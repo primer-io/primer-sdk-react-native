@@ -2,6 +2,9 @@
 #
 .DS_Store
 
+# iOS
+ios/Pods
+
 # XDE
 .expo/
 
@@ -33,6 +36,7 @@ project.xcworkspace
 #
 .idea
 .gradle
+gradle-wrapper.jar
 local.properties
 android.iml
 

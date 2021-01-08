@@ -1,0 +1,27 @@
+PODS:
+  - CardScan (2.0.6)
+  - PrimerSDK (0.1.2):
+    - CardScan
+    - Sentry
+  - Sentry (6.0.12):
+    - Sentry/Core (= 6.0.12)
+  - Sentry/Core (6.0.12)
+
+DEPENDENCIES:
+  - "PrimerSDK (~> 0.1.2+1)"
+
+SPEC REPOS:
+  "git@github.com:primer-io/primer-sdk-podspecs.git":
+    - PrimerSDK
+  trunk:
+    - CardScan
+    - Sentry
+
+SPEC CHECKSUMS:
+  CardScan: ec880b2453469bf29f31fc5c29e11748c43f12eb
+  PrimerSDK: bf9e80e391c42b52a9325f1387ec10e1cb0c9cd1
+  Sentry: 8ffcfe3416e0a58b90bb1ae319e8e8a13022a03e
+
+PODFILE CHECKSUM: d1f2e2eb029ca59a9a590a647e5f0a0fed1d0ece
+
+COCOAPODS: 1.10.1

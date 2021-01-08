@@ -1,18 +1,24 @@
-import * as React from 'react';
-
-import { StyleSheet, View, Text } from 'react-native';
-import ReactNative from '@primer-io/react-native';
+import React from 'react';
+import { StyleSheet, View, Text, Button } from 'react-native';
+import { UXMode } from '@primer-io/react-native';
+import { usePrimer } from './usePrimer';
 
 export default function App() {
-  const [result, setResult] = React.useState<number | undefined>();
-
-  React.useEffect(() => {
-    ReactNative.multiply(3, 7).then(setResult);
-  }, []);
+  const { showCheckout, token } = usePrimer({
+    uxMode: UXMode.MANAGE_PAYMENT_METHODS,
+    amount: 1234,
+    currency: 'EUR',
+    clientToken: '',
+  });
 
   return (
     <View style={styles.container}>
-      <Text>Result: {result}</Text>
+      <Text>Result: {token}</Text>
+      <View style={styles.button}>
+        <Button title="Checkout" onPress={showCheckout}>
+          Checkout
+        </Button>
+      </View>
     </View>
   );
 }
@@ -27,5 +33,8 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     marginVertical: 20,
+  },
+  button: {
+    marginVertical: 10,
   },
 });
