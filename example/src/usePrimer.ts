@@ -4,9 +4,11 @@ import {
   PaymentMethod,
   UXMode,
 } from '@primer-io/react-native';
+import type { PaymentMethodConfig } from 'src/types';
 
 interface UsePrimerOptions {
   clientToken: string;
+  paymentMethods: PaymentMethodConfig[];
   uxMode?: UXMode;
   currency?: string;
   amount?: number;

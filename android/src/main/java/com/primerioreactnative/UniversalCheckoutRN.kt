@@ -1,18 +1,46 @@
 package com.primerioreactnative
 
 import android.content.Context
-import android.util.Log
 import com.facebook.react.bridge.*
-import io.primer.android.IClientTokenProvider
+import io.primer.android.ClientTokenProvider
 import io.primer.android.PaymentMethod
 import io.primer.android.UniversalCheckout
 import io.primer.android.events.CheckoutEvent
+import io.primer.android.model.dto.PaymentMethodToken
+import org.json.JSONArray
+import org.json.JSONObject
+import java.util.*
+import kotlin.collections.ArrayList
 
 class UniversalCheckoutRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
-  private var callback: Callback? = null
+  private var options: OptionsDeserializer? = null
+  private var paymentMethods: MutableList<PaymentMethod> = ArrayList()
+
   private val listener = object : UniversalCheckout.EventListener {
+    private var mQueue: Deque<CheckoutEvent> = ArrayDeque()
+    private var mCallback: Callback? = null
+
     override fun onCheckoutEvent(e: CheckoutEvent) {
-      callback?.invoke(e)
+      mQueue.add(e)
+      poll()
+    }
+
+    fun poll(cb: Callback? = null) {
+      if (cb != null) {
+        mCallback = cb
+      }
+
+      mCallback?.let { callback ->
+        mQueue.poll()?.let { next ->
+          callback.invoke(serializeEvent(next))
+          mCallback = null
+        }
+      }
+    }
+
+    fun clear() {
+      mQueue.clear()
+      mCallback = null
     }
   }
 
@@ -21,22 +49,25 @@ class UniversalCheckoutRN(reactContext: ReactApplicationContext) : ReactContextB
   }
 
   @ReactMethod
-  fun initialize(clientToken: String) {
-    UniversalCheckout.initialize(currentActivity as Context, object : IClientTokenProvider {
-      override fun createToken(callback: (String) -> Unit) {
-        callback(clientToken)
-      }
-    })
+  fun setEventCallback(cb: Callback) {
+    listener.poll(cb)
   }
 
   @ReactMethod
-  fun loadPaymentMethods(serialized: String) {
-    Log.i("primer-rn", serialized)
+  fun initialize(serialized: String) {
+    options = OptionsDeserializer(serialized)
+    paymentMethods = PaymentMethodDeserializer(options!!.get("paymentMethods", JSONArray())).deserialize()
 
-    UniversalCheckout.loadPaymentMethods(
-      listOf(PaymentMethod.Card())
-//      PaymentMethodDeserializer(paymentMethods).deserialize()
+    UniversalCheckout.initialize(
+      currentActivity as Context,
+      object : ClientTokenProvider {
+        override fun createToken(callback: (String) -> Unit) {
+          options?.get<String>("clientToken")?.let { callback(it) }
+        }
+      }
     )
+
+    UniversalCheckout.loadPaymentMethods(paymentMethods)
   }
 
   @ReactMethod
@@ -45,36 +76,63 @@ class UniversalCheckoutRN(reactContext: ReactApplicationContext) : ReactContextB
   }
 
   @ReactMethod
-  fun showSuccess(serialized: String) {
-    val delay: Int = OptionsDeserializer(serialized).get("dismissDelay", 3000)
-    UniversalCheckout.showSuccess(dismissDelay = delay)
+  fun showSuccess() {
+    val delay: Int = options?.get("autoDismissDelay", 3000) ?: 3000
+    UniversalCheckout.showSuccess(autoDismissDelay = delay)
   }
 
   @ReactMethod
-  fun show(serialized: String, cb: Callback) {
-    callback = cb
-
-    val options = OptionsDeserializer(serialized)
-
-    UniversalCheckout.show(
-      listener,
-      uxMode = intToUxMode(options.get("uxMode")),
-      currency = options.get("currency"),
-      amount = options.get("amount")
-    )
+  fun show() {
+    when (options?.get("uxMode") ?: 0) {
+      0 -> UniversalCheckout.showCheckout(listener, amount = options!!.get("amount")!!, currency = options!!.get("currency")!!)
+      1 -> UniversalCheckout.showSavedPaymentMethods(listener)
+      2 -> UniversalCheckout.showStandalone(listener, paymentMethod = paymentMethods.first())
+      else -> {}
+    }
   }
 
   @ReactMethod
   fun destroy() {
     UniversalCheckout.destroy()
-    callback = null
+    options = null
+    listener.clear()
   }
 
-  private fun intToUxMode(ordinal: Int?): UniversalCheckout.UXMode? {
-    return when(ordinal) {
-      0 -> UniversalCheckout.UXMode.CHECKOUT
-      1 -> UniversalCheckout.UXMode.ADD_PAYMENT_METHOD
-      else -> null
+  private fun serializeEvent(e: CheckoutEvent): String {
+    val json = JSONObject()
+    json.put("type", e.type.name)
+
+    val data = when(e) {
+      is CheckoutEvent.Exit -> JSONObject().apply {
+        put("reason", e.data.reason.name)
+      }
+      is CheckoutEvent.TokenAddedToVault -> serializeToken(e.data)
+      is CheckoutEvent.TokenizationSuccess -> serializeToken(e.data)
+      is CheckoutEvent.TokenRemovedFromVault -> serializeToken(e.data)
+      is CheckoutEvent.TokenizationError -> JSONObject().apply {
+        put("errorId", e.data.errorId ?: "")
+        put("diagnosticsId", e.data.diagnosticsId ?: "")
+        put("message", e.data.description)
+      }
+      else -> JSONObject()
+    }
+
+    json.put("data", data)
+
+    return json.toString()
+  }
+
+  private fun serializeToken(data: PaymentMethodToken): JSONObject {
+    return JSONObject().apply {
+      put("token", data.token)
+      put("analyticsId", data.analyticsId)
+      put("paymentInstrumentType", data.paymentInstrumentType)
+      put("paymentInstrumentData", data.paymentInstrumentData.toString())
+      data.vaultData?.let {
+        put("vaultData", JSONObject().apply {
+          put("customerId", it.customerId)
+        })
+      }
     }
   }
 }

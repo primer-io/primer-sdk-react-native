@@ -20,8 +20,11 @@ export enum CheckoutEventType {
   TOKENIZE_ERROR = 'TOKENIZE_ERROR',
 }
 
-interface PaymentMethodToken {
+export interface PaymentMethodToken {
   token: string;
+  analyticsId: string;
+  paymentInstrumentType: string;
+  paymentInstrumentData: { [x: string]: string };
 }
 
 interface ICheckoutEvent<T extends CheckoutEventType, U> {
@@ -30,7 +33,8 @@ interface ICheckoutEvent<T extends CheckoutEventType, U> {
 }
 
 interface TokenizeError {
-  code: string;
+  errorId: string;
+  diagnosticsId: string;
   message: string;
 }
 
@@ -54,7 +58,7 @@ interface CheckoutTheme {
 
 export interface InitOptions {
   clientToken: string;
-  paymentMethods: PaymentMethod[];
+  paymentMethods: PaymentMethodConfig[];
   uxMode: UXMode;
   onEvent: (e: CheckoutEvent) => void;
   amount?: number;
@@ -97,7 +101,7 @@ export type GoCardless = IPaymentMethod<
   GoCardlessOptions
 >;
 
-export type PaymentMethod =
+export type PaymentMethodConfig =
   | PaymentCard
   | GooglePay
   | ApplePay
