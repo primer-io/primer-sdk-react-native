@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
   UniversalCheckout,
-  PaymentMethodType,
+  PaymentMethod,
   UXMode,
 } from '@primer-io/react-native';
 
@@ -14,7 +14,7 @@ interface UsePrimerOptions {
 
 export function usePrimer({
   clientToken,
-  uxMode,
+  uxMode = UXMode.CHECKOUT,
   amount,
   currency,
 }: UsePrimerOptions) {
@@ -25,18 +25,18 @@ export function usePrimer({
   };
 
   const showCheckout = () => {
-    UniversalCheckout.show(onEvent, {
+    UniversalCheckout.show();
+  };
+
+  useEffect(() => {
+    UniversalCheckout.initialize({
+      clientToken,
+      paymentMethods: [PaymentMethod.Card()],
+      onEvent,
       uxMode,
       amount,
       currency,
     });
-  };
-
-  useEffect(() => {
-    UniversalCheckout.initialize(clientToken);
-    UniversalCheckout.loadPaymentMethods([
-      { type: PaymentMethodType.PAYMENT_CARD },
-    ]);
 
     return () => {
       UniversalCheckout.destroy();
