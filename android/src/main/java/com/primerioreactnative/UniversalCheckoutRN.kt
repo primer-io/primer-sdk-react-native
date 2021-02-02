@@ -22,30 +22,9 @@ class UniversalCheckoutRN(reactContext: ReactApplicationContext) : ReactContextB
     mListener.poll(cb)
   }
 
-  private fun themeToString(t: UniversalCheckoutTheme?): String {
-    if (t == null) {
-      return "it's null :*("
-    }
-    var str = ""
-
-    str += "{\n"
-    str += "\tbuttonDefaultColor: ${t.buttonDefaultColor},\n"
-    str += "\tinputBackgroundColor: ${t.inputBackgroundColor},\n"
-    str += "\tbuttonPrimaryColor: ${t.buttonPrimaryColor},\n"
-    str += "\ttextDangerColor: ${t.textDangerColor},\n"
-    str += "\tbackgroundColor: ${t.backgroundColor},\n"
-    str += "\tbuttonCornerRadius: ${t.buttonCornerRadius}\n"
-    str += "}"
-
-    return str
-  }
-
   @ReactMethod
   fun initialize(serialized: String) {
     options.hydrate(serialized)
-
-    Log.i("primer-rn", "Resolved theme")
-    Log.i("primer-rn", themeToString(options?.theme))
 
     val context = currentActivity as Context
     val provider = CheckoutClientTokenProvider(options.clientToken)

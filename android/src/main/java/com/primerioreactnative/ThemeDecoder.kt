@@ -29,11 +29,10 @@ object ThemeDecoder {
 
   /**
    * hex is in format rrggbb(aa)
-   * we need android int representing aarrggbb
+   * For android, it needs to be a string in aarrggbb format
    */
   private fun colorFromString(obj: JSONObject, name: String): String? {
     val hex = JSONPrimitiveDecoder.asStringOpt(obj, name) ?: return null
-    Log.i("primer-rn", "Decoding $name...")
 
     if (!hex.matches(hexPattern)) {
       Log.i("primer-rn", "$hex Does not match")
@@ -44,12 +43,8 @@ object ThemeDecoder {
     val g = hex.substring(3..4).toUpperCase(Locale.ROOT)
     val b = hex.substring(5..6).toUpperCase(Locale.ROOT)
 
-    Log.i("primer-rn", "r: $r, g: $g, b: $b")
-
     val a = if (hex.length == 7) "FF" else hex.substring(7..8).toUpperCase(Locale.ROOT)
     val argb = "#$a$r$g$b"
-
-    Log.i("primer-rn", "Decoded $name - $argb")
 
     return argb
   }
