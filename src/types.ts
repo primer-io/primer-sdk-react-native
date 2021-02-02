@@ -53,7 +53,31 @@ export type CheckoutEvent =
   | ICheckoutEvent<CheckoutEventType.TOKENIZE_ERROR, TokenizeError>;
 
 interface CheckoutTheme {
+  buttonCornerRadius?: number;
+  inputCornerRadius?: number;
+
+  // Surface colors
   backgroundColor?: string;
+
+  // Button Colors
+  buttonPrimaryColor?: string;
+  buttonPrimaryColorDisabled?: string;
+  buttonDefaultColor?: string;
+  buttonDefaultColorDisabled?: string;
+  buttonDefaultBorderColor?: string;
+
+  // Text Colors
+  textDefaultColor?: string;
+  textDangerColor?: string;
+  textMutedColor?: string;
+
+  // General theme
+  primaryColor?: string;
+  inputBackgroundColor?: string;
+
+  android?: {
+    windowMode?: 'BOTTOM_SHEET' | 'FULL_SCREEN';
+  };
 }
 
 export interface InitOptions {

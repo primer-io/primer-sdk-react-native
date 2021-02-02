@@ -38,6 +38,14 @@ export function usePrimer({
       uxMode,
       amount,
       currency,
+      theme: {
+        backgroundColor: '#ff0000',
+        buttonCornerRadius: 2.0,
+        buttonDefaultColor: '#00ff00',
+        android: {
+          windowMode: 'FULL_SCREEN',
+        },
+      },
     });
 
     return () => {
