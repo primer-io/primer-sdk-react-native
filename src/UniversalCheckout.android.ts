@@ -125,15 +125,23 @@ function toPaymentToken(data: { [x: string]: string }): PaymentMethodToken {
  * The native side queues events and will emit them as soon as new callbacks become available
  */
 function setEventCallback(onEvent: (e: CheckoutEvent) => void): void {
-  AndroidModule.setEventCallback((nativeEvent: NativeAndroidSDKEvent) => {
-    const event = nativeEventToCheckoutEvent(nativeEvent);
+  AndroidModule.setEventCallback((serialized: string) => {
+    let nativeEvent: NativeAndroidSDKEvent | null = null;
 
-    if (event !== null) {
-      onEvent(event);
+    try {
+      nativeEvent = JSON.parse(serialized);
+    } catch (e) {}
+
+    if (nativeEvent !== null) {
+      const event = nativeEventToCheckoutEvent(nativeEvent);
+
+      if (event !== null) {
+        onEvent(event);
+      }
+
+      setImmediate(() => {
+        setEventCallback(onEvent);
+      });
     }
-
-    setImmediate(() => {
-      setEventCallback(onEvent);
-    });
   });
 }
