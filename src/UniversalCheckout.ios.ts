@@ -19,13 +19,15 @@ export const UniversalCheckout: IOSUniversalCheckout = {
    * Present the direct debit cehckout view
    * @param _options
    */
-  loadDirectDebitView(): void {},
+  loadDirectDebitView(): void {
+    IOSModule.loadDirectDebitView();
+  },
 
   /**
    * Fetch tokenised payment methods and direct debit
    * @param _options
    */
-  loadPaymentMethods(completion: (any: any) => {}): void {
+  loadPaymentMethods(completion: (any: any) => void): void {
     IOSModule.loadPaymentMethods(completion);
   },
 

@@ -203,7 +203,7 @@ export interface IOSUniversalCheckout {
 
   loadDirectDebitView(): void;
 
-  loadPaymentMethods(completion: (any: any) => {}): void;
+  loadPaymentMethods(completion: (any: any) => void): void;
 
   dismissCheckout(): void;
 }

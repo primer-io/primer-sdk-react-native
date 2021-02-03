@@ -6,6 +6,7 @@ import PrimerSDK
 class UniversalCheckout: NSObject {
     
     var primer: Primer?
+    var delegate: PrimerCheckoutDelegate?
     
     @objc func initialize(_ data: NSDictionary, callback: @escaping RCTResponseSenderBlock) -> Void {
         DispatchQueue.main.async {
@@ -16,7 +17,6 @@ class UniversalCheckout: NSObject {
                 let colorThemeData = themeData["colorTheme"] as! NSDictionary
                 
                 for (key, value) in colorThemeData {
-                    print("Property: \"\(key as! String)\"")
                     
                     guard let val = value as? NSDictionary else { return }
                     
@@ -28,15 +28,15 @@ class UniversalCheckout: NSObject {
                     )
                     
                     switch key as! String {
-                    case "text1": lightTheme.text1 = clr
-                    case "text2": lightTheme.text2 = clr
-                    case "text3": lightTheme.text3 = clr
-                    case "secondaryText1": lightTheme.secondaryText1 = clr
-                    case "main1": lightTheme.main1 = clr
-                    case "main2": lightTheme.main2 = clr
-                    case "tint1": lightTheme.tint1 = clr
-                    case "disabled1": lightTheme.disabled1 = clr
-                    case "error1": lightTheme.error1 = clr
+                    case "text1": lightTheme.text1 = clr; break
+                    case "text2": lightTheme.text2 = clr; break
+                    case "text3": lightTheme.text3 = clr; break
+                    case "secondaryText1": lightTheme.secondaryText1 = clr; break
+                    case "main1": lightTheme.main1 = clr; break
+                    case "main2": lightTheme.main2 = clr; break
+                    case "tint1": lightTheme.tint1 = clr; break
+                    case "disabled1": lightTheme.disabled1 = clr; break
+                    case "error1": lightTheme.error1 = clr; break
                     default: break
                     }
                 }
@@ -80,9 +80,11 @@ class UniversalCheckout: NSObject {
             
             let tokenResponse = data["clientTokenData"] as! NSDictionary
             
-            let delegate = CheckoutDelegate(
+            self.delegate = CheckoutDelegate(
                 tokenResponse: tokenResponse, callback: callback
             )
+            
+            guard let delegate = self.delegate else { return }
             
             let amount = data["amount"] as! Int
             let currency = Currency(rawValue: data["currency"] as! String)!
@@ -111,15 +113,9 @@ class UniversalCheckout: NSObject {
     
     @objc func loadDirectDebitView() -> Void {
         
-        print("🚀")
-        
         DispatchQueue.main.async { [weak self] in
             
-            print("🚀🚀")
-            
             guard let vc = RCTPresentedViewController() else { return }
-            
-            print("🚀🚀🚀")
             
             self?.primer?.showCheckout(vc, flow: .addDirectDebit)
             
@@ -128,7 +124,8 @@ class UniversalCheckout: NSObject {
     }
     
     @objc func loadPaymentMethods(_ callback: @escaping RCTResponseSenderBlock) -> Void {
-        primer?.fetchVaultedPaymentMethods() { result in
+        primer!.fetchVaultedPaymentMethods({ result in
+            
             switch result {
             case .failure: break
             case .success(let arr):
@@ -136,35 +133,21 @@ class UniversalCheckout: NSObject {
                     
                     let data = try JSONEncoder().encode(arr)
                     
-                    callback([data])
+                    let str = String(data: data, encoding: .utf8)
+                    
+                    callback([str ?? "[]"])
                     
                 } catch {
                     
                 }
             }
-        }
+        })
     }
     
     @objc func dismissCheckout() -> Void {
         primer?.dismiss()
     }
 }
-
-//struct ColorThemeData: Codable {
-//    var text1: RGBValues?;
-//    var text2: RGBValues?;
-//    var text3: RGBValues?;
-//    var secondaryText1: RGBValues?;
-//    var main1: RGBValues?;
-//    var main2: RGBValues?;
-//    var tint1: RGBValues?;
-//    var disabled1: RGBValues?;
-//    var error1: RGBValues?;
-//}
-//
-//struct RGBValues: Codable {
-//    var red, green, blue: String
-//}
 
 class CheckoutDelegate: PrimerCheckoutDelegate {
     
@@ -197,6 +180,7 @@ class CheckoutDelegate: PrimerCheckoutDelegate {
         
         do {
             let payload = try JSONEncoder().encode(result)
+            
             self.callback([payload])
         } catch {
             
