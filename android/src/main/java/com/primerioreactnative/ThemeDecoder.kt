@@ -51,9 +51,7 @@ object ThemeDecoder {
 
   private fun getWindowMode(obj: JSONObject): UniversalCheckoutTheme.WindowMode {
     val mode = obj
-      .takeIf { it.has("android") }
-      ?.getJSONObject("android")
-      ?.takeIf { it.has("windowMode") }
+      .takeIf { it.has("windowMode") }
       ?.getString("windowMode")
 
     return when (mode) {

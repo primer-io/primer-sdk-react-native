@@ -1,9 +1,8 @@
 import { NativeModules } from 'react-native';
-import {
+import type {
   InitOptions,
   IUniversalCheckout,
   CheckoutEvent,
-  CheckoutEventType,
   PaymentMethodToken,
 } from './types';
 
@@ -32,9 +31,9 @@ export const UniversalCheckout: IUniversalCheckout = {
         clientToken: options.clientToken,
         uxMode: options.uxMode,
         paymentMethods: options.paymentMethods,
-        theme: options.theme || null,
-        amount: options.amount || null,
-        currency: options.currency || null,
+        theme: options.theme?.android ?? null,
+        amount: options.amount ?? null,
+        currency: options.currency ?? null,
       })
     );
     setEventCallback(options.onEvent);
@@ -75,6 +74,13 @@ export const UniversalCheckout: IUniversalCheckout = {
   destroy(): void {
     AndroidModule.destroy();
   },
+
+  loadPaymentMethods(): Promise<PaymentMethodToken[]> {
+    /**
+     * not implemented yet
+     */
+    return Promise.resolve([]);
+  },
 };
 
 function nativeEventToCheckoutEvent(
@@ -83,27 +89,27 @@ function nativeEventToCheckoutEvent(
   switch (nativeEvent.type) {
     case 'EXIT':
       return {
-        type: CheckoutEventType.EXIT,
+        type: 'EXIT',
         data: { reason: nativeEvent.data.reason },
       };
     case 'TOKENIZE_SUCCESS':
       return {
-        type: CheckoutEventType.TOKENIZE_SUCCESS,
+        type: 'TOKENIZE_SUCCESS',
         data: toPaymentToken(nativeEvent.data),
       };
     case 'TOKEN_ADDED_TO_VAULT':
       return {
-        type: CheckoutEventType.TOKEN_ADDED_TO_VAULT,
+        type: 'TOKEN_ADDED_TO_VAULT',
         data: toPaymentToken(nativeEvent.data),
       };
     case 'TOKEN_REMOVED_FROM_VAULT':
       return {
-        type: CheckoutEventType.TOKEN_REMOVED_FROM_VAULT,
+        type: 'TOKEN_REMOVED_FROM_VAULT',
         data: toPaymentToken(nativeEvent.data),
       };
     case 'TOKENIZE_ERROR':
       return {
-        type: CheckoutEventType.TOKENIZE_ERROR,
+        type: 'TOKENIZE_ERROR',
         data: {
           errorId: nativeEvent.data.errorId,
           diagnosticsId: nativeEvent.data.diagnosticsId,

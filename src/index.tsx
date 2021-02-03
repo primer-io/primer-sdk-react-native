@@ -5,34 +5,32 @@ import {
   UXMode,
   IUniversalCheckout,
   PaymentCard,
-  PaymentMethodType,
   PayPal,
   GooglePay,
   ApplePay,
   GoCardless,
   GoCardlessOptions,
-  IOSUniversalCheckout,
 } from './types';
 
-const UniversalCheckout: IUniversalCheckout | IOSUniversalCheckout =
+const UniversalCheckout: IUniversalCheckout =
   Platform.OS === 'ios' ? IOSImpl : AndroidImpl;
 
 export { UniversalCheckout, UXMode };
 
 export const PaymentMethod = {
   Card(): PaymentCard {
-    return { type: PaymentMethodType.PAYMENT_CARD };
+    return { type: 'PAYMENT_CARD' };
   },
   PayPal(): PayPal {
-    return { type: PaymentMethodType.PAYPAL };
+    return { type: 'PAYPAL' };
   },
   GooglePay(): GooglePay {
-    return { type: PaymentMethodType.GOOGLE_PAY };
+    return { type: 'GOOGLE_PAY' };
   },
   ApplePay(): ApplePay {
-    return { type: PaymentMethodType.APPLE_PAY };
+    return { type: 'APPLE_PAY' };
   },
   GoCardless(opts: GoCardlessOptions): GoCardless {
-    return { type: PaymentMethodType.GO_CARDLESS, ...opts };
+    return { type: 'GO_CARDLESS', ...opts };
   },
 };

@@ -1,10 +1,9 @@
-export enum PaymentMethodType {
-  PAYMENT_CARD = 'PAYMENT_CARD',
-  GOOGLE_PAY = 'GOOGLE_PAY',
-  APPLE_PAY = 'APPLE_PAY',
-  PAYPAL = 'PAYPAL',
-  GO_CARDLESS = 'GOCARDLESS',
-}
+export type PaymentMethodType =
+  | 'PAYMENT_CARD'
+  | 'GOOGLE_PAY'
+  | 'APPLE_PAY'
+  | 'PAYPAL'
+  | 'GOCARDLESS';
 
 export enum UXMode {
   CHECKOUT = 0,
@@ -12,13 +11,12 @@ export enum UXMode {
   STANDALONE_PAYMENT_METHOD = 2,
 }
 
-export enum CheckoutEventType {
-  EXIT = 'EXIT',
-  TOKEN_ADDED_TO_VAULT = 'TOKEN_ADDED_TO_VAULT',
-  TOKEN_REMOVED_FROM_VAULT = 'TOKEN_REMOVED_FROM_VAULT',
-  TOKENIZE_SUCCESS = 'TOKENIZE_SUCCESS',
-  TOKENIZE_ERROR = 'TOKENIZE_ERROR',
-}
+export type CheckoutEventType =
+  | 'EXIT'
+  | 'TOKEN_ADDED_TO_VAULT'
+  | 'TOKEN_REMOVED_FROM_VAULT'
+  | 'TOKENIZE_SUCCESS'
+  | 'TOKENIZE_ERROR';
 
 export interface PaymentMethodToken {
   token: string;
@@ -43,16 +41,13 @@ interface ExitInfo {
 }
 
 export type CheckoutEvent =
-  | ICheckoutEvent<CheckoutEventType.EXIT, ExitInfo>
-  | ICheckoutEvent<CheckoutEventType.TOKEN_ADDED_TO_VAULT, PaymentMethodToken>
-  | ICheckoutEvent<
-      CheckoutEventType.TOKEN_REMOVED_FROM_VAULT,
-      PaymentMethodToken
-    >
-  | ICheckoutEvent<CheckoutEventType.TOKENIZE_SUCCESS, PaymentMethodToken>
-  | ICheckoutEvent<CheckoutEventType.TOKENIZE_ERROR, TokenizeError>;
+  | ICheckoutEvent<'EXIT', ExitInfo>
+  | ICheckoutEvent<'TOKEN_ADDED_TO_VAULT', PaymentMethodToken>
+  | ICheckoutEvent<'TOKEN_REMOVED_FROM_VAULT', PaymentMethodToken>
+  | ICheckoutEvent<'TOKENIZE_SUCCESS', PaymentMethodToken>
+  | ICheckoutEvent<'TOKENIZE_ERROR', TokenizeError>;
 
-interface CheckoutTheme {
+interface AndroidCheckoutTheme {
   buttonCornerRadius?: number;
   inputCornerRadius?: number;
 
@@ -75,19 +70,18 @@ interface CheckoutTheme {
   primaryColor?: string;
   inputBackgroundColor?: string;
 
-  android?: {
-    windowMode?: 'BOTTOM_SHEET' | 'FULL_SCREEN';
-  };
+  windowMode?: 'BOTTOM_SHEET' | 'FULL_SCREEN';
 }
 
 export interface InitOptions {
   clientToken: string;
+  customerId: string;
   paymentMethods: PaymentMethodConfig[];
   uxMode: UXMode;
   onEvent: (e: CheckoutEvent) => void;
   amount?: number;
   currency?: string;
-  theme?: CheckoutTheme;
+  theme?: { ios?: IOSCheckoutTheme; android?: AndroidCheckoutTheme };
 }
 
 export interface IUniversalCheckout {
@@ -97,33 +91,35 @@ export interface IUniversalCheckout {
   showSuccess(): void;
   showProgressIndicator(visible: boolean): void;
   destroy(): void;
+  loadPaymentMethods(): Promise<PaymentMethodToken[]>;
 }
 
-type IPaymentMethod<T extends PaymentMethodType, U = {}> = U & {
+type IPaymentMethod<T, U = {}> = U & {
   type: T;
 };
 
-export interface GoCardlessOptions {
-  companyName: string;
-  companyAddress: string;
-  customerName: string;
-  customerEmail: string;
-  customerAddressLine1: string;
-  customerAddressLine2?: string;
-  customerAddressCity: string;
-  customerAddressState?: string;
-  customerAddressPostalCode: string;
-  customerAddressCountryCode: string;
+export interface Address {
+  line1: string;
+  line2?: string;
+  city: string;
+  state?: string;
+  countryCode: string;
+  postalCode: string;
 }
 
-export type PaymentCard = IPaymentMethod<PaymentMethodType.PAYMENT_CARD>;
-export type GooglePay = IPaymentMethod<PaymentMethodType.GOOGLE_PAY>;
-export type ApplePay = IPaymentMethod<PaymentMethodType.APPLE_PAY>;
-export type PayPal = IPaymentMethod<PaymentMethodType.PAYPAL>;
-export type GoCardless = IPaymentMethod<
-  PaymentMethodType.GO_CARDLESS,
-  GoCardlessOptions
->;
+export interface GoCardlessOptions {
+  companyName: string;
+  companyAddress: Address;
+  customerName: string;
+  customerEmail: string;
+  customerAddress: Address;
+}
+
+export type PaymentCard = IPaymentMethod<'PAYMENT_CARD'>;
+export type GooglePay = IPaymentMethod<'GOOGLE_PAY'>;
+export type ApplePay = IPaymentMethod<'APPLE_PAY'>;
+export type PayPal = IPaymentMethod<'PAYPAL'>;
+export type GoCardless = IPaymentMethod<'GO_CARDLESS', GoCardlessOptions>;
 
 export type PaymentMethodConfig =
   | PaymentCard
@@ -148,7 +144,7 @@ export interface IOSInitOptions {
   currency: string;
   customerId: string;
   countryCode: string;
-  theme?: IOSPrimerTheme;
+  theme?: IOSCheckoutTheme<IOSRgbColor>;
   businessDetails: IOSBusinessDetails;
   isFullScreenOnly?: boolean;
 }
@@ -158,21 +154,21 @@ export interface IOSClientTokenData {
   expirationDate: String;
 }
 
-export interface IOSPrimerTheme {
-  colorTheme: IOSPrimerColorTheme;
+export interface IOSCheckoutTheme<T = string> {
+  colorTheme: IOSPrimerColorTheme<T>;
   textFieldTheme: 'doublelined' | 'underlined' | 'outlined';
 }
 
-export interface IOSPrimerColorTheme {
-  text1?: IOSRgbColor;
-  text2?: IOSRgbColor;
-  text3?: IOSRgbColor;
-  secondaryText1?: IOSRgbColor;
-  main1?: IOSRgbColor;
-  main2?: IOSRgbColor;
-  tint1?: IOSRgbColor;
-  disabled1?: IOSRgbColor;
-  error1?: IOSRgbColor;
+export interface IOSPrimerColorTheme<T> {
+  text1?: T;
+  text2?: T;
+  text3?: T;
+  secondaryText1?: T;
+  main1?: T;
+  main2?: T;
+  tint1?: T;
+  disabled1?: T;
+  error1?: T;
 }
 
 export interface IOSRgbColor {
@@ -193,17 +189,4 @@ export interface IOSBusinessAddress {
   state?: string;
   countryCode: string;
   postalCode: string;
-}
-
-export interface IOSUniversalCheckout {
-  initialize(
-    options: IOSInitOptions,
-    onTokenizeSuccess: (any: any) => void
-  ): void;
-
-  loadDirectDebitView(): void;
-
-  loadPaymentMethods(completion: (any: any) => void): void;
-
-  dismissCheckout(): void;
 }
