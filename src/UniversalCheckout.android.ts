@@ -27,7 +27,6 @@ export const UniversalCheckout: IUniversalCheckout = {
    * @param _options
    */
   initialize(options: InitOptions): void {
-    console.log('Initializing: ', options);
     AndroidModule.initialize(
       JSON.stringify({
         clientToken: options.clientToken,
