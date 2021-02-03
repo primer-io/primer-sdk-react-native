@@ -11,9 +11,10 @@ import {
   ApplePay,
   GoCardless,
   GoCardlessOptions,
+  IOSUniversalCheckout,
 } from './types';
 
-const UniversalCheckout: IUniversalCheckout =
+const UniversalCheckout: IUniversalCheckout | IOSUniversalCheckout =
   Platform.OS === 'ios' ? IOSImpl : AndroidImpl;
 
 export { UniversalCheckout, UXMode };

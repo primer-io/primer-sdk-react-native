@@ -1,35 +1,41 @@
-import type { IUniversalCheckout, InitOptions } from './types';
+import { NativeModules } from 'react-native';
+import type { IOSUniversalCheckout, IOSInitOptions } from './types';
 
-export const UniversalCheckout: IUniversalCheckout = {
+const { UniversalCheckoutRN: IOSModule } = NativeModules;
+
+export const UniversalCheckout: IOSUniversalCheckout = {
   /**
    * Initialize the iOS SDK
    * @param _options
    */
-  initialize(_options: InitOptions): void {},
+  initialize(
+    options: IOSInitOptions,
+    onTokenizeSuccess: (any: any) => void
+  ): void {
+    IOSModule.initialize(options, onTokenizeSuccess);
+  },
 
   /**
-   * Show the checkout sheet
+   * Present the direct debit cehckout view
+   * @param _options
    */
-  show(): void {},
+  loadDirectDebitView(): void {
+    IOSModule.loadDirectDebitView();
+  },
 
   /**
-   * Show the success screen
+   * Fetch tokenised payment methods and direct debit
+   * @param _options
    */
-  showSuccess(): void {},
+  loadPaymentMethods(completion: (any: any) => void): void {
+    IOSModule.loadPaymentMethods(completion);
+  },
 
   /**
-   * Show the loadinng indicator
-   * @param _visible
+   * Dismiss the checkout view
+   * @param _options
    */
-  showProgressIndicator(_visible: boolean): void {},
-
-  /**
-   * Dismiss the sheet
-   */
-  dismiss(): void {},
-
-  /**
-   * Clean up any resources here
-   */
-  destroy(): void {},
+  dismissCheckout(): void {
+    IOSModule.dismissCheckout();
+  },
 };

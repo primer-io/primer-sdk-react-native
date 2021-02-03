@@ -141,3 +141,69 @@ export interface ShowCheckoutOptions {
   currency?: string;
   amount?: number;
 }
+
+export interface IOSInitOptions {
+  clientTokenData: IOSClientTokenData;
+  amount: number;
+  currency: string;
+  customerId: string;
+  countryCode: string;
+  theme?: IOSPrimerTheme;
+  businessDetails: IOSBusinessDetails;
+  isFullScreenOnly?: boolean;
+}
+
+export interface IOSClientTokenData {
+  clientToken: String;
+  expirationDate: String;
+}
+
+export interface IOSPrimerTheme {
+  colorTheme: IOSPrimerColorTheme;
+  textFieldTheme: 'doublelined' | 'underlined' | 'outlined';
+}
+
+export interface IOSPrimerColorTheme {
+  text1?: IOSRgbColor;
+  text2?: IOSRgbColor;
+  text3?: IOSRgbColor;
+  secondaryText1?: IOSRgbColor;
+  main1?: IOSRgbColor;
+  main2?: IOSRgbColor;
+  tint1?: IOSRgbColor;
+  disabled1?: IOSRgbColor;
+  error1?: IOSRgbColor;
+}
+
+export interface IOSRgbColor {
+  red: number;
+  green: number;
+  blue: number;
+}
+
+export interface IOSBusinessDetails {
+  name: string;
+  address: IOSBusinessAddress;
+}
+
+export interface IOSBusinessAddress {
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  state?: string;
+  countryCode: string;
+  postalCode: string;
+}
+
+export interface IOSUniversalCheckout {
+  initialize(
+    options: IOSInitOptions,
+    onTokenizeSuccess: (any: any) => void
+  ): void;
+
+  loadDirectDebitView(): void;
+
+  loadPaymentMethods(completion: (any: any) => void): void;
+
+  dismissCheckout(): void;
+}
