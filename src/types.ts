@@ -113,3 +113,59 @@ export interface ShowCheckoutOptions {
   currency?: string;
   amount?: number;
 }
+
+export interface IOSInitOptions {
+  clientTokenData: IOSClientTokenData;
+  amount: number;
+  currency: string;
+  customerId: string;
+  countryCode: string;
+  theme?: IOSPrimerTheme;
+}
+
+export interface IOSClientTokenData {
+  clientToken: String;
+  expirationDate: String;
+}
+
+export interface IOSPrimerTheme {
+  colorTheme: IOSPrimerColorTheme;
+  textFieldTheme: IOSPrimerTextFieldTheme;
+}
+
+export interface IOSPrimerColorTheme {
+  text1?: IOSRgbColor;
+  text2?: IOSRgbColor;
+  text3?: IOSRgbColor;
+  secondaryText1?: IOSRgbColor;
+  main1?: IOSRgbColor;
+  main2?: IOSRgbColor;
+  tint1?: IOSRgbColor;
+  disabled1?: IOSRgbColor;
+  error1?: IOSRgbColor;
+}
+
+export interface IOSRgbColor {
+  red: number;
+  green: number;
+  blue: number;
+}
+
+export enum IOSPrimerTextFieldTheme {
+  doublelined,
+  underlined,
+  outlined,
+}
+
+export interface IOSUniversalCheckout {
+  initialize(
+    options: IOSInitOptions,
+    onTokenizeSuccess: (any: any) => void
+  ): void;
+
+  loadDirectDebitView(): void;
+
+  loadPaymentMethods(completion: (any: any) => {}): void;
+
+  dismissCheckout(): void;
+}
