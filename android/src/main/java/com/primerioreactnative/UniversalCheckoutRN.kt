@@ -1,7 +1,10 @@
 package com.primerioreactnative
 
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import androidx.annotation.MainThread
 import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
@@ -35,28 +38,38 @@ class UniversalCheckoutRN(reactContext: ReactApplicationContext) : ReactContextB
 
   @ReactMethod
   fun dismiss() {
-    UniversalCheckout.dismiss()
+    interact {
+      UniversalCheckout.dismiss()
+    }
   }
 
   @ReactMethod
   fun showSuccess() {
-    UniversalCheckout.showSuccess(autoDismissDelay = options.autoDismissDelay)
+    interact {
+      UniversalCheckout.showSuccess(autoDismissDelay = options.autoDismissDelay)
+    }
   }
 
   @ReactMethod
   fun show() {
-    when (options.uxMode) {
-      0 -> UniversalCheckout.showCheckout(mListener, amount = options.amount!!, currency = options.currency!!)
-      1 -> UniversalCheckout.showSavedPaymentMethods(mListener)
-      2 -> UniversalCheckout.showStandalone(mListener, paymentMethod = options.paymentMethods.first())
-      else -> {
+    interact {
+      when (options.uxMode) {
+        0 -> UniversalCheckout.showCheckout(mListener, amount = options.amount!!, currency = options.currency!!)
+        1 -> UniversalCheckout.showSavedPaymentMethods(mListener)
+        2 -> UniversalCheckout.showStandalone(mListener, paymentMethod = options.paymentMethods.first())
+        else -> {
+        }
       }
     }
   }
 
   @ReactMethod
   fun destroy() {
-    UniversalCheckout.destroy()
+    interact { UniversalCheckout.destroy() }
     mListener.clear()
+  }
+
+  private fun interact(task: () -> Unit) {
+    Handler(Looper.getMainLooper()).post(task)
   }
 }
