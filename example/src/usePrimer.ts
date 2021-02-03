@@ -5,10 +5,15 @@ import {
   UXMode,
 } from '@primer-io/react-native';
 import { Platform } from 'react-native';
-import type { IUniversalCheckout, IOSUniversalCheckout } from 'src/types';
+import type {
+  PaymentMethodConfig,
+  IUniversalCheckout,
+  IOSUniversalCheckout,
+} from 'src/types';
 
 interface UsePrimerOptions {
   clientToken: string;
+  paymentMethods: PaymentMethodConfig[];
   uxMode?: UXMode;
   currency?: string;
   amount?: number;
@@ -42,6 +47,14 @@ export function usePrimer({
         uxMode,
         amount,
         currency,
+        theme: {
+          backgroundColor: '#ff0000',
+          buttonCornerRadius: 2.0,
+          buttonDefaultColor: '#00ff00',
+          android: {
+            windowMode: 'FULL_SCREEN',
+          },
+        },
       });
 
       return () => {

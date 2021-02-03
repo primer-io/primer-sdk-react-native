@@ -20,8 +20,11 @@ export enum CheckoutEventType {
   TOKENIZE_ERROR = 'TOKENIZE_ERROR',
 }
 
-interface PaymentMethodToken {
+export interface PaymentMethodToken {
   token: string;
+  analyticsId: string;
+  paymentInstrumentType: string;
+  paymentInstrumentData: { [x: string]: string };
 }
 
 interface ICheckoutEvent<T extends CheckoutEventType, U> {
@@ -30,7 +33,8 @@ interface ICheckoutEvent<T extends CheckoutEventType, U> {
 }
 
 interface TokenizeError {
-  code: string;
+  errorId: string;
+  diagnosticsId: string;
   message: string;
 }
 
@@ -49,12 +53,36 @@ export type CheckoutEvent =
   | ICheckoutEvent<CheckoutEventType.TOKENIZE_ERROR, TokenizeError>;
 
 interface CheckoutTheme {
+  buttonCornerRadius?: number;
+  inputCornerRadius?: number;
+
+  // Surface colors
   backgroundColor?: string;
+
+  // Button Colors
+  buttonPrimaryColor?: string;
+  buttonPrimaryColorDisabled?: string;
+  buttonDefaultColor?: string;
+  buttonDefaultColorDisabled?: string;
+  buttonDefaultBorderColor?: string;
+
+  // Text Colors
+  textDefaultColor?: string;
+  textDangerColor?: string;
+  textMutedColor?: string;
+
+  // General theme
+  primaryColor?: string;
+  inputBackgroundColor?: string;
+
+  android?: {
+    windowMode?: 'BOTTOM_SHEET' | 'FULL_SCREEN';
+  };
 }
 
 export interface InitOptions {
   clientToken: string;
-  paymentMethods: PaymentMethod[];
+  paymentMethods: PaymentMethodConfig[];
   uxMode: UXMode;
   onEvent: (e: CheckoutEvent) => void;
   amount?: number;
@@ -97,7 +125,7 @@ export type GoCardless = IPaymentMethod<
   GoCardlessOptions
 >;
 
-export type PaymentMethod =
+export type PaymentMethodConfig =
   | PaymentCard
   | GooglePay
   | ApplePay
