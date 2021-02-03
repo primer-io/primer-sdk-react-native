@@ -10,7 +10,7 @@ export const UniversalCheckout: IOSUniversalCheckout = {
    */
   initialize(
     options: IOSInitOptions,
-    onTokenizeSuccess: (any: any) => {}
+    onTokenizeSuccess: (any: any) => void
   ): void {
     IOSModule.initialize(options, onTokenizeSuccess);
   },
