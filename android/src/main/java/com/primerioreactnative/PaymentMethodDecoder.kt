@@ -30,17 +30,26 @@ object PaymentMethodDecoder {
       "PAYPAL" -> PaymentMethod.PayPal()
       "GOCARDLESS" -> PaymentMethod.GoCardless(
         companyName = item.getString("companyName"),
-        companyAddress = item.getString("companyAddress"),
+        companyAddress = formatAddress(item.getJSONObject("companyAddress")),
         customerName = item.getString("customerName"),
         customerEmail = item.getString("customerEmail"),
-        customerAddressLine1 = item.getString("customerAddressLine1"),
-        customerAddressLine2 = item.getString("customerAddressLine2"),
-        customerAddressCity = item.getString("customerAddressCity"),
-        customerAddressState = item.getString("customerAddressState"),
-        customerAddressCountryCode = item.getString("customerAddressCountryCode"),
-        customerAddressPostalCode = item.getString("customerAddressPostalCode")
+        customerAddressLine1 = item.getJSONObject("customerAddress").getString("line1"),
+        customerAddressLine2 = item.getJSONObject("customerAddress").getString("line2"),
+        customerAddressCity = item.getJSONObject("customerAddress").getString("city"),
+        customerAddressState = item.getJSONObject("customerAddress").getString("state"),
+        customerAddressCountryCode = item.getJSONObject("customerAddress").getString("countryCode"),
+        customerAddressPostalCode = item.getJSONObject("customerAddress").getString("postalCode")
       )
       else -> null
     }
+  }
+
+  private fun formatAddress(address: JSONObject): String {
+    val line1 = address.getString("line1")
+    val city = address.getString("city")
+    val postalCode = address.getString("postalCode")
+    val countryCode = address.getString("countryCode")
+
+    return "$line1, $city, $postalCode, $countryCode"
   }
 }
