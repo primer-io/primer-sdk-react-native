@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   s.license      = package["license"]
   s.authors      = package["author"]
 
-  s.platforms    = { :ios => "12.0" }
+  s.platforms    = { :ios => "10.0" }
   s.source       = { :git => "https://github.com/primer-io/primer-sdk-react-native.git", :tag => "#{s.version}" }
 
   
@@ -18,5 +18,5 @@ Pod::Spec.new do |s|
   
 
   s.dependency "React-Core"
-  s.dependency "PrimerSDK"
+  s.dependency "PrimerSDK",  "~> 1.1.12"
 end

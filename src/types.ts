@@ -149,6 +149,8 @@ export interface IOSInitOptions {
   customerId: string;
   countryCode: string;
   theme?: IOSPrimerTheme;
+  businessDetails: IOSBusinessDetails;
+  isFullScreenOnly?: boolean;
 }
 
 export interface IOSClientTokenData {
@@ -158,7 +160,7 @@ export interface IOSClientTokenData {
 
 export interface IOSPrimerTheme {
   colorTheme: IOSPrimerColorTheme;
-  textFieldTheme: IOSPrimerTextFieldTheme;
+  textFieldTheme: 'doublelined' | 'underlined' | 'outlined';
 }
 
 export interface IOSPrimerColorTheme {
@@ -179,10 +181,18 @@ export interface IOSRgbColor {
   blue: number;
 }
 
-export enum IOSPrimerTextFieldTheme {
-  doublelined,
-  underlined,
-  outlined,
+export interface IOSBusinessDetails {
+  name: string;
+  address: IOSBusinessAddress;
+}
+
+export interface IOSBusinessAddress {
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  state?: string;
+  countryCode: string;
+  postalCode: string;
 }
 
 export interface IOSUniversalCheckout {

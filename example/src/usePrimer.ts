@@ -35,6 +35,7 @@ export function usePrimer({
     if (Platform.OS === 'android') {
       (UniversalCheckout as IUniversalCheckout).show();
     } else {
+      (UniversalCheckout as IOSUniversalCheckout).loadDirectDebitView();
     }
   };
 
@@ -74,6 +75,30 @@ export function usePrimer({
           currency,
           customerId: '',
           countryCode: 'FR',
+          theme: {
+            colorTheme: {
+              tint1: {
+                red: 200,
+                green: 200,
+                blue: 100,
+              },
+              text2: {
+                red: 200,
+                green: 200,
+                blue: 100,
+              },
+            },
+            textFieldTheme: 'doublelined',
+          },
+          businessDetails: {
+            name: 'My Business Ltd.',
+            address: {
+              addressLine1: '4 Rue',
+              city: 'Paris',
+              postalCode: '75001',
+              countryCode: 'FR',
+            },
+          },
         },
         (paymentMethodToken) => {
           console.log(paymentMethodToken);
