@@ -21,7 +21,7 @@ export function usePrimer({ clientToken, amount, currency }: UsePrimerOptions) {
   useEffect(() => {
     UniversalCheckout.initialize({
       clientToken,
-      customerId: 'my customer',
+      customerId: 'my-customer',
       amount,
       currency,
       uxMode: UXMode.STANDALONE_PAYMENT_METHOD,

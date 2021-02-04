@@ -23,10 +23,10 @@ PODS:
   - Mixpanel-swift (2.8.3):
     - Mixpanel-swift/Complete (= 2.8.3)
   - Mixpanel-swift/Complete (2.8.3)
-  - primer-io-react-native (0.1.0):
-    - PrimerSDK (~> 1.1.12)
+  - primer-io-react-native (0.2.2):
+    - PrimerSDK (~> 1.1.13)
     - React-Core
-  - PrimerSDK (1.1.12):
+  - PrimerSDK (1.1.13):
     - CardScan
     - Mixpanel-swift
   - RCTRequired (0.63.4)
@@ -360,8 +360,8 @@ SPEC CHECKSUMS:
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
   glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
   Mixpanel-swift: 947354668bf7dcaff5aaf9c64232fb5bea6ff0c7
-  primer-io-react-native: 0476668b96179b3bd3f2c27fbe19fe2afdd0a7d8
-  PrimerSDK: 0664c58d20ab941ef2bdb56fde7b640db0f9f14d
+  primer-io-react-native: b39d2e5e24e3099669ff5aad3d1786c81ac90202
+  PrimerSDK: b7362497616b30f377dde324eca2bcad8267d26c
   RCTRequired: 082f10cd3f905d6c124597fd1c14f6f2655ff65e
   RCTTypeSafety: 8c9c544ecbf20337d069e4ae7fd9a377aadf504b
   React: b0a957a2c44da4113b0c4c9853d8387f8e64e615
