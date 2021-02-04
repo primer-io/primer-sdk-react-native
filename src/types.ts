@@ -91,7 +91,7 @@ export interface IUniversalCheckout {
   showSuccess(): void;
   showProgressIndicator(visible: boolean): void;
   destroy(): void;
-  loadPaymentMethods(): Promise<PaymentMethodToken[]>;
+  getSavedPaymentMethods(): Promise<PaymentMethodToken[]>;
 }
 
 type IPaymentMethod<T, U = {}> = U & {

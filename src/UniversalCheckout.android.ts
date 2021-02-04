@@ -75,7 +75,7 @@ export const UniversalCheckout: IUniversalCheckout = {
     AndroidModule.destroy();
   },
 
-  loadPaymentMethods(): Promise<PaymentMethodToken[]> {
+  getSavedPaymentMethods(): Promise<PaymentMethodToken[]> {
     /**
      * not implemented yet
      */

@@ -81,7 +81,7 @@ export const UniversalCheckout: IUniversalCheckout = {
    * Fetch tokenised payment methods and direct debit
    * @param _options
    */
-  loadPaymentMethods(): Promise<PaymentMethodToken[]> {
+  getSavedPaymentMethods(): Promise<PaymentMethodToken[]> {
     return new Promise((resolve) => {
       IOSModule.loadPaymentMethods((val: string) => {
         const tokens = JSON.parse(val) as unknown[];
