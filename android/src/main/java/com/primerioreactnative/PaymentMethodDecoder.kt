@@ -1,5 +1,6 @@
 package com.primerioreactnative
 
+import android.util.Log
 import io.primer.android.PaymentMethod
 import org.json.JSONArray
 import org.json.JSONObject
@@ -21,6 +22,9 @@ object PaymentMethodDecoder {
   }
 
   private fun toPaymentMethod(item: JSONObject): PaymentMethod? {
+    Log.i("primer-rn","Processing")
+    Log.i("primer-rn", item.toString())
+
     val type = if (item.has("type")) item.getString("type") else return null
 
     return when (type) {
@@ -28,20 +32,27 @@ object PaymentMethodDecoder {
 //      "GOOGLE_PAY" ->
 //      "APPLE_PAY" ->
       "PAYPAL" -> PaymentMethod.PayPal()
-      "GOCARDLESS" -> PaymentMethod.GoCardless(
-        companyName = item.getString("companyName"),
-        companyAddress = formatAddress(item.getJSONObject("companyAddress")),
-        customerName = item.getString("customerName"),
-        customerEmail = item.getString("customerEmail"),
-        customerAddressLine1 = item.getJSONObject("customerAddress").getString("line1"),
-        customerAddressLine2 = item.getJSONObject("customerAddress").getString("line2"),
-        customerAddressCity = item.getJSONObject("customerAddress").getString("city"),
-        customerAddressState = item.getJSONObject("customerAddress").getString("state"),
-        customerAddressCountryCode = item.getJSONObject("customerAddress").getString("countryCode"),
-        customerAddressPostalCode = item.getJSONObject("customerAddress").getString("postalCode")
-      )
+      "GOCARDLESS" -> createGoCardlessConfig(item)
       else -> null
     }
+  }
+
+  private fun createGoCardlessConfig(data: JSONObject): PaymentMethod.GoCardless? {
+    val customerAddress = data.takeIf { it.has("customerAddress") }?.getJSONObject("customerAddress") ?: return null
+    val companyAddress = data.takeIf { it.has("companyAddress") }?.getJSONObject("companyAddress") ?: return null
+
+    return PaymentMethod.GoCardless(
+      companyName = data.getString("companyName"),
+      companyAddress = formatAddress(companyAddress),
+      customerName = data.getString("customerName"),
+      customerEmail = data.getString("customerEmail"),
+      customerAddressLine1 = customerAddress.getString("line1"),
+      customerAddressLine2 = JSONPrimitiveDecoder.asStringOpt(customerAddress, "line2"),
+      customerAddressCity = customerAddress.getString("city"),
+      customerAddressState = JSONPrimitiveDecoder.asStringOpt(customerAddress, "state"),
+      customerAddressCountryCode = customerAddress.getString("countryCode"),
+      customerAddressPostalCode = customerAddress.getString("postalCode")
+    )
   }
 
   private fun formatAddress(address: JSONObject): String {

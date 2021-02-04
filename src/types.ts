@@ -119,7 +119,7 @@ export type PaymentCard = IPaymentMethod<'PAYMENT_CARD'>;
 export type GooglePay = IPaymentMethod<'GOOGLE_PAY'>;
 export type ApplePay = IPaymentMethod<'APPLE_PAY'>;
 export type PayPal = IPaymentMethod<'PAYPAL'>;
-export type GoCardless = IPaymentMethod<'GO_CARDLESS', GoCardlessOptions>;
+export type GoCardless = IPaymentMethod<'GOCARDLESS', GoCardlessOptions>;
 
 export type PaymentMethodConfig =
   | PaymentCard

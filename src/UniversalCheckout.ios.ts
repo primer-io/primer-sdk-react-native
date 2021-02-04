@@ -32,9 +32,9 @@ export const UniversalCheckout: IUniversalCheckout = {
       theme: formatTheme(options.theme?.ios) ?? undefined,
     };
 
-    const gc = options.paymentMethods.find((e) => e.type === 'GO_CARDLESS');
+    const gc = options.paymentMethods.find((e) => e.type === 'GOCARDLESS');
 
-    if (gc != null && gc.type === 'GO_CARDLESS') {
+    if (gc != null && gc.type === 'GOCARDLESS') {
       initOptions.businessDetails = {
         name: gc.companyName,
         address: {

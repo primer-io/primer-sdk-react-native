@@ -31,6 +31,6 @@ export const PaymentMethod = {
     return { type: 'APPLE_PAY' };
   },
   GoCardless(opts: GoCardlessOptions): GoCardless {
-    return { type: 'GO_CARDLESS', ...opts };
+    return { type: 'GOCARDLESS', ...opts };
   },
 };

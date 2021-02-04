@@ -4,22 +4,14 @@ import {
   PaymentMethod,
   UXMode,
 } from '@primer-io/react-native';
-import type { PaymentMethodConfig } from 'src/types';
 
 interface UsePrimerOptions {
   clientToken: string;
-  paymentMethods: PaymentMethodConfig[];
-  uxMode?: UXMode;
   currency?: string;
   amount?: number;
 }
 
-export function usePrimer({
-  clientToken,
-  uxMode = UXMode.CHECKOUT,
-  amount,
-  currency,
-}: UsePrimerOptions) {
+export function usePrimer({ clientToken, amount, currency }: UsePrimerOptions) {
   const [token] = useState<string | null>(null);
 
   const showCheckout = () => {
@@ -32,7 +24,7 @@ export function usePrimer({
       customerId: 'my customer',
       amount,
       currency,
-      uxMode,
+      uxMode: UXMode.STANDALONE_PAYMENT_METHOD,
       paymentMethods: [
         PaymentMethod.GoCardless({
           companyName: 'E-Corp',
