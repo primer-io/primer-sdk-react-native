@@ -28,7 +28,7 @@ export const UniversalCheckout: IUniversalCheckout = {
         expirationDate: '',
       },
       countryCode: 'FR',
-      customerId: options.customerId,
+      customerId: 'mock-customer-id', // TODO - make this optional
       theme: formatTheme(options.theme?.ios) ?? undefined,
     };
 

@@ -75,7 +75,6 @@ interface AndroidCheckoutTheme {
 
 export interface InitOptions {
   clientToken: string;
-  customerId: string;
   paymentMethods: PaymentMethodConfig[];
   uxMode: UXMode;
   onEvent: (e: CheckoutEvent) => void;
