@@ -109,9 +109,9 @@ export interface Address {
 export interface GoCardlessOptions {
   companyName: string;
   companyAddress: Address;
-  customerName: string;
-  customerEmail: string;
-  customerAddress: Address;
+  customerName?: string;
+  customerEmail?: string;
+  customerAddress?: Address;
 }
 
 export type PaymentCard = IPaymentMethod<'PAYMENT_CARD'>;

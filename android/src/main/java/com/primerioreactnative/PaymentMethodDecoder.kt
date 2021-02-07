@@ -38,20 +38,20 @@ object PaymentMethodDecoder {
   }
 
   private fun createGoCardlessConfig(data: JSONObject): PaymentMethod.GoCardless? {
-    val customerAddress = data.takeIf { it.has("customerAddress") }?.getJSONObject("customerAddress") ?: return null
+    val customerAddress = data.takeIf { it.has("customerAddress") }?.getJSONObject("customerAddress") ?: JSONObject()
     val companyAddress = data.takeIf { it.has("companyAddress") }?.getJSONObject("companyAddress") ?: return null
 
     return PaymentMethod.GoCardless(
       companyName = data.getString("companyName"),
       companyAddress = formatAddress(companyAddress),
-      customerName = data.getString("customerName"),
-      customerEmail = data.getString("customerEmail"),
-      customerAddressLine1 = customerAddress.getString("line1"),
+      customerName = JSONPrimitiveDecoder.asStringOpt(data, "customerName"),
+      customerEmail = JSONPrimitiveDecoder.asStringOpt(data,"customerEmail"),
+      customerAddressLine1 = JSONPrimitiveDecoder.asStringOpt(customerAddress, "line1"),
       customerAddressLine2 = JSONPrimitiveDecoder.asStringOpt(customerAddress, "line2"),
-      customerAddressCity = customerAddress.getString("city"),
+      customerAddressCity = JSONPrimitiveDecoder.asStringOpt(customerAddress, "city"),
       customerAddressState = JSONPrimitiveDecoder.asStringOpt(customerAddress, "state"),
-      customerAddressCountryCode = customerAddress.getString("countryCode"),
-      customerAddressPostalCode = customerAddress.getString("postalCode")
+      customerAddressCountryCode = JSONPrimitiveDecoder.asStringOpt(customerAddress, "countryCode"),
+      customerAddressPostalCode = JSONPrimitiveDecoder.asStringOpt(customerAddress, "postalCode")
     )
   }
 
