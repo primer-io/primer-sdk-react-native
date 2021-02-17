@@ -145,6 +145,7 @@ export interface IOSInitOptions {
   countryCode: string;
   theme?: IOSCheckoutTheme<IOSRgbColor>;
   businessDetails: IOSBusinessDetails;
+  customerDetails: IOSCustomerDetails;
   isFullScreenOnly?: boolean;
 }
 
@@ -156,6 +157,14 @@ export interface IOSClientTokenData {
 export interface IOSCheckoutTheme<T = string> {
   colorTheme: IOSPrimerColorTheme<T>;
   textFieldTheme: 'doublelined' | 'underlined' | 'outlined';
+  cornerRadiusTheme: IOSPrimerCornerRadiusTheme;
+}
+
+export interface IOSPrimerCornerRadiusTheme {
+  buttons?: number;
+  textFields?: number;
+  sheetView?: number;
+  confirmMandateList?: number;
 }
 
 export interface IOSPrimerColorTheme<T> {
@@ -166,6 +175,7 @@ export interface IOSPrimerColorTheme<T> {
   main1?: T;
   main2?: T;
   tint1?: T;
+  neutral1?: T;
   disabled1?: T;
   error1?: T;
 }
@@ -182,6 +192,18 @@ export interface IOSBusinessDetails {
 }
 
 export interface IOSBusinessAddress {
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  state?: string;
+  countryCode: string;
+  postalCode: string;
+}
+
+export interface IOSCustomerDetails {
+  firstName: string;
+  lastName: string;
+  email: string;
   addressLine1: string;
   addressLine2?: string;
   city: string;

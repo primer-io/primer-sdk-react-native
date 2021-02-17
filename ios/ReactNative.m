@@ -11,4 +11,10 @@ RCT_EXTERN_METHOD(loadDirectDebitView)
 
 RCT_EXTERN_METHOD(loadPaymentMethods: (RCTResponseSenderBlock)callback)
 
+//RCT_EXTERN_METHOD(setDependencies: (NSDictionary *)data)
+
+RCT_EXTERN_METHOD(setTheme: (NSDictionary *)data)
+
+RCT_EXTERN_METHOD(setDirectDebitDetails: (NSDictionary *)data)
+
 @end
