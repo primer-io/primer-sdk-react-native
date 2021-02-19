@@ -8,6 +8,7 @@ import type {
   IOSRgbColor,
   IOSPrimerColorTheme,
   IOSBusinessDetails,
+  IOSCustomerDetails,
 } from './types';
 
 const { UniversalCheckoutRN: IOSModule } = NativeModules;
@@ -18,8 +19,12 @@ export const UniversalCheckout: IUniversalCheckout = {
    * @param _options
    */
   initialize(options: InitOptions): void {
-    const initOptions: Omit<IOSInitOptions, 'businessDetails'> & {
+    const initOptions: Omit<
+      IOSInitOptions,
+      'businessDetails' | 'customerDetails'
+    > & {
       businessDetails?: IOSBusinessDetails;
+      customerDetails?: IOSCustomerDetails;
     } = {
       amount: options.amount ?? 100, // TODO - make this optional
       currency: options.currency ?? 'EUR', // TODO - make this optional,
@@ -45,6 +50,17 @@ export const UniversalCheckout: IUniversalCheckout = {
           postalCode: gc.companyAddress.postalCode,
           countryCode: gc.companyAddress.countryCode,
         },
+      };
+      initOptions.customerDetails = {
+        firstName: gc.customerName ?? '',
+        lastName: '',
+        email: gc.customerEmail ?? '',
+        addressLine1: gc.companyAddress.line1,
+        addressLine2: gc.companyAddress.line2,
+        city: gc.companyAddress.city,
+        state: gc.companyAddress.state,
+        postalCode: gc.companyAddress.postalCode,
+        countryCode: gc.companyAddress.countryCode,
       };
     }
 
@@ -77,6 +93,14 @@ export const UniversalCheckout: IUniversalCheckout = {
    */
   showSuccess() {},
 
+  // /**
+  //  * Set direct debit details
+  //  */
+  // setDirectDebitDetails({
+  // }): void {
+  //   IOSModule.setDirectDebitDetails
+  // }
+
   /**
    * Fetch tokenised payment methods and direct debit
    * @param _options
@@ -106,10 +130,12 @@ function formatTheme(
     return null;
   }
 
-  const { colorTheme, textFieldTheme } = theme;
+  const { colorTheme, textFieldTheme, cornerRadiusTheme } = theme;
 
   if (!colorTheme) {
-    return textFieldTheme ? { textFieldTheme, colorTheme: {} } : null;
+    return textFieldTheme
+      ? { textFieldTheme, colorTheme: {}, cornerRadiusTheme }
+      : null;
   }
 
   const nextTheme = Object.entries(colorTheme).reduce(
@@ -128,6 +154,7 @@ function formatTheme(
   return {
     textFieldTheme,
     colorTheme: nextTheme,
+    cornerRadiusTheme,
   };
 }
 
