@@ -132,6 +132,7 @@ def kotlin_version = getExtOrDefault('kotlinVersion')
 
 allprojects {
   repositories {
+    mavenLocal()
     maven {
       url 'https://dl.bintray.com/primer-api/android/'
     }
