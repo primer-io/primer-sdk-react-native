@@ -69,6 +69,15 @@ class UniversalCheckoutRN(reactContext: ReactApplicationContext) : ReactContextB
     mListener.clear()
   }
 
+  @ReactMethod
+  fun getSavedPaymentMethods(cb: Callback) {
+    interact {
+      UniversalCheckout.getSavedPaymentMethods { vault ->
+        cb(TokenSerializer.serialize(vault).toString())
+      }
+    }
+  }
+
   private fun interact(task: () -> Unit) {
     Handler(Looper.getMainLooper()).post(task)
   }

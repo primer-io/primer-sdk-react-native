@@ -76,10 +76,12 @@ export const UniversalCheckout: IUniversalCheckout = {
   },
 
   getSavedPaymentMethods(): Promise<PaymentMethodToken[]> {
-    /**
-     * not implemented yet
-     */
-    return Promise.resolve([]);
+    return new Promise((resolve) => {
+      AndroidModule.getSavedPaymentMethods((serialized: string) => {
+        const result = JSON.parse(serialized) as PaymentMethodToken[];
+        resolve(result);
+      });
+    });
   },
 };
 

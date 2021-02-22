@@ -117,6 +117,10 @@ export function usePrimer({ clientToken, amount, currency }: UsePrimerOptions) {
         UniversalCheckout.dismiss();
       },
     });
+
+    UniversalCheckout.getSavedPaymentMethods().then((pms) => {
+      console.log('PMS!', pms);
+    });
   });
 
   return {

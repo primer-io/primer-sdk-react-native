@@ -14,9 +14,9 @@ object EventSerializer {
       is CheckoutEvent.Exit -> JSONObject().apply {
         put("reason", e.data.reason.name)
       }
-      is CheckoutEvent.TokenAddedToVault -> serializeToken(e.data)
-      is CheckoutEvent.TokenizationSuccess -> serializeToken(e.data)
-      is CheckoutEvent.TokenRemovedFromVault -> serializeToken(e.data)
+      is CheckoutEvent.TokenAddedToVault -> TokenSerializer.serialize(e.data)
+      is CheckoutEvent.TokenizationSuccess -> TokenSerializer.serialize(e.data)
+      is CheckoutEvent.TokenRemovedFromVault -> TokenSerializer.serialize(e.data)
       is CheckoutEvent.TokenizationError -> JSONObject().apply {
         put("errorId", e.data.errorId ?: "")
         put("diagnosticsId", e.data.diagnosticsId ?: "")
@@ -28,20 +28,5 @@ object EventSerializer {
     json.put("data", data)
 
     return json.toString()
-  }
-
-
-  private fun serializeToken(data: PaymentMethodToken): JSONObject {
-    return JSONObject().apply {
-      put("token", data.token)
-      put("analyticsId", data.analyticsId)
-      put("paymentInstrumentType", data.paymentInstrumentType)
-      put("paymentInstrumentData", data.paymentInstrumentData.toString())
-      data.vaultData?.let {
-        put("vaultData", JSONObject().apply {
-          put("customerId", it.customerId)
-        })
-      }
-    }
   }
 }
