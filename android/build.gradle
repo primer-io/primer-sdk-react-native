@@ -5,6 +5,9 @@ buildscript {
   repositories {
     google()
     jcenter()
+    maven {
+      url 'https://dl.bintray.com/primer-api/android/'
+    }
   }
 
   dependencies {
@@ -126,6 +129,14 @@ repositories {
 }
 
 def kotlin_version = getExtOrDefault('kotlinVersion')
+
+allprojects {
+  repositories {
+    maven {
+      url 'https://dl.bintray.com/primer-api/android/'
+    }
+  }
+}
 
 dependencies {
   // noinspection GradleDynamicVersion
