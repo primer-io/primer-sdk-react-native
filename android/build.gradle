@@ -3,9 +3,6 @@ buildscript {
   def kotlin_version = rootProject.ext.has('kotlinVersion') ? rootProject.ext.get('kotlinVersion') : project.properties['ReactNative_kotlinVersion']
 
   repositories {
-    maven {
-      url 'https://dl.bintray.com/primer-api/android/'
-    }
     google()
     jcenter()
   }
@@ -54,9 +51,6 @@ android {
 }
 
 repositories {
-  maven {
-    url 'https://dl.bintray.com/primer-api/android/'
-  }
   mavenCentral()
   jcenter()
   google()
@@ -141,5 +135,5 @@ dependencies {
   // noinspection GradleDynamicVersion
   api 'com.facebook.react:react-native:+'
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-  implementation 'io.primer.android:android:1.0.0-beta.8'
+  implementation 'io.primer.android:android:1.0.0-beta.10'
 }
