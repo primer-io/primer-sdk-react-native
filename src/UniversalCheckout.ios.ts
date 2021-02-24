@@ -40,6 +40,10 @@ export const UniversalCheckout: IUniversalCheckout = {
     const gc = options.paymentMethods.find((e) => e.type === 'GOCARDLESS');
 
     if (gc != null && gc.type === 'GOCARDLESS') {
+      const customerName = gc.customerName ?? '';
+      const tokens = customerName.split(/\s+/g);
+      const [first, ...others] = tokens;
+
       initOptions.businessDetails = {
         name: gc.companyName,
         address: {
@@ -52,8 +56,8 @@ export const UniversalCheckout: IUniversalCheckout = {
         },
       };
       initOptions.customerDetails = {
-        firstName: gc.customerName ?? '',
-        lastName: '',
+        firstName: first,
+        lastName: others.join(' '),
         email: gc.customerEmail ?? '',
         addressLine1: gc.companyAddress.line1,
         addressLine2: gc.companyAddress.line2,
