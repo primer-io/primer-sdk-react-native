@@ -12,6 +12,7 @@ class UniversalCheckout: NSObject {
         DispatchQueue.main.async {
             
             var lightTheme = PrimerDefaultTheme()
+            var darkTheme: ColorTheme?
             
             var cornerRadiusTheme: CornerRadiusTheme?
             
@@ -31,6 +32,8 @@ class UniversalCheckout: NSObject {
                         alpha: 1
                     )
                     
+                    print("🌈 clr: \(clr)")
+                    
                     print(clr, key)
 
                     switch key as! String {
@@ -40,7 +43,11 @@ class UniversalCheckout: NSObject {
                     case "secondaryText1": lightTheme.secondaryText1 = clr
                     case "main1": lightTheme.main1 = clr
                     case "main2": lightTheme.main2 = clr
-                    case "tint1": lightTheme.tint1 = clr
+                    case "tint1":
+                        lightTheme.tint1 = clr
+                        if #available(iOS 13.0, *) {
+                            darkTheme = PrimerDarkTheme(tint1: clr)
+                        }
                     case "neutral1": lightTheme.neutral1 = clr
                     case "disabled1": lightTheme.disabled1 = clr
                     case "error1": lightTheme.error1 = clr
@@ -84,8 +91,8 @@ class UniversalCheckout: NSObject {
             if #available(iOS 13.0, *) {
                 theme = PrimerTheme(
                     cornerRadiusTheme: cornerRadiusTheme ?? CornerRadiusTheme(),
-                    colorTheme: PrimerDefaultTheme(neutral1: .blue),
-                    darkTheme: lightTheme,
+                    colorTheme: lightTheme,
+                    darkTheme: darkTheme ?? PrimerDarkTheme(),
                     layout: PrimerLayout(showTopTitle: false, textFieldHeight: 56),
                     textFieldTheme: textFieldTheme,
                     fontTheme: PrimerFontTheme(mainTitle: .boldSystemFont(ofSize: 24))
@@ -126,7 +133,7 @@ class UniversalCheckout: NSObject {
             
             guard let delegate = self.delegate else { return }
             
-            let amount = data["amount"] as! Int
+//            let amount = data["amount"] as! Int
             let currency = Currency(rawValue: data["currency"] as! String)!
             let customerId = data["customerId"] as! String
             let countryCode = CountryCode(rawValue: data["countryCode"] as! String)!
@@ -135,7 +142,7 @@ class UniversalCheckout: NSObject {
             
             let settings = PrimerSettings(
                 delegate: delegate,
-                amount: amount,
+//                amount: amount,
                 currency: currency,
                 theme: theme,
                 customerId: customerId,
@@ -208,7 +215,7 @@ class UniversalCheckout: NSObject {
     }
     
     @objc func loadPaymentMethods(_ callback: @escaping RCTResponseSenderBlock) -> Void {
-        primer!.fetchVaultedPaymentMethods({ result in
+        primer?.fetchVaultedPaymentMethods({ result in
             
             switch result {
             case .failure: break

@@ -29,11 +29,11 @@ export function usePrimer({ clientToken, amount, currency }: UsePrimerOptions) {
             countryCode: 'SE',
             postalCode: '654936',
           },
-          customerName: 'J Doe',
-          customerEmail: 'j.doe@email.com',
+          customerName: 'John Doe',
+          customerEmail: 'test@mail.com',
           customerAddress: {
-            line1: '123 Fake St',
-            postalCode: '836520',
+            line1: '1 Rue de Rivoli',
+            postalCode: '75001',
             city: 'Paris',
             countryCode: 'FR',
           },
@@ -49,9 +49,6 @@ export function usePrimer({ clientToken, amount, currency }: UsePrimerOptions) {
         ios: {
           colorTheme: {
             tint1: '#2D50E6',
-            neutral1: '#ffffff',
-            main1: '#222222',
-            text1: '#ffffff',
           },
           textFieldTheme: 'outlined',
           cornerRadiusTheme: {
