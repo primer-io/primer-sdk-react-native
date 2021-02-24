@@ -59,12 +59,12 @@ export const UniversalCheckout: IUniversalCheckout = {
         firstName: first,
         lastName: others.join(' '),
         email: gc.customerEmail ?? '',
-        addressLine1: gc.companyAddress.line1,
-        addressLine2: gc.companyAddress.line2,
-        city: gc.companyAddress.city,
-        state: gc.companyAddress.state,
-        postalCode: gc.companyAddress.postalCode,
-        countryCode: gc.companyAddress.countryCode,
+        addressLine1: gc.customerAddress?.line1 ?? '',
+        addressLine2: gc.customerAddress?.line2 ?? '',
+        city: gc.customerAddress?.city ?? '',
+        state: gc.customerAddress?.state,
+        postalCode: gc.customerAddress?.postalCode ?? '',
+        countryCode: gc.customerAddress?.countryCode ?? '',
       };
     }
 
