@@ -123,11 +123,17 @@ repositories {
 
 def kotlin_version = getExtOrDefault('kotlinVersion')
 
-allprojects {
-  repositories {
-    maven {
-      url 'https://dl.bintray.com/primer-api/android/'
-    }
+// allprojects {
+//   repositories {
+//     maven {
+//       url 'https://dl.bintray.com/primer-api/android/'
+//     }
+//   }
+// }
+
+repositories {
+  flatDir {
+    dirs 'libs'
   }
 }
 
@@ -135,5 +141,5 @@ dependencies {
   // noinspection GradleDynamicVersion
   api 'com.facebook.react:react-native:+'
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-  implementation 'io.primer.android:android:1.0.0-beta.10'
+  implementation fileTree('libs') // implementation 'io.primer.android:android:1.0.0-beta.10'
 }
