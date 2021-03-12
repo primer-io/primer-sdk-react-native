@@ -6,169 +6,194 @@ import PrimerSDK
 class UniversalCheckout: NSObject {
     
     var primer: Primer?
-    var delegate: PrimerCheckoutDelegate?
+
+    var tokenResponse: NSDictionary?
+    var onTokenizeSuccess: RCTResponseSenderBlock?
+    var onViewDismissed: RCTResponseSenderBlock?
     
-    @objc func initialize(_ data: NSDictionary, callback: @escaping RCTResponseSenderBlock) -> Void {
-        DispatchQueue.main.async {
+    
+    // theme and settings
+    var lightTheme = PrimerDefaultTheme()
+    var darkTheme: ColorTheme?
+    var cornerRadiusTheme: CornerRadiusTheme?
+    var textFieldTheme: PrimerTextFieldTheme = .outlined
+    var theme: PrimerTheme?
+    
+    var businessDetails: BusinessDetails?
+    
+    var currency: Currency?
+    var customerId: String?
+    var countryCode: CountryCode?
+    let urlScheme: String = "primer://oauth"
+    let urlSchemeIdentifier: String = "primer"
+    
+    
+    var settings: PrimerSettings?
+    
+    private func generateTheme(with themeData: NSDictionary) {
+        let colorThemeData = themeData["colorTheme"] as! NSDictionary
+
+        for (key, value) in colorThemeData {
+
+            guard let val = value as? NSDictionary else { return }
+
+            let clr = UIColor(
+                red: val["red"] as! CGFloat/255,
+                green: val["green"] as! CGFloat/255,
+                blue: val["blue"] as! CGFloat/255,
+                alpha: 1
+            )
             
-            var lightTheme = PrimerDefaultTheme()
-            var darkTheme: ColorTheme?
+            print("🌈 clr: \(clr)")
             
-            var cornerRadiusTheme: CornerRadiusTheme?
+            print(clr, key)
+
+            switch key as! String {
+            case "text1": lightTheme.text1 = clr
+            case "text2": lightTheme.text2 = clr
+            case "text3": lightTheme.text3 = clr
+            case "secondaryText1": lightTheme.secondaryText1 = clr
+            case "main1": lightTheme.main1 = clr
+            case "main2": lightTheme.main2 = clr
+            case "tint1":
+                lightTheme.tint1 = clr
+                if #available(iOS 13.0, *) {
+                    darkTheme = PrimerDarkTheme(tint1: clr)
+                }
+            case "neutral1": lightTheme.neutral1 = clr
+            case "disabled1": lightTheme.disabled1 = clr
+            case "error1": lightTheme.error1 = clr
+            default: break
+            }
             
-            var textFieldTheme: PrimerTextFieldTheme = .outlined
             
+        }
+        
+        if let textFieldThemeData = themeData["textFieldTheme"] {
+            switch textFieldThemeData as! String {
+            case "outlined":
+                textFieldTheme = .outlined
+            case "doublelined":
+                textFieldTheme = .doublelined
+            case "underlined":
+                textFieldTheme = .underlined
+            default: break
+            }
+        }
+        
+        print(themeData)
+        
+        let cornerRadiusThemeData = themeData["cornerRadiusTheme"] as? NSDictionary
+        
+        cornerRadiusTheme = CornerRadiusTheme(
+            buttons: cornerRadiusThemeData?["buttons"] as? CGFloat ?? 4,
+            textFields: cornerRadiusThemeData?["textFields"] as? CGFloat ?? 2,
+            sheetView: cornerRadiusThemeData?["sheetView"] as? CGFloat ?? 12,
+            confirmMandateList: cornerRadiusThemeData?["confirmMandateList"] as? CGFloat ?? 0
+        )
+        
+        print(textFieldTheme)
+        
+        if #available(iOS 13.0, *) {
+            theme = PrimerTheme(
+                cornerRadiusTheme: cornerRadiusTheme ?? CornerRadiusTheme(),
+                colorTheme: lightTheme,
+                darkTheme: darkTheme ?? PrimerDarkTheme(),
+                layout: PrimerLayout(showTopTitle: false, textFieldHeight: 56),
+                textFieldTheme: textFieldTheme,
+                fontTheme: PrimerFontTheme(mainTitle: .boldSystemFont(ofSize: 24))
+            )
+        } else {
+            theme = PrimerTheme(
+                cornerRadiusTheme: cornerRadiusTheme ?? CornerRadiusTheme(),
+                colorTheme: lightTheme,
+                layout: PrimerLayout(showMainTitle: true, showTopTitle: false),
+                textFieldTheme: textFieldTheme,
+                fontTheme: PrimerFontTheme(mainTitle: .boldSystemFont(ofSize: 24))
+            )
+        }
+    }
+    
+    private func setBusinessDetails(_ businessDetailsData: NSDictionary, _ addressData: NSDictionary) {
+        let address = Address(
+            addressLine1: addressData["addressLine1"] as? String,
+            addressLine2: addressData["addressLine2"] as? String,
+            city: addressData["city"] as? String,
+            state: addressData["state"] as? String,
+            countryCode: addressData["countryCode"] as? String,
+            postalCode: addressData["postalCode"] as? String
+        )
+        
+        businessDetails = BusinessDetails(
+            name: businessDetailsData["name"] as? String ?? "",
+            address: address
+        )
+    }
+    
+    private func setSettingsAndInit() {
+        
+        print("🦆 do we have a theme?")
+        
+        guard let theme = self.theme else { return }
+        
+        print("🦆 we got a theme!")
+        
+        settings = PrimerSettings(
+            delegate: self,
+            currency: currency,
+            theme: theme,
+            customerId: customerId,
+            countryCode: countryCode,
+            urlScheme: urlScheme,
+            urlSchemeIdentifier: urlSchemeIdentifier,
+            isFullScreenOnly: true,
+            businessDetails: businessDetails
+        )
+        
+        guard let settings = self.settings else { return }
+        
+        self.primer = Primer(with: settings)
+        
+        self.primer?.clearOnDestroy = false
+    }
+    
+    
+    @objc func initialize(_ data: NSDictionary) -> Void {
+        DispatchQueue.main.async { [weak self] in
+
+            //theme
             if let themeData = data["theme"] as? NSDictionary {
-                let colorThemeData = themeData["colorTheme"] as! NSDictionary
-
-                for (key, value) in colorThemeData {
-
-                    guard let val = value as? NSDictionary else { return }
-
-                    let clr = UIColor(
-                        red: val["red"] as! CGFloat/255,
-                        green: val["green"] as! CGFloat/255,
-                        blue: val["blue"] as! CGFloat/255,
-                        alpha: 1
-                    )
-                    
-                    print("🌈 clr: \(clr)")
-                    
-                    print(clr, key)
-
-                    switch key as! String {
-                    case "text1": lightTheme.text1 = clr
-                    case "text2": lightTheme.text2 = clr
-                    case "text3": lightTheme.text3 = clr
-                    case "secondaryText1": lightTheme.secondaryText1 = clr
-                    case "main1": lightTheme.main1 = clr
-                    case "main2": lightTheme.main2 = clr
-                    case "tint1":
-                        lightTheme.tint1 = clr
-                        if #available(iOS 13.0, *) {
-                            darkTheme = PrimerDarkTheme(tint1: clr)
-                        }
-                    case "neutral1": lightTheme.neutral1 = clr
-                    case "disabled1": lightTheme.disabled1 = clr
-                    case "error1": lightTheme.error1 = clr
-                    default: break
-                    }
-                    
-                    
-                }
-                
-                if let textFieldThemeData = themeData["textFieldTheme"] {
-                    switch textFieldThemeData as! String {
-                    case "outlined":
-                        textFieldTheme = .outlined
-                    case "doublelined":
-                        textFieldTheme = .doublelined
-                    case "underlined":
-                        textFieldTheme = .underlined
-                    default: break
-                    }
-                }
-                
-                print(themeData)
-                
-                let cornerRadiusThemeData = themeData["cornerRadiusTheme"] as? NSDictionary
-                
-                cornerRadiusTheme = CornerRadiusTheme(
-                    buttons: cornerRadiusThemeData?["buttons"] as? CGFloat ?? 4,
-                    textFields: cornerRadiusThemeData?["textFields"] as? CGFloat ?? 2,
-                    sheetView: cornerRadiusThemeData?["sheetView"] as? CGFloat ?? 12,
-                    confirmMandateList: cornerRadiusThemeData?["confirmMandateList"] as? CGFloat ?? 0
-                )
-                
-                print(textFieldTheme)
-                
+                self?.generateTheme(with: themeData)
             }
-            
-            print(lightTheme)
-            
-            var theme: PrimerTheme
-            
-            if #available(iOS 13.0, *) {
-                theme = PrimerTheme(
-                    cornerRadiusTheme: cornerRadiusTheme ?? CornerRadiusTheme(),
-                    colorTheme: lightTheme,
-                    darkTheme: darkTheme ?? PrimerDarkTheme(),
-                    layout: PrimerLayout(showTopTitle: false, textFieldHeight: 56),
-                    textFieldTheme: textFieldTheme,
-                    fontTheme: PrimerFontTheme(mainTitle: .boldSystemFont(ofSize: 24))
-                )
-            } else {
-                theme = PrimerTheme(
-                    cornerRadiusTheme: cornerRadiusTheme ?? CornerRadiusTheme(),
-                    colorTheme: lightTheme,
-                    layout: PrimerLayout(showMainTitle: true, showTopTitle: false),
-                    textFieldTheme: textFieldTheme,
-                    fontTheme: PrimerFontTheme(mainTitle: .boldSystemFont(ofSize: 24))
-                )
-            }
-            
-            let businessDetailsData = data["businessDetails"] as! NSDictionary
-            let addressData = businessDetailsData["address"] as! NSDictionary
             
             // business details
-            let address = Address(
-                addressLine1: addressData["addressLine1"] as? String,
-                addressLine2: addressData["addressLine2"] as? String,
-                city: addressData["city"] as? String,
-                state: addressData["state"] as? String,
-                countryCode: addressData["countryCode"] as? String,
-                postalCode: addressData["postalCode"] as? String
-            )
+            if let businessDetailsData = data["businessDetails"] as? NSDictionary,
+               let addressData = businessDetailsData["address"] as? NSDictionary {
+                self?.setBusinessDetails(businessDetailsData, addressData)
+            }
             
-            let businessDetails = BusinessDetails(
-                name: businessDetailsData["name"] as! String,
-                address: address
-            )
-            
-            let tokenResponse = data["clientTokenData"] as! NSDictionary
-            
-            self.delegate = CheckoutDelegate(
-                tokenResponse: tokenResponse, callback: callback
-            )
-            
-            guard let delegate = self.delegate else { return }
-            
-//            let amount = data["amount"] as! Int
-            let currency = Currency(rawValue: data["currency"] as! String)!
-            let customerId = data["customerId"] as! String
-            let countryCode = CountryCode(rawValue: data["countryCode"] as! String)!
-            let urlScheme: String = "primer://oauth"
-            let urlSchemeIdentifier: String = "primer"
-            
-            let settings = PrimerSettings(
-                delegate: delegate,
-//                amount: amount,
-                currency: currency,
-                theme: theme,
-                customerId: customerId,
-                countryCode: countryCode,
-                urlScheme: urlScheme,
-                urlSchemeIdentifier: urlSchemeIdentifier,
-                isFullScreenOnly: true,
-                businessDetails: businessDetails
-            )
-            
-            self.primer = Primer(with: settings)
-            
-            self.primer?.setDependencies(settings: settings)
-            
-            self.setDirectDebitDetails(data["customerDetails"] as? NSDictionary)
-            
-            print("🪢", theme)
-            
-            self.primer?.setTheme(theme: theme)
-            
+            self?.tokenResponse = data["clientTokenData"] as? NSDictionary
+            self?.currency = Currency(rawValue: data["currency"] as! String)!
+            self?.customerId = data["customerId"] as? String
+            self?.countryCode = CountryCode(rawValue: data["countryCode"] as! String)
+            self?.setSettingsAndInit()
+            self?.setDirectDebitDetails(data["customerDetails"] as? NSDictionary)
         }
     }
     
     // set theme
-    @objc func setTheme(_ data: NSDictionary) {
-        
+    @objc func setTheme(_ data: NSDictionary) { }
+    
+    @objc func setEventCallback(_ callback: @escaping RCTResponseSenderBlock) {
+        onTokenizeSuccess = callback
+        setSettingsAndInit()
+        print("set new onTokenizeSuccess callback 🍇")
+    }
+    
+    @objc func setOnViewDismissedCallback(_ callback: @escaping RCTResponseSenderBlock) {
+        onViewDismissed = callback
+        setSettingsAndInit()
+        print("set new onViewDismissed callback 🍒")
     }
     
     // set direct debit details
@@ -226,26 +251,31 @@ class UniversalCheckout: NSObject {
                     
                     let str = String(data: data, encoding: .utf8)
                     
+                    print("🎁 str: \(str ?? "nil")")
+                    
                     callback([str ?? "[]"])
                     
                 } catch {
-                    
+                    callback(["[]"])
                 }
             }
         })
     }
     
     @objc func dismissCheckout() -> Void {
-        primer?.dismiss()
+        DispatchQueue.main.async { [weak self] in
+            self?.primer?.dismiss()
+        }
     }
 }
 
-class CheckoutDelegate: PrimerCheckoutDelegate {
-    
-    var tokenResponse: NSDictionary
-    var callback: RCTResponseSenderBlock
-    
+enum RNError: String, Error {
+    case noClientToken = "Unable to load direct debit view with client token."
+}
+
+extension UniversalCheckout: PrimerDelegate {
     func clientTokenCallback(_ completion: @escaping (Result<CreateClientTokenResponse, Error>) -> Void) {
+        guard let tokenResponse = self.tokenResponse else { return completion(.failure(RNError.noClientToken)) }
         
         do {
             
@@ -268,22 +298,70 @@ class CheckoutDelegate: PrimerCheckoutDelegate {
     }
     
     func authorizePayment(_ result: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
-        
-        do {
-            let payload = try JSONEncoder().encode(result)
-            
-            self.callback([payload])
-        } catch {
-            
+        if let onTokenizeSuccess = self.onTokenizeSuccess {
+            do {
+                let payload = try JSONEncoder().encode(result)
+                print("onTokenizeSuccess called! 🔥")
+                onTokenizeSuccess([payload])
+            } catch {
+                onTokenizeSuccess([])
+            }
         }
     }
     
     func onCheckoutDismissed() {
-        
-    }
-    
-    init(tokenResponse: NSDictionary, callback: @escaping RCTResponseSenderBlock) {
-        self.tokenResponse = tokenResponse
-        self.callback = callback
+        if let onViewDismissed = self.onViewDismissed {
+            print("checkout closed! 🔥")
+            onViewDismissed(["checkout closed! 🔥"])
+        }
     }
 }
+
+//class CheckoutDelegate: PrimerDelegate {
+//
+//    var tokenResponse: NSDictionary?
+//    var onTokenizeSuccess: RCTResponseSenderBlock?
+//    var onViewDismissed: RCTResponseSenderBlock?
+//
+//    func clientTokenCallback(_ completion: @escaping (Result<CreateClientTokenResponse, Error>) -> Void) {
+//
+//        guard let tokenResponse = self.tokenResponse else { return completion(.failure(RNError.noClientToken)) }
+//
+//        do {
+//
+//            var codableDict = [String:String]()
+//
+//            codableDict["clientToken"] = tokenResponse["clientToken"] as? String
+//            codableDict["expirationDate"] = tokenResponse["expirationDate"] as? String
+//
+//            let payload = try JSONEncoder().encode(codableDict)
+//
+//            let res = try JSONDecoder().decode(CreateClientTokenResponse.self, from: payload)
+//
+//            completion(.success(res))
+//
+//        } catch {
+//
+//            completion(.failure(error))
+//
+//        }
+//    }
+//
+//    func authorizePayment(_ result: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
+//        if let onTokenizeSuccess = self.onTokenizeSuccess {
+//            do {
+//                let payload = try JSONEncoder().encode(result)
+//                print("onTokenizeSuccess called! 🔥")
+//                onTokenizeSuccess([payload])
+//            } catch {
+//                onTokenizeSuccess([])
+//            }
+//        }
+//    }
+//
+//    func onCheckoutDismissed() {
+//        if let onViewDismissed = self.onViewDismissed {
+//            onViewDismissed(["checkout closed! 🔥"])
+//        }
+//    }
+//}
