@@ -75,12 +75,9 @@ export const UniversalCheckout: IUniversalCheckout = {
 
     setEventCallback(onTokenizeSuccess);
 
-    // set callback that resets on each call after the view is dismissed.
-    const onViewDismissed = (val: any): void => {
-      console.log(val);
-    };
-
-    setOnViewDismissedCallback(onViewDismissed);
+    if (options.onDismiss) {
+      setOnViewDismissedCallback(options.onDismiss);
+    }
 
     //
     IOSModule.initialize(initOptions);

@@ -69,6 +69,9 @@ export function usePrimer({ clientToken, amount, currency }: UsePrimerOptions) {
         console.log(e);
         UniversalCheckout.dismiss();
       },
+      onDismiss(e) {
+        console.log(e);
+      },
     });
   });
 

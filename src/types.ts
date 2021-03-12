@@ -81,6 +81,7 @@ export interface InitOptions {
   amount?: number;
   currency?: string;
   theme?: { ios?: IOSCheckoutTheme; android?: AndroidCheckoutTheme };
+  onDismiss?: (e: CheckoutEvent) => void;
 }
 
 export interface IUniversalCheckout {
