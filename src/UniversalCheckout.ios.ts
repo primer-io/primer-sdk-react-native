@@ -69,13 +69,13 @@ export const UniversalCheckout: IUniversalCheckout = {
     }
 
     // set callback that resets on each call after tokenization.
-    const onTokenizeSuccess = (val: any): void => {
-      options.onEvent({ type: 'TOKENIZE_SUCCESS', data: val });
+    const onTokenizeSuccess = (val: string): void => {
+      options.onEvent({ type: 'TOKENIZE_SUCCESS', data: JSON.parse(val) });
     };
     setEventCallback(onTokenizeSuccess);
 
-    const onViewDismissed = (val: any): void => {
-      options.onEvent({ type: 'EXIT', data: val });
+    const onViewDismissed = (): void => {
+      options.onEvent({ type: 'EXIT', data: { reason: 'null' } });
     };
     setOnViewDismissedCallback(onViewDismissed);
 

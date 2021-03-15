@@ -317,7 +317,7 @@ extension UniversalCheckout: PrimerDelegate {
     func onCheckoutDismissed() {
         if let onViewDismissed = self.onViewDismissed {
             print("checkout closed! 🔥")
-            onViewDismissed(["checkout closed! 🔥"])
+            onViewDismissed([])
         }
     }
 }
