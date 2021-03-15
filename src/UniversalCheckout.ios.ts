@@ -72,14 +72,13 @@ export const UniversalCheckout: IUniversalCheckout = {
     const onTokenizeSuccess = (val: any): void => {
       options.onEvent({ type: 'TOKENIZE_SUCCESS', data: val });
     };
-
     setEventCallback(onTokenizeSuccess);
 
-    if (options.onDismiss) {
-      setOnViewDismissedCallback(options.onDismiss);
-    }
+    const onViewDismissed = (val: any): void => {
+      options.onEvent({ type: 'EXIT', data: val });
+    };
+    setOnViewDismissedCallback(onViewDismissed);
 
-    //
     IOSModule.initialize(initOptions);
   },
 
@@ -204,7 +203,6 @@ function setEventCallback(onEvent: (e: any) => void): void {
     setEventCallback(onEvent);
   });
 }
-
 /**
  * The onDismiss event callback has to be continuously replaced in iOS
  */

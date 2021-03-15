@@ -271,6 +271,7 @@ class UniversalCheckout: NSObject {
 
 enum RNError: String, Error {
     case noClientToken = "Unable to load direct debit view with client token."
+    case tokenizationError = "Adding payment method process failed."
 }
 
 extension UniversalCheckout: PrimerDelegate {
@@ -301,10 +302,14 @@ extension UniversalCheckout: PrimerDelegate {
         if let onTokenizeSuccess = self.onTokenizeSuccess {
             do {
                 let payload = try JSONEncoder().encode(result)
-                print("onTokenizeSuccess called! 🔥")
-                onTokenizeSuccess([payload])
+                
+                let str = String(data: payload, encoding: .utf8)
+                
+                print("onTokenizeSuccess called! 🔥🔥🔥🔥", str ?? "nil")
+                
+                onTokenizeSuccess([str ?? "error"])
             } catch {
-                onTokenizeSuccess([])
+                onTokenizeSuccess(["error"])
             }
         }
     }

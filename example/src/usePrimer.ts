@@ -65,12 +65,24 @@ export function usePrimer({ clientToken, amount, currency }: UsePrimerOptions) {
           },
         },
       },
+
       onEvent(e) {
-        console.log(e);
-        UniversalCheckout.dismiss();
-      },
-      onDismiss(e) {
-        console.log(e);
+        switch (e.type) {
+          case 'EXIT':
+            console.log('Checkout closed', e);
+
+            // show some sort of success screen with the token mandate ID.
+
+            break;
+          case 'TOKENIZE_SUCCESS':
+            console.log('Do something with token:', e.data);
+
+            // save the token somewhere temporarily.
+
+            // dismiss the checkout manually.
+            UniversalCheckout.dismiss();
+            break;
+        }
       },
     });
   });
