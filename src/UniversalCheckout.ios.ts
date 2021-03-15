@@ -75,7 +75,7 @@ export const UniversalCheckout: IUniversalCheckout = {
     setEventCallback(onTokenizeSuccess);
 
     const onViewDismissed = (): void => {
-      options.onEvent({ type: 'EXIT', data: { reason: 'null' } });
+      options.onEvent({ type: 'EXIT', data: { reason: 'FINISHED' } });
     };
     setOnViewDismissedCallback(onViewDismissed);
 
