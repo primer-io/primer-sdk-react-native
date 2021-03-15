@@ -19,10 +19,10 @@ PODS:
     - DoubleConversion
     - glog
   - glog (0.3.5)
-  - primer-io-react-native (0.5.0):
-    - PrimerSDK (= 1.1.20)
+  - primer-io-react-native (0.5.2):
+    - PrimerSDK (= 1.2.2)
     - React-Core
-  - PrimerSDK (1.1.20)
+  - PrimerSDK (1.2.2)
   - RCTRequired (0.63.4)
   - RCTTypeSafety (0.63.4):
     - FBLazyVector (= 0.63.4)
@@ -350,8 +350,8 @@ SPEC CHECKSUMS:
   FBReactNativeSpec: f2c97f2529dd79c083355182cc158c9f98f4bd6e
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
   glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
-  primer-io-react-native: 152b5e8927147a0b2218881f67af4fdec18ac504
-  PrimerSDK: a54b62c692387c4004c3c7932f4532db3c46cae5
+  primer-io-react-native: dd5db616492fc4650242a9e0ef85e706ca048689
+  PrimerSDK: 8e419aacbf5127d762d3e22943398ad418a16025
   RCTRequired: 082f10cd3f905d6c124597fd1c14f6f2655ff65e
   RCTTypeSafety: 8c9c544ecbf20337d069e4ae7fd9a377aadf504b
   React: b0a957a2c44da4113b0c4c9853d8387f8e64e615
