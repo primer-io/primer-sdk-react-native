@@ -64,3 +64,6 @@ lib/
 
 # npm
 .npmrc
+
+# env
+.env

@@ -178,11 +178,20 @@ android {
     }
 }
 
+repositories {
+  maven {
+    url System.getenv()['PRIMER_S3_MAVEN_REPO']
+    credentials(AwsCredentials) {
+      accessKey = System.getenv()['PRIMER_S3_MAVEN_REPO_ACCESS_KEY']
+      secretKey = System.getenv()['PRIMER_S3_MAVEN_REPO_SECRET_KEY']
+    }
+  }
+}
+
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
-
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
