@@ -68,11 +68,18 @@ export const UniversalCheckout: IUniversalCheckout = {
       };
     }
 
-    const onTokenizeSuccess = (val: any): void => {
-      options.onEvent({ type: 'TOKENIZE_SUCCESS', data: val });
+    // set callback that resets on each call after tokenization.
+    const onTokenizeSuccess = (val: string): void => {
+      options.onEvent({ type: 'TOKENIZE_SUCCESS', data: JSON.parse(val) });
     };
+    setEventCallback(onTokenizeSuccess);
 
-    IOSModule.initialize(initOptions, onTokenizeSuccess);
+    const onViewDismissed = (): void => {
+      options.onEvent({ type: 'EXIT', data: { reason: 'FINISHED' } });
+    };
+    setOnViewDismissedCallback(onViewDismissed);
+
+    IOSModule.initialize(initOptions);
   },
 
   /**
@@ -185,4 +192,23 @@ function toRGB(hex: string): IOSRgbColor | null {
     green: parseInt(g, 16),
     blue: parseInt(b, 16),
   };
+}
+
+/**
+ * The event callback has to be continuously replaced in iOS
+ */
+function setEventCallback(onEvent: (e: any) => void): void {
+  IOSModule.setEventCallback((data: any) => {
+    onEvent(data);
+    setEventCallback(onEvent);
+  });
+}
+/**
+ * The onDismiss event callback has to be continuously replaced in iOS
+ */
+function setOnViewDismissedCallback(onEvent: (e: any) => void): void {
+  IOSModule.setOnViewDismissedCallback((data: any) => {
+    onEvent(data);
+    setOnViewDismissedCallback(onEvent);
+  });
 }
