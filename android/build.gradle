@@ -133,7 +133,6 @@ allprojects {
         secretKey = System.getenv()['PRIMER_S3_MAVEN_REPO_SECRET_KEY']
       }
     }
-    maven { url 'https://dl.bintray.com/primer-api/android/' }
   }
 }
 
