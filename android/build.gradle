@@ -126,13 +126,7 @@ def kotlin_version = getExtOrDefault('kotlinVersion')
 allprojects {
   repositories {
     mavenLocal()
-    maven {
-      url System.getenv()['PRIMER_S3_MAVEN_REPO']
-      credentials(AwsCredentials) {
-        accessKey = System.getenv()['PRIMER_S3_MAVEN_REPO_ACCESS_KEY']
-        secretKey = System.getenv()['PRIMER_S3_MAVEN_REPO_SECRET_KEY']
-      }
-    }
+    maven { url 'https://dl.bintray.com/primer-api/android/' }
   }
 }
 
@@ -141,5 +135,5 @@ dependencies {
   api 'com.facebook.react:react-native:+'
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
-  implementation 'io.primer.android:android:1.0.0-test.1'
+  implementation 'io.primer.android:android:1.0.0-test-okhttp3.0'
 }

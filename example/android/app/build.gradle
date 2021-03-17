@@ -179,13 +179,6 @@ android {
 }
 
 repositories {
-  maven {
-    url System.getenv()['PRIMER_S3_MAVEN_REPO']
-    credentials(AwsCredentials) {
-      accessKey = System.getenv()['PRIMER_S3_MAVEN_REPO_ACCESS_KEY']
-      secretKey = System.getenv()['PRIMER_S3_MAVEN_REPO_SECRET_KEY']
-    }
-  }
 }
 
 dependencies {
