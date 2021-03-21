@@ -11,6 +11,10 @@ interface UsePrimerOptions {
   amount?: number;
 }
 
+function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export function usePrimer({ clientToken, amount, currency }: UsePrimerOptions) {
   const [token] = useState<string | null>(null);
 
@@ -66,7 +70,7 @@ export function usePrimer({ clientToken, amount, currency }: UsePrimerOptions) {
         },
       },
 
-      onEvent(e) {
+      async onEvent(e) {
         switch (e.type) {
           case 'EXIT':
             console.log('Checkout closed', e);
@@ -78,6 +82,9 @@ export function usePrimer({ clientToken, amount, currency }: UsePrimerOptions) {
             console.log('Do something with token:', e.data);
 
             // save the token somewhere temporarily.
+            await delay(2000);
+
+            console.log('🚀 authorized, now dismiss');
 
             // dismiss the checkout manually.
             UniversalCheckout.dismiss();
