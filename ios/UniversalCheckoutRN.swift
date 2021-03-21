@@ -186,13 +186,13 @@ class UniversalCheckout: NSObject {
     
     @objc func setEventCallback(_ callback: @escaping RCTResponseSenderBlock) {
         onTokenizeSuccess = callback
-        setSettingsAndInit()
+//        setSettingsAndInit()
         print("set new onTokenizeSuccess callback 🍇")
     }
     
     @objc func setOnViewDismissedCallback(_ callback: @escaping RCTResponseSenderBlock) {
         onViewDismissed = callback
-        setSettingsAndInit()
+//        setSettingsAndInit()
         print("set new onViewDismissed callback 🍒")
     }
     
