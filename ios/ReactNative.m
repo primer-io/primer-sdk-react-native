@@ -1,22 +1,20 @@
 #import <React/RCTBridgeModule.h>
 #import <React/RCTViewManager.h>
 
-@interface RCT_EXTERN_MODULE(UniversalCheckoutRN, RCTViewManager)
+@interface RCT_EXTERN_MODULE(PrimerRN, RCTViewManager)
 
-RCT_EXTERN_METHOD(initialize: (NSDictionary *)data)
+RCT_EXTERN_METHOD(configureSettings: (NSString *)data)
 
-RCT_EXTERN_METHOD(setEventCallback: (RCTResponseSenderBlock)callback)
+RCT_EXTERN_METHOD(configureTheme: (NSString *)data)
 
-RCT_EXTERN_METHOD(setOnViewDismissedCallback: (RCTResponseSenderBlock)callback)
+RCT_EXTERN_METHOD(configureOnTokenizeSuccessCallback: (RCTResponseSenderBlock)callback)
 
-RCT_EXTERN_METHOD(dismissCheckout)
+RCT_EXTERN_METHOD(configureOnDismissCallback: (RCTResponseSenderBlock)callback)
 
-RCT_EXTERN_METHOD(loadDirectDebitView)
+RCT_EXTERN_METHOD(configureOnPrimerErrorCallback: (RCTResponseSenderBlock)callback)
 
-RCT_EXTERN_METHOD(loadPaymentMethods: (RCTResponseSenderBlock)callback)
+RCT_EXTERN_METHOD(initWith: (NSString *)data)
 
-RCT_EXTERN_METHOD(setTheme: (NSDictionary *)data)
-
-RCT_EXTERN_METHOD(setDirectDebitDetails: (NSDictionary *)data)
+RCT_EXTERN_METHOD(resumeWith: (NSString *)data)
 
 @end
