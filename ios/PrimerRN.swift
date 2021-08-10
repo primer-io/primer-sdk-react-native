@@ -24,6 +24,7 @@ class PrimerRN: NSObject {
     var settings: PrimerSettings?
     var theme: PrimerTheme?
     var onTokenizeSuccessCallback: RCTResponseSenderBlock?
+    var onVaultSuccessCallback: RCTResponseSenderBlock?
     var onDismissCallback: RCTResponseSenderBlock?
     var onPrimerErrorCallback: RCTResponseSenderBlock?
     var onResumeFlowCallback: BasicCompletionBlock?
@@ -52,6 +53,11 @@ class PrimerRN: NSObject {
         print("\(#function)")
         self.onTokenizeSuccessCallback = callback
     }
+    
+    @objc func configureOnVaultSuccessCallback(_ callback: @escaping RCTResponseSenderBlock) {
+        print("\(#function)")
+        self.onVaultSuccessCallback = callback
+    }
 
     @objc func configureOnDismissCallback(_ callback: @escaping RCTResponseSenderBlock) {
         print("\(#function)")
@@ -61,6 +67,23 @@ class PrimerRN: NSObject {
     @objc func configureOnPrimerErrorCallback(_ callback: @escaping RCTResponseSenderBlock) {
         print("\(#function)")
         self.onPrimerErrorCallback = callback
+    }
+    
+    @objc func fetchSavedPaymentInstruments(_ callback: @escaping RCTResponseSenderBlock) {
+        Primer.shared.fetchVaultedPaymentMethods { [weak self] result in
+            switch result {
+            case .failure(let error):
+                self?.checkoutFailed(with: error)
+            case .success(let tokens):
+                do {
+                    let json = try self?.encoder.encode(tokens)
+                    let data = String(data: json!, encoding: .utf8)!
+                    callback([data])
+                } catch {
+                    self?.checkoutFailed(with: error)
+                }
+            }
+        }
     }
     
     @objc func initWith(_ data: String) -> Void {
@@ -113,6 +136,7 @@ class PrimerRN: NSObject {
 }
 
 extension PrimerRN: PrimerDelegate {
+
     func clientTokenCallback(_ completion: @escaping (String?, Error?) -> Void) {
         guard let clientToken = clientToken else {
             checkoutFailed(with: PrimerExceptionRN.clientTokenNotConfigured)
@@ -131,6 +155,16 @@ extension PrimerRN: PrimerDelegate {
             checkoutFailed(with: PrimerExceptionRN.tokenParsingFailed)
         }
         onResumeFlowCallback = completion
+    }
+    
+    func tokenAddedToVault(_ token: PaymentMethodToken) {
+        do {
+            let json = try encoder.encode(token)
+            let data = String(data: json, encoding: .utf8)!
+            self.onVaultSuccessCallback?([data])
+        } catch {
+            checkoutFailed(with: PrimerExceptionRN.tokenParsingFailed)
+        }
     }
     
     func onCheckoutDismissed() {

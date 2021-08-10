@@ -65,6 +65,9 @@ export function usePrimer(theme: IPrimerTheme, settings: IPrimerSettings) {
       intent: 'payWithAny',
       token: token,
     });
+    Primer.fetchSavedPaymentInstruments((data) => {
+      console.log('payment methods:', data);
+    });
   };
 
   return {

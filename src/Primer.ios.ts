@@ -15,9 +15,13 @@ export interface IPrimer {
   configureOnTokenizeSuccessCallback(
     callback: (data: IPaymentInstrument) => void
   ): void;
+  configureOnVaultSuccessCallback(
+    callback: (data: IPaymentInstrument) => void
+  ): void;
   configureOnDismissCallback(callback: () => void): void;
   configureOnPrimerErrorCallback(callback: (data: String) => void): void;
   removeAllCallbacks(): void;
+  fetchSavedPaymentInstruments(callback: (data: String) => void): void;
   initWith(request: IPrimerInitRequest): void;
   resumeWith(request: IPrimerResumeRequest): void;
 }
@@ -41,6 +45,12 @@ export const Primer: IPrimer = {
     configureOnTokenizeSuccessCallback(callback);
   },
 
+  configureOnVaultSuccessCallback(
+    callback: (data: IPaymentInstrument) => void
+  ): void {
+    configureOnVaultSuccessCallback(callback);
+  },
+
   configureOnDismissCallback(callback: () => void): void {
     configureOnDismissCallback(callback);
   },
@@ -51,6 +61,10 @@ export const Primer: IPrimer = {
 
   removeAllCallbacks(): void {
     IOSModule.removeAllCallbacks();
+  },
+
+  fetchSavedPaymentInstruments(callback: (data: String) => void): void {
+    IOSModule.fetchSavedPaymentInstruments(callback);
   },
 
   // FLOW
@@ -72,6 +86,16 @@ function configureOnTokenizeSuccessCallback(
     const paymentInstrument = JSON.parse(data) as IPaymentInstrument;
     callback(paymentInstrument);
     configureOnTokenizeSuccessCallback(callback);
+  });
+}
+
+function configureOnVaultSuccessCallback(
+  callback: (data: IPaymentInstrument) => void
+) {
+  IOSModule.configureOnVaultSuccessCallback((data: any) => {
+    const paymentInstrument = JSON.parse(data) as IPaymentInstrument;
+    callback(paymentInstrument);
+    configureOnVaultSuccessCallback(callback);
   });
 }
 
