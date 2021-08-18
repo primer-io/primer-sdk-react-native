@@ -1,18 +1,38 @@
-import type { IPrimerSettings } from 'lib/typescript/models/primer-settings';
-import type { IPrimerTheme } from 'lib/typescript/models/primer-theme';
 import React from 'react';
 import { StyleSheet, View, Text, Button } from 'react-native';
+import type { IPrimerSettings } from 'src/models/primer-settings';
+import type { IPrimerTheme } from 'src/models/primer-theme';
 import { usePrimer } from './usePrimer';
 
 const theme: IPrimerTheme = {
-  color: '',
+  colors: {
+    mainColor: {
+      red: 120,
+      green: 80,
+      blue: 180,
+      alpha: 255,
+    },
+    background: {
+      red: 100,
+      green: 80,
+      blue: 200,
+      alpha: 255,
+    },
+    disabled: {
+      red: 50,
+      green: 50,
+      blue: 50,
+      alpha: 255,
+    },
+  },
 };
 
 const settings: IPrimerSettings = {
-  order: {},
-  business: {},
-  customer: {},
-  appearance: {
+  order: {
+    amount: 8000,
+    currency: 'EUR',
+  },
+  options: {
     hasDisabledSuccessScreen: false,
     isInitialLoadingHidden: false,
   },
@@ -25,7 +45,7 @@ export default function App() {
     if (loading) return <Text>Loading...</Text>;
 
     return (
-      <Button title="Checkout" onPress={presentPrimer}>
+      <Button title="Pay" onPress={presentPrimer}>
         Checkout
       </Button>
     );

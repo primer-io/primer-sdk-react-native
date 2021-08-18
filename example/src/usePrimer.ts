@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Primer } from '@primer-io/react-native';
-import type { IPrimerTheme } from 'lib/typescript/models/primer-theme';
-import type { IPrimerSettings } from 'lib/typescript/models/primer-settings';
+import type { IPrimerTheme } from 'src/models/primer-theme';
+import type { IPrimerSettings } from 'src/models/primer-settings';
 
 const fetchClientToken = async () => {
   const root = 'https://us-central1-primerdemo-8741b.cloudfunctions.net';
@@ -9,7 +9,7 @@ const fetchClientToken = async () => {
   const url = root + '/clientToken';
 
   const body = JSON.stringify({
-    environment: 'sandbox',
+    environment: 'staging',
     customerId: 'customer1',
     customerCountryCode: 'GB',
   });
@@ -43,27 +43,13 @@ export function usePrimer(theme: IPrimerTheme, settings: IPrimerSettings) {
 
   const presentPrimer = () => {
     if (!token) return;
-    Primer.configureTheme(theme);
-    Primer.configureSettings(settings);
-    Primer.configureOnTokenizeSuccessCallback((data) => {
-      console.log('payment instrument token:', data);
-      Primer.resumeWith({
-        intent: 'showSuccess',
-        token: token,
-        metadata: {
-          message: 'Successfully completed payment.',
-        },
-      });
-    });
-    Primer.configureOnDismissCallback(() => {
-      console.log('dismissed!');
-    });
-    Primer.configureOnPrimerErrorCallback((data) => {
-      console.log('error:', data);
-    });
-    Primer.initWith({
-      intent: 'payWithAny',
-      token: token,
+    Primer.init(token, {
+      settings,
+      theme,
+      onTokenizeSuccess: (data, callback) => {
+        console.log('payment instrument token:', data);
+        callback({ intent: 'showError', token });
+      },
     });
     Primer.fetchSavedPaymentInstruments((data) => {
       console.log('payment methods:', data);
