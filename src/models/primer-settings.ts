@@ -1,30 +1,44 @@
 export interface IPrimerSettings {
-  order: IOrder;
-  business: IBusiness;
-  customer: ICustomer;
-  appearance: IAppearance;
+  order?: IOrder;
+  business?: IBusiness;
+  customer?: ICustomer;
+  options?: IOptions;
 }
 
 interface IOrder {
-  amount?: Number;
-  currency?: String;
+  amount?: number;
+  currency?: string;
+  countryCode?: string;
+  items?: IOrderItem[];
+}
+
+interface IOrderItem {
+  name: string;
+  unitAmount?: number;
+  quantity: number;
+  isPending?: boolean;
 }
 
 interface IBusiness {
-  name?: String;
-  address?: IAddress;
+  name: string;
+  address: IAddress;
 }
 
 interface ICustomer {
-  firstName?: String;
-  lastName?: String;
-  email?: String;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
   shipping?: IAddress;
   billing?: IAddress;
 }
 
-interface IAppearance {
-  hasDisabledSuccessScreen: boolean;
-  isInitialLoadingHidden: boolean;
-  locale?: String;
+interface IOptions {
+  hasDisabledSuccessScreen?: boolean;
+  isInitialLoadingHidden?: boolean;
+  locale?: string;
+  iosMerchantIdentifier?: string;
+  iosUrlScheme?: string;
+  iosUrlSchemeIdentifier?: string;
+  isFullScreenOnly?: boolean;
+  androidRedirectScheme?: string;
 }

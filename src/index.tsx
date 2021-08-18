@@ -1,9 +1,6 @@
-// import { Platform } from 'react-native';
-// import { UniversalCheckout as AndroidImpl } from './UniversalCheckout.android';
-// import { UniversalCheckout as IOSImpl } from './UniversalCheckout.ios';
-import { Primer as IOSImpl, IPrimer } from './Primer.ios';
+import type { IPrimer } from './models/primer';
+import { PrimerNativeMapping } from './Primer';
 
-// const Primer: Primer = Platform.OS === 'ios' ? IOSImpl : AndroidImpl;
-const Primer: IPrimer = IOSImpl;
+const Primer: IPrimer = PrimerNativeMapping;
 
 export { Primer };
