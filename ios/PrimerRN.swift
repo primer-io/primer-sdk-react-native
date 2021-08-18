@@ -21,51 +21,58 @@ class PrimerRN: NSObject {
     }
 
     var clientToken: String?
-    var settings: PrimerSettings?
-    var theme: PrimerTheme?
+    var settings: PrimerSettingsRN?
+    var theme: PrimerThemeRN?
+    var flow: PrimerSessionFlow?
     var onTokenizeSuccessCallback: RCTResponseSenderBlock?
     var onVaultSuccessCallback: RCTResponseSenderBlock?
     var onDismissCallback: RCTResponseSenderBlock?
     var onPrimerErrorCallback: RCTResponseSenderBlock?
     var onResumeFlowCallback: BasicCompletionBlock?
     
-    @objc func configureSettings(_ data: String) {
+    @objc func configureSettings(_ request: String) {
         do {
-            let json = data.data(using: .utf8)!
+            let json = request.data(using: .utf8)!
             let settings = try JSONDecoder().decode(PrimerSettingsRN.self, from: json)
-            self.settings = settings.asPrimerSettings()
+            self.settings = settings
         } catch {
             checkoutFailed(with: PrimerExceptionRN.settingsParsingFailed)
         }
     }
 
-    @objc func configureTheme(_ data: String) {
+    @objc func configureTheme(_ request: String) {
         do {
-            let json = data.data(using: .utf8)!
+            let json = request.data(using: .utf8)!
             let themeRN = try JSONDecoder().decode(PrimerThemeRN.self, from: json)
-            self.theme = themeRN.asPrimerTheme()
+            self.theme = themeRN
         } catch {
             checkoutFailed(with: PrimerExceptionRN.themeParsingFailed)
         }
     }
     
-    @objc func configureOnTokenizeSuccessCallback(_ callback: @escaping RCTResponseSenderBlock) {
-        print("\(#function)")
+    @objc func configureFlow(_ request: String) {
+        do {
+            let json = request.data(using: .utf8)!
+            let flow = try JSONDecoder().decode(PrimerFlowRN.self, from: json)
+            self.flow = flow.toPrimerSessionFlow()
+        } catch {
+            checkoutFailed(with: PrimerExceptionRN.flowParsingFailed)
+        }
+    }
+    
+    @objc func configureOnTokenizeSuccess(_ callback: @escaping RCTResponseSenderBlock) {
         self.onTokenizeSuccessCallback = callback
     }
     
-    @objc func configureOnVaultSuccessCallback(_ callback: @escaping RCTResponseSenderBlock) {
-        print("\(#function)")
+    @objc func configureOnVaultSuccess(_ callback: @escaping RCTResponseSenderBlock) {
         self.onVaultSuccessCallback = callback
     }
 
-    @objc func configureOnDismissCallback(_ callback: @escaping RCTResponseSenderBlock) {
-        print("\(#function)")
+    @objc func configureOnDismiss(_ callback: @escaping RCTResponseSenderBlock) {
         self.onDismissCallback = callback
     }
 
-    @objc func configureOnPrimerErrorCallback(_ callback: @escaping RCTResponseSenderBlock) {
-        print("\(#function)")
+    @objc func configureOnPrimerError(_ callback: @escaping RCTResponseSenderBlock) {
         self.onPrimerErrorCallback = callback
     }
     
@@ -86,25 +93,25 @@ class PrimerRN: NSObject {
         }
     }
     
-    @objc func initWith(_ data: String) -> Void {
+    @objc func `init`(_ token: String) -> Void {
         DispatchQueue.main.async { [weak self] in
             do {
-                let json = data.data(using: .utf8)!
-                let request = try JSONDecoder().decode(PrimerInitRequest.self, from: json)
-                
                 guard let viewController = RCTPresentedViewController() else {
                     throw PrimerExceptionRN.noViewController
                 }
 
-                guard let flow = PrimerFlowRN.fromString(request.intent) else {
+                guard let flow = self?.flow else {
                     throw PrimerExceptionRN.invalidPrimerIntent
                 }
                 
-                guard let settings = self?.settings, let theme = self?.theme else {
+                guard
+                    let settings = self?.settings?.asPrimerSettings(),
+                    let theme = self?.theme?.asPrimerTheme()
+                else {
                     throw PrimerExceptionRN.settingsNotConfigured
                 }
                 
-                self?.clientToken = request.token
+                self?.clientToken = token
                 
                 Primer.shared.delegate = self
                 Primer.shared.configure(settings: settings, theme: theme)
@@ -116,10 +123,10 @@ class PrimerRN: NSObject {
         }
     }
     
-    @objc func resumeWith(_ data: String) -> Void {
+    @objc func resume(_ request: String) -> Void {
         DispatchQueue.main.async { [weak self] in
             do {
-                let json = data.data(using: .utf8)!
+                let json = request.data(using: .utf8)!
                 let request = try JSONDecoder().decode(PrimerResumeRequest.self, from: json)
                 
                 self?.clientToken = request.token

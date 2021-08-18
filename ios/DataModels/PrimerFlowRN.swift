@@ -7,20 +7,48 @@
 //
 import PrimerSDK
 
-class PrimerFlowRN {
-    static func fromString(_ value: String) -> PrimerSessionFlow? {
-        switch value {
-          // VAULT
-        case "vaultWithAny": return .defaultWithVault
-        case "vaultWithCard": return .addCardToVault
-        case "vaultWithKlarna": return .addKlarnaToVault
-        case "vaultWithPayPal": return .addPayPalToVault
-        // PAY
-        case "payWithAny": return .default
-        case "payWithCard": return .completeDirectCheckout
-        case "payWithKlarna": return .checkoutWithKlarna
-        case "payWithApplePay": return .checkoutWithApplePay
-        default: return nil
+struct PrimerFlowRN: Decodable {
+    let intent: PrimerIntentRN
+    let paymentMethod: PrimerPaymentMethodTypeRN
+    
+    
+    func toPrimerSessionFlow() -> PrimerSessionFlow? {
+        
+        switch (intent) {
+        case .Checkout:
+            switch (paymentMethod) {
+            case .Any:
+                return .default
+            case .ApplePay:
+                return .checkoutWithApplePay
+            case .Klarna:
+                return .checkoutWithKlarna
+            case .Card:
+                return .completeDirectCheckout
+            default:
+                return nil
+            }
+        case .Vault:
+            switch (paymentMethod) {
+            case .Any:
+                return .defaultWithVault
+            case .Klarna:
+                return .addKlarnaToVault
+            case .PayPal:
+                return .addPayPalToVault
+            case .Card:
+                return .defaultWithVault
+            default:
+                return nil
+            }
         }
     }
+}
+
+enum PrimerIntentRN: String, Decodable {
+    case Checkout, Vault
+}
+
+enum PrimerPaymentMethodTypeRN: String, Decodable {
+    case `Any`, Klarna, Card, PayPal, GooglePay, ApplePay, GoCardless
 }

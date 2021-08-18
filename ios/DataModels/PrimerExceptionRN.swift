@@ -14,4 +14,5 @@ enum PrimerExceptionRN: String, Error {
     case tokenParsingFailed
     case settingsNotConfigured
     case clientTokenNotConfigured
+    case flowParsingFailed
 }

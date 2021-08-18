@@ -3,22 +3,24 @@
 
 @interface RCT_EXTERN_MODULE(PrimerRN, RCTViewManager)
 
-RCT_EXTERN_METHOD(configureSettings: (NSString *)data)
+RCT_EXTERN_METHOD(configureSettings: (NSString *)request)
 
-RCT_EXTERN_METHOD(configureTheme: (NSString *)data)
+RCT_EXTERN_METHOD(configureTheme: (NSString *)request)
 
-RCT_EXTERN_METHOD(configureOnTokenizeSuccessCallback: (RCTResponseSenderBlock)callback)
+RCT_EXTERN_METHOD(configureFlow: (NSString *)request)
 
-RCT_EXTERN_METHOD(configureOnVaultSuccessCallback: (RCTResponseSenderBlock)callback)
+RCT_EXTERN_METHOD(configureOnTokenizeSuccess: (RCTResponseSenderBlock)callback)
 
-RCT_EXTERN_METHOD(configureOnDismissCallback: (RCTResponseSenderBlock)callback)
+RCT_EXTERN_METHOD(configureOnVaultSuccess: (RCTResponseSenderBlock)callback)
 
-RCT_EXTERN_METHOD(configureOnPrimerErrorCallback: (RCTResponseSenderBlock)callback)
+RCT_EXTERN_METHOD(configureOnDismiss: (RCTResponseSenderBlock)callback)
+
+RCT_EXTERN_METHOD(configureOnPrimerError: (RCTResponseSenderBlock)callback)
 
 RCT_EXTERN_METHOD(fetchSavedPaymentInstruments: (RCTResponseSenderBlock)callback)
 
-RCT_EXTERN_METHOD(initWith: (NSString *)data)
+RCT_EXTERN_METHOD(init: (NSString *)data)
 
-RCT_EXTERN_METHOD(resumeWith: (NSString *)data)
+RCT_EXTERN_METHOD(resume: (NSString *)data)
 
 @end
