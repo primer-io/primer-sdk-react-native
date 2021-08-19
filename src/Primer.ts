@@ -1,5 +1,4 @@
 import { NativeModules } from 'react-native';
-import type { PaymentInstrumentToken } from './models/payment-instrument-token';
 import type { IPrimer } from './models/primer';
 import type {
   OnDismissCallback,
@@ -8,11 +7,10 @@ import type {
   OnTokenizeSuccessCallback,
 } from './models/primer-callbacks';
 import type { IPrimerConfig } from './models/primer-config';
-import type { PrimerNativeException } from './models/primer-exception';
-import type { PrimerFlow } from './models/primer-flow';
-import type { IPrimerResumeRequest } from './models/primer-request';
+import type { PrimerIntent } from './models/primer-intent';
 import type { IPrimerSettings } from './models/primer-settings';
 import type { IPrimerTheme } from './models/primer-theme';
+import { parseCallback, parseCallbackResume } from './utils';
 
 const { PrimerRN: NativeModule } = NativeModules;
 
@@ -20,7 +18,7 @@ export const PrimerNativeMapping: IPrimer = {
   init(token: String, config: IPrimerConfig): void {
     configureSettings(config.settings);
     configureTheme(config.theme);
-    configureFlow(config.flow);
+    configureFlow(config.intent);
     configureOnVaultSuccess(config.onTokenAddedToVault);
     configureOnDismiss(config.onDismiss);
     configureOnPrimerError(config.onPrimerError);
@@ -49,71 +47,47 @@ function configureTheme(theme: IPrimerTheme = {}): void {
 }
 
 function configureFlow(
-  flow: PrimerFlow = { intent: 'Checkout', paymentMethod: 'Any' }
+  intent: PrimerIntent = { flow: 'Checkout', paymentMethod: 'Any' }
 ): void {
-  const data = JSON.stringify(flow);
+  const data = JSON.stringify(intent);
   NativeModule.configureFlow(data);
 }
 
+function resume() {
+  const data = JSON.stringify({
+    intent: 'success',
+    token: 'none',
+    metadata: {
+      message: 'none',
+    },
+  });
+  NativeModule.resume(data);
+}
+
 function configureOnTokenizeSuccess(
-  callback: OnTokenizeSuccessCallback = (data) => {
-    console.log(data);
-  }
+  callback: OnTokenizeSuccessCallback = (_) => {}
 ) {
   NativeModule.configureOnTokenizeSuccess((data: any) => {
-    let completion = (_: IPrimerResumeRequest): void => {
-      NativeModule.resume('success');
-    };
-    try {
-      const paymentInstrument = JSON.parse(data) as PaymentInstrumentToken;
-
-      callback(paymentInstrument, completion);
-    } catch (e) {
-      callback({ name: 'ParseJsonFailed' }, completion);
-    }
-    configureOnTokenizeSuccess(callback);
+    parseCallbackResume(data, callback, resume);
   });
 }
 
 function configureOnVaultSuccess(
-  callback: OnTokenAddedToVaultCallback = (data) => {
-    console.log(data);
-  }
+  callback: OnTokenAddedToVaultCallback = (_) => {}
 ) {
   NativeModule.configureOnVaultSuccess((data: any) => {
-    try {
-      const paymentInstrument = JSON.parse(data) as PaymentInstrumentToken;
-      callback(paymentInstrument);
-    } catch (error) {
-      callback({ name: 'ParseJsonFailed' });
-    }
-    configureOnVaultSuccess(callback);
+    parseCallback(data, callback);
   });
 }
 
-function configureOnDismiss(
-  callback: OnDismissCallback = () => {
-    console.log('dismissed!');
-  }
-) {
+function configureOnDismiss(callback: OnDismissCallback = () => {}) {
   NativeModule.configureOnDismiss((_: any) => {
     callback();
-    configureOnDismiss(callback);
   });
 }
 
-function configureOnPrimerError(
-  callback: OnPrimerErrorCallback = (data) => {
-    console.log(data);
-  }
-) {
+function configureOnPrimerError(callback: OnPrimerErrorCallback = (_) => {}) {
   NativeModule.configureOnPrimerError((data: any) => {
-    try {
-      const error = JSON.parse(data) as PrimerNativeException;
-      callback(error);
-    } catch (e) {
-      callback({ name: 'ParseJsonFailed' });
-    }
-    configureOnPrimerError(callback);
+    parseCallback(data, callback);
   });
 }

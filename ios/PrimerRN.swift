@@ -53,8 +53,8 @@ class PrimerRN: NSObject {
     @objc func configureFlow(_ request: String) {
         do {
             let json = request.data(using: .utf8)!
-            let flow = try JSONDecoder().decode(PrimerFlowRN.self, from: json)
-            self.flow = flow.toPrimerSessionFlow()
+            let intent = try JSONDecoder().decode(PrimerIntentRN.self, from: json)
+            self.flow = intent.toPrimerSessionFlow()
         } catch {
             checkoutFailed(with: PrimerExceptionRN.flowParsingFailed)
         }

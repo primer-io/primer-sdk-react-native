@@ -1,4 +1,4 @@
-package com.primerioreactnative.DataModels
+package com.primerioreactnative.datamodels
 
 import io.primer.android.model.dto.PaymentInstrumentData
 import io.primer.android.model.dto.PaymentMethodToken

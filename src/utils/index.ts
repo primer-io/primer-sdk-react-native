@@ -1,3 +1,5 @@
+import type { PrimerReactNativeException } from 'src/models/primer-exception';
+import type { IPrimerResumeRequest } from 'src/models/primer-request';
 import type { RgbaColor } from 'src/models/primer-theme';
 
 export function toRgbColor(hex: string): RgbaColor | null {
@@ -24,4 +26,35 @@ export function toRgbColor(hex: string): RgbaColor | null {
     blue: parseInt(b, 16),
     alpha: 1,
   };
+}
+
+export function parseCallback<T>(
+  data: any,
+  callback: (val: T | PrimerReactNativeException) => void
+) {
+  try {
+    const error = JSON.parse(data) as T;
+    callback(error);
+  } catch (e) {
+    callback({ name: 'ParseJsonFailed' });
+  }
+}
+
+export function parseCallbackResume<T>(
+  data: any,
+  callback: (
+    val: T | PrimerReactNativeException,
+    res: (req: IPrimerResumeRequest) => void
+  ) => void,
+  resume: () => void = () => {}
+) {
+  let completion = (_: IPrimerResumeRequest): void => {
+    resume();
+  };
+  try {
+    const error = JSON.parse(data) as T;
+    callback(error, completion);
+  } catch (e) {
+    callback({ name: 'ParseJsonFailed' }, () => {});
+  }
 }

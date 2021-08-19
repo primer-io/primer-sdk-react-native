@@ -11,7 +11,7 @@ const fetchClientToken = async () => {
   const body = JSON.stringify({
     environment: 'staging',
     customerId: 'customer1',
-    customerCountryCode: 'GB',
+    customerCountryCode: 'SE',
   });
 
   const headers = { 'Content-Type': 'application/json' };
@@ -44,10 +44,13 @@ export function usePrimer(theme: IPrimerTheme, settings: IPrimerSettings) {
   const presentPrimer = () => {
     if (!token) return;
     Primer.init(token, {
+      intent: {
+        flow: 'Checkout',
+        paymentMethod: 'Any',
+      },
       settings,
       theme,
-      onTokenizeSuccess: (data, callback) => {
-        console.log('payment instrument token:', data);
+      onTokenizeSuccess: (_, callback) => {
         callback({ intent: 'showError', token });
       },
     });

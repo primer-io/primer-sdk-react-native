@@ -7,14 +7,14 @@
 //
 import PrimerSDK
 
-struct PrimerFlowRN: Decodable {
-    let intent: PrimerIntentRN
+struct PrimerIntentRN: Decodable {
+    let flow: PrimerFlowRN
     let paymentMethod: PrimerPaymentMethodTypeRN
     
     
     func toPrimerSessionFlow() -> PrimerSessionFlow? {
         
-        switch (intent) {
+        switch (flow) {
         case .Checkout:
             switch (paymentMethod) {
             case .Any:
@@ -45,7 +45,7 @@ struct PrimerFlowRN: Decodable {
     }
 }
 
-enum PrimerIntentRN: String, Decodable {
+enum PrimerFlowRN: String, Decodable {
     case Checkout, Vault
 }
 

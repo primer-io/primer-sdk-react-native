@@ -4,15 +4,16 @@ import type {
   OnTokenAddedToVaultCallback,
   OnTokenizeSuccessCallback,
 } from './primer-callbacks';
-import type { PrimerFlow } from './primer-flow';
+import type { PrimerIntent } from './primer-intent';
 import type { IPrimerSettings } from './primer-settings';
 import type { IPrimerTheme } from './primer-theme';
 
 export interface IPrimerConfig {
   /**
    * Determine whether checkout or vault should be opened.
+   * Also contains option to specify payment method.
    */
-  flow?: PrimerFlow;
+  intent?: PrimerIntent;
   /**
    * Include data for different payment methods (e.g. amount or business details)
    */

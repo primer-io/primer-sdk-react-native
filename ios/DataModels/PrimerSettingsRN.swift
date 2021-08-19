@@ -22,6 +22,7 @@ extension PrimerSettingsRN {
             amount: order?.amount,
             currency: order?.currency,
             countryCode: order?.countryCode,
+            klarnaSessionType: .recurringPayment, // need to update
             urlScheme: options?.iosUrlScheme,
             urlSchemeIdentifier: options?.iosUrlSchemeIdentifier,
             isFullScreenOnly: options?.isFullScreenOnly ?? false,

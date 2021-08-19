@@ -1,3 +1,6 @@
+import type { CountryCode } from './countryCode';
+import type { CurrencyCode } from './currencyCode';
+
 export interface IPrimerSettings {
   order?: IOrder;
   business?: IBusiness;
@@ -7,8 +10,8 @@ export interface IPrimerSettings {
 
 interface IOrder {
   amount?: number;
-  currency?: string;
-  countryCode?: string;
+  currency?: CurrencyCode;
+  countryCode?: CountryCode;
   items?: IOrderItem[];
 }
 

@@ -6,22 +6,13 @@ import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
-import com.primerioreactnative.DataModels.*
-import io.primer.android.CheckoutEventListener
+import com.primerioreactnative.datamodels.*
 import io.primer.android.UniversalCheckout
-import io.primer.android.events.CheckoutEvent
 import io.primer.android.model.dto.CountryCode
-import io.primer.android.payment.card.Card
-import io.primer.android.payment.klarna.Klarna
-import io.primer.android.payment.paypal.PayPal
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import androidx.core.content.ContextCompat.startActivity
 
-import android.content.Intent
-import android.net.Uri
-import io.primer.android.UniversalCheckoutTheme
 import java.util.*
 
 
@@ -29,9 +20,9 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
 
   private var settings: PrimerSettingsRN = PrimerSettingsRN()
   private var theme: PrimerThemeRN = PrimerThemeRN()
-  private var flow: PrimerFlowRN = PrimerFlowRN()
+  private var intent: PrimerIntentRN = PrimerIntentRN()
 
-  private val mListener = PrimerRNEventListener()
+  private var mListener = PrimerRNEventListener()
 
   override fun getName(): String = "PrimerRN"
 
@@ -43,7 +34,12 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
       this.settings = settings
     } catch (e: Exception) {
       Log.e("PrimerRN", "configure settings error: $e")
-      mListener.onPrimerErrorQueue.addRequestAndPoll(PrimerExceptionRN.ParseJsonFailed.name)
+      val exception = PrimerExceptionRN(
+        ExceptionTypeRN.ParseJsonFailed,
+        "failed to parse settings.",
+      )
+      val encoded = Json.encodeToString(exception)
+      mListener.onPrimerErrorQueue?.addRequestAndPoll(encoded)
     }
   }
 
@@ -55,19 +51,29 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
       this.theme = theme
     } catch (e: Exception) {
       Log.e("PrimerRN", "configure theme error: $e")
-      mListener.onPrimerErrorQueue.addRequestAndPoll(PrimerExceptionRN.ParseJsonFailed.name)
+      val exception = PrimerExceptionRN(
+        ExceptionTypeRN.ParseJsonFailed,
+        "failed to parse theme.",
+      )
+      val encoded = Json.encodeToString(exception)
+      mListener.onPrimerErrorQueue?.addRequestAndPoll(encoded)
     }
   }
 
   @ReactMethod
   fun configureFlow(request: String) {
     try {
-      Log.d("PrimerRN", "flow: $request")
-      val flow = Json.decodeFromString<PrimerFlowRN>(request)
-      this.flow = flow
+      Log.d("PrimerRN", "intent: $request")
+      val intent = Json.decodeFromString<PrimerIntentRN>(request)
+      this.intent = intent
     } catch (e: Exception) {
-      Log.e("PrimerRN", "configure flow error: $e")
-      mListener.onPrimerErrorQueue.addRequestAndPoll(PrimerExceptionRN.ParseJsonFailed.name)
+      Log.e("PrimerRN", "configure intent error: $e")
+      val exception = PrimerExceptionRN(
+        ExceptionTypeRN.ParseJsonFailed,
+        "failed to parse intent.",
+      )
+      val encoded = Json.encodeToString(exception)
+      mListener.onPrimerErrorQueue?.addRequestAndPoll(encoded)
     }
   }
 
@@ -93,22 +99,27 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
 
   @ReactMethod
   fun dispose() {
-
+    mListener = PrimerRNEventListener()
   }
 
   @ReactMethod
   fun fetchSavedPaymentInstruments(callback: Callback) {
     Log.d("PrimerRN", "fetch saved payment instruments")
-//    UniversalCheckout.getSavedPaymentMethods { data ->
-//      try {
-//        val paymentMethods = data.map { PrimerPaymentInstrumentTokenRN.fromPaymentMethodToken(it) }
-//        val request = Json.encodeToString(paymentMethods)
-//        callback.invoke(request)
-//      } catch (e: Exception) {
-//        Log.e("PrimerRN", "fetch saved payment methods error: $e")
-//        mListener.onPrimerErrorQueue.addRequestAndPoll(PrimerExceptionRN.ParseJsonFailed.name)
-//      }
-//    }
+    UniversalCheckout.getSavedPaymentMethods { data ->
+      try {
+        val paymentMethods = data.map { PrimerPaymentInstrumentTokenRN.fromPaymentMethodToken(it) }
+        val request = Json.encodeToString(paymentMethods)
+        callback.invoke(request)
+      } catch (e: Exception) {
+        Log.e("PrimerRN", "fetch saved payment methods error: $e")
+        val exception = PrimerExceptionRN(
+          ExceptionTypeRN.ParseJsonFailed,
+          "failed to parse fetched payment methods.",
+        )
+        val encoded = Json.encodeToString(exception)
+        mListener.onPrimerErrorQueue?.addRequestAndPoll(encoded)
+      }
+    }
   }
 
   @ReactMethod
@@ -126,22 +137,22 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
         locale = Locale.UK,
         theme = theme,
       )
-      val paymentMethods = flow.toPaymentMethods()
+      val paymentMethods = intent.toPaymentMethods(settings)
       UniversalCheckout.loadPaymentMethods(paymentMethods)
 
       mListener.completion = {
         currentActivity?.let {
           it.runOnUiThread {
-            UniversalCheckout.showSuccess(5000)
+            UniversalCheckout.dismiss(true)
           }
         }
       }
 
-      when (flow.intent) {
-        PrimerIntentRN.Checkout -> UniversalCheckout.showCheckout(
+      when (intent.flow) {
+        PrimerFlowRN.Checkout -> UniversalCheckout.showCheckout(
           context,
           mListener,
-          isStandalonePaymentMethod = false,
+          isStandalonePaymentMethod = paymentMethods.size < 2,
           doNotShowUi = settings.options?.isInitialLoadingHidden ?: false,
           preferWebView = true,
           currency = settings.order?.currency,
@@ -149,10 +160,10 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
           clearAllListeners = true,
           webBrowserRedirectScheme = settings.options?.androidRedirectScheme,
         )
-        PrimerIntentRN.Vault -> UniversalCheckout.showVault(
+        PrimerFlowRN.Vault -> UniversalCheckout.showVault(
           context,
           mListener,
-          isStandalonePaymentMethod = false,
+          isStandalonePaymentMethod = paymentMethods.size < 2,
           doNotShowUi = settings.options?.isInitialLoadingHidden ?: false,
           preferWebView = true,
           currency = settings.order?.currency,
@@ -163,7 +174,12 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
       }
     } catch (e: Exception) {
       Log.e("PrimerRN", "init error: $e")
-      mListener.onPrimerErrorQueue.addRequestAndPoll(PrimerExceptionRN.InitFailed.name)
+      val exception = PrimerExceptionRN(
+        ExceptionTypeRN.InitFailed,
+        "failed to initialise Primer SDK, error: $e",
+      )
+      val encoded = Json.encodeToString(exception)
+      mListener.onPrimerErrorQueue?.addRequestAndPoll(encoded)
     }
   }
 

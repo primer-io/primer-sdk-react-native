@@ -1,4 +1,4 @@
-package com.primerioreactnative.DataModels
+package com.primerioreactnative.datamodels
 
 import io.primer.android.UniversalCheckoutTheme
 import kotlinx.serialization.Serializable

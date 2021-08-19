@@ -1,4 +1,4 @@
-package com.primerioreactnative.DataModels
+package com.primerioreactnative.datamodels
 
 import kotlinx.serialization.*
 

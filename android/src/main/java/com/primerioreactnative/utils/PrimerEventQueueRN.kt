@@ -1,4 +1,4 @@
-package com.primerioreactnative.Utils
+package com.primerioreactnative.utils
 
 import com.facebook.react.bridge.Callback
 import java.util.*
@@ -21,7 +21,7 @@ class PrimerEventQueueRN {
 
     callback.invoke(next)
 
-    mCallback = null
+    clear()
   }
 
   fun clear() {
