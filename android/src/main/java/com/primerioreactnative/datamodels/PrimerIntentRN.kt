@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class PrimerIntentRN(
-  val flow: PrimerFlowRN = PrimerFlowRN.Checkout,
+  val vault: Boolean = false,
   val paymentMethod: PrimerPaymentMethodTypeRN = PrimerPaymentMethodTypeRN.Any,
 ) {
 
@@ -54,12 +54,6 @@ data class PrimerIntentRN(
       }?.dropLast(2)
     }
   }
-}
-
-@Serializable
-enum class PrimerFlowRN {
-  Checkout,
-  Vault,
 }
 
 @Serializable

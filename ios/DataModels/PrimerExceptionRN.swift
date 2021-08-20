@@ -6,12 +6,17 @@
 //  Copyright © 2021 Facebook. All rights reserved.
 //
 
-enum PrimerExceptionRN: String, Error {
-    case noViewController
+struct PrimerExceptionRN: Encodable {
+    let exceptionType: ExceptionTypeRN
+    let description: String?
+}
+
+enum ExceptionTypeRN: String, Error, Encodable {
+    case ParseJsonFailed
+    case noIosViewController
     case invalidPrimerIntent
     case themeParsingFailed
     case settingsParsingFailed
-    case tokenParsingFailed
     case settingsNotConfigured
     case clientTokenNotConfigured
     case flowParsingFailed

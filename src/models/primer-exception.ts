@@ -8,6 +8,10 @@ const exceptions = [
   'InitFailed',
   'CheckoutFlowFailed',
   'TokenizationFailed',
+  'clientTokenNotConfigured',
+  'settingsNotConfigured',
+  'invalidPrimerIntent',
+  'noIosViewController',
 ] as const;
 
 type PrimerNativeExceptionType = typeof exceptions[number];

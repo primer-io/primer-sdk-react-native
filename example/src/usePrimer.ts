@@ -1,36 +1,39 @@
 import { useEffect, useState } from 'react';
 import { Primer } from '@primer-io/react-native';
-import type { IPrimerTheme } from 'src/models/primer-theme';
+import { fetchClientToken } from './fetch-client-token';
 import type { IPrimerSettings } from 'src/models/primer-settings';
+import type { IPrimerTheme } from 'src/models/primer-theme';
+import type { PaymentInstrumentToken } from 'src/models/payment-instrument-token';
 
-const fetchClientToken = async () => {
-  const root = 'https://us-central1-primerdemo-8741b.cloudfunctions.net';
-
-  const url = root + '/clientToken';
-
-  const body = JSON.stringify({
-    environment: 'staging',
-    customerId: 'customer1',
-    customerCountryCode: 'SE',
-  });
-
-  const headers = { 'Content-Type': 'application/json' };
-
-  const method = 'post';
-
-  const reqOptions = { method, headers, body };
-
-  const result = await fetch(url, reqOptions);
-
-  const json = await result.json();
-
-  console.log(json);
-
-  return json.clientToken;
+const settings: IPrimerSettings = {
+  order: {
+    amount: 8000,
+    currency: 'GBP',
+    countryCode: 'SE',
+  },
+  options: {
+    hasDisabledSuccessScreen: false,
+    isInitialLoadingHidden: false,
+  },
 };
 
-export function usePrimer(theme: IPrimerTheme, settings: IPrimerSettings) {
+const theme: IPrimerTheme = {
+  colors: {
+    background: {
+      red: 255,
+      green: 100,
+      blue: 100,
+      alpha: 255,
+    },
+  },
+};
+
+export function usePrimer() {
   const [token, setToken] = useState<String | null>(null);
+  const [
+    paymentInstrument,
+    setPaymentInstrument,
+  ] = useState<PaymentInstrumentToken | null>();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -43,24 +46,30 @@ export function usePrimer(theme: IPrimerTheme, settings: IPrimerSettings) {
 
   const presentPrimer = () => {
     if (!token) return;
-    Primer.init(token, {
-      intent: {
-        flow: 'Checkout',
-        paymentMethod: 'Any',
-      },
+    Primer.showUniversalCheckout(token, {
       settings,
       theme,
-      onTokenizeSuccess: (_, callback) => {
-        callback({ intent: 'showError', token });
+      onTokenizeSuccess: (
+        paymentInstrumentToken: PaymentInstrumentToken,
+        callback: any
+      ) => {
+        setPaymentInstrument(paymentInstrumentToken);
+        callback({ intent: 'showError' });
       },
-    });
-    Primer.fetchSavedPaymentInstruments((data) => {
-      console.log('payment methods:', data);
+      onTokenAddedToVault: (paymentInstrumentToken: PaymentInstrumentToken) => {
+        setPaymentInstrument(paymentInstrumentToken);
+      },
+      onDismiss: () => {
+        Primer.fetchSavedPaymentInstruments(token, (data) => {
+          console.log('payment methods:', data);
+        });
+      },
     });
   };
 
   return {
     presentPrimer,
     loading,
+    paymentInstrument,
   };
 }

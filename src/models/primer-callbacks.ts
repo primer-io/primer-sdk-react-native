@@ -1,17 +1,14 @@
 import type { PaymentInstrumentToken } from './payment-instrument-token';
-import type {
-  PrimerException,
-  PrimerReactNativeException,
-} from './primer-exception';
+import type { PrimerException } from './primer-exception';
 import type { IPrimerResumeRequest } from './primer-request';
 
 export type OnTokenizeSuccessCallback = (
-  data: PaymentInstrumentToken | PrimerReactNativeException,
+  data: PaymentInstrumentToken | PrimerException,
   completion: (request: IPrimerResumeRequest) => void
 ) => void;
 
 export type OnTokenAddedToVaultCallback = (
-  data: PaymentInstrumentToken | PrimerReactNativeException
+  data: PaymentInstrumentToken
 ) => void;
 
 export type OnDismissCallback = () => void;

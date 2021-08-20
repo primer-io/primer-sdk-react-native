@@ -30,13 +30,16 @@ class PrimerRN: NSObject {
     var onPrimerErrorCallback: RCTResponseSenderBlock?
     var onResumeFlowCallback: BasicCompletionBlock?
     
+    private var sdkWasInitialised = false
+    private var haltExecution = false
+    
     @objc func configureSettings(_ request: String) {
         do {
             let json = request.data(using: .utf8)!
             let settings = try JSONDecoder().decode(PrimerSettingsRN.self, from: json)
             self.settings = settings
         } catch {
-            checkoutFailed(with: PrimerExceptionRN.settingsParsingFailed)
+            checkoutFailed(with: ExceptionTypeRN.ParseJsonFailed)
         }
     }
 
@@ -46,17 +49,18 @@ class PrimerRN: NSObject {
             let themeRN = try JSONDecoder().decode(PrimerThemeRN.self, from: json)
             self.theme = themeRN
         } catch {
-            checkoutFailed(with: PrimerExceptionRN.themeParsingFailed)
+            checkoutFailed(with: ExceptionTypeRN.ParseJsonFailed)
         }
     }
     
-    @objc func configureFlow(_ request: String) {
+    @objc func configureIntent(_ request: String) {
         do {
             let json = request.data(using: .utf8)!
             let intent = try JSONDecoder().decode(PrimerIntentRN.self, from: json)
             self.flow = intent.toPrimerSessionFlow()
         } catch {
-            checkoutFailed(with: PrimerExceptionRN.flowParsingFailed)
+            print("🔥🔥🔥")
+            checkoutFailed(with: ExceptionTypeRN.ParseJsonFailed)
         }
     }
     
@@ -76,7 +80,10 @@ class PrimerRN: NSObject {
         self.onPrimerErrorCallback = callback
     }
     
-    @objc func fetchSavedPaymentInstruments(_ callback: @escaping RCTResponseSenderBlock) {
+    @objc func fetchSavedPaymentInstruments(_ token: String, with callback: @escaping RCTResponseSenderBlock) {
+        
+        self.clientToken = token
+        
         Primer.shared.fetchVaultedPaymentMethods { [weak self] result in
             switch result {
             case .failure(let error):
@@ -93,22 +100,22 @@ class PrimerRN: NSObject {
         }
     }
     
-    @objc func `init`(_ token: String) -> Void {
+    @objc func initialize(_ token: String) -> Void {
         DispatchQueue.main.async { [weak self] in
             do {
                 guard let viewController = RCTPresentedViewController() else {
-                    throw PrimerExceptionRN.noViewController
+                    throw ExceptionTypeRN.noIosViewController
                 }
 
                 guard let flow = self?.flow else {
-                    throw PrimerExceptionRN.invalidPrimerIntent
+                    throw ExceptionTypeRN.invalidPrimerIntent
                 }
                 
                 guard
                     let settings = self?.settings?.asPrimerSettings(),
                     let theme = self?.theme?.asPrimerTheme()
                 else {
-                    throw PrimerExceptionRN.settingsNotConfigured
+                    throw ExceptionTypeRN.settingsNotConfigured
                 }
                 
                 self?.clientToken = token
@@ -132,7 +139,7 @@ class PrimerRN: NSObject {
                 self?.clientToken = request.token
                 
                 switch request.intent {
-                case "showError": self?.onResumeFlowCallback?(PrimerExceptionRN.tokenParsingFailed)
+                case "showError": self?.onResumeFlowCallback?(ExceptionTypeRN.ParseJsonFailed)
                 default:  self?.onResumeFlowCallback?(nil)
                 }
             } catch {
@@ -140,14 +147,18 @@ class PrimerRN: NSObject {
             }
         }
     }
+    
+    @objc func dispose() -> Void {
+        
+    }
 }
 
 extension PrimerRN: PrimerDelegate {
 
     func clientTokenCallback(_ completion: @escaping (String?, Error?) -> Void) {
         guard let clientToken = clientToken else {
-            checkoutFailed(with: PrimerExceptionRN.clientTokenNotConfigured)
-            completion(nil, PrimerExceptionRN.clientTokenNotConfigured)
+            checkoutFailed(with: ExceptionTypeRN.clientTokenNotConfigured)
+            completion(nil, ExceptionTypeRN.clientTokenNotConfigured)
             return
         }
         completion(clientToken, nil)
@@ -159,7 +170,7 @@ extension PrimerRN: PrimerDelegate {
             let data = String(data: json, encoding: .utf8)!
             self.onTokenizeSuccessCallback?([data])
         } catch {
-            checkoutFailed(with: PrimerExceptionRN.tokenParsingFailed)
+            checkoutFailed(with: ExceptionTypeRN.ParseJsonFailed)
         }
         onResumeFlowCallback = completion
     }
@@ -170,7 +181,7 @@ extension PrimerRN: PrimerDelegate {
             let data = String(data: json, encoding: .utf8)!
             self.onVaultSuccessCallback?([data])
         } catch {
-            checkoutFailed(with: PrimerExceptionRN.tokenParsingFailed)
+            checkoutFailed(with: ExceptionTypeRN.ParseJsonFailed)
         }
     }
     
@@ -181,6 +192,18 @@ extension PrimerRN: PrimerDelegate {
     
     func checkoutFailed(with error: Error) {
         print("\(#function): \(error)")
-        self.onPrimerErrorCallback?([error.localizedDescription])
+        do {
+            if let error = error as? ExceptionTypeRN {
+                let exception = PrimerExceptionRN(exceptionType: error, description: nil)
+                let json = try encoder.encode(exception)
+                let data = String(data: json, encoding: .utf8)!
+                self.onPrimerErrorCallback?([data])
+            } else {
+                self.onPrimerErrorCallback?(["{\"exceptionType\":\"CheckoutFlowFailed\"}"])
+            }
+        } catch {
+            self.onPrimerErrorCallback?(["{\"exceptionType\":\"ParseJsonFailed\"}"])
+        }
+        haltExecution = true
     }
 }

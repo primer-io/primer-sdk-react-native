@@ -1,11 +1,23 @@
-export type PrimerIntent = PrimerVaultIntent | PrimerCheckoutIntent;
+const paymentMethods = [
+  'Card',
+  'PayPal',
+  'Klarna',
+  'ApplePay',
+  'GooglePay',
+  'GoCardless',
+] as const;
 
-interface PrimerVaultIntent {
-  flow: 'Vault';
-  paymentMethod?: VaultPaymentMethod;
+export type SinglePrimerPaymentMethod = typeof paymentMethods[number];
+export interface AnyPrimerPaymentMethodIntent {
+  vault: boolean;
+  paymentMethod: 'Any';
 }
 
-interface PrimerCheckoutIntent {
-  flow: 'Checkout';
-  paymentMethod?: DirectCheckoutPaymentMethod;
+export interface ISinglePrimerPaymentMethodIntent {
+  vault: boolean;
+  paymentMethod: SinglePrimerPaymentMethod;
 }
+
+export type IPrimerIntent =
+  | ISinglePrimerPaymentMethodIntent
+  | AnyPrimerPaymentMethodIntent;

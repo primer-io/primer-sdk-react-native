@@ -8,14 +8,14 @@
 import PrimerSDK
 
 struct PrimerIntentRN: Decodable {
-    let flow: PrimerFlowRN
+    let vault: Bool
     let paymentMethod: PrimerPaymentMethodTypeRN
     
     
     func toPrimerSessionFlow() -> PrimerSessionFlow? {
         
-        switch (flow) {
-        case .Checkout:
+        switch (vault) {
+        case false:
             switch (paymentMethod) {
             case .Any:
                 return .default
@@ -28,7 +28,7 @@ struct PrimerIntentRN: Decodable {
             default:
                 return nil
             }
-        case .Vault:
+        case true:
             switch (paymentMethod) {
             case .Any:
                 return .defaultWithVault
@@ -43,10 +43,6 @@ struct PrimerIntentRN: Decodable {
             }
         }
     }
-}
-
-enum PrimerFlowRN: String, Decodable {
-    case Checkout, Vault
 }
 
 enum PrimerPaymentMethodTypeRN: String, Decodable {
