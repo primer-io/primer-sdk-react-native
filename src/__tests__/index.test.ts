@@ -22,12 +22,6 @@ jest.mock('react-native', () => {
 
 describe('Test Primer', () => {
   describe('init', () => {
-    beforeAll(() => {
-      PrimerNativeMapping.init('mockToken', {
-        onTokenizeSuccess: (_, __) => {},
-      });
-    });
-
     it('should call native module configureSettings', () => {
       expect(NativeModules.PrimerRN.configureSettings).toHaveBeenCalled();
     });
@@ -66,7 +60,7 @@ describe('Test Primer', () => {
   describe('fetchSavedPaymentInstruments', () => {
     it('should call native module fetchSavedPaymentInstruments & pass in callback', () => {
       const callback = () => {};
-      PrimerNativeMapping.fetchSavedPaymentInstruments(callback);
+      PrimerNativeMapping.fetchSavedPaymentInstruments('token', callback);
       expect(
         NativeModules.PrimerRN.fetchSavedPaymentInstruments
       ).toHaveBeenCalledWith(callback);

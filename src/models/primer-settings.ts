@@ -1,3 +1,4 @@
+import type { IAddress } from './address';
 import type { CountryCode } from './countryCode';
 import type { CurrencyCode } from './currencyCode';
 

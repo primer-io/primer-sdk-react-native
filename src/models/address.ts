@@ -1,6 +1,6 @@
 import type { CountryCode } from './countryCode';
 
-interface IAddress {
+export interface IAddress {
   line1: String;
   line2: String;
   postalCode: String;

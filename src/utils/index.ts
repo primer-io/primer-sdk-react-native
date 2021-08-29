@@ -1,4 +1,3 @@
-import type { PrimerException } from 'src/models/primer-exception';
 import type { IPrimerResumeRequest } from 'src/models/primer-request';
 import type { RgbaColor } from 'src/models/primer-theme';
 
@@ -28,25 +27,18 @@ export function toRgbColor(hex: string): RgbaColor | null {
   };
 }
 
-export function parseCallback<T>(
-  data: any,
-  callback: (val: T | PrimerException) => void
-) {
+export function parseCallback<T>(data: any, callback: (val: T) => void) {
   try {
     const error = JSON.parse(data) as T;
     callback(error);
   } catch (e) {
     console.log('failed to parse json', e);
-    callback({ name: 'ParseJsonFailed' });
   }
 }
 
 export function parseCallbackResume<T>(
   data: any,
-  callback: (
-    val: T | PrimerException,
-    res: (req: IPrimerResumeRequest) => void
-  ) => void,
+  callback: (val: T, res: (req: IPrimerResumeRequest) => void) => void,
   resume: () => void = () => {}
 ) {
   let completion = (_: IPrimerResumeRequest): void => {
@@ -58,6 +50,5 @@ export function parseCallbackResume<T>(
     callback(parsedData, completion);
   } catch (e) {
     console.log('failed to parse json', e);
-    callback({ name: 'ParseJsonFailed' }, () => {});
   }
 }
