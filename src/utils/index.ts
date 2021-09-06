@@ -46,7 +46,6 @@ export function parseCallbackResume<T>(
   };
   try {
     const parsedData = JSON.parse(data) as T;
-    console.log('parsedData', parsedData);
     callback(parsedData, completion);
   } catch (e) {
     console.log('failed to parse json', e);

@@ -93,7 +93,6 @@ function configureOnTokenizeSuccess(
   callback: OnTokenizeSuccessCallback = (_) => {}
 ) {
   NativeModule.configureOnTokenizeSuccess((data: any) => {
-    console.log('token:', data);
     parseCallbackResume<PaymentInstrumentToken>(data, callback, resume);
   });
 }
@@ -102,21 +101,18 @@ function configureOnVaultSuccess(
   callback: OnTokenAddedToVaultCallback = (_) => {}
 ) {
   NativeModule.configureOnVaultSuccess((data: any) => {
-    console.log('vault:', data);
     parseCallback<PaymentInstrumentToken>(data, callback);
   });
 }
 
 function configureOnDismiss(callback: OnDismissCallback = () => {}) {
   NativeModule.configureOnDismiss((_: any) => {
-    console.log('dismiss:');
     callback();
   });
 }
 
 function configureOnPrimerError(callback: OnPrimerErrorCallback = (_) => {}) {
   NativeModule.configureOnPrimerError((data: any) => {
-    console.log('error:', data);
     parseCallback<PrimerException>(data, callback);
   });
 }
