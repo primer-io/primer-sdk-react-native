@@ -3,7 +3,7 @@ import type { PrimerException } from './primer-exception';
 import type { IPrimerResumeRequest } from './primer-request';
 
 export type OnTokenizeSuccessCallback = (
-  data: PaymentInstrumentToken | PrimerException,
+  data: PaymentInstrumentToken,
   completion: (request: IPrimerResumeRequest) => void
 ) => void;
 
