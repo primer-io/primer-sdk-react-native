@@ -10,7 +10,7 @@ struct PrimerSettingsRN: Decodable {
 extension PrimerSettingsRN {
     func asPrimerSettings() -> PrimerSettings {
         return PrimerSettings(
-            merchantIdentifier: options?.iosMerchantIdentifier,
+            merchantIdentifier: options?.merchantIdentifier,
             customerId: customer?.id,
             amount: order?.amount,
             currency: order?.currency,
@@ -112,7 +112,7 @@ fileprivate struct OptionsRN: Decodable {
     let hasDisabledSuccessScreen: Bool?
     let isInitialLoadingHidden: Bool?
     let locale: String?
-    let iosMerchantIdentifier: String?
+    let merchantIdentifier: String?
     let iosUrlScheme: String?
     let iosUrlSchemeIdentifier: String?
     let isFullScreenOnly: Bool?

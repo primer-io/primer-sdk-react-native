@@ -40,7 +40,7 @@ interface IOptions {
   hasDisabledSuccessScreen?: boolean;
   isInitialLoadingHidden?: boolean;
   locale?: string;
-  iosMerchantIdentifier?: string;
+  merchantIdentifier?: string;
   iosUrlScheme?: string;
   iosUrlSchemeIdentifier?: string;
   isFullScreenOnly?: boolean;
