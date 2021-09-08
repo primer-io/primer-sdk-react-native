@@ -1,9 +1,9 @@
-struct PrimerExceptionRN: Encodable {
-    let exceptionType: ExceptionTypeRN
+struct PrimerErrorRN: Encodable {
+    let exceptionType: ErrorTypeRN
     let description: String?
 }
 
-enum ExceptionTypeRN: String, Error, Encodable {
+enum ErrorTypeRN: String, Error, Encodable {
     case ParseJsonFailed
     case noIosViewController
     case invalidPrimerIntent

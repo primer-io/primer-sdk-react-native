@@ -10,7 +10,7 @@ export default function App() {
     return (
       <View>
         <Text>Got Card 💰</Text>
-        <Text>{JSON.stringify(paymentInstrument)}</Text>
+        <Text>{'\ntoken: ' + paymentInstrument.token}</Text>
       </View>
     );
   };

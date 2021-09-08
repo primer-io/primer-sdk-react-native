@@ -21,6 +21,7 @@ class PrimerRN: NSObject {
     var onDismissCallback: RCTResponseSenderBlock?
     var onPrimerErrorCallback: RCTResponseSenderBlock?
     var onResumeFlowCallback: BasicCompletionBlock?
+    var onSavedPaymentInstrumentsFetchedCallback: RCTResponseSenderBlock?
     
     private var sdkWasInitialised = false
     private var haltExecution = false
@@ -31,7 +32,7 @@ class PrimerRN: NSObject {
             let settings = try JSONDecoder().decode(PrimerSettingsRN.self, from: json)
             self.settings = settings
         } catch {
-            checkoutFailed(with: ExceptionTypeRN.ParseJsonFailed)
+            checkoutFailed(with: ErrorTypeRN.ParseJsonFailed)
         }
     }
 
@@ -41,7 +42,7 @@ class PrimerRN: NSObject {
             let themeRN = try JSONDecoder().decode(PrimerThemeRN.self, from: json)
             self.theme = themeRN
         } catch {
-            checkoutFailed(with: ExceptionTypeRN.ParseJsonFailed)
+            checkoutFailed(with: ErrorTypeRN.ParseJsonFailed)
         }
     }
     
@@ -51,8 +52,7 @@ class PrimerRN: NSObject {
             let intent = try JSONDecoder().decode(PrimerIntentRN.self, from: json)
             self.flow = intent.toPrimerSessionFlow()
         } catch {
-            print("🔥🔥🔥")
-            checkoutFailed(with: ExceptionTypeRN.ParseJsonFailed)
+            checkoutFailed(with: ErrorTypeRN.ParseJsonFailed)
         }
     }
     
@@ -72,7 +72,11 @@ class PrimerRN: NSObject {
         self.onPrimerErrorCallback = callback
     }
     
-    @objc func fetchSavedPaymentInstruments(_ token: String, with callback: @escaping RCTResponseSenderBlock) {
+    @objc func configureOnSavedPaymentInstrumentsFetched(_ callback: @escaping RCTResponseSenderBlock) {
+        self.onSavedPaymentInstrumentsFetchedCallback = callback
+    }
+    
+    @objc func fetchSavedPaymentInstruments(_ token: String) {
         
         self.clientToken = token
         
@@ -84,7 +88,7 @@ class PrimerRN: NSObject {
                 do {
                     let json = try self?.encoder.encode(tokens)
                     let data = String(data: json!, encoding: .utf8)!
-                    callback([data])
+                    self?.onSavedPaymentInstrumentsFetchedCallback?([data])
                 } catch {
                     self?.checkoutFailed(with: error)
                 }
@@ -96,18 +100,18 @@ class PrimerRN: NSObject {
         DispatchQueue.main.async { [weak self] in
             do {
                 guard let viewController = RCTPresentedViewController() else {
-                    throw ExceptionTypeRN.noIosViewController
+                    throw ErrorTypeRN.noIosViewController
                 }
 
                 guard let flow = self?.flow else {
-                    throw ExceptionTypeRN.invalidPrimerIntent
+                    throw ErrorTypeRN.invalidPrimerIntent
                 }
                 
                 guard
                     let settings = self?.settings?.asPrimerSettings(),
                     let theme = self?.theme?.asPrimerTheme()
                 else {
-                    throw ExceptionTypeRN.settingsNotConfigured
+                    throw ErrorTypeRN.settingsNotConfigured
                 }
                 
                 self?.clientToken = token
@@ -131,7 +135,7 @@ class PrimerRN: NSObject {
                 self?.clientToken = request.token
                 
                 switch request.intent {
-                case "showError": self?.onResumeFlowCallback?(ExceptionTypeRN.ParseJsonFailed)
+                case "showError": self?.onResumeFlowCallback?(ErrorTypeRN.ParseJsonFailed)
                 default:  self?.onResumeFlowCallback?(nil)
                 }
             } catch {
@@ -149,8 +153,8 @@ extension PrimerRN: PrimerDelegate {
 
     func clientTokenCallback(_ completion: @escaping (String?, Error?) -> Void) {
         guard let clientToken = clientToken else {
-            checkoutFailed(with: ExceptionTypeRN.clientTokenNotConfigured)
-            completion(nil, ExceptionTypeRN.clientTokenNotConfigured)
+            checkoutFailed(with: ErrorTypeRN.clientTokenNotConfigured)
+            completion(nil, ErrorTypeRN.clientTokenNotConfigured)
             return
         }
         completion(clientToken, nil)
@@ -162,7 +166,7 @@ extension PrimerRN: PrimerDelegate {
             let data = String(data: json, encoding: .utf8)!
             self.onTokenizeSuccessCallback?([data])
         } catch {
-            checkoutFailed(with: ExceptionTypeRN.ParseJsonFailed)
+            checkoutFailed(with: ErrorTypeRN.ParseJsonFailed)
         }
         onResumeFlowCallback = completion
     }
@@ -173,20 +177,18 @@ extension PrimerRN: PrimerDelegate {
             let data = String(data: json, encoding: .utf8)!
             self.onVaultSuccessCallback?([data])
         } catch {
-            checkoutFailed(with: ExceptionTypeRN.ParseJsonFailed)
+            checkoutFailed(with: ErrorTypeRN.ParseJsonFailed)
         }
     }
     
     func onCheckoutDismissed() {
-        print("\(#function): dismissing")
         self.onDismissCallback?([])
     }
     
     func checkoutFailed(with error: Error) {
-        print("\(#function): \(error)")
         do {
-            if let error = error as? ExceptionTypeRN {
-                let exception = PrimerExceptionRN(exceptionType: error, description: nil)
+            if let error = error as? ErrorTypeRN {
+                let exception = PrimerErrorRN(exceptionType: error, description: nil)
                 let json = try encoder.encode(exception)
                 let data = String(data: json, encoding: .utf8)!
                 self.onPrimerErrorCallback?([data])

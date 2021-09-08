@@ -1,6 +1,5 @@
-import type { IAddress } from './address';
-import type { CountryCode } from './countryCode';
-import type { CurrencyCode } from './currencyCode';
+import type { CountryCode } from './utils/countryCode';
+import type { CurrencyCode } from './utils/currencyCode';
 
 export interface IPrimerSettings {
   order?: IOrder;
@@ -14,6 +13,7 @@ interface IOrder {
   currency?: CurrencyCode;
   countryCode?: CountryCode;
   items?: IOrderItem[];
+  shipping?: IAddress; // TODO: map to native
 }
 
 interface IOrderItem {
@@ -25,24 +25,44 @@ interface IOrderItem {
 
 interface IBusiness {
   name: string;
+  registrationNumber?: string;
+  email?: string;
+  phone?: string;
   address: IAddress;
 }
 
 interface ICustomer {
+  id?: string;
   firstName?: string;
   lastName?: string;
   email?: string;
-  shipping?: IAddress;
+  phone?: string;
   billing?: IAddress;
 }
 
 interface IOptions {
-  hasDisabledSuccessScreen?: boolean;
-  isInitialLoadingHidden?: boolean;
-  locale?: string;
-  merchantIdentifier?: string;
-  iosUrlScheme?: string;
-  iosUrlSchemeIdentifier?: string;
-  isFullScreenOnly?: boolean;
-  androidRedirectScheme?: string;
+  isResultScreenEnabled?: boolean; // TODO: map to native
+  isLoadingScreenEnabled?: boolean; // TODO: map to native
+  isFullScreenEnabled?: boolean; // TODO: map to native
+  locale?: string; // TODO: language code, region code, locale code
+  ios?: IIosOptions; // TODO: map to native
+  androids?: IAndroidOptions; // TODO: map to native
+}
+
+interface IIosOptions {
+  urlScheme?: string; // TODO: map to native
+  urlSchemeIdentifier?: string; // TODO: map to native
+  merchantIdentifier?: string; // TODO: map to native + Evangelos & Apple Pay
+}
+interface IAndroidOptions {
+  redirectScheme?: string;
+}
+
+interface IAddress {
+  line1: String;
+  line2: String;
+  postalCode: String;
+  state?: String;
+  city: String;
+  country: CountryCode;
 }

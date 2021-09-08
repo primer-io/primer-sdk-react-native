@@ -1,9 +1,9 @@
-export interface PrimerException {
-  name: PrimerNativeExceptionType;
+export interface PrimerError {
+  name: PrimerErrorType;
   description?: String;
 }
 
-const exceptions = [
+const errors = [
   'ParseJsonFailed',
   'InitFailed',
   'CheckoutFlowFailed',
@@ -14,4 +14,4 @@ const exceptions = [
   'noIosViewController',
 ] as const;
 
-type PrimerNativeExceptionType = typeof exceptions[number];
+type PrimerErrorType = typeof errors[number];

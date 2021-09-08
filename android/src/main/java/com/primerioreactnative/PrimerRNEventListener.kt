@@ -2,8 +2,8 @@ package com.primerioreactnative
 
 import android.util.Log
 import com.facebook.react.bridge.Callback
-import com.primerioreactnative.datamodels.ExceptionTypeRN
-import com.primerioreactnative.datamodels.PrimerExceptionRN
+import com.primerioreactnative.datamodels.ErrorTypeRN
+import com.primerioreactnative.datamodels.PrimerErrorRN
 import com.primerioreactnative.datamodels.PrimerPaymentInstrumentTokenRN
 import com.primerioreactnative.utils.PrimerEventQueueRN
 import io.primer.android.CheckoutEventListener
@@ -17,6 +17,7 @@ class PrimerRNEventListener : CheckoutEventListener {
   private var onVaultSuccessQueue: PrimerEventQueueRN? = null
   private var onDismissQueue: PrimerEventQueueRN? = null
   var onPrimerErrorQueue: PrimerEventQueueRN? = null
+  var onSavedPaymentInstrumentsFetchedQueue: PrimerEventQueueRN? = null
 
   var completion: (() -> Unit)? = null
 
@@ -38,6 +39,11 @@ class PrimerRNEventListener : CheckoutEventListener {
   fun configureOnPrimerError(callback: Callback) {
     onPrimerErrorQueue = PrimerEventQueueRN()
     onPrimerErrorQueue?.poll(callback)
+  }
+
+  fun configureOnSavedPaymentInstrumentsFetched(callback: Callback) {
+    onSavedPaymentInstrumentsFetchedQueue = PrimerEventQueueRN()
+    onSavedPaymentInstrumentsFetchedQueue?.poll(callback)
   }
 
   override fun onCheckoutEvent(e: CheckoutEvent) {
@@ -64,8 +70,8 @@ class PrimerRNEventListener : CheckoutEventListener {
       }
       is CheckoutEvent.ApiError -> {
         Log.e("PrimerRN", "ApiError: ${e.data}")
-        val exception = PrimerExceptionRN(
-          ExceptionTypeRN.CheckoutFlowFailed,
+        val exception = PrimerErrorRN(
+          ErrorTypeRN.CheckoutFlowFailed,
           e.data.description,
         )
         val data = Json.encodeToString(exception)
@@ -73,8 +79,8 @@ class PrimerRNEventListener : CheckoutEventListener {
       }
       is CheckoutEvent.TokenizationError -> {
         Log.e("PrimerRN", "TokenizationError: ${e.data}")
-        val exception = PrimerExceptionRN(
-          ExceptionTypeRN.TokenizationFailed,
+        val exception = PrimerErrorRN(
+          ErrorTypeRN.TokenizationFailed,
           e.data.description,
         )
         val data = Json.encodeToString(exception)

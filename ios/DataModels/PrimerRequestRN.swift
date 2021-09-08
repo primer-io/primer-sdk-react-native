@@ -6,7 +6,7 @@ struct PrimerInitRequest: Decodable {
 
 struct PrimerResumeRequest: Decodable {
     let intent: String;
-    let token: String;
+    let token: String?;
     let metadata: PrimerRequestMetadata?;
 }
 

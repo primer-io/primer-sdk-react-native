@@ -4,46 +4,48 @@ import type { IPrimer } from './models/primer';
 import type {
   OnDismissCallback,
   OnPrimerErrorCallback,
+  OnSavedPaymentInstrumentsFetchedCallback,
   OnTokenAddedToVaultCallback,
   OnTokenizeSuccessCallback,
 } from './models/primer-callbacks';
 import type { IPrimerConfig } from './models/primer-config';
-import type { PrimerException } from './models/primer-exception';
+import type { PrimerError } from './models/primer-error';
 import type {
   IPrimerIntent,
   ISinglePrimerPaymentMethodIntent,
 } from './models/primer-intent';
+import type { IPrimerResumeRequest } from './models/primer-request';
 import type { IPrimerSettings } from './models/primer-settings';
 import type { IPrimerTheme } from './models/primer-theme';
-import { parseCallback, parseCallbackResume } from './utils';
+import { parseCallback } from './utils';
 
 const { PrimerRN: NativeModule } = NativeModules;
 
 export const PrimerNativeMapping: IPrimer = {
-  showUniversalCheckout(token: String, config: IPrimerConfig): void {
-    configure({ vault: false, paymentMethod: 'Any' }, config);
+  configure(config: IPrimerConfig) {
+    configure(config);
+  },
+
+  showUniversalCheckout(token: String): void {
+    configureIntent({ vault: false, paymentMethod: 'Any' });
     NativeModule.initialize(token);
   },
 
-  showVaultManager(token: String, config: IPrimerConfig): void {
-    configure({ vault: true, paymentMethod: 'Any' }, config);
+  showVaultManager(token: String): void {
+    configureIntent({ vault: true, paymentMethod: 'Any' });
     NativeModule.initialize(token);
   },
 
   showSinglePaymentMethod(
     token: String,
-    intent: ISinglePrimerPaymentMethodIntent,
-    config: IPrimerConfig
+    intent: ISinglePrimerPaymentMethodIntent
   ): void {
-    configure(intent, config);
+    configureIntent(intent);
     NativeModule.initialize(token);
   },
 
-  fetchSavedPaymentInstruments(
-    token: String,
-    callback: (data: any) => void
-  ): void {
-    NativeModule.fetchSavedPaymentInstruments(token, callback);
+  fetchSavedPaymentInstruments(token: String): void {
+    NativeModule.fetchSavedPaymentInstruments(token);
   },
 
   dispose(): void {
@@ -51,14 +53,16 @@ export const PrimerNativeMapping: IPrimer = {
   },
 };
 
-function configure(intent: IPrimerIntent, config: IPrimerConfig): void {
-  configureIntent(intent);
+function configure(config: IPrimerConfig): void {
   configureTheme(config.theme);
   configureSettings(config.settings);
   configureOnVaultSuccess(config.onTokenAddedToVault);
   configureOnDismiss(config.onDismiss);
-  configureOnPrimerError(config.onPrimerError);
+  configureOnError(config.onError);
   configureOnTokenizeSuccess(config.onTokenizeSuccess);
+  configureOnSavedPaymentInstrumentsFetched(
+    config.onSavedPaymentInstrumentsFetched
+  );
 }
 
 function configureSettings(settings: IPrimerSettings = {}): void {
@@ -78,22 +82,24 @@ function configureIntent(
   NativeModule.configureIntent(data);
 }
 
-function resume() {
-  const data = JSON.stringify({
-    intent: 'success',
-    token: 'none',
-    metadata: {
-      message: 'none',
-    },
-  });
+function resume(request: IPrimerResumeRequest) {
+  const data = JSON.stringify(request);
   NativeModule.resume(data);
 }
 
 function configureOnTokenizeSuccess(
-  callback: OnTokenizeSuccessCallback = (_) => {}
+  callback: OnTokenizeSuccessCallback = (_) =>
+    new Promise<IPrimerResumeRequest>((resolve, __) =>
+      resolve({ intent: 'showSuccess' })
+    )
 ) {
   NativeModule.configureOnTokenizeSuccess((data: any) => {
-    parseCallbackResume<PaymentInstrumentToken>(data, callback, resume);
+    try {
+      const parsedData = JSON.parse(data) as PaymentInstrumentToken;
+      callback(parsedData).then((r) => resume(r));
+    } catch (e) {
+      console.log('failed to parse json', e);
+    }
   });
 }
 
@@ -106,13 +112,19 @@ function configureOnVaultSuccess(
 }
 
 function configureOnDismiss(callback: OnDismissCallback = () => {}) {
-  NativeModule.configureOnDismiss((_: any) => {
-    callback();
+  NativeModule.configureOnDismiss((_: any) => callback());
+}
+
+function configureOnError(callback: OnPrimerErrorCallback = (_) => {}) {
+  NativeModule.configureOnPrimerError((data: any) => {
+    parseCallback<PrimerError>(data, callback);
   });
 }
 
-function configureOnPrimerError(callback: OnPrimerErrorCallback = (_) => {}) {
-  NativeModule.configureOnPrimerError((data: any) => {
-    parseCallback<PrimerException>(data, callback);
+function configureOnSavedPaymentInstrumentsFetched(
+  callback: OnSavedPaymentInstrumentsFetchedCallback = (_) => {}
+) {
+  NativeModule.configureOnSavedPaymentInstrumentsFetched((data: any) => {
+    parseCallback<PaymentInstrumentToken[]>(data, callback);
   });
 }

@@ -1,6 +1,7 @@
 import type {
   OnDismissCallback,
   OnPrimerErrorCallback,
+  OnSavedPaymentInstrumentsFetchedCallback,
   OnTokenAddedToVaultCallback,
   OnTokenizeSuccessCallback,
 } from './primer-callbacks';
@@ -31,5 +32,9 @@ export interface IPrimerConfig {
   /**
    * Use this callback to perform some action when the SDK throws an error.
    */
-  onPrimerError?: OnPrimerErrorCallback;
+  onError?: OnPrimerErrorCallback;
+  /**
+   * Use this to receive saved payment instruments fetch result.
+   */
+  onSavedPaymentInstrumentsFetched?: OnSavedPaymentInstrumentsFetchedCallback;
 }

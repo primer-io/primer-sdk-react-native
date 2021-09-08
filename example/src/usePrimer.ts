@@ -5,29 +5,6 @@ import type { IPrimerSettings } from 'src/models/primer-settings';
 import type { IPrimerTheme } from 'src/models/primer-theme';
 import type { PaymentInstrumentToken } from 'src/models/payment-instrument-token';
 
-const settings: IPrimerSettings = {
-  order: {
-    amount: 8000,
-    currency: 'GBP',
-    countryCode: 'SE',
-  },
-  options: {
-    hasDisabledSuccessScreen: false,
-    isInitialLoadingHidden: false,
-  },
-};
-
-const theme: IPrimerTheme = {
-  colors: {
-    background: {
-      red: 255,
-      green: 100,
-      blue: 100,
-      alpha: 255,
-    },
-  },
-};
-
 export function usePrimer() {
   const [token, setToken] = useState<String | null>(null);
   const [
@@ -46,25 +23,42 @@ export function usePrimer() {
 
   const presentPrimer = () => {
     if (!token) return;
-    Primer.showUniversalCheckout(token, {
+
+    const settings: IPrimerSettings = {
+      order: {
+        amount: 8000,
+        currency: 'GBP',
+        countryCode: 'SE',
+      },
+    };
+
+    const theme: IPrimerTheme = {
+      // colors: {
+      //   background: {
+      //     red: 255,
+      //     green: 100,
+      //     blue: 100,
+      //     alpha: 255,
+      //   },
+      // },
+    };
+
+    Primer.configure({
       settings,
       theme,
-      onTokenizeSuccess: (
-        paymentInstrumentToken: PaymentInstrumentToken,
-        callback: any
-      ) => {
-        setPaymentInstrument(paymentInstrumentToken);
-        callback({ intent: 'showError' });
+      onTokenizeSuccess: async (i) => {
+        setPaymentInstrument(i);
+        return { intent: 'showSuccess' };
       },
-      onTokenAddedToVault: (paymentInstrumentToken: PaymentInstrumentToken) => {
-        setPaymentInstrument(paymentInstrumentToken);
-      },
+      onTokenAddedToVault: (i) => setPaymentInstrument(i),
       onDismiss: () => {
         Primer.fetchSavedPaymentInstruments(token, (data) => {
           console.log('payment methods:', data);
         });
       },
     });
+
+    Primer.showUniversalCheckout(token);
   };
 
   return {

@@ -4,13 +4,13 @@ import kotlinx.serialization.Serializable
 
 
 @Serializable
-data class PrimerExceptionRN(
-  val exceptionType: ExceptionTypeRN,
+data class PrimerErrorRN(
+  val errorType: ErrorTypeRN,
   val description: String? = null,
 )
 
 @Serializable
-enum class ExceptionTypeRN {
+enum class ErrorTypeRN {
   ParseJsonFailed,
   InitFailed,
   CheckoutFlowFailed,

@@ -3,7 +3,7 @@ const primerResumeIntent = ['showError', 'showSuccess'] as const;
 type PrimerResumeIntent = typeof primerResumeIntent[number];
 export interface IPrimerResumeRequest {
   intent: PrimerResumeIntent;
-  token: String;
+  token?: String;
   metadata?: IPrimerRequestMetadata;
 }
 

@@ -1,4 +1,3 @@
-import type { IPrimerResumeRequest } from 'src/models/primer-request';
 import type { RgbaColor } from 'src/models/primer-theme';
 
 export function toRgbColor(hex: string): RgbaColor | null {
@@ -31,22 +30,6 @@ export function parseCallback<T>(data: any, callback: (val: T) => void) {
   try {
     const error = JSON.parse(data) as T;
     callback(error);
-  } catch (e) {
-    console.log('failed to parse json', e);
-  }
-}
-
-export function parseCallbackResume<T>(
-  data: any,
-  callback: (val: T, res: (req: IPrimerResumeRequest) => void) => void,
-  resume: () => void = () => {}
-) {
-  let completion = (_: IPrimerResumeRequest): void => {
-    resume();
-  };
-  try {
-    const parsedData = JSON.parse(data) as T;
-    callback(parsedData, completion);
   } catch (e) {
     console.log('failed to parse json', e);
   }

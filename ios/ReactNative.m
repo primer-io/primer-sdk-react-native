@@ -17,7 +17,9 @@ RCT_EXTERN_METHOD(configureOnDismiss: (RCTResponseSenderBlock)callback)
 
 RCT_EXTERN_METHOD(configureOnPrimerError: (RCTResponseSenderBlock)callback)
 
-RCT_EXTERN_METHOD(fetchSavedPaymentInstruments: (NSString)token with: (RCTResponseSenderBlock)callback)
+RCT_EXTERN_METHOD(configureOnSavedPaymentInstrumentsFetched: (RCTResponseSenderBlock)callback)
+
+RCT_EXTERN_METHOD(fetchSavedPaymentInstruments: (NSString *)token)
 
 RCT_EXTERN_METHOD(initialize: (NSString *)data)
 

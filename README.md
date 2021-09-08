@@ -28,10 +28,8 @@ import { Primer } from '@primer-io/react-native';
 // fetch Primer client token from backend.
 const token: string = await fetchClientToken();
 
-// show Universal Checkout with client token and settings.
-Primer.showUniversalCheckout(token, {
-  {}, // configuration settings
-  {}, // theme
+// configure settings, theme, and listeners.
+Primer.configure({
   onTokenizeSuccess: (
     paymentInstrumentToken: PaymentInstrumentToken,
     callback: any
@@ -40,6 +38,9 @@ Primer.showUniversalCheckout(token, {
     // the Primer payments API.
   },
 });
+
+// show Universal Checkout with client token and settings.
+Primer.showUniversalCheckout(token);
 ```
 
 ## 🤝 Contributing

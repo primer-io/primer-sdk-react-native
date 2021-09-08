@@ -10,19 +10,19 @@ struct PrimerSettingsRN: Decodable {
 extension PrimerSettingsRN {
     func asPrimerSettings() -> PrimerSettings {
         return PrimerSettings(
-            merchantIdentifier: options?.merchantIdentifier,
+            merchantIdentifier: options?.ios?.merchantIdentifier,
             customerId: customer?.id,
             amount: order?.amount,
             currency: order?.currency,
             countryCode: order?.countryCode,
             klarnaSessionType: .recurringPayment, // need to update
-            urlScheme: options?.iosUrlScheme,
-            urlSchemeIdentifier: options?.iosUrlSchemeIdentifier,
-            isFullScreenOnly: options?.isFullScreenOnly ?? false,
-            hasDisabledSuccessScreen: options?.hasDisabledSuccessScreen ?? false,
+            urlScheme: options?.ios?.urlScheme,
+            urlSchemeIdentifier: options?.ios?.urlSchemeIdentifier,
+            isFullScreenOnly: options?.isFullScreenEnabled ?? false,
+            hasDisabledSuccessScreen: !(options?.isResultScreenEnabled ?? true),
             businessDetails: business?.primerFormat,
             orderItems: order?.itemsFormatted ?? [],
-            isInitialLoadingHidden: options?.isInitialLoadingHidden ?? false
+            isInitialLoadingHidden: !(options?.isLoadingScreenEnabled ?? true)
         )
     }
 }
@@ -32,6 +32,7 @@ fileprivate struct OrderRN: Decodable {
     let currency: Currency?
     let countryCode: CountryCode?
     let items: [OrderItemRN]?
+    let shipping: AddressRN?
 }
 
 fileprivate extension OrderRN {
@@ -66,6 +67,9 @@ fileprivate extension OrderItemRN {
 
 fileprivate struct BusinessRN: Decodable {
     let name: String
+    let registrationNumber: String?
+    let email: String?
+    let phone: String?
     let address: AddressRN
 }
 
@@ -83,7 +87,7 @@ fileprivate struct CustomerRN: Decodable {
     let firstName: String?
     let lastName: String?
     let email: String?
-    let shipping: AddressRN?
+    let phone: String?
     let billing: AddressRN?
 }
 
@@ -92,6 +96,7 @@ fileprivate struct AddressRN: Decodable {
     let line2: String?
     let postalCode: String?
     let city: String?
+    let state: String?
     let country: String?
 }
 
@@ -101,7 +106,7 @@ fileprivate extension AddressRN {
             addressLine1: line1,
             addressLine2: line2,
             city: city,
-            state: nil,
+            state: state,
             countryCode: country,
             postalCode: postalCode
         )
@@ -109,17 +114,21 @@ fileprivate extension AddressRN {
 }
 
 fileprivate struct OptionsRN: Decodable {
-    let hasDisabledSuccessScreen: Bool?
-    let isInitialLoadingHidden: Bool?
+    let isResultScreenEnabled: Bool?
+    let isLoadingScreenEnabled: Bool?
+    let isFullScreenEnabled: Bool?
     let locale: String?
-    let merchantIdentifier: String?
-    let iosUrlScheme: String?
-    let iosUrlSchemeIdentifier: String?
-    let isFullScreenOnly: Bool?
+    let ios: IosOptionsRN?
 }
 
 fileprivate extension String {
     var localeFormatted: Locale {
         return Locale(identifier: self)
     }
+}
+
+fileprivate struct IosOptionsRN: Decodable {
+    let urlScheme: String?
+    let urlSchemeIdentifier: String?
+    let merchantIdentifier: String?
 }
