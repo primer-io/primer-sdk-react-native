@@ -1,7 +1,8 @@
 import type { CountryCode } from './utils/countryCode';
 import type { CurrencyCode } from './utils/currencyCode';
 
-export interface IPrimerSettings {
+export type PrimerSettings = IPrimerSettings;
+interface IPrimerSettings {
   order?: IOrder;
   business?: IBusiness;
   customer?: ICustomer;
@@ -13,7 +14,7 @@ interface IOrder {
   currency?: CurrencyCode;
   countryCode?: CountryCode;
   items?: IOrderItem[];
-  shipping?: IAddress; // TODO: map to native
+  shipping?: IAddress;
 }
 
 interface IOrderItem {
@@ -41,18 +42,18 @@ interface ICustomer {
 }
 
 interface IOptions {
-  isResultScreenEnabled?: boolean; // TODO: map to native
-  isLoadingScreenEnabled?: boolean; // TODO: map to native
-  isFullScreenEnabled?: boolean; // TODO: map to native
-  locale?: string; // TODO: language code, region code, locale code
-  ios?: IIosOptions; // TODO: map to native
-  androids?: IAndroidOptions; // TODO: map to native
+  isResultScreenEnabled?: boolean;
+  isLoadingScreenEnabled?: boolean;
+  isFullScreenEnabled?: boolean;
+  locale?: string;
+  ios?: IIosOptions;
+  androids?: IAndroidOptions;
 }
 
 interface IIosOptions {
-  urlScheme?: string; // TODO: map to native
-  urlSchemeIdentifier?: string; // TODO: map to native
-  merchantIdentifier?: string; // TODO: map to native + Evangelos & Apple Pay
+  urlScheme?: string;
+  urlSchemeIdentifier?: string;
+  merchantIdentifier?: string;
 }
 interface IAndroidOptions {
   redirectScheme?: string;
@@ -60,8 +61,8 @@ interface IAndroidOptions {
 
 interface IAddress {
   line1: String;
-  line2: String;
-  postalCode: String;
+  line2?: String;
+  postalCode?: String;
   state?: String;
   city: String;
   country: CountryCode;

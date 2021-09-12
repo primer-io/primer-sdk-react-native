@@ -1,9 +1,22 @@
 import { useEffect, useState } from 'react';
 import { Primer } from '@primer-io/react-native';
 import { fetchClientToken } from './fetch-client-token';
-import type { IPrimerSettings } from 'src/models/primer-settings';
-import type { IPrimerTheme } from 'src/models/primer-theme';
+import type { PrimerSettings } from 'src/models/primer-settings';
+// import type { IPrimerTheme } from 'src/models/primer-theme';
 import type { PaymentInstrumentToken } from 'src/models/payment-instrument-token';
+import type { OnTokenizeSuccessCallback } from 'src/models/primer-callbacks';
+import type { ISinglePrimerPaymentMethodIntent } from 'src/models/primer-intent';
+
+// const theme: IPrimerTheme = {
+//   colors: {
+//     background: {
+//       red: 255,
+//       green: 100,
+//       blue: 100,
+//       alpha: 255,
+//     },
+//   },
+// };
 
 export function usePrimer() {
   const [token, setToken] = useState<String | null>(null);
@@ -18,47 +31,63 @@ export function usePrimer() {
       setToken(t);
       setLoading(false);
     });
+
     return () => {};
   }, []);
 
   const presentPrimer = () => {
     if (!token) return;
 
-    const settings: IPrimerSettings = {
+    const settings: PrimerSettings = {
       order: {
         amount: 8000,
         currency: 'GBP',
-        countryCode: 'SE',
+        countryCode: 'GB',
+        items: [],
+      },
+      customer: {
+        lastName: 'Eriksson',
+        firstName: 'Carl',
+        billing: {
+          city: 'Paris',
+          country: 'FR',
+          line1: '1 Rue de Rivoli',
+          postalCode: '75001',
+          state: 'Paris',
+        },
+      },
+      business: {
+        name: 'Primer Ltd.',
+        address: {
+          line1: '1 Street',
+          postalCode: 'EC3',
+          city: 'London',
+          country: 'GB',
+        },
+      },
+      options: {
+        isResultScreenEnabled: false,
+        isLoadingScreenEnabled: false,
+        isFullScreenEnabled: true,
+        locale: 'sv-SE',
+        ios: {
+          merchantIdentifier: '',
+        },
       },
     };
 
-    const theme: IPrimerTheme = {
-      // colors: {
-      //   background: {
-      //     red: 255,
-      //     green: 100,
-      //     blue: 100,
-      //     alpha: 255,
-      //   },
-      // },
+    const onTokenizeSuccess: OnTokenizeSuccessCallback = async (e) => {
+      setPaymentInstrument(e);
+      return { intent: 'showSuccess' };
     };
 
-    Primer.configure({
-      settings,
-      theme,
-      onTokenizeSuccess: async (i) => {
-        setPaymentInstrument(i);
-        return { intent: 'showSuccess' };
-      },
-      onTokenAddedToVault: (i) => setPaymentInstrument(i),
-      onDismiss: () => {
-        Primer.fetchSavedPaymentInstruments(token, (data) => {
-          console.log('payment methods:', data);
-        });
-      },
-    });
+    const config = { settings, onTokenizeSuccess };
+    const intent: ISinglePrimerPaymentMethodIntent = {
+      vault: false,
+      paymentMethod: 'Card',
+    };
 
-    Primer.showUniversalCheckout(token);
+    Primer.showSinglePaymentMethod(token, intent, config);
   };
 
   return {

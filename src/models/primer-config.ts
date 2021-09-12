@@ -5,14 +5,15 @@ import type {
   OnTokenAddedToVaultCallback,
   OnTokenizeSuccessCallback,
 } from './primer-callbacks';
-import type { IPrimerSettings } from './primer-settings';
+import type { PrimerSettings } from './primer-settings';
 import type { IPrimerTheme } from './primer-theme';
 
-export interface IPrimerConfig {
+export type PrimerConfig = IPrimerConfig;
+interface IPrimerConfig {
   /**
    * Include data for different payment methods (e.g. amount or business details)
    */
-  settings?: IPrimerSettings;
+  settings?: PrimerSettings;
   /**
    * Set colors and dimensions for the Primer UI.
    */

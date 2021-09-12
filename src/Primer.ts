@@ -8,43 +8,44 @@ import type {
   OnTokenAddedToVaultCallback,
   OnTokenizeSuccessCallback,
 } from './models/primer-callbacks';
-import type { IPrimerConfig } from './models/primer-config';
+import type { PrimerConfig } from './models/primer-config';
 import type { PrimerError } from './models/primer-error';
 import type {
   IPrimerIntent,
   ISinglePrimerPaymentMethodIntent,
 } from './models/primer-intent';
 import type { IPrimerResumeRequest } from './models/primer-request';
-import type { IPrimerSettings } from './models/primer-settings';
+import type { PrimerSettings } from './models/primer-settings';
 import type { IPrimerTheme } from './models/primer-theme';
 import { parseCallback } from './utils';
 
 const { PrimerRN: NativeModule } = NativeModules;
 
 export const PrimerNativeMapping: IPrimer = {
-  configure(config: IPrimerConfig) {
-    configure(config);
-  },
-
-  showUniversalCheckout(token: String): void {
+  showUniversalCheckout(token: String, config: PrimerConfig): void {
     configureIntent({ vault: false, paymentMethod: 'Any' });
+    configure(config);
     NativeModule.initialize(token);
   },
 
-  showVaultManager(token: String): void {
+  showVaultManager(token: String, config: PrimerConfig): void {
     configureIntent({ vault: true, paymentMethod: 'Any' });
+    configure(config);
     NativeModule.initialize(token);
   },
 
   showSinglePaymentMethod(
     token: String,
-    intent: ISinglePrimerPaymentMethodIntent
+    intent: ISinglePrimerPaymentMethodIntent,
+    config: PrimerConfig
   ): void {
     configureIntent(intent);
+    configure(config);
     NativeModule.initialize(token);
   },
 
-  fetchSavedPaymentInstruments(token: String): void {
+  fetchSavedPaymentInstruments(token: String, config: PrimerConfig): void {
+    configure(config);
     NativeModule.fetchSavedPaymentInstruments(token);
   },
 
@@ -53,7 +54,7 @@ export const PrimerNativeMapping: IPrimer = {
   },
 };
 
-function configure(config: IPrimerConfig): void {
+function configure(config: PrimerConfig): void {
   configureTheme(config.theme);
   configureSettings(config.settings);
   configureOnVaultSuccess(config.onTokenAddedToVault);
@@ -65,7 +66,7 @@ function configure(config: IPrimerConfig): void {
   );
 }
 
-function configureSettings(settings: IPrimerSettings = {}): void {
+function configureSettings(settings: PrimerSettings = {}): void {
   const data = JSON.stringify(settings);
   NativeModule.configureSettings(data);
 }

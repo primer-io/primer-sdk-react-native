@@ -1,14 +1,7 @@
-import type { PaymentInstrumentToken } from './payment-instrument-token';
-import type { IPrimerConfig } from './primer-config';
+import type { PrimerConfig } from './primer-config';
 import type { ISinglePrimerPaymentMethodIntent } from './primer-intent';
 
 export interface IPrimer {
-  /**
-   * Configure settings before launching a checkout session.
-   * @param config Configuration object for the SDK. Use this to set theme, listeners, and settings,
-   */
-  configure(config: IPrimerConfig): void;
-
   /**
    * Launch Primer's Universal Checkout
    * This will enable users to generate a payment instrument token with any configured payment method.
@@ -18,7 +11,7 @@ export interface IPrimer {
    * @param config Configuration object for the SDK. Use this to set listeners, theme,
    * and payment method specific settings.
    */
-  showUniversalCheckout(token: String): void;
+  showUniversalCheckout(token: String, config: PrimerConfig): void;
 
   /**
    * Launch Primer's Vault Manager.
@@ -27,7 +20,7 @@ export interface IPrimer {
    * @param config Configuration object for the SDK. Use this to set listeners, theme,
    * and payment method specific settings.
    */
-  showVaultManager(token: String): void;
+  showVaultManager(token: String, config: PrimerConfig): void;
 
   /**
    * Launch checkout with a specific payment method
@@ -37,17 +30,15 @@ export interface IPrimer {
    */
   showSinglePaymentMethod(
     token: String,
-    intent: ISinglePrimerPaymentMethodIntent
+    intent: ISinglePrimerPaymentMethodIntent,
+    config: PrimerConfig
   ): void;
 
   /**
    * fetch saved payment instruments from Primer's vault.
    * @param callback callback with array of saved payment instruments as argument.
    */
-  fetchSavedPaymentInstruments(
-    token: String,
-    callback: (data: [PaymentInstrumentToken]) => void
-  ): void;
+  fetchSavedPaymentInstruments(token: String, config: PrimerConfig): void;
 
   /**
    * remove all listeners & callbacks.
