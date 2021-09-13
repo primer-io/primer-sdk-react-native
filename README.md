@@ -21,9 +21,9 @@ import { Primer } from '@primer-io/react-native';
 const token: string = await fetchClientToken();
 
 // configure settings, theme, and listeners.
-const onTokenizeSuccess: OnTokenizeSuccessCallback = async (e) => {
-  setPaymentInstrument(e);
-  return { intent: 'showSuccess' };
+const onTokenizeSuccess: OnTokenizeSuccessCallback = (t, handler) => {
+  setPaymentInstrument(t);
+  handler.resumeWithSuccess(); // call this to resume the checkout flow.
 };
 
 const config = { onTokenizeSuccess };

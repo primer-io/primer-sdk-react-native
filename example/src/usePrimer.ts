@@ -5,7 +5,7 @@ import type { PrimerSettings } from 'src/models/primer-settings';
 // import type { IPrimerTheme } from 'src/models/primer-theme';
 import type { PaymentInstrumentToken } from 'src/models/payment-instrument-token';
 import type { OnTokenizeSuccessCallback } from 'src/models/primer-callbacks';
-import type { ISinglePrimerPaymentMethodIntent } from 'src/models/primer-intent';
+import type { PrimerPaymentMethodIntent } from 'src/models/primer-intent';
 
 // const theme: IPrimerTheme = {
 //   colors: {
@@ -76,18 +76,19 @@ export function usePrimer() {
       },
     };
 
-    const onTokenizeSuccess: OnTokenizeSuccessCallback = async (e) => {
-      setPaymentInstrument(e);
-      return { intent: 'showSuccess' };
+    const onTokenizeSuccess: OnTokenizeSuccessCallback = (t, handler) => {
+      setPaymentInstrument(t);
+      handler.resumeWithSuccess();
     };
 
     const config = { settings, onTokenizeSuccess };
-    const intent: ISinglePrimerPaymentMethodIntent = {
+    const intent: PrimerPaymentMethodIntent = {
       vault: false,
       paymentMethod: 'Card',
     };
 
-    Primer.showSinglePaymentMethod(token, intent, config);
+    Primer.showPaymentMethod(token, intent, config);
+    // Primer.showUniversalCheckout(token, config);
   };
 
   return {
