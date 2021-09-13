@@ -41,33 +41,13 @@ export function usePrimer() {
     const settings: PrimerSettings = {
       order: {
         amount: 8000,
-        currency: 'GBP',
-        countryCode: 'GB',
+        currency: 'SEK',
+        countryCode: 'SE',
         items: [],
-      },
-      customer: {
-        lastName: 'Eriksson',
-        firstName: 'Carl',
-        billing: {
-          city: 'Paris',
-          country: 'FR',
-          line1: '1 Rue de Rivoli',
-          postalCode: '75001',
-          state: 'Paris',
-        },
-      },
-      business: {
-        name: 'Primer Ltd.',
-        address: {
-          line1: '1 Street',
-          postalCode: 'EC3',
-          city: 'London',
-          country: 'GB',
-        },
       },
       options: {
         isResultScreenEnabled: false,
-        isLoadingScreenEnabled: false,
+        isLoadingScreenEnabled: true,
         isFullScreenEnabled: true,
         locale: 'sv-SE',
         ios: {
@@ -84,7 +64,7 @@ export function usePrimer() {
     const config = { settings, onTokenizeSuccess };
     const intent: PrimerPaymentMethodIntent = {
       vault: false,
-      paymentMethod: 'Card',
+      paymentMethod: 'Klarna',
     };
 
     Primer.showPaymentMethod(token, intent, config);

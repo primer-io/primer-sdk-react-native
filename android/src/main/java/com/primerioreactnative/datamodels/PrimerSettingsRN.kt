@@ -63,9 +63,9 @@ data class AndroidOptionsRN(
 @Serializable
 data class PrimerAddressRN(
   val line1: String,
-  val line2: String,
+  val line2: String? = null,
   val postalCode: String,
-  val state: String?,
+  val state: String? = null,
   val city: String,
   val country: String,
 )

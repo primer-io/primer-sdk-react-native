@@ -24,13 +24,15 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
   private var sdkWasInitialised = false
   private var haltExecution = false
 
+  private val json = Json{ ignoreUnknownKeys = true }
+
   override fun getName(): String = "PrimerRN"
 
   @ReactMethod
   fun configureSettings(request: String) {
     try {
       Log.d("PrimerRN", "settings: $request")
-      val settings = Json.decodeFromString<PrimerSettingsRN>(request)
+      val settings = json.decodeFromString<PrimerSettingsRN>(request)
       this.settings = settings
     } catch (e: Exception) {
       Log.e("PrimerRN", "configure settings error: $e")
@@ -38,7 +40,7 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
         ErrorTypeRN.ParseJsonFailed,
         "failed to parse settings.",
       )
-      val encoded = Json.encodeToString(exception)
+      val encoded = json.encodeToString(exception)
       mListener.onPrimerErrorQueue?.addRequestAndPoll(encoded)
       haltExecution = true
     }
@@ -48,7 +50,7 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
   fun configureTheme(request: String) {
     try {
       Log.d("PrimerRN", "theme: $request")
-      val theme = Json.decodeFromString<PrimerThemeRN>(request)
+      val theme = json.decodeFromString<PrimerThemeRN>(request)
       this.theme = theme
     } catch (e: Exception) {
       Log.e("PrimerRN", "configure theme error: $e")
@@ -56,7 +58,7 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
         ErrorTypeRN.ParseJsonFailed,
         "failed to parse theme.",
       )
-      val encoded = Json.encodeToString(exception)
+      val encoded = json.encodeToString(exception)
       mListener.onPrimerErrorQueue?.addRequestAndPoll(encoded)
       haltExecution = true
     }
@@ -66,7 +68,7 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
   fun configureIntent(request: String) {
     try {
       Log.d("PrimerRN", "intent: $request")
-      val intent = Json.decodeFromString<PrimerIntentRN>(request)
+      val intent = json.decodeFromString<PrimerIntentRN>(request)
       this.intent = intent
     } catch (e: Exception) {
       Log.e("PrimerRN", "configure intent error: $e")
@@ -74,7 +76,7 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
         ErrorTypeRN.ParseJsonFailed,
         "failed to parse intent.",
       )
-      val encoded = Json.encodeToString(exception)
+      val encoded = json.encodeToString(exception)
       mListener.onPrimerErrorQueue?.addRequestAndPoll(encoded)
       haltExecution = true
     }
@@ -126,7 +128,7 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
     Primer.getSavedPaymentMethods { data ->
       try {
         val paymentMethods = data.map { PrimerPaymentInstrumentTokenRN.fromPaymentMethodToken(it) }
-        val request = Json.encodeToString(paymentMethods)
+        val request = json.encodeToString(paymentMethods)
         mListener.onSavedPaymentInstrumentsFetchedQueue?.addRequestAndPoll(request)
       } catch (e: Exception) {
         Log.e("PrimerRN", "fetch saved payment methods error: $e")
@@ -134,7 +136,7 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
           ErrorTypeRN.ParseJsonFailed,
           "failed to parse fetched payment methods.",
         )
-        val encoded = Json.encodeToString(exception)
+        val encoded = json.encodeToString(exception)
         mListener.onPrimerErrorQueue?.addRequestAndPoll(encoded)
         haltExecution = true
       }
@@ -203,7 +205,7 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
         ErrorTypeRN.InitFailed,
         "failed to initialise Primer SDK, error: $e",
       )
-      val encoded = Json.encodeToString(exception)
+      val encoded = json.encodeToString(exception)
       mListener.onPrimerErrorQueue?.addRequestAndPoll(encoded)
     }
   }
@@ -211,7 +213,7 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
   @ReactMethod
   fun resume(request: String) {
     try {
-      val data = Json.decodeFromString<PrimerResumeRequest>(request)
+      val data = json.decodeFromString<PrimerResumeRequest>(request)
       mListener.completion?.invoke(data.error)
     } catch (e: Exception) {
       Log.e("PrimerRN", "configure settings error: $e")
@@ -219,7 +221,7 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
         ErrorTypeRN.ParseJsonFailed,
         "failed to parse settings.",
       )
-      val encoded = Json.encodeToString(exception)
+      val encoded = json.encodeToString(exception)
       mListener.onPrimerErrorQueue?.addRequestAndPoll(encoded)
       haltExecution = true
     }
