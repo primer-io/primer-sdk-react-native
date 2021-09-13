@@ -1,5 +1,5 @@
 import type { PrimerConfig } from './primer-config';
-import type { ISinglePrimerPaymentMethodIntent } from './primer-intent';
+import type { PrimerPaymentMethodIntent } from './primer-intent';
 
 export interface IPrimer {
   /**
@@ -28,9 +28,9 @@ export interface IPrimer {
    * @param intent Intent object for specifying payment method and toggle vaulting.
    * @param config Configuration for the SDK.
    */
-  showSinglePaymentMethod(
+  showPaymentMethod(
     token: String,
-    intent: ISinglePrimerPaymentMethodIntent,
+    intent: PrimerPaymentMethodIntent,
     config: PrimerConfig
   ): void;
 

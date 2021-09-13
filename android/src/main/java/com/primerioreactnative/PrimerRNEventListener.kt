@@ -7,6 +7,7 @@ import com.primerioreactnative.datamodels.PrimerErrorRN
 import com.primerioreactnative.datamodels.PrimerPaymentInstrumentTokenRN
 import com.primerioreactnative.utils.PrimerEventQueueRN
 import io.primer.android.CheckoutEventListener
+import io.primer.android.Primer
 import io.primer.android.events.CheckoutEvent
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -19,7 +20,7 @@ class PrimerRNEventListener : CheckoutEventListener {
   var onPrimerErrorQueue: PrimerEventQueueRN? = null
   var onSavedPaymentInstrumentsFetchedQueue: PrimerEventQueueRN? = null
 
-  var completion: (() -> Unit)? = null
+  var completion: ((error: Boolean) -> Unit)? = null
 
   fun configureOnTokenizeSuccess(callback: Callback) {
     onTokenizeSuccessQueue = PrimerEventQueueRN()

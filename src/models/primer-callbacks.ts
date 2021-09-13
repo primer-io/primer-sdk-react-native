@@ -1,12 +1,11 @@
 import type { PaymentInstrumentToken } from './payment-instrument-token';
 import type { PrimerError } from './primer-error';
-import type { IPrimerResumeRequest } from './primer-request';
+import type { PrimerResumeHandler } from './primer-request';
 
 export type OnTokenizeSuccessCallback = (
-  data: PaymentInstrumentToken
-) => Promise<IPrimerResumeRequest>;
-
-export type OnResumeCallback = (request: IPrimerResumeRequest) => void;
+  req: PaymentInstrumentToken,
+  completion: PrimerResumeHandler
+) => void;
 
 export type OnTokenAddedToVaultCallback = (
   data: PaymentInstrumentToken

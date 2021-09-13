@@ -11,12 +11,11 @@ import type {
 import type { PrimerConfig } from './models/primer-config';
 import type { PrimerError } from './models/primer-error';
 import type {
-  IPrimerIntent,
-  ISinglePrimerPaymentMethodIntent,
+  PrimerIntent,
+  PrimerPaymentMethodIntent,
 } from './models/primer-intent';
-import type { IPrimerResumeRequest } from './models/primer-request';
 import type { PrimerSettings } from './models/primer-settings';
-import type { IPrimerTheme } from './models/primer-theme';
+import type { PrimerTheme } from './models/primer-theme';
 import { parseCallback } from './utils';
 
 const { PrimerRN: NativeModule } = NativeModules;
@@ -34,9 +33,9 @@ export const PrimerNativeMapping: IPrimer = {
     NativeModule.initialize(token);
   },
 
-  showSinglePaymentMethod(
+  showPaymentMethod(
     token: String,
-    intent: ISinglePrimerPaymentMethodIntent,
+    intent: PrimerPaymentMethodIntent,
     config: PrimerConfig
   ): void {
     configureIntent(intent);
@@ -71,33 +70,33 @@ function configureSettings(settings: PrimerSettings = {}): void {
   NativeModule.configureSettings(data);
 }
 
-function configureTheme(theme: IPrimerTheme = {}): void {
+function configureTheme(theme: PrimerTheme = {}): void {
   const data = JSON.stringify(theme);
   NativeModule.configureTheme(data);
 }
 
 function configureIntent(
-  intent: IPrimerIntent = { vault: false, paymentMethod: 'Any' }
+  intent: PrimerIntent = { vault: false, paymentMethod: 'Any' }
 ): void {
   const data = JSON.stringify(intent);
   NativeModule.configureIntent(data);
 }
 
-function resume(request: IPrimerResumeRequest) {
+function resume(request: any) {
   const data = JSON.stringify(request);
   NativeModule.resume(data);
 }
 
 function configureOnTokenizeSuccess(
-  callback: OnTokenizeSuccessCallback = (_) =>
-    new Promise<IPrimerResumeRequest>((resolve, __) =>
-      resolve({ intent: 'showSuccess' })
-    )
+  callback: OnTokenizeSuccessCallback = (_, __) => {}
 ) {
   NativeModule.configureOnTokenizeSuccess((data: any) => {
     try {
       const parsedData = JSON.parse(data) as PaymentInstrumentToken;
-      callback(parsedData).then((r) => resume(r));
+      callback(parsedData, {
+        resumeWithError: () => resume({ error: true }),
+        resumeWithSuccess: () => resume({ error: false }),
+      });
     } catch (e) {
       console.log('failed to parse json', e);
     }

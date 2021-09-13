@@ -8,14 +8,9 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.primerioreactnative.datamodels.*
 import io.primer.android.Primer
-import io.primer.android.UniversalCheckout
-import io.primer.android.UniversalCheckoutTheme
-import io.primer.android.model.dto.CountryCode
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-
-import java.util.*
 
 
 class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
@@ -118,7 +113,7 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
   private fun startSdk(token: String) {
     val context = currentActivity as Context
     val theme = this.theme.primerTheme
-    UniversalCheckout.initialize(context, token, theme = theme)
+    Primer.initialize(context, token, theme = theme)
     sdkWasInitialised = true
   }
 
@@ -164,18 +159,22 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
       startSdk(token)
 
       val paymentMethods = intent.toPaymentMethods(settings)
-      UniversalCheckout.loadPaymentMethods(paymentMethods)
+      Primer.loadPaymentMethods(paymentMethods)
 
-      mListener.completion = {
+      mListener.completion = { error ->
         currentActivity?.let {
           it.runOnUiThread {
-            UniversalCheckout.dismiss(true)
+            if (error) {
+              Primer.showError()
+            } else {
+              Primer.showSuccess()
+            }
           }
         }
       }
 
       when (intent.vault) {
-        false -> UniversalCheckout.showCheckout(
+        false -> Primer.showCheckout(
           context,
           mListener,
           isStandalonePaymentMethod = paymentMethods.size < 2,
@@ -186,7 +185,7 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
           clearAllListeners = true,
           webBrowserRedirectScheme = settings.options?.android?.redirectScheme,
         )
-        true -> UniversalCheckout.showVault(
+        true -> Primer.showVault(
           context,
           mListener,
           isStandalonePaymentMethod = paymentMethods.size < 2,
@@ -211,6 +210,18 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
 
   @ReactMethod
   fun resume(request: String) {
-    mListener.completion?.invoke()
+    try {
+      val data = Json.decodeFromString<PrimerResumeRequest>(request)
+      mListener.completion?.invoke(data.error)
+    } catch (e: Exception) {
+      Log.e("PrimerRN", "configure settings error: $e")
+      val exception = PrimerErrorRN(
+        ErrorTypeRN.ParseJsonFailed,
+        "failed to parse settings.",
+      )
+      val encoded = Json.encodeToString(exception)
+      mListener.onPrimerErrorQueue?.addRequestAndPoll(encoded)
+      haltExecution = true
+    }
   }
 }

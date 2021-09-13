@@ -13,11 +13,13 @@ export interface AnyPrimerPaymentMethodIntent {
   paymentMethod: 'Any';
 }
 
-export interface ISinglePrimerPaymentMethodIntent {
+export type PrimerPaymentMethodIntent = ISinglePrimerPaymentMethodIntent;
+
+interface ISinglePrimerPaymentMethodIntent {
   vault: boolean;
   paymentMethod: SinglePrimerPaymentMethod;
 }
 
-export type IPrimerIntent =
+export type PrimerIntent =
   | ISinglePrimerPaymentMethodIntent
   | AnyPrimerPaymentMethodIntent;

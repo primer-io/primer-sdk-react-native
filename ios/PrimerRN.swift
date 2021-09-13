@@ -132,11 +132,10 @@ class PrimerRN: NSObject {
                 let json = request.data(using: .utf8)!
                 let request = try JSONDecoder().decode(PrimerResumeRequest.self, from: json)
                 
-                self?.clientToken = request.token
-                
-                switch request.intent {
-                case "showError": self?.onResumeFlowCallback?(ErrorTypeRN.ParseJsonFailed)
-                default:  self?.onResumeFlowCallback?(nil)
+                if (request.error) {
+                    self?.onResumeFlowCallback?(ErrorTypeRN.ParseJsonFailed)
+                } else {
+                    self?.onResumeFlowCallback?(nil)
                 }
             } catch {
                 self?.checkoutFailed(with: error)

@@ -1,4 +1,6 @@
-export interface PrimerError {
+export type PrimerError = IPrimerError;
+
+interface IPrimerError {
   name: PrimerErrorType;
   description?: String;
 }

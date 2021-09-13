@@ -6,7 +6,7 @@ import type {
   OnTokenizeSuccessCallback,
 } from './primer-callbacks';
 import type { PrimerSettings } from './primer-settings';
-import type { IPrimerTheme } from './primer-theme';
+import type { PrimerTheme } from './primer-theme';
 
 export type PrimerConfig = IPrimerConfig;
 interface IPrimerConfig {
@@ -17,7 +17,7 @@ interface IPrimerConfig {
   /**
    * Set colors and dimensions for the Primer UI.
    */
-  theme?: IPrimerTheme;
+  theme?: PrimerTheme;
   /**
    * Use this callback to grab a Primer payment instrument token and complete a payment.
    */
