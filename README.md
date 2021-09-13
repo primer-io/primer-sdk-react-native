@@ -6,13 +6,13 @@ Official React Native SDK plugin for [Primer](https://primer.io)
 
 </h3>
 
-## Installation
+## 💾 Installation
 
 ```sh
 npm install @primer-io/react-native
 ```
 
-## Usage
+## 🔧 Usage
 
 ```js
 import { Primer } from '@primer-io/react-native';
