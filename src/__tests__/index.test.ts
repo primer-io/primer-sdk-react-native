@@ -60,7 +60,7 @@ describe('Test Primer', () => {
   describe('fetchSavedPaymentInstruments', () => {
     it('should call native module fetchSavedPaymentInstruments & pass in callback', () => {
       const callback = () => {};
-      PrimerNativeMapping.fetchSavedPaymentInstruments('token', callback);
+      PrimerNativeMapping.fetchSavedPaymentInstruments('token', {});
       expect(
         NativeModules.PrimerRN.fetchSavedPaymentInstruments
       ).toHaveBeenCalledWith(callback);
