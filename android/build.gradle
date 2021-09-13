@@ -8,14 +8,16 @@ buildscript {
   }
 
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.2.1'
+    classpath 'com.android.tools.build:gradle:7.0.0'
     // noinspection DifferentKotlinGradleVersion
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
   }
 }
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlinx-serialization'
 
 def getExtOrDefault(name) {
   return rootProject.ext.has(name) ? rootProject.ext.get(name) : project.properties['ReactNative_' + name]
@@ -31,8 +33,6 @@ android {
   defaultConfig {
     minSdkVersion 21
     targetSdkVersion getExtOrIntegerDefault('targetSdkVersion')
-    versionCode 1
-    versionName "1.0"
 
   }
 
@@ -123,17 +123,10 @@ repositories {
 
 def kotlin_version = getExtOrDefault('kotlinVersion')
 
-allprojects {
-  repositories {
-    maven {
-      url 'https://dl.bintray.com/primer-api/android/'
-    }
-  }
-}
-
 dependencies {
   // noinspection GradleDynamicVersion
   api 'com.facebook.react:react-native:+'
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-  implementation 'io.primer.android:android:1.0.0-beta.10'
+  implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2"
+  implementation 'io.primer:android:1.0.0-beta.30'
 }

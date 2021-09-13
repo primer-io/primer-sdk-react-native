@@ -1,101 +1,79 @@
 import { useEffect, useState } from 'react';
-import {
-  UniversalCheckout,
-  PaymentMethod,
-  UXMode,
-} from '@primer-io/react-native';
+import { Primer } from '@primer-io/react-native';
+import { fetchClientToken } from './fetch-client-token';
+import type { PrimerSettings } from 'src/models/primer-settings';
+// import type { IPrimerTheme } from 'src/models/primer-theme';
+import type { PaymentInstrumentToken } from 'src/models/payment-instrument-token';
+import type { OnTokenizeSuccessCallback } from 'src/models/primer-callbacks';
+import type { PrimerPaymentMethodIntent } from 'src/models/primer-intent';
 
-interface UsePrimerOptions {
-  clientToken: string;
-  currency?: string;
-  amount?: number;
-}
+// const theme: IPrimerTheme = {
+//   colors: {
+//     background: {
+//       red: 255,
+//       green: 100,
+//       blue: 100,
+//       alpha: 255,
+//     },
+//   },
+// };
 
-function delay(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-export function usePrimer({ clientToken, amount, currency }: UsePrimerOptions) {
-  const [token] = useState<string | null>(null);
-
-  const showCheckout = () => {
-    // UniversalCheckout.getSavedPaymentMethods().then((pms) => {
-    //   console.log('PMS!', pms);
-    // });
-
-    UniversalCheckout.show();
-  };
+export function usePrimer() {
+  const [token, setToken] = useState<String | null>(null);
+  const [
+    paymentInstrument,
+    setPaymentInstrument,
+  ] = useState<PaymentInstrumentToken | null>();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    UniversalCheckout.initialize({
-      clientToken,
-      amount,
-      currency,
-      uxMode: UXMode.STANDALONE_PAYMENT_METHOD,
-      paymentMethods: [
-        PaymentMethod.GoCardless({
-          companyName: 'E-Corp',
-          companyAddress: {
-            line1: 'Unit 10',
-            city: 'Marin',
-            countryCode: 'SE',
-            postalCode: '654936',
-          },
-          customerName: 'John Doe',
-          customerEmail: 'test@mail.com',
-          customerAddress: {
-            line1: '1 Rue de Rivoli',
-            postalCode: '75001',
-            city: 'Paris',
-            countryCode: 'FR',
-          },
-        }),
-      ],
-      theme: {
-        android: {
-          backgroundColor: '#ff0000',
-          buttonCornerRadius: 2.0,
-          buttonDefaultColor: '#00ff00',
-          windowMode: 'FULL_SCREEN',
-        },
-        ios: {
-          colorTheme: {
-            tint1: '#2D50E6',
-          },
-          textFieldTheme: 'outlined',
-          cornerRadiusTheme: {
-            buttons: 12,
-            textFields: 8,
-          },
-        },
-      },
-
-      async onEvent(e) {
-        switch (e.type) {
-          case 'EXIT':
-            console.log('Checkout closed', e);
-
-            // show some sort of success screen with the token mandate ID.
-
-            break;
-          case 'TOKENIZE_SUCCESS':
-            console.log('Do something with token:', e.data);
-
-            // save the token somewhere temporarily.
-            await delay(2000);
-
-            console.log('🚀 authorized, now dismiss');
-
-            // dismiss the checkout manually.
-            UniversalCheckout.dismiss();
-            break;
-        }
-      },
+    fetchClientToken().then((t) => {
+      setToken(t);
+      setLoading(false);
     });
-  });
+
+    return () => {};
+  }, []);
+
+  const presentPrimer = () => {
+    if (!token) return;
+
+    const settings: PrimerSettings = {
+      order: {
+        amount: 8000,
+        currency: 'SEK',
+        countryCode: 'SE',
+        items: [],
+      },
+      options: {
+        isResultScreenEnabled: false,
+        isLoadingScreenEnabled: true,
+        isFullScreenEnabled: true,
+        locale: 'sv-SE',
+        ios: {
+          merchantIdentifier: '',
+        },
+      },
+    };
+
+    const onTokenizeSuccess: OnTokenizeSuccessCallback = (t, handler) => {
+      setPaymentInstrument(t);
+      handler.resumeWithSuccess();
+    };
+
+    const config = { settings, onTokenizeSuccess };
+    const intent: PrimerPaymentMethodIntent = {
+      vault: false,
+      paymentMethod: 'Klarna',
+    };
+
+    Primer.showPaymentMethod(token, intent, config);
+    // Primer.showUniversalCheckout(token, config);
+  };
 
   return {
-    showCheckout,
-    token,
+    presentPrimer,
+    loading,
+    paymentInstrument,
   };
 }
