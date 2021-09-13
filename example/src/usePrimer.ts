@@ -64,7 +64,7 @@ export function usePrimer() {
     const config = { settings, onTokenizeSuccess };
     const intent: PrimerPaymentMethodIntent = {
       vault: false,
-      paymentMethod: 'Klarna',
+      paymentMethod: 'Card',
     };
 
     Primer.showPaymentMethod(token, intent, config);
