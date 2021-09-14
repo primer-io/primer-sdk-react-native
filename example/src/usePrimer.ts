@@ -62,10 +62,12 @@ export function usePrimer() {
         billing: {
           line1: "122 Clerkenwell Rd",
           city: "London",
-          country: "GB"
+          country: "GB",
+          postalCode: "WC1X8AS"
         }
       },
       order: {
+        id: "order_id",
         amount: 8000,
         currency: 'GBP',
         countryCode: 'GB',
