@@ -1,6 +1,6 @@
 <img src="./assets/cover.png"  width="100%"/>
 
-<h1 align="center"><img src="./assets/primer-logo.png" height="24px">Primer React Native SDK</h1>
+<h1 align="center"><img src="./assets/primer-logo.png" height="24px"> Primer React Native SDK</h1>
 
 <h3 align="center">
 
