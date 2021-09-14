@@ -9,7 +9,7 @@ Official React Native SDK plugin for [Primer](https://primer.io)
 ## 💾 Installation
 
 ```sh
-npm install @primer-io/react-native
+npm i @primer-io/react-native
 ```
 
 ## 🔧 Usage
