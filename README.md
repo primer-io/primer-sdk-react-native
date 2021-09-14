@@ -28,7 +28,7 @@ The simplest payments integration, ever. Integrate payments once with just a few
 
 - 🔒 Always PCI compliant without redirecting customers
 
-<br>
+---
 
 ## 💾 Installation
 
@@ -36,7 +36,6 @@ The simplest payments integration, ever. Integrate payments once with just a few
 npm i @primer-io/react-native
 ```
 
-<br>
 
 ## 🔧 Usage
 
@@ -60,7 +59,6 @@ Primer.showUniversalCheckout(token, config);
 
 For more info & help troubleshooting, check out our 🔥 [docs](https://www.notion.so/primerapi/Quick-Start-1f12ad53684543a3ab3c93d5173670f5)
 
-<br>
 
 ## 📚 License
 
