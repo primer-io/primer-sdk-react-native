@@ -59,7 +59,7 @@ const settings: PrimerSettings = { order: { amount: 50, currency: 'GBP' } };
 Primer.showUniversalCheckout(token, { onTokenizeSuccess, settings });
 ```
 
-For more info & help troubleshooting, check out our 🔥 [docs](https://www.notion.so/primerapi/Quick-Start-1f12ad53684543a3ab3c93d5173670f5)
+For more info & help troubleshooting, check out our 🔥 [docs](https://www.notion.so/primerio/Quick-Start-6c5eb61e5bbe426ca66244259e06048e)
 
 
 ## 📚 License
