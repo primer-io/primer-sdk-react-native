@@ -41,20 +41,21 @@ npm i @primer-io/react-native
 
 ```js
 import { Primer } from '@primer-io/react-native';
+import type { PrimerSettings } from 'src/models/primer-settings';
 
 // fetch Primer client token from backend.
 const token: string = await fetchClientToken();
 
-// configure settings, theme, and listeners.
+// configure listeners and settings.
 const onTokenizeSuccess: OnTokenizeSuccessCallback = (t, handler) => {
   setPaymentInstrument(t);
   handler.resumeWithSuccess(); // call this to resume the checkout flow.
 };
 
-const config = { onTokenizeSuccess };
+const settings: PrimerSettings = { order: { amount: 50, currency: 'GBP' } };
 
 // show Universal Checkout with client token and config.
-Primer.showUniversalCheckout(token, config);
+Primer.showUniversalCheckout(token, { onTokenizeSuccess, settings });
 ```
 
 For more info & help troubleshooting, check out our 🔥 [docs](https://www.notion.so/primerapi/Quick-Start-1f12ad53684543a3ab3c93d5173670f5)
