@@ -35,21 +35,47 @@ export function usePrimer() {
     return () => {};
   }, []);
 
+  // Order ID is missing
+  // User details address line 1 is missing
+  // User details city is missing
+  // User details country code is missing
+  // User details country code is missing
+  // User details are missing
+
   const presentPrimer = () => {
     if (!token) return;
 
     const settings: PrimerSettings = {
+      business: {
+        name: "My business",
+        address: {
+          line1: "122 Clerkenwell Rd",
+          city: "London",
+          country: "GB"
+        }
+      },
+      customer: {
+        id: "customer_id",
+        firstName: "John",
+        lastName: "Smith",
+        email: "john.smith@primer.io",
+        billing: {
+          line1: "122 Clerkenwell Rd",
+          city: "London",
+          country: "GB"
+        }
+      },
       order: {
         amount: 8000,
-        currency: 'SEK',
-        countryCode: 'SE',
+        currency: 'GBP',
+        countryCode: 'GB',
         items: [],
       },
       options: {
         isResultScreenEnabled: false,
         isLoadingScreenEnabled: true,
         isFullScreenEnabled: true,
-        locale: 'sv-SE',
+        locale: 'en-GB',
         ios: {
           merchantIdentifier: '',
         },
