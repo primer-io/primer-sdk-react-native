@@ -10,6 +10,7 @@ interface IPrimerSettings {
 }
 
 interface IOrder {
+  id?: string;
   amount?: number;
   currency?: CurrencyCode;
   countryCode?: CountryCode;
