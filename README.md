@@ -41,7 +41,8 @@ npm i @primer-io/react-native
 
 ```js
 import { Primer } from '@primer-io/react-native';
-import type { PrimerSettings } from 'src/models/primer-settings';
+import type { OnTokenizeSuccessCallback } from '@primer-io/react-native/models/primer-callbacks';
+import type { PrimerSettings } from '@primer-io/react-native/models/primer-settings';
 
 // fetch Primer client token from backend.
 const token: string = await fetchClientToken();
