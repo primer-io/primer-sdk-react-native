@@ -22,7 +22,7 @@ PODS:
   - primer-io-react-native (0.6.1):
     - PrimerSDK (= 1.9.0-beta.10)
     - React-Core
-  - Primer3DS (0.1.32)
+  - Primer3DS (0.1.33)
   - PrimerSDK (1.9.0-beta.10):
     - PrimerSDK/Core (= 1.9.0-beta.10)
   - PrimerSDK/Core (1.9.0-beta.10)
@@ -357,7 +357,7 @@ SPEC CHECKSUMS:
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
   glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
   primer-io-react-native: 8502de883490d3450edeb4e1ed20f6749601d666
-  Primer3DS: 3a0a967894991133f9a9601270288e9b3b3df129
+  Primer3DS: f266ce1db528cef20751b3405c87a8a44d68477f
   PrimerSDK: 30851446bc80cfec2efe0ca3d2eca2406491a6c7
   RCTRequired: 082f10cd3f905d6c124597fd1c14f6f2655ff65e
   RCTTypeSafety: 8c9c544ecbf20337d069e4ae7fd9a377aadf504b
@@ -381,6 +381,6 @@ SPEC CHECKSUMS:
   ReactCommon: 73d79c7039f473b76db6ff7c6b159c478acbbb3b
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
 
-PODFILE CHECKSUM: 5c567963cd422f7512d4a20bd668321c698b010b
+PODFILE CHECKSUM: 485f14a1ab3efc81814ad9f4dd0fb261e797271e
 
 COCOAPODS: 1.10.2
