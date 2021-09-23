@@ -24,7 +24,7 @@ class PrimerRN: NSObject {
     var onSavedPaymentInstrumentsFetchedCallback: RCTResponseSenderBlock?
     
     private var sdkWasInitialised = false
-    private var haltExecution = false
+    internal var haltExecution = false
     
     @objc func configureSettings(_ request: String) {
         do {
@@ -80,6 +80,8 @@ class PrimerRN: NSObject {
         
         self.clientToken = token
         
+        Primer.shared.delegate = self
+        
         Primer.shared.fetchVaultedPaymentMethods { [weak self] result in
             switch result {
             case .failure(let error):
@@ -89,6 +91,7 @@ class PrimerRN: NSObject {
                     let json = try self?.encoder.encode(tokens)
                     let data = String(data: json!, encoding: .utf8)!
                     self?.onSavedPaymentInstrumentsFetchedCallback?([data])
+                    self?.onSavedPaymentInstrumentsFetchedCallback = nil
                 } catch {
                     self?.checkoutFailed(with: error)
                 }
@@ -137,6 +140,7 @@ class PrimerRN: NSObject {
                 } else {
                     self?.onResumeFlowCallback?(nil)
                 }
+                self?.onResumeFlowCallback = nil
             } catch {
                 self?.checkoutFailed(with: error)
             }
@@ -145,58 +149,5 @@ class PrimerRN: NSObject {
     
     @objc func dispose() -> Void {
         
-    }
-}
-
-extension PrimerRN: PrimerDelegate {
-
-    func clientTokenCallback(_ completion: @escaping (String?, Error?) -> Void) {
-        guard let clientToken = clientToken else {
-            checkoutFailed(with: ErrorTypeRN.clientTokenNotConfigured)
-            completion(nil, ErrorTypeRN.clientTokenNotConfigured)
-            return
-        }
-        completion(clientToken, nil)
-    }
-    
-    func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
-        do {
-            let json = try encoder.encode(paymentMethodToken)
-            let data = String(data: json, encoding: .utf8)!
-            self.onTokenizeSuccessCallback?([data])
-        } catch {
-            checkoutFailed(with: ErrorTypeRN.ParseJsonFailed)
-        }
-        onResumeFlowCallback = completion
-    }
-    
-    func tokenAddedToVault(_ token: PaymentMethodToken) {
-        do {
-            let json = try encoder.encode(token)
-            let data = String(data: json, encoding: .utf8)!
-            self.onVaultSuccessCallback?([data])
-        } catch {
-            checkoutFailed(with: ErrorTypeRN.ParseJsonFailed)
-        }
-    }
-    
-    func onCheckoutDismissed() {
-        self.onDismissCallback?([])
-    }
-    
-    func checkoutFailed(with error: Error) {
-        do {
-            if let error = error as? ErrorTypeRN {
-                let exception = PrimerErrorRN(exceptionType: error, description: nil)
-                let json = try encoder.encode(exception)
-                let data = String(data: json, encoding: .utf8)!
-                self.onPrimerErrorCallback?([data])
-            } else {
-                self.onPrimerErrorCallback?(["{\"exceptionType\":\"CheckoutFlowFailed\"}"])
-            }
-        } catch {
-            self.onPrimerErrorCallback?(["{\"exceptionType\":\"ParseJsonFailed\"}"])
-        }
-        haltExecution = true
     }
 }

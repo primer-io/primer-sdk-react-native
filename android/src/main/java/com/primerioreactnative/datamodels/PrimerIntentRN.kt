@@ -16,7 +16,19 @@ data class PrimerIntentRN(
 
   fun toPaymentMethods(settings: PrimerSettingsRN): List<PaymentMethod> {
     return when (paymentMethod) {
-      PrimerPaymentMethodTypeRN.Any -> listOf(Klarna(), Card(), PayPal())
+      PrimerPaymentMethodTypeRN.Any -> {
+        val countryCode = settings.order?.countryCode ?: throw Exception()
+        val currency = settings.order.currency ?: throw Exception()
+        val amount = settings.order.amount ?: throw Exception()
+
+        val googlePay = GooglePay(
+          countryCode = countryCode,
+          currencyCode = currency,
+          totalPrice = amount.toString(),
+        )
+
+        listOf(Klarna(), Card(), PayPal(), googlePay)
+      }
       PrimerPaymentMethodTypeRN.Klarna -> listOf(Klarna())
       PrimerPaymentMethodTypeRN.Card -> listOf(Card())
       PrimerPaymentMethodTypeRN.PayPal -> listOf(PayPal())
