@@ -37,6 +37,14 @@ export const SettingsScreen = (args: ISettingsScreenArguments) => {
         amount: amount,
         currency: getCurrencyFromCountry(),
         countryCode: country,
+        items: [
+          {
+            name: "item_name",
+            unitAmount: 123,
+            quantity: 1,
+            isPending: false
+          }
+        ]
       },
       customer: {
         id: "customer_id",
@@ -55,7 +63,7 @@ export const SettingsScreen = (args: ISettingsScreenArguments) => {
         isLoadingScreenEnabled: true,
         isResultScreenEnabled: true,
         ios: {
-          merchantIdentifier: '',
+          merchantIdentifier: 'merchant.checkout.team',
           urlScheme: 'primer',
           urlSchemeIdentifier: 'primer',
         },
