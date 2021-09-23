@@ -33,9 +33,22 @@ export const SettingsScreen = (args: ISettingsScreenArguments) => {
   const presentWallet = () => {
     const settings: PrimerSettings = {
       order: {
+        id: "order_id",
         amount: amount,
         currency: getCurrencyFromCountry(),
         countryCode: country,
+      },
+      customer: {
+        id: "customer_id",
+        firstName: "John",
+        lastName: "Smith",
+        email: "john.smith@primer.io",
+        billing: {
+          line1: "122 Clerkenwell Rd",
+          city: "London",
+          country: "GB",
+          postalCode: "WC1X8AS"
+        }
       },
       options: {
         isFullScreenEnabled: false,
