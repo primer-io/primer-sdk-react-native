@@ -36,31 +36,27 @@ The simplest payments integration, ever. Integrate payments once with just a few
 npm i @primer-io/react-native
 ```
 
-
 ## 🔧 Usage
 
 ```js
 import { Primer } from '@primer-io/react-native';
-import type { OnTokenizeSuccessCallback } from '@primer-io/react-native/models/primer-callbacks';
-import type { PrimerSettings } from '@primer-io/react-native/models/primer-settings';
 
 // fetch Primer client token from backend.
 const token: string = await fetchClientToken();
 
 // configure listeners and settings.
-const onTokenizeSuccess: OnTokenizeSuccessCallback = (t, handler) => {
+const onTokenizeSuccess = (t, handler) => {
   setPaymentInstrument(t);
   handler.resumeWithSuccess(); // call this to resume the checkout flow.
 };
 
-const settings: PrimerSettings = { order: { amount: 50, currency: 'GBP' } };
+const settings = { order: { amount: 50, currency: 'GBP' } };
 
 // show Universal Checkout with client token and config.
 Primer.showUniversalCheckout(token, { onTokenizeSuccess, settings });
 ```
 
 For more info & help troubleshooting, check out our 🔥 [docs](https://www.notion.so/primerio/Quick-Start-6c5eb61e5bbe426ca66244259e06048e)
-
 
 ## 📚 License
 
