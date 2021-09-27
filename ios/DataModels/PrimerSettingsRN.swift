@@ -9,25 +9,15 @@ struct PrimerSettingsRN: Decodable {
 
 extension PrimerSettingsRN {
     func asPrimerSettings() -> PrimerSettings {
-        var userDetails: UserDetails?
-        if let firstName = customer?.firstName,
-           let lastName = customer?.lastName,
-           let email = customer?.email,
-           let addressLine1 = customer?.billing?.line1,
-           let city = customer?.billing?.city,
-           let postalCode = customer?.billing?.postalCode,
-           let countryCode = customer?.billing?.country?.rawValue {
-            userDetails = UserDetails(firstName: firstName,
-                                               lastName: lastName,
-                                               email: email,
-                                               addressLine1: addressLine1,
-                                               addressLine2: customer?.billing?.line2,
-                                               city: city,
-                                               postalCode: postalCode,
-                                               countryCode: countryCode,
-                                               homePhone: customer?.phone,
-                                               mobilePhone: nil,
-                                               workPhone: nil)
+        var address: Address?
+        if let billingAddress = customer?.billing {
+            address = Address(
+                addressLine1: billingAddress.line1,
+                addressLine2: billingAddress.line2,
+                city: billingAddress.city,
+                state: billingAddress.state,
+                countryCode: billingAddress.country?.rawValue,
+                postalCode: billingAddress.postalCode)
         }
     
         return PrimerSettings(
@@ -45,7 +35,14 @@ extension PrimerSettingsRN {
             orderItems: order?.itemsFormatted ?? [],
             isInitialLoadingHidden: !(options?.isLoadingScreenEnabled ?? true),
             orderId: order?.id,
-            userDetails: userDetails
+            customer: Customer(
+                firstName: customer?.firstName,
+                lastName: customer?.lastName,
+                email: customer?.email,
+                homePhoneNumber: nil,
+                mobilePhoneNumber: customer?.phone,
+                workPhoneNumber: nil,
+                billingAddress: address)
         )
     }
 }
