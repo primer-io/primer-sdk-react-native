@@ -19,8 +19,8 @@ PODS:
     - DoubleConversion
     - glog
   - glog (0.3.5)
-  - primer-io-react-native (0.6.3):
-    - PrimerSDK (= 1.10.0)
+  - primer-io-react-native (0.6.4):
+    - PrimerSDK (= 1.9.0-beta.15)
     - React-Core
   - Primer3DS (0.1.33)
   - PrimerSDK (1.9.0-beta.15):
@@ -372,7 +372,7 @@ SPEC CHECKSUMS:
   FBReactNativeSpec: f2c97f2529dd79c083355182cc158c9f98f4bd6e
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
   glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
-  primer-io-react-native: 624783d3a3496ad418e2341362ca0b092b550fb8
+  primer-io-react-native: 61b585726ab41b9c2cbdeadb28476ebfff9458e1
   Primer3DS: f266ce1db528cef20751b3405c87a8a44d68477f
   PrimerSDK: 9c14c41463638021db43ad3090511413e02d0815
   RCTRequired: 082f10cd3f905d6c124597fd1c14f6f2655ff65e
