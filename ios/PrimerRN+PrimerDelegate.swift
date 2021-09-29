@@ -17,7 +17,10 @@ extension PrimerRN: PrimerDelegate {
         completion(clientToken, nil)
     }
     
-    func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion: @escaping (Error?) -> Void) {
+    func onTokenizeSuccess(
+        _ paymentMethodToken: PaymentMethodToken,
+        _ completion: @escaping (Error?) -> Void
+    ) {
         do {
             let json = try encoder.encode(paymentMethodToken)
             let data = String(data: json, encoding: .utf8)!
