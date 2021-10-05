@@ -46,6 +46,7 @@ interface IOptions {
   isResultScreenEnabled?: boolean;
   isLoadingScreenEnabled?: boolean;
   isFullScreenEnabled?: boolean;
+  isThreeDsEnabled?: boolean;
   locale?: string;
   ios?: IIosOptions;
   androids?: IAndroidOptions;

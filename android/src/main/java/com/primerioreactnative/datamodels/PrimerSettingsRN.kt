@@ -51,6 +51,7 @@ data class OptionsRN(
   val isResultScreenEnabled: Boolean? = null,
   val isLoadingScreenEnabled: Boolean? = null,
   val isFullScreenEnabled: Boolean? = null,
+  val isThreeDsEnabled: Boolean? = null,
   val locale: String? = null,
   val android: AndroidOptionsRN? = null,
 )

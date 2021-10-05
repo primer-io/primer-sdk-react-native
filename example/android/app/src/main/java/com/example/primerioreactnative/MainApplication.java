@@ -1,4 +1,4 @@
-package com.example.primerioreactnative;
+package io.primer.ReactNativeExample;
 
 import android.app.Application;
 import android.content.Context;

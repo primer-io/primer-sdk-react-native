@@ -1,5 +1,5 @@
 export const fetchClientToken = async (
-  environment: string,
+  environment: 'dev' | 'staging' | 'sandbox' | 'production',
   customerId: string,
   country: string
 ) => {

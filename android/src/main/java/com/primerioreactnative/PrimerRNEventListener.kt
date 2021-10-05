@@ -64,8 +64,12 @@ class PrimerRNEventListener : CheckoutEventListener {
         val request = Json.encodeToString(token)
         onTokenizeSuccessQueue?.addRequestAndPoll(request)
       }
+      is CheckoutEvent.SavedPaymentInstrumentsFetched -> {
+        val list = e.data.map { PrimerPaymentInstrumentTokenRN.fromPaymentMethodToken(it) }
+        val request = Json.encodeToString(list)
+        onSavedPaymentInstrumentsFetchedQueue?.addRequestAndPoll(request)
+      }
       is CheckoutEvent.Exit -> {
-        println("🔥 exit event ${e.data}")
         onDismissQueue?.addRequestAndPoll("dismiss")
         onDismissQueue = null
       }
