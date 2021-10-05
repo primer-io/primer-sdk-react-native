@@ -128,7 +128,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.example.primerioreactnative"
+        applicationId "io.primer.ReactNativeExample"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -178,6 +178,16 @@ android {
     }
 }
 
+repositories {
+  maven {
+    url "${ARTIFACTORY_3DS_URL}"
+    credentials {
+      username System.getenv("PRIMER_ANDROID_ARTIFACTORY_3DS_USERNAME") ?: "${PRIMER_ANDROID_ARTIFACTORY_3DS_USERNAME}"
+      password System.getenv("PRIMER_ANDROID_ARTIFACTORY_3DS_PASSWORD") ?: "${PRIMER_ANDROID_ARTIFACTORY_3DS_PASSWORD}"
+    }
+  }
+}
+
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     //noinspection GradleDynamicVersion
@@ -185,6 +195,7 @@ dependencies {
 
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+    implementation "io.primer:3ds-android:1.0.0"
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
       exclude group:'com.facebook.fbjni'
     }

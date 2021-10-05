@@ -9,6 +9,17 @@ struct PrimerSettingsRN: Decodable {
 
 extension PrimerSettingsRN {
     func asPrimerSettings() -> PrimerSettings {
+        var address: Address?
+        if let billingAddress = customer?.billing {
+            address = Address(
+                addressLine1: billingAddress.line1,
+                addressLine2: billingAddress.line2,
+                city: billingAddress.city,
+                state: billingAddress.state,
+                countryCode: billingAddress.country?.rawValue,
+                postalCode: billingAddress.postalCode)
+        }
+    
         return PrimerSettings(
             merchantIdentifier: options?.ios?.merchantIdentifier,
             customerId: customer?.id,
@@ -22,14 +33,25 @@ extension PrimerSettingsRN {
             hasDisabledSuccessScreen: !(options?.isResultScreenEnabled ?? true),
             businessDetails: business?.primerFormat,
             orderItems: order?.itemsFormatted ?? [],
-            isInitialLoadingHidden: !(options?.isLoadingScreenEnabled ?? true)
+            isInitialLoadingHidden: !(options?.isLoadingScreenEnabled ?? true),
+            orderId: order?.id,
+            customer: Customer(
+                firstName: customer?.firstName,
+                lastName: customer?.lastName,
+                email: customer?.email,
+                homePhoneNumber: nil,
+                mobilePhoneNumber: customer?.phone,
+                workPhoneNumber: nil,
+                billingAddress: address)
         )
     }
 }
 
 fileprivate struct OrderRN: Decodable {
+    let id: String?
     let amount: Int?
     let currency: Currency?
+    // FIXME: Move countryCode only within Address (RN & Android)
     let countryCode: CountryCode?
     let items: [OrderItemRN]?
     let shipping: AddressRN?
@@ -97,7 +119,7 @@ fileprivate struct AddressRN: Decodable {
     let postalCode: String?
     let city: String?
     let state: String?
-    let country: String?
+    let country: CountryCode?
 }
 
 fileprivate extension AddressRN {
@@ -107,7 +129,7 @@ fileprivate extension AddressRN {
             addressLine2: line2,
             city: city,
             state: state,
-            countryCode: country,
+            countryCode: country?.rawValue,
             postalCode: postalCode
         )
     }

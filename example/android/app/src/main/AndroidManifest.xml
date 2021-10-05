@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="com.example.primerioreactnative">
+  package="io.primer.ReactNativeExample">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -30,7 +30,7 @@
           <action android:name="android.intent.action.VIEW" />
           <category android:name="android.intent.category.DEFAULT" />
           <category android:name="android.intent.category.BROWSABLE" />
-          <data android:scheme="com.example.primerioreactnative.primer" />
+          <data android:scheme="io.primer.ReactNativeExample.primer" />
         </intent-filter>
       </activity>
     </application>

@@ -10,6 +10,7 @@ interface IPrimerSettings {
 }
 
 interface IOrder {
+  id?: string;
   amount?: number;
   currency?: CurrencyCode;
   countryCode?: CountryCode;
@@ -45,6 +46,7 @@ interface IOptions {
   isResultScreenEnabled?: boolean;
   isLoadingScreenEnabled?: boolean;
   isFullScreenEnabled?: boolean;
+  isThreeDsEnabled?: boolean;
   locale?: string;
   ios?: IIosOptions;
   androids?: IAndroidOptions;

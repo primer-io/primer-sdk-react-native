@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Picker, TextInput, TouchableOpacity, Text } from 'react-native';
+import { View, Picker, TextInput, TouchableOpacity, Text, Switch } from 'react-native';
 import type { PrimerSettings } from 'src/models/primer-settings';
 import type { CurrencyCode } from 'src/models/utils/currencyCode';
 import { styles } from '../styles';
@@ -14,10 +14,11 @@ export const SettingsScreen = (args: ISettingsScreenArguments) => {
   const [intent, setIntent] = React.useState<'checkout' | 'vault' | 'card'>(
     'checkout'
   );
-  const [environment, setEnvironment] = useState<'sandbox' | 'production'>(
+  const [environment, setEnvironment] = useState<'dev' | 'staging' | 'sandbox' | 'production'>(
     'sandbox'
   );
-  const [country, setCountry] = useState<'SE' | 'GB'>('GB');
+  const [threeDsEnabled, setThreeDsEnabled] = useState(false);
+  const [country, setCountry] = useState<'SE' | 'GB' | 'FR' | 'DE' | 'US'>('GB');
 
   const getCurrencyFromCountry = (): CurrencyCode => {
     switch (country) {
@@ -25,6 +26,11 @@ export const SettingsScreen = (args: ISettingsScreenArguments) => {
         return 'SEK';
       case 'GB':
         return 'GBP';
+      case 'FR':
+      case 'DE':
+        return 'EUR'
+      case 'US':
+        return 'USD'
       default:
         return 'GBP';
     }
@@ -33,16 +39,39 @@ export const SettingsScreen = (args: ISettingsScreenArguments) => {
   const presentWallet = () => {
     const settings: PrimerSettings = {
       order: {
+        id: "order_id",
         amount: amount,
         currency: getCurrencyFromCountry(),
         countryCode: country,
+        items: [
+          {
+            name: "coffee",
+            unitAmount: amount,
+            quantity: 1,
+            isPending: false
+          }
+        ]
+      },
+      customer: {
+        id: "customer_id",
+        firstName: "John",
+        lastName: "Smith",
+        email: "john.smith@primer.io",
+        billing: {
+          line1: "122 Clerkenwell Rd",
+          line2: "",
+          city: "London",
+          country: "GB",
+          postalCode: "WC1X8AS"
+        }
       },
       options: {
         isFullScreenEnabled: false,
         isLoadingScreenEnabled: true,
         isResultScreenEnabled: true,
+        isThreeDsEnabled: threeDsEnabled,
         ios: {
-          merchantIdentifier: '',
+          merchantIdentifier: 'merchant.checkout.team',
           urlScheme: 'primer',
           urlSchemeIdentifier: 'primer',
         },
@@ -80,6 +109,8 @@ export const SettingsScreen = (args: ISettingsScreenArguments) => {
             >
               <Picker.Item label="Production" value="production" />
               <Picker.Item label="Sandbox" value="sandbox" />
+              <Picker.Item label="Staging" value="staging" />
+              <Picker.Item label="Dev" value="dev" />
             </Picker>
           </View>
           <View style={[styles.container]}>
@@ -90,6 +121,9 @@ export const SettingsScreen = (args: ISettingsScreenArguments) => {
             >
               <Picker.Item label="SE - SEK" value="SE" />
               <Picker.Item label="GB - GBP" value="GB" />
+              <Picker.Item label="FR - EUR" value="FR" />
+              <Picker.Item label="DE - EUR" value="DE" />
+              <Picker.Item label="US - USD" value="US" />
             </Picker>
           </View>
           <View style={[styles.container]}>
@@ -129,6 +163,13 @@ export const SettingsScreen = (args: ISettingsScreenArguments) => {
               <Picker.Item label="Universal Checkout" value="checkout" />
               <Picker.Item label="Card Checkout" value="card" />
             </Picker>
+          </View>
+          <View>
+            <Text>3DS enabled</Text>
+            <Switch
+              value={threeDsEnabled}
+              onValueChange={setThreeDsEnabled}
+            />
           </View>
         </View>
 
