@@ -1,3 +1,6 @@
+source 'https://github.com/CocoaPods/Specs.git'
+source 'https://github.com/primer-io/primer-podspecs.git'
+
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
@@ -7,9 +10,11 @@ target 'ReactNativeExample' do
   config = use_native_modules!
 
   use_react_native!(:path => config["reactNativePath"])
-
-      pod 'primer-io-react-native', :path => '../..'
   
+  pod 'Primer3DS'
+  pod 'primer-io-react-native', :path => '../..'
+  
+      
   # Enables Flipper.
   #
   # Note that if you have use_frameworks! enabled, Flipper will not work and
@@ -18,4 +23,23 @@ target 'ReactNativeExample' do
   # post_install do |installer|
   #   flipper_post_install(installer)
   # end
+  
+  # Enables Primer3DS if it has been added in your podfile.
+  #
+  # Note that if you have use_frameworks! enabled, Primer3DS will not work without
+  # disabling these next few lines.
+  post_install do |installer|
+    installer.pods_project.targets.each do |target|
+      if target.name == "primer-io-react-native" || target.name == "PrimerSDK"
+        target.build_configurations.each do |config|
+          config.build_settings['FRAMEWORK_SEARCH_PATHS'] = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/Primer3DS"
+          config.build_settings['LIBRARY_SEARCH_PATHS'] = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/Primer3DS"
+          config.build_settings['SWIFT_INCLUDE_PATHS'] = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/Primer3DS"
+          config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -Xcc -fmodule-map-file="${PODS_CONFIGURATION_BUILD_DIR}/Primer3DS/Primer3DS.modulemap"'
+          config.build_settings['OTHER_LDFLAGS'] = '$(inherited) -weak_library -l"Primer3DS"'
+        end
+      end
+    end
+  end
+  
 end

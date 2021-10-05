@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="com.example.primerioreactnative">
+  package="io.primer.ReactNativeExample">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -22,6 +22,17 @@
         </intent-filter>
       </activity>
       <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
+      <activity
+        android:name="io.primer.android.WebBrowserInteropActivity"
+        android:launchMode="singleTask"
+        android:exported="true">
+        <intent-filter>
+          <action android:name="android.intent.action.VIEW" />
+          <category android:name="android.intent.category.DEFAULT" />
+          <category android:name="android.intent.category.BROWSABLE" />
+          <data android:scheme="io.primer.ReactNativeExample.primer" />
+        </intent-filter>
+      </activity>
     </application>
 
 </manifest>

@@ -8,6 +8,8 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.primerioreactnative.datamodels.*
 import io.primer.android.Primer
+import io.primer.android.model.PrimerDebugOptions
+import io.primer.android.model.dto.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -113,9 +115,48 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
   }
 
   private fun startSdk(token: String) {
-    val context = currentActivity as Context
     val theme = this.theme.primerTheme
-    Primer.initialize(context, token, theme = theme)
+    val order = Order(
+      currency = settings.order?.currency,
+      amount = settings.order?.amount,
+      countryCode = settings.order?.countryCode?.let { CountryCode.valueOf(it) },
+    )
+
+    val customer = Customer(
+      firstName = "Carl",
+      lastName = "Embarcadero",
+      email = "carlEmbarcadero@mail.com",
+      billingAddress = Address(
+        line1 = "1 Some Street",
+        city = "London",
+        postalCode = "SW9 1NG",
+        countryCode = CountryCode.GB,
+      ),
+    )
+    val business = Business(name = "My Business")
+    val options = Options(
+      redirectScheme = settings.options?.android?.redirectScheme,
+      is3DSOnVaultingEnabled = settings.options?.isThreeDsEnabled ?: false,
+      debugOptions = PrimerDebugOptions(
+        is3DSSanityCheckEnabled = false,
+      ),
+    )
+    val settings = PrimerSettings(order, business, customer, options)
+    val config = PrimerConfig(theme, settings)
+
+    mListener.completion = { error ->
+      currentActivity?.let {
+        it.runOnUiThread {
+          if (error) {
+            Primer.instance.showError()
+          } else {
+            Primer.instance.showSuccess()
+          }
+        }
+      }
+    }
+
+    Primer.instance.configure(config, mListener)
     sdkWasInitialised = true
   }
 
@@ -125,79 +166,22 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
 
     if (!sdkWasInitialised) startSdk(token)
 
-    Primer.getSavedPaymentMethods { data ->
-      try {
-        val paymentMethods = data.map { PrimerPaymentInstrumentTokenRN.fromPaymentMethodToken(it) }
-        val request = json.encodeToString(paymentMethods)
-        mListener.onSavedPaymentInstrumentsFetchedQueue?.addRequestAndPoll(request)
-      } catch (e: Exception) {
-        Log.e("PrimerRN", "fetch saved payment methods error: $e")
-        val exception = PrimerErrorRN(
-          ErrorTypeRN.ParseJsonFailed,
-          "failed to parse fetched payment methods.",
-        )
-        val encoded = json.encodeToString(exception)
-        mListener.onPrimerErrorQueue?.addRequestAndPoll(encoded)
-        haltExecution = true
-      }
-    }
+    Primer.instance.fetchSavedPaymentInstruments(token)
   }
 
   @ReactMethod
   fun initialize(token: String) {
     try {
-
       if (haltExecution) {
         haltExecution = false
         return
       }
-
       Log.d("PrimerRN", "init with client token: $token")
-
-      val theme = this.theme.primerTheme
-
-      val context = currentActivity as Context
-
       startSdk(token)
-
-      val paymentMethods = intent.toPaymentMethods(settings)
-      Primer.loadPaymentMethods(paymentMethods)
-
-      mListener.completion = { error ->
-        currentActivity?.let {
-          it.runOnUiThread {
-            if (error) {
-              Primer.showError()
-            } else {
-              Primer.showSuccess()
-            }
-          }
-        }
-      }
-
+      val context = currentActivity as Context
       when (intent.vault) {
-        false -> Primer.showCheckout(
-          context,
-          mListener,
-          isStandalonePaymentMethod = paymentMethods.size < 2,
-          doNotShowUi = settings.options?.isLoadingScreenEnabled ?: true,
-          preferWebView = true,
-          currency = settings.order?.currency,
-          amount = settings.order?.amount,
-          clearAllListeners = true,
-          webBrowserRedirectScheme = settings.options?.android?.redirectScheme,
-        )
-        true -> Primer.showVault(
-          context,
-          mListener,
-          isStandalonePaymentMethod = paymentMethods.size < 2,
-          doNotShowUi = settings.options?.isLoadingScreenEnabled ?: true,
-          preferWebView = true,
-          currency = settings.order?.currency,
-          amount = settings.order?.amount,
-          clearAllListeners = true,
-          webBrowserRedirectScheme = settings.options?.android?.redirectScheme,
-        )
+        false -> Primer.instance.showUniversalCheckout(context, token)
+        true -> Primer.instance.showVaultManager(context, token)
       }
     } catch (e: Exception) {
       Log.e("PrimerRN", "init error: $e")

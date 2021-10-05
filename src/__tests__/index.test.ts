@@ -5,23 +5,33 @@ jest.mock('react-native', () => {
   return {
     NativeModules: {
       PrimerRN: {
-        init: jest.fn(),
+        initialize: jest.fn(),
+        resume: jest.fn(),
         fetchSavedPaymentInstruments: jest.fn(),
         dispose: jest.fn(),
         configureSettings: jest.fn(),
         configureTheme: jest.fn(),
-        configureFlow: jest.fn(),
+        configureIntent: jest.fn(),
         configureOnVaultSuccess: jest.fn(),
         configureOnDismiss: jest.fn(),
         configureOnPrimerError: jest.fn(),
         configureOnTokenizeSuccess: jest.fn(),
+        configureOnSavedPaymentInstrumentsFetched: jest.fn(),
       },
     },
   };
 });
 
 describe('Test Primer', () => {
-  describe('init', () => {
+  describe('showUniversalCheckout', () => {
+    beforeAll(() => {
+      PrimerNativeMapping.showUniversalCheckout('mock', {});
+    });
+
+    afterAll(() => {
+      jest.clearAllMocks();
+    });
+
     it('should call native module configureSettings', () => {
       expect(NativeModules.PrimerRN.configureSettings).toHaveBeenCalled();
     });
@@ -30,8 +40,10 @@ describe('Test Primer', () => {
       expect(NativeModules.PrimerRN.configureTheme).toHaveBeenCalled();
     });
 
-    it('should call native module configureFlow', () => {
-      expect(NativeModules.PrimerRN.configureFlow).toHaveBeenCalled();
+    it('should call native module configureIntent', () => {
+      expect(NativeModules.PrimerRN.configureIntent).toHaveBeenCalledWith(
+        JSON.stringify({ vault: false, paymentMethod: 'Any' })
+      );
     });
 
     it('should call native module configureOnVaultSuccess', () => {
@@ -52,18 +64,113 @@ describe('Test Primer', () => {
       ).toHaveBeenCalled();
     });
 
-    it('should call native module init', () => {
-      expect(NativeModules.PrimerRN.init).toHaveBeenCalled();
+    it('should call native module initialize', () => {
+      expect(NativeModules.PrimerRN.initialize).toHaveBeenCalled();
+    });
+  });
+
+  describe('showVaultManager', () => {
+    beforeAll(() => {
+      PrimerNativeMapping.showVaultManager('mock', {});
+    });
+
+    afterAll(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should call native module configureSettings', () => {
+      expect(NativeModules.PrimerRN.configureSettings).toHaveBeenCalled();
+    });
+
+    it('should call native module configureTheme', () => {
+      expect(NativeModules.PrimerRN.configureTheme).toHaveBeenCalled();
+    });
+
+    it('should call native module configureIntent', () => {
+      expect(NativeModules.PrimerRN.configureIntent).toHaveBeenCalledWith(
+        JSON.stringify({ vault: true, paymentMethod: 'Any' })
+      );
+    });
+
+    it('should call native module configureOnVaultSuccess', () => {
+      expect(NativeModules.PrimerRN.configureOnVaultSuccess).toHaveBeenCalled();
+    });
+
+    it('should call native module configureOnDismiss', () => {
+      expect(NativeModules.PrimerRN.configureOnDismiss).toHaveBeenCalled();
+    });
+
+    it('should call native module configureOnPrimerError', () => {
+      expect(NativeModules.PrimerRN.configureOnPrimerError).toHaveBeenCalled();
+    });
+
+    it('should call native module configureOnTokenizeSuccess', () => {
+      expect(
+        NativeModules.PrimerRN.configureOnTokenizeSuccess
+      ).toHaveBeenCalled();
+    });
+
+    it('should call native module initialize', () => {
+      expect(NativeModules.PrimerRN.initialize).toHaveBeenCalled();
+    });
+  });
+
+  describe('showPaymentMethod', () => {
+    beforeAll(() => {
+      PrimerNativeMapping.showPaymentMethod(
+        'mock',
+        { vault: true, paymentMethod: 'Card' },
+        {}
+      );
+    });
+
+    afterAll(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should call native module configureSettings', () => {
+      expect(NativeModules.PrimerRN.configureSettings).toHaveBeenCalled();
+    });
+
+    it('should call native module configureTheme', () => {
+      expect(NativeModules.PrimerRN.configureTheme).toHaveBeenCalled();
+    });
+
+    it('should call native module configureIntent', () => {
+      expect(NativeModules.PrimerRN.configureIntent).toHaveBeenCalledWith(
+        JSON.stringify({ vault: true, paymentMethod: 'Card' })
+      );
+    });
+
+    it('should call native module configureOnVaultSuccess', () => {
+      expect(NativeModules.PrimerRN.configureOnVaultSuccess).toHaveBeenCalled();
+    });
+
+    it('should call native module configureOnDismiss', () => {
+      expect(NativeModules.PrimerRN.configureOnDismiss).toHaveBeenCalled();
+    });
+
+    it('should call native module configureOnPrimerError', () => {
+      expect(NativeModules.PrimerRN.configureOnPrimerError).toHaveBeenCalled();
+    });
+
+    it('should call native module configureOnTokenizeSuccess', () => {
+      expect(
+        NativeModules.PrimerRN.configureOnTokenizeSuccess
+      ).toHaveBeenCalled();
+    });
+
+    it('should call native module initialize', () => {
+      expect(NativeModules.PrimerRN.initialize).toHaveBeenCalled();
     });
   });
 
   describe('fetchSavedPaymentInstruments', () => {
     it('should call native module fetchSavedPaymentInstruments & pass in callback', () => {
-      const callback = () => {};
       PrimerNativeMapping.fetchSavedPaymentInstruments('token', {});
       expect(
         NativeModules.PrimerRN.fetchSavedPaymentInstruments
-      ).toHaveBeenCalledWith(callback);
+      ).toHaveBeenCalled();
     });
   });
 

@@ -9,8 +9,16 @@
     "start": "react-native start"
   },
   "dependencies": {
+    "@react-native-masked-view/masked-view": "^0.2.6",
+    "@react-navigation/native": "^6.0.2",
+    "@react-navigation/native-stack": "^6.1.0",
+    "@types/react": "^17.0.24",
+    "@types/react-native": "^0.65.2",
     "react": "16.13.1",
-    "react-native": "0.63.4"
+    "react-native": "0.63.4",
+    "react-native-safe-area-context": "^3.3.2",
+    "react-native-safe-area-view": "^1.1.1",
+    "react-native-screens": "^3.7.2"
   },
   "devDependencies": {
     "@babel/core": "^7.12.10",

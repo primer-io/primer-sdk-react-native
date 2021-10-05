@@ -1,6 +1,7 @@
 package com.primerioreactnative.datamodels
 
-import io.primer.android.UniversalCheckoutTheme
+import io.primer.android.InputThemeData
+import io.primer.android.PrimerTheme
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -8,18 +9,10 @@ class PrimerThemeRN(
   private val colors: ColorThemeRN? = null,
   val darkModeColors: ColorThemeRN? = null,
 ) {
-  val primerTheme: UniversalCheckoutTheme
+  val primerTheme: PrimerTheme
     get() {
-      return UniversalCheckoutTheme.create(
-        textDefaultColor = colors?.text?.hex,
-        textDangerColor = colors?.error?.hex,
-        textMutedColor = colors?.disabled?.hex,
-        backgroundColor = colors?.background?.hex,
-        buttonPrimaryColor = colors?.mainColor?.hex,
-        buttonPrimaryColorDisabled = colors?.disabled?.hex,
-        primaryColor = colors?.mainColor?.hex,
-        inputBackgroundColor = colors?.background?.hex,
-        buttonDefaultBorderColor = colors?.borders?.hex,
+      return PrimerTheme.build(
+        input = InputThemeData()
       )
     }
 }
