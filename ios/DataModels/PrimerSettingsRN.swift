@@ -17,7 +17,8 @@ extension PrimerSettingsRN {
                 city: billingAddress.city,
                 state: billingAddress.state,
                 countryCode: billingAddress.country?.rawValue,
-                postalCode: billingAddress.postalCode)
+                postalCode: billingAddress.postalCode
+            )
         }
     
         return PrimerSettings(
@@ -42,7 +43,8 @@ extension PrimerSettingsRN {
                 homePhoneNumber: nil,
                 mobilePhoneNumber: customer?.phone,
                 workPhoneNumber: nil,
-                billingAddress: address)
+                billingAddress: address
+            )
         )
     }
 }
@@ -92,11 +94,15 @@ fileprivate struct BusinessRN: Decodable {
     let registrationNumber: String?
     let email: String?
     let phone: String?
-    let address: AddressRN
+    let address: AddressRN?
 }
 
 fileprivate extension BusinessRN {
-    var primerFormat: BusinessDetails {
+    var primerFormat: BusinessDetails? {
+        guard let address = address else {
+            return nil
+        }
+        
         return BusinessDetails(
             name: name,
             address: address.primerFormat

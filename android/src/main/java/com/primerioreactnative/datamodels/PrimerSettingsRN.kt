@@ -1,14 +1,24 @@
 package com.primerioreactnative.datamodels
 
+import io.primer.android.model.PrimerDebugOptions
+import io.primer.android.model.dto.*
 import kotlinx.serialization.Serializable
 
 @Serializable
 class PrimerSettingsRN(
   val order: OrderRN? = null,
   val business: BusinessRN? = null,
-  val customer: CustomerRN? = null,
-  val options: OptionsRN? = null,
-)
+  private val customer: CustomerRN? = null,
+  private val options: OptionsRN? = null,
+) {
+  fun format(): PrimerSettings {
+    val order = order?.format() ?: Order()
+    val customer = customer?.format() ?: Customer()
+    val business = business?.format() ?: Business()
+    val options = options?.format() ?: Options()
+    return PrimerSettings(order, business, customer, options)
+  }
+}
 
 @Serializable
 data class OrderRN(
@@ -17,7 +27,16 @@ data class OrderRN(
   val countryCode: String? = null,
   val items: List<OrderItemRN>? = null,
   val shipping: PrimerAddressRN? = null,
-)
+) {
+  fun format(): Order {
+    return Order(
+      amount = amount,
+      currency = currency,
+      countryCode = countryCode?.let { CountryCode.valueOf(it) },
+
+    )
+  }
+}
 
 @Serializable
 data class OrderItemRN(
@@ -34,7 +53,18 @@ data class BusinessRN(
   val email: String? = null,
   val phone: String? = null,
   val address: PrimerAddressRN? = null,
-)
+) {
+
+  fun format(): Business {
+    return Business(
+      name = name,
+      registrationNumber = registrationNumber,
+      email = email,
+      phone = phone,
+      address = address?.format(),
+    )
+  }
+}
 
 @Serializable
 data class CustomerRN(
@@ -44,7 +74,18 @@ data class CustomerRN(
   val email: String? = null,
   val phone: String? = null,
   val billing: PrimerAddressRN? = null,
-)
+) {
+  fun format(): Customer {
+    return Customer(
+      id = id,
+      firstName = firstName,
+      lastName = lastName,
+      email = email,
+      homePhone = phone,
+      billingAddress = billing?.format(),
+    )
+  }
+}
 
 @Serializable
 data class OptionsRN(
@@ -54,7 +95,18 @@ data class OptionsRN(
   val isThreeDsEnabled: Boolean? = null,
   val locale: String? = null,
   val android: AndroidOptionsRN? = null,
-)
+) {
+  fun format(): Options {
+    return Options(
+      showUI = isLoadingScreenEnabled ?: true,
+      redirectScheme = android?.redirectScheme,
+      is3DSOnVaultingEnabled = isThreeDsEnabled ?: false,
+      debugOptions = PrimerDebugOptions(
+        is3DSSanityCheckEnabled = true, // false on emulator
+      ),
+    )
+  }
+}
 
 @Serializable
 data class AndroidOptionsRN(
@@ -63,10 +115,30 @@ data class AndroidOptionsRN(
 
 @Serializable
 data class PrimerAddressRN(
-  val line1: String,
+  val line1: String?,
   val line2: String? = null,
-  val postalCode: String,
+  val postalCode: String?,
   val state: String? = null,
-  val city: String,
-  val country: String,
-)
+  val city: String?,
+  val country: String?,
+) {
+
+  fun format(): Address? {
+      if (
+        line1 == null ||
+        postalCode == null ||
+        city == null ||
+        country == null
+      ) {
+        return null
+      }
+
+      return Address(
+        line1 = line1,
+        line2 = line2,
+        city = city,
+        countryCode = CountryCode.valueOf(country),
+        postalCode = postalCode,
+      )
+  }
+}

@@ -26,11 +26,11 @@ interface IOrderItem {
 }
 
 interface IBusiness {
-  name: string;
+  name?: string;
   registrationNumber?: string;
   email?: string;
   phone?: string;
-  address: IAddress;
+  address?: IAddress;
 }
 
 interface ICustomer {
@@ -49,7 +49,7 @@ interface IOptions {
   isThreeDsEnabled?: boolean;
   locale?: string;
   ios?: IIosOptions;
-  androids?: IAndroidOptions;
+  android?: IAndroidOptions;
 }
 
 interface IIosOptions {
@@ -62,10 +62,10 @@ interface IAndroidOptions {
 }
 
 interface IAddress {
-  line1: String;
+  line1?: String;
   line2?: String;
   postalCode?: String;
   state?: String;
-  city: String;
-  country: CountryCode;
+  city?: String;
+  country?: CountryCode;
 }
