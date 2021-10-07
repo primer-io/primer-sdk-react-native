@@ -48,7 +48,6 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = ReactNativeExample/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = ReactNativeExample/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = ReactNativeExample/main.m; sourceTree = "<group>"; };
-		152C143D270DAABA009DDCA9 /* ReactNativeExample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = ReactNativeExample.entitlements; path = ReactNativeExample/ReactNativeExample.entitlements; sourceTree = "<group>"; };
 		1D14D8CD25C8B20D00206A38 /* ReactNativeExample-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ReactNativeExample-Bridging-Header.h"; sourceTree = "<group>"; };
 		1D14D8CE25C8B20D00206A38 /* Bridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bridge.swift; sourceTree = "<group>"; };
 		1D3922C8270DAADD001BDCCA /* ReactNativeExample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = ReactNativeExample.entitlements; path = ReactNativeExample/ReactNativeExample.entitlements; sourceTree = "<group>"; };
@@ -115,7 +114,7 @@
 		13B07FAE1A68108700A75B9A /* ReactNativeExample */ = {
 			isa = PBXGroup;
 			children = (
-				152C143D270DAABA009DDCA9 /* ReactNativeExample.entitlements */,
+				1D3922C8270DAADD001BDCCA /* ReactNativeExample.entitlements */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -418,8 +417,11 @@
 			inputFileListPaths = (
 			);
 			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-ReactNativeExample/Pods-ReactNativeExample-frameworks.sh",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/ThreeDS_SDK/ThreeDS_SDK.framework/ThreeDS_SDK",
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
 			);
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/Pods-ReactNativeExample-checkManifestLockResult.txt",
