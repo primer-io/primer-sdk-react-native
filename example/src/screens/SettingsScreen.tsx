@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { View, Picker, TextInput, TouchableOpacity, Text, Switch } from 'react-native';
+import {
+  View,
+  Picker,
+  TextInput,
+  TouchableOpacity,
+  Text,
+  Switch,
+} from 'react-native';
 import type { PrimerSettings } from 'src/models/primer-settings';
 import type { CurrencyCode } from 'src/models/utils/currencyCode';
 import { styles } from '../styles';
@@ -14,11 +21,13 @@ export const SettingsScreen = (args: ISettingsScreenArguments) => {
   const [intent, setIntent] = React.useState<'checkout' | 'vault' | 'card'>(
     'checkout'
   );
-  const [environment, setEnvironment] = useState<'dev' | 'staging' | 'sandbox' | 'production'>(
-    'sandbox'
-  );
+  const [environment, setEnvironment] = useState<
+    'dev' | 'staging' | 'sandbox' | 'production'
+  >('sandbox');
   const [threeDsEnabled, setThreeDsEnabled] = useState(false);
-  const [country, setCountry] = useState<'SE' | 'GB' | 'FR' | 'DE' | 'US'>('GB');
+  const [country, setCountry] = useState<'SE' | 'GB' | 'FR' | 'DE' | 'US'>(
+    'GB'
+  );
 
   const getCurrencyFromCountry = (): CurrencyCode => {
     switch (country) {
@@ -28,9 +37,9 @@ export const SettingsScreen = (args: ISettingsScreenArguments) => {
         return 'GBP';
       case 'FR':
       case 'DE':
-        return 'EUR'
+        return 'EUR';
       case 'US':
-        return 'USD'
+        return 'USD';
       default:
         return 'GBP';
     }
@@ -39,31 +48,31 @@ export const SettingsScreen = (args: ISettingsScreenArguments) => {
   const presentWallet = () => {
     const settings: PrimerSettings = {
       order: {
-        id: "order_id",
+        id: 'order_id',
         amount: amount,
         currency: getCurrencyFromCountry(),
         countryCode: country,
         items: [
           {
-            name: "coffee",
+            name: 'coffee',
             unitAmount: amount,
             quantity: 1,
-            isPending: false
-          }
-        ]
+            isPending: false,
+          },
+        ],
       },
       customer: {
-        id: "customer_id",
-        firstName: "John",
-        lastName: "Smith",
-        email: "john.smith@primer.io",
+        id: 'customer_id',
+        firstName: 'John',
+        lastName: 'Smith',
+        email: 'john.smith@primer.io',
         billing: {
-          line1: "122 Clerkenwell Rd",
-          line2: "",
-          city: "London",
-          country: "GB",
-          postalCode: "WC1X8AS"
-        }
+          line1: '122 Clerkenwell Rd',
+          line2: '',
+          city: 'London',
+          country: 'GB',
+          postalCode: 'WC1X8AS',
+        },
       },
       options: {
         isFullScreenEnabled: false,
@@ -75,7 +84,7 @@ export const SettingsScreen = (args: ISettingsScreenArguments) => {
           urlScheme: 'primer',
           urlSchemeIdentifier: 'primer',
         },
-        androids: {
+        android: {
           redirectScheme: 'primer',
         },
       },
@@ -166,10 +175,7 @@ export const SettingsScreen = (args: ISettingsScreenArguments) => {
           </View>
           <View>
             <Text>3DS enabled</Text>
-            <Switch
-              value={threeDsEnabled}
-              onValueChange={setThreeDsEnabled}
-            />
+            <Switch value={threeDsEnabled} onValueChange={setThreeDsEnabled} />
           </View>
         </View>
 
