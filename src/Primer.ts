@@ -1,7 +1,9 @@
 import { NativeModules } from 'react-native';
+import type { ActionRequest } from './models/action-request';
 import type { PaymentInstrumentToken } from './models/payment-instrument-token';
 import type { IPrimer } from './models/primer';
 import type {
+  OnDataChangeCallback,
   OnDismissCallback,
   OnPrimerErrorCallback,
   OnSavedPaymentInstrumentsFetchedCallback,
@@ -60,6 +62,7 @@ function configure(config: PrimerConfig): void {
   configureOnDismiss(config.onDismiss);
   configureOnError(config.onError);
   configureOnTokenizeSuccess(config.onTokenizeSuccess);
+  configureOnDataChange(); // todo: add to config + example app
   configureOnSavedPaymentInstrumentsFetched(
     config.onSavedPaymentInstrumentsFetched
   );
@@ -96,6 +99,22 @@ function configureOnTokenizeSuccess(
       callback(parsedData, {
         resumeWithError: () => resume({ error: true }),
         resumeWithSuccess: () => resume({ error: false }),
+      });
+    } catch (e) {
+      console.log('failed to parse json', e);
+    }
+  });
+}
+
+function configureOnDataChange(callback: OnDataChangeCallback = (_, __) => {}) {
+  NativeModule.configureOnDataChange((data: any) => {
+    try {
+      const parsedData = JSON.parse(data) as ActionRequest;
+      callback(parsedData, {
+        resumeWithError: (error?: string) =>
+          resume({ error, clientToken: null }),
+        resumeWithSuccess: (clientToken?: string) =>
+          resume({ error: null, clientToken }),
       });
     } catch (e) {
       console.log('failed to parse json', e);

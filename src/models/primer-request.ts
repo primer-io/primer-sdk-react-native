@@ -1,5 +1,5 @@
 export type PrimerResumeHandler = IPrimerResumeHandler;
 interface IPrimerResumeHandler {
-  resumeWithError: () => void;
-  resumeWithSuccess: () => void;
+  resumeWithError: (error?: string) => void;
+  resumeWithSuccess: (clientToken?: string) => void;
 }
