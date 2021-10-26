@@ -7,7 +7,6 @@ import type {
   OnSavedPaymentInstrumentsFetchedCallback,
   OnTokenizeSuccessCallback,
 } from 'src/models/primer-callbacks';
-import { Alert } from 'react-native';
 
 export const usePrimer = (
   settings: PrimerSettings,
@@ -54,7 +53,7 @@ export const usePrimer = (
   }, [settings, environment, customerId]);
 
   const showAlert = (t: PaymentInstrumentToken) =>
-    setPaymentToken(`Got token!\n${JSON.stringify(t)}`)
+    setPaymentToken(`Got token!\n${JSON.stringify(t)}`);
 
   const presentPrimer = () => {
     if (!token) return;
