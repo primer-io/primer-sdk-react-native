@@ -115,42 +115,18 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
   }
 
   private fun startSdk(token: String) {
-    val theme = this.theme.primerTheme
-    val order = Order(
-      currency = settings.order?.currency,
-      amount = settings.order?.amount,
-      countryCode = settings.order?.countryCode?.let { CountryCode.valueOf(it) },
-    )
-
-    val customer = Customer(
-      firstName = "Carl",
-      lastName = "Embarcadero",
-      email = "carlEmbarcadero@mail.com",
-      billingAddress = Address(
-        line1 = "1 Some Street",
-        city = "London",
-        postalCode = "SW9 1NG",
-        countryCode = CountryCode.GB,
-      ),
-    )
-    val business = Business(name = "My Business")
-    val options = Options(
-      redirectScheme = settings.options?.android?.redirectScheme,
-      is3DSOnVaultingEnabled = settings.options?.isThreeDsEnabled ?: false,
-      debugOptions = PrimerDebugOptions(
-        is3DSSanityCheckEnabled = false,
-      ),
-    )
-    val settings = PrimerSettings(order, business, customer, options)
+    val theme = theme.format()
+    val settings = settings.format()
     val config = PrimerConfig(theme, settings)
 
-    mListener.completion = { error ->
+    // todo: refactor with next version
+    mListener.completion = { error, clientToken ->
       currentActivity?.let {
         it.runOnUiThread {
-          if (error) {
+
             Primer.instance.showError()
           } else {
-            Primer.instance.showSuccess()
+            clientToken?.let { t -> mListener.resumeHandler?.handleNewClientToken(t) }
           }
         }
       }
@@ -176,9 +152,13 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
         haltExecution = false
         return
       }
+
       Log.d("PrimerRN", "init with client token: $token")
+
       startSdk(token)
+
       val context = currentActivity as Context
+
       when (intent.vault) {
         false -> Primer.instance.showUniversalCheckout(context, token)
         true -> Primer.instance.showVaultManager(context, token)
@@ -197,8 +177,9 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
   @ReactMethod
   fun resume(request: String) {
     try {
+      Log.d("PrimerRN", "resume: $request")
       val data = json.decodeFromString<PrimerResumeRequest>(request)
-      mListener.completion?.invoke(data.error)
+      mListener.completion?.invoke(data.error, data.token)
     } catch (e: Exception) {
       Log.e("PrimerRN", "configure settings error: $e")
       val exception = PrimerErrorRN(

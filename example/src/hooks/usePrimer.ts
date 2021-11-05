@@ -7,7 +7,7 @@ import type {
   OnSavedPaymentInstrumentsFetchedCallback,
   OnTokenizeSuccessCallback,
 } from 'src/models/primer-callbacks';
-import { Alert } from 'react-native';
+import { createPayment } from '../api/create-payment';
 
 export const usePrimer = (
   settings: PrimerSettings,
@@ -54,15 +54,26 @@ export const usePrimer = (
   }, [settings, environment, customerId]);
 
   const showAlert = (t: PaymentInstrumentToken) =>
-    setPaymentToken(`Got token!\n${JSON.stringify(t)}`)
+    setPaymentToken(`Got token!\n${JSON.stringify(t)}`);
 
   const presentPrimer = () => {
     if (!token) return;
 
-    const onTokenizeSuccess: OnTokenizeSuccessCallback = (t, handler) => {
+    const onTokenizeSuccess: OnTokenizeSuccessCallback = async (t, handler) => {
       showAlert(t);
 
-      handler.resumeWithSuccess();
+      const newClientToken: string = await createPayment(
+        'sandbox',
+        t.token,
+        settings.customer!.id!,
+        settings.order!.countryCode!,
+        settings.order!.amount!,
+        settings.order!.currency!
+      );
+
+      console.log('newClientToken:', newClientToken);
+
+      handler.resumeWithSuccess(newClientToken);
     };
 
     const config = { settings, onTokenizeSuccess };

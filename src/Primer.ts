@@ -82,7 +82,7 @@ function configureIntent(
   NativeModule.configureIntent(data);
 }
 
-function resume(request: any) {
+function resume(request: ResumeRequest) {
   const data = JSON.stringify(request);
   NativeModule.resume(data);
 }
@@ -94,8 +94,8 @@ function configureOnTokenizeSuccess(
     try {
       const parsedData = JSON.parse(data) as PaymentInstrumentToken;
       callback(parsedData, {
-        resumeWithError: () => resume({ error: true }),
-        resumeWithSuccess: () => resume({ error: false }),
+        resumeWithError: () => resume({ error: true, token: '' }),
+        resumeWithSuccess: (token) => resume({ error: false, token }),
       });
     } catch (e) {
       console.log('failed to parse json', e);
@@ -127,4 +127,9 @@ function configureOnSavedPaymentInstrumentsFetched(
   NativeModule.configureOnSavedPaymentInstrumentsFetched((data: any) => {
     parseCallback<PaymentInstrumentToken[]>(data, callback);
   });
+}
+
+interface ResumeRequest {
+  error: boolean;
+  token?: string;
 }

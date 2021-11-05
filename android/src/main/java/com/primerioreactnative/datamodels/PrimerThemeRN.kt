@@ -9,12 +9,11 @@ class PrimerThemeRN(
   private val colors: ColorThemeRN? = null,
   val darkModeColors: ColorThemeRN? = null,
 ) {
-  val primerTheme: PrimerTheme
-    get() {
+  fun format(): PrimerTheme {
       return PrimerTheme.build(
         input = InputThemeData()
       )
-    }
+  }
 }
 
 @Serializable
