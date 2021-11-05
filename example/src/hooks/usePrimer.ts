@@ -7,6 +7,7 @@ import type {
   OnSavedPaymentInstrumentsFetchedCallback,
   OnTokenizeSuccessCallback,
 } from 'src/models/primer-callbacks';
+import { createPayment } from '../api/create-payment';
 
 export const usePrimer = (
   settings: PrimerSettings,
@@ -58,10 +59,21 @@ export const usePrimer = (
   const presentPrimer = () => {
     if (!token) return;
 
-    const onTokenizeSuccess: OnTokenizeSuccessCallback = (t, handler) => {
+    const onTokenizeSuccess: OnTokenizeSuccessCallback = async (t, handler) => {
       showAlert(t);
 
-      handler.resumeWithSuccess();
+      const newClientToken: string = await createPayment(
+        'sandbox',
+        t.token,
+        settings.customer!.id!,
+        settings.order!.countryCode!,
+        settings.order!.amount!,
+        settings.order!.currency!
+      );
+
+      console.log('newClientToken:', newClientToken);
+
+      handler.resumeWithSuccess(newClientToken);
     };
 
     const config = { settings, onTokenizeSuccess };

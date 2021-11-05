@@ -1,7 +1,7 @@
 import UIKit
 import PrimerSDK
 
-typealias BasicCompletionBlock = ((Error?) -> Void)
+typealias BasicCompletionBlock = ((Error?, String?) -> Void)
 
 @objc(PrimerRN)
 class PrimerRN: NSObject {
@@ -136,9 +136,9 @@ class PrimerRN: NSObject {
                 let request = try JSONDecoder().decode(PrimerResumeRequest.self, from: json)
                 
                 if (request.error) {
-                    self?.onResumeFlowCallback?(ErrorTypeRN.ParseJsonFailed)
+                    self?.onResumeFlowCallback?(ErrorTypeRN.ParseJsonFailed, nil)
                 } else {
-                    self?.onResumeFlowCallback?(nil)
+                    self?.onResumeFlowCallback?(nil, request.token)
                 }
                 self?.onResumeFlowCallback = nil
             } catch {

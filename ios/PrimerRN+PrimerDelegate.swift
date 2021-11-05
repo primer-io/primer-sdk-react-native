@@ -19,7 +19,7 @@ extension PrimerRN: PrimerDelegate {
     
     func onTokenizeSuccess(
         _ paymentMethodToken: PaymentMethodToken,
-        _ completion: @escaping (Error?) -> Void
+        resumeHandler: ResumeHandlerProtocol
     ) {
         do {
             let json = try encoder.encode(paymentMethodToken)
@@ -28,7 +28,15 @@ extension PrimerRN: PrimerDelegate {
         } catch {
             checkoutFailed(with: ErrorTypeRN.ParseJsonFailed)
         }
-        onResumeFlowCallback = completion
+        onResumeFlowCallback = { error, token in
+            if let token = token {
+                resumeHandler.handle(newClientToken: token)
+            } else if let error = error {
+                resumeHandler.handle(error: error)
+            } else {
+                resumeHandler.handle(error: PrimerError.generic)
+            }
+        }
     }
     
     func tokenAddedToVault(_ token: PaymentMethodToken) {

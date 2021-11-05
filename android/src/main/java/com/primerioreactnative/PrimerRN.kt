@@ -120,13 +120,13 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
     val config = PrimerConfig(theme, settings)
 
     // todo: refactor with next version
-    mListener.completion = { error ->
+    mListener.completion = { error, clientToken ->
       currentActivity?.let {
         it.runOnUiThread {
-          if (error) {
+
             Primer.instance.showError()
           } else {
-            Primer.instance.showSuccess()
+            clientToken?.let { t -> mListener.resumeHandler?.handleNewClientToken(t) }
           }
         }
       }
@@ -177,8 +177,9 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
   @ReactMethod
   fun resume(request: String) {
     try {
+      Log.d("PrimerRN", "resume: $request")
       val data = json.decodeFromString<PrimerResumeRequest>(request)
-      mListener.completion?.invoke(data.error)
+      mListener.completion?.invoke(data.error, data.token)
     } catch (e: Exception) {
       Log.e("PrimerRN", "configure settings error: $e")
       val exception = PrimerErrorRN(
