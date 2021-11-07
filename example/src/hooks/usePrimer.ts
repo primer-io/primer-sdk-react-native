@@ -71,8 +71,6 @@ export const usePrimer = (
         settings.order!.currency!
       );
 
-      console.log('newClientToken:', newClientToken);
-
       handler.resumeWithSuccess(newClientToken);
     };
 
