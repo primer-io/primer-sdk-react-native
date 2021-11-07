@@ -39,6 +39,18 @@ extension PrimerRN: PrimerDelegate {
         }
     }
     
+    func onResumeSuccess(_ clientToken: String, resumeHandler: ResumeHandlerProtocol) {
+        self.onResumeSuccessCallback?([clientToken])
+        
+        onResumeFlowCallback = { error, token in
+            if let error = error {
+                resumeHandler.handle(error: error)
+            } else {
+                resumeHandler.handleSuccess()
+            }
+        }
+    }
+    
     func tokenAddedToVault(_ token: PaymentMethodToken) {
         do {
             let json = try encoder.encode(token)

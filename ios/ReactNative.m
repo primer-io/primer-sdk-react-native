@@ -11,6 +11,8 @@ RCT_EXTERN_METHOD(configureIntent: (NSString *)request)
 
 RCT_EXTERN_METHOD(configureOnTokenizeSuccess: (RCTResponseSenderBlock)callback)
 
+RCT_EXTERN_METHOD(configureOnResumeSuccess: (RCTResponseSenderBlock)callback)
+
 RCT_EXTERN_METHOD(configureOnVaultSuccess: (RCTResponseSenderBlock)callback)
 
 RCT_EXTERN_METHOD(configureOnDismiss: (RCTResponseSenderBlock)callback)

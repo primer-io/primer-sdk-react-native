@@ -22,6 +22,9 @@ interface IPrimerConfig {
    * Use this callback to grab a Primer payment instrument token and complete a payment.
    */
   onTokenizeSuccess?: OnTokenizeSuccessCallback;
+
+  onResumeSuccess?: OnTokenizeSuccessCallback;
+
   /**
    * Use this callback to perform some action when a payment instrument was saved to Primer.
    */

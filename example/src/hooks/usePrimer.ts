@@ -76,7 +76,11 @@ export const usePrimer = (
       handler.resumeWithSuccess(newClientToken);
     };
 
-    const config = { settings, onTokenizeSuccess };
+    const onResumeSuccess: OnTokenizeSuccessCallback = async (_, handler) => {
+      handler.resumeWithSuccess('');
+    };
+
+    const config = { settings, onTokenizeSuccess, onResumeSuccess };
 
     switch (mode) {
       case 'checkout':
