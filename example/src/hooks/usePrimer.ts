@@ -74,8 +74,9 @@ export const usePrimer = (
       handler.resumeWithSuccess(newClientToken);
     };
 
-    const onResumeSuccess: OnTokenizeSuccessCallback = async (_, handler) => {
-      handler.resumeWithSuccess('');
+    const onResumeSuccess: OnTokenizeSuccessCallback = async (t, handler) => {
+      console.log('new token: ', t.token);
+      handler.resumeWithSuccess(t.token);
     };
 
     const config = { settings, onTokenizeSuccess, onResumeSuccess };

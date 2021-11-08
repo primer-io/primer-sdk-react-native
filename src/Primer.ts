@@ -110,8 +110,8 @@ function configureOnResumeSuccess(
   NativeModule.configureOnResumeSuccess((token: any) => {
     try {
       callback(token, {
-        resumeWithError: () => resume({ error: true, token: '' }),
-        resumeWithSuccess: () => resume({ error: false, token: '' }),
+        resumeWithError: () => resume({ error: true, token: null }),
+        resumeWithSuccess: (t) => resume({ error: false, token: t }),
       });
     } catch (e) {
       console.log('failed to parse json', e);
@@ -147,5 +147,5 @@ function configureOnSavedPaymentInstrumentsFetched(
 
 interface ResumeRequest {
   error: boolean;
-  token?: string;
+  token: string | null;
 }

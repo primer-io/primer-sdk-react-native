@@ -45,6 +45,8 @@ extension PrimerRN: PrimerDelegate {
         onResumeFlowCallback = { error, token in
             if let error = error {
                 resumeHandler.handle(error: error)
+            } else if let token = token {
+                resumeHandler.handle(newClientToken: token)
             } else {
                 resumeHandler.handleSuccess()
             }
