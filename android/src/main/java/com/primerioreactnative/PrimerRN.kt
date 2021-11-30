@@ -8,7 +8,6 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.primerioreactnative.datamodels.*
 import io.primer.android.Primer
-import io.primer.android.model.PrimerDebugOptions
 import io.primer.android.model.dto.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -90,6 +89,11 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
   }
 
   @ReactMethod
+  fun configureOnResumeSuccess(callback: Callback) {
+    mListener.configureOnResumeSuccess(callback)
+  }
+
+  @ReactMethod
   fun configureOnVaultSuccess(callback: Callback) {
     mListener.configureOnVaultSuccess(callback)
   }
@@ -123,10 +127,14 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
     mListener.completion = { error, clientToken ->
       currentActivity?.let {
         it.runOnUiThread {
-
+          if (error) {
             Primer.instance.showError()
           } else {
-            clientToken?.let { t -> mListener.resumeHandler?.handleNewClientToken(t) }
+            if (clientToken == null) {
+              mListener.resumeHandler?.handleSuccess()
+            } else {
+              mListener.resumeHandler?.handleNewClientToken(clientToken)
+            }
           }
         }
       }

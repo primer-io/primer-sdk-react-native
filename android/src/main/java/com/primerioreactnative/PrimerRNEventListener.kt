@@ -7,7 +7,6 @@ import com.primerioreactnative.datamodels.PrimerErrorRN
 import com.primerioreactnative.datamodels.PrimerPaymentInstrumentTokenRN
 import com.primerioreactnative.utils.PrimerEventQueueRN
 import io.primer.android.CheckoutEventListener
-import io.primer.android.Primer
 import io.primer.android.completion.ResumeHandler
 import io.primer.android.events.CheckoutEvent
 import kotlinx.serialization.encodeToString
@@ -16,6 +15,7 @@ import kotlinx.serialization.json.Json
 class PrimerRNEventListener : CheckoutEventListener {
 
   private var onTokenizeSuccessQueue: PrimerEventQueueRN? = null
+  private var onResumeSuccessQueue: PrimerEventQueueRN? = null
   private var onVaultSuccessQueue: PrimerEventQueueRN? = null
   private var onDismissQueue: PrimerEventQueueRN? = null
   var onPrimerErrorQueue: PrimerEventQueueRN? = null
@@ -28,6 +28,11 @@ class PrimerRNEventListener : CheckoutEventListener {
   fun configureOnTokenizeSuccess(callback: Callback) {
     onTokenizeSuccessQueue = PrimerEventQueueRN()
     onTokenizeSuccessQueue?.poll(callback)
+  }
+
+  fun configureOnResumeSuccess(callback: Callback) {
+    onResumeSuccessQueue = PrimerEventQueueRN()
+    onResumeSuccessQueue?.poll(callback)
   }
 
   fun configureOnVaultSuccess(callback: Callback) {
@@ -67,6 +72,11 @@ class PrimerRNEventListener : CheckoutEventListener {
         val token = PrimerPaymentInstrumentTokenRN.fromPaymentMethodToken(e.data)
         val request = Json.encodeToString(token)
         onTokenizeSuccessQueue?.addRequestAndPoll(request)
+      }
+      is CheckoutEvent.ResumeSuccess -> {
+        val token = e.resumeToken
+        onResumeSuccessQueue?.addRequestAndPoll(token)
+        resumeHandler = e.resumeHandler
       }
       is CheckoutEvent.SavedPaymentInstrumentsFetched -> {
         val list = e.data.map { PrimerPaymentInstrumentTokenRN.fromPaymentMethodToken(it) }

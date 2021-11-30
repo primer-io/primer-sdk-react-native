@@ -60,6 +60,7 @@ function configure(config: PrimerConfig): void {
   configureOnDismiss(config.onDismiss);
   configureOnError(config.onError);
   configureOnTokenizeSuccess(config.onTokenizeSuccess);
+  configureOnResumeSuccess(config.onResumeSuccess);
   configureOnSavedPaymentInstrumentsFetched(
     config.onSavedPaymentInstrumentsFetched
   );
@@ -103,6 +104,21 @@ function configureOnTokenizeSuccess(
   });
 }
 
+function configureOnResumeSuccess(
+  callback: OnTokenizeSuccessCallback = (_, __) => {}
+) {
+  NativeModule.configureOnResumeSuccess((token: any) => {
+    try {
+      callback(token, {
+        resumeWithError: () => resume({ error: true, token: null }),
+        resumeWithSuccess: (t) => resume({ error: false, token: t }),
+      });
+    } catch (e) {
+      console.log('failed to parse json', e);
+    }
+  });
+}
+
 function configureOnVaultSuccess(
   callback: OnTokenAddedToVaultCallback = (_) => {}
 ) {
@@ -131,5 +147,5 @@ function configureOnSavedPaymentInstrumentsFetched(
 
 interface ResumeRequest {
   error: boolean;
-  token?: string;
+  token: string | null;
 }

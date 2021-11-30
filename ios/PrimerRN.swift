@@ -17,6 +17,7 @@ class PrimerRN: NSObject {
     var theme: PrimerThemeRN?
     var flow: PrimerSessionFlow?
     var onTokenizeSuccessCallback: RCTResponseSenderBlock?
+    var onResumeSuccessCallback: RCTResponseSenderBlock?
     var onVaultSuccessCallback: RCTResponseSenderBlock?
     var onDismissCallback: RCTResponseSenderBlock?
     var onPrimerErrorCallback: RCTResponseSenderBlock?
@@ -58,6 +59,10 @@ class PrimerRN: NSObject {
     
     @objc func configureOnTokenizeSuccess(_ callback: @escaping RCTResponseSenderBlock) {
         self.onTokenizeSuccessCallback = callback
+    }
+    
+    @objc func configureOnResumeSuccess(_ callback: @escaping RCTResponseSenderBlock) {
+        self.onResumeSuccessCallback = callback
     }
     
     @objc func configureOnVaultSuccess(_ callback: @escaping RCTResponseSenderBlock) {
@@ -122,7 +127,6 @@ class PrimerRN: NSObject {
                 Primer.shared.delegate = self
                 Primer.shared.configure(settings: settings, theme: theme)
                 Primer.shared.showCheckout(viewController, flow: flow)
-                
             } catch {
                 self?.checkoutFailed(with: error)
             }
@@ -137,8 +141,10 @@ class PrimerRN: NSObject {
                 
                 if (request.error) {
                     self?.onResumeFlowCallback?(ErrorTypeRN.ParseJsonFailed, nil)
+                } else if let token = request.token {
+                    self?.onResumeFlowCallback?(nil, token)
                 } else {
-                    self?.onResumeFlowCallback?(nil, request.token)
+                    self?.onResumeFlowCallback?(nil, nil)
                 }
                 self?.onResumeFlowCallback = nil
             } catch {
