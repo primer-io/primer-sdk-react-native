@@ -10,14 +10,15 @@ export const createPayment = async (
 ) => {
   const url = Routes.payments;
 
+  console.log('ignore:', customerId, countryCode, amount, currencyCode);
+
   const body = JSON.stringify({
     environment,
     paymentMethod,
-    amount,
-    customerId,
-    currencyCode,
-    countryCode,
+    isV3: true,
   });
+
+  console.log('create payment request body', body);
 
   const headers = { 'Content-Type': 'application/json' };
 
