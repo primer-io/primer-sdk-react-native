@@ -34,23 +34,26 @@ export const usePrimer = (
   };
 
   useEffect(() => {
+    let isSubscribed = true;
     fetchClientToken(
       environment,
       customerId,
       settings.order!.countryCode!
     ).then((t) => {
-      setToken(t);
-
-      const config = {
-        settings,
-        onSavedPaymentInstrumentsFetched,
-      };
-
-      Primer.fetchSavedPaymentInstruments(t, config);
-      setLoading(false);
+      if (isSubscribed) {
+        setToken(t);
+        const config = {
+          settings,
+          onSavedPaymentInstrumentsFetched,
+        };
+        Primer.fetchSavedPaymentInstruments(t, config);
+        setLoading(false);
+      }
     });
 
-    return () => {};
+    return () => {
+      isSubscribed = false;
+    };
   }, [settings, environment, customerId]);
 
   const showAlert = (t: PaymentInstrumentToken) =>

@@ -10,7 +10,12 @@ interface IWalletScreenArguments {
 }
 
 export const WalletScreen = (args: IWalletScreenArguments) => {
-  const { presentPrimer, loading, paymentSavedInstruments, paymentToken } = usePrimer(
+  const {
+    presentPrimer,
+    loading,
+    paymentSavedInstruments,
+    paymentToken,
+  } = usePrimer(
     args.route.params.settings,
     args.route.params.environment,
     args.route.params.customerId,
