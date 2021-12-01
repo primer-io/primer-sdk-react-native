@@ -2,15 +2,9 @@ import { Routes } from '../constants/url';
 
 export const createPayment = async (
   environment: 'dev' | 'staging' | 'sandbox' | 'production',
-  paymentMethod: string,
-  customerId: string,
-  countryCode: string,
-  amount: number,
-  currencyCode: string
+  paymentMethod: string
 ) => {
   const url = Routes.payments;
-
-  console.log('ignore:', customerId, countryCode, amount, currencyCode);
 
   const body = JSON.stringify({
     environment,

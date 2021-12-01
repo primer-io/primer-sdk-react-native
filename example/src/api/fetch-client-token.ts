@@ -7,11 +7,11 @@ export const fetchClientToken = async (
 
   const url = root + '/clientSession';
 
-  console.log('ignore:', environment, customerId, country);
+  console.log('ignore:', country); // todo: refactor test app settings form
 
   const body = JSON.stringify({
-    environment: 'staging',
-    customerId: 'test',
+    environment,
+    customerId,
     orderId: 'rn-test-10001',
     currencyCode: 'EUR',
     order: {
