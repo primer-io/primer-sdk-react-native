@@ -59,7 +59,7 @@ export const usePrimer = (
     if (!token) return;
 
     const onTokenizeSuccess: OnTokenizeSuccessCallback = async (t, handler) => {
-      const newClientToken: string = await createPayment('sandbox', t.token);
+      const newClientToken: string = await createPayment(environment, t.token);
       handler.resumeWithSuccess(newClientToken);
     };
 
