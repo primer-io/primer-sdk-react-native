@@ -16,7 +16,7 @@ class PrimerSettingsRN(
     val customer = customer?.format() ?: Customer()
     val business = business?.format() ?: Business()
     val options = options?.format() ?: Options()
-    return PrimerSettings(order, business, customer, options)
+    return PrimerSettings(order, customer, business, options)
   }
 }
 

@@ -16,7 +16,6 @@ export const usePrimer = (
   mode: string
 ) => {
   const [token, setToken] = useState<String | null>(null);
-  const [paymentToken, setPaymentToken] = useState<String | null>(null);
 
   const [paymentSavedInstruments, setSavedPaymentInstruments] = useState<
     PaymentInstrumentToken[]
@@ -34,43 +33,33 @@ export const usePrimer = (
   };
 
   useEffect(() => {
+    let isSubscribed = true;
     fetchClientToken(
       environment,
       customerId,
       settings.order!.countryCode!
     ).then((t) => {
-      setToken(t);
-
-      const config = {
-        settings,
-        onSavedPaymentInstrumentsFetched,
-      };
-
-      Primer.fetchSavedPaymentInstruments(t, config);
-      setLoading(false);
+      if (isSubscribed) {
+        setToken(t);
+        const config = {
+          settings,
+          onSavedPaymentInstrumentsFetched,
+        };
+        Primer.fetchSavedPaymentInstruments(t, config);
+        setLoading(false);
+      }
     });
 
-    return () => {};
+    return () => {
+      isSubscribed = false;
+    };
   }, [settings, environment, customerId]);
-
-  const showAlert = (t: PaymentInstrumentToken) =>
-    setPaymentToken(`Got token!\n${JSON.stringify(t)}`);
 
   const presentPrimer = () => {
     if (!token) return;
 
     const onTokenizeSuccess: OnTokenizeSuccessCallback = async (t, handler) => {
-      showAlert(t);
-
-      const newClientToken: string = await createPayment(
-        'sandbox',
-        t.token,
-        settings.customer!.id!,
-        settings.order!.countryCode!,
-        settings.order!.amount!,
-        settings.order!.currency!
-      );
-
+      const newClientToken: string = await createPayment(environment, t.token);
       handler.resumeWithSuccess(newClientToken);
     };
 
@@ -106,6 +95,5 @@ export const usePrimer = (
     presentPrimer,
     loading,
     paymentSavedInstruments,
-    paymentToken,
   };
 };

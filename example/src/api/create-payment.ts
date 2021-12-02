@@ -2,22 +2,17 @@ import { Routes } from '../constants/url';
 
 export const createPayment = async (
   environment: 'dev' | 'staging' | 'sandbox' | 'production',
-  paymentMethod: string,
-  customerId: string,
-  countryCode: string,
-  amount: number,
-  currencyCode: string
+  paymentMethod: string
 ) => {
   const url = Routes.payments;
 
   const body = JSON.stringify({
     environment,
     paymentMethod,
-    amount,
-    customerId,
-    currencyCode,
-    countryCode,
+    isV3: true,
   });
+
+  console.log('create payment request body', body);
 
   const headers = { 'Content-Type': 'application/json' };
 

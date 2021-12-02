@@ -10,7 +10,7 @@ interface IWalletScreenArguments {
 }
 
 export const WalletScreen = (args: IWalletScreenArguments) => {
-  const { presentPrimer, loading, paymentSavedInstruments, paymentToken } = usePrimer(
+  const { presentPrimer, loading, paymentSavedInstruments } = usePrimer(
     args.route.params.settings,
     args.route.params.environment,
     args.route.params.customerId,
@@ -40,7 +40,6 @@ export const WalletScreen = (args: IWalletScreenArguments) => {
           <PaymentInstrumentList data={paymentSavedInstruments} />
         </View>
         <View style={[styles.row, styles.button]}>{renderButton()}</View>
-        <Text>{paymentToken}</Text>
       </View>
     </View>
   );
