@@ -11,8 +11,9 @@ target 'ReactNativeExample' do
 
   use_react_native!(:path => config["reactNativePath"])
   
-  pod 'Primer3DS'
   pod 'primer-io-react-native', :path => '../..'
+
+  pod 'Primer3DS'
   
       
   # Enables Flipper.

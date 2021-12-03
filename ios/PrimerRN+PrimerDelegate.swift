@@ -39,6 +39,50 @@ extension PrimerRN: PrimerDelegate {
         }
     }
     
+    func onClientSessionActions(_ actions: [ClientSession.Action], resumeHandler: ResumeHandlerProtocol?) {
+        do {
+            let actionsRN: [[String: String?]] = actions.compactMap  {
+                
+                if ($0.`type` == "SELECT_PAYMENT_METHOD") {
+                    let network = ($0.params?["binData"] as? [String: Any])?["network"] as? String
+                    return [
+                        "type": "SET_PAYMENT_METHOD",
+                        "paymentMethodType": $0.params?["paymentMethodType"] as? String,
+                        "network": network,
+                    ]
+                }
+                    
+                if ($0.`type` == "UNSELECT_PAYMENT_METHOD") {
+                    return [
+                        "type": "UNSET_PAYMENT_METHOD",
+                    ]
+                }
+                
+                return [ "type": "UNKNOWN" ]
+            }
+            
+            let request: [String: Any] = [
+                "actions": actionsRN
+            ]
+            
+            let data = try JSONSerialization.data(withJSONObject: request, options: .fragmentsAllowed)
+            let jsonString = String(data: data, encoding: .utf8)!
+            self.onClientSessionActionsCallback?([jsonString])
+        } catch {
+            checkoutFailed(with: ErrorTypeRN.ParseJsonFailed)
+        }
+        
+        onActionResumeCallback = { error, token in
+            if let token = token {
+                resumeHandler?.handle(newClientToken: token)
+            } else if let error = error {
+                resumeHandler?.handle(error: error)
+            } else {
+                resumeHandler?.handle(error: PrimerError.generic)
+            }
+        }
+    }
+    
     func onResumeSuccess(_ clientToken: String, resumeHandler: ResumeHandlerProtocol) {
         self.onResumeSuccessCallback?([clientToken])
         

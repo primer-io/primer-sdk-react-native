@@ -1,10 +1,16 @@
 import type { ActionRequest } from './action-request';
+import type { ClientSessionActionsRequest } from './client-session-actions-request';
 import type { PaymentInstrumentToken } from './payment-instrument-token';
 import type { PrimerError } from './primer-error';
 import type { PrimerResumeHandler } from './primer-request';
 
 export type OnTokenizeSuccessCallback = (
   req: PaymentInstrumentToken,
+  completion: PrimerResumeHandler
+) => void;
+
+export type OnClientSessionActionsCallback = (
+  req: ClientSessionActionsRequest,
   completion: PrimerResumeHandler
 ) => void;
 

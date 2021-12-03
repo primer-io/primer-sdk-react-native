@@ -17,11 +17,13 @@ class PrimerRN: NSObject {
     var theme: PrimerThemeRN?
     var flow: PrimerSessionFlow?
     var onTokenizeSuccessCallback: RCTResponseSenderBlock?
+    var onClientSessionActionsCallback: RCTResponseSenderBlock?
     var onResumeSuccessCallback: RCTResponseSenderBlock?
     var onVaultSuccessCallback: RCTResponseSenderBlock?
     var onDismissCallback: RCTResponseSenderBlock?
     var onPrimerErrorCallback: RCTResponseSenderBlock?
     var onResumeFlowCallback: BasicCompletionBlock?
+    var onActionResumeCallback: BasicCompletionBlock?
     var onSavedPaymentInstrumentsFetchedCallback: RCTResponseSenderBlock?
     
     private var sdkWasInitialised = false
@@ -59,6 +61,10 @@ class PrimerRN: NSObject {
     
     @objc func configureOnTokenizeSuccess(_ callback: @escaping RCTResponseSenderBlock) {
         self.onTokenizeSuccessCallback = callback
+    }
+    
+    @objc func configureOnClientSessionActions(_ callback: @escaping RCTResponseSenderBlock) {
+        self.onClientSessionActionsCallback = callback
     }
     
     @objc func configureOnResumeSuccess(_ callback: @escaping RCTResponseSenderBlock) {
@@ -147,6 +153,26 @@ class PrimerRN: NSObject {
                     self?.onResumeFlowCallback?(nil, nil)
                 }
                 self?.onResumeFlowCallback = nil
+            } catch {
+                self?.checkoutFailed(with: error)
+            }
+        }
+    }
+    
+    @objc func actionResume(_ request: String) -> Void {
+        DispatchQueue.main.async { [weak self] in
+            do {
+                let json = request.data(using: .utf8)!
+                let request = try JSONDecoder().decode(PrimerResumeRequest.self, from: json)
+                
+                if (request.error) {
+                    self?.onActionResumeCallback?(ErrorTypeRN.ParseJsonFailed, nil)
+                } else if let token = request.token {
+                    self?.onActionResumeCallback?(nil, token)
+                } else {
+                    self?.onActionResumeCallback?(nil, nil)
+                }
+                self?.onActionResumeCallback = nil
             } catch {
                 self?.checkoutFailed(with: error)
             }

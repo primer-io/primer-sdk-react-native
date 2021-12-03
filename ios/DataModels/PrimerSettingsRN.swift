@@ -39,7 +39,7 @@ extension PrimerSettingsRN {
             customer: Customer(
                 firstName: customer?.firstName,
                 lastName: customer?.lastName,
-                email: customer?.email,
+                emailAddress: customer?.email,
                 homePhoneNumber: nil,
                 mobilePhoneNumber: customer?.phone,
                 workPhoneNumber: nil,

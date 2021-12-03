@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react';
 import { Primer } from '@primer-io/react-native';
-import { fetchClientToken } from '../api/fetch-client-token';
+import { createClientSession } from '../api/client-session';
 import type { PrimerSettings } from 'src/models/primer-settings';
 import type { PaymentInstrumentToken } from 'src/models/payment-instrument-token';
 import type {
+  OnClientSessionActionsCallback,
   OnSavedPaymentInstrumentsFetchedCallback,
   OnTokenizeSuccessCallback,
 } from 'src/models/primer-callbacks';
 import { createPayment } from '../api/create-payment';
+import { postAction } from '../api/actions';
 
 export const usePrimer = (
   settings: PrimerSettings,
@@ -15,7 +17,7 @@ export const usePrimer = (
   customerId: string,
   mode: string
 ) => {
-  const [token, setToken] = useState<String | null>(null);
+  const [token, setToken] = useState<string | null>(null);
 
   const [paymentSavedInstruments, setSavedPaymentInstruments] = useState<
     PaymentInstrumentToken[]
@@ -26,15 +28,12 @@ export const usePrimer = (
   const onSavedPaymentInstrumentsFetched: OnSavedPaymentInstrumentsFetchedCallback = (
     data
   ) => {
-    console.log('🔥🔥');
-    console.log(data);
-    console.log(JSON.stringify(data[1].paymentInstrumentData));
     setSavedPaymentInstruments(data);
   };
 
   useEffect(() => {
     let isSubscribed = true;
-    fetchClientToken(
+    createClientSession(
       environment,
       customerId,
       settings.order!.countryCode!
@@ -56,19 +55,47 @@ export const usePrimer = (
   }, [settings, environment, customerId]);
 
   const presentPrimer = () => {
-    if (!token) return;
+    if (!token) throw Error('client token is null!');
 
-    const onTokenizeSuccess: OnTokenizeSuccessCallback = async (t, handler) => {
-      const newClientToken: string = await createPayment(environment, t.token);
-      handler.resumeWithSuccess(newClientToken);
+    const onTokenizeSuccess: OnTokenizeSuccessCallback = async (req, res) => {
+      const newClientToken: string = await createPayment(
+        environment,
+        req.token
+      );
+      res.resumeWithSuccess(newClientToken);
     };
 
-    const onResumeSuccess: OnTokenizeSuccessCallback = async (t, handler) => {
-      console.log('new token: ', t.token);
-      handler.resumeWithSuccess(t.token);
+    const onResumeSuccess: OnTokenizeSuccessCallback = async (req, res) => {
+      const newClientToken: string = await createPayment(
+        environment,
+        req.token
+      );
+      res.resumeWithSuccess(newClientToken);
     };
 
-    const config = { settings, onTokenizeSuccess, onResumeSuccess };
+    const onClientSessionActions: OnClientSessionActionsCallback = async (
+      clientSessionActionsRequest,
+      handler
+    ) => {
+      try {
+        const newClientToken: string = await postAction(
+          environment,
+          clientSessionActionsRequest,
+          token
+        );
+        console.log('calling resume success');
+        handler.resumeWithSuccess(newClientToken);
+      } catch (error) {
+        handler.resumeWithError('checkout failed, please close and retry.'); // this can be any message
+      }
+    };
+
+    const config = {
+      settings,
+      onTokenizeSuccess,
+      onClientSessionActions,
+      onResumeSuccess,
+    };
 
     switch (mode) {
       case 'checkout':

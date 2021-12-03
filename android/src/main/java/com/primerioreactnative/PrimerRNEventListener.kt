@@ -4,9 +4,11 @@ import android.util.Log
 import com.facebook.react.bridge.Callback
 import com.primerioreactnative.datamodels.ErrorTypeRN
 import com.primerioreactnative.datamodels.PrimerErrorRN
+import com.primerioreactnative.datamodels.PrimerOnClientSessionActionsRequestRN
 import com.primerioreactnative.datamodels.PrimerPaymentInstrumentTokenRN
 import com.primerioreactnative.utils.PrimerEventQueueRN
 import io.primer.android.CheckoutEventListener
+import io.primer.android.completion.ActionResumeHandler
 import io.primer.android.completion.ResumeHandler
 import io.primer.android.events.CheckoutEvent
 import kotlinx.serialization.encodeToString
@@ -15,6 +17,7 @@ import kotlinx.serialization.json.Json
 class PrimerRNEventListener : CheckoutEventListener {
 
   private var onTokenizeSuccessQueue: PrimerEventQueueRN? = null
+  private var onClientSessionActionsQueue: PrimerEventQueueRN? = null
   private var onResumeSuccessQueue: PrimerEventQueueRN? = null
   private var onVaultSuccessQueue: PrimerEventQueueRN? = null
   private var onDismissQueue: PrimerEventQueueRN? = null
@@ -22,12 +25,20 @@ class PrimerRNEventListener : CheckoutEventListener {
   var onSavedPaymentInstrumentsFetchedQueue: PrimerEventQueueRN? = null
 
   var completion: ((error: Boolean, token: String?) -> Unit)? = null
+  var actionCompletion: ((error: Boolean, token: String?) -> Unit)? = null
 
   var resumeHandler: ResumeHandler? = null
+  var actionResumeHandler: ActionResumeHandler? = null
 
   fun configureOnTokenizeSuccess(callback: Callback) {
     onTokenizeSuccessQueue = PrimerEventQueueRN()
     onTokenizeSuccessQueue?.poll(callback)
+  }
+
+  fun configureOnClientSessionActions(callback: Callback) {
+    onClientSessionActionsQueue = PrimerEventQueueRN()
+    println("polling with callback: $callback")
+    onClientSessionActionsQueue?.poll(callback)
   }
 
   fun configureOnResumeSuccess(callback: Callback) {
@@ -53,6 +64,17 @@ class PrimerRNEventListener : CheckoutEventListener {
   fun configureOnSavedPaymentInstrumentsFetched(callback: Callback) {
     onSavedPaymentInstrumentsFetchedQueue = PrimerEventQueueRN()
     onSavedPaymentInstrumentsFetchedQueue?.poll(callback)
+  }
+
+  override fun onClientSessionActions(event: CheckoutEvent.OnClientSessionActions) {
+    val token = PrimerOnClientSessionActionsRequestRN.build(event.data)
+    val request = Json.encodeToString(token)
+
+    println("on client session actions")
+    println("onClientSessionActionsQueue is null?: ${onClientSessionActionsQueue == null}")
+
+    onClientSessionActionsQueue?.addRequestAndPoll(request)
+    actionResumeHandler = event.resumeHandler
   }
 
   override fun onCheckoutEvent(e: CheckoutEvent) {

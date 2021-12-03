@@ -1,7 +1,9 @@
 import { NativeModules } from 'react-native';
+import type { ClientSessionActionsRequest } from './models/client-session-actions-request';
 import type { PaymentInstrumentToken } from './models/payment-instrument-token';
 import type { IPrimer } from './models/primer';
 import type {
+  OnClientSessionActionsCallback,
   OnDismissCallback,
   OnPrimerErrorCallback,
   OnSavedPaymentInstrumentsFetchedCallback,
@@ -60,6 +62,7 @@ function configure(config: PrimerConfig): void {
   configureOnDismiss(config.onDismiss);
   configureOnError(config.onError);
   configureOnTokenizeSuccess(config.onTokenizeSuccess);
+  configureOnClientSessionActions(config.onClientSessionActions);
   configureOnResumeSuccess(config.onResumeSuccess);
   configureOnSavedPaymentInstrumentsFetched(
     config.onSavedPaymentInstrumentsFetched
@@ -85,6 +88,7 @@ function configureIntent(
 
 function resume(request: ResumeRequest) {
   const data = JSON.stringify(request);
+  console.log('calling resume');
   NativeModule.resume(data);
 }
 
@@ -100,6 +104,31 @@ function configureOnTokenizeSuccess(
       });
     } catch (e) {
       console.log('failed to parse json', e);
+    }
+  });
+}
+
+function actionResume(request: ResumeRequest) {
+  const data = JSON.stringify(request);
+  console.log('calling resume with data:', data);
+  NativeModule.actionResume(data);
+}
+
+function configureOnClientSessionActions(
+  callback: OnClientSessionActionsCallback = (_, __) => {}
+) {
+  NativeModule.configureOnClientSessionActions((data: any) => {
+    try {
+      console.log('on client session actions 🔥', data);
+      const parsedData = JSON.parse(data) as ClientSessionActionsRequest;
+      console.log('parsedData:', parsedData);
+      callback(parsedData, {
+        resumeWithError: () => actionResume({ error: true, token: null }),
+        resumeWithSuccess: (token) => actionResume({ error: false, token }),
+      });
+      configureOnClientSessionActions(callback);
+    } catch (e) {
+      console.log('[OnClientSessionActions]', 'failed to parse json', e);
     }
   });
 }

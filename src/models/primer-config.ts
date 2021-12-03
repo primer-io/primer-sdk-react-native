@@ -1,4 +1,5 @@
 import type {
+  OnClientSessionActionsCallback,
   OnDismissCallback,
   OnPrimerErrorCallback,
   OnSavedPaymentInstrumentsFetchedCallback,
@@ -41,4 +42,6 @@ interface IPrimerConfig {
    * Use this to receive saved payment instruments fetch result.
    */
   onSavedPaymentInstrumentsFetched?: OnSavedPaymentInstrumentsFetchedCallback;
+
+  onClientSessionActions?: OnClientSessionActionsCallback;
 }

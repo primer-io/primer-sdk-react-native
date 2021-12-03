@@ -12,6 +12,7 @@ import io.primer.android.model.dto.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlin.Error
 
 
 class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
@@ -89,6 +90,11 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
   }
 
   @ReactMethod
+  fun configureOnClientSessionActions(callback: Callback) {
+    mListener.configureOnClientSessionActions(callback)
+  }
+
+  @ReactMethod
   fun configureOnResumeSuccess(callback: Callback) {
     mListener.configureOnResumeSuccess(callback)
   }
@@ -135,6 +141,18 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
             } else {
               mListener.resumeHandler?.handleNewClientToken(clientToken)
             }
+          }
+        }
+      }
+    }
+
+    mListener.actionCompletion = { error, clientToken ->
+      currentActivity?.let {
+        it.runOnUiThread {
+          if (error) {
+            mListener.actionResumeHandler?.handleError(Error("something went wrong!"))
+          } else {
+            mListener.actionResumeHandler?.handleClientToken(clientToken)
           }
         }
       }
@@ -197,6 +215,30 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
       val encoded = json.encodeToString(exception)
       mListener.onPrimerErrorQueue?.addRequestAndPoll(encoded)
       haltExecution = true
+    }
+  }
+
+  @ReactMethod
+  fun actionResume(request: String) {
+    try {
+      Log.d("PrimerRN", "resume: $request")
+      val data = json.decodeFromString<PrimerResumeRequest>(request)
+      mListener.actionCompletion?.invoke(data.error, data.token)
+
+      mListener.actionCompletion = { error, clientToken ->
+        currentActivity?.let {
+          it.runOnUiThread {
+            if (error) {
+              mListener.actionResumeHandler?.handleError(Error("something went wrong!"))
+            } else {
+              mListener.actionResumeHandler?.handleClientToken(clientToken)
+            }
+          }
+        }
+      }
+
+    } catch (e: Exception) {
+      Log.e("PrimerRN", "configure settings error: $e")
     }
   }
 }
