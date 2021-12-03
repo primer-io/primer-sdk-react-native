@@ -117,7 +117,11 @@ function actionResume(request: ResumeRequest) {
 }
 
 function configureOnClientSessionActions(
-  callback: OnClientSessionActionsCallback = (_, __) => {}
+  callback: OnClientSessionActionsCallback = (_, __) => {
+    NativeModule.configureOnClientSessionActions((___: any) => {
+      actionResume({ error: null, token: null });
+    });
+  }
 ) {
   NativeModule.configureOnClientSessionActions((data: any) => {
     try {
