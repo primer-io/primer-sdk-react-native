@@ -1,7 +1,9 @@
 import { NativeModules } from 'react-native';
+import type { ClientSessionActionsRequest } from './models/client-session-actions-request';
 import type { PaymentInstrumentToken } from './models/payment-instrument-token';
 import type { IPrimer } from './models/primer';
 import type {
+  OnClientSessionActionsCallback,
   OnDismissCallback,
   OnPrimerErrorCallback,
   OnSavedPaymentInstrumentsFetchedCallback,
@@ -60,6 +62,7 @@ function configure(config: PrimerConfig): void {
   configureOnDismiss(config.onDismiss);
   configureOnError(config.onError);
   configureOnTokenizeSuccess(config.onTokenizeSuccess);
+  configureOnClientSessionActions(config.onClientSessionActions);
   configureOnResumeSuccess(config.onResumeSuccess);
   configureOnSavedPaymentInstrumentsFetched(
     config.onSavedPaymentInstrumentsFetched
@@ -104,6 +107,37 @@ function configureOnTokenizeSuccess(
       });
     } catch (e) {
       console.log('failed to parse json', e);
+    }
+  });
+}
+
+function actionResume(request: ResumeRequest) {
+  const data = JSON.stringify(request);
+  NativeModule.actionResume(data);
+}
+
+function configureOnClientSessionActions(
+  callback: OnClientSessionActionsCallback = (_, __) => {
+    NativeModule.configureOnClientSessionActions((___: any) => {
+      actionResume({ error: null, token: null });
+      configureOnClientSessionActions(callback);
+    });
+  }
+) {
+  NativeModule.configureOnClientSessionActions((data: any) => {
+    try {
+      const parsedData = JSON.parse(data) as ClientSessionActionsRequest;
+      callback(parsedData, {
+        handleError: (error) => actionResume({ error, token: null }),
+        handleSuccess: () => actionResume({ error: null, token: null }),
+        handleNewClientToken: (token) => actionResume({ error: null, token }),
+        // deprecated
+        resumeWithError: (error) => actionResume({ error, token: null }),
+        resumeWithSuccess: (token) => actionResume({ error: null, token }),
+      });
+      configureOnClientSessionActions(callback);
+    } catch (e) {
+      console.log('[OnClientSessionActions]', 'failed to parse json', e);
     }
   });
 }

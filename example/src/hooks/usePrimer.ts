@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react';
 import { Primer } from '@primer-io/react-native';
-import { fetchClientToken } from '../api/fetch-client-token';
+import { createClientSession } from '../api/client-session';
 import type { PrimerSettings } from 'src/models/primer-settings';
 import type { PaymentInstrumentToken } from 'src/models/payment-instrument-token';
 import type {
+  OnClientSessionActionsCallback,
   OnSavedPaymentInstrumentsFetchedCallback,
   OnTokenizeSuccessCallback,
 } from 'src/models/primer-callbacks';
 import { createPayment } from '../api/create-payment';
+import { postAction } from '../api/actions';
 import { resumePayment } from '../api/resume-payment';
 
 const ERROR_MESSAGE = 'payment failed, please try again!';
@@ -35,18 +37,18 @@ export const usePrimer = (
 
   useEffect(() => {
     let isSubscribed = true;
-    fetchClientToken(
+    createClientSession(
       environment,
       customerId,
       settings.order!.countryCode!
-    ).then((t) => {
+    ).then((session) => {
       if (isSubscribed) {
-        setToken(t);
+        setToken(session.clientToken);
         const config = {
           settings,
           onSavedPaymentInstrumentsFetched,
         };
-        Primer.fetchSavedPaymentInstruments(t, config);
+        Primer.fetchSavedPaymentInstruments(session.clientToken, config);
         setLoading(false);
       }
     });
@@ -57,7 +59,7 @@ export const usePrimer = (
   }, [settings, environment, customerId]);
 
   const presentPrimer = () => {
-    if (!token) return;
+    if (!token) throw Error('client token is null!');
 
     const onTokenizeSuccess: OnTokenizeSuccessCallback = (req, res) =>
       createPayment(environment, req.token)
@@ -92,7 +94,29 @@ export const usePrimer = (
         })
         .catch((_) => res.handleError(ERROR_MESSAGE));
 
-    const config = { settings, onTokenizeSuccess, onResumeSuccess };
+    const onClientSessionActions: OnClientSessionActionsCallback = async (
+      clientSessionActionsRequest,
+      handler
+    ) => {
+      try {
+        const newClientToken: string = await postAction(
+          environment,
+          clientSessionActionsRequest,
+          token
+        );
+        console.log('calling resume success');
+        handler.handleNewClientToken(newClientToken);
+      } catch (error) {
+        handler.handleError(ERROR_MESSAGE);
+      }
+    };
+
+    const config = {
+      settings,
+      onTokenizeSuccess,
+      onClientSessionActions,
+      onResumeSuccess,
+    };
 
     switch (mode) {
       case 'checkout':

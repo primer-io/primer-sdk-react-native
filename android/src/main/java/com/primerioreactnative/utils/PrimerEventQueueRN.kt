@@ -14,9 +14,7 @@ class PrimerEventQueueRN {
 
   fun poll(cb: Callback? = null) {
     if (cb != null) mCallback = cb
-
     val callback = mCallback ?: return
-
     val next = mQueue.poll() ?: return
 
     callback.invoke(next)

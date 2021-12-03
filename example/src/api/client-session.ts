@@ -1,4 +1,4 @@
-export const fetchClientToken = async (
+export const createClientSession = async (
   environment: 'dev' | 'staging' | 'sandbox' | 'production',
   customerId: string,
   country: string
@@ -40,6 +40,44 @@ export const fetchClientToken = async (
       },
       nationalDocumentId: '9011211234567',
     },
+    paymentMethod: {
+      options: {
+        GOOGLE_PAY: {
+          surcharge: {
+            amount: 50,
+          },
+        },
+        ADYEN_IDEAL: {
+          surcharge: {
+            amount: 50,
+          },
+        },
+        ADYEN_SOFORT: {
+          surcharge: {
+            amount: 50,
+          },
+        },
+        APPLE_PAY: {
+          surcharge: {
+            amount: 150,
+          },
+        },
+        PAYMENT_CARD: {
+          networks: {
+            VISA: {
+              surcharge: {
+                amount: 100,
+              },
+            },
+            MASTERCARD: {
+              surcharge: {
+                amount: 200,
+              },
+            },
+          },
+        },
+      },
+    },
   });
 
   const headers = { 'Content-Type': 'application/json' };
@@ -54,5 +92,5 @@ export const fetchClientToken = async (
 
   console.log('client token:', json);
 
-  return json.clientToken;
+  return json;
 };
