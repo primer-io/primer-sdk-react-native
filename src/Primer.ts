@@ -99,8 +99,12 @@ function configureOnTokenizeSuccess(
     try {
       const parsedData = JSON.parse(data) as PaymentInstrumentToken;
       callback(parsedData, {
-        resumeWithError: () => resume({ error: true, token: '' }),
-        resumeWithSuccess: (token) => resume({ error: false, token }),
+        handleError: (error) => resume({ error, token: null }),
+        handleSuccess: () => resume({ error: null, token: null }),
+        handleNewClientToken: (token) => resume({ error: null, token }),
+        // deprecated
+        resumeWithError: (error) => resume({ error, token: null }),
+        resumeWithSuccess: (token) => resume({ error: null, token }),
       });
     } catch (e) {
       console.log('failed to parse json', e);
@@ -136,11 +140,15 @@ function configureOnClientSessionActions(
 function configureOnResumeSuccess(
   callback: OnTokenizeSuccessCallback = (_, __) => {}
 ) {
-  NativeModule.configureOnResumeSuccess((token: any) => {
+  NativeModule.configureOnResumeSuccess((paymentMethodToken: any) => {
     try {
-      callback(token, {
-        resumeWithError: () => resume({ error: true, token: null }),
-        resumeWithSuccess: (t) => resume({ error: false, token: t }),
+      callback(paymentMethodToken, {
+        handleError: (error) => resume({ error, token: null }),
+        handleSuccess: () => resume({ error: null, token: null }),
+        handleNewClientToken: (token) => resume({ error: null, token }),
+        // deprecated
+        resumeWithError: (error) => resume({ error, token: null }),
+        resumeWithSuccess: (token) => resume({ error: null, token }),
       });
     } catch (e) {
       console.log('failed to parse json', e);
@@ -175,6 +183,6 @@ function configureOnSavedPaymentInstrumentsFetched(
 }
 
 interface ResumeRequest {
-  error: boolean;
+  error: string | null;
   token: string | null;
 }

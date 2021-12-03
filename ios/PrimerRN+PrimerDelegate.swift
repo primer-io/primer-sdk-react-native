@@ -28,13 +28,13 @@ extension PrimerRN: PrimerDelegate {
         } catch {
             checkoutFailed(with: ErrorTypeRN.ParseJsonFailed)
         }
-        onResumeFlowCallback = { error, token in
-            if let token = token {
-                resumeHandler.handle(newClientToken: token)
-            } else if let error = error {
+        onResumeFlowCallback = { error, clientToken in
+            if let error = error {
                 resumeHandler.handle(error: error)
+            } else if let clientToken = clientToken {
+                resumeHandler.handle(newClientToken: clientToken)
             } else {
-                resumeHandler.handle(error: PrimerError.generic)
+                resumeHandler.handleSuccess()
             }
         }
     }
@@ -86,11 +86,11 @@ extension PrimerRN: PrimerDelegate {
     func onResumeSuccess(_ clientToken: String, resumeHandler: ResumeHandlerProtocol) {
         self.onResumeSuccessCallback?([clientToken])
         
-        onResumeFlowCallback = { error, token in
+        onResumeFlowCallback = { error, clientToken in
             if let error = error {
                 resumeHandler.handle(error: error)
-            } else if let token = token {
-                resumeHandler.handle(newClientToken: token)
+            } else if let clientToken = clientToken {
+                resumeHandler.handle(newClientToken: clientToken)
             } else {
                 resumeHandler.handleSuccess()
             }

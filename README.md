@@ -43,15 +43,13 @@ import { Primer } from '@primer-io/react-native';
 const token: string = await fetchClientToken();
 
 // configure listeners and settings.
-const onTokenizeSuccess = (t, handler) => {
-  setPaymentInstrument(t);
-  handler.resumeWithSuccess(); // call this to resume the checkout flow.
+const onTokenizeSuccess = async (t, handler) => {
+  const payment = await createPayment(t);
+  handler.handleSuccess(); // resume the checkout flow with success message.
 };
 
-const settings = { order: { amount: 50, currency: 'GBP' } };
-
 // show Universal Checkout with client token and config.
-Primer.showUniversalCheckout(token, { onTokenizeSuccess, settings });
+Primer.showUniversalCheckout(token, { onTokenizeSuccess });
 ```
 
 For more info & help troubleshooting, check out our 🔥 [docs](https://www.notion.so/primerio/Quick-Start-6c5eb61e5bbe426ca66244259e06048e)

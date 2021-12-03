@@ -133,8 +133,8 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
     mListener.completion = { error, clientToken ->
       currentActivity?.let {
         it.runOnUiThread {
-          if (error) {
-            Primer.instance.showError()
+          if (error != null) {
+            mListener.resumeHandler?.handleError(Error(error))
           } else {
             if (clientToken == null) {
               mListener.resumeHandler?.handleSuccess()

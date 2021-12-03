@@ -26,5 +26,5 @@ export const createPayment = async (
 
   console.log('create payment response:', json);
 
-  return json.requiredAction.clientToken;
+  return json;
 };
