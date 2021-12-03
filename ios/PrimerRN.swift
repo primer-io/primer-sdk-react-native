@@ -152,6 +152,7 @@ class PrimerRN: NSObject {
                 } else {
                     self?.onResumeFlowCallback?(nil, nil)
                 }
+                
                 self?.onResumeFlowCallback = nil
             } catch {
                 self?.checkoutFailed(with: error)
@@ -165,13 +166,14 @@ class PrimerRN: NSObject {
                 let json = request.data(using: .utf8)!
                 let request = try JSONDecoder().decode(PrimerResumeRequest.self, from: json)
                 
-                if (request.error) {
-                    self?.onActionResumeCallback?(ErrorTypeRN.ParseJsonFailed, nil)
-                } else if let token = request.token {
-                    self?.onActionResumeCallback?(nil, token)
+                if let error = request.error {
+                    self?.onActionResumeCallback?(ErrorRN(message: error), nil)
+                } else if let clientToken = request.token {
+                    self?.onActionResumeCallback?(nil, clientToken)
                 } else {
                     self?.onActionResumeCallback?(nil, nil)
                 }
+                
                 self?.onActionResumeCallback = nil
             } catch {
                 self?.checkoutFailed(with: error)

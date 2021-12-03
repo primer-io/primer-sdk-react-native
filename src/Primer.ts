@@ -88,7 +88,6 @@ function configureIntent(
 
 function resume(request: ResumeRequest) {
   const data = JSON.stringify(request);
-  console.log('calling resume');
   NativeModule.resume(data);
 }
 
@@ -114,7 +113,6 @@ function configureOnTokenizeSuccess(
 
 function actionResume(request: ResumeRequest) {
   const data = JSON.stringify(request);
-  console.log('calling resume with data:', data);
   NativeModule.actionResume(data);
 }
 
@@ -123,12 +121,14 @@ function configureOnClientSessionActions(
 ) {
   NativeModule.configureOnClientSessionActions((data: any) => {
     try {
-      console.log('on client session actions 🔥', data);
       const parsedData = JSON.parse(data) as ClientSessionActionsRequest;
-      console.log('parsedData:', parsedData);
       callback(parsedData, {
-        resumeWithError: () => actionResume({ error: true, token: null }),
-        resumeWithSuccess: (token) => actionResume({ error: false, token }),
+        handleError: (error) => actionResume({ error, token: null }),
+        handleSuccess: () => actionResume({ error: null, token: null }),
+        handleNewClientToken: (token) => actionResume({ error: null, token }),
+        // deprecated
+        resumeWithError: (error) => actionResume({ error, token: null }),
+        resumeWithSuccess: (token) => actionResume({ error: null, token }),
       });
       configureOnClientSessionActions(callback);
     } catch (e) {

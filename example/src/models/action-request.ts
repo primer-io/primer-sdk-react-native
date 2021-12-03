@@ -43,13 +43,13 @@ export const buildActionRequest = (
       if (action.paymentMethodType == 'PAYMENT_CARD') {
         request.actions[0].params!.binData = {
           network: action.network,
-          product_code: action.network,
-          product_name: action.network,
-          product_usage_type: 'UNKNOWN',
-          account_number_type: 'UNKNOWN',
-          account_funding_type: 'UNKNOWN',
-          regional_restriction: 'UNKNOWN',
-          prepaid_reloadable_indicator: 'NOT_APPLICABLE',
+          // product_code: action.network,
+          // product_name: action.network,
+          // product_usage_type: 'UNKNOWN',
+          // account_number_type: 'UNKNOWN',
+          // account_funding_type: 'UNKNOWN',
+          // regional_restriction: 'UNKNOWN',
+          // prepaid_reloadable_indicator: 'NOT_APPLICABLE',
         };
       }
 

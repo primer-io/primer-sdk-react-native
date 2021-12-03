@@ -41,14 +41,14 @@ export const usePrimer = (
       environment,
       customerId,
       settings.order!.countryCode!
-    ).then((t) => {
+    ).then((session) => {
       if (isSubscribed) {
-        setToken(t);
+        setToken(session.clientToken);
         const config = {
           settings,
           onSavedPaymentInstrumentsFetched,
         };
-        Primer.fetchSavedPaymentInstruments(t, config);
+        Primer.fetchSavedPaymentInstruments(session.clientToken, config);
         setLoading(false);
       }
     });

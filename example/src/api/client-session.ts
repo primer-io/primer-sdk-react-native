@@ -52,6 +52,11 @@ export const createClientSession = async (
             amount: 50,
           },
         },
+        ADYEN_SOFORT: {
+          surcharge: {
+            amount: 50,
+          },
+        },
         APPLE_PAY: {
           surcharge: {
             amount: 150,
@@ -87,5 +92,5 @@ export const createClientSession = async (
 
   console.log('client token:', json);
 
-  return json.clientToken;
+  return json;
 };
