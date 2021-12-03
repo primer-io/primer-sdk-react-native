@@ -5,7 +5,7 @@ struct PrimerInitRequest: Decodable {
 }
 
 struct PrimerResumeRequest: Decodable {
-    let error: Bool;
+    let error: String?
     let token: String?
 }
 

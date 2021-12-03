@@ -8,6 +8,9 @@ import type {
   OnTokenizeSuccessCallback,
 } from 'src/models/primer-callbacks';
 import { createPayment } from '../api/create-payment';
+import { resumePayment } from '../api/resume-payment';
+
+const ERROR_MESSAGE = 'payment failed, please try again!';
 
 export const usePrimer = (
   settings: PrimerSettings,
@@ -15,7 +18,8 @@ export const usePrimer = (
   customerId: string,
   mode: string
 ) => {
-  const [token, setToken] = useState<String | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [paymentId, setPaymentId] = useState<string | null>(null);
 
   const [paymentSavedInstruments, setSavedPaymentInstruments] = useState<
     PaymentInstrumentToken[]
@@ -26,9 +30,6 @@ export const usePrimer = (
   const onSavedPaymentInstrumentsFetched: OnSavedPaymentInstrumentsFetchedCallback = (
     data
   ) => {
-    console.log('🔥🔥');
-    console.log(data);
-    console.log(JSON.stringify(data[1].paymentInstrumentData));
     setSavedPaymentInstruments(data);
   };
 
@@ -58,15 +59,38 @@ export const usePrimer = (
   const presentPrimer = () => {
     if (!token) return;
 
-    const onTokenizeSuccess: OnTokenizeSuccessCallback = async (t, handler) => {
-      const newClientToken: string = await createPayment(environment, t.token);
-      handler.resumeWithSuccess(newClientToken);
-    };
+    const onTokenizeSuccess: OnTokenizeSuccessCallback = (req, res) =>
+      createPayment(environment, req.token)
+        .then((payment) => {
+          // https://primer.io/docs/api/#section/API-Usage-Guide/Payment-Status
+          if (payment.status in ['FAILED', 'DECLINED', 'CANCELLED']) {
+            res.handleError(ERROR_MESSAGE);
+          } else if (payment.requiredAction?.name != null) {
+            console.log('paymentId:', payment.id);
+            setPaymentId(payment.id);
+            res.handleNewClientToken(payment.requiredAction.clientToken);
+          } else {
+            res.handleSuccess();
+          }
+        })
+        .catch((_) => res.handleError(ERROR_MESSAGE));
 
-    const onResumeSuccess: OnTokenizeSuccessCallback = async (t, handler) => {
-      console.log('new token: ', t.token);
-      handler.resumeWithSuccess(t.token);
-    };
+    const onResumeSuccess: OnTokenizeSuccessCallback = (req, res) =>
+      resumePayment({
+        id: paymentId,
+        resumeToken: req,
+        environment: environment,
+      })
+        .then((payment) => {
+          if (
+            payment.status in ['FAILED', 'DECLINED', 'CANCELLED', 'PENDING']
+          ) {
+            res.handleError(ERROR_MESSAGE);
+          } else {
+            res.handleSuccess();
+          }
+        })
+        .catch((_) => res.handleError(ERROR_MESSAGE));
 
     const config = { settings, onTokenizeSuccess, onResumeSuccess };
 
