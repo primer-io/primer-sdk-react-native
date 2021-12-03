@@ -120,8 +120,8 @@ function configureOnClientSessionActions(
   callback: OnClientSessionActionsCallback = (_, __) => {
     NativeModule.configureOnClientSessionActions((___: any) => {
       actionResume({ error: null, token: null });
+      configureOnClientSessionActions(callback);
     });
-    configureOnClientSessionActions(callback);
   }
 ) {
   NativeModule.configureOnClientSessionActions((data: any) => {
