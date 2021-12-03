@@ -139,10 +139,10 @@ class PrimerRN: NSObject {
                 let json = request.data(using: .utf8)!
                 let request = try JSONDecoder().decode(PrimerResumeRequest.self, from: json)
                 
-                if (request.error) {
-                    self?.onResumeFlowCallback?(ErrorTypeRN.ParseJsonFailed, nil)
-                } else if let token = request.token {
-                    self?.onResumeFlowCallback?(nil, token)
+                if let error = request.error {
+                    self?.onResumeFlowCallback?(ErrorRN(message: error), nil)
+                } else if let clientToken = request.token {
+                    self?.onResumeFlowCallback?(nil, clientToken)
                 } else {
                     self?.onResumeFlowCallback?(nil, nil)
                 }

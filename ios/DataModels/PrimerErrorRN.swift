@@ -13,3 +13,7 @@ enum ErrorTypeRN: String, Error, Encodable {
     case clientTokenNotConfigured
     case flowParsingFailed
 }
+
+struct ErrorRN: Error {
+    let message: String
+}
