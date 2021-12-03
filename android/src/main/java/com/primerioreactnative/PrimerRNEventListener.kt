@@ -25,7 +25,7 @@ class PrimerRNEventListener : CheckoutEventListener {
   var onSavedPaymentInstrumentsFetchedQueue: PrimerEventQueueRN? = null
 
   var completion: ((error: String?, token: String?) -> Unit)? = null
-  var actionCompletion: ((error: Boolean, token: String?) -> Unit)? = null
+  var actionCompletion: ((error: String?, token: String?) -> Unit)? = null
 
   var resumeHandler: ResumeHandler? = null
   var actionResumeHandler: ActionResumeHandler? = null

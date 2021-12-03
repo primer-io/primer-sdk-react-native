@@ -149,8 +149,8 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
     mListener.actionCompletion = { error, clientToken ->
       currentActivity?.let {
         it.runOnUiThread {
-          if (error) {
-            mListener.actionResumeHandler?.handleError(Error("something went wrong!"))
+          if (error != null) {
+            mListener.actionResumeHandler?.handleError(Error(error))
           } else {
             mListener.actionResumeHandler?.handleClientToken(clientToken)
           }
@@ -228,8 +228,8 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
       mListener.actionCompletion = { error, clientToken ->
         currentActivity?.let {
           it.runOnUiThread {
-            if (error) {
-              mListener.actionResumeHandler?.handleError(Error("something went wrong!"))
+            if (error != null) {
+              mListener.actionResumeHandler?.handleError(Error(error))
             } else {
               mListener.actionResumeHandler?.handleClientToken(clientToken)
             }
