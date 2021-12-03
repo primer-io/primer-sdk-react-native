@@ -37,7 +37,6 @@ class PrimerRNEventListener : CheckoutEventListener {
 
   fun configureOnClientSessionActions(callback: Callback) {
     onClientSessionActionsQueue = PrimerEventQueueRN()
-    println("polling with callback: $callback")
     onClientSessionActionsQueue?.poll(callback)
   }
 
@@ -69,9 +68,6 @@ class PrimerRNEventListener : CheckoutEventListener {
   override fun onClientSessionActions(event: CheckoutEvent.OnClientSessionActions) {
     val token = PrimerOnClientSessionActionsRequestRN.build(event.data)
     val request = Json.encodeToString(token)
-
-    println("on client session actions")
-    println("onClientSessionActionsQueue is null?: ${onClientSessionActionsQueue == null}")
 
     onClientSessionActionsQueue?.addRequestAndPoll(request)
     actionResumeHandler = event.resumeHandler
