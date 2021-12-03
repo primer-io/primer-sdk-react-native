@@ -105,9 +105,9 @@ export const usePrimer = (
           token
         );
         console.log('calling resume success');
-        handler.resumeWithSuccess(newClientToken);
+        handler.handleNewClientToken(newClientToken);
       } catch (error) {
-        handler.resumeWithError('checkout failed, please close and retry.'); // this can be any message
+        handler.handleError(ERROR_MESSAGE);
       }
     };
 
