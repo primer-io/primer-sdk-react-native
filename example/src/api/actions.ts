@@ -1,20 +1,23 @@
 import type { ClientSessionActionsRequest } from 'src/models/client-session-actions-request';
-import { Routes } from '../constants/url';
+import { root } from '../constants/url';
 import { buildActionRequest } from '../models/action-request';
 
 export const postAction = async (
-  environment: 'dev' | 'staging' | 'sandbox' | 'production',
   clientSessionActionsRequest: ClientSessionActionsRequest,
   clientToken: string
 ) => {
-  const headers = { 'Content-Type': 'application/json' };
+  const url = root + `/client-session/actions`;
+
+  const headers = {
+    'Content-Type': 'application/json',
+    'environment': 'sandbox',
+  };
 
   const request = buildActionRequest(clientSessionActionsRequest, clientToken);
 
   console.log('sending actions request:', request);
 
   const body = JSON.stringify({
-    environment,
     ...request,
   });
 
@@ -22,7 +25,7 @@ export const postAction = async (
 
   const reqOptions = { method: 'post', headers, body };
 
-  const result = await fetch(Routes.actions, reqOptions);
+  const result = await fetch(url, reqOptions);
 
   const json = await result.json();
 

@@ -16,7 +16,6 @@ const ERROR_MESSAGE = 'payment failed, please try again!';
 
 export const usePrimer = (
   settings: PrimerSettings,
-  environment: 'dev' | 'staging' | 'sandbox' | 'production',
   customerId: string,
   mode: string
 ) => {
@@ -36,12 +35,9 @@ export const usePrimer = (
   };
 
   useEffect(() => {
+    console.log('🐠 mount usePrimer');
     let isSubscribed = true;
-    createClientSession(
-      environment,
-      customerId,
-      settings.order!.countryCode!
-    ).then((session) => {
+    createClientSession(customerId, settings).then((session) => {
       if (isSubscribed) {
         setToken(session.clientToken);
         const config = {
@@ -55,21 +51,22 @@ export const usePrimer = (
 
     return () => {
       isSubscribed = false;
+      console.log('🐠 unmount usePrimer');
     };
-  }, [settings, environment, customerId]);
+  }, [settings, customerId, mode]);
 
   const presentPrimer = () => {
     if (!token) throw Error('client token is null!');
 
     const onTokenizeSuccess: OnTokenizeSuccessCallback = (req, res) =>
-      createPayment(environment, req.token)
+      createPayment(req.token)
         .then((payment) => {
           // https://primer.io/docs/api/#section/API-Usage-Guide/Payment-Status
           if (payment.status in ['FAILED', 'DECLINED', 'CANCELLED']) {
             res.handleError(ERROR_MESSAGE);
           } else if (payment.requiredAction?.name != null) {
             console.log('paymentId:', payment.id);
-            setPaymentId(payment.id);
+            setPaymentId(payment.id!);
             res.handleNewClientToken(payment.requiredAction.clientToken);
           } else {
             res.handleSuccess();
@@ -78,10 +75,8 @@ export const usePrimer = (
         .catch((_) => res.handleError(ERROR_MESSAGE));
 
     const onResumeSuccess: OnTokenizeSuccessCallback = (req, res) =>
-      resumePayment({
-        id: paymentId,
+      resumePayment(paymentId!, {
         resumeToken: req,
-        environment: environment,
       })
         .then((payment) => {
           if (
@@ -100,7 +95,6 @@ export const usePrimer = (
     ) => {
       try {
         const newClientToken: string = await postAction(
-          environment,
           clientSessionActionsRequest,
           token
         );
