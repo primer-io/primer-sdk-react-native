@@ -20,7 +20,6 @@ export const resumePayment = async (id: string, req: any) => {
 
   if (response.status >= 200 && response.status < 300) {
     const parsedResponse = await response.json();
-    console.log('create resume response:', parsedResponse);
     console.log('🚀🚀  create resume response body', parsedResponse);
     return parsedResponse;
   } else {
