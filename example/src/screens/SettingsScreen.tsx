@@ -31,7 +31,7 @@ export const SettingsScreen = (args: ISettingsScreenArguments) => {
       case 'US':
         return 'USD';
       default:
-        return 'EUR';
+        throw 'this currency is not yet defined in the test app!';
     }
   };
 
