@@ -23,6 +23,11 @@ export const buildActionRequest = (
   clientSessionActionsRequest: ClientSessionActionsRequest,
   clientToken: string
 ): ActionRequest => {
+  console.log(
+    'actions received:',
+    JSON.stringify(clientSessionActionsRequest.actions)
+  );
+
   const action = clientSessionActionsRequest.actions[0];
   const type = action.type;
 

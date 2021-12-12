@@ -1,13 +1,7 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Picker,
-  TextInput,
-  TouchableOpacity,
-  Text,
-  Switch,
-} from 'react-native';
+import { View, Picker, TextInput, TouchableOpacity, Text } from 'react-native';
 import type { PrimerSettings } from 'src/models/primer-settings';
+import type { CountryCode } from 'src/models/utils/countryCode';
 import type { CurrencyCode } from 'src/models/utils/currencyCode';
 import { styles } from '../styles';
 
@@ -21,13 +15,7 @@ export const SettingsScreen = (args: ISettingsScreenArguments) => {
   const [intent, setIntent] = React.useState<'checkout' | 'vault' | 'card'>(
     'checkout'
   );
-  const [environment, setEnvironment] = useState<
-    'dev' | 'staging' | 'sandbox' | 'production'
-  >('sandbox');
-  const [threeDsEnabled, setThreeDsEnabled] = useState(false);
-  const [country, setCountry] = useState<'SE' | 'GB' | 'FR' | 'DE' | 'US'>(
-    'GB'
-  );
+  const [country, setCountry] = useState<CountryCode>('DE');
 
   const getCurrencyFromCountry = (): CurrencyCode => {
     switch (country) {
@@ -36,12 +24,14 @@ export const SettingsScreen = (args: ISettingsScreenArguments) => {
       case 'GB':
         return 'GBP';
       case 'FR':
+      case 'AT':
+      case 'NL':
       case 'DE':
         return 'EUR';
       case 'US':
         return 'USD';
       default:
-        return 'GBP';
+        throw 'this currency is not yet defined in the test app!';
     }
   };
 
@@ -78,7 +68,7 @@ export const SettingsScreen = (args: ISettingsScreenArguments) => {
         isFullScreenEnabled: false,
         isLoadingScreenEnabled: true,
         isResultScreenEnabled: true,
-        isThreeDsEnabled: threeDsEnabled,
+        isThreeDsEnabled: true,
         ios: {
           merchantIdentifier: 'merchant.checkout.team',
           urlScheme: 'primer',
@@ -92,7 +82,6 @@ export const SettingsScreen = (args: ISettingsScreenArguments) => {
 
     args.navigation.navigate('Wallet', {
       settings,
-      environment,
       customerId,
       intent,
     });
@@ -112,27 +101,13 @@ export const SettingsScreen = (args: ISettingsScreenArguments) => {
         <View style={[styles.row, styles.container]}>
           <View style={[styles.container]}>
             <Picker
-              selectedValue={environment}
-              style={styles.picker}
-              onValueChange={(itemValue, _) => setEnvironment(itemValue)}
-            >
-              <Picker.Item label="Production" value="production" />
-              <Picker.Item label="Sandbox" value="sandbox" />
-              <Picker.Item label="Staging" value="staging" />
-              <Picker.Item label="Dev" value="dev" />
-            </Picker>
-          </View>
-          <View style={[styles.container]}>
-            <Picker
               selectedValue={country}
               style={styles.picker}
               onValueChange={(itemValue, _) => setCountry(itemValue)}
             >
-              <Picker.Item label="SE - SEK" value="SE" />
-              <Picker.Item label="GB - GBP" value="GB" />
-              <Picker.Item label="FR - EUR" value="FR" />
-              <Picker.Item label="DE - EUR" value="DE" />
-              <Picker.Item label="US - USD" value="US" />
+              <Picker.Item label="🇩🇪" value="DE" />
+              <Picker.Item label="🇳🇱" value="NL" />
+              <Picker.Item label="🇦🇹" value="AT" />
             </Picker>
           </View>
           <View style={[styles.container]}>
@@ -170,12 +145,7 @@ export const SettingsScreen = (args: ISettingsScreenArguments) => {
             >
               <Picker.Item label="Vault Manager" value="vault" />
               <Picker.Item label="Universal Checkout" value="checkout" />
-              <Picker.Item label="Card Checkout" value="card" />
             </Picker>
-          </View>
-          <View>
-            <Text>3DS enabled</Text>
-            <Switch value={threeDsEnabled} onValueChange={setThreeDsEnabled} />
           </View>
         </View>
 

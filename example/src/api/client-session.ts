@@ -1,21 +1,24 @@
+import type { PrimerSettings } from 'src/models/primer-settings';
+import { root } from '../constants/url';
+
 export const createClientSession = async (
-  environment: 'dev' | 'staging' | 'sandbox' | 'production',
   customerId: string,
-  country: string
+  settings: PrimerSettings
 ) => {
-  const root = 'https://us-central1-primerdemo-8741b.cloudfunctions.net';
+  const url = root + '/client-session';
 
-  const url = root + '/clientSession';
-
-  console.log('ignore:', country); // todo: refactor test app settings form
+  const headers = {
+    'Content-Type': 'application/json',
+    'X-Api-Version': '2021-10-19',
+    'environment': 'sandbox',
+  };
 
   const body = JSON.stringify({
-    environment,
     customerId,
     orderId: 'rn-test-10001',
-    currencyCode: 'EUR',
+    currencyCode: settings.order?.currency,
     order: {
-      countryCode: 'NL',
+      countryCode: settings.order?.countryCode,
       lineItems: [
         {
           amount: 1000,
@@ -36,7 +39,7 @@ export const createClientSession = async (
         postalCode: '12345',
         city: 'test',
         state: 'test',
-        countryCode: 'NL',
+        countryCode: 'DE',
       },
       nationalDocumentId: '9011211234567',
     },
@@ -79,8 +82,6 @@ export const createClientSession = async (
       },
     },
   });
-
-  const headers = { 'Content-Type': 'application/json' };
 
   const method = 'post';
 
