@@ -28,6 +28,8 @@ export const SettingsScreen = (args: ISettingsScreenArguments) => {
       case 'NL':
       case 'DE':
         return 'EUR';
+      case 'SG':
+        return 'SGD';
       case 'US':
         return 'USD';
       default:
@@ -106,6 +108,7 @@ export const SettingsScreen = (args: ISettingsScreenArguments) => {
               onValueChange={(itemValue, _) => setCountry(itemValue)}
             >
               <Picker.Item label="🇩🇪" value="DE" />
+              <Picker.Item label="🇸🇬" value="SG" />
               <Picker.Item label="🇳🇱" value="NL" />
               <Picker.Item label="🇦🇹" value="AT" />
             </Picker>
