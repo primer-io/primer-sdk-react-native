@@ -1,4 +1,4 @@
-import { root } from '../constants/url';
+import { root, baseHeaders } from '../constants/url';
 
 export const createPayment = async (paymentMethod: string) => {
   const url = root + '/payments';
@@ -9,11 +9,8 @@ export const createPayment = async (paymentMethod: string) => {
 
   console.log('🚀 create payment request body', body);
 
-  const headers = {
-    'Content-Type': 'application/json',
-    'X-API-Version': '2021-09-27',
-    'environment': 'sandbox',
-  };
+  const headers = baseHeaders;
+  headers['X-Api-Version'] = '2021-09-27';
 
   const method = 'post';
 

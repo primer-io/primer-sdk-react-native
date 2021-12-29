@@ -1,4 +1,4 @@
-import { root } from '../constants/url';
+import { root, baseHeaders } from '../constants/url';
 
 export const resumePayment = async (id: string, req: any) => {
   const url = root + `/payments/${id}/resume`;
@@ -7,10 +7,8 @@ export const resumePayment = async (id: string, req: any) => {
 
   console.log('🚀🚀  create resume request body', body);
 
-  const headers = {
-    'Content-Type': 'application/json',
-    'environment': 'sandbox',
-  };
+  const headers = baseHeaders;
+  headers['X-Api-Version'] = '2021-09-27';
 
   const method = 'post';
 

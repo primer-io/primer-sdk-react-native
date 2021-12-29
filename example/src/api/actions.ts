@@ -1,5 +1,5 @@
 import type { ClientSessionActionsRequest } from 'src/models/client-session-actions-request';
-import { root } from '../constants/url';
+import { root, baseHeaders } from '../constants/url';
 import { buildActionRequest } from '../models/action-request';
 
 export const postAction = async (
@@ -8,10 +8,7 @@ export const postAction = async (
 ) => {
   const url = root + `/client-session/actions`;
 
-  const headers = {
-    'Content-Type': 'application/json',
-    'environment': 'sandbox',
-  };
+  const headers = baseHeaders;
 
   const request = buildActionRequest(clientSessionActionsRequest, clientToken);
 

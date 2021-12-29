@@ -1,5 +1,5 @@
 import type { PrimerSettings } from 'src/models/primer-settings';
-import { root } from '../constants/url';
+import { root, baseHeaders } from '../constants/url';
 
 export const createClientSession = async (
   customerId: string,
@@ -7,11 +7,8 @@ export const createClientSession = async (
 ) => {
   const url = root + '/client-session';
 
-  const headers = {
-    'Content-Type': 'application/json',
-    'X-Api-Version': '2021-10-19',
-    'environment': 'sandbox',
-  };
+  const headers = baseHeaders;
+  headers['X-Api-Version'] = '2021-10-19';
 
   const body = JSON.stringify({
     customerId,
