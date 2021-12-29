@@ -18,15 +18,14 @@ export const postAction = async (
     ...request,
   });
 
-  console.log('action request:', body);
+  const method = 'post';
+  const reqOptions = { method, headers, body };
 
-  const reqOptions = { method: 'post', headers, body };
-
+  console.log(`REQUEST\n[${method.toUpperCase()}] URL: ${url}\nHeaders: ${JSON.stringify(headers)}\nBody: ${JSON.stringify(body)}\n\n`);
   const result = await fetch(url, reqOptions);
 
   const json = await result.json();
-
-  console.log('action response:', json);
+  console.log(`RESPONSE\n${JSON.stringify(json)}`);
 
   return json.clientToken;
 };

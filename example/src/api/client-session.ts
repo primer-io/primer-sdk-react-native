@@ -94,13 +94,14 @@ export const createClientSession = async (
 
   const method = 'post';
 
+  
   const reqOptions = { method, headers, body };
 
+  console.log(`REQUEST\n[${method.toUpperCase()}] URL: ${url}\nHeaders: ${JSON.stringify(headers)}\nBody: ${JSON.stringify(body)}\n\n`);
   const result = await fetch(url, reqOptions);
 
   const json = await result.json();
-
-  console.log('client token:', json);
+  console.log(`RESPONSE\n${JSON.stringify(json)}`);
 
   return json;
 };
