@@ -1,7 +1,10 @@
+import { generateRandomString } from "../api/utils";
+
 export const root =
-  'https://us-central1-primerdemo-8741b.cloudfunctions.net/api';
+  'https://api.sandbox.primer.io';
 
   export const baseHeaders = {
     'Content-Type': 'application/json',
-    'environment': 'sandbox',
+    'X-Idempotency-Key': generateRandomString(16),  // Not required, but useful
+    'X-Api-Key': '',
   };
