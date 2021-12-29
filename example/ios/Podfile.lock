@@ -300,7 +300,7 @@ SPEC REPOS:
   https://github.com/CocoaPods/Specs.git:
     - boost-for-react-native
     - PrimerSDK
-  https://github.com/primer-io/primer-podspecs.git:
+  https://github.com/primer-io/primer-podspecs:
     - Primer3DS
 
 EXTERNAL SOURCES:
