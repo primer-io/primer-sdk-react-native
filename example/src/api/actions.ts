@@ -10,7 +10,7 @@ export const postAction = async (
 
   const headers = {
     'Content-Type': 'application/json',
-    'environment': 'sandbox',
+    'environment': 'staging',
   };
 
   const request = buildActionRequest(clientSessionActionsRequest, clientToken);

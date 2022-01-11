@@ -4,36 +4,22 @@ struct PrimerIntentRN: Decodable {
     let vault: Bool
     let paymentMethod: PrimerPaymentMethodTypeRN
     
-    
-    func toPrimerSessionFlow() -> PrimerSessionFlow? {
-        
-        switch (vault) {
-        case false:
-            switch (paymentMethod) {
-            case .Any:
-                return .default
-            case .ApplePay:
-                return .checkoutWithApplePay
-            case .Klarna:
-                return .checkoutWithKlarna
-            case .Card:
-                return .completeDirectCheckout
-            default:
-                return nil
-            }
-        case true:
-            switch (paymentMethod) {
-            case .Any:
-                return .defaultWithVault
-            case .Klarna:
-                return .addKlarnaToVault
-            case .PayPal:
-                return .addPayPalToVault
-            case .Card:
-                return .defaultWithVault
-            default:
-                return nil
-            }
+    var paymentMethodConfigType: PaymentMethodConfigType {
+        switch paymentMethod {
+        case .Any:
+            return .paymentCard
+        case .Klarna:
+            return .klarna
+        case .Card:
+            return .paymentCard
+        case .PayPal:
+            return .payPal
+        case .GooglePay:
+            return .googlePay
+        case .ApplePay:
+            return .applePay
+        case .GoCardless:
+            return .goCardlessMandate
         }
     }
 }

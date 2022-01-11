@@ -15,7 +15,7 @@ class PrimerRN: NSObject {
     var clientToken: String?
     var settings: PrimerSettingsRN?
     var theme: PrimerThemeRN?
-    var flow: PrimerSessionFlow?
+    var intent: PrimerIntentRN?
     var onTokenizeSuccessCallback: RCTResponseSenderBlock?
     var onClientSessionActionsCallback: RCTResponseSenderBlock?
     var onResumeSuccessCallback: RCTResponseSenderBlock?
@@ -52,7 +52,7 @@ class PrimerRN: NSObject {
         do {
             let json = request.data(using: .utf8)!
             let intent = try JSONDecoder().decode(PrimerIntentRN.self, from: json)
-            self.flow = intent.toPrimerSessionFlow()
+            self.intent = intent
         } catch {
             checkoutFailed(with: ErrorTypeRN.ParseJsonFailed)
         }
@@ -89,7 +89,7 @@ class PrimerRN: NSObject {
                     throw ErrorTypeRN.noIosViewController
                 }
 
-                guard let flow = self?.flow else {
+                guard let intent = self?.intent else {
                     throw ErrorTypeRN.invalidPrimerIntent
                 }
                 
@@ -104,7 +104,14 @@ class PrimerRN: NSObject {
                 
                 Primer.shared.delegate = self
                 Primer.shared.configure(settings: settings, theme: theme)
-                Primer.shared.showCheckout(viewController, flow: flow)
+                
+                DispatchQueue.main.async {
+                    if (intent.vault) {
+                        Primer.shared.showVaultManager(on: viewController, clientToken: token)
+                    } else {
+                        Primer.shared.showUniversalCheckout(on: viewController, clientToken: token)
+                    }
+                }
             } catch {
                 self?.checkoutFailed(with: error)
             }

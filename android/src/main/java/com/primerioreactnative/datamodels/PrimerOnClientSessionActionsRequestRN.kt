@@ -13,6 +13,12 @@ data class PrimerOnClientSessionActionsRequestRN(
     val type: String,
     val paymentMethodType: String? = null,
     val network: String? = null,
+    val params: Params? = null,
+  )
+
+  @Serializable
+  data class Params(
+    val billingAddress: Map<String, String?>
   )
 
   companion object {
@@ -32,6 +38,23 @@ data class PrimerOnClientSessionActionsRequestRN(
             is ClientSessionActionsRequest.UnsetPaymentMethod -> {
               Action(
                 type = "UNSET_PAYMENT_METHOD",
+              )
+            }
+            is ClientSessionActionsRequest.SetBillingAddress -> {
+              Action(
+                type = "SET_BILLING_ADDRESS",
+                params = Params(
+                  billingAddress = mapOf(
+                    "firstName" to action.firstName,
+                    "lastName" to action.lastName,
+                    "addressLine1" to action.addressLine1,
+                    "addressLine2" to action.addressLine2,
+                    "city" to action.city,
+                    "postalCode" to action.postalCode,
+                    "state" to action.state,
+                    "countryCode" to action.countryCode
+                  )
+                )
               )
             }
           }

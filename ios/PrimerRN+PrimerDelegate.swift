@@ -41,7 +41,7 @@ extension PrimerRN: PrimerDelegate {
     
     func onClientSessionActions(_ actions: [ClientSession.Action], resumeHandler: ResumeHandlerProtocol?) {
         do {
-            let actionsRN: [[String: String?]] = actions.compactMap  {
+            let actionsRN: [[String: Any]] = actions.compactMap  {
                 
                 if ($0.`type` == "SELECT_PAYMENT_METHOD") {
                     let network = ($0.params?["binData"] as? [String: Any])?["network"] as? String
@@ -55,6 +55,22 @@ extension PrimerRN: PrimerDelegate {
                 if ($0.`type` == "UNSELECT_PAYMENT_METHOD") {
                     return [
                         "type": "UNSET_PAYMENT_METHOD",
+                    ]
+                }
+                
+                if ($0.`type` == "SET_BILLING_ADDRESS") {
+                    
+                    var billingAddress: [String: String] = [:]
+                    
+                    $0.params?.forEach { entry in
+                        if let value = entry.value as? String, !value.isEmpty {
+                            billingAddress[entry.key] = value
+                        }
+                    }
+                    
+                    return [
+                        "type": "SET_BILLING_ADDRESS",
+                        "params": [ "billingAddress": billingAddress ]
                     ]
                 }
                 
@@ -78,7 +94,7 @@ extension PrimerRN: PrimerDelegate {
             } else if let error = error {
                 resumeHandler?.handle(error: error)
             } else {
-                resumeHandler?.handle(error: PrimerError.generic)
+                resumeHandler?.handle(error: ErrorTypeRN.generic)
             }
         }
     }

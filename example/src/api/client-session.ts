@@ -10,7 +10,7 @@ export const createClientSession = async (
   const headers = {
     'Content-Type': 'application/json',
     'X-Api-Version': '2021-10-19',
-    'environment': 'sandbox',
+    'environment': 'staging',
   };
 
   const body = JSON.stringify({

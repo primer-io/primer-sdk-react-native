@@ -12,11 +12,15 @@ interface Action {
   params?: IActionParams;
 }
 
-type ActionType = 'SELECT_PAYMENT_METHOD' | 'UNSELECT_PAYMENT_METHOD';
+type ActionType =
+  | 'SELECT_PAYMENT_METHOD'
+  | 'UNSELECT_PAYMENT_METHOD'
+  | 'SET_BILLING_ADDRESS';
 
 interface IActionParams {
-  paymentMethodType: string;
+  paymentMethodType?: string;
   binData?: Record<string, any>;
+  billingAddress?: Record<string, any>;
 }
 
 export const buildActionRequest = (
@@ -65,6 +69,16 @@ export const buildActionRequest = (
         actions: [
           {
             type: 'UNSELECT_PAYMENT_METHOD',
+          },
+        ],
+      };
+    case 'SET_BILLING_ADDRESS':
+      return {
+        clientToken,
+        actions: [
+          {
+            type: 'SET_BILLING_ADDRESS',
+            params: action.params,
           },
         ],
       };
