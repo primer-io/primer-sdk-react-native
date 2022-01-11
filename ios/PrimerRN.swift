@@ -24,7 +24,6 @@ class PrimerRN: NSObject {
     var onPrimerErrorCallback: RCTResponseSenderBlock?
     var onResumeFlowCallback: BasicCompletionBlock?
     var onActionResumeCallback: BasicCompletionBlock?
-    var onSavedPaymentInstrumentsFetchedCallback: RCTResponseSenderBlock?
     
     private var sdkWasInitialised = false
     internal var haltExecution = false
@@ -81,33 +80,6 @@ class PrimerRN: NSObject {
 
     @objc func configureOnPrimerError(_ callback: @escaping RCTResponseSenderBlock) {
         self.onPrimerErrorCallback = callback
-    }
-    
-    @objc func configureOnSavedPaymentInstrumentsFetched(_ callback: @escaping RCTResponseSenderBlock) {
-        self.onSavedPaymentInstrumentsFetchedCallback = callback
-    }
-    
-    @objc func fetchSavedPaymentInstruments(_ token: String) {
-        
-        self.clientToken = token
-        
-        Primer.shared.delegate = self
-        
-        Primer.shared.fetchVaultedPaymentMethods { [weak self] result in
-            switch result {
-            case .failure(let error):
-                self?.checkoutFailed(with: error)
-            case .success(let tokens):
-                do {
-                    let json = try self?.encoder.encode(tokens)
-                    let data = String(data: json!, encoding: .utf8)!
-                    self?.onSavedPaymentInstrumentsFetchedCallback?([data])
-                    self?.onSavedPaymentInstrumentsFetchedCallback = nil
-                } catch {
-                    self?.checkoutFailed(with: error)
-                }
-            }
-        }
     }
     
     @objc func initialize(_ token: String) -> Void {
