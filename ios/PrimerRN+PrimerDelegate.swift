@@ -84,6 +84,7 @@ extension PrimerRN: PrimerDelegate {
             let data = try JSONSerialization.data(withJSONObject: request, options: .fragmentsAllowed)
             let jsonString = String(data: data, encoding: .utf8)!
             self.onClientSessionActionsCallback?([jsonString])
+            self.onClientSessionActionsCallback = nil
         } catch {
             checkoutFailed(with: ErrorTypeRN.ParseJsonFailed)
         }
