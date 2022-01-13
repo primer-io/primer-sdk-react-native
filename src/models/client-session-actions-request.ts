@@ -7,7 +7,10 @@ interface IClientSessionActionsRequest {
 type ClientSessionAction = IClientSessionAction;
 
 interface IClientSessionAction {
-  type: 'SET_PAYMENT_METHOD' | 'UNSET_PAYMENT_METHOD' | 'SET_BILLING_ADDRESS';
+  type:
+    | 'SELECT_PAYMENT_METHOD'
+    | 'UNSELECT_PAYMENT_METHOD'
+    | 'SET_BILLING_ADDRESS';
   paymentMethodType?: string;
   network?: string;
   params?: IActionParams;

@@ -30,14 +30,14 @@ data class PrimerOnClientSessionActionsRequestRN(
           when (action) {
             is ClientSessionActionsRequest.SetPaymentMethod -> {
               Action(
-                type = "SET_PAYMENT_METHOD",
+                type = "SELECT_PAYMENT_METHOD",
                 paymentMethodType = action.paymentMethodType,
                 network = action.network,
               )
             }
             is ClientSessionActionsRequest.UnsetPaymentMethod -> {
               Action(
-                type = "UNSET_PAYMENT_METHOD",
+                type = "UNSELECT_PAYMENT_METHOD",
               )
             }
             is ClientSessionActionsRequest.SetBillingAddress -> {

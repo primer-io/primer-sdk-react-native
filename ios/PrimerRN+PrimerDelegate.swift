@@ -46,7 +46,7 @@ extension PrimerRN: PrimerDelegate {
                 if ($0.`type` == "SELECT_PAYMENT_METHOD") {
                     let network = ($0.params?["binData"] as? [String: Any])?["network"] as? String
                     return [
-                        "type": "SET_PAYMENT_METHOD",
+                        "type": "SELECT_PAYMENT_METHOD",
                         "paymentMethodType": $0.params?["paymentMethodType"] as? String,
                         "network": network,
                     ]
@@ -54,7 +54,7 @@ extension PrimerRN: PrimerDelegate {
                     
                 if ($0.`type` == "UNSELECT_PAYMENT_METHOD") {
                     return [
-                        "type": "UNSET_PAYMENT_METHOD",
+                        "type": "UNSELECT_PAYMENT_METHOD",
                     ]
                 }
                 

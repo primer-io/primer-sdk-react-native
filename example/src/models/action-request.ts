@@ -36,7 +36,7 @@ export const buildActionRequest = (
   const type = action.type;
 
   switch (type) {
-    case 'SET_PAYMENT_METHOD':
+    case 'SELECT_PAYMENT_METHOD':
       const request = {
         clientToken,
         actions: [
@@ -63,7 +63,7 @@ export const buildActionRequest = (
       }
 
       return request;
-    case 'UNSET_PAYMENT_METHOD':
+    case 'UNSELECT_PAYMENT_METHOD':
       return {
         clientToken,
         actions: [
