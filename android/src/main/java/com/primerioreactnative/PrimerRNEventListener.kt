@@ -96,11 +96,6 @@ class PrimerRNEventListener : CheckoutEventListener {
         onResumeSuccessQueue?.addRequestAndPoll(token)
         resumeHandler = e.resumeHandler
       }
-      is CheckoutEvent.SavedPaymentInstrumentsFetched -> {
-        val list = e.data.map { PrimerPaymentInstrumentTokenRN.fromPaymentMethodToken(it) }
-        val request = Json.encodeToString(list)
-        onSavedPaymentInstrumentsFetchedQueue?.addRequestAndPoll(request)
-      }
       is CheckoutEvent.Exit -> {
         onDismissQueue?.addRequestAndPoll("dismiss")
         onDismissQueue = null

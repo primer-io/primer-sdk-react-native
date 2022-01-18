@@ -108,6 +108,8 @@ export const SettingsScreen = (args: ISettingsScreenArguments) => {
               onValueChange={(itemValue, _) => setCountry(itemValue)}
             >
               <Picker.Item label="🇩🇪" value="DE" />
+              <Picker.Item label="🇬🇧" value="GB" />
+              <Picker.Item label="🇸🇪" value="SE" />
               <Picker.Item label="🇸🇬" value="SG" />
               <Picker.Item label="🇳🇱" value="NL" />
               <Picker.Item label="🇦🇹" value="AT" />

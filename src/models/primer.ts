@@ -35,13 +35,6 @@ export interface IPrimer {
   ): void;
 
   /**
-   * Prompt the SDK to fetch saved payment instruments from Primer's vault.
-   * Use the onSavedPaymentInstrumentsFetched callback in {@link PrimerConfig}
-   * to handle returned saved payment instruments.
-   */
-  fetchSavedPaymentInstruments(token: String, config: PrimerConfig): void;
-
-  /**
    * remove all listeners & callbacks.
    */
   dispose(): void;

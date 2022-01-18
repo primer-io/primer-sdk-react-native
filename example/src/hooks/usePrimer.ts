@@ -2,10 +2,8 @@ import { useEffect, useState } from 'react';
 import { Primer } from '@primer-io/react-native';
 import { createClientSession } from '../api/client-session';
 import type { PrimerSettings } from 'src/models/primer-settings';
-import type { PaymentInstrumentToken } from 'src/models/payment-instrument-token';
 import type {
   OnClientSessionActionsCallback,
-  OnSavedPaymentInstrumentsFetchedCallback,
   OnTokenizeSuccessCallback,
 } from 'src/models/primer-callbacks';
 import { createPayment } from '../api/create-payment';
@@ -22,17 +20,11 @@ export const usePrimer = (
   const [token, setToken] = useState<string | null>(null);
   const [paymentId, setPaymentId] = useState<string | null>(null);
 
-  const [paymentSavedInstruments, setSavedPaymentInstruments] = useState<
-    PaymentInstrumentToken[]
-  >([]);
+  // const [paymentSavedInstruments, setSavedPaymentInstruments] = useState<
+  //   PaymentInstrumentToken[]
+  // >([]);
 
   const [loading, setLoading] = useState(true);
-
-  const onSavedPaymentInstrumentsFetched: OnSavedPaymentInstrumentsFetchedCallback = (
-    data
-  ) => {
-    setSavedPaymentInstruments(data);
-  };
 
   useEffect(() => {
     console.log('🐠 mount usePrimer');
@@ -40,11 +32,6 @@ export const usePrimer = (
     createClientSession(customerId, settings).then((session) => {
       if (isSubscribed) {
         setToken(session.clientToken);
-        const config = {
-          settings,
-          onSavedPaymentInstrumentsFetched,
-        };
-        Primer.fetchSavedPaymentInstruments(session.clientToken, config);
         setLoading(false);
       }
     });
@@ -136,6 +123,5 @@ export const usePrimer = (
   return {
     presentPrimer,
     loading,
-    paymentSavedInstruments,
   };
 };

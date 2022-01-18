@@ -16,7 +16,6 @@ jest.mock('react-native', () => {
         configureOnDismiss: jest.fn(),
         configureOnPrimerError: jest.fn(),
         configureOnTokenizeSuccess: jest.fn(),
-        configureOnSavedPaymentInstrumentsFetched: jest.fn(),
       },
     },
   };
@@ -162,15 +161,6 @@ describe('Test Primer', () => {
 
     it('should call native module initialize', () => {
       expect(NativeModules.PrimerRN.initialize).toHaveBeenCalled();
-    });
-  });
-
-  describe('fetchSavedPaymentInstruments', () => {
-    it('should call native module fetchSavedPaymentInstruments & pass in callback', () => {
-      PrimerNativeMapping.fetchSavedPaymentInstruments('token', {});
-      expect(
-        NativeModules.PrimerRN.fetchSavedPaymentInstruments
-      ).toHaveBeenCalled();
     });
   });
 

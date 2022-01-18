@@ -9,7 +9,7 @@ export const resumePayment = async (id: string, req: any) => {
 
   const headers = {
     'Content-Type': 'application/json',
-    'environment': 'sandbox',
+    'environment': 'staging',
   };
 
   const method = 'post';

@@ -6,7 +6,6 @@ import type {
   OnClientSessionActionsCallback,
   OnDismissCallback,
   OnPrimerErrorCallback,
-  OnSavedPaymentInstrumentsFetchedCallback,
   OnTokenAddedToVaultCallback,
   OnTokenizeSuccessCallback,
 } from './models/primer-callbacks';
@@ -45,10 +44,11 @@ export const PrimerNativeMapping: IPrimer = {
     NativeModule.initialize(token);
   },
 
-  fetchSavedPaymentInstruments(token: String, config: PrimerConfig): void {
-    configure(config);
-    NativeModule.fetchSavedPaymentInstruments(token);
-  },
+  // todo: refactor
+  // fetchSavedPaymentInstruments(token: String, config: PrimerConfig): void {
+  //   configure(config);
+  //   NativeModule.fetchSavedPaymentInstruments(token);
+  // },
 
   dispose(): void {
     NativeModule.dispose();
@@ -64,9 +64,6 @@ function configure(config: PrimerConfig): void {
   configureOnTokenizeSuccess(config.onTokenizeSuccess);
   configureOnClientSessionActions(config.onClientSessionActions);
   configureOnResumeSuccess(config.onResumeSuccess);
-  configureOnSavedPaymentInstrumentsFetched(
-    config.onSavedPaymentInstrumentsFetched
-  );
 }
 
 function configureSettings(settings: PrimerSettings = {}): void {
@@ -176,14 +173,6 @@ function configureOnDismiss(callback: OnDismissCallback = () => {}) {
 function configureOnError(callback: OnPrimerErrorCallback = (_) => {}) {
   NativeModule.configureOnPrimerError((data: any) => {
     parseCallback<PrimerError>(data, callback);
-  });
-}
-
-function configureOnSavedPaymentInstrumentsFetched(
-  callback: OnSavedPaymentInstrumentsFetchedCallback = (_) => {}
-) {
-  NativeModule.configureOnSavedPaymentInstrumentsFetched((data: any) => {
-    parseCallback<PaymentInstrumentToken[]>(data, callback);
   });
 }
 

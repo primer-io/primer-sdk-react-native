@@ -12,7 +12,7 @@ export const createPayment = async (paymentMethod: string) => {
   const headers = {
     'Content-Type': 'application/json',
     'X-API-Version': '2021-09-27',
-    'environment': 'sandbox',
+    'environment': 'staging',
   };
 
   const method = 'post';

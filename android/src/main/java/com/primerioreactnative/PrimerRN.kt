@@ -163,15 +163,6 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
   }
 
   @ReactMethod
-  fun fetchSavedPaymentInstruments(token: String) {
-    Log.d("PrimerRN", "fetch saved payment instruments")
-
-    if (!sdkWasInitialised) startSdk(token)
-
-    Primer.instance.fetchSavedPaymentInstruments(token)
-  }
-
-  @ReactMethod
   fun initialize(token: String) {
     try {
       if (haltExecution) {

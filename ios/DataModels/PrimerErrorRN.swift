@@ -12,6 +12,7 @@ enum ErrorTypeRN: String, Error, Encodable {
     case settingsNotConfigured
     case clientTokenNotConfigured
     case flowParsingFailed
+    case generic
 }
 
 struct ErrorRN: Error {
