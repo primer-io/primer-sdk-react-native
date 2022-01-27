@@ -12,13 +12,14 @@ import { resumePayment } from '../api/resume-payment';
 
 const ERROR_MESSAGE = 'payment failed, please try again!';
 
+let paymentId: string | null = null;
+
 export const usePrimer = (
   settings: PrimerSettings,
   customerId: string,
   mode: string
 ) => {
   const [token, setToken] = useState<string | null>(null);
-  const [paymentId, setPaymentId] = useState<string | null>(null);
 
   // const [paymentSavedInstruments, setSavedPaymentInstruments] = useState<
   //   PaymentInstrumentToken[]
@@ -50,10 +51,11 @@ export const usePrimer = (
         .then((payment) => {
           // https://primer.io/docs/api/#section/API-Usage-Guide/Payment-Status
           if (payment.status in ['FAILED', 'DECLINED', 'CANCELLED']) {
+            console.log('❌ payment error');
             res.handleError(ERROR_MESSAGE);
           } else if (payment.requiredAction?.name != null) {
             console.log('paymentId:', payment.id);
-            setPaymentId(payment.id!);
+            paymentId = payment.id;
             res.handleNewClientToken(payment.requiredAction.clientToken);
           } else {
             res.handleSuccess();
@@ -61,7 +63,8 @@ export const usePrimer = (
         })
         .catch((_) => res.handleError(ERROR_MESSAGE));
 
-    const onResumeSuccess: OnTokenizeSuccessCallback = (req, res) =>
+    const onResumeSuccess: OnTokenizeSuccessCallback = (req, res) => {
+      console.log('✈️ paymentId', paymentId);
       resumePayment(paymentId!, {
         resumeToken: req,
       })
@@ -69,12 +72,18 @@ export const usePrimer = (
           if (
             payment.status in ['FAILED', 'DECLINED', 'CANCELLED', 'PENDING']
           ) {
+            console.error('❌ resume payment error');
             res.handleError(ERROR_MESSAGE);
           } else {
+            console.log('🔥 resume payment success');
             res.handleSuccess();
           }
         })
-        .catch((_) => res.handleError(ERROR_MESSAGE));
+        .catch((_) => {
+          console.error('❌ resume payment error thrown');
+          res.handleError(ERROR_MESSAGE);
+        });
+    };
 
     const onClientSessionActions: OnClientSessionActionsCallback = async (
       clientSessionActionsRequest,
@@ -85,7 +94,10 @@ export const usePrimer = (
           clientSessionActionsRequest,
           token
         );
-        console.log('calling resume success');
+        console.log(
+          'calling handleNewClientToken from action:',
+          newClientToken
+        );
         handler.handleNewClientToken(newClientToken);
       } catch (error) {
         handler.handleError(ERROR_MESSAGE);
@@ -110,7 +122,7 @@ export const usePrimer = (
       case 'card':
         Primer.showPaymentMethod(
           token,
-          { vault: false, paymentMethod: 'Card' },
+          { vault: false, paymentMethod: 'PAYMENT_CARD' },
           config
         );
         break;
