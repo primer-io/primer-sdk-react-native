@@ -150,7 +150,7 @@ class PrimerRN: NSObject {
                 } else if let clientToken = request.token {
                     self?.onActionResumeCallback?(nil, clientToken)
                 } else {
-                    self?.onActionResumeCallback?(nil, nil)
+                    self?.onActionResumeCallback?(nil, self?.clientToken)
                 }
                 
                 self?.onActionResumeCallback = nil

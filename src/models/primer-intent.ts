@@ -28,6 +28,7 @@ const paymentMethods = [
   'PAY_NL_PAYCONIQ',
   'PAYMENT_CARD',
   'PAYPAL',
+  'XFERS_PAYNOW',
 ] as const;
 
 export type SinglePrimerPaymentMethod = typeof paymentMethods[number];
