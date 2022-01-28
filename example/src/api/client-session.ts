@@ -1,4 +1,5 @@
 import type { PrimerSettings } from 'src/models/primer-settings';
+import { primer_environment } from '../constants/environment';
 import { root } from '../constants/url';
 
 export const createClientSession = async (
@@ -10,7 +11,7 @@ export const createClientSession = async (
   const headers = {
     'Content-Type': 'application/json',
     'X-Api-Version': '2021-10-19',
-    'environment': 'staging',
+    'environment': primer_environment,
   };
 
   const body = JSON.stringify({
