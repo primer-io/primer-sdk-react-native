@@ -1,4 +1,5 @@
 import type { ClientSessionActionsRequest } from 'src/models/client-session-actions-request';
+import { primer_environment } from '../constants/environment';
 import { root } from '../constants/url';
 import { buildActionRequest } from '../models/action-request';
 
@@ -10,7 +11,7 @@ export const postAction = async (
 
   const headers = {
     'Content-Type': 'application/json',
-    'environment': 'staging',
+    'environment': primer_environment,
   };
 
   const request = buildActionRequest(clientSessionActionsRequest, clientToken);

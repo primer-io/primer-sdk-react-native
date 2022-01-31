@@ -1,3 +1,4 @@
+import { primer_environment } from '../constants/environment';
 import { root } from '../constants/url';
 
 export const createPayment = async (paymentMethod: string) => {
@@ -12,7 +13,7 @@ export const createPayment = async (paymentMethod: string) => {
   const headers = {
     'Content-Type': 'application/json',
     'X-API-Version': '2021-09-27',
-    'environment': 'staging',
+    'environment': primer_environment,
   };
 
   const method = 'post';

@@ -1,3 +1,4 @@
+import { primer_environment } from '../constants/environment';
 import { root } from '../constants/url';
 
 export const resumePayment = async (id: string, req: any) => {
@@ -9,7 +10,7 @@ export const resumePayment = async (id: string, req: any) => {
 
   const headers = {
     'Content-Type': 'application/json',
-    'environment': 'staging',
+    'environment': primer_environment,
   };
 
   const method = 'post';

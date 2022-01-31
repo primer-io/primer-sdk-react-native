@@ -118,7 +118,7 @@ describe('Test Primer', () => {
     beforeAll(() => {
       PrimerNativeMapping.showPaymentMethod(
         'mock',
-        { vault: true, paymentMethod: 'Card' },
+        { vault: true, paymentMethod: 'PAYMENT_CARD' },
         {}
       );
     });
