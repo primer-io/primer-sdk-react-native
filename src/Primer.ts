@@ -114,24 +114,25 @@ function actionResume(request: ResumeRequest) {
 }
 
 function configureOnClientSessionActions(
-  callback: OnClientSessionActionsCallback = (_, __) => {
-    NativeModule.configureOnClientSessionActions((___: any) => {
-      actionResume({ error: null, token: null });
-      configureOnClientSessionActions(callback);
-    });
-  }
+  callback?: OnClientSessionActionsCallback
 ) {
   NativeModule.configureOnClientSessionActions((data: any) => {
     try {
       const parsedData = JSON.parse(data) as ClientSessionActionsRequest;
-      callback(parsedData, {
-        handleError: (error) => actionResume({ error, token: null }),
-        handleSuccess: () => actionResume({ error: null, token: null }),
-        handleNewClientToken: (token) => actionResume({ error: null, token }),
-        // deprecated
-        resumeWithError: (error) => actionResume({ error, token: null }),
-        resumeWithSuccess: (token) => actionResume({ error: null, token }),
-      });
+
+      if (!callback) {
+        actionResume({ error: null, token: null });
+      } else {
+        callback(parsedData, {
+          handleError: (error) => actionResume({ error, token: null }),
+          handleSuccess: () => actionResume({ error: null, token: null }),
+          handleNewClientToken: (token) => actionResume({ error: null, token }),
+          // deprecated
+          resumeWithError: (error) => actionResume({ error, token: null }),
+          resumeWithSuccess: (token) => actionResume({ error: null, token }),
+        });
+      }
+
       configureOnClientSessionActions(callback);
     } catch (e) {
       console.log('[OnClientSessionActions]', 'failed to parse json', e);
