@@ -113,29 +113,47 @@ function actionResume(request: ResumeRequest) {
   NativeModule.actionResume(data);
 }
 
+/**
+ * Call @method configureOnClientSessionActions on the native bridge, passing
+ * in a callback that the native side will call every time a client session
+ * action is triggered.
+ */
 function configureOnClientSessionActions(
-  callback?: OnClientSessionActionsCallback
+  callback?: OnClientSessionActionsCallback // defined by integrating developer.
 ) {
   NativeModule.configureOnClientSessionActions((data: any) => {
     try {
+      // parse the client session action JSON string.
       const parsedData = JSON.parse(data) as ClientSessionActionsRequest;
 
       if (!callback) {
+        /**
+         * if @param callback is undefined immediately call the native bridge
+         * and resume with null values. This will resume the SDK flow without
+         * triggering extra configuration API fetch calls.
+         */
         actionResume({ error: null, token: null });
       } else {
+        /**
+         * send the parsed data back to the developer through the defined callback.
+         * The developer will determine how to resume the flow using one of the provided
+         * resume handlers.
+         */
         callback(parsedData, {
           handleError: (error) => actionResume({ error, token: null }),
           handleSuccess: () => actionResume({ error: null, token: null }),
           handleNewClientToken: (token) => actionResume({ error: null, token }),
-          // deprecated
+          // deprecated, remove in next major version update.
           resumeWithError: (error) => actionResume({ error, token: null }),
           resumeWithSuccess: (token) => actionResume({ error: null, token }),
         });
       }
 
+      // reset the client session action callback (native bridge callbacks are disposed once they're invoked).
       configureOnClientSessionActions(callback);
     } catch (e) {
-      console.log('[OnClientSessionActions]', 'failed to parse json', e);
+      // log error if the client session action JSON string cannot be parsed (this should never happen!).
+      console.error('[OnClientSessionActions]', 'failed to parse json', e);
     }
   });
 }
