@@ -85,29 +85,29 @@ export const usePrimer = (
         });
     };
 
-    const onClientSessionActions: OnClientSessionActionsCallback = async (
-      clientSessionActionsRequest,
-      handler
-    ) => {
-      try {
-        const newClientToken: string = await postAction(
-          clientSessionActionsRequest,
-          token
-        );
-        console.log(
-          'calling handleNewClientToken from action:',
-          newClientToken
-        );
-        handler.handleNewClientToken(newClientToken);
-      } catch (error) {
-        handler.handleError(ERROR_MESSAGE);
-      }
-    };
+    // const onClientSessionActions: OnClientSessionActionsCallback = async (
+    //   clientSessionActionsRequest,
+    //   handler
+    // ) => {
+    //   try {
+    //     const newClientToken: string = await postAction(
+    //       clientSessionActionsRequest,
+    //       token
+    //     );
+    //     console.log(
+    //       'calling handleNewClientToken from action:',
+    //       newClientToken
+    //     );
+    //     handler.handleNewClientToken(newClientToken);
+    //   } catch (error) {
+    //     handler.handleError(ERROR_MESSAGE);
+    //   }
+    // };
 
     const config = {
       settings,
       onTokenizeSuccess,
-      onClientSessionActions,
+      // onClientSessionActions,
       onResumeSuccess,
     };
 
