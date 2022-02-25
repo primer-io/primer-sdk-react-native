@@ -20,10 +20,9 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   input: {
-    backgroundColor: '#eeeeee',
     borderRadius: 12,
     borderWidth: 1,
-    height: 40,
+    height: 46,
     margin: 12,
     padding: 10,
     flex: 1,

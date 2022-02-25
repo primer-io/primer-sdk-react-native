@@ -30,7 +30,7 @@ export const usePrimer = (
   useEffect(() => {
     console.log('🐠 mount usePrimer');
     let isSubscribed = true;
-    createClientSession(customerId, settings).then((session) => {
+    createClientSession(customerId).then((session) => {
       if (isSubscribed) {
         setToken(session.clientToken);
         setLoading(false);

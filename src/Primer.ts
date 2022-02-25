@@ -1,4 +1,5 @@
 import { NativeModules } from 'react-native';
+import headlessCheckout from './headless_checkout';
 import type { ClientSessionActionsRequest } from './models/client-session-actions-request';
 import type { PaymentInstrumentToken } from './models/payment-instrument-token';
 import type { IPrimer } from './models/primer';
@@ -53,7 +54,11 @@ export const PrimerNativeMapping: IPrimer = {
   dispose(): void {
     NativeModule.dispose();
   },
+
+  headlessCheckout,
 };
+
+//
 
 function configure(config: PrimerConfig): void {
   configureTheme(config.theme);

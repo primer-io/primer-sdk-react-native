@@ -1,11 +1,7 @@
-import type { PrimerSettings } from 'src/models/primer-settings';
 import { primer_environment } from '../constants/environment';
 import { root } from '../constants/url';
 
-export const createClientSession = async (
-  customerId: string,
-  settings: PrimerSettings
-) => {
+export const createClientSession = async (customerId: string) => {
   const url = root + '/client-session';
 
   const headers = {
@@ -17,9 +13,9 @@ export const createClientSession = async (
   const body = JSON.stringify({
     customerId,
     orderId: 'rn-test-10001',
-    currencyCode: settings.order?.currency,
+    currencyCode: 'GBP',
     order: {
-      countryCode: settings.order?.countryCode,
+      countryCode: 'GB',
       lineItems: [
         {
           amount: 1000,
@@ -41,7 +37,7 @@ export const createClientSession = async (
         postalCode: '12345',
         addressLine1: '1 test',
         addressLine2: null,
-        countryCode: settings.order?.countryCode,
+        countryCode: 'GB',
         city: 'test',
         state: 'test',
       },
@@ -52,7 +48,7 @@ export const createClientSession = async (
         postalCode: '12345',
         city: 'test',
         state: 'test',
-        countryCode: settings.order?.countryCode,
+        countryCode: 'GB',
       },
       nationalDocumentId: '9011211234567',
     },
