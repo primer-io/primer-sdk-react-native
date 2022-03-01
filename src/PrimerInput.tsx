@@ -13,19 +13,17 @@ const { PrimerRN } = NativeModules;
 export const PrimerCardNumberEditText: React.FC<PrimerCardNumberEditTextProps> = (
   props
 ) => {
-  // const ref = useRef(React.createRef<any>());
+  const ref = useRef(React.createRef<any>());
 
-  // useEffect(() => {
-  //   const currentRef = ref.current;
-  //   console.log('🔥', currentRef);
-  //   PrimerRN.registerComponent(currentRef);
+  useEffect(() => {
+    const tag = ref.current.current._nativeTag;
+    PrimerRN.addInput(tag);
+    return () => PrimerRN.removeInput(tag);
+  }, []);
 
-  //   return () => {
-  //     PrimerRN.deregisterComponent(currentRef);
-  //   };
-  // }, []);
-
-  const rawComponent = <PrimerCardNumberEditTextRaw {...props} />;
+  const rawComponent = (
+    <PrimerCardNumberEditTextRaw ref={ref.current} {...props} />
+  );
 
   return rawComponent;
 };
@@ -40,7 +38,14 @@ type PrimerCardholderNameEditTextProps = ViewProps;
 export const PrimerCardholderNameEditText: React.FC<PrimerCardholderNameEditTextProps> = (
   props
 ) => {
-  return <PrimerCardholderNameEditTextRaw {...props} />;
+  const ref = useRef(React.createRef<any>());
+
+  useEffect(() => {
+    const tag = ref.current.current._nativeTag;
+    PrimerRN.addInput(tag);
+    return () => PrimerRN.removeInput(tag);
+  }, []);
+  return <PrimerCardholderNameEditTextRaw ref={ref.current} {...props} />;
 };
 
 // PrimerExpiryEditText

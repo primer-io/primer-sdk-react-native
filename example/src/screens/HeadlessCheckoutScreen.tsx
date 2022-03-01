@@ -40,7 +40,8 @@ export const HeadlessCheckoutScreen = () => {
 
   const onPayButtonPressed = () => {
     Primer.headlessCheckout.validate((isValid) => {
-      console.log('isValid', isValid);
+      if (!isValid) return;
+      Primer.headlessCheckout.tokenize();
     });
   };
 

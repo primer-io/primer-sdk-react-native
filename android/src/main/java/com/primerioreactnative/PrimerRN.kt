@@ -12,6 +12,7 @@ import com.primerioreactnative.datamodels.*
 import io.primer.android.Primer
 import io.primer.android.components.PrimerHeadlessUniversalCheckout
 import io.primer.android.components.manager.PrimerUniversalCheckoutCardManagerInterface
+import io.primer.android.components.ui.widgets.elements.PrimerInputElement
 import io.primer.android.model.dto.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -68,14 +69,20 @@ class PrimerRN(
     callback(isValid)
   }
 
+  private val inputElements = mutableMapOf<Int, PrimerInputElement>()
+
   @ReactMethod
-  fun logView(tag: Int, callback: Callback) {
+  fun addInput(tag: Int) {
     val uiManagerModule = reactContext.getNativeModule(UIManagerModule::class.java)
-    val view = uiManagerModule.resolveView(tag)
+    val view = uiManagerModule.resolveView(tag) as PrimerInputElement
+    inputElements[tag] = view
 
-    view.setBackgroundColor(Color.MAGENTA)
+    cardManager.setInputElements(inputElements.values.toList())
+  }
 
-    callback(view.toString())
+  fun removeInput(tag: Int) {
+    inputElements.remove(tag)
+    cardManager.setInputElements(inputElements.values.toList())
   }
 
   @ReactMethod
