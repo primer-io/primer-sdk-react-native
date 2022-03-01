@@ -50,6 +50,7 @@ export const usePrimer = (
       createPayment(req.token)
         .then((payment) => {
           // https://primer.io/docs/api/#section/API-Usage-Guide/Payment-Status
+          // res.handleError(ERROR_MESSAGE); // <-- test error handling
           if (payment.status in ['FAILED', 'DECLINED', 'CANCELLED']) {
             console.log('❌ payment error');
             res.handleError(ERROR_MESSAGE);
@@ -69,6 +70,7 @@ export const usePrimer = (
         resumeToken: req,
       })
         .then((payment) => {
+          // res.handleError(ERROR_MESSAGE); // <-- test error handling
           if (
             payment.status in ['FAILED', 'DECLINED', 'CANCELLED', 'PENDING']
           ) {

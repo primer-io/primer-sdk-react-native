@@ -125,13 +125,12 @@ class PrimerRN: NSObject {
                 let request = try JSONDecoder().decode(PrimerResumeRequest.self, from: json)
                 
                 if let error = request.error {
-                    self?.onResumeFlowCallback?(ErrorRN(message: error), nil)
+                    self?.onResumeFlowCallback?(ErrorRN(message: error).localized, nil)
                 } else if let clientToken = request.token {
                     self?.onResumeFlowCallback?(nil, clientToken)
                 } else {
                     self?.onResumeFlowCallback?(nil, nil)
                 }
-                
                 self?.onResumeFlowCallback = nil
             } catch {
                 self?.checkoutFailed(with: error)
@@ -146,7 +145,7 @@ class PrimerRN: NSObject {
                 let request = try JSONDecoder().decode(PrimerResumeRequest.self, from: json)
                 
                 if let error = request.error {
-                    self?.onActionResumeCallback?(ErrorRN(message: error), nil)
+                    self?.onActionResumeCallback?(ErrorRN(message: error).localized, nil)
                 } else if let clientToken = request.token {
                     self?.onActionResumeCallback?(nil, clientToken)
                 } else {

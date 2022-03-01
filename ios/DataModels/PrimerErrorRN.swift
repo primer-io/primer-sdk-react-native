@@ -17,4 +17,13 @@ enum ErrorTypeRN: String, Error, Encodable {
 
 struct ErrorRN: Error {
     let message: String
+    
+    var localized: Error {
+        return NSError(
+            domain: "merchant-domain",
+            code: 1,
+            userInfo: [NSLocalizedDescriptionKey: message]
+        )
+    }
+    
 }
