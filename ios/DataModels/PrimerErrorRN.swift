@@ -15,6 +15,11 @@ enum ErrorTypeRN: String, Error, Encodable {
     case generic
 }
 
-struct ErrorRN: Error {
+struct ErrorRN: CustomNSError, LocalizedError {
     let message: String
+    
+    var errorDescription: String? {
+        return message
+    }
+    
 }
