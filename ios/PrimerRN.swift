@@ -125,7 +125,8 @@ class PrimerRN: NSObject {
                 let request = try JSONDecoder().decode(PrimerResumeRequest.self, from: json)
                 
                 if let error = request.error {
-                    self?.onResumeFlowCallback?(ErrorRN(message: error).localized, nil)
+                    let errorRN = ErrorRN(message: error)
+                    self?.onResumeFlowCallback?(errorRN, nil)
                 } else if let clientToken = request.token {
                     self?.onResumeFlowCallback?(nil, clientToken)
                 } else {
@@ -145,7 +146,8 @@ class PrimerRN: NSObject {
                 let request = try JSONDecoder().decode(PrimerResumeRequest.self, from: json)
                 
                 if let error = request.error {
-                    self?.onActionResumeCallback?(ErrorRN(message: error).localized, nil)
+                    let errorRN = ErrorRN(message: error)
+                    self?.onActionResumeCallback?(errorRN, nil)
                 } else if let clientToken = request.token {
                     self?.onActionResumeCallback?(nil, clientToken)
                 } else {
