@@ -71,7 +71,7 @@ export const usePrimer = (
         .then((payment) => {
           // res.handleError(ERROR_MESSAGE); // <-- test error handling
           if (
-            ['FAILED', 'DECLINED', 'CANCELLED', 'CANCELED', 'PENDING'].includes(payment.status)
+            ['FAILED', 'DECLINED', 'CANCELLED', 'PENDING'].includes(payment.status)
           ) {
             console.error('❌ resume payment error');
             res.handleError(ERROR_MESSAGE);
