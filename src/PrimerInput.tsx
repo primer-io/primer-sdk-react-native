@@ -1,5 +1,7 @@
+import { PrimerHeadlessUniversalCheckoutCardFormUIManager } from './RNTPrimerHeadlessUniversalCheckoutCardFormUIManager';
 import React, { useEffect, useRef } from 'react';
 import { NativeModules, requireNativeComponent, ViewProps } from 'react-native';
+
 
 // PrimerCardNumberEditText
 export const PrimerCardNumberEditTextRaw = requireNativeComponent<{}>(
@@ -10,14 +12,12 @@ type PrimerCardNumberEditTextProps = ViewProps;
 
 const { PrimerRN } = NativeModules;
 
-export const PrimerCardNumberEditText: React.FC<PrimerCardNumberEditTextProps> = (
-  props
-) => {
+export const PrimerCardNumberEditText: React.FC<PrimerCardNumberEditTextProps> = (props) => {
   const ref = useRef(React.createRef<any>());
 
   useEffect(() => {
     const tag = ref.current.current._nativeTag;
-    PrimerRN.addInput(tag);
+    PrimerHeadlessUniversalCheckoutCardFormUIManager.addInput(tag);
     return () => PrimerRN.removeInput(tag);
   }, []);
 
