@@ -19,6 +19,7 @@ export const HeadlessCheckoutScreen = () => {
     // fetch client token
     createClientSession('customerId123').then((session) => {
       setLoading(false);
+
       Primer.headlessCheckout.startHeadlessCheckout(
         session.clientToken,
         (request) => {
@@ -105,13 +106,7 @@ export const HeadlessCheckoutScreen = () => {
 
   return (
     <View style={(styles.container, styles.frame)}>
-      {showError && <Text>Error!</Text>}
-      {loading && !showError && (
-        <View>
-          <Text>Loading...</Text>
-        </View>
-      )}
-      {!loading && !showError && showPaymentMethods && renderCardForm()}
+      <PrimerCardNumberEditText style={{width: 300, height: 50, backgroundColor: 'red'}} />
     </View>
   );
 };

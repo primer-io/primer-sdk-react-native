@@ -20,8 +20,8 @@ export default function App() {
           name="Home"
           component={SettingsScreen}
           options={{ title: 'Settings' }}
-        /> */}
-        <Stack.Screen name="Wallet" component={WalletScreen} />
+        />
+        <Stack.Screen name="Wallet" component={WalletScreen} /> */}
       </Stack.Navigator>
     </NavigationContainer>
   );
