@@ -157,11 +157,6 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
     }
     
     func primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError err: Error) {
-        let errorData: [String: String] = [
-            "errorId": "",
-            "description": "",
-            "recoverySuggestion": ""
-        ]
-        sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.error.stringValue, body: ["error": errorData])
+        sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.error.stringValue, body: ["error": err.rnError])
     }
 }

@@ -17,10 +17,10 @@ export const HeadlessCheckoutScreen = () => {
   const [localImageUrl, setLocalImageUrl] = useState<null | string>(null);
   const [error, setError] = useState<null | any>(null);
 
-  huc.getAssetFor("applePay2",
+  huc.getAssetFor("apple-pay",
     "logo",
     (err) => {
-
+      console.error(err.description);
     },
     (url) => {
       setLocalImageUrl(url);
