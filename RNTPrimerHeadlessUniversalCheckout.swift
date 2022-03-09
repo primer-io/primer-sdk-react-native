@@ -19,7 +19,22 @@ enum PrimerHeadlessUniversalCheckoutEvents: Int, CaseIterable {
     case error
     
     var stringValue: String {
-      String(describing: self)
+        switch self {
+        case .clientSessionDidSetUpSuccessfully:
+            return "clientSessionDidSetUpSuccessfully"
+        case .preparationStarted:
+            return "preparationStarted"
+        case .paymentMethodPresented:
+            return "paymentMethodPresented"
+        case .tokenizationStarted:
+            return "tokenizationStarted"
+        case .tokenizationSucceeded:
+            return "tokenizationSucceeded"
+        case .resume:
+            return "resume"
+        case .error:
+            return "error"
+        }
     }
 }
 
