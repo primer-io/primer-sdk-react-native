@@ -7,34 +7,51 @@ export interface PaymentMethodsTypes {
     paymentMethodTypes: string[];
 }
 
+export interface IPrimerError {
+  errorId: string;
+  description: string;
+  recoverySuggestion?: string;
+}
+
 export class PrimerHUC {
 
-    tokenizationSucceeded: undefined | ((paymentMethod: any) => void);
+    onPreparationStarted: undefined | (() => void);
+    onPaymentMethodPresented: undefined | (() => void);
+    onTokenizationStarted: undefined | (() => void);
+    onTokenizeSuccess: undefined | ((paymentMethod: any) => void);
+    onFailure: undefined | ((error: IPrimerError) => void);
    
     constructor() {
         const eventEmitter = new NativeEventEmitter(PrimerHeadlessUniversalCheckout);
         const preparationStartedListener = eventEmitter.addListener('preparationStarted', (data) => {
           console.log("preparationStarted");
-        });
-    
-        const clientSessionDidSetUpSuccessfullyListener = eventEmitter.addListener('clientSessionDidSetUpSuccessfully', (data) => {
-          console.log("clientSessionDidSetUpSuccessfully");
+          if (this.onPreparationStarted) {
+            this.onPreparationStarted();
+          }
         });
     
         const paymentMethodPresentedListener = eventEmitter.addListener('paymentMethodPresented', (data) => {
           console.log("paymentMethodPresented");
+
+          if (this.onPaymentMethodPresented) {
+            this.onPaymentMethodPresented();
+          }
         });
     
         const tokenizationStartedListener = eventEmitter.addListener('tokenizationStarted', (data) => {
           console.log("tokenizationStarted");
+
+          if (this.onTokenizationStarted) {
+            this.onTokenizationStarted();
+          }
         });
     
         const tokenizationSucceededListener = eventEmitter.addListener('tokenizationSucceeded', (data) => {
             console.log(`tokenizationSucceeded: ${JSON.stringify(data)}`);
             const paymentMethodToken = JSON.parse(data["paymentMethodToken"]);
 
-            if (this.tokenizationSucceeded) {
-                this.tokenizationSucceeded(paymentMethodToken);
+            if (this.onTokenizeSuccess) {
+                this.onTokenizeSuccess(paymentMethodToken);
             }
         });
     
@@ -44,6 +61,11 @@ export class PrimerHUC {
     
         const errorListener = eventEmitter.addListener('error', (data) => {
           console.log(`error: ${JSON.stringify(data)}`);
+
+          const error: IPrimerError = data["error"];
+          if (this.onFailure && error) {
+            this.onFailure(error);
+          }
         });
     }
 
@@ -69,6 +91,20 @@ export class PrimerHUC {
 
     showPaymentMethod(paymentMethod: string) {
         PrimerHeadlessUniversalCheckout.showPaymentMethod(paymentMethod);
+    }
+
+    getAssetFor(paymentMethodType: string,
+        assetType: string,
+        errorCallback: (err: Error) => void,
+        completion: (url: string) => void) {
+        PrimerHeadlessUniversalCheckout.getAssetFor(paymentMethodType,
+            assetType,
+            (err: Error) => {
+                errorCallback(err);
+            },
+            (url: string) => {
+                completion(url);
+            });
     }
 
 }

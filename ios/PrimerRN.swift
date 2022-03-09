@@ -125,8 +125,8 @@ class PrimerRN: NSObject {
                 let resumeRequestData = resumeRequestStr.data(using: .utf8)!
                 let resumeRequest = try JSONDecoder().decode(PrimerResumeRequest.self, from: resumeRequestData)
                 
-                if let error = resumeRequest.error {
-                    let errorRN = ErrorRN(message: error)
+                if let errorDescription = resumeRequest.error {
+                    let errorRN = NativeError(errorId: "server-error", errorDescription: errorDescription, recoverySuggestion: nil)
                     self?.onResumeFlowCallback?(errorRN, nil)
                 } else if let clientToken = resumeRequest.token {
                     self?.onResumeFlowCallback?(nil, clientToken)
@@ -146,8 +146,8 @@ class PrimerRN: NSObject {
                 let resumeRequestData = resumeRequestStr.data(using: .utf8)!
                 let resumeRequestRN = try JSONDecoder().decode(PrimerResumeRequest.self, from: resumeRequestData)
                 
-                if let error = resumeRequestRN.error {
-                    let errorRN = ErrorRN(message: error)
+                if let errorDescription = resumeRequestRN.error {
+                    let errorRN = NativeError(errorId: "server-error", errorDescription: errorDescription, recoverySuggestion: nil)
                     self?.onActionResumeCallback?(errorRN, nil)
                 } else if let clientToken = resumeRequestRN.token {
                     self?.onActionResumeCallback?(nil, clientToken)

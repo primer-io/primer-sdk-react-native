@@ -2,19 +2,29 @@ import React, { useEffect, useState } from 'react';
 import {
   PrimerHUC
 } from '@primer-io/react-native';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { styles } from '../styles';
 import { createClientSession } from '../api/client-session';
 import type { PrimerSettings } from 'src/models/primer-settings';
 import { createPayment } from '../api/create-payment';
 
+const huc = new PrimerHUC();
+
 export const HeadlessCheckoutScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showPaymentMethods, setShowPaymentMethods] = useState(false);
   const [paymentResponse, setPaymentResponse] = useState<null | string>(null);
+  const [localImageUrl, setLocalImageUrl] = useState<null | string>(null);
   const [error, setError] = useState<null | any>(null);
 
-  const huc = new PrimerHUC();
+  huc.getAssetFor("applePay2",
+    "logo",
+    (err) => {
+      debugger;
+    },
+    (url) => {
+      setLocalImageUrl(url);
+    });
 
   useEffect(() => {
     const settings: PrimerSettings = {
@@ -41,7 +51,7 @@ export const HeadlessCheckoutScreen = () => {
     });
   }, []);
 
-  huc.tokenizationSucceeded = async (paymentMethodToken) => {
+  huc.onTokenizeSuccess = async (paymentMethodToken) => {
     try {
       const response = await createPayment(paymentMethodToken.token);
       console.log(JSON.stringify(response));
@@ -67,13 +77,12 @@ export const HeadlessCheckoutScreen = () => {
                 height: 50, 
                 backgroundColor: 'black', 
                 justifyContent: 'center', 
-                alignItems: "center"
+                alignItems: "center",
+                borderRadius: 4
               }}
               onPress={payWithApplePay}
             >
-              <Text style={{color: "white"}}>
-                Pay with Apple Pay
-              </Text>
+              <Image source={{uri: localImageUrl}} style = {{width: 60, height: 25, resizeMode : 'contain', tintColor: 'white' }} />
             </TouchableOpacity>
       )
     }
