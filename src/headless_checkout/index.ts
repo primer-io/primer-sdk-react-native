@@ -1,12 +1,14 @@
-import { NativeModules } from 'react-native';
+import { NativeEventEmitter, NativeModules, Platform } from 'react-native';
+import type { PrimerSettings } from 'src/models/primer-settings';
 
-const { PrimerRN } = NativeModules;
+const { PrimerRN, PrimerHeadlessUniversalCheckout } = NativeModules;
 
 export interface HeadlessCheckout {
   startHeadlessCheckout: (
     clientToken: string,
     callback: (request: HeadlessCheckoutRequest) => void
   ) => void;
+  showPaymentMethod: (paymentMethod: string) => void;
   disposeHeadlessCheckout: () => void;
   resumeHandler: HeadlessCheckoutResumeHandler;
   validate: (callback: (isValid: boolean) => void) => void;
@@ -77,8 +79,65 @@ const headlessCheckout: HeadlessCheckout = {
     callback: (request: HeadlessCheckoutRequest) => void
   ) => {
     console.log('start headless checkout');
-    const eventHandler = setHeadlessCheckoutCallback(callback);
-    PrimerRN.startHeadlessCheckout(clientToken, eventHandler);
+
+    const eventEmitter = new NativeEventEmitter(PrimerHeadlessUniversalCheckout);
+    const preparationStartedListener = eventEmitter.addListener('preparationStarted', (data) => {
+      console.log("preparationStarted");
+    });
+
+    const clientSessionDidSetUpSuccessfullyListener = eventEmitter.addListener('clientSessionDidSetUpSuccessfully', (data) => {
+      console.log("clientSessionDidSetUpSuccessfully");
+    });
+
+    const paymentMethodPresentedListener = eventEmitter.addListener('paymentMethodPresented', (data) => {
+      console.log("paymentMethodPresented");
+    });
+
+    const tokenizationStartedListener = eventEmitter.addListener('tokenizationStarted', (data) => {
+      console.log("tokenizationStarted");
+    });
+
+    const tokenizationSucceededListener = eventEmitter.addListener('tokenizationSucceeded', (data) => {
+      console.log("tokenizationSucceeded");
+    });
+
+    const resumeListener = eventEmitter.addListener('resume', (data) => {
+      console.log("resume");
+    });
+
+    const errorListener = eventEmitter.addListener('error', (data) => {
+      console.log("error");
+    });
+
+    if (Platform.OS === 'ios') {
+      const settings: PrimerSettings = {
+        options: {
+          ios: {
+            merchantIdentifier: "merchant.dx.team"
+          }
+        }
+      }
+      PrimerHeadlessUniversalCheckout.startWithClientToken(clientToken, 
+        JSON.stringify(settings), 
+        (err) => {
+          console.error(err);
+        },
+        (paymentMethodsArr: string[]) => {
+          const onClientSessionSetupSuccessfullyRequest: OnClientSessionSetupSuccessfullyRequest = {
+            kind: 'OnClientSessionSetupSuccessfully',
+            paymentMethodTypes: paymentMethodsArr
+          }
+          
+          callback(onClientSessionSetupSuccessfullyRequest);
+        })
+    } else {
+      const eventHandler = setHeadlessCheckoutCallback(callback);
+      PrimerRN.startHeadlessCheckout(clientToken, eventHandler);
+    }
+  },
+
+  showPaymentMethod: (paymentMethod: string) => {
+    PrimerHeadlessUniversalCheckout.showPaymentMethod(paymentMethod);
   },
 
   disposeHeadlessCheckout: () => {
