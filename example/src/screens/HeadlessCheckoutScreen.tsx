@@ -20,7 +20,7 @@ export const HeadlessCheckoutScreen = () => {
   huc.getAssetFor("applePay2",
     "logo",
     (err) => {
-      debugger;
+
     },
     (url) => {
       setLocalImageUrl(url);
