@@ -18,7 +18,7 @@ export const createClientSession = async (customerId: string) => {
       countryCode: 'GB',
       lineItems: [
         {
-          amount: 1000,
+          amount: 30,
           quantity: 1,
           itemId: 'item-123',
           description: 'this item',
