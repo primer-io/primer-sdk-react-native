@@ -86,7 +86,7 @@ export class PrimerHUC {
   startHeadlessCheckout(clientToken: string,
     settings: PrimerSettings,
     errorCallback: (err: Error) => void,
-    completion: (paymentMethodsTypes: IPaymentMethodsTypes) => void) {
+    completion: (paymentMethodTypes: IPaymentMethodsTypes) => void) {
     PrimerHeadlessUniversalCheckout.startWithClientToken(clientToken,
       JSON.stringify(settings),
       (err: Error) => {
