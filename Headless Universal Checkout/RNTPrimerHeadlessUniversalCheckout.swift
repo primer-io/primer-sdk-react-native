@@ -85,6 +85,12 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
     }
     
     @objc
+    func listAvailableAssets(_ successCallback: @escaping RCTResponseSenderBlock) {
+        let availableAssets = PrimerAsset.Brand.allCases.compactMap({ $0.rawValue })
+        successCallback([availableAssets])
+    }
+    
+    @objc
     func getAssetFor(_ assetBrand: String,
                      assetType: String,
                      errorCallback: @escaping RCTResponseSenderBlock,

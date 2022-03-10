@@ -101,6 +101,12 @@ export class PrimerHUC {
       PrimerHeadlessUniversalCheckout.resumeWithClientToken(resumeToken);
     }
 
+    listAvailableAssets(completion: (assets: string[]) => void) {
+      PrimerHeadlessUniversalCheckout.listAvailableAssets((assets: string[]) => {
+        completion(assets);
+      })
+    }
+
     getAssetFor(paymentMethodType: string,
         assetType: string,
         errorCallback: (err: Error) => void,
