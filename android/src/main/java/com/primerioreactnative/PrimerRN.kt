@@ -40,7 +40,7 @@ class PrimerRN(
 
   // HEADLESS CHECKOUT
   private val headlessCheckoutListener by lazy {
-    HeadlessCheckoutListener(json)
+    HeadlessCheckoutListener(reactContext, json)
   }
 
   @ReactMethod

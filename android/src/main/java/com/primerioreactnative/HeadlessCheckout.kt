@@ -1,16 +1,20 @@
 package com.primerioreactnative
 
+import androidx.annotation.Nullable
+import com.facebook.react.bridge.Callback
+import com.facebook.react.bridge.ReactContext
+import com.facebook.react.bridge.WritableMap
+import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter
 import io.primer.android.completion.ResumeHandler
 import io.primer.android.components.PrimerHeadlessUniversalCheckoutListener
+import io.primer.android.components.domain.core.models.PrimerHeadlessUniversalCheckoutPaymentMethod
 import io.primer.android.model.dto.APIError
 import io.primer.android.model.dto.PaymentMethodToken
 import io.primer.android.model.dto.PrimerPaymentMethodType
 import kotlinx.serialization.Serializable
-import com.facebook.react.bridge.Callback
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import java.lang.Error
+
 
 @Serializable
 sealed class HeadlessCheckoutRequest(val kind: String)
@@ -57,12 +61,13 @@ data class HeadlessCheckoutResumeWithErrorRequest(
 @Serializable
 data class HeadlessCheckoutResumeWithClientTokenRequest(
   val clientToken: String,
-) : HeadlessCheckoutResumeRequest( "ClientToken")
+) : HeadlessCheckoutResumeRequest("ClientToken")
 
 @Serializable
 class HeadlessCheckoutResumeWithNullRequest : HeadlessCheckoutResumeRequest("Null")
 
 class HeadlessCheckoutListener(
+  private val reactContext: ReactContext,
   private val json: Json,
 ) : PrimerHeadlessUniversalCheckoutListener {
 
@@ -96,9 +101,24 @@ class HeadlessCheckoutListener(
 //    callback = null
   }
 
-  // present payment methods
-  override fun onClientSessionSetupSuccessfully(paymentMethodTypes: List<PrimerPaymentMethodType>) {
-    val request = OnClientSessionSetupSuccessfullyRequest(paymentMethodTypes)
+  private fun sendEvent(
+    reactContext: ReactContext,
+    eventName: String,
+    @Nullable params: WritableMap? = null
+  ) {
+    reactContext
+      .getJSModule(RCTDeviceEventEmitter::class.java)
+      .emit(eventName, params)
+  }
+
+  override fun onClientSessionSetupSuccessfully(paymentMethods: List<PrimerHeadlessUniversalCheckoutPaymentMethod>) {
+    val request =
+      OnClientSessionSetupSuccessfullyRequest(paymentMethods.map { it.paymentMethodType })
+
+    sendEvent(
+      reactContext,
+      PrimerHeadlessUniversalCheckoutEvents.clientSessionDidSetUpSuccessfully.name,
+    )
     emit(request)
   }
 
@@ -108,18 +128,18 @@ class HeadlessCheckoutListener(
     emit(request)
   }
 
-  // present loading for APMs
-  override fun onPaymentMethodPresented() {
-    val request = OnPaymentMethodPresentedRequest()
-    emit(request)
+  override fun onPaymentMethodShowed() {
+    sendEvent(
+      reactContext,
+      PrimerHeadlessUniversalCheckoutEvents.paymentMethodPresented.name,
+    )
   }
 
   // present loading
-  override fun onPreparationStarted() {
+  override fun onTokenizationPreparation() {
     val request = OnPreparationStartedRequest()
     emit(request)
   }
-
 
   override fun onResumeSuccess(resumeToken: String, resumeHandler: ResumeHandler) {
     this.resumeHandler = resumeHandler
@@ -140,5 +160,16 @@ class HeadlessCheckoutListener(
     this.resumeHandler = resumeHandler
     val request = OnTokenizationSuccessRequest(paymentMethodToken.token)
     emit(request)
+  }
+
+
+  enum class PrimerHeadlessUniversalCheckoutEvents {
+    clientSessionDidSetUpSuccessfully,
+    preparationStarted,
+    paymentMethodPresented,
+    tokenizationStarted,
+    tokenizationSucceeded,
+    resume,
+    error
   }
 }

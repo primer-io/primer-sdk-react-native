@@ -13,9 +13,9 @@ export const createClientSession = async (customerId: string) => {
   const body = JSON.stringify({
     customerId,
     orderId: 'rn-test-10001',
-    currencyCode: 'GBP',
+    currencyCode: 'EUR',
     order: {
-      countryCode: 'GB',
+      countryCode: 'FR',
       lineItems: [
         {
           amount: 30,
@@ -37,7 +37,7 @@ export const createClientSession = async (customerId: string) => {
         postalCode: '12345',
         addressLine1: '1 test',
         addressLine2: null,
-        countryCode: 'GB',
+        countryCode: 'FR',
         city: 'test',
         state: 'test',
       },
@@ -48,7 +48,7 @@ export const createClientSession = async (customerId: string) => {
         postalCode: '12345',
         city: 'test',
         state: 'test',
-        countryCode: 'GB',
+        countryCode: 'FR',
       },
       nationalDocumentId: '9011211234567',
     },

@@ -17,12 +17,13 @@ export const HeadlessCheckoutScreen = () => {
   const [localImageUrl, setLocalImageUrl] = useState<null | string>(null);
   const [error, setError] = useState<null | any>(null);
 
-  huc.getAssetFor("apple-pay",
+  huc.getAssetFor("google-pay",
     "logo",
     (err) => {
       console.error(err.description);
     },
     (url) => {
+    console.log(localImageUrl)
       setLocalImageUrl(url);
     });
 
@@ -38,7 +39,7 @@ export const HeadlessCheckoutScreen = () => {
     createClientSession('customerId123').then((session) => {
       setIsLoading(false);
 
-      huc.startHeadlessCheckout(session.clientToken, 
+      huc.startHeadlessCheckout(session.clientToken,
         settings,
         (err) => {
           setError(err);
@@ -63,7 +64,7 @@ export const HeadlessCheckoutScreen = () => {
   }
 
   const payWithApplePay = () => {
-    huc.showPaymentMethod("APPLE_PAY");
+    huc.showPaymentMethod("GOOGLE_PAY");
   }
 
   const renderPaymentMethods = () => {
@@ -73,16 +74,16 @@ export const HeadlessCheckoutScreen = () => {
       return (
         <TouchableOpacity
               style={{
-                marginHorizontal: 20, 
-                height: 50, 
-                backgroundColor: 'black', 
-                justifyContent: 'center', 
+                marginHorizontal: 20,
+                height: 50,
+                backgroundColor: 'black',
+                justifyContent: 'center',
                 alignItems: "center",
                 borderRadius: 4
               }}
               onPress={payWithApplePay}
             >
-              <Image source={{uri: localImageUrl}} style = {{width: 60, height: 25, resizeMode : 'contain', tintColor: 'white' }} />
+              <Image source={{uri: localImageUrl}} style = {{width: 60, height: 25, resizeMode : 'contain' }} />
             </TouchableOpacity>
       )
     }
