@@ -7,7 +7,7 @@ import { styles } from '../styles';
 import type { PrimerSettings } from 'src/models/primer-settings';
 import { createClientSession, createPayment, resumePayment } from '../api/api';
 
-const huc = new PrimerHUC();
+const huc = PrimerHUC.getInstance();
 
 export const HeadlessCheckoutScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
