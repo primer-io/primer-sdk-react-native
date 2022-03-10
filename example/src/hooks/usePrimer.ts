@@ -1,14 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Primer } from '@primer-io/react-native';
-import { createClientSession } from '../api/client-session';
+import { createClientSession, createPayment, resumePayment } from '../api/api';
 import type { PrimerSettings } from 'src/models/primer-settings';
 import type {
   OnClientSessionActionsCallback,
   OnTokenizeSuccessCallback,
 } from 'src/models/primer-callbacks';
-import { createPayment } from '../api/create-payment';
 import { postAction } from '../api/actions';
-import { resumePayment } from '../api/resume-payment';
 
 const ERROR_MESSAGE = 'payment failed, please try again!';
 

@@ -19,12 +19,29 @@ enum PrimerHeadlessUniversalCheckoutEvents: Int, CaseIterable {
     case error
     
     var stringValue: String {
-      String(describing: self)
+        switch self {
+        case .clientSessionDidSetUpSuccessfully:
+            return "clientSessionDidSetUpSuccessfully"
+        case .preparationStarted:
+            return "preparationStarted"
+        case .paymentMethodPresented:
+            return "paymentMethodPresented"
+        case .tokenizationStarted:
+            return "tokenizationStarted"
+        case .tokenizationSucceeded:
+            return "tokenizationSucceeded"
+        case .resume:
+            return "resume"
+        case .error:
+            return "error"
+        }
     }
 }
 
 @objc(PrimerHeadlessUniversalCheckout)
 class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
+    
+    private var resumeTokenCompletion: ((_ resumeToken: String) -> Void)?
     
     override init() {
         super.init()
@@ -60,6 +77,17 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
                 successCallback([paymentMethodTypes.compactMap({$0.rawValue})])
             }
         }
+    }
+    
+    @objc
+    func resumeWithClientToken(_ resumeToken: String) {
+        self.resumeTokenCompletion?(resumeToken)
+    }
+    
+    @objc
+    func listAvailableAssets(_ successCallback: @escaping RCTResponseSenderBlock) {
+        let availableAssets = PrimerAsset.Brand.allCases.compactMap({ $0.rawValue })
+        successCallback([availableAssets])
     }
     
     @objc
@@ -130,6 +158,11 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
         do {
             let paymentMethodTokenData = try JSONEncoder().encode(paymentMethodToken)
             let paymentMethodTokenStr = String(data: paymentMethodTokenData, encoding: .utf8)!
+            
+            self.resumeTokenCompletion = { (resumeToken) in
+                resumeHandler?.handle(newClientToken: resumeToken)
+            }
+            
             sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.tokenizationSucceeded.stringValue, body: ["paymentMethodToken": paymentMethodTokenStr])
 
         } catch {

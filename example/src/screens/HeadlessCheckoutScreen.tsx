@@ -4,87 +4,130 @@ import {
 } from '@primer-io/react-native';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { styles } from '../styles';
-import { createClientSession } from '../api/client-session';
 import type { PrimerSettings } from 'src/models/primer-settings';
-import { createPayment } from '../api/create-payment';
+import { createClientSession, createPayment, resumePayment } from '../api/api';
 
-const huc = new PrimerHUC();
+const huc = PrimerHUC.getInstance();
 
 export const HeadlessCheckoutScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [showPaymentMethods, setShowPaymentMethods] = useState(false);
+  const [paymentMethods, setPaymentMethods] = useState<undefined | string[]>(undefined);
   const [paymentResponse, setPaymentResponse] = useState<null | string>(null);
   const [localImageUrl, setLocalImageUrl] = useState<null | string>(null);
+  const [paymentId, setPaymentId] = useState<undefined | string>(undefined);
   const [error, setError] = useState<null | any>(null);
 
-  huc.getAssetFor("google-pay",
-    "logo",
-    (err) => {
-      console.error(err.description);
+  huc.listAvailableAssets((assets) => {
+    console.log(`Available assets: ${JSON.stringify(assets)}`);
+  });
+
+useEffect(() => {
+  const settings: PrimerSettings = {
+    options: {
+      ios: {
+        merchantIdentifier: "merchant.checkout.team",
+      },
     },
-    (url) => {
-    console.log(localImageUrl)
-      setLocalImageUrl(url);
-    });
+  };
+  createClientSession().then((session) => {
+    setIsLoading(false);
 
-  useEffect(() => {
-    const settings: PrimerSettings = {
-      options: {
-        ios: {
-          merchantIdentifier: "merchant.checkout.team"
-        }
-      }
-    }
-
-    createClientSession('customerId123').then((session) => {
-      setIsLoading(false);
-
-      huc.startHeadlessCheckout(session.clientToken,
-        settings,
-        (err) => {
-          setError(err);
-          console.error(err);
-        },
-        (paymentMethodTypes) => {
-          setShowPaymentMethods(true);
-          console.log(`Available payment methods: ${JSON.stringify(paymentMethodTypes)}`);
+    huc.startHeadlessCheckout(
+      session.clientToken,
+      settings,
+      (err) => {
+        setError(err);
+        console.log(err);
+      },
+      (response) => {
+        setPaymentMethods(response.paymentMethodTypes);
+        console.log(
+          `Available payment methods: ${JSON.stringify(
+            response.paymentMethodTypes
+          )}`
+        );
+        response.paymentMethodTypes.map((pm) => {
+          huc.getAssetFor(
+            pm,
+            "ICON",
+            (err) => {
+              setError(err);
+              console.log(err);
+            },
+            (uri) => {
+              console.log(uri);
+            }
+          );
         });
-    });
-  }, []);
+      }
+    );
+  });
+}, []);
+
 
   huc.onTokenizeSuccess = async (paymentMethodToken) => {
     try {
       const response = await createPayment(paymentMethodToken.token);
       console.log(JSON.stringify(response));
-      setPaymentResponse(response);
+      if (response.id && response.requiredAction && response.requiredAction.clientToken) {
+        setPaymentId(response.id);
+        huc.resumeWithToken(response.requiredAction.clientToken);
+      }
     } catch (error) {
       console.error(error);
       setError(error);
     }
   }
 
-  const payWithApplePay = () => {
-    huc.showPaymentMethod("GOOGLE_PAY");
+  huc.onResume = async (resumeToken) => {
+    try {
+      if (paymentId) {
+        const response = await resumePayment(paymentId, resumeToken);
+        setPaymentResponse(response);
+      } else {
+        const err = new Error("Missing payment id")
+        throw err
+      }
+    } catch (err) {
+      console.error(err);
+      setError(err);
+    }
+  }
+
+  const payWithPaymentMethod = (paymentMethod: string) => {
+    huc.showPaymentMethod(paymentMethod);
   }
 
   const renderPaymentMethods = () => {
-    if (!showPaymentMethods) {
+    if (!paymentMethods) {
       return null;
     } else {
       return (
-        <TouchableOpacity
-              style={{
-                marginHorizontal: 20,
-                height: 50,
-                backgroundColor: 'black',
-                justifyContent: 'center',
-                alignItems: "center",
-                borderRadius: 4
-              }}
-              onPress={payWithApplePay}
-            >
-              <Image source={{uri: localImageUrl}} style = {{width: 60, height: 25, resizeMode : 'contain' }} />
-            </TouchableOpacity>
+        <View>
+          {
+            paymentMethods.map(pm => {
+              return (
+                <TouchableOpacity
+                  key={pm}
+                  style={{
+                    marginHorizontal: 20,
+                    marginVertical: 4,
+                    height: 50,
+                    backgroundColor: 'black',
+                    justifyContent: 'center',
+                    alignItems: "center",
+                    borderRadius: 4
+                  }}
+                  onPress={() => {
+                    payWithPaymentMethod(pm);
+                  }}
+                >
+                  <Text style={{color: "white"}}>{pm}</Text>
+                </TouchableOpacity>
+              )
+            })
+          }
+        </View>
       )
     }
   }

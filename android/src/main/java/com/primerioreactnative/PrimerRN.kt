@@ -1,29 +1,21 @@
 package com.primerioreactnative
 
 import android.content.Context
-import android.graphics.Color
 import android.util.Log
 import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
-import com.facebook.react.uimanager.UIManagerModule
 import com.primerioreactnative.datamodels.*
 import io.primer.android.Primer
-import io.primer.android.components.PrimerHeadlessUniversalCheckout
-import io.primer.android.components.manager.PrimerUniversalCheckoutCardManagerInterface
-import io.primer.android.components.ui.widgets.elements.PrimerInputElement
 import io.primer.android.model.dto.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.Error
 
-
-class PrimerRN(
-  val reactContext: ReactApplicationContext,
-  val cardManager: PrimerUniversalCheckoutCardManagerInterface,
-) : ReactContextBaseJavaModule(reactContext) {
+class PrimerRN(reactContext: ReactApplicationContext) :
+  ReactContextBaseJavaModule(reactContext) {
 
   private var settings: PrimerSettingsRN = PrimerSettingsRN()
   private var theme: PrimerThemeRN = PrimerThemeRN()
@@ -34,63 +26,9 @@ class PrimerRN(
   private var sdkWasInitialised = false
   private var haltExecution = false
 
-  private val json = Json{ ignoreUnknownKeys = true }
+  private val json = Json { ignoreUnknownKeys = true }
 
   override fun getName(): String = "PrimerRN"
-
-  // HEADLESS CHECKOUT
-  private val headlessCheckoutListener by lazy {
-    HeadlessCheckoutListener(reactContext, json)
-  }
-
-  @ReactMethod
-  fun setHeadlessCheckoutCallback(callback: Callback) {
-    headlessCheckoutListener.setCallback(callback)
-    PrimerHeadlessUniversalCheckout.current.setListener(headlessCheckoutListener)
-  }
-
-  @ReactMethod
-  fun startHeadlessCheckout(clientToken: String, callback: Callback) {
-    val context = currentActivity as Context
-    val settings = settings.format()
-    val config = PrimerConfig(settings = settings)
-    headlessCheckoutListener.setCallback(callback)
-    PrimerHeadlessUniversalCheckout.current.start(context, clientToken, config, headlessCheckoutListener)
-  }
-
-  @ReactMethod
-  fun resumeHeadlessCheckout(clientToken: String?, errorDescription: String?) {
-    headlessCheckoutListener.resume(clientToken, errorDescription)
-  }
-
-  @ReactMethod
-  fun validate(callback: Callback) {
-    val isValid = cardManager.isCardFormValid()
-    callback(isValid)
-  }
-
-  private val inputElements = mutableMapOf<Int, PrimerInputElement>()
-
-  @ReactMethod
-  fun addInput(tag: Int) {
-    val uiManagerModule = reactContext.getNativeModule(UIManagerModule::class.java)
-    val view = uiManagerModule.resolveView(tag) as PrimerInputElement
-    inputElements[tag] = view
-
-    cardManager.setInputElements(inputElements.values.toList())
-  }
-
-  fun removeInput(tag: Int) {
-    inputElements.remove(tag)
-    cardManager.setInputElements(inputElements.values.toList())
-  }
-
-  @ReactMethod
-  fun disposeHeadlessCheckout() {
-    PrimerHeadlessUniversalCheckout.current.cleanup()
-  }
-
-  //
 
   @ReactMethod
   fun configureSettings(request: String) {
