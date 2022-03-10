@@ -12,6 +12,8 @@
 
 RCT_EXTERN_METHOD(startWithClientToken:(NSString *)clientToken settingsStr:(NSString *)settingsStr errorCallback:(RCTResponseSenderBlock)errorCallback successCallback: (RCTResponseSenderBlock)successCallback)
 
+RCT_EXTERN_METHOD(resumeWithClientToken:(NSString *)resumeToken)
+
 RCT_EXTERN_METHOD(showPaymentMethod:(NSString *)paymentMethodTypeStr)
 
 RCT_EXTERN_METHOD(getAssetFor:(NSString *)assetBrand

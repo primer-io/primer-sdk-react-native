@@ -19,6 +19,7 @@ export class PrimerHUC {
     onPaymentMethodPresented: undefined | (() => void);
     onTokenizationStarted: undefined | (() => void);
     onTokenizeSuccess: undefined | ((paymentMethod: any) => void);
+    onResume: undefined | ((resumeToken: string) => void);
     onFailure: undefined | ((error: IPrimerError) => void);
    
     constructor() {
@@ -57,6 +58,9 @@ export class PrimerHUC {
     
         const resumeListener = eventEmitter.addListener('resume', (data) => {
           console.log("resume");
+          if (this.onResume && data.resumeToken) {
+            this.onResume(data.resumeToken);
+          }
         });
     
         const errorListener = eventEmitter.addListener('error', (data) => {
@@ -90,7 +94,11 @@ export class PrimerHUC {
     }
 
     showPaymentMethod(paymentMethod: string) {
-        PrimerHeadlessUniversalCheckout.showPaymentMethod(paymentMethod);
+      PrimerHeadlessUniversalCheckout.showPaymentMethod(paymentMethod);
+    }
+
+    resumeWithToken(resumeToken: string) {
+      PrimerHeadlessUniversalCheckout.resumeWithClientToken(resumeToken);
     }
 
     getAssetFor(paymentMethodType: string,

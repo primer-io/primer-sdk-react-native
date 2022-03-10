@@ -41,6 +41,8 @@ enum PrimerHeadlessUniversalCheckoutEvents: Int, CaseIterable {
 @objc(PrimerHeadlessUniversalCheckout)
 class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
     
+    private var resumeTokenCompletion: ((_ resumeToken: String) -> Void)?
+    
     override init() {
         super.init()
         PrimerHeadlessUniversalCheckout.current.delegate = self
@@ -75,6 +77,11 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
                 successCallback([paymentMethodTypes.compactMap({$0.rawValue})])
             }
         }
+    }
+    
+    @objc
+    func resumeWithClientToken(_ resumeToken: String) {
+        self.resumeTokenCompletion?(resumeToken)
     }
     
     @objc
@@ -145,6 +152,11 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
         do {
             let paymentMethodTokenData = try JSONEncoder().encode(paymentMethodToken)
             let paymentMethodTokenStr = String(data: paymentMethodTokenData, encoding: .utf8)!
+            
+            self.resumeTokenCompletion = { (resumeToken) in
+                resumeHandler?.handle(newClientToken: resumeToken)
+            }
+            
             sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.tokenizationSucceeded.stringValue, body: ["paymentMethodToken": paymentMethodTokenStr])
 
         } catch {

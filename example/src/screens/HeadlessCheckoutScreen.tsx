@@ -4,9 +4,8 @@ import {
 } from '@primer-io/react-native';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { styles } from '../styles';
-import { createClientSession } from '../api/client-session';
 import type { PrimerSettings } from 'src/models/primer-settings';
-import { createPayment } from '../api/create-payment';
+import { createClientSession, createPayment, resumePayment } from '../api/api';
 
 const huc = new PrimerHUC();
 
@@ -15,6 +14,7 @@ export const HeadlessCheckoutScreen = () => {
   const [showPaymentMethods, setShowPaymentMethods] = useState(false);
   const [paymentResponse, setPaymentResponse] = useState<null | string>(null);
   const [localImageUrl, setLocalImageUrl] = useState<null | string>(null);
+  const [paymentId, setPaymentId] = useState<undefined | string>(undefined);
   const [error, setError] = useState<null | any>(null);
 
   huc.getAssetFor("apple-pay",
@@ -55,15 +55,32 @@ export const HeadlessCheckoutScreen = () => {
     try {
       const response = await createPayment(paymentMethodToken.token);
       console.log(JSON.stringify(response));
-      setPaymentResponse(response);
+      if (response.id && response.requiredAction && response.requiredAction.clientToken) {
+        setPaymentId(response.id);
+        huc.resumeWithToken(response.requiredAction.clientToken);
+      }
     } catch (error) {
       console.error(error);
       setError(error);
     }
   }
 
+  huc.onResume = async (resumeToken) => {
+    try {
+      const response = await resumePayment(paymentId, resumeToken);
+      setPaymentResponse(response);
+    } catch (err) {
+      console.error(err);
+      setError(err);
+    }
+  }
+
   const payWithApplePay = () => {
     huc.showPaymentMethod("APPLE_PAY");
+  }
+
+  const payWithBuckarooIdeal = () => {
+    huc.showPaymentMethod("BUCKAROO_IDEAL");
   }
 
   const renderPaymentMethods = () => {
@@ -80,7 +97,7 @@ export const HeadlessCheckoutScreen = () => {
                 alignItems: "center",
                 borderRadius: 4
               }}
-              onPress={payWithApplePay}
+              onPress={payWithBuckarooIdeal}
             >
               <Image source={{uri: localImageUrl}} style = {{width: 60, height: 25, resizeMode : 'contain', tintColor: 'white' }} />
             </TouchableOpacity>
