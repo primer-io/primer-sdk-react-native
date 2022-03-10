@@ -18,52 +18,43 @@ export const HeadlessCheckoutScreen = () => {
   const [error, setError] = useState<null | any>(null);
 
   huc.listAvailableAssets((assets) => {
-    console.log(`Available assets: ${JSON.stringify(assets)}`);
-  });
+     console.log(`Available assets: ${JSON.stringify(assets)}`);
+   });
 
-useEffect(() => {
-  const settings: PrimerSettings = {
-    options: {
-      ios: {
-        merchantIdentifier: "merchant.checkout.team",
-      },
-    },
-  };
-  createClientSession().then((session) => {
-    setIsLoading(false);
+   huc.getAssetFor("apple-pay",
+     "logo",
+     (err) => {
+       //@ts-ignore
+       console.error(err.description);
+     },
+     (url) => {
+       setLocalImageUrl(url);
+   });
 
-    huc.startHeadlessCheckout(
-      session.clientToken,
-      settings,
-      (err) => {
-        setError(err);
-        console.log(err);
-      },
-      (response) => {
-        setPaymentMethods(response.paymentMethodTypes);
-        console.log(
-          `Available payment methods: ${JSON.stringify(
-            response.paymentMethodTypes
-          )}`
-        );
-        response.paymentMethodTypes.map((pm) => {
-          huc.getAssetFor(
-            pm,
-            "ICON",
-            (err) => {
-              setError(err);
-              console.log(err);
-            },
-            (uri) => {
-              console.log(uri);
-            }
-          );
-        });
-      }
-    );
-  });
-}, []);
+   useEffect(() => {
+     const settings: PrimerSettings = {
+       options: {
+         ios: {
+           merchantIdentifier: "merchant.checkout.team"
+         }
+       }
+     }
 
+     createClientSession().then((session) => {
+       setIsLoading(false);
+
+       huc.startHeadlessCheckout(session.clientToken,
+         settings,
+         (err) => {
+           setError(err);
+           console.error(err);
+         },
+         (response) => {
+           setPaymentMethods(response.paymentMethodTypes);
+           console.log(`Available payment methods: ${JSON.stringify(response.paymentMethodTypes)}`);
+         });
+     });
+   }, []);
 
   huc.onTokenizeSuccess = async (paymentMethodToken) => {
     try {

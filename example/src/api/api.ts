@@ -118,7 +118,6 @@ export const createPayment = async (paymentMethod: string) => {
       };
 
     const body = {paymentMethodToken: paymentMethod};
-
     try {
         const response = await axios.post(url, body, {headers: headers});
 
