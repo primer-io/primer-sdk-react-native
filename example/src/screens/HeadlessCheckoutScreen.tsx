@@ -24,6 +24,7 @@ export const HeadlessCheckoutScreen = () => {
   huc.getAssetFor("apple-pay",
     "logo",
     (err) => {
+      //@ts-ignore
       console.error(err.description);
     },
     (url) => {
@@ -71,8 +72,13 @@ export const HeadlessCheckoutScreen = () => {
 
   huc.onResume = async (resumeToken) => {
     try {
-      const response = await resumePayment(paymentId, resumeToken);
-      setPaymentResponse(response);
+      if (paymentId) {
+        const response = await resumePayment(paymentId, resumeToken);
+        setPaymentResponse(response);
+      } else {
+        const err = new Error("Missing payment id")
+        throw err
+      }
     } catch (err) {
       console.error(err);
       setError(err);
