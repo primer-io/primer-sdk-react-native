@@ -4,7 +4,6 @@ import { View, Picker, TextInput, TouchableOpacity, Text } from 'react-native';
 import type { PrimerSettings } from 'src/models/primer-settings';
 import type { CountryCode } from 'src/models/utils/countryCode';
 import type { CurrencyCode } from 'src/models/utils/currencyCode';
-import { PrimerHeadlessUniversalCheckoutCardFormUIManager } from '../components/RNTPrimerHeadlessUniversalCheckoutCardFormUIManager';
 import { styles } from '../styles';
 
 
@@ -21,7 +20,7 @@ export const SettingsScreen = (args: ISettingsScreenArguments) => {
   const [country, setCountry] = useState<CountryCode>('DE');
 
   Primer.headlessCheckout.startHeadlessCheckout("CLIENT TOKEN", () => {
-    
+
   })
 
   PrimerHeadlessUniversalCheckoutCardFormUIManager.setInputElements("test",

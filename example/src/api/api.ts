@@ -16,7 +16,7 @@ export const createClientSession = async () => {
         orderId: 'rn-test-10001',
         currencyCode: 'EUR',
         order: {
-            countryCode: 'NL',
+            countryCode: 'FR',
             lineItems: [
             {
                 amount: 30,
@@ -110,7 +110,7 @@ export const createClientSession = async () => {
 
 export const createPayment = async (paymentMethod: string) => {
     const url = root + '/payments';
-    
+
     const headers = {
         'Content-Type': 'application/json',
         'X-API-Version': '2021-09-27',
@@ -118,7 +118,6 @@ export const createPayment = async (paymentMethod: string) => {
       };
 
     const body = {paymentMethodToken: paymentMethod};
-  
     try {
         const response = await axios.post(url, body, {headers: headers});
 

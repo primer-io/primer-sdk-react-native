@@ -18,43 +18,43 @@ export const HeadlessCheckoutScreen = () => {
   const [error, setError] = useState<null | any>(null);
 
   huc.listAvailableAssets((assets) => {
-    console.log(`Available assets: ${JSON.stringify(assets)}`);
-  });
+     console.log(`Available assets: ${JSON.stringify(assets)}`);
+   });
 
-  huc.getAssetFor("apple-pay",
-    "logo",
-    (err) => {
-      //@ts-ignore
-      console.error(err.description);
-    },
-    (url) => {
-      setLocalImageUrl(url);
-  });
+   huc.getAssetFor("apple-pay",
+     "logo",
+     (err) => {
+       //@ts-ignore
+       console.error(err.description);
+     },
+     (url) => {
+       setLocalImageUrl(url);
+   });
 
-  useEffect(() => {
-    const settings: PrimerSettings = {
-      options: {
-        ios: {
-          merchantIdentifier: "merchant.checkout.team"
-        }
-      }
-    }
+   useEffect(() => {
+     const settings: PrimerSettings = {
+       options: {
+         ios: {
+           merchantIdentifier: "merchant.checkout.team"
+         }
+       }
+     }
 
-    createClientSession().then((session) => {
-      setIsLoading(false);
+     createClientSession().then((session) => {
+       setIsLoading(false);
 
-      huc.startHeadlessCheckout(session.clientToken, 
-        settings,
-        (err) => {
-          setError(err);
-          console.error(err);
-        },
-        (response) => {
-          setPaymentMethods(response.paymentMethodTypes);
-          console.log(`Available payment methods: ${JSON.stringify(response.paymentMethodTypes)}`);
-        });
-    });
-  }, []);
+       huc.startHeadlessCheckout(session.clientToken,
+         settings,
+         (err) => {
+           setError(err);
+           console.error(err);
+         },
+         (response) => {
+           setPaymentMethods(response.paymentMethodTypes);
+           console.log(`Available payment methods: ${JSON.stringify(response.paymentMethodTypes)}`);
+         });
+     });
+   }, []);
 
   huc.onTokenizeSuccess = async (paymentMethodToken) => {
     try {
@@ -101,11 +101,11 @@ export const HeadlessCheckoutScreen = () => {
                 <TouchableOpacity
                   key={pm}
                   style={{
-                    marginHorizontal: 20, 
+                    marginHorizontal: 20,
                     marginVertical: 4,
-                    height: 50, 
-                    backgroundColor: 'black', 
-                    justifyContent: 'center', 
+                    height: 50,
+                    backgroundColor: 'black',
+                    justifyContent: 'center',
                     alignItems: "center",
                     borderRadius: 4
                   }}
