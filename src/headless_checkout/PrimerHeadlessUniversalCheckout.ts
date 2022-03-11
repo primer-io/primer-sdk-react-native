@@ -1,133 +1,114 @@
-import { NativeEventEmitter, NativeModules } from "react-native";
-import type { PrimerSettings } from "src/models/primer-settings";
+import type { PrimerSettings } from 'src/models/primer-settings';
+import NativePrimerHeadlessUniversalCheckout from './NativePrimerHeadlessUniversalCheckout';
+import type {
+  PrimerHeadlessUniversalCheckoutStartResponse,
+  PrimerHeadlessUniversalCheckoutCallbacks,
+} from './types';
 
-const { PrimerHeadlessUniversalCheckout } = NativeModules;
+class PrimerHeadlessUniversalCheckoutClass {
+  private callbacks: PrimerHeadlessUniversalCheckoutCallbacks | undefined;
 
-export interface IPaymentMethodsTypes {
-  paymentMethodTypes: string[];
-}
-
-export interface IPrimerError {
-  errorId: string;
-  description: string;
-  recoverySuggestion?: string;
-}
-
-export class PrimerHUC {
-
-  onPreparationStarted: undefined | (() => void);
-  onPaymentMethodPresented: undefined | (() => void);
-  onTokenizationStarted: undefined | (() => void);
-  onTokenizeSuccess: undefined | ((paymentMethod: any) => void);
-  onResume: undefined | ((resumeToken: string) => void);
-  onFailure: undefined | ((error: IPrimerError) => void);
-
-  private static instance: PrimerHUC;
-
-  public static getInstance(): PrimerHUC {
-    if (!PrimerHUC.instance) {
-      PrimerHUC.instance = new PrimerHUC();
-    }
-
-    return PrimerHUC.instance;
+  ///////////////////////////////////////////
+  // Init
+  ///////////////////////////////////////////
+  constructor() {
+    this.callbacks = undefined;
+    this.configureListeners();
   }
 
-  private constructor() {
-    const eventEmitter = new NativeEventEmitter(PrimerHeadlessUniversalCheckout);
-    const preparationStartedListener = eventEmitter.addListener('preparationStarted', (data) => {
-      console.log("preparationStarted");
-      if (this.onPreparationStarted) {
-        this.onPreparationStarted();
+  private configureListeners() {
+    NativePrimerHeadlessUniversalCheckout.addListener(
+      'preparationStarted',
+      () => {
+        console.log('preparationStarted');
+        this.callbacks?.onPreparationStarted?.();
       }
+    );
+
+    NativePrimerHeadlessUniversalCheckout.addListener(
+      'paymentMethodPresented',
+      () => {
+        console.log('paymentMethodPresented');
+        this.callbacks?.onPaymentMethodPresented?.();
+      }
+    );
+
+    NativePrimerHeadlessUniversalCheckout.addListener(
+      'tokenizationStarted',
+      () => {
+        console.log('tokenizationStarted');
+        this.callbacks?.onTokenizeStart?.();
+      }
+    );
+
+    NativePrimerHeadlessUniversalCheckout.addListener(
+      'tokenizationSucceeded',
+      (data) => {
+        console.log('tokenizationSucceeded', data);
+        this.callbacks?.onTokenizeSuccess?.(data.paymentMethodToken);
+      }
+    );
+
+    NativePrimerHeadlessUniversalCheckout.addListener('resume', (data) => {
+      console.log('resume', data);
+      this.callbacks?.onResumeSuccess?.(data.resumeToken);
     });
 
-    const paymentMethodPresentedListener = eventEmitter.addListener('paymentMethodPresented', (data) => {
-      console.log("paymentMethodPresented");
-
-      if (this.onPaymentMethodPresented) {
-        this.onPaymentMethodPresented();
-      }
-    });
-
-    const tokenizationStartedListener = eventEmitter.addListener('tokenizationStarted', (data) => {
-      console.log("tokenizationStarted");
-
-      if (this.onTokenizationStarted) {
-        this.onTokenizationStarted();
-      }
-    });
-
-    const tokenizationSucceededListener = eventEmitter.addListener('tokenizationSucceeded', (data) => {
-      console.log(`tokenizationSucceeded: ${JSON.stringify(data)}`);
-      const paymentMethodToken = JSON.parse(data["paymentMethodToken"]);
-
-      if (this.onTokenizeSuccess) {
-        this.onTokenizeSuccess(paymentMethodToken);
-      }
-    });
-
-    const resumeListener = eventEmitter.addListener('resume', (data) => {
-      console.log("resume");
-      if (this.onResume && data.resumeToken) {
-        this.onResume(data.resumeToken);
-      }
-    });
-
-    const errorListener = eventEmitter.addListener('error', (data) => {
-      console.log(`error: ${JSON.stringify(data)}`);
-
-      const error: IPrimerError = data["error"];
-      if (this.onFailure && error) {
-        this.onFailure(error);
-      }
+    NativePrimerHeadlessUniversalCheckout.addListener('error', (data) => {
+      console.log('error', data);
+      this.callbacks?.onFailure?.(data.error);
     });
   }
 
-  startHeadlessCheckout(clientToken: string,
-    settings: PrimerSettings,
-    errorCallback: (err: Error) => void,
-    completion: (paymentMethodTypes: IPaymentMethodsTypes) => void) {
-    PrimerHeadlessUniversalCheckout.startWithClientToken(clientToken,
-      JSON.stringify(settings),
-      (err: Error) => {
-        console.error(err);
-        errorCallback(err);
-      },
-      (paymentMethodsArr: string[]) => {
-        const onClientSessionSetupSuccessfullyRequest: IPaymentMethodsTypes = {
-          paymentMethodTypes: paymentMethodsArr
-        }
+  ///////////////////////////////////////////
+  // API
+  ///////////////////////////////////////////
+  startWithClientToken(
+    clientToken: string,
+    settings: PrimerSettings & PrimerHeadlessUniversalCheckoutCallbacks
+  ): Promise<PrimerHeadlessUniversalCheckoutStartResponse> {
+    // Copy callback
+    this.callbacks = {
+      onPreparationStarted: settings.onPreparationStarted,
+      onPaymentMethodPresented: settings.onPaymentMethodPresented,
+      onTokenizeStart: settings.onTokenizeStart,
+      onResumeSuccess: settings.onResumeSuccess,
+      onFailure: settings.onFailure,
+    };
 
-        completion(onClientSessionSetupSuccessfullyRequest);
-      })
+    return NativePrimerHeadlessUniversalCheckout.startWithClientToken(
+      clientToken,
+      settings
+    );
   }
 
   showPaymentMethod(paymentMethod: string) {
-    PrimerHeadlessUniversalCheckout.showPaymentMethod(paymentMethod);
+    return NativePrimerHeadlessUniversalCheckout.showPaymentMethod(
+      paymentMethod
+    );
   }
 
-  resumeWithToken(resumeToken: string) {
-    PrimerHeadlessUniversalCheckout.resumeWithClientToken(resumeToken);
+  resumeWithClientToken(resumeToken: string) {
+    return NativePrimerHeadlessUniversalCheckout.resumeWithClientToken(
+      resumeToken
+    );
   }
 
-  listAvailableAssets(completion: (assets: string[]) => void) {
-    PrimerHeadlessUniversalCheckout.listAvailableAssets((assets: string[]) => {
-      completion(assets);
-    })
+  getAssetForPaymentMethod(
+    paymentMethodType: string,
+    assetType: string
+  ): Promise<string> {
+    return NativePrimerHeadlessUniversalCheckout.getAssetForPaymentMethod(
+      paymentMethodType,
+      assetType
+    );
   }
 
-  getAssetFor(paymentMethodType: string,
-    assetType: string,
-    errorCallback: (err: Error) => void,
-    completion: (url: string) => void) {
-    PrimerHeadlessUniversalCheckout.getAssetFor(paymentMethodType,
-      assetType,
-      (err: Error) => {
-        errorCallback(err);
-      },
-      (url: string) => {
-        completion(url);
-      });
+  listAvailableAssets() {
+    return NativePrimerHeadlessUniversalCheckout.listAvailableAssets();
   }
-
 }
+
+const PrimerHeadlessUniversalCheckout = new PrimerHeadlessUniversalCheckoutClass();
+
+export default PrimerHeadlessUniversalCheckout;
