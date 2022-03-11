@@ -9,6 +9,7 @@
     "start": "react-native start"
   },
   "dependencies": {
+    "@primer-io/react-native": "file:./..",
     "@react-native-masked-view/masked-view": "^0.2.6",
     "@react-navigation/native": "^6.0.2",
     "@react-navigation/native-stack": "^6.1.0",
