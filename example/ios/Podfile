@@ -1,3 +1,6 @@
+source 'https://github.com/CocoaPods/Specs.git'
+source 'https://github.com/primer-io/primer-podspecs.git'
+
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
@@ -7,7 +10,9 @@ target 'ReactNativeExample' do
   config = use_native_modules!
 
   use_react_native!(:path => config["reactNativePath"])
-        
+  
+  pod 'primer-io-react-native', :path => '../..'
+      
   # Enables Flipper.
   #
   # Note that if you have use_frameworks! enabled, Flipper will not work and
