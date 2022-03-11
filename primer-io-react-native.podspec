@@ -18,5 +18,5 @@ Pod::Spec.new do |s|
   
 
   s.dependency "React-Core"
-  s.dependency "PrimerSDK",  "1.27.1"
+  s.dependency "PrimerSDK", "1.29.0"
 end
