@@ -1,22 +1,9 @@
 import type { PrimerSettings } from 'src/models/primer-settings';
 import NativePrimerHeadlessUniversalCheckout from './NativePrimerHeadlessUniversalCheckout';
 import type {
-  PrimerError,
   PrimerHeadlessUniversalCheckoutStartResponse,
   PrimerHeadlessUniversalCheckoutCallbacks,
 } from './types';
-
-export const getAssetForPaymentMethod = (
-  paymentMethodType: string,
-  assetType: string
-): Promise<string> =>
-  NativePrimerHeadlessUniversalCheckout.getAssetForPaymentMethod(
-    paymentMethodType,
-    assetType
-  );
-
-export const listAvailableAssets = (): Promise<string[]> =>
-  NativePrimerHeadlessUniversalCheckout.listAvailableAssets();
 
 class PrimerHeadlessUniversalCheckoutClass {
   private callbacks: PrimerHeadlessUniversalCheckoutCallbacks | undefined;
@@ -105,6 +92,20 @@ class PrimerHeadlessUniversalCheckoutClass {
     return NativePrimerHeadlessUniversalCheckout.resumeWithClientToken(
       resumeToken
     );
+  }
+
+  getAssetForPaymentMethod(
+    paymentMethodType: string,
+    assetType: string
+  ): Promise<string> {
+    return NativePrimerHeadlessUniversalCheckout.getAssetForPaymentMethod(
+      paymentMethodType,
+      assetType
+    );
+  }
+
+  listAvailableAssets() {
+    return NativePrimerHeadlessUniversalCheckout.listAvailableAssets();
   }
 }
 
