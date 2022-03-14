@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import {
-  PrimerHUC
+  PrimerHUC,
 } from '@primer-io/react-native';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { styles } from '../styles';
 import type { PrimerSettings } from 'src/models/primer-settings';
 import { createClientSession, createPayment, resumePayment } from '../api/api';
-
-const huc = PrimerHUC.getInstance();
+import type { PrimerHeadlessUniversalCheckoutCallbacks } from 'src/headless_checkout/types';
 
 export const HeadlessCheckoutScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -17,76 +16,92 @@ export const HeadlessCheckoutScreen = () => {
   const [paymentId, setPaymentId] = useState<undefined | string>(undefined);
   const [error, setError] = useState<null | any>(null);
 
-  huc.listAvailableAssets((assets) => {
-     console.log(`Available assets: ${JSON.stringify(assets)}`);
-   });
-
-   huc.getAssetFor("apple-pay",
-     "logo",
-     (err) => {
-       //@ts-ignore
-       console.error(err.description);
-     },
-     (url) => {
-       setLocalImageUrl(url);
-   });
-
-   useEffect(() => {
-     const settings: PrimerSettings = {
-       options: {
-         ios: {
-           merchantIdentifier: "merchant.checkout.team"
-         }
-       }
-     }
-
-     createClientSession().then((session) => {
-       setIsLoading(false);
-
-       huc.startHeadlessCheckout(session.clientToken,
-         settings,
-         (err) => {
-           setError(err);
-           console.error(err);
-         },
-         (response) => {
-           setPaymentMethods(response.paymentMethodTypes);
-           console.log(`Available payment methods: ${JSON.stringify(response.paymentMethodTypes)}`);
-         });
-     });
-   }, []);
-
-  huc.onTokenizeSuccess = async (paymentMethodToken) => {
+  const listAvailableAssets = (async () => {
     try {
-      const response = await createPayment(paymentMethodToken.token);
-      console.log(JSON.stringify(response));
-      if (response.id && response.requiredAction && response.requiredAction.clientToken) {
-        setPaymentId(response.id);
-        huc.resumeWithToken(response.requiredAction.clientToken);
-      }
-    } catch (error) {
-      console.error(error);
-      setError(error);
-    }
-  }
-
-  huc.onResume = async (resumeToken) => {
-    try {
-      if (paymentId) {
-        const response = await resumePayment(paymentId, resumeToken);
-        setPaymentResponse(response);
-      } else {
-        const err = new Error("Missing payment id")
-        throw err
-      }
+      const assets = await PrimerHUC.listAvailableAssets()
     } catch (err) {
-      console.error(err);
-      setError(err);
+
     }
-  }
+  });
+
+  const getAsset = (async (identifier: string) => {
+    try {
+      const assetUrl = await PrimerHUC.getAssetForPaymentMethod("applePay", "logo");
+      setLocalImageUrl(assetUrl);
+    } catch (err) {
+
+    }
+  });
+
+  let paymentId2: string | undefined;
+
+  useEffect(() => {
+    const settings: PrimerSettings & PrimerHeadlessUniversalCheckoutCallbacks = {
+      options: {
+        ios: {
+          merchantIdentifier: "merchant.checkout.team"
+        }
+      },
+      onPreparationStarted: () => {
+
+      },
+      onTokenizeStart: () => {
+
+      },
+      onTokenizeSuccess: async (paymentMethodInstrument) => {
+        try {
+          const response = await createPayment(paymentMethodInstrument.token);
+          console.log(JSON.stringify(response));
+          if (response.id && response.requiredAction && response.requiredAction.clientToken) {
+            setPaymentId(response.id);
+            paymentId2 = response.id;
+            debugger;
+            PrimerHUC.resumeWithClientToken(response.requiredAction.clientToken);
+          }
+        } catch (error) {
+          console.error(error);
+          setError(error);
+        }
+      },
+      onPaymentMethodPresented: () => {
+
+      },
+      onResumeSuccess: async (resumeToken) => {
+        try {
+          debugger;
+          if (paymentId2) {
+            const response = await resumePayment(paymentId2, resumeToken);
+            setPaymentResponse(response);
+          } else {
+            const err = new Error("Missing payment id")
+            throw err
+          }
+        } catch (err) {
+          console.error(err);
+          setError(err);
+        }
+      },
+      onFailure: (err) => {
+
+      }
+    }
+
+    createClientSession().then((session) => {
+      setIsLoading(false);
+      PrimerHUC.startWithClientToken(session.clientToken, settings)
+        .then((response) => {
+          console.log(`Available payment methods: ${JSON.stringify(response.paymentMethodTypes)}`);
+          setPaymentMethods(response.paymentMethodTypes);
+        })
+        .catch((err) => {
+          console.error(err);
+          setError(err);
+        })
+    });
+  }, []);
 
   const payWithPaymentMethod = (paymentMethod: string) => {
-    huc.showPaymentMethod(paymentMethod);
+    PrimerHUC.showPaymentMethod(paymentMethod);
   }
 
   const renderPaymentMethods = () => {
@@ -113,7 +128,7 @@ export const HeadlessCheckoutScreen = () => {
                     payWithPaymentMethod(pm);
                   }}
                 >
-                  <Text style={{color: "white"}}>{pm}</Text>
+                  <Text style={{ color: "white" }}>{pm}</Text>
                 </TouchableOpacity>
               )
             })
@@ -128,7 +143,7 @@ export const HeadlessCheckoutScreen = () => {
       return null;
     } else {
       return (
-        <Text style={{color: "black"}}>
+        <Text style={{ color: "black" }}>
           {JSON.stringify(paymentResponse)}
         </Text>
       )
@@ -140,7 +155,7 @@ export const HeadlessCheckoutScreen = () => {
       return null;
     } else {
       return (
-        <Text style={{color: "red"}}>
+        <Text style={{ color: "red" }}>
           {JSON.stringify(error)}
         </Text>
       )

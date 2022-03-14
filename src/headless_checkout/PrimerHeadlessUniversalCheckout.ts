@@ -1,3 +1,5 @@
+import type { PaymentInstrumentToken } from 'src/models/payment-instrument-token';
+import type { PrimerError } from 'src/models/primer-error';
 import type { PrimerSettings } from 'src/models/primer-settings';
 import NativePrimerHeadlessUniversalCheckout from './NativePrimerHeadlessUniversalCheckout';
 import type {
@@ -45,7 +47,17 @@ class PrimerHeadlessUniversalCheckoutClass {
       'tokenizationSucceeded',
       (data) => {
         console.log('tokenizationSucceeded', data);
-        this.callbacks?.onTokenizeSuccess?.(data.paymentMethodToken);
+
+        if (data.paymentMethodToken) {
+          const paymentMethodTokenObj: PaymentInstrumentToken = JSON.parse(data.paymentMethodToken);
+          this.callbacks?.onTokenizeSuccess?.(paymentMethodTokenObj);
+        } else {
+          const err: PrimerError = {
+            name: "ParseJsonFailed",
+            description: "Failed to parse payment method token"
+          }
+          this.callbacks?.onFailure?.(err);
+        }        
       }
     );
 
@@ -72,6 +84,7 @@ class PrimerHeadlessUniversalCheckoutClass {
       onPreparationStarted: settings.onPreparationStarted,
       onPaymentMethodPresented: settings.onPaymentMethodPresented,
       onTokenizeStart: settings.onTokenizeStart,
+      onTokenizeSuccess: settings.onTokenizeSuccess,
       onResumeSuccess: settings.onResumeSuccess,
       onFailure: settings.onFailure,
     };

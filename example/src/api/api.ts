@@ -16,7 +16,7 @@ export const createClientSession = async () => {
         orderId: 'rn-test-10001',
         currencyCode: 'EUR',
         order: {
-            countryCode: 'FR',
+            countryCode: 'NL',
             lineItems: [
             {
                 amount: 30,
