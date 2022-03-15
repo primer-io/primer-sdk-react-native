@@ -43,6 +43,10 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
     
     private var resumeTokenCompletion: ((_ resumeToken: String) -> Void)?
     
+    override class func requiresMainQueueSetup() -> Bool {
+        return true
+    }
+    
     override init() {
         super.init()
         PrimerHeadlessUniversalCheckout.current.delegate = self
@@ -84,51 +88,6 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
     @objc
     public func resumeWithClientToken(_ resumeToken: String) {
         self.resumeTokenCompletion?(resumeToken)
-    }
-    
-    @objc
-    public func listAvailableAssets(_ successCallback: @escaping RCTResponseSenderBlock) {
-        let availableAssets = PrimerAsset.Brand.allCases.compactMap({ $0.rawValue })
-        successCallback([availableAssets])
-    }
-    
-    @objc
-    public func getAssetFor(_ assetBrand: String,
-                            assetType: String,
-                            errorCallback: @escaping RCTResponseSenderBlock,
-                            successCallback: @escaping RCTResponseSenderBlock)
-    {
-        guard let brand = PrimerAsset.Brand(rawValue: assetBrand) else {
-            let err = NativeError(errorId: "missing-asset", errorDescription: "Asset for \(assetBrand) does not exist, make sure you don't have any typos.", recoverySuggestion: nil)
-            errorCallback([err.rnError])
-            return
-        }
-        
-        guard (assetType == "logo" || assetType == "icon") else {
-            let err = NativeError(errorId: "mismatch", errorDescription: "You have provided assetType=\(assetType), but variable assetType can be 'logo' or 'icon'.", recoverySuggestion: nil)
-            errorCallback([err.rnError])
-            return
-        }
-        
-        guard let image = PrimerHeadlessUniversalCheckout.getAsset(for: brand, assetType: .logo) else {
-            let err = NativeError(errorId: "missing-asset", errorDescription: "Failed to find \(assetType) for \(brand.rawValue)", recoverySuggestion: nil)
-            errorCallback([err.rnError])
-            return
-        }
-        
-        guard let imageURL = NSURL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("\(assetBrand).png") else {
-            let err = NativeError(errorId: "error", errorDescription: "Failed to create URL for asset", recoverySuggestion: nil)
-            errorCallback([err.rnError])
-            return
-        }
-        
-        let pngData = image.pngData()
-        do {
-            try pngData?.write(to: imageURL)
-            successCallback([imageURL.absoluteString])
-        } catch {
-            errorCallback([error.rnError])
-        }
     }
     
     @objc

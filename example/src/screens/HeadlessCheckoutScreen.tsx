@@ -16,20 +16,12 @@ export const HeadlessCheckoutScreen = () => {
   const [paymentId, setPaymentId] = useState<undefined | string>(undefined);
   const [error, setError] = useState<null | any>(null);
 
-  const listAvailableAssets = (async () => {
+  const getLogo = (async (identifier: string) => {
     try {
-      const assets = await PrimerHUC.listAvailableAssets()
-    } catch (err) {
-
-    }
-  });
-
-  const getAsset = (async (identifier: string) => {
-    try {
-      const assetUrl = await PrimerHUC.getAssetForPaymentMethod("applePay", "logo");
+      const assetUrl = await PrimerHUC.getAssetForPaymentMethod(identifier, "logo");
       setLocalImageUrl(assetUrl);
     } catch (err) {
-
+      console.error(err);
     }
   });
 
@@ -98,6 +90,14 @@ export const HeadlessCheckoutScreen = () => {
           setError(err);
         })
     });
+
+    getLogo("APPLE_PAY")
+    .then(() => {
+
+    })
+    .catch (err => {
+
+    })
   }, []);
 
   const payWithPaymentMethod = (paymentMethod: string) => {
@@ -150,6 +150,19 @@ export const HeadlessCheckoutScreen = () => {
     }
   }
 
+  const renderTestImage = () => {
+    if (!localImageUrl) {
+      return null;
+    } else {
+      return (
+        <Image
+          style={{width: 300, height: 150}}
+          source={{uri:localImageUrl}}
+        />
+      );
+    }
+  }
+
   const renderError = () => {
     if (!error) {
       return null;
@@ -166,6 +179,7 @@ export const HeadlessCheckoutScreen = () => {
     <View style={(styles.container, styles.frame)}>
       {/* <PrimerCardNumberEditText style={{width: 300, height: 50, backgroundColor: 'red'}} /> */}
       {renderPaymentMethods()}
+      {renderTestImage()}
       {renderResponse()}
       {renderError()}
     </View>

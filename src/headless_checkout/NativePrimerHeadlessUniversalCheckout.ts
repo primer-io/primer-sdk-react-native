@@ -25,11 +25,11 @@ const NativePrimerHeadlessUniversalCheckout = {
   ///////////////////////////////////////////
   getAssetForPaymentMethod: (
     paymentMethodType: string,
-    assetType: string
+    assetType: "logo" | "icon"
   ): Promise<string> => {
     return new Promise((resolve, reject) => {
       try {
-        PrimerHeadlessUniversalCheckout.getAssetFor(
+        PrimerHeadlessUniversalCheckout.getAssetForPaymentMethodType(
           paymentMethodType,
           assetType,
           (err: Error) => {
@@ -45,12 +45,20 @@ const NativePrimerHeadlessUniversalCheckout = {
     });
   },
 
-  listAvailableAssets: (): Promise<string[]> => {
+  getAssetForCardNetwork: (
+    cardNetwork: string,
+    assetType: "logo" | "icon"
+  ): Promise<string> => {
     return new Promise((resolve, reject) => {
       try {
-        PrimerHeadlessUniversalCheckout.listAvailableAssets(
-          (assets: string[]) => {
-            resolve(assets);
+        PrimerHeadlessUniversalCheckout.getAssetForPaymentMethodType(
+          cardNetwork,
+          assetType,
+          (err: Error) => {
+            reject(err);
+          },
+          (url: string) => {
+            resolve(url);
           }
         );
       } catch (e) {

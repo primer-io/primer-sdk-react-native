@@ -56,6 +56,7 @@ class PrimerHeadlessUniversalCheckoutClass {
             name: "ParseJsonFailed",
             description: "Failed to parse payment method token"
           }
+          //@ts-ignore
           this.callbacks?.onFailure?.(err);
         }        
       }
@@ -109,7 +110,7 @@ class PrimerHeadlessUniversalCheckoutClass {
 
   getAssetForPaymentMethod(
     paymentMethodType: string,
-    assetType: string
+    assetType: "logo" | "icon"
   ): Promise<string> {
     return NativePrimerHeadlessUniversalCheckout.getAssetForPaymentMethod(
       paymentMethodType,
@@ -117,9 +118,16 @@ class PrimerHeadlessUniversalCheckoutClass {
     );
   }
 
-  listAvailableAssets() {
-    return NativePrimerHeadlessUniversalCheckout.listAvailableAssets();
+  getAssetForCardNetwork(
+    cardNetwork: string,
+    assetType: "logo" | "icon"
+  ): Promise<string> {
+    return NativePrimerHeadlessUniversalCheckout.getAssetForCardNetwork(
+      cardNetwork,
+      assetType
+    );
   }
+
 }
 
 const PrimerHeadlessUniversalCheckout = new PrimerHeadlessUniversalCheckoutClass();
