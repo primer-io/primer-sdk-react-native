@@ -23,5 +23,15 @@ RCT_EXTERN_METHOD(getAssetFor:(NSString *)assetBrand
                   errorCallback:(RCTResponseSenderBlock)errorCallback
                   successCallback: (RCTResponseSenderBlock)successCallback)
 
+RCT_EXTERN_METHOD(getAssetForPaymentMethodType:(NSString *)paymentMethodTypeStr
+                  assetType:(NSString *)assetTypeStr
+                  errorCallback:(RCTResponseSenderBlock)errorCallback
+                  successCallback: (RCTResponseSenderBlock)successCallback)
+
+RCT_EXTERN_METHOD(getAssetForCardNetwork:(NSString *)cardNetworkStr
+                  assetType:(NSString *)assetTypeStr
+                  errorCallback:(RCTResponseSenderBlock)errorCallback
+                  successCallback: (RCTResponseSenderBlock)successCallback)
+
 
 @end

@@ -51,12 +51,14 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
     override func supportedEvents() -> [String]! {
         return PrimerHeadlessUniversalCheckoutEvents.allCases.compactMap({ $0.stringValue })
     }
-
+    
+    // MARK: - API
+    
     @objc
-    func startWithClientToken(_ clientToken: String,
-                              settingsStr: String?,
-                              errorCallback: @escaping RCTResponseSenderBlock,
-                              successCallback: @escaping RCTResponseSenderBlock)
+    public func startWithClientToken(_ clientToken: String,
+                                     settingsStr: String?,
+                                     errorCallback: @escaping RCTResponseSenderBlock,
+                                     successCallback: @escaping RCTResponseSenderBlock)
     {
         var settings: PrimerSettings?
         if let settingsStr = settingsStr {
@@ -69,7 +71,7 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
                 return
             }
         }
-                
+        
         PrimerHeadlessUniversalCheckout.current.start(withClientToken: clientToken, settings: settings, delegate: self) { paymentMethodTypes, err in
             if let err = err {
                 errorCallback([err.rnError])
@@ -80,21 +82,21 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
     }
     
     @objc
-    func resumeWithClientToken(_ resumeToken: String) {
+    public func resumeWithClientToken(_ resumeToken: String) {
         self.resumeTokenCompletion?(resumeToken)
     }
     
     @objc
-    func listAvailableAssets(_ successCallback: @escaping RCTResponseSenderBlock) {
+    public func listAvailableAssets(_ successCallback: @escaping RCTResponseSenderBlock) {
         let availableAssets = PrimerAsset.Brand.allCases.compactMap({ $0.rawValue })
         successCallback([availableAssets])
     }
     
     @objc
-    func getAssetFor(_ assetBrand: String,
-                     assetType: String,
-                     errorCallback: @escaping RCTResponseSenderBlock,
-                     successCallback: @escaping RCTResponseSenderBlock)
+    public func getAssetFor(_ assetBrand: String,
+                            assetType: String,
+                            errorCallback: @escaping RCTResponseSenderBlock,
+                            successCallback: @escaping RCTResponseSenderBlock)
     {
         guard let brand = PrimerAsset.Brand(rawValue: assetBrand) else {
             let err = NativeError(errorId: "missing-asset", errorDescription: "Asset for \(assetBrand) does not exist, make sure you don't have any typos.", recoverySuggestion: nil)
@@ -119,7 +121,7 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
             errorCallback([err.rnError])
             return
         }
-
+        
         let pngData = image.pngData()
         do {
             try pngData?.write(to: imageURL)
@@ -130,12 +132,112 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
     }
     
     @objc
-    func showPaymentMethod(_ paymentMethodTypeStr: String) {
+    public func getAssetForPaymentMethodType(_ paymentMethodTypeStr: String,
+                                             assetType assetTypeStr: String,
+                                             errorCallback: @escaping RCTResponseSenderBlock,
+                                             successCallback: @escaping RCTResponseSenderBlock)
+    {
+        do {
+            try validate(assetStr: paymentMethodTypeStr, assetTypeStr: assetTypeStr)
+            let paymentMethodType = PaymentMethodConfigType(rawValue: paymentMethodTypeStr)
+            
+            guard let image = PrimerHeadlessUniversalCheckout.getAsset(for: paymentMethodType, assetType: PrimerAsset.ImageType(rawValue: assetTypeStr)!) else {
+                let err = NativeError(errorId: "missing-asset", errorDescription: "Failed to find \(assetTypeStr) for \(paymentMethodTypeStr)", recoverySuggestion: nil)
+                errorCallback([err.rnError])
+                return
+            }
+            
+            
+            let imageURL = try self.tempStoreImage(image: image, name: paymentMethodTypeStr)
+            successCallback([imageURL.absoluteString])
+        } catch {
+            errorCallback([error.rnError])
+        }
+    }
+    
+    @objc
+    public func getAssetForCardNetwork(_ cardNetworkStr: String,
+                                       assetType assetTypeStr: String,
+                                       errorCallback: @escaping RCTResponseSenderBlock,
+                                       successCallback: @escaping RCTResponseSenderBlock)
+    {
+        do {
+            try validate(assetStr: cardNetworkStr, assetTypeStr: assetTypeStr)
+            guard let cardNetwork = CardNetwork(rawValue: cardNetworkStr) else {
+                let err = NativeError(errorId: "invalid-card-network", errorDescription: "Card network for \(cardNetworkStr) does not exist, make sure you don't have any typos.", recoverySuggestion: nil)
+                errorCallback([err.rnError])
+                return
+            }
+            
+            guard let image = PrimerHeadlessUniversalCheckout.getAsset(for: cardNetwork, assetType: PrimerAsset.ImageType(rawValue: assetTypeStr)!) else {
+                let err = NativeError(errorId: "missing-asset", errorDescription: "Failed to find \(assetTypeStr) for \(cardNetworkStr)", recoverySuggestion: nil)
+                errorCallback([err.rnError])
+                return
+            }
+            
+            
+            let imageURL = try self.tempStoreImage(image: image, name: cardNetworkStr)
+            successCallback([imageURL.absoluteString])
+        } catch {
+            errorCallback([error.rnError])
+        }
+    }
+    
+    @objc
+    public func showPaymentMethod(_ paymentMethodTypeStr: String) {
         let paymentMethodType = PrimerPaymentMethodType(rawValue: paymentMethodTypeStr)
         PrimerHeadlessUniversalCheckout.current.showPaymentMethod(paymentMethodType)
     }
     
+    // MARK: - HELPERS
+    
+    private func validate(assetStr: String, assetTypeStr: String) throws {
+        var errors: [NativeError] = []
+        
+        if PaymentMethodConfigType(rawValue: assetStr) != .other(rawValue: assetStr) {
+            // ...
+        } else if CardNetwork(rawValue: assetStr) != nil {
+            // ...
+        } else {
+            let err = NativeError(errorId: "invalid-payment-method-type", errorDescription: "Asset for \(assetStr) does not exist, make sure you don't have any typos.", recoverySuggestion: nil)
+            errors.append(err)
+        }
+        
+        
+        if PrimerAsset.ImageType(rawValue: assetTypeStr) == nil {
+            let err = NativeError(errorId: "mismatch", errorDescription: "You have provided assetType=\(assetTypeStr), which is not valid", recoverySuggestion: "Use one of the following values: \(PrimerAsset.ImageType.allCases.compactMap({ $0.rawValue }))")
+            errors.append(err)
+        }
+        
+        if errors.isEmpty {
+            return
+        } else if errors.count == 1 {
+            throw errors.first!
+        } else {
+            let errorDescription: String = errors.compactMap({ $0.errorDescription }).joined(separator: "/n")
+            let recoverySuggestion = errors.compactMap({ $0.recoverySuggestion }).joined(separator: "/n")
+            let err = NativeError(errorId: "underlying-errors", errorDescription: errorDescription, recoverySuggestion: recoverySuggestion)
+            throw err
+        }
+    }
+    
+    private func tempStoreImage(image: UIImage, name: String) throws -> URL {
+        guard let imageURL = NSURL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("\(name).png") else {
+            let err = NativeError(errorId: "error", errorDescription: "Failed to create URL for asset", recoverySuggestion: nil)
+            throw err
+        }
+        
+        guard let pngData = image.pngData() else {
+            let err = NativeError(errorId: "error", errorDescription: "Failed to get image's PNG data", recoverySuggestion: nil)
+            throw err
+        }
+        
+        try pngData.write(to: imageURL)
+        return imageURL
+    }
 }
+
+// MARK: - EVENTS
 
 extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDelegate {
     func primerHeadlessUniversalCheckoutClientSessionDidSetUpSuccessfully() {
@@ -164,7 +266,7 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
             }
             
             sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.tokenizationSucceeded.stringValue, body: ["paymentMethodToken": paymentMethodTokenStr])
-
+            
         } catch {
             self.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: error)
         }
