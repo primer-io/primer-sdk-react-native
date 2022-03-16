@@ -35,6 +35,7 @@ extension PrimerSettingsRN {
             businessDetails: business?.primerFormat,
             orderItems: order?.itemsFormatted ?? [],
             isInitialLoadingHidden: !(options?.isLoadingScreenEnabled ?? true),
+            is3DSOnVaultingEnabled: options?.is3DSOnVaultingEnabled ?? false,
             orderId: order?.id,
             customer: Customer(
                 firstName: customer?.firstName,
@@ -145,6 +146,7 @@ fileprivate struct OptionsRN: Decodable {
     let isResultScreenEnabled: Bool?
     let isLoadingScreenEnabled: Bool?
     let isFullScreenEnabled: Bool?
+    let is3DSOnVaultingEnabled: Bool?
     let locale: String?
     let ios: IosOptionsRN?
 }

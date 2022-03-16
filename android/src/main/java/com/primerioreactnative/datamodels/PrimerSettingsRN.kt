@@ -92,7 +92,7 @@ data class OptionsRN(
   val isResultScreenEnabled: Boolean? = null,
   val isLoadingScreenEnabled: Boolean? = null,
   val isFullScreenEnabled: Boolean? = null,
-  val isThreeDsEnabled: Boolean? = null,
+  val is3DSOnVaultingEnabled: Boolean? = null,
   val locale: String? = null,
   val android: AndroidOptionsRN? = null,
   val is3DSSanityCheckEnabled: Boolean = true
@@ -101,7 +101,7 @@ data class OptionsRN(
     return Options(
       showUI = isLoadingScreenEnabled ?: true,
       redirectScheme = android?.redirectScheme,
-      is3DSOnVaultingEnabled = isThreeDsEnabled ?: false,
+      is3DSOnVaultingEnabled = is3DSOnVaultingEnabled ?: false,
       debugOptions = PrimerDebugOptions(
         is3DSSanityCheckEnabled = is3DSSanityCheckEnabled, // false on emulator
       ),
