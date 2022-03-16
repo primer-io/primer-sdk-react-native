@@ -181,10 +181,6 @@ android {
 repositories {
   maven {
     url "${ARTIFACTORY_3DS_URL}"
-    credentials {
-      username System.getenv("PRIMER_ANDROID_ARTIFACTORY_3DS_USERNAME") ?: "${PRIMER_ANDROID_ARTIFACTORY_3DS_USERNAME}"
-      password System.getenv("PRIMER_ANDROID_ARTIFACTORY_3DS_PASSWORD") ?: "${PRIMER_ANDROID_ARTIFACTORY_3DS_PASSWORD}"
-    }
   }
 }
 
