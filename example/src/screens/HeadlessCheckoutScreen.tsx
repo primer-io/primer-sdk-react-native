@@ -35,12 +35,13 @@ export const HeadlessCheckoutScreen = () => {
         }
       },
       onPreparationStarted: () => {
-
+        console.log(`merchant app | onPreparationStarted`);
       },
       onTokenizeStart: () => {
-
+        console.log(`merchant app | onTokenizeStart`);
       },
       onTokenizeSuccess: async (paymentMethodInstrument) => {
+        console.log(`merchant app | onTokenizeSuccess`);
         try {
           const response = await createPayment(paymentMethodInstrument.token);
           console.log(JSON.stringify(response));
@@ -55,9 +56,11 @@ export const HeadlessCheckoutScreen = () => {
         }
       },
       onPaymentMethodPresented: () => {
-
+        console.log(`merchant app | onPaymentMethodPresented`);
       },
       onResumeSuccess: async (resumeToken) => {
+        console.log(`merchant app | onResumeSuccess`);
+
         try {
           if (paymentId2) {
             const response = await resumePayment(paymentId2, resumeToken);
@@ -72,7 +75,7 @@ export const HeadlessCheckoutScreen = () => {
         }
       },
       onFailure: (err) => {
-
+        console.log(`merchant app | onFailure`);
       }
     }
 
