@@ -91,7 +91,7 @@ export const HeadlessCheckoutScreen = () => {
         })
     });
 
-    getLogo("APPLE_PAY")
+    getLogo("GOOGLE_PAY")
     .then(() => {
 
     })
