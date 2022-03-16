@@ -17,7 +17,6 @@ import io.primer.android.completion.ResumeHandler
 import io.primer.android.components.PrimerHeadlessUniversalCheckout
 import io.primer.android.components.PrimerHeadlessUniversalCheckoutListener
 import io.primer.android.components.domain.core.models.PrimerHeadlessUniversalCheckoutPaymentMethod
-import io.primer.android.components.ui.assets.Brand
 import io.primer.android.components.ui.assets.ImageType
 import io.primer.android.model.dto.*
 import kotlinx.serialization.decodeFromString
@@ -79,28 +78,22 @@ class PrimerHeadlessUniversalCheckout(
   }
 
   @ReactMethod
-  fun listAvailableAssets(successCallback: Callback) {
-    val availableAssets = Brand.values().map { it.name }
-    successCallback(Arguments.fromList(availableAssets))
-  }
-
-  @ReactMethod
   fun disposeHeadlessCheckout() {
     PrimerHeadlessUniversalCheckout.current.cleanup()
   }
 
   @ReactMethod
-  fun getAssetFor(
+  fun getAssetForPaymentMethodType(
     paymentMethodType: String,
     assetType: String,
     errorCallback: Callback,
     successCallback: Callback
   ) {
 
-    val brand = Brand.values().find { it.name == paymentMethodType }
-    val type = ImageType.values().find { it.name == assetType }
+    val primerPaymentMethodType = PrimerPaymentMethodType.safeValueOf(paymentMethodType)
+    val type = ImageType.values().find { it.name.equals(assetType, ignoreCase = true) }
     when {
-      brand == null -> {
+      primerPaymentMethodType == PaymentMethodType.UNKNOWN -> {
         errorCallback.invoke(
           json.encodeToString(
             PrimerErrorRN(
@@ -121,7 +114,7 @@ class PrimerHeadlessUniversalCheckout(
         )
       }
       else -> {
-        PrimerHeadlessUniversalCheckout.getAsset(reactContext, brand, type)?.let { resourceId ->
+        PrimerHeadlessUniversalCheckout.getAsset(primerPaymentMethodType, type)?.let { resourceId ->
           val file = getFile(reactContext, paymentMethodType)
           AssetsManager.saveBitmapToFile(
             file,
