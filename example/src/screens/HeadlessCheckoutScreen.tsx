@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  PrimerHUC,
+  HeadlessUniversalCheckout,
 } from '@primer-io/react-native';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { styles } from '../styles';
@@ -18,7 +18,7 @@ export const HeadlessCheckoutScreen = () => {
 
   const getLogo = (async (identifier: string) => {
     try {
-      const assetUrl = await PrimerHUC.getAssetForPaymentMethod(identifier, "logo");
+      const assetUrl = await HeadlessUniversalCheckout.getAssetForPaymentMethod(identifier, "logo");
       setLocalImageUrl(assetUrl);
     } catch (err) {
       console.error(err);
@@ -47,7 +47,7 @@ export const HeadlessCheckoutScreen = () => {
           if (response.id && response.requiredAction && response.requiredAction.clientToken) {
             setPaymentId(response.id);
             paymentId2 = response.id;
-            PrimerHUC.resumeWithClientToken(response.requiredAction.clientToken);
+            HeadlessUniversalCheckout.resumeWithClientToken(response.requiredAction.clientToken);
           }
         } catch (error) {
           console.error(error);
@@ -78,7 +78,7 @@ export const HeadlessCheckoutScreen = () => {
 
     createClientSession().then((session) => {
       setIsLoading(false);
-      PrimerHUC.startWithClientToken(session.clientToken, settings)
+      HeadlessUniversalCheckout.startWithClientToken(session.clientToken, settings)
         .then((response) => {
           console.log(`Available payment methods: ${JSON.stringify(response.paymentMethodTypes)}`);
           setPaymentMethods(response.paymentMethodTypes);
@@ -99,7 +99,7 @@ export const HeadlessCheckoutScreen = () => {
   }, []);
 
   const payWithPaymentMethod = (paymentMethod: string) => {
-    PrimerHUC.showPaymentMethod(paymentMethod);
+    HeadlessUniversalCheckout.showPaymentMethod(paymentMethod);
   }
 
   const renderPaymentMethods = () => {

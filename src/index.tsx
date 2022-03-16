@@ -5,4 +5,4 @@ export * from './PrimerInput';
 
 const Primer: IPrimer = PrimerNativeMapping;
 
-export { Primer, PrimerHeadlessUniversalCheckout as PrimerHUC };
+export { Primer, PrimerHeadlessUniversalCheckout as HeadlessUniversalCheckout };
