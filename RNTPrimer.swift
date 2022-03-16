@@ -23,7 +23,7 @@ enum PrimerEvents: Int, CaseIterable {
     }
 }
 
-@objc(PrimerNative)
+@objc(NativePrimer)
 class RNTPrimer: RCTEventEmitter {
     
     private var clientTokenCallback: ((String?, Error?) -> Void)?

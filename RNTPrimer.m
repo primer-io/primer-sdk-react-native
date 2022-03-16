@@ -8,7 +8,7 @@
 #import <React/RCTBridgeModule.h>
 #import <React/RCTEventEmitter.h>
 
-@interface RCT_EXTERN_MODULE(PrimerNative, RCTEventEmitter)
+@interface RCT_EXTERN_MODULE(NativePrimer, RCTEventEmitter)
 
 RCT_EXTERN_METHOD(configureWithSettings:(NSString *)settingsStr)
 
