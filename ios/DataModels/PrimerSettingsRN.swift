@@ -20,6 +20,11 @@ extension PrimerSettingsRN {
                 postalCode: billingAddress.postalCode
             )
         }
+        
+        var debugOptions: PrimerDebugOptions?
+        if options?.is3DSDevelopmentModeEnabled == true {
+            debugOptions = PrimerDebugOptions(is3DSSanityCheckEnabled: true)
+        }
     
         return PrimerSettings(
             merchantIdentifier: options?.ios?.merchantIdentifier,
@@ -37,6 +42,7 @@ extension PrimerSettingsRN {
             isInitialLoadingHidden: !(options?.isLoadingScreenEnabled ?? true),
             is3DSOnVaultingEnabled: options?.is3DSOnVaultingEnabled ?? false,
             orderId: order?.id,
+            debugOptions: debugOptions,
             customer: Customer(
                 firstName: customer?.firstName,
                 lastName: customer?.lastName,
@@ -147,6 +153,7 @@ fileprivate struct OptionsRN: Decodable {
     let isLoadingScreenEnabled: Bool?
     let isFullScreenEnabled: Bool?
     let is3DSOnVaultingEnabled: Bool?
+    let is3DSDevelopmentModeEnabled: Bool?
     let locale: String?
     let ios: IosOptionsRN?
 }
