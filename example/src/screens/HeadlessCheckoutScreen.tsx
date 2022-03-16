@@ -47,7 +47,6 @@ export const HeadlessCheckoutScreen = () => {
           if (response.id && response.requiredAction && response.requiredAction.clientToken) {
             setPaymentId(response.id);
             paymentId2 = response.id;
-            debugger;
             PrimerHUC.resumeWithClientToken(response.requiredAction.clientToken);
           }
         } catch (error) {
@@ -60,7 +59,6 @@ export const HeadlessCheckoutScreen = () => {
       },
       onResumeSuccess: async (resumeToken) => {
         try {
-          debugger;
           if (paymentId2) {
             const response = await resumePayment(paymentId2, resumeToken);
             setPaymentResponse(response);
