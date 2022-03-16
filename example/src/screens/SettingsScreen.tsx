@@ -76,6 +76,7 @@ export const SettingsScreen = (args: ISettingsScreenArguments) => {
           urlScheme: 'primer',
           urlSchemeIdentifier: 'primer',
         },
+        is3DSSanityCheckEnabled : false,
         android: {
           redirectScheme: 'primer',
         },
