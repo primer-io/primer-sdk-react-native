@@ -95,6 +95,7 @@ data class OptionsRN(
   val isThreeDsEnabled: Boolean? = null,
   val locale: String? = null,
   val android: AndroidOptionsRN? = null,
+  val is3DSSanityCheckEnabled: Boolean = true
 ) {
   fun format(): Options {
     return Options(
@@ -102,7 +103,7 @@ data class OptionsRN(
       redirectScheme = android?.redirectScheme,
       is3DSOnVaultingEnabled = isThreeDsEnabled ?: false,
       debugOptions = PrimerDebugOptions(
-        is3DSSanityCheckEnabled = true, // false on emulator
+        is3DSSanityCheckEnabled = is3DSSanityCheckEnabled, // false on emulator
       ),
     )
   }
