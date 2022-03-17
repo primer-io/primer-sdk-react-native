@@ -103,7 +103,7 @@ data class OptionsRN(
       redirectScheme = android?.redirectScheme,
       is3DSOnVaultingEnabled = is3DSOnVaultingEnabled ?: false,
       debugOptions = PrimerDebugOptions(
-        is3DSSanityCheckEnabled = is3DSDevelopmentModeEnabled, // false on emulator
+        is3DSSanityCheckEnabled = !is3DSDevelopmentModeEnabled, // false on emulator
       ),
     )
   }
