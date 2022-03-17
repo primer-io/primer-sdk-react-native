@@ -1,4 +1,3 @@
-import type { HeadlessCheckout } from 'src/headless_checkout';
 import type { PrimerConfig } from './primer-config';
 import type { PrimerPaymentMethodIntent } from './primer-intent';
 
@@ -39,9 +38,4 @@ export interface IPrimer {
    * remove all listeners & callbacks.
    */
   dispose(): void;
-
-  /**
-   * headless checkout object for running Primer SDK with your own UI
-   */
-  headlessCheckout: HeadlessCheckout;
 }

@@ -25,7 +25,7 @@ const NativePrimerHeadlessUniversalCheckout = {
   ///////////////////////////////////////////
   getAssetForPaymentMethod: (
     paymentMethodType: string,
-    assetType: "logo" | "icon"
+    assetType: 'logo' | 'icon'
   ): Promise<string> => {
     return new Promise((resolve, reject) => {
       try {
@@ -47,7 +47,7 @@ const NativePrimerHeadlessUniversalCheckout = {
 
   getAssetForCardNetwork: (
     cardNetwork: string,
-    assetType: "logo" | "icon"
+    assetType: 'logo' | 'icon'
   ): Promise<string> => {
     return new Promise((resolve, reject) => {
       try {
