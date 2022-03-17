@@ -21,10 +21,7 @@ extension PrimerSettingsRN {
             )
         }
         
-        var debugOptions: PrimerDebugOptions?
-        if options?.is3DSDevelopmentModeEnabled == false {
-            debugOptions = PrimerDebugOptions(is3DSSanityCheckEnabled: true)
-        }
+        let debugOptions = PrimerDebugOptions(is3DSSanityCheckEnabled: !(options?.is3DSDevelopmentModeEnabled ?? false))
     
         return PrimerSettings(
             merchantIdentifier: options?.ios?.merchantIdentifier,
