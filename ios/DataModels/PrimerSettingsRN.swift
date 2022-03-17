@@ -22,7 +22,7 @@ extension PrimerSettingsRN {
         }
         
         var debugOptions: PrimerDebugOptions?
-        if options?.is3DSDevelopmentModeEnabled == true {
+        if options?.is3DSDevelopmentModeEnabled == false {
             debugOptions = PrimerDebugOptions(is3DSSanityCheckEnabled: true)
         }
     
