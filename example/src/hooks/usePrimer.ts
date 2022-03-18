@@ -1,14 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Primer } from '@primer-io/react-native';
-import { createClientSession } from '../api/client-session';
+import { createClientSession, createPayment, resumePayment } from '../api/api';
 import type { PrimerSettings } from 'src/models/primer-settings';
 import type {
   OnClientSessionActionsCallback,
   OnTokenizeSuccessCallback,
 } from 'src/models/primer-callbacks';
-import { createPayment } from '../api/create-payment';
 import { postAction } from '../api/actions';
-import { resumePayment } from '../api/resume-payment';
 
 const ERROR_MESSAGE = 'payment failed, please try again!';
 
@@ -30,7 +28,7 @@ export const usePrimer = (
   useEffect(() => {
     console.log('🐠 mount usePrimer');
     let isSubscribed = true;
-    createClientSession(customerId, settings).then((session) => {
+    createClientSession(customerId).then((session) => {
       if (isSubscribed) {
         setToken(session.clientToken);
         setLoading(false);
@@ -50,7 +48,7 @@ export const usePrimer = (
       createPayment(req.token)
         .then((payment) => {
           // https://primer.io/docs/api/#section/API-Usage-Guide/Payment-Status
-          if (payment.status in ['FAILED', 'DECLINED', 'CANCELLED']) {
+          if (['FAILED', 'DECLINED', 'CANCELLED'].includes(payment.status)) {
             console.log('❌ payment error');
             res.handleError(ERROR_MESSAGE);
           } else if (payment.requiredAction?.name != null) {
@@ -69,8 +67,9 @@ export const usePrimer = (
         resumeToken: req,
       })
         .then((payment) => {
+          // res.handleError(ERROR_MESSAGE); // <-- test error handling
           if (
-            payment.status in ['FAILED', 'DECLINED', 'CANCELLED', 'PENDING']
+            ['FAILED', 'DECLINED', 'CANCELLED', 'CANCELED', 'PENDING'].includes(payment.status)
           ) {
             console.error('❌ resume payment error');
             res.handleError(ERROR_MESSAGE);

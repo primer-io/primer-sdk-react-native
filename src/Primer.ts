@@ -55,6 +55,8 @@ export const PrimerNativeMapping: IPrimer = {
   },
 };
 
+//
+
 function configure(config: PrimerConfig): void {
   configureTheme(config.theme);
   configureSettings(config.settings);

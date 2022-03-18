@@ -28,31 +28,31 @@ class PrimerRN: NSObject {
     private var sdkWasInitialised = false
     internal var haltExecution = false
     
-    @objc func configureSettings(_ request: String) {
+    @objc func configureSettings(_ settingsStr: String) {
         do {
-            let json = request.data(using: .utf8)!
-            let settings = try JSONDecoder().decode(PrimerSettingsRN.self, from: json)
-            self.settings = settings
+            let settingsData = settingsStr.data(using: .utf8)!
+            let settingsRN = try JSONDecoder().decode(PrimerSettingsRN.self, from: settingsData)
+            self.settings = settingsRN
         } catch {
             checkoutFailed(with: ErrorTypeRN.ParseJsonFailed)
         }
     }
 
-    @objc func configureTheme(_ request: String) {
+    @objc func configureTheme(_ themeStr: String) {
         do {
-            let json = request.data(using: .utf8)!
-            let themeRN = try JSONDecoder().decode(PrimerThemeRN.self, from: json)
+            let themeData = themeStr.data(using: .utf8)!
+            let themeRN = try JSONDecoder().decode(PrimerThemeRN.self, from: themeData)
             self.theme = themeRN
         } catch {
             checkoutFailed(with: ErrorTypeRN.ParseJsonFailed)
         }
     }
     
-    @objc func configureIntent(_ request: String) {
+    @objc func configureIntent(_ intentStr: String) {
         do {
-            let json = request.data(using: .utf8)!
-            let intent = try JSONDecoder().decode(PrimerIntentRN.self, from: json)
-            self.intent = intent
+            let intentData = intentStr.data(using: .utf8)!
+            let intentRN = try JSONDecoder().decode(PrimerIntentRN.self, from: intentData)
+            self.intent = intentRN
         } catch {
             checkoutFailed(with: ErrorTypeRN.ParseJsonFailed)
         }
@@ -112,26 +112,27 @@ class PrimerRN: NSObject {
                         Primer.shared.showUniversalCheckout(on: viewController, clientToken: token)
                     }
                 }
+                
             } catch {
                 self?.checkoutFailed(with: error)
             }
         }
     }
     
-    @objc func resume(_ request: String) -> Void {
+    @objc func resume(_ resumeRequestStr: String) -> Void {
         DispatchQueue.main.async { [weak self] in
             do {
-                let json = request.data(using: .utf8)!
-                let request = try JSONDecoder().decode(PrimerResumeRequest.self, from: json)
+                let resumeRequestData = resumeRequestStr.data(using: .utf8)!
+                let resumeRequest = try JSONDecoder().decode(PrimerResumeRequest.self, from: resumeRequestData)
                 
-                if let error = request.error {
-                    self?.onResumeFlowCallback?(ErrorRN(message: error), nil)
-                } else if let clientToken = request.token {
+                if let errorDescription = resumeRequest.error {
+                    let errorRN = NativeError(errorId: "server-error", errorDescription: errorDescription, recoverySuggestion: nil)
+                    self?.onResumeFlowCallback?(errorRN, nil)
+                } else if let clientToken = resumeRequest.token {
                     self?.onResumeFlowCallback?(nil, clientToken)
                 } else {
                     self?.onResumeFlowCallback?(nil, nil)
                 }
-                
                 self?.onResumeFlowCallback = nil
             } catch {
                 self?.checkoutFailed(with: error)
@@ -139,15 +140,16 @@ class PrimerRN: NSObject {
         }
     }
     
-    @objc func actionResume(_ request: String) -> Void {
+    @objc func actionResume(_ resumeRequestStr: String) -> Void {
         DispatchQueue.main.async { [weak self] in
             do {
-                let json = request.data(using: .utf8)!
-                let request = try JSONDecoder().decode(PrimerResumeRequest.self, from: json)
+                let resumeRequestData = resumeRequestStr.data(using: .utf8)!
+                let resumeRequestRN = try JSONDecoder().decode(PrimerResumeRequest.self, from: resumeRequestData)
                 
-                if let error = request.error {
-                    self?.onActionResumeCallback?(ErrorRN(message: error), nil)
-                } else if let clientToken = request.token {
+                if let errorDescription = resumeRequestRN.error {
+                    let errorRN = NativeError(errorId: "server-error", errorDescription: errorDescription, recoverySuggestion: nil)
+                    self?.onActionResumeCallback?(errorRN, nil)
+                } else if let clientToken = resumeRequestRN.token {
                     self?.onActionResumeCallback?(nil, clientToken)
                 } else {
                     self?.onActionResumeCallback?(nil, self?.clientToken)

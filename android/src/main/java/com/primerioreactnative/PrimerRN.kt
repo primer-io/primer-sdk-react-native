@@ -14,8 +14,8 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.Error
 
-
-class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
+class PrimerRN(reactContext: ReactApplicationContext) :
+  ReactContextBaseJavaModule(reactContext) {
 
   private var settings: PrimerSettingsRN = PrimerSettingsRN()
   private var theme: PrimerThemeRN = PrimerThemeRN()
@@ -26,7 +26,7 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
   private var sdkWasInitialised = false
   private var haltExecution = false
 
-  private val json = Json{ ignoreUnknownKeys = true }
+  private val json = Json { ignoreUnknownKeys = true }
 
   override fun getName(): String = "PrimerRN"
 

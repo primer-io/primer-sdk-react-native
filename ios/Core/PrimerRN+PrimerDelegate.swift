@@ -22,12 +22,13 @@ extension PrimerRN: PrimerDelegate {
         resumeHandler: ResumeHandlerProtocol
     ) {
         do {
-            let json = try encoder.encode(paymentMethodToken)
-            let data = String(data: json, encoding: .utf8)!
-            self.onTokenizeSuccessCallback?([data])
+            let paymentMethodTokenData = try encoder.encode(paymentMethodToken)
+            let paymentMethodTokenStr = String(data: paymentMethodTokenData, encoding: .utf8)!
+            self.onTokenizeSuccessCallback?([paymentMethodTokenStr])
         } catch {
             checkoutFailed(with: ErrorTypeRN.ParseJsonFailed)
         }
+        
         onResumeFlowCallback = { error, clientToken in
             if let error = error {
                 resumeHandler.handle(error: error)

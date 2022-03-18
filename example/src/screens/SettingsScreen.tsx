@@ -1,9 +1,11 @@
+import { Primer } from '@primer-io/react-native';
 import React, { useState } from 'react';
 import { View, Picker, TextInput, TouchableOpacity, Text } from 'react-native';
 import type { PrimerSettings } from 'src/models/primer-settings';
 import type { CountryCode } from 'src/models/utils/countryCode';
 import type { CurrencyCode } from 'src/models/utils/currencyCode';
 import { styles } from '../styles';
+
 
 interface ISettingsScreenArguments {
   navigation: any;
@@ -16,6 +18,20 @@ export const SettingsScreen = (args: ISettingsScreenArguments) => {
     'checkout'
   );
   const [country, setCountry] = useState<CountryCode>('DE');
+
+  Primer.headlessCheckout.startHeadlessCheckout("CLIENT TOKEN", () => {
+
+  })
+
+  PrimerHeadlessUniversalCheckoutCardFormUIManager.setInputElements("test",
+  (error) => {
+    console.error(`Error found! ${error}`);
+  },
+  (eventId) => {
+    console.log(`event id ${eventId} returned`);
+  });
+  PrimerHeadlessUniversalCheckoutCardFormUIManager.tokenize();
+  console.log(`PrimerHeadlessUniversalCheckoutCardFormUIManager: ${JSON.stringify(PrimerHeadlessUniversalCheckoutCardFormUIManager)}`);
 
   const getCurrencyFromCountry = (): CurrencyCode => {
     switch (country) {
