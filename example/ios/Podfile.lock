@@ -267,6 +267,7 @@ DEPENDENCIES:
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - primer-io-react-native (from `../..`)
+  - PrimerSDK (from `https://github.com/primer-io/primer-sdk-ios.git`, branch `feature/rn-helpers`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
   - RCTTypeSafety (from `../node_modules/react-native/Libraries/TypeSafety`)
   - React (from `../node_modules/react-native/`)
@@ -297,7 +298,6 @@ DEPENDENCIES:
 SPEC REPOS:
   https://github.com/CocoaPods/Specs.git:
     - boost-for-react-native
-    - PrimerSDK
 
 EXTERNAL SOURCES:
   DoubleConversion:
@@ -312,6 +312,9 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
   primer-io-react-native:
     :path: "../.."
+  PrimerSDK:
+    :branch: feature/rn-helpers
+    :git: https://github.com/primer-io/primer-sdk-ios.git
   RCTRequired:
     :path: "../node_modules/react-native/Libraries/RCTRequired"
   RCTTypeSafety:
@@ -361,6 +364,11 @@ EXTERNAL SOURCES:
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
+CHECKOUT OPTIONS:
+  PrimerSDK:
+    :commit: 7727523237bc702b5a16ada71670d92b9a5e26aa
+    :git: https://github.com/primer-io/primer-sdk-ios.git
+
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: cde416483dac037923206447da6e1454df403714
@@ -395,6 +403,6 @@ SPEC CHECKSUMS:
   RNScreens: 0591543e343c7444ea1756b6265d81a4295922c9
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
 
-PODFILE CHECKSUM: d296aff9309b573f72b66664f86018a234c8cff8
+PODFILE CHECKSUM: 20fd1e1436c0e68b566c30cf224b90f11a4a987f
 
 COCOAPODS: 1.11.2
