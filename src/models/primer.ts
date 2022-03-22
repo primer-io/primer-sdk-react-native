@@ -11,7 +11,7 @@ export interface IPrimer {
    * @param config Configuration object for the SDK. Use this to set listeners, theme,
    * and payment method specific settings.
    */
-  showUniversalCheckout(token: String, config: PrimerConfig): void;
+  showUniversalCheckout(token: string | null, config: PrimerConfig): void;
 
   /**
    * Launch Primer's Vault Manager.
@@ -20,7 +20,7 @@ export interface IPrimer {
    * @param config Configuration object for the SDK. Use this to set listeners, theme,
    * and payment method specific settings.
    */
-  showVaultManager(token: String, config: PrimerConfig): void;
+  showVaultManager(token: string | null, config: PrimerConfig): void;
 
   /**
    * Launch checkout with a specific payment method
@@ -29,7 +29,7 @@ export interface IPrimer {
    * @param config Configuration for the SDK.
    */
   showPaymentMethod(
-    token: String,
+    token: string | null,
     intent: PrimerPaymentMethodIntent,
     config: PrimerConfig
   ): void;
