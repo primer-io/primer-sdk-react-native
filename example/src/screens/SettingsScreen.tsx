@@ -89,8 +89,7 @@ export const SettingsScreen = (args: ISettingsScreenArguments) => {
         is3DSOnVaultingEnabled: true,
         ios: {
           merchantIdentifier: 'merchant.checkout.team',
-          urlScheme: 'primer',
-          urlSchemeIdentifier: 'primer',
+          urlScheme: 'primer://'
         },
         is3DSDevelopmentModeEnabled: false,
         android: {
