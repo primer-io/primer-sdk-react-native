@@ -17,9 +17,9 @@ export const createClientSession = async (
   const body = JSON.stringify({
     customerId,
     orderId: 'rn-test-10001',
-    currencyCode: "EUR",
+    currencyCode: settings.order?.currency,
     order: {
-      countryCode: "NL",
+      countryCode: settings.order?.countryCode,
       lineItems: [
         {
           amount: 10001,
