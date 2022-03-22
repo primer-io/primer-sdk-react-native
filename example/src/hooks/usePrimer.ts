@@ -1,16 +1,17 @@
 import { useEffect, useState } from 'react';
-import { Primer } from '@primer-io/react-native';
 import { createClientSession } from '../api/client-session';
 import type { PrimerSettings } from 'src/models/primer-settings';
 import type {
   OnClientSessionActionsCallback,
+  OnClientTokenCallback,
+  OnPrimerErrorCallback,
   OnTokenizeSuccessCallback,
 } from 'src/models/primer-callbacks';
 import { createPayment } from '../api/create-payment';
 import { postAction } from '../api/actions';
 import { resumePayment } from '../api/resume-payment';
-
-const ERROR_MESSAGE = 'payment failed, please try again!';
+import { Primer } from '@primer-io/react-native';
+import type { PrimerResumeHandler } from 'src/models/primer-request';
 
 let paymentId: string | null = null;
 
@@ -20,11 +21,6 @@ export const usePrimer = (
   mode: string
 ) => {
   const [token, setToken] = useState<string | null>(null);
-
-  // const [paymentSavedInstruments, setSavedPaymentInstruments] = useState<
-  //   PaymentInstrumentToken[]
-  // >([]);
-
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -46,69 +42,104 @@ export const usePrimer = (
   const presentPrimer = () => {
     if (!token) throw Error('client token is null!');
 
-    const onTokenizeSuccess: OnTokenizeSuccessCallback = (req, res) =>
-      createPayment(req.token)
-        .then((payment) => {
-          // https://primer.io/docs/api/#section/API-Usage-Guide/Payment-Status
-          if (payment.status in ['FAILED', 'DECLINED', 'CANCELLED']) {
-            console.log('❌ payment error');
-            res.handleError(ERROR_MESSAGE);
-          } else if (payment.requiredAction?.name != null) {
-            console.log('paymentId:', payment.id);
-            paymentId = payment.id;
-            res.handleNewClientToken(payment.requiredAction.clientToken);
-          } else {
-            res.handleSuccess();
-          }
-        })
-        .catch((_) => res.handleError(ERROR_MESSAGE));
+    const onClientTokenCallback: OnClientTokenCallback = async (resumeHandler) => {
+      try {
+        const clientSession = await createClientSession(customerId, settings);
 
-    const onResumeSuccess: OnTokenizeSuccessCallback = (req, res) => {
-      console.log('✈️ paymentId', paymentId);
-      resumePayment(paymentId!, {
-        resumeToken: req,
-      })
-        .then((payment) => {
-          if (
-            payment.status in ['FAILED', 'DECLINED', 'CANCELLED', 'PENDING']
-          ) {
-            console.error('❌ resume payment error');
-            res.handleError(ERROR_MESSAGE);
+        if (clientSession.clientToken) {
+          resumeHandler.handleNewClientToken(clientSession.clientToken);
+        } else {
+          resumeHandler.handleError(new Error("Failed to create client session."))
+        }
+      } catch (err) {
+        if (err instanceof Error) {
+          resumeHandler.handleError(err);
+        } else {
+          resumeHandler.handleError(new Error("Unknown error when "));
+        }
+      }
+    }
+
+    const onClientSessionActions: OnClientSessionActionsCallback = async (clientSessionActions, handler) => {
+      try {
+        const newClientToken: string = await postAction(
+          clientSessionActions,
+          token
+        );
+
+        if (handler) {
+          handler.handleNewClientToken(newClientToken);
+        }
+        
+      } catch (err) {
+        if (handler) {
+          if (err instanceof Error) {
+            handler.handleError(err);
           } else {
-            console.log('🔥 resume payment success');
-            res.handleSuccess();
+            handler.handleError(new Error("Unknown Error"));
           }
-        })
-        .catch((_) => {
-          console.error('❌ resume payment error thrown');
-          res.handleError(ERROR_MESSAGE);
-        });
+        }
+      }
     };
 
-    // const onClientSessionActions: OnClientSessionActionsCallback = async (
-    //   clientSessionActionsRequest,
-    //   handler
-    // ) => {
-    //   try {
-    //     const newClientToken: string = await postAction(
-    //       clientSessionActionsRequest,
-    //       token
-    //     );
-    //     console.log(
-    //       'calling handleNewClientToken from action:',
-    //       newClientToken
-    //     );
-    //     handler.handleNewClientToken(newClientToken);
-    //   } catch (error) {
-    //     handler.handleError(ERROR_MESSAGE);
-    //   }
-    // };
+    const onTokenizeSuccess: OnTokenizeSuccessCallback = async (paymentInstrument, resumeHandler) => {
+      try {
+        const paymentResponse = await createPayment(paymentInstrument.token);
+
+        // https://primer.io/docs/api/#section/API-Usage-Guide/Payment-Status
+        if (['FAILED', 'DECLINED', 'CANCELLED'].includes(paymentResponse.status)) {
+          console.log('❌ payment error');
+          const err = new Error(`Payment failed with status: ${paymentResponse.status}`)
+          resumeHandler.handleError(err);
+        } else if (paymentResponse.requiredAction?.name != null) {
+          console.log('paymentId:', paymentResponse.id);
+          paymentId = paymentResponse.id;
+          resumeHandler.handleNewClientToken(paymentResponse.requiredAction.clientToken);
+        } else {
+          resumeHandler.handleSuccess();
+        }
+      } catch (err) {
+        if (err instanceof Error) {
+          resumeHandler.handleError(err);
+        } else {
+          resumeHandler.handleError(new Error("Unknown Error"));
+        }
+      }
+    }
+      
+    const onResumeSuccess = async (resumeToken: string, resumeHandler: PrimerResumeHandler) => {
+      console.log('✈️ paymentId', paymentId);
+      try {
+        const resumePaymentResponse = await resumePayment(paymentId!, {resumeToken: resumeToken});
+        if (['FAILED', 'DECLINED', 'CANCELLED'].includes(resumePaymentResponse.status)) {
+          console.log('❌ payment error');
+          const err = new Error(`Payment failed with status: ${resumePaymentResponse.status}`)
+          resumeHandler.handleError(err);
+        } else {
+          console.log('🔥 resume payment success');
+          resumeHandler.handleSuccess();
+        }
+      } catch (err) {
+        if (err instanceof Error) {
+          resumeHandler.handleError(err);
+        } else {
+          resumeHandler.handleError(new Error("Unknown Error"));
+        }
+      }
+    };
+
+    const onError: OnPrimerErrorCallback = async (err, handler) => {
+      console.error(`Primer SDK failed with error: ${err.errorId} ${err.errorDescription || 'No description'}`);
+      handler.handleError(new Error("rn test error"))
+    };
 
     const config = {
       settings,
+      onClientTokenCallback,
       onTokenizeSuccess,
-      // onClientSessionActions,
+      onClientSessionActions,
       onResumeSuccess,
+      onError
     };
 
     switch (mode) {

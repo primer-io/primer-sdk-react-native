@@ -17,12 +17,12 @@ export const createClientSession = async (
   const body = JSON.stringify({
     customerId,
     orderId: 'rn-test-10001',
-    currencyCode: settings.order?.currency,
+    currencyCode: "EUR",
     order: {
-      countryCode: settings.order?.countryCode,
+      countryCode: "NL",
       lineItems: [
         {
-          amount: 1000,
+          amount: 10001,
           quantity: 1,
           itemId: 'item-123',
           description: 'this item',
@@ -41,7 +41,7 @@ export const createClientSession = async (
         postalCode: '12345',
         addressLine1: '1 test',
         addressLine2: null,
-        countryCode: settings.order?.countryCode,
+        countryCode: "NL",
         city: 'test',
         state: 'test',
       },
@@ -76,6 +76,11 @@ export const createClientSession = async (
         APPLE_PAY: {
           surcharge: {
             amount: 150,
+          },
+        },
+        BUCKAROO_IDEAL: {
+          surcharge: {
+            amount: 299,
           },
         },
         PAYMENT_CARD: {

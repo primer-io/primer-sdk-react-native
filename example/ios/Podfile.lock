@@ -22,6 +22,7 @@ PODS:
   - primer-io-react-native (0.12.2):
     - PrimerSDK (= 1.29.2)
     - React-Core
+  - Primer3DS (1.0.0)
   - PrimerSDK (1.29.2):
     - PrimerSDK/Core (= 1.29.2)
   - PrimerSDK/Core (1.29.2)
@@ -267,6 +268,7 @@ DEPENDENCIES:
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - primer-io-react-native (from `../..`)
+  - Primer3DS
   - PrimerSDK (from `https://github.com/primer-io/primer-sdk-ios.git`, branch `feature/rn-helpers`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
   - RCTTypeSafety (from `../node_modules/react-native/Libraries/TypeSafety`)
@@ -298,6 +300,7 @@ DEPENDENCIES:
 SPEC REPOS:
   https://github.com/CocoaPods/Specs.git:
     - boost-for-react-native
+    - Primer3DS
 
 EXTERNAL SOURCES:
   DoubleConversion:
@@ -377,6 +380,7 @@ SPEC CHECKSUMS:
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
   glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
   primer-io-react-native: 48727785021f652295524913724833209573846b
+  Primer3DS: 0b298ca54adb07e3f5ae3d74e574b6d3084e8a0d
   PrimerSDK: 0c03ea0c73296ee63bbe80f9e9adc161b0c73c70
   RCTRequired: 082f10cd3f905d6c124597fd1c14f6f2655ff65e
   RCTTypeSafety: 8c9c544ecbf20337d069e4ae7fd9a377aadf504b
@@ -403,6 +407,6 @@ SPEC CHECKSUMS:
   RNScreens: 0591543e343c7444ea1756b6265d81a4295922c9
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
 
-PODFILE CHECKSUM: 20fd1e1436c0e68b566c30cf224b90f11a4a987f
+PODFILE CHECKSUM: 14c4a0c7d5f2d5ad1cb278e630eed293a419e1f1
 
 COCOAPODS: 1.11.2

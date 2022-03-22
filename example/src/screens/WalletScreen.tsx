@@ -1,11 +1,8 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { View, ActivityIndicator, TouchableOpacity, Text } from 'react-native';
 import { styles } from '../styles';
+import { usePrimer } from '../hooks/usePrimer';
 import { PaymentInstrumentList } from '../components/PaymentInstrumentList';
-import { Primer } from "@primer-io/react-native";
-import { createClientSession } from '../api/client-session';
-import { useState } from 'react';
-import type { PrimerSettings } from 'lib/typescript/models/primer-settings';
 
 interface IWalletScreenArguments {
   navigation: any;
@@ -13,52 +10,25 @@ interface IWalletScreenArguments {
 }
 
 export const WalletScreen = (args: IWalletScreenArguments) => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  const settings: PrimerSettings = args.route.params.settings;
-  const customerId: string = args.route.params.customerId;
-  debugger;
-
-  // const { presentPrimer, loading } = usePrimer(
-  //   args.route.params.settings,
-  //   args.route.params.customerId,
-  //   args.route.params.intent
-  // );
-
-  useEffect(() => {
-    Primer.onClientTokenCallback = async () => {
-      try {
-        setIsLoading(true);
-        debugger;
-        const response = await createClientSession(customerId, settings);
-        const clientToken = response.clientToken;
-        Primer.setClientToken(clientToken);
-        setIsLoading(false);
-      } catch (err) {
-        console.error(err);
-        setIsLoading(false);
-      }
-    }
-  }, []);
-
-  const presentPrimer = () => {
-    Primer.showUniversalCheckout(undefined);
-  }
+  const { presentPrimer, loading } = usePrimer(
+    args.route.params.settings,
+    args.route.params.customerId,
+    args.route.params.intent
+  );
 
   const renderButton = () => {
-    if (isLoading)
+    if (loading)
       return (
         <View style={[styles.container, styles.button]}>
           <ActivityIndicator color={'white'} />
         </View>
       );
     return (
-        <TouchableOpacity
-          style={[styles.container, styles.button]}
-          onPress={presentPrimer}
-        >
+      <View style={[styles.container, styles.button]}>
+        <TouchableOpacity onPress={presentPrimer}>
           <Text style={[styles.buttonText]}>Show Checkout</Text>
         </TouchableOpacity>
+      </View>
     );
   };
 
