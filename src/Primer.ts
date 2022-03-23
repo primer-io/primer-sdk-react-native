@@ -212,7 +212,7 @@ export const PrimerNativeMapping: IPrimer = {
   },
 
   showPaymentMethod(
-    token: string,
+    clientToken: string,
     intent: PrimerPaymentMethodIntent,
     config: PrimerConfig
   ): void {
@@ -232,7 +232,7 @@ export const PrimerNativeMapping: IPrimer = {
 
     RNPrimer.setImplementedRNCallbacks(implementedRNCallbacks);
     
-    RNPrimer.showPaymentMethod(intent.paymentMethod, token, intent.vault === true ? "vault" : "checkout")
+    RNPrimer.showPaymentMethod(clientToken, intent.paymentMethod, intent.vault === true ? "vault" : "checkout")
   },
 
   dispose(): void {

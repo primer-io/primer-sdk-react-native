@@ -86,11 +86,16 @@ const RNPrimer = {
 
   showPaymentMethod: (
     paymentMethodType: string,
-    token: string,
+    clientToken: string,
     intent: "checkout" | "vault"
   ): Promise<void> => {
     return new Promise(async (resolve, reject) => {
-      resolve();
+      try {
+        await NativePrimer.showPaymentMethod(clientToken, paymentMethodType, intent);
+        resolve();
+      } catch (err) {
+        reject(err);
+      }
     });
   },
 

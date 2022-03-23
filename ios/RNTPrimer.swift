@@ -42,6 +42,14 @@ enum PrimerEvents: Int, CaseIterable {
 @objc(NativePrimer)
 class RNTPrimer: RCTEventEmitter {
     
+    private var isClientTokenCallbackImplementedInRN: Bool?
+    private var clientTokenCallback: ((String?, Error?) -> Void)?
+    private var isOnClientSessionActionsImplementedInRN: Bool?
+    private var onClientSessionActions: ((String?, Error?) -> Void)?
+    private var onTokenizeSuccess: ((String?, Error?) -> Void)?
+    private var onResumeSuccess: ((String?, Error?) -> Void)?
+    private var implementedReactNativeCallbacks: ImplementedReactNativeCallbacks?
+    
     // MARK: - INITIALIZATION & REACT NATIVE SUPPORT
     
     override class func requiresMainQueueSetup() -> Bool {
@@ -118,18 +126,33 @@ class RNTPrimer: RCTEventEmitter {
     }
     
     @objc
+    public func showPaymentMethod(_ clientToken: String, paymentMethodTypeStr: String, intentStr: String, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
+        do {
+            let paymentMethodType = PaymentMethodConfigType(rawValue: paymentMethodTypeStr)
+            guard paymentMethodType != .other(rawValue: paymentMethodTypeStr) else {
+                let err = NSError(domain: "native-bridge", code: 1, userInfo: [NSLocalizedDescriptionKey: "Invalid payment method type"])
+                throw err
+            }
+            
+            guard let intent = PrimerSessionIntent(rawValue: intentStr) else {
+                let err = NSError(domain: "native-bridge", code: 2, userInfo: [NSLocalizedDescriptionKey: "Invalid intent"])
+                throw err
+            }
+            
+            DispatchQueue.main.async {
+                PrimerSDK.Primer.shared.showPaymentMethod(paymentMethodType, withIntent: intent, on: UIViewController(), with: clientToken)
+                resolver(nil)
+            }
+        } catch {
+            rejecter(error.rnError["errorId"]!, error.rnError["description"], error)
+        }
+    }
+    
+    @objc
     public func handleNewClientToken(_ clientToken: String, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
         self.callCallbackWithClientToken(clientToken)
         resolver(nil)
     }
-    
-    private var isClientTokenCallbackImplementedInRN: Bool?
-    private var clientTokenCallback: ((String?, Error?) -> Void)?
-    private var isOnClientSessionActionsImplementedInRN: Bool?
-    private var onClientSessionActions: ((String?, Error?) -> Void)?
-    private var onTokenizeSuccess: ((String?, Error?) -> Void)?
-    private var onResumeSuccess: ((String?, Error?) -> Void)?
-    private var implementedReactNativeCallbacks: ImplementedReactNativeCallbacks?
     
     @objc
     public func handleError(_ errorStr: String, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
