@@ -82,9 +82,9 @@ export const usePrimer = (
       }
     };
 
-    const onTokenizeSuccess: OnTokenizeSuccessCallback = async (paymentInstrument, resumeHandler) => {
+    const onTokenizeSuccess: OnTokenizeSuccessCallback = async (paymentMethodToken, resumeHandler) => {
       try {
-        const paymentResponse = await createPayment(paymentInstrument.token);
+        const paymentResponse = await createPayment(paymentMethodToken.token);
 
         // https://primer.io/docs/api/#section/API-Usage-Guide/Payment-Status
         if (['FAILED', 'DECLINED', 'CANCELLED'].includes(paymentResponse.status)) {
