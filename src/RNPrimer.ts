@@ -63,7 +63,7 @@ const RNPrimer = {
         } else if (settings === null && theme) {
           await NativePrimer.configureWithTheme(JSON.stringify(theme));
         } else {
-          await await NativePrimer.configureWithSettings(JSON.stringify(settings));
+          await NativePrimer.configureWithSettings(JSON.stringify(settings));
           await NativePrimer.configureWithTheme(JSON.stringify(theme));
         }
         resolve();
