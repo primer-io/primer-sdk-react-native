@@ -17,4 +17,20 @@ export const styles = StyleSheet.create({
     highlight: {
       fontWeight: '700',
     },
+    button: {
+      height: 50,
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderRadius: 4
+    },
+    buttonText: {
+      fontSize: 17
+    },
+    textInput: {
+      height: 40,
+      paddingHorizontal: 4,
+      borderColor: 'black',
+      borderWidth: 1,
+      borderRadius: 4
+    }
   });

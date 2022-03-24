@@ -21,15 +21,12 @@ const App = () => {
   };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen name="Settings" component={SettingsScreen} />
           <Stack.Screen name="Checkout" component={CheckoutScreen} />
         </Stack.Navigator>
       </NavigationContainer>
-    </SafeAreaView>
   );
 };
 
