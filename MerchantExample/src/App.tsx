@@ -7,7 +7,11 @@ import {
 
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SettingsScreen from './screens/SettingsScreen';
+import CheckoutScreen from './screens/CheckoutScreen';
+
+const Stack = createNativeStackNavigator();
 
 const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -20,7 +24,10 @@ const App = () => {
     <SafeAreaView style={backgroundStyle}>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
       <NavigationContainer>
-        <SettingsScreen/>
+        <Stack.Navigator>
+          <Stack.Screen name="Settings" component={SettingsScreen} />
+          <Stack.Screen name="Checkout" component={CheckoutScreen} />
+        </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaView>
   );
