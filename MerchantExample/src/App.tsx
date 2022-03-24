@@ -6,6 +6,7 @@ import {
 } from 'react-native';
 
 import { Colors } from 'react-native/Libraries/NewAppScreen';
+import { NavigationContainer } from '@react-navigation/native';
 import SettingsScreen from './screens/SettingsScreen';
 
 const App = () => {
@@ -18,7 +19,9 @@ const App = () => {
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <SettingsScreen/>
+      <NavigationContainer>
+        <SettingsScreen/>
+      </NavigationContainer>
     </SafeAreaView>
   );
 };
