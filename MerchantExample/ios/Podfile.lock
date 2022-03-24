@@ -74,7 +74,7 @@ PODS:
   - glog (0.3.5)
   - libevent (2.1.12)
   - OpenSSL-Universal (1.1.180)
-  - primer-io-react-native (0.12.2):
+  - primer-io-react-native (0.12.3):
     - PrimerSDK (= 1.29.2)
     - React-Core
   - Primer3DS (1.0.0)
@@ -516,7 +516,7 @@ SPEC CHECKSUMS:
   glog: 85ecdd10ee8d8ec362ef519a6a45ff9aa27b2e85
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   OpenSSL-Universal: 1aa4f6a6ee7256b83db99ec1ccdaa80d10f9af9b
-  primer-io-react-native: 48727785021f652295524913724833209573846b
+  primer-io-react-native: b22388db3d5fe96000dd65c8995f809166664315
   Primer3DS: 0b298ca54adb07e3f5ae3d74e574b6d3084e8a0d
   PrimerSDK: 0c03ea0c73296ee63bbe80f9e9adc161b0c73c70
   RCT-Folly: 803a9cfd78114b2ec0f140cfa6fa2a6bafb2d685

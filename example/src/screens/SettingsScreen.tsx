@@ -75,7 +75,7 @@ export const SettingsScreen = (args: ISettingsScreenArguments) => {
           merchantIdentifier: 'merchant.checkout.team',
           urlScheme: 'primer://'
         },
-        is3DSDevelopmentModeEnabled : false,
+        is3DSDevelopmentModeEnabled: false,
         android: {
           redirectScheme: 'primer',
         },
