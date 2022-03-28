@@ -13,17 +13,19 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 import { styles } from '../styles';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
-import { Environment } from '../models/Environment';
+import { Environment, makeEnvironmentFromIntVal } from '../models/Environment';
 import { Picker } from "@react-native-picker/picker";
 import { Section } from '../models/Section';
 
 // import { NavigationContainer, NavigationContainerProps } from '@react-navigation/native';
 // import { NavigatorScreenParams } from '@react-navigation/native';
 
+export let environment: Environment = Environment.Sandbox;
+
 // @ts-ignore
 const SettingsScreen = ({ navigation }) => {
     const isDarkMode = useColorScheme() === 'dark';
-    const [environment, setEnvironment] = React.useState<Environment>(Environment.Sandbox);
+    // const [environment, setEnvironment] = React.useState<Environment>(Environment.Sandbox);
     const [amount, setAmount] = React.useState<number | null>(1000);
     const [currency, setCurrency] = React.useState<string>("EUR");
     const [countryCode, setCountryCode] = React.useState<string>("DE");
@@ -78,24 +80,8 @@ const SettingsScreen = ({ navigation }) => {
                     selectedIndex={environment}
                     onChange={(event) => {
                         const selectedIndex = event.nativeEvent.selectedSegmentIndex;
-                        let selectedEnvironment: Environment;
-                        switch (selectedIndex) {
-                            case 0:
-                                selectedEnvironment = Environment.Dev;
-                                break;
-                            case 1:
-                                selectedEnvironment = Environment.Sandbox;
-                                break;
-                            case 2:
-                                selectedEnvironment = Environment.Staging;
-                                break;
-                            case 3:
-                                selectedEnvironment = Environment.Production;
-                                break;
-                            default:
-                                return;
-                        }
-                        setEnvironment(selectedEnvironment);
+                        let selectedEnvironment = makeEnvironmentFromIntVal(selectedIndex);
+                        environment = selectedEnvironment;
                     }}
                 />
 
