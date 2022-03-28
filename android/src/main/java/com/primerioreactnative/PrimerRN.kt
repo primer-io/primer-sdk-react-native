@@ -25,8 +25,9 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
 
   private var sdkWasInitialised = false
   private var haltExecution = false
+  private var clientToken: String? = null
 
-  private val json = Json{ ignoreUnknownKeys = true }
+  private val json = Json { ignoreUnknownKeys = true }
 
   override fun getName(): String = "PrimerRN"
 
@@ -129,6 +130,8 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
     val settings = settings.format()
     val config = PrimerConfig(theme, settings)
 
+    this.clientToken = token
+
     // todo: refactor with next version
     mListener.completion = { error, clientToken ->
       currentActivity?.let {
@@ -196,7 +199,7 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
     try {
       Log.d("PrimerRN", "resume: $request")
       val data = json.decodeFromString<PrimerResumeRequest>(request)
-      mListener.completion?.invoke(data.error, data.token)
+      mListener.completion?.invoke(data.error, data.token ?: clientToken)
     } catch (e: Exception) {
       Log.e("PrimerRN", "configure settings error: $e")
       val exception = PrimerErrorRN(
@@ -214,7 +217,7 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
     try {
       Log.d("PrimerRN", "resume: $request")
       val data = json.decodeFromString<PrimerResumeRequest>(request)
-      mListener.actionCompletion?.invoke(data.error, data.token)
+      mListener.actionCompletion?.invoke(data.error, data.token ?: clientToken)
 
       mListener.actionCompletion = { error, clientToken ->
         currentActivity?.let {
@@ -222,7 +225,7 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
             if (error != null) {
               mListener.actionResumeHandler?.handleError(Error(error))
             } else {
-              mListener.actionResumeHandler?.handleClientToken(clientToken)
+              mListener.actionResumeHandler?.handleClientToken(clientToken ?: clientToken)
             }
           }
         }
