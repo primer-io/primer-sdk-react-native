@@ -1,11 +1,12 @@
 
 
+import { Primer } from '@primer-io/react-native';
 import * as React from 'react';
 import { View, Text, useColorScheme, TouchableOpacity } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { IClientSession } from '../models/IClientSession';
 import { IClientSessionRequestBody } from '../models/IClientSessionRequestBody';
-import { createClientSession } from '../network/api';
+import { createClientSession, createPayment } from '../network/api';
 import { styles } from '../styles';
 
 const CheckoutScreen = () => {
@@ -98,9 +99,38 @@ const CheckoutScreen = () => {
         },
     };
 
+    const onTokenizeSuccess = async (paymentMethod, handler) => {
+        try {
+            const payment = await createPayment(paymentMethod.token);
+            handler.handleSuccess();
+        } catch (err) {
+            handler.handleError(err);
+        }
+    }
+
     const onUniversalCheckoutButtonTapped = async () => {
         try {
             const clientSession: IClientSession = await createClientSession(clientSessionRequestBody);
+            const primerConfig = {
+                settings: {
+                    options: {
+                        isResultScreenEnabled: true,
+                        isLoadingScreenEnabled: true,
+                        is3DSDevelopmentModeEnabled: true,
+                        ios: {
+                            urlScheme: '',
+                            merchantIdentifier: ''
+                        },
+                        android: {
+                            redirectScheme: ''
+                        }
+                    }
+                },
+                onTokenizeSuccess: onTokenizeSuccess
+            };
+
+            // debugger;
+            Primer.showUniversalCheckout(clientSession.clientToken, primerConfig);
 
         } catch (err) {
             if (err instanceof Error) {
@@ -115,31 +145,31 @@ const CheckoutScreen = () => {
 
     return (
         <View style={backgroundStyle}>
-            <View style={{flex: 1}}/>
+            <View style={{ flex: 1 }} />
             <TouchableOpacity
-                style={{...styles.button, marginHorizontal: 20, marginVertical: 5, backgroundColor: 'black'}}
+                style={{ ...styles.button, marginHorizontal: 20, marginVertical: 5, backgroundColor: 'black' }}
             >
                 <Text
-                    style={{...styles.buttonText, color: 'white'}}
+                    style={{ ...styles.buttonText, color: 'white' }}
                 >
                     Apple Pay
                 </Text>
             </TouchableOpacity>
             <TouchableOpacity
-                style={{...styles.button, marginHorizontal: 20, marginVertical: 5, backgroundColor: 'black'}}
+                style={{ ...styles.button, marginHorizontal: 20, marginVertical: 5, backgroundColor: 'black' }}
             >
                 <Text
-                    style={{...styles.buttonText, color: 'white'}}
+                    style={{ ...styles.buttonText, color: 'white' }}
                 >
                     Vault Manager
                 </Text>
             </TouchableOpacity>
             <TouchableOpacity
-                style={{...styles.button, marginHorizontal: 20, marginBottom: 20, marginTop: 5, backgroundColor: 'black'}}
+                style={{ ...styles.button, marginHorizontal: 20, marginBottom: 20, marginTop: 5, backgroundColor: 'black' }}
                 onPress={onUniversalCheckoutButtonTapped}
             >
                 <Text
-                    style={{...styles.buttonText, color: 'white'}}
+                    style={{ ...styles.buttonText, color: 'white' }}
                 >
                     Universal Checkout
                 </Text>
