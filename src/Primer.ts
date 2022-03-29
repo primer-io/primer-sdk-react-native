@@ -1,7 +1,7 @@
 import * as React from 'react';
 import type { PaymentInstrumentToken } from './models/payment-instrument-token';
 import type { IPrimer } from './models/primer';
-import type { PrimerConfig } from './models/primer-config';
+import type { IPrimerConfig } from './models/primer-config';
 import type { PrimerPaymentMethodIntent } from './models/primer-intent';
 import type { PrimerResumeHandler } from './models/primer-request';
 import RNPrimer, { IPrimerError } from './NativePrimer';
@@ -90,7 +90,7 @@ interface IBinData {
 
 export const PrimerNativeMapping: IPrimer = {
 
-  showUniversalCheckout(clientToken: string, config: PrimerConfig): void {
+  showUniversalCheckout(clientToken: string, config: IPrimerConfig): void {
     debugger;
     if (config.settings || config.theme) {
       RNPrimer.configure(config.settings || null, config.theme || null);
@@ -108,11 +108,11 @@ export const PrimerNativeMapping: IPrimer = {
       RNPrimer.setImplementedRNCallbacks(implementedRNCallbacks);
     }
 
-    RNPrimer.addListener('onClientTokenCallback', _ => {
-      if (config.onClientTokenCallback) {
-        config.onClientTokenCallback(resumeHandler);
-      }
-    });
+    // RNPrimer.addListener('onClientTokenCallback', _ => {
+    //   if (config.onClientTokenCallback) {
+    //     config.onClientTokenCallback(resumeHandler);
+    //   }
+    // });
 
     RNPrimer.addListener('onClientSessionActions', data => {
       const clientSessionActions: IClientSessionAction[] = data;
@@ -151,7 +151,7 @@ export const PrimerNativeMapping: IPrimer = {
     RNPrimer.showUniversalCheckout(clientToken);
   },
 
-  showVaultManager(clientToken: string, config: PrimerConfig): void {
+  showVaultManager(clientToken: string, config: IPrimerConfig): void {
     if (config.settings || config.theme) {
       RNPrimer.configure(config.settings || null, config.theme || null);
 
@@ -216,7 +216,7 @@ export const PrimerNativeMapping: IPrimer = {
   showPaymentMethod(
     token: string,
     intent: PrimerPaymentMethodIntent,
-    config: PrimerConfig
+    config: IPrimerConfig
   ): void {
     if (config.settings || config.theme) {
       RNPrimer.configure(config.settings || null, config.theme || null);

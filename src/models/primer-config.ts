@@ -4,8 +4,7 @@ import type { PrimerResumeHandler } from './primer-request';
 import type { PrimerSettings } from './primer-settings';
 import type { PrimerTheme } from './primer-theme';
 
-export type PrimerConfig = IPrimerConfig;
-interface IPrimerConfig {
+export interface IPrimerConfig {
   /**
    * Include data for different payment methods (e.g. amount or business details)
    */

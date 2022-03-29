@@ -24,6 +24,9 @@ export const createClientSession = async (body: IClientSessionRequestBody) => {
         console.log(`\n`);
         const response = await axios.post(url, body, { headers: headers });
 
+        console.log(`\nRESPONSE [${response.status}]:`);
+        console.log(response.data);
+
         if (response.status >= 200 && response.status < 300) {
             return response.data;
         } else {
