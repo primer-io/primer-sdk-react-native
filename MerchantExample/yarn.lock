@@ -1057,7 +1057,7 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@primer-io/react-native@file:./../":
+"@primer-io/react-native@file:./..":
   version "0.12.3"
 
 "@react-native-community/cli-debugger-ui@^6.0.0-rc.0":
