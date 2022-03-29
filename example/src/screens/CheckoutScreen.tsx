@@ -11,6 +11,8 @@ import type { IClientSessionRequestBody } from '../models/IClientSessionRequestB
 import type { OnTokenizeSuccessCallback } from 'lib/typescript/models/primer-callbacks';
 import type { PaymentInstrumentToken } from 'lib/typescript/models/payment-instrument-token';
 import type { IClientSession } from '../models/IClientSession';
+import { makeRandomString } from '../helpers/helpers';
+import type { IPayment } from '../models/IPayment';
 
 const CheckoutScreen = (props: any) => {
     const isDarkMode = useColorScheme() === 'dark';
@@ -25,14 +27,14 @@ const CheckoutScreen = (props: any) => {
     let paymentId: string | null = null;
 
     const clientSessionRequestBody: IClientSessionRequestBody = {
-        // customerId: "rn_customer_id",
-        orderId: 'rn-test-10001',
-        // currencyCode: 'EUR',
+        customerId: appSettings.customerId,
+        orderId: 'rn-test-' + makeRandomString(8),
+        currencyCode: appSettings.currencyCode,
         order: {
-            // countryCode: 'NL',
+            countryCode: appSettings.countryCode,
             lineItems: [
                 {
-                    amount: 0,
+                    amount: appSettings.amount,
                     quantity: 1,
                     itemId: 'item-123',
                     description: 'this item',
@@ -42,7 +44,7 @@ const CheckoutScreen = (props: any) => {
         },
         customer: {
             emailAddress: 'test@mail.com',
-            mobileNumber: '0841234567',
+            mobileNumber: appSettings.phoneNumber,
             firstName: 'John',
             lastName: 'Doe',
             billingAddress: {
@@ -51,7 +53,7 @@ const CheckoutScreen = (props: any) => {
                 postalCode: '12345',
                 addressLine1: '1 test',
                 addressLine2: undefined,
-                // countryCode: 'GB',
+                countryCode: appSettings.countryCode,
                 city: 'test',
                 state: 'test',
             },
@@ -62,11 +64,12 @@ const CheckoutScreen = (props: any) => {
                 postalCode: '12345',
                 city: 'test',
                 state: 'test',
-                // countryCode: 'GB',
+                countryCode: appSettings.countryCode,
             },
             nationalDocumentId: '9011211234567',
         },
         paymentMethod: {
+            vaultOnSuccess: false,
             options: {
                 GOOGLE_PAY: {
                     surcharge: {
@@ -105,18 +108,6 @@ const CheckoutScreen = (props: any) => {
             },
         },
     };
-    clientSessionRequestBody.currencyCode = appSettings.currencyCode;
-    //@ts-ignore
-    clientSessionRequestBody.order.lineItems[0].amount = appSettings.amount;
-    //@ts-ignore
-    clientSessionRequestBody.order.countryCode = appSettings.countryCode;
-    //@ts-ignore
-    clientSessionRequestBody.order.countryCode = appSettings.countryCode;
-    clientSessionRequestBody.customerId = appSettings.customerId;
-    //@ts-ignore
-    clientSessionRequestBody.customer.billingAddress.countryCode = appSettings.countryCode;
-    //@ts-ignore
-    clientSessionRequestBody.customer.shippingAddress.countryCode = appSettings.countryCode;
 
     const onTokenizeSuccess: OnTokenizeSuccessCallback = async (paymentInstrument: PaymentInstrumentToken, resumeHandler: PrimerResumeHandler) => {
         try {
@@ -140,13 +131,10 @@ const CheckoutScreen = (props: any) => {
     };
 
     const onResumeSuccess = async (resumeToken: string, resumeHandler: PrimerResumeHandler | null) => {
-        // const err = new Error("Invalid value for paymentId");
-        // debugger;
-        // resumeHandler?.handleSuccess();
-        // return;
         try {
             if (paymentId) {
-                const payment = await resumePayment(paymentId, resumeToken);
+                const payment: IPayment = await resumePayment(paymentId, resumeToken);
+                debugger;
                 paymentId = null;
                 if (resumeHandler) {
                     resumeHandler.handleSuccess();
