@@ -1,13 +1,16 @@
 
-
-import { Primer } from '@primer-io/react-native';
 import * as React from 'react';
+import { Primer } from '@primer-io/react-native';
+import { OnTokenizeSuccessCallback } from '../../../src/models/primer-callbacks';
+import { PrimerConfig } from '../../../src/models/primer-config';
 import { View, Text, useColorScheme, TouchableOpacity } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { IClientSession } from '../models/IClientSession';
 import { IClientSessionRequestBody } from '../models/IClientSessionRequestBody';
 import { createClientSession, createPayment } from '../network/api';
 import { styles } from '../styles';
+import { PaymentInstrumentToken } from '../../../src/models/payment-instrument-token';
+import { PrimerResumeHandler } from '../../../src/models/primer-request';
 
 const CheckoutScreen = () => {
     const isDarkMode = useColorScheme() === 'dark';
@@ -99,19 +102,25 @@ const CheckoutScreen = () => {
         },
     };
 
-    const onTokenizeSuccess = async (paymentMethod, handler) => {
+    const onTokenizeSuccess: OnTokenizeSuccessCallback = async (paymentInstrument: PaymentInstrumentToken, resumeHandler: PrimerResumeHandler) => {
         try {
-            const payment = await createPayment(paymentMethod.token);
-            handler.handleSuccess();
+            const payment = await createPayment(paymentInstrument.token);
+            resumeHandler.handleSuccess();
         } catch (err) {
-            handler.handleError(err);
+            if (err instanceof Error) {
+                resumeHandler.handleError(err);
+            } else if (typeof err === "string") {
+                resumeHandler.handleError(new Error(err));
+            } else {
+                resumeHandler.handleError(new Error('Unknown error'));
+            }
         }
     }
 
     const onUniversalCheckoutButtonTapped = async () => {
         try {
             const clientSession: IClientSession = await createClientSession(clientSessionRequestBody);
-            const primerConfig = {
+            const primerConfig: PrimerConfig = {
                 settings: {
                     options: {
                         isResultScreenEnabled: true,

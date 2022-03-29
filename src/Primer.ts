@@ -1,3 +1,4 @@
+import * as React from 'react';
 import type { PaymentInstrumentToken } from './models/payment-instrument-token';
 import type { IPrimer } from './models/primer';
 import type { PrimerConfig } from './models/primer-config';
@@ -90,6 +91,7 @@ interface IBinData {
 export const PrimerNativeMapping: IPrimer = {
 
   showUniversalCheckout(clientToken: string, config: PrimerConfig): void {
+    debugger;
     if (config.settings || config.theme) {
       RNPrimer.configure(config.settings || null, config.theme || null);
 

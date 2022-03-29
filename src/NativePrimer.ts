@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { NativeEventEmitter, NativeModules } from 'react-native';
 import type { PrimerSettings } from './models/primer-settings';
 import type { PrimerTheme } from './models/primer-theme';
