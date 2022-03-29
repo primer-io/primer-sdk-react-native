@@ -1,6 +1,7 @@
 {
   "name": "MerchantExample",
   "version": "0.0.1",
+  
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -8,9 +9,12 @@
     "start": "react-native start",
     "test": "jest",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "clean": "watchman watch-del-all && rm -rf $TMPDIR/react-native-packager-cache-* && rm -rf $TMPDIR/metro-bundler-cache-* && rm -rf node_modules/ && npm cache clean --force && yarn cache clean && yarn"
+    "clean-caches": "watchman watch-del-all && rm -rf $TMPDIR/react-native-packager-cache-* && rm -rf $TMPDIR/metro-bundler-cache-* && npm cache clean --force && yarn cache clean && rm -rf ~/Documents/Derived\\ Data/",
+    "clean-install": "yarn run clean-caches && rm -rf node_modules/ && yarn && cd ios && pod deintegrate && rm -rf Podfile.lock && pod install --repo-update",
+    "clean-pod-install": "pod deintegrate && rm -rf Podfile.lock && pod install --repo-update"
   },
   "dependencies": {
+    "@primer-io/react-native": "file:./../",
     "@react-native-picker/picker": "^2.4.0",
     "@react-native-segmented-control/segmented-control": "^2.4.0",
     "@react-navigation/native": "^6.0.8",

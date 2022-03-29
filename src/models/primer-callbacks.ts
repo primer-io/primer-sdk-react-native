@@ -1,4 +1,4 @@
-import type { IPrimerError } from 'src/NativePrimer';
+import type { IPrimerError } from 'src/RNPrimer';
 import type { IClientSessionAction } from 'src/Primer';
 import type { PaymentInstrumentToken } from './payment-instrument-token';
 import type { PrimerResumeHandler } from './primer-request';

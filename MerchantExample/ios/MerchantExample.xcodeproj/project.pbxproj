@@ -10,23 +10,23 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		4CACFA50B814C78B6FCBD47A /* libPods-MerchantExample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00ED4B3280DC5567C8DEC924 /* libPods-MerchantExample.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		E0507BCF76AEC4C9B61474AC /* libPods-MerchantExample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 370FA4881931580D1CDCE4E6 /* libPods-MerchantExample.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* MerchantExampleTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MerchantExampleTests.m; sourceTree = "<group>"; };
+		00ED4B3280DC5567C8DEC924 /* libPods-MerchantExample.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MerchantExample.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07F961A680F5B00A75B9A /* MerchantExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MerchantExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = MerchantExample/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = MerchantExample/AppDelegate.m; sourceTree = "<group>"; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = MerchantExample/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = MerchantExample/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = MerchantExample/main.m; sourceTree = "<group>"; };
-		370FA4881931580D1CDCE4E6 /* libPods-MerchantExample.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MerchantExample.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = MerchantExample/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		BBBA553B30C3CBE45999C3A3 /* Pods-MerchantExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MerchantExample.debug.xcconfig"; path = "Target Support Files/Pods-MerchantExample/Pods-MerchantExample.debug.xcconfig"; sourceTree = "<group>"; };
-		D2C60066F08B38EED06B3666 /* Pods-MerchantExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MerchantExample.release.xcconfig"; path = "Target Support Files/Pods-MerchantExample/Pods-MerchantExample.release.xcconfig"; sourceTree = "<group>"; };
+		A8856911221171AE089F0BA7 /* Pods-MerchantExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MerchantExample.release.xcconfig"; path = "Target Support Files/Pods-MerchantExample/Pods-MerchantExample.release.xcconfig"; sourceTree = "<group>"; };
+		E710A694D285BF44DD322E85 /* Pods-MerchantExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MerchantExample.debug.xcconfig"; path = "Target Support Files/Pods-MerchantExample/Pods-MerchantExample.debug.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -35,7 +35,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E0507BCF76AEC4C9B61474AC /* libPods-MerchantExample.a in Frameworks */,
+				4CACFA50B814C78B6FCBD47A /* libPods-MerchantExample.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -76,7 +76,7 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				370FA4881931580D1CDCE4E6 /* libPods-MerchantExample.a */,
+				00ED4B3280DC5567C8DEC924 /* libPods-MerchantExample.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -114,8 +114,8 @@
 		E233CBF5F47BEE60B243DCF8 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				BBBA553B30C3CBE45999C3A3 /* Pods-MerchantExample.debug.xcconfig */,
-				D2C60066F08B38EED06B3666 /* Pods-MerchantExample.release.xcconfig */,
+				E710A694D285BF44DD322E85 /* Pods-MerchantExample.debug.xcconfig */,
+				A8856911221171AE089F0BA7 /* Pods-MerchantExample.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -127,14 +127,14 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "MerchantExample" */;
 			buildPhases = (
-				85ABE2DBA54CBF8CFD4DAF39 /* [CP] Check Pods Manifest.lock */,
+				3068F74104473E9399E6EC03 /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				22404D6AF0FFF73B192590B3 /* [CP] Embed Pods Frameworks */,
-				C9309979EE725DB6333354A7 /* [CP] Copy Pods Resources */,
+				83E86308BA93B059AB8F057D /* [CP] Embed Pods Frameworks */,
+				463B306647DE4443537455C5 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -203,24 +203,7 @@
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nexport NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
 		};
-		22404D6AF0FFF73B192590B3 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-MerchantExample/Pods-MerchantExample-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-MerchantExample/Pods-MerchantExample-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MerchantExample/Pods-MerchantExample-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		85ABE2DBA54CBF8CFD4DAF39 /* [CP] Check Pods Manifest.lock */ = {
+		3068F74104473E9399E6EC03 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -242,7 +225,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		C9309979EE725DB6333354A7 /* [CP] Copy Pods Resources */ = {
+		463B306647DE4443537455C5 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -257,6 +240,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MerchantExample/Pods-MerchantExample-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		83E86308BA93B059AB8F057D /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-MerchantExample/Pods-MerchantExample-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-MerchantExample/Pods-MerchantExample-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MerchantExample/Pods-MerchantExample-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
@@ -295,7 +295,7 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = BBBA553B30C3CBE45999C3A3 /* Pods-MerchantExample.debug.xcconfig */;
+			baseConfigurationReference = E710A694D285BF44DD322E85 /* Pods-MerchantExample.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -321,7 +321,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D2C60066F08B38EED06B3666 /* Pods-MerchantExample.release.xcconfig */;
+			baseConfigurationReference = A8856911221171AE089F0BA7 /* Pods-MerchantExample.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
