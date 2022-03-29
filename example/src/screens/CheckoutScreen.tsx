@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Primer } from '@primer-io/react-native';
 import { View, Text, useColorScheme, TouchableOpacity } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
-import { createClientSession, createPayment } from '../network/api';
+import { createClientSession, createPayment, resumePayment } from '../network/api';
 import { styles } from '../styles';
 import type { IAppSettings } from '../models/IAppSettings';
 import type { PrimerResumeHandler } from 'lib/typescript/models/primer-request';
@@ -11,11 +11,10 @@ import type { IClientSessionRequestBody } from '../models/IClientSessionRequestB
 import type { OnTokenizeSuccessCallback } from 'lib/typescript/models/primer-callbacks';
 import type { PaymentInstrumentToken } from 'lib/typescript/models/payment-instrument-token';
 import type { IClientSession } from '../models/IClientSession';
-import { resumePayment } from 'MerchantExample/src/network/api';
 
 const CheckoutScreen = (props: any) => {
     const isDarkMode = useColorScheme() === 'dark';
-    const [paymentId, setPaymentId] = React.useState<string | null>(null);
+    // const [paymentId, setPaymentId] = React.useState<string | null>(null);
     const [error, setError] = React.useState<Error | null>(null);
 
     const backgroundStyle = {
@@ -23,6 +22,7 @@ const CheckoutScreen = (props: any) => {
     };
 
     const appSettings: IAppSettings = props.route.params;
+    let paymentId: string | null = null;
 
     const clientSessionRequestBody: IClientSessionRequestBody = {
         // customerId: "rn_customer_id",
@@ -123,7 +123,7 @@ const CheckoutScreen = (props: any) => {
             const payment = await createPayment(paymentInstrument.token);
             
             if (payment.requiredAction?.clientToken) {
-                setPaymentId(payment.id);
+                paymentId = payment.id;
                 resumeHandler.handleNewClientToken(payment.requiredAction.clientToken);
             } else {
                 resumeHandler.handleSuccess();
@@ -140,13 +140,23 @@ const CheckoutScreen = (props: any) => {
     };
 
     const onResumeSuccess = async (resumeToken: string, resumeHandler: PrimerResumeHandler | null) => {
+        // const err = new Error("Invalid value for paymentId");
+        // debugger;
+        // resumeHandler?.handleSuccess();
+        // return;
         try {
-            //@ts-ignore
-            const payment = await resumePayment(paymentId, resumeToken);
-            if (resumeHandler) {
-                resumeHandler.handleSuccess();
+            if (paymentId) {
+                const payment = await resumePayment(paymentId, resumeToken);
+                paymentId = null;
+                if (resumeHandler) {
+                    resumeHandler.handleSuccess();
+                }
+            } else {
+                const err = new Error("Invalid value for paymentId");
+                throw err;
             }
         } catch (err) {
+            paymentId = null;
             if (resumeHandler) {
                 if (err instanceof Error) {
                     resumeHandler.handleError(err.message);
@@ -198,7 +208,7 @@ const CheckoutScreen = (props: any) => {
     return (
         <View style={backgroundStyle}>
             <View style={{ flex: 1 }} />
-            <TouchableOpacity
+            {/* <TouchableOpacity
                 style={{ ...styles.button, marginHorizontal: 20, marginVertical: 5, backgroundColor: 'black' }}
             >
                 <Text
@@ -215,7 +225,7 @@ const CheckoutScreen = (props: any) => {
                 >
                     Vault Manager
                 </Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             <TouchableOpacity
                 style={{ ...styles.button, marginHorizontal: 20, marginBottom: 20, marginTop: 5, backgroundColor: 'black' }}
                 onPress={onUniversalCheckoutButtonTapped}
