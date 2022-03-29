@@ -42,6 +42,14 @@ enum PrimerEvents: Int, CaseIterable {
 @objc(NativePrimer)
 class RNTPrimer: RCTEventEmitter {
     
+    private var isClientTokenCallbackImplementedInRN: Bool?
+    private var clientTokenCallback: ((String?, Error?) -> Void)?
+    private var isOnClientSessionActionsImplementedInRN: Bool?
+    private var onClientSessionActions: ((String?, Error?) -> Void)?
+    private var onTokenizeSuccess: ((String?, Error?) -> Void)?
+    private var onResumeSuccess: ((String?, Error?) -> Void)?
+    private var implementedReactNativeCallbacks: ImplementedReactNativeCallbacks?
+    
     // MARK: - INITIALIZATION & REACT NATIVE SUPPORT
     
     override class func requiresMainQueueSetup() -> Bool {
@@ -65,23 +73,27 @@ class RNTPrimer: RCTEventEmitter {
     
     @objc
     public func configureWithSettings(_ settingsStr: String, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
-        do {
-            try self.configure(settingsStr: settingsStr)
-            resolver(nil)
-        } catch {
-            self.checkoutFailed(with: error)
-            rejecter(error.rnError["errorId"]!, error.rnError["description"], error)
+        DispatchQueue.main.async {
+            do {
+                try self.configure(settingsStr: settingsStr)
+                resolver(nil)
+            } catch {
+                self.checkoutFailed(with: error)
+                rejecter(error.rnError["errorId"]!, error.rnError["description"], error)
+            }
         }
     }
     
     @objc
     public func configureWithTheme(_ themeStr: String, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
-        do {
-            try self.configure(themeStr: themeStr)
-            resolver(nil)
-        } catch {
-            self.checkoutFailed(with: error)
-            rejecter(error.rnError["errorId"]!, error.rnError["description"], error)
+        DispatchQueue.main.async {
+            do {
+                try self.configure(themeStr: themeStr)
+                resolver(nil)
+            } catch {
+                self.checkoutFailed(with: error)
+                rejecter(error.rnError["errorId"]!, error.rnError["description"], error)
+            }
         }
     }
     
@@ -119,39 +131,56 @@ class RNTPrimer: RCTEventEmitter {
     
     @objc
     public func handleNewClientToken(_ clientToken: String, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
-        self.callCallbackWithClientToken(clientToken)
-        resolver(nil)
+        DispatchQueue.main.async {
+            self.callCallbackWithClientToken(clientToken)
+            resolver(nil)
+        }
     }
-    
-    private var isClientTokenCallbackImplementedInRN: Bool?
-    private var clientTokenCallback: ((String?, Error?) -> Void)?
-    private var isOnClientSessionActionsImplementedInRN: Bool?
-    private var onClientSessionActions: ((String?, Error?) -> Void)?
-    private var onTokenizeSuccess: ((String?, Error?) -> Void)?
-    private var onResumeSuccess: ((String?, Error?) -> Void)?
-    private var implementedReactNativeCallbacks: ImplementedReactNativeCallbacks?
     
     @objc
     public func handleError(_ errorStr: String, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
-        do {
-            guard let errorData = errorStr.data(using: .utf8) else {
-                let err = NSError(domain: "native-bridge", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to convert string to data"])
-                throw err
+        DispatchQueue.main.async {
+            do {
+                guard let errorData = errorStr.data(using: .utf8) else {
+                    let err = NSError(domain: "native-bridge", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to convert string to data"])
+                    throw err
+                }
+                
+                let err = try JSONDecoder().decode(NativeError.self, from: errorData)
+                self.callCallbackWithError(err)
+                resolver(nil)
+            } catch {
+                self.checkoutFailed(with: error)
+                rejecter(error.rnError["errorId"]!, error.rnError["description"], error)
             }
-            
-            let err = try JSONDecoder().decode(NativeError.self, from: errorData)
-            self.callCallbackWithError(err)
-            resolver(nil)
-        } catch {
-            self.checkoutFailed(with: error)
-            rejecter(error.rnError["errorId"]!, error.rnError["description"], error)
         }
     }
     
     @objc
     public func handleSuccess(_ resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
-        self.callCallbackToContinueFlow()
-        resolver(nil)
+        DispatchQueue.main.async {
+            self.callCallbackToContinueFlow()
+            resolver(nil)
+        }
+    }
+    
+    @objc
+    public func setImplementedRNCallbacks(_ implementedRNCallbacksStr: String, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
+        DispatchQueue.main.async {
+            do {
+                guard let implementedRNCallbacksData = implementedRNCallbacksStr.data(using: .utf8) else {
+                    let err = NSError(domain: "native-bridge", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to convert string to data"])
+                    throw err
+                }
+                self.implementedReactNativeCallbacks = try JSONDecoder().decode(ImplementedReactNativeCallbacks.self, from: implementedRNCallbacksData)
+                print("implementedRNCallbacksStr: \(implementedRNCallbacksStr)\nself.implementedReactNativeCallbacks: \(self.implementedReactNativeCallbacks)")
+                Primer.shared.setImplementedReactNativeCallbacks(self.implementedReactNativeCallbacks!)
+                resolver(nil)
+            } catch {
+                self.checkoutFailed(with: error)
+                rejecter(error.rnError["errorId"]!, error.rnError["description"], error)
+            }
+        }
     }
     
     // MARK: - HELPERS
@@ -160,7 +189,8 @@ class RNTPrimer: RCTEventEmitter {
         var settings: PrimerSettings?
         if let settingsStr = settingsStr {
             guard let settingsData = settingsStr.data(using: .utf8) else {
-                return
+                let err = NSError(domain: "native-bridge", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to convert string to data"])
+                throw err
             }
             let settingsRN = try JSONDecoder().decode(PrimerSettingsRN.self, from: settingsData)
             settings = settingsRN.asPrimerSettings()
@@ -169,31 +199,14 @@ class RNTPrimer: RCTEventEmitter {
         var theme: PrimerTheme?
         if let themeStr = themeStr {
             guard let themeData = themeStr.data(using: .utf8) else {
-                return
+                let err = NSError(domain: "native-bridge", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to convert string to data"])
+                throw err
             }
             let themeRN = try JSONDecoder().decode(PrimerThemeRN.self, from: themeData)
             theme = themeRN.asPrimerTheme()
         }
-        
-        
-        DispatchQueue.main.async {
-            PrimerSDK.Primer.shared.configure(settings: settings, theme: theme)
-        }
-    }
     
-    @objc
-    public func setImplementedRNCallbacks(_ implementedRNCallbacksStr: String, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
-        do {
-            guard let implementedRNCallbacksData = implementedRNCallbacksStr.data(using: .utf8) else {
-                return
-            }
-            self.implementedReactNativeCallbacks = try JSONDecoder().decode(ImplementedReactNativeCallbacks.self, from: implementedRNCallbacksData)
-            Primer.shared.setImplementedReactNativeCallbacks(self.implementedReactNativeCallbacks!)
-            resolver(nil)
-        } catch {
-            self.checkoutFailed(with: error)
-            rejecter(error.rnError["errorId"]!, error.rnError["description"], error)
-        }
+        PrimerSDK.Primer.shared.configure(settings: settings, theme: theme)
     }
     
     private func detectImplemetedCallbacks() {
@@ -236,77 +249,117 @@ class RNTPrimer: RCTEventEmitter {
 extension RNTPrimer: PrimerDelegate {
     
     func clientTokenCallback(_ completion: @escaping (String?, Error?) -> Void) {
-        self.clientTokenCallback = { (clientToken, err) in
-            completion(clientToken, err)
-            self.removeCallbacksAndHandlers()
+        DispatchQueue.main.async {
+            if self.implementedReactNativeCallbacks?.isClientTokenCallbackImplemented == true {
+                self.clientTokenCallback = { (clientToken, err) in
+                    completion(clientToken, err)
+                    self.removeCallbacksAndHandlers()
+                }
+                self.sendEvent(withName: PrimerEvents.onClientTokenCallback.stringValue, body: nil)
+            } else {
+                let err = NSError(domain: "native-bridge", code: 1, userInfo: [NSLocalizedDescriptionKey: "Callback [clientTokenCallback] should had been implemented."])
+                completion(nil, err)
+            }
         }
-        sendEvent(withName: PrimerEvents.onClientTokenCallback.stringValue, body: nil)
     }
     
     func onClientSessionActions(_ actions: [ClientSession.Action], resumeHandler: ResumeHandlerProtocol?) {
-        self.onClientSessionActions = { (newClientToken, err) in
-            if let err = err {
-                resumeHandler?.handle(error: err)
-            } else if let newClientToken = newClientToken {
-                resumeHandler?.handle(newClientToken: newClientToken)
+        DispatchQueue.main.async {
+            if self.implementedReactNativeCallbacks?.isClientSessionActionsImplemented == true {
+                self.onClientSessionActions = { (newClientToken, err) in
+                    if let err = err {
+                        resumeHandler?.handle(error: err)
+                    } else if let newClientToken = newClientToken {
+                        resumeHandler?.handle(newClientToken: newClientToken)
+                    } else {
+                        resumeHandler?.handleSuccess()
+                    }
+                }
+                
+                do {
+                    let actionsData = try JSONEncoder().encode(actions)
+                    let actionsJson = try JSONSerialization.jsonObject(with: actionsData, options: .allowFragments)
+                    self.sendEvent(withName: PrimerEvents.onClientSessionActions.stringValue, body: actionsJson)
+                } catch {
+                    self.checkoutFailed(with: error)
+                }
             } else {
-                resumeHandler?.handleSuccess()
+                let err = NSError(domain: "native-bridge", code: 1, userInfo: [NSLocalizedDescriptionKey: "Callback [onClientSessionActions] should had been implemented."])
+                resumeHandler?.handle(error: err)
             }
-        }
-        
-        do {
-            let actionsData = try JSONEncoder().encode(actions)
-            let actionsJson = try JSONSerialization.jsonObject(with: actionsData, options: .allowFragments)
-            sendEvent(withName: PrimerEvents.onClientSessionActions.stringValue, body: actionsJson)
-        } catch {
-            self.checkoutFailed(with: error)
+            
         }
     }
     
     func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, resumeHandler: ResumeHandlerProtocol) {
-        self.onTokenizeSuccess = { (newClientToken, err) in
-            if let err = err {
-                resumeHandler.handle(error: err)
-            } else if let newClientToken = newClientToken {
-                resumeHandler.handle(newClientToken: newClientToken)
-            } else {
-                resumeHandler.handleSuccess()
+        DispatchQueue.main.async {
+            self.onTokenizeSuccess = { (newClientToken, err) in
+                if let err = err {
+                    resumeHandler.handle(error: err)
+                } else if let newClientToken = newClientToken {
+                    resumeHandler.handle(newClientToken: newClientToken)
+                } else {
+                    resumeHandler.handleSuccess()
+                }
             }
-        }
-        
-        do {
-            let paymentMethodTokenData = try JSONEncoder().encode(paymentMethodToken)
-            let paymentMethodTokenJson = try JSONSerialization.jsonObject(with: paymentMethodTokenData, options: .allowFragments)
-            sendEvent(withName: PrimerEvents.onTokenizeSuccessCallback.stringValue, body: paymentMethodTokenJson)
-        } catch {
-            self.checkoutFailed(with: error)
+            
+            do {
+                let paymentMethodTokenData = try JSONEncoder().encode(paymentMethodToken)
+                let paymentMethodTokenJson = try JSONSerialization.jsonObject(with: paymentMethodTokenData, options: .allowFragments)
+                self.sendEvent(withName: PrimerEvents.onTokenizeSuccessCallback.stringValue, body: paymentMethodTokenJson)
+            } catch {
+                self.checkoutFailed(with: error)
+            }
         }
     }
     
     func onResumeSuccess(_ clientToken: String, resumeHandler: ResumeHandlerProtocol) {
-        self.onResumeSuccess = { (newClientToken, err) in
-            if let err = err {
-                resumeHandler.handle(error: err)
-            } else if let newClientToken = newClientToken {
-                resumeHandler.handle(newClientToken: newClientToken)
+        DispatchQueue.main.async {
+            if self.implementedReactNativeCallbacks?.isOnResumeSuccessImplemented == true {
+                self.onResumeSuccess = { (newClientToken, err) in
+                    if let err = err {
+                        resumeHandler.handle(error: err)
+                    } else if let newClientToken = newClientToken {
+                        resumeHandler.handle(newClientToken: newClientToken)
+                    } else {
+                        resumeHandler.handleSuccess()
+                    }
+                }
+                
+                self.sendEvent(withName: PrimerEvents.onResumeSuccess.stringValue, body: ["resumeToken": clientToken])
             } else {
-                resumeHandler.handleSuccess()
+                let err = NSError(domain: "native-bridge", code: 1, userInfo: [NSLocalizedDescriptionKey: "Callback [onResumeSuccess] should had been implemented."])
+                resumeHandler.handle(error: err)
             }
         }
-        
-        sendEvent(withName: PrimerEvents.onResumeSuccess.stringValue, body: ["resumeToken": clientToken])
     }
     
     func onResumeError(_ error: Error) {
-        self.checkoutFailed(with: error)
+        DispatchQueue.main.async {
+            if self.implementedReactNativeCallbacks?.isOnResumeErrorImplemented == true {
+                self.checkoutFailed(with: error)
+            } else {
+                let err = NSError(domain: "native-bridge", code: 1, userInfo: [NSLocalizedDescriptionKey: "Callback [onResumeError] should had been implemented."])
+                self.checkoutFailed(with: err)
+            }
+        }
     }
     
     func onCheckoutDismissed() {
-        sendEvent(withName: PrimerEvents.onCheckoutDismissed.stringValue, body: nil)
+        DispatchQueue.main.async {
+            if self.implementedReactNativeCallbacks?.isOnCheckoutDismissedImplemented == true {
+                self.sendEvent(withName: PrimerEvents.onCheckoutDismissed.stringValue, body: nil)
+            } else {
+                let err = NSError(domain: "native-bridge", code: 1, userInfo: [NSLocalizedDescriptionKey: "Callback [onCheckoutDismissed] should had been implemented."])
+                self.checkoutFailed(with: err)
+            }
+        }
     }
     
     func checkoutFailed(with error: Error) {
-        sendEvent(withName: PrimerEvents.onError.stringValue, body: ["error": error.rnError])
+        DispatchQueue.main.async {
+            self.sendEvent(withName: PrimerEvents.onError.stringValue, body: ["error": error.rnError])
+        }
     }
     
 }

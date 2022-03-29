@@ -1,19 +1,21 @@
 
 import * as React from 'react';
 import { Primer } from '@primer-io/react-native';
-import { OnTokenizeSuccessCallback } from '../../../src/models/primer-callbacks';
 import { View, Text, useColorScheme, TouchableOpacity } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
-import { IClientSession } from '../models/IClientSession';
-import { IClientSessionRequestBody } from '../models/IClientSessionRequestBody';
 import { createClientSession, createPayment } from '../network/api';
 import { styles } from '../styles';
-import { PaymentInstrumentToken } from '../../../src/models/payment-instrument-token';
-import { PrimerResumeHandler } from '../../../src/models/primer-request';
-import { IAppSettings } from '../models/IAppSettings';
+import type { IAppSettings } from '../models/IAppSettings';
+import type { PrimerResumeHandler } from 'lib/typescript/models/primer-request';
+import type { IClientSessionRequestBody } from '../models/IClientSessionRequestBody';
+import type { OnTokenizeSuccessCallback } from 'lib/typescript/models/primer-callbacks';
+import type { PaymentInstrumentToken } from 'lib/typescript/models/payment-instrument-token';
+import type { IClientSession } from '../models/IClientSession';
+import { resumePayment } from 'MerchantExample/src/network/api';
 
 const CheckoutScreen = (props: any) => {
     const isDarkMode = useColorScheme() === 'dark';
+    const [paymentId, setPaymentId] = React.useState<string | null>(null);
     const [error, setError] = React.useState<Error | null>(null);
 
     const backgroundStyle = {
@@ -118,26 +120,44 @@ const CheckoutScreen = (props: any) => {
 
     const onTokenizeSuccess: OnTokenizeSuccessCallback = async (paymentInstrument: PaymentInstrumentToken, resumeHandler: PrimerResumeHandler) => {
         try {
-            debugger;
             const payment = await createPayment(paymentInstrument.token);
-            debugger;
-            console.log(`PAYMENT:`);
-            console.log(payment);
-            console.log('resumeHandler');
-            console.log(resumeHandler);
-            resumeHandler.handleSuccess();
-        } catch (err) {
-            debugger;
-            console.error(err);
-            if (err instanceof Error) {
-                resumeHandler.handleError(err);
-            } else if (typeof err === "string") {
-                resumeHandler.handleError(new Error(err));
+            
+            if (payment.requiredAction?.clientToken) {
+                setPaymentId(payment.id);
+                resumeHandler.handleNewClientToken(payment.requiredAction.clientToken);
             } else {
-                resumeHandler.handleError(new Error('Unknown error'));
+                resumeHandler.handleSuccess();
+            }
+        } catch (err) {
+            if (err instanceof Error) {
+                resumeHandler.handleError(err.message);
+            } else if (typeof err === "string") {
+                resumeHandler.handleError(err);
+            } else {
+                resumeHandler.handleError('Unknown error');
             }
         }
-    }
+    };
+
+    const onResumeSuccess = async (resumeToken: string, resumeHandler: PrimerResumeHandler | null) => {
+        try {
+            //@ts-ignore
+            const payment = await resumePayment(paymentId, resumeToken);
+            if (resumeHandler) {
+                resumeHandler.handleSuccess();
+            }
+        } catch (err) {
+            if (resumeHandler) {
+                if (err instanceof Error) {
+                    resumeHandler.handleError(err.message);
+                } else if (typeof err === "string") {
+                    resumeHandler.handleError(err);
+                } else {
+                    resumeHandler.handleError('Unknown error');
+                }
+            }
+        }
+    };
 
     const onUniversalCheckoutButtonTapped = async () => {
         try {
@@ -157,7 +177,8 @@ const CheckoutScreen = (props: any) => {
                         }
                     }
                 },
-                onTokenizeSuccess: onTokenizeSuccess
+                onTokenizeSuccess: onTokenizeSuccess,
+                onResumeSuccess: onResumeSuccess
             };
 
             //@ts-ignore

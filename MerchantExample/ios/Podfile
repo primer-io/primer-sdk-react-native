@@ -12,7 +12,7 @@ target 'MerchantExample' do
     :hermes_enabled => false
   )
   
-  pod 'primer-io-react-native', :path => '../..'
+#  pod 'primer-io-react-native', :path => '../../'
   # pod 'PrimerSDK', :git => 'https://github.com/primer-io/primer-sdk-ios.git', :branch => 'feature/rn-helpers'
   pod 'Primer3DS'
 
