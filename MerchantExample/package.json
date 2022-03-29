@@ -10,7 +10,6 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "dependencies": {
-    "@primer-io/react-native": "file:./../",
     "@react-native-picker/picker": "^2.4.0",
     "@react-native-segmented-control/segmented-control": "^2.4.0",
     "@react-navigation/native": "^6.0.8",
