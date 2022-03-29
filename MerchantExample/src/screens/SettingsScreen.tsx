@@ -16,6 +16,7 @@ import SegmentedControl from '@react-native-segmented-control/segmented-control'
 import { Environment, makeEnvironmentFromIntVal } from '../models/Environment';
 import { Picker } from "@react-native-picker/picker";
 import { Section } from '../models/Section';
+import { IAppSettings } from '../models/IAppSettings';
 
 // import { NavigationContainer, NavigationContainerProps } from '@react-navigation/native';
 // import { NavigatorScreenParams } from '@react-navigation/native';
@@ -25,7 +26,6 @@ export let environment: Environment = Environment.Sandbox;
 // @ts-ignore
 const SettingsScreen = ({ navigation }) => {
     const isDarkMode = useColorScheme() === 'dark';
-    // const [environment, setEnvironment] = React.useState<Environment>(Environment.Sandbox);
     const [amount, setAmount] = React.useState<number | null>(1000);
     const [currency, setCurrency] = React.useState<string>("EUR");
     const [countryCode, setCountryCode] = React.useState<string>("DE");
@@ -160,14 +160,24 @@ const SettingsScreen = ({ navigation }) => {
                     style={{ ...styles.button, marginHorizontal: 20, marginTop: 20, marginBottom: 5, backgroundColor: 'black' }}
                     onPress={() => {
                         console.log(`Amount: ${amount}\nCurrency: ${currency}\nCountry Code: ${countryCode}\nCustomer ID: ${customerId}\nPhone Number: ${phoneNumber}`);
-                        
-                        navigation.navigate('Checkout');
+
+                        if (amount && currency && countryCode) {
+                            const appSettings: IAppSettings = {
+                                amount: amount,
+                                currencyCode: currency,
+                                countryCode: countryCode,
+                                customerId: customerId || undefined,
+                                phoneNumber: phoneNumber || undefined,
+                            };
+    
+                            navigation.navigate('Checkout', appSettings);
+                        }
                     }}
                 >
                     <Text
                         style={{ ...styles.buttonText, color: 'white' }}
                     >
-                        Initialize App with Primer
+                        Continue with Primer SDK
                     </Text>
                 </TouchableOpacity>
 

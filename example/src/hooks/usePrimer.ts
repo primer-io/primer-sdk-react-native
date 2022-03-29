@@ -10,7 +10,7 @@ import type {
 import { createPayment } from '../api/create-payment';
 import { postAction } from '../api/actions';
 import { resumePayment } from '../api/resume-payment';
-import { Primer } from '@primer-io/react-native';
+import { Primer, PrimerConfig } from '@primer-io/react-native';
 import type { PrimerResumeHandler } from 'src/models/primer-request';
 
 let paymentId: string | null = null;

@@ -11,8 +11,9 @@ import { createClientSession, createPayment } from '../network/api';
 import { styles } from '../styles';
 import { PaymentInstrumentToken } from '../../../src/models/payment-instrument-token';
 import { PrimerResumeHandler } from '../../../src/models/primer-request';
+import { IAppSettings } from '../models/IAppSettings';
 
-const CheckoutScreen = () => {
+const CheckoutScreen = (props: any) => {
     const isDarkMode = useColorScheme() === 'dark';
     const [error, setError] = React.useState<Error | null>(null);
 
@@ -20,15 +21,17 @@ const CheckoutScreen = () => {
         backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
     };
 
+    const appSettings: IAppSettings = props.route.params;
+
     const clientSessionRequestBody: IClientSessionRequestBody = {
-        customerId: "rn_customer_id",
+        // customerId: "rn_customer_id",
         orderId: 'rn-test-10001',
-        currencyCode: 'EUR',
+        // currencyCode: 'EUR',
         order: {
-            countryCode: 'NL',
+            // countryCode: 'NL',
             lineItems: [
                 {
-                    amount: 30,
+                    amount: 0,
                     quantity: 1,
                     itemId: 'item-123',
                     description: 'this item',
@@ -47,7 +50,7 @@ const CheckoutScreen = () => {
                 postalCode: '12345',
                 addressLine1: '1 test',
                 addressLine2: undefined,
-                countryCode: 'GB',
+                // countryCode: 'GB',
                 city: 'test',
                 state: 'test',
             },
@@ -58,7 +61,7 @@ const CheckoutScreen = () => {
                 postalCode: '12345',
                 city: 'test',
                 state: 'test',
-                countryCode: 'GB',
+                // countryCode: 'GB',
             },
             nationalDocumentId: '9011211234567',
         },
@@ -101,6 +104,18 @@ const CheckoutScreen = () => {
             },
         },
     };
+    clientSessionRequestBody.currencyCode = appSettings.currencyCode;
+    //@ts-ignore
+    clientSessionRequestBody.order.lineItems[0].amount = appSettings.amount;
+    //@ts-ignore
+    clientSessionRequestBody.order.countryCode = appSettings.countryCode;
+    //@ts-ignore
+    clientSessionRequestBody.order.countryCode = appSettings.countryCode;
+    clientSessionRequestBody.customerId = appSettings.customerId;
+    //@ts-ignore
+    clientSessionRequestBody.customer.billingAddress.countryCode = appSettings.countryCode;
+    //@ts-ignore
+    clientSessionRequestBody.customer.shippingAddress.countryCode = appSettings.countryCode;
 
     const onTokenizeSuccess: OnTokenizeSuccessCallback = async (paymentInstrument: PaymentInstrumentToken, resumeHandler: PrimerResumeHandler) => {
         try {
@@ -138,7 +153,7 @@ const CheckoutScreen = () => {
                 onTokenizeSuccess: onTokenizeSuccess
             };
 
-            // debugger;
+            debugger;
             Primer.showUniversalCheckout(clientSession.clientToken, primerConfig);
 
         } catch (err) {
