@@ -2,6 +2,7 @@ import axios from 'axios';
 import { environment } from '../screens/SettingsScreen';
 import { getEnvironmentStringVal } from '../models/Environment';
 import type { IClientSessionRequestBody } from '../models/IClientSessionRequestBody';
+import type { IPayment } from '../models/IPayment';
 
 const baseUrl = 'https://us-central1-primerdemo-8741b.cloudfunctions.net/api';
 
@@ -60,7 +61,8 @@ export const createPayment = async (paymentMethodToken: string) => {
         console.log(response.data);
 
         if (response.status >= 200 && response.status < 300) {
-            return response.data;
+            const payment: IPayment = response.data;
+            return payment;
         } else {
             const err = new Error(`Request failed with status ${response.status}.\nBody: ${JSON.stringify(response.data)}`);
             console.error(err);
