@@ -90,11 +90,13 @@ interface IBinData {
 export const PrimerNativeMapping: IPrimer = {
 
   showUniversalCheckout(clientToken: string, config: PrimerConfig): void {
+    RNPrimer.removeAllListeners();
+
     if (config.settings || config.theme) {
       RNPrimer.configure(config.settings || null, config.theme || null);
 
       let implementedRNCallbacks: any = {
-        isClientTokenCallbackImplemented: (config.onClientTokenCallback !== undefined),
+        // isClientTokenCallbackImplemented: (config.onClientTokenCallback !== undefined),
         isTokenAddedToVaultImplemented: (config.onTokenAddedToVault !== undefined),
         isOnResumeSuccessImplemented: (config.onResumeSuccess !== undefined),
         isOnResumeErrorImplemented: (config.onError !== undefined),
@@ -106,11 +108,11 @@ export const PrimerNativeMapping: IPrimer = {
       RNPrimer.setImplementedRNCallbacks(implementedRNCallbacks);
     }
 
-    RNPrimer.addListener('onClientTokenCallback', _ => {
-      if (config.onClientTokenCallback) {
-        config.onClientTokenCallback(resumeHandler);
-      }
-    });
+    // RNPrimer.addListener('onClientTokenCallback', _ => {
+    //   if (config.onClientTokenCallback) {
+    //     config.onClientTokenCallback(resumeHandler);
+    //   }
+    // });
 
     RNPrimer.addListener('onClientSessionActions', data => {
       const clientSessionActions: IClientSessionAction[] = data;
@@ -150,11 +152,13 @@ export const PrimerNativeMapping: IPrimer = {
   },
 
   showVaultManager(clientToken: string, config: PrimerConfig): void {
+    RNPrimer.removeAllListeners();
+
     if (config.settings || config.theme) {
       RNPrimer.configure(config.settings || null, config.theme || null);
 
       let implementedRNCallbacks: any = {
-        isClientTokenCallbackImplemented: (config.onClientTokenCallback !== undefined),
+        // isClientTokenCallbackImplemented: (config.onClientTokenCallback !== undefined),
         isTokenAddedToVaultImplemented: (config.onTokenAddedToVault !== undefined),
         isOnResumeSuccessImplemented: (config.onResumeSuccess !== undefined),
         isOnResumeErrorImplemented: (config.onError !== undefined),
@@ -166,11 +170,11 @@ export const PrimerNativeMapping: IPrimer = {
       RNPrimer.setImplementedRNCallbacks(implementedRNCallbacks);
     }
 
-    RNPrimer.addListener('onClientTokenCallback', _ => {
-      if (config.onClientTokenCallback) {
-        config.onClientTokenCallback(resumeHandler);
-      }
-    });
+    // RNPrimer.addListener('onClientTokenCallback', _ => {
+    //   if (config.onClientTokenCallback) {
+    //     config.onClientTokenCallback(resumeHandler);
+    //   }
+    // });
 
     RNPrimer.addListener('onClientSessionActions', data => {
       const clientSessionActions: IClientSessionAction[] = data;
@@ -216,12 +220,14 @@ export const PrimerNativeMapping: IPrimer = {
     intent: PrimerPaymentMethodIntent,
     config: PrimerConfig
   ): void {
+    RNPrimer.removeAllListeners();
+
     if (config.settings || config.theme) {
       RNPrimer.configure(config.settings || null, config.theme || null);
     }
 
     let implementedRNCallbacks: any = {
-      isClientTokenCallbackImplemented: (config.onClientTokenCallback !== undefined),
+      // isClientTokenCallbackImplemented: (config.onClientTokenCallback !== undefined),
       isTokenAddedToVaultImplemented: (config.onTokenAddedToVault !== undefined),
       isOnResumeSuccessImplemented: (config.onResumeSuccess !== undefined),
       isOnResumeErrorImplemented: (config.onError !== undefined),
@@ -231,11 +237,11 @@ export const PrimerNativeMapping: IPrimer = {
     };
 
     RNPrimer.setImplementedRNCallbacks(implementedRNCallbacks);
-    
-    RNPrimer.showPaymentMethod(clientToken, intent.paymentMethod, intent.vault === true ? "vault" : "checkout")
+    RNPrimer.showPaymentMethod(clientToken, intent.paymentMethod, intent.vault === true ? "vault" : "checkout");
   },
 
   dispose(): void {
+    RNPrimer.removeAllListeners();
     RNPrimer.dispose();
   },
 

@@ -16,7 +16,7 @@ interface IPrimerConfig {
    */
   theme?: PrimerTheme;
 
-  onClientTokenCallback?: (resumeHandler: PrimerResumeHandler) => void;
+  // onClientTokenCallback?: (resumeHandler: PrimerResumeHandler) => void;
 
   /**
    * Use this callback to grab a Primer payment instrument and complete a payment.

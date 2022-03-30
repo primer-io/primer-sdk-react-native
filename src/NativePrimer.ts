@@ -9,6 +9,7 @@ type EventType =
   | 'onClientTokenCallback'
   | 'onClientSessionActions'
   | 'onTokenizeSuccessCallback'
+  | 'onVaultSuccess'
   | 'onResumeSuccess'
   | 'onCheckoutDismissed'
   | 'onError'
@@ -26,6 +27,24 @@ const RNPrimer = {
   ///////////////////////////////////////////
   addListener: (eventType: EventType, listener: (...args: any[]) => any) => {
     eventEmitter.addListener(eventType, listener);
+  },
+
+  removeListener: (eventType: EventType, listener: (...args: any[]) => any) => {
+    eventEmitter.removeListener(eventType, listener);
+  },
+
+  removeAllListenersForEvent(eventType: EventType) {
+    eventEmitter.removeAllListeners(eventType);
+  },
+
+  removeAllListeners() {
+    eventEmitter.removeAllListeners('onClientTokenCallback');
+    eventEmitter.removeAllListeners('onClientSessionActions');
+    eventEmitter.removeAllListeners('onTokenizeSuccessCallback');
+    eventEmitter.removeAllListeners('onResumeSuccess');
+    eventEmitter.removeAllListeners('onCheckoutDismissed');
+    eventEmitter.removeAllListeners('onError');
+    eventEmitter.removeAllListeners('detectImplementedRNCallbacks');
   },
 
   ///////////////////////////////////////////
@@ -85,8 +104,8 @@ const RNPrimer = {
   },
 
   showPaymentMethod: (
-    paymentMethodType: string,
     clientToken: string,
+    paymentMethodType: string,
     intent: "checkout" | "vault"
   ): Promise<void> => {
     return new Promise(async (resolve, reject) => {

@@ -7,12 +7,14 @@
 
 import Foundation
 import PrimerSDK
+import UIKit
 
 @objc
 enum PrimerEvents: Int, CaseIterable {
     case onClientTokenCallback = 0
     case onClientSessionActions
     case onTokenizeSuccessCallback
+    case onVaultSuccess
     case onResumeSuccess
     case onCheckoutDismissed
     case onError
@@ -27,6 +29,8 @@ enum PrimerEvents: Int, CaseIterable {
             return "onClientSessionActions"
         case .onTokenizeSuccessCallback:
             return "onTokenizeSuccessCallback"
+        case .onVaultSuccess:
+            return "onVaultSuccess"
         case .onResumeSuccess:
             return "onResumeSuccess"
         case .onCheckoutDismissed:
@@ -126,25 +130,36 @@ class RNTPrimer: RCTEventEmitter {
     }
     
     @objc
-    public func showPaymentMethod(_ clientToken: String, paymentMethodTypeStr: String, intentStr: String, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
-        do {
-            let paymentMethodType = PaymentMethodConfigType(rawValue: paymentMethodTypeStr)
-            guard paymentMethodType != .other(rawValue: paymentMethodTypeStr) else {
-                let err = NSError(domain: "native-bridge", code: 1, userInfo: [NSLocalizedDescriptionKey: "Invalid payment method type"])
-                throw err
-            }
-            
-            guard let intent = PrimerSessionIntent(rawValue: intentStr) else {
-                let err = NSError(domain: "native-bridge", code: 2, userInfo: [NSLocalizedDescriptionKey: "Invalid intent"])
-                throw err
-            }
-            
-            DispatchQueue.main.async {
-                PrimerSDK.Primer.shared.showPaymentMethod(paymentMethodType, withIntent: intent, on: UIViewController(), with: clientToken)
+    public func showPaymentMethod(_ clientToken: String, paymentMethodStr: String, intentStr: String, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
+        DispatchQueue.main.async {
+            do {
+                let paymentMethodConfigType = PaymentMethodConfigType(rawValue: paymentMethodStr)
+                
+                guard paymentMethodConfigType != PaymentMethodConfigType.other(rawValue: paymentMethodStr) else {
+                    let err = NSError(domain: "native-bridge", code: 0, userInfo: [NSLocalizedDescriptionKey: "Payment method type \(paymentMethodStr) is not valid."])
+                    throw err
+                }
+                
+                guard let intent = PrimerSessionIntent(rawValue: intentStr) else {
+                    let err = NSError(domain: "native-bridge", code: 0, userInfo: [NSLocalizedDescriptionKey: "Intent \(intentStr) is not valid."])
+                    throw err
+                }
+                
+                PrimerSDK.Primer.shared.showPaymentMethod(paymentMethodConfigType, withIntent: intent, on: UIViewController(), with: clientToken)
                 resolver(nil)
+            } catch {
+                self.checkoutFailed(with: error)
+                rejecter(error.rnError["errorId"]!, error.rnError["description"], error)
             }
-        } catch {
-            rejecter(error.rnError["errorId"]!, error.rnError["description"], error)
+            
+        }
+    }
+    
+    @objc
+    public func handleNewClientToken(_ clientToken: String, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
+        DispatchQueue.main.async {
+            self.callCallbackWithClientToken(clientToken)
+            resolver(nil)
         }
     }
     
