@@ -1,12 +1,7 @@
 package com.primerioreactnative
 
 import android.util.Log
-import com.facebook.react.bridge.Callback
-import com.primerioreactnative.datamodels.ErrorTypeRN
-import com.primerioreactnative.datamodels.PrimerErrorRN
-import com.primerioreactnative.datamodels.PrimerOnClientSessionActionsRequestRN
-import com.primerioreactnative.datamodels.PrimerPaymentInstrumentTokenRN
-import com.primerioreactnative.utils.PrimerEventQueueRN
+import com.primerioreactnative.datamodels.*
 import io.primer.android.CheckoutEventListener
 import io.primer.android.completion.ActionResumeHandler
 import io.primer.android.completion.ResumeHandler
@@ -16,89 +11,65 @@ import kotlinx.serialization.json.Json
 
 class PrimerRNEventListener : CheckoutEventListener {
 
-  private var onTokenizeSuccessQueue: PrimerEventQueueRN? = null
-  private var onClientSessionActionsQueue: PrimerEventQueueRN? = null
-  private var onResumeSuccessQueue: PrimerEventQueueRN? = null
-  private var onVaultSuccessQueue: PrimerEventQueueRN? = null
-  private var onDismissQueue: PrimerEventQueueRN? = null
-  var onPrimerErrorQueue: PrimerEventQueueRN? = null
-  var onSavedPaymentInstrumentsFetchedQueue: PrimerEventQueueRN? = null
+  private var clientTokenCallback: ((String?, Error?) -> Unit)? = null
+  private var onClientSessionActions: ((String?, Error?) -> Unit)? = null
+  private var onTokenizeSuccess: ((String?, Error?) -> Unit)? = null
+  private var onResumeSuccess: ((String?, Error?) -> Unit)? = null
 
-  var completion: ((error: String?, token: String?) -> Unit)? = null
-  var actionCompletion: ((error: String?, token: String?) -> Unit)? = null
+  var sendEvent: ((eventName: String, paramsJson: String?) -> Unit)? = null
+  var sendError: ((paramsJson: String) -> Unit)? = null
 
   var resumeHandler: ResumeHandler? = null
   var actionResumeHandler: ActionResumeHandler? = null
-
-  fun configureOnTokenizeSuccess(callback: Callback) {
-    onTokenizeSuccessQueue = PrimerEventQueueRN()
-    onTokenizeSuccessQueue?.poll(callback)
-  }
-
-  fun configureOnClientSessionActions(callback: Callback) {
-    onClientSessionActionsQueue = PrimerEventQueueRN()
-    onClientSessionActionsQueue?.poll(callback)
-  }
-
-  fun configureOnResumeSuccess(callback: Callback) {
-    onResumeSuccessQueue = PrimerEventQueueRN()
-    onResumeSuccessQueue?.poll(callback)
-  }
-
-  fun configureOnVaultSuccess(callback: Callback) {
-    onVaultSuccessQueue = PrimerEventQueueRN()
-    onVaultSuccessQueue?.poll(callback)
-  }
-
-  fun configureOnDismiss(callback: Callback) {
-    onDismissQueue = PrimerEventQueueRN()
-    onDismissQueue?.poll(callback)
-  }
-
-  fun configureOnPrimerError(callback: Callback) {
-    onPrimerErrorQueue = PrimerEventQueueRN()
-    onPrimerErrorQueue?.poll(callback)
-  }
-
-  fun configureOnSavedPaymentInstrumentsFetched(callback: Callback) {
-    onSavedPaymentInstrumentsFetchedQueue = PrimerEventQueueRN()
-    onSavedPaymentInstrumentsFetchedQueue?.poll(callback)
-  }
 
   override fun onClientSessionActions(event: CheckoutEvent.OnClientSessionActions) {
     val token = PrimerOnClientSessionActionsRequestRN.build(event.data)
     val request = Json.encodeToString(token)
 
-    onClientSessionActionsQueue?.addRequestAndPoll(request)
+    onClientSessionActions = { newClientToken, err ->
+      when {
+          err != null -> resumeHandler?.handleError(err)
+          newClientToken != null -> resumeHandler?.handleNewClientToken(newClientToken)
+          else -> resumeHandler?.handleSuccess()
+      }
+    }
+
     actionResumeHandler = event.resumeHandler
+
+    sendEvent?.invoke(PrimerEventsRN.OnClientSessionActions.string, request)
   }
 
   override fun onCheckoutEvent(e: CheckoutEvent) {
     when (e) {
-      is CheckoutEvent.TokenAddedToVault -> {
-        val token = PrimerPaymentInstrumentTokenRN.fromPaymentMethodToken(e.data)
-        val request = Json.encodeToString(token)
-        onVaultSuccessQueue?.addRequestAndPoll(request)
-      }
       is CheckoutEvent.TokenizationSuccess -> {
         val token = PrimerPaymentInstrumentTokenRN.fromPaymentMethodToken(e.data)
         val request = Json.encodeToString(token)
-        onTokenizeSuccessQueue?.addRequestAndPoll(request)
+        onTokenizeSuccess = { newClientToken, err ->
+          when {
+            err != null -> resumeHandler?.handleError(err)
+            newClientToken != null -> resumeHandler?.handleNewClientToken(newClientToken)
+            else -> resumeHandler?.handleSuccess()
+          }
+        }
+
         resumeHandler = e.resumeHandler
-      }
-      is CheckoutEvent.TokenSelected -> {
-        val token = PrimerPaymentInstrumentTokenRN.fromPaymentMethodToken(e.data)
-        val request = Json.encodeToString(token)
-        onTokenizeSuccessQueue?.addRequestAndPoll(request)
+        sendEvent?.invoke(PrimerEventsRN.OnTokenizeSuccessCallback.string, request)
       }
       is CheckoutEvent.ResumeSuccess -> {
         val token = e.resumeToken
-        onResumeSuccessQueue?.addRequestAndPoll(token)
+        onResumeSuccess = { newClientToken, err ->
+          when {
+            err != null -> resumeHandler?.handleError(err)
+            newClientToken != null -> resumeHandler?.handleNewClientToken(newClientToken)
+            else -> resumeHandler?.handleSuccess()
+          }
+        }
         resumeHandler = e.resumeHandler
-      }
-      is CheckoutEvent.Exit -> {
-        onDismissQueue?.addRequestAndPoll("dismiss")
-        onDismissQueue = null
+        val resumeToken = token to Keys.RESUME_TOKEN
+        sendEvent?.invoke(
+          PrimerEventsRN.OnResumeSuccess.string,
+          Json.encodeToString(resumeToken)
+        )
       }
       is CheckoutEvent.ApiError -> {
         Log.e("PrimerRN", "ApiError: ${e.data}")
@@ -107,7 +78,36 @@ class PrimerRNEventListener : CheckoutEventListener {
           e.data.description,
         )
         val data = Json.encodeToString(exception)
-        onPrimerErrorQueue?.addRequestAndPoll(data)
+        sendError?.invoke(data)
+      }
+      is CheckoutEvent.TokenAddedToVault -> {
+        val token = PrimerPaymentInstrumentTokenRN.fromPaymentMethodToken(e.data)
+        val request = Json.encodeToString(token)
+        sendEvent?.invoke(
+          PrimerEventsRN.OnVaultSuccess.string,
+          request
+        )
+      }
+      is CheckoutEvent.TokenSelected -> {
+        val token = PrimerPaymentInstrumentTokenRN.fromPaymentMethodToken(e.data)
+        val request = Json.encodeToString(token)
+        onTokenizeSuccess = { newClientToken, err ->
+          when {
+            err != null -> resumeHandler?.handleError(err)
+            newClientToken != null -> resumeHandler?.handleNewClientToken(newClientToken)
+            else -> resumeHandler?.handleSuccess()
+          }
+        }
+
+        resumeHandler = e.resumeHandler
+        sendEvent?.invoke(PrimerEventsRN.OnTokenizeSuccessCallback.string, request)
+      }
+      is CheckoutEvent.Exit -> {
+        removeCallbacksAndHandlers()
+        sendEvent?.invoke(
+          PrimerEventsRN.OnCheckoutDismissed.string,
+          null
+        )
       }
       is CheckoutEvent.TokenizationError -> {
         Log.e("PrimerRN", "TokenizationError: ${e.data}")
@@ -116,9 +116,32 @@ class PrimerRNEventListener : CheckoutEventListener {
           e.data.description,
         )
         val data = Json.encodeToString(exception)
-        onPrimerErrorQueue?.addRequestAndPoll(data)
+        sendError?.invoke(data)
       }
       else -> Unit
     }
+  }
+
+  fun onClientTokenCallback(clientToken: String?, error: Error?) {
+    this.clientTokenCallback?.invoke(clientToken, error)
+  }
+
+  fun onClientSessionActions(clientToken: String?, error: Error?) {
+    this.onClientSessionActions?.invoke(clientToken, error)
+  }
+
+  fun onTokenizeSuccess(clientToken: String?, error: Error?) {
+    this.onTokenizeSuccess?.invoke(clientToken, error)
+  }
+
+  fun onResumeSuccess(clientToken: String?, error: Error?) {
+    this.onResumeSuccess?.invoke(clientToken, error)
+  }
+
+  fun removeCallbacksAndHandlers() {
+    clientTokenCallback = null
+    onClientSessionActions = null
+    onTokenizeSuccess = null
+    onResumeSuccess = null
   }
 }

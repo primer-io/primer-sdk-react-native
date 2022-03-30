@@ -12,7 +12,7 @@ import type { IClientSession } from '../models/IClientSession';
 import { makeRandomString } from '../helpers/helpers';
 import type { IPayment } from '../models/IPayment';
 import type { PrimerPaymentMethodIntent } from 'lib/typescript/models/primer-intent';
-import type { PrimerConfig } from 'lib/typescript/models/primer-config';
+import type { IPrimerConfig } from 'lib/typescript/models/primer-config';
 import type { OnResumeCallback } from 'src/models/primer-callbacks';
 
 let currentClientToken: string | null = null;
@@ -202,7 +202,7 @@ const CheckoutScreen = (props: any) => {
             const clientSession: IClientSession = await createClientSession(clientSessionRequestBody);
             currentClientToken = clientSession.clientToken;
 
-            const primerConfig: PrimerConfig = {
+            const primerConfig: IPrimerConfig = {
                 settings: {
                     options: {
                         isResultScreenEnabled: true,
@@ -212,9 +212,7 @@ const CheckoutScreen = (props: any) => {
                             urlScheme: 'primer',
                             merchantIdentifier: 'merchant.checkout.team'
                         },
-                        android: {
-                            redirectScheme: 'primer'
-                        }
+                        redirectScheme: 'primer'
                     }
                 },
                 onClientSessionActions: onClientSessionActions,

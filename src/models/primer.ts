@@ -1,4 +1,4 @@
-import type { PrimerConfig } from './primer-config';
+import type { IPrimerConfig } from './primer-config';
 import type { PrimerPaymentMethodIntent } from './primer-intent';
 
 export interface IPrimer {
@@ -11,7 +11,7 @@ export interface IPrimer {
    * @param config Configuration object for the SDK. Use this to set listeners, theme,
    * and payment method specific settings.
    */
-  showUniversalCheckout(token: string | null, config: PrimerConfig): void;
+  showUniversalCheckout(token: string | null, config: IPrimerConfig): void;
 
   /**
    * Launch Primer's Vault Manager.
@@ -20,7 +20,7 @@ export interface IPrimer {
    * @param config Configuration object for the SDK. Use this to set listeners, theme,
    * and payment method specific settings.
    */
-  showVaultManager(token: string | null, config: PrimerConfig): void;
+  showVaultManager(token: string | null, config: IPrimerConfig): void;
 
   /**
    * Launch checkout with a specific payment method
@@ -31,7 +31,7 @@ export interface IPrimer {
   showPaymentMethod(
     token: string | null,
     intent: PrimerPaymentMethodIntent,
-    config: PrimerConfig
+    config: IPrimerConfig
   ): void;
 
   /**
