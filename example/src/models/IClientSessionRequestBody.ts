@@ -79,3 +79,13 @@ export interface IClientSessionRequestBody {
         },
     }
 }
+
+export interface IClientSessionActionsRequestBody {
+    clientToken: string;
+    actions: IClientSession_Action[];
+}
+
+export interface IClientSession_Action {
+    type: string;
+    params?: any;
+}

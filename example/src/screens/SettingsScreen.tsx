@@ -26,9 +26,9 @@ export let environment: Environment = Environment.Sandbox;
 // @ts-ignore
 const SettingsScreen = ({ navigation }) => {
     const isDarkMode = useColorScheme() === 'dark';
-    const [amount, setAmount] = React.useState<number | null>(10001);
+    const [amount, setAmount] = React.useState<number | null>(1000);
     const [currency, setCurrency] = React.useState<string>("EUR");
-    const [countryCode, setCountryCode] = React.useState<string>("DE");
+    const [countryCode, setCountryCode] = React.useState<string>("FR");
     const [customerId, setCustomerId] = React.useState<string | null>(null);
     const [phoneNumber, setPhoneNumber] = React.useState<string | null>(null);
 
