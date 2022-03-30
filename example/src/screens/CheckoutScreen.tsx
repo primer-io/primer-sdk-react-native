@@ -6,7 +6,7 @@ import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { createClientSession, createPayment, resumePayment, setClientSessionActions } from '../network/api';
 import { styles } from '../styles';
 import type { IAppSettings } from '../models/IAppSettings';
-import type { IClientSessionActionsRequestBody, IClientSessionRequestBody } from '../models/IClientSessionRequestBody';
+import type { IClientSessionRequestBody } from '../models/IClientSessionRequestBody';
 import type { OnClientSessionActionsCallback, OnPrimerErrorCallback, OnTokenizeSuccessCallback } from 'lib/typescript/models/primer-callbacks';
 import type { IClientSession } from '../models/IClientSession';
 import { makeRandomString } from '../helpers/helpers';
@@ -140,6 +140,9 @@ const CheckoutScreen = (props: any) => {
                 paymentId = payment.id;
                 resumeHandler.handleNewClientToken(payment.requiredAction.clientToken);
             } else {
+                debugger;
+                props.navigation.navigate('Result', payment);
+                debugger;
                 resumeHandler.handleSuccess();
             }
         } catch (err) {
@@ -159,6 +162,8 @@ const CheckoutScreen = (props: any) => {
         try {
             if (paymentId) {
                 const payment: IPayment = await resumePayment(paymentId, resumeToken);
+                props.navigation.navigate('Result', payment);
+
                 if (resumeHandler) {
                     resumeHandler.handleSuccess();
                 }
