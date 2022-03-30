@@ -203,7 +203,6 @@ class RNTPrimer: RCTEventEmitter {
                     throw err
                 }
                 self.implementedReactNativeCallbacks = try JSONDecoder().decode(ImplementedReactNativeCallbacks.self, from: implementedRNCallbacksData)
-                print("implementedRNCallbacksStr: \(implementedRNCallbacksStr)\nself.implementedReactNativeCallbacks: \(self.implementedReactNativeCallbacks)")
                 Primer.shared.setImplementedReactNativeCallbacks(self.implementedReactNativeCallbacks!)
                 resolver(nil)
             } catch {

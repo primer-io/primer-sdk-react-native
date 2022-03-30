@@ -1,4 +1,3 @@
-import * as React from 'react';
 import type { PaymentInstrumentToken } from './models/payment-instrument-token';
 import type { IPrimer } from './models/primer';
 import type { IPrimerConfig } from './models/primer-config';
@@ -145,7 +144,7 @@ export const PrimerNativeMapping: IPrimer = {
           RNPrimer.showUniversalCheckout(clientToken);
         })
         .catch( err => {
-          
+          console.error(err);
         })
       }
 
