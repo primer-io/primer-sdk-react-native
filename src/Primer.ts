@@ -91,6 +91,8 @@ interface IBinData {
 export const PrimerNativeMapping: IPrimer = {
 
   showUniversalCheckout(clientToken: string, config: IPrimerConfig): void {
+    RNPrimer.removeAllListeners();
+
     if (config.settings || config.theme) {
       RNPrimer.configure(config.settings || null, config.theme || null);
 
@@ -155,6 +157,8 @@ export const PrimerNativeMapping: IPrimer = {
   },
 
   showVaultManager(clientToken: string, config: IPrimerConfig): void {
+    RNPrimer.removeAllListeners();
+
     if (config.settings || config.theme) {
       RNPrimer.configure(config.settings || null, config.theme || null);
 
@@ -217,10 +221,12 @@ export const PrimerNativeMapping: IPrimer = {
   },
 
   showPaymentMethod(
-    token: string,
+    clientToken: string,
     intent: PrimerPaymentMethodIntent,
     config: IPrimerConfig
   ): void {
+    RNPrimer.removeAllListeners();
+
     if (config.settings || config.theme) {
       RNPrimer.configure(config.settings || null, config.theme || null);
     }
@@ -236,11 +242,11 @@ export const PrimerNativeMapping: IPrimer = {
     };
 
     RNPrimer.setImplementedRNCallbacks(implementedRNCallbacks);
-
-    RNPrimer.showPaymentMethod(intent.paymentMethod, token, intent.vault === true ? "vault" : "checkout")
+    RNPrimer.showPaymentMethod(clientToken, intent.paymentMethod, intent.vault === true ? "vault" : "checkout");
   },
 
   dispose(): void {
+    RNPrimer.removeAllListeners();
     RNPrimer.dispose();
   },
 
