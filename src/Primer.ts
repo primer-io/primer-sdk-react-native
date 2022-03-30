@@ -203,7 +203,7 @@ export const PrimerNativeMapping: IPrimer = {
       }
     });
 
-    RNPrimer.addListener('onCheckoutDismissed', data => {
+    RNPrimer.addListener('onCheckoutDismissed', () => {
       if (config.onDismiss) {
         config.onDismiss();
       }
