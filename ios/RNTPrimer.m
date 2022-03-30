@@ -22,6 +22,8 @@ RCT_EXTERN_METHOD(showVaultManager:(RCTPromiseResolveBlock)resolver rejecter:(RC
 
 RCT_EXTERN_METHOD(showVaultManager:(NSString *)clientToken resolver:(RCTPromiseResolveBlock)resolver rejecter:(RCTPromiseRejectBlock)rejecter)
 
+
+
 RCT_EXTERN_METHOD(handleNewClientToken:(NSString *)clientToken resolver:(RCTPromiseResolveBlock)resolver rejecter:(RCTPromiseRejectBlock)rejecter)
 
 RCT_EXTERN_METHOD(handleError:(NSString *)errorStr resolver:(RCTPromiseResolveBlock)resolver rejecter:(RCTPromiseRejectBlock)rejecter)
@@ -29,6 +31,13 @@ RCT_EXTERN_METHOD(handleError:(NSString *)errorStr resolver:(RCTPromiseResolveBl
 RCT_EXTERN_METHOD(handleSuccess:(RCTPromiseResolveBlock)resolver rejecter:(RCTPromiseRejectBlock)rejecter)
 
 RCT_EXTERN_METHOD(setImplementedRNCallbacks:(NSString *)implementedRNCallbacksStr resolver:(RCTPromiseResolveBlock)resolver rejecter:(RCTPromiseRejectBlock)rejecter)
+
+
+
+
+
+
+RCT_EXTERN_METHOD(showPaymentMethod:(NSString *)clientToken paymentMethodStr:(NSString *)paymentMethodStr intentStr:(NSString *)intentStr resolver:(RCTPromiseResolveBlock)resolver rejecter:(RCTPromiseRejectBlock)rejecter)
 
 @end
 
