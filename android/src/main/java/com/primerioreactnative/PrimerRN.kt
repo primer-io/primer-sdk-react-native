@@ -4,12 +4,15 @@ import android.util.Log
 import com.facebook.react.bridge.*
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.primerioreactnative.datamodels.*
+import com.primerioreactnative.utils.PrimerImplementedRNCallbacks
+import com.primerioreactnative.utils.errorTo
 import io.primer.android.PaymentMethodIntent
 import io.primer.android.Primer
 import io.primer.android.model.dto.PrimerConfig
 import io.primer.android.model.dto.PrimerPaymentMethod
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import org.json.JSONObject
 
 class PrimerRN(reactContext: ReactApplicationContext) :
   ReactContextBaseJavaModule(reactContext) {
@@ -27,7 +30,7 @@ class PrimerRN(reactContext: ReactApplicationContext) :
 
   init {
       mListener.sendEvent = { eventName, paramsJson -> sendEvent(eventName, paramsJson) }
-      mListener.sendError = { paramsJson -> sendEvent(PrimerEventsRN.OnError.string, paramsJson) }
+      mListener.sendError = { paramsJson -> checkoutFailed(paramsJson) }
   }
 
   override fun getName(): String = "NativePrimer"
@@ -42,12 +45,9 @@ class PrimerRN(reactContext: ReactApplicationContext) :
       promise.resolve(null)
     } catch (e: Exception) {
       Log.e("PrimerRN", "configure settings error: $e")
-      val exception = PrimerErrorRN(
-        ErrorTypeRN.ParseJsonFailed,
-        "failed to parse settings.",
-      )
+      val exception = ErrorTypeRN.ParseJsonFailed errorTo "failed to parse settings."
       checkoutFailed(exception)
-      promise.reject(exception.errorType.name, exception.description, e)
+      promise.reject(exception.errorId, exception.errorDescription, e)
     }
   }
 
@@ -61,23 +61,18 @@ class PrimerRN(reactContext: ReactApplicationContext) :
       promise.resolve(null)
     } catch (e: Exception) {
       Log.e("PrimerRN", "configure theme error: $e")
-      val exception = PrimerErrorRN(
-        ErrorTypeRN.ParseJsonFailed,
-        "failed to parse theme.",
-      )
+      val exception = ErrorTypeRN.ParseJsonFailed errorTo "failed to parse theme."
       checkoutFailed(exception)
-      promise.reject(exception.errorType.name, exception.description, e)
+      promise.reject(exception.errorId, exception.errorDescription, e)
     }
   }
 
   @ReactMethod
   fun showUniversalCheckout(promise: Promise) {
-    val exception = PrimerErrorRN(
-      ErrorTypeRN.CheckoutFlowFailed,
+    val exception = ErrorTypeRN.CheckoutFlowFailed errorTo
       "This method not implemented, please use showUniversalCheckoutWithClientToken"
-    )
     checkoutFailed(exception)
-    promise.reject(exception.errorType.name, exception.description)
+    promise.reject(exception.errorId, exception.errorDescription)
   }
 
   @ReactMethod
@@ -89,23 +84,19 @@ class PrimerRN(reactContext: ReactApplicationContext) :
       Primer.instance.showUniversalCheckout(reactApplicationContext.applicationContext, clientToken)
       promise.resolve(null)
     } catch (e: Exception) {
-      val exception = PrimerErrorRN(
-        ErrorTypeRN.CheckoutFlowFailed,
+      val exception = ErrorTypeRN.CheckoutFlowFailed errorTo
         "Call of Primer SDK is failed: ${e.message}"
-      )
       checkoutFailed(exception)
-      promise.reject(exception.errorType.name, exception.description, e)
+      promise.reject(exception.errorId, exception.errorDescription, e)
     }
   }
 
   @ReactMethod
   fun showVaultManager(promise: Promise) {
-    val exception = PrimerErrorRN(
-      ErrorTypeRN.CheckoutFlowFailed,
+    val exception = ErrorTypeRN.CheckoutFlowFailed errorTo
       "This method not implemented, please use showVaultManager with client Token"
-    )
     checkoutFailed(exception)
-    promise.reject(exception.errorType.name, exception.description)
+    promise.reject(exception.errorId, exception.errorDescription)
   }
 
   @ReactMethod
@@ -114,12 +105,10 @@ class PrimerRN(reactContext: ReactApplicationContext) :
       Primer.instance.showVaultManager(reactApplicationContext.applicationContext, clientToken)
       promise.resolve(null)
     } catch (e: Exception) {
-      val exception = PrimerErrorRN(
-        ErrorTypeRN.CheckoutFlowFailed,
+      val exception = ErrorTypeRN.CheckoutFlowFailed errorTo
         "Call of Primer SDK is failed: ${e.message}"
-      )
       checkoutFailed(exception)
-      promise.reject(exception.errorType.name, exception.description, e)
+      promise.reject(exception.errorId, exception.errorDescription, e)
     }
   }
 
@@ -133,24 +122,18 @@ class PrimerRN(reactContext: ReactApplicationContext) :
     try {
       this.intent = PaymentMethodIntent.valueOf(intentStr)
     } catch (e: Exception) {
-      val exception = PrimerErrorRN(
-        ErrorTypeRN.ParseJsonFailed,
-        "failed to parse intent."
-      )
+      val exception = ErrorTypeRN.ParseJsonFailed errorTo "failed to parse intent."
       checkoutFailed(exception)
-      promise.reject(exception.errorType.name, exception.description, e)
+      promise.reject(exception.errorId, exception.errorDescription, e)
       return
     }
     try {
       val paymentMethod = PrimerPaymentMethod.valueOf(paymentMethodTypeStr)
       this.paymentMethod = paymentMethod
     } catch (e: Exception) {
-      val exception = PrimerErrorRN(
-        ErrorTypeRN.CheckoutFlowFailed,
-        "failed to parse payment method type."
-      )
+      val exception = ErrorTypeRN.CheckoutFlowFailed errorTo "failed to parse payment method type."
       checkoutFailed(exception)
-      promise.reject(exception.errorType.name, exception.description, e)
+      promise.reject(exception.errorId, exception.errorDescription, e)
       return
     }
 
@@ -165,12 +148,10 @@ class PrimerRN(reactContext: ReactApplicationContext) :
       )
       promise.resolve(null)
     } catch (e: Exception) {
-      val exception = PrimerErrorRN(
-        ErrorTypeRN.CheckoutFlowFailed,
+      val exception = ErrorTypeRN.CheckoutFlowFailed errorTo
         "Call of Primer SDK is failed: ${e.message}"
-      )
       checkoutFailed(exception)
-      promise.reject(exception.errorType.name, exception.description, e)
+      promise.reject(exception.errorId, exception.errorDescription, e)
     }
   }
 
@@ -187,7 +168,7 @@ class PrimerRN(reactContext: ReactApplicationContext) :
   @ReactMethod
   fun handleError(errorStr: String, promise: Promise) {
     try {
-      val err = Error(errorStr)
+      val err = json.decodeFromString<PrimerErrorRN>(errorStr)
       mListener.onClientTokenCallback(null, err)
       mListener.onClientSessionActions(null, err)
       mListener.onTokenizeSuccess(null, err)
@@ -196,11 +177,11 @@ class PrimerRN(reactContext: ReactApplicationContext) :
       promise.resolve(null)
     } catch (e: Exception) {
       val exception = PrimerErrorRN(
-        ErrorTypeRN.CheckoutFlowFailed,
+        ErrorTypeRN.CheckoutFlowFailed.name,
         "Call of Primer SDK is failed: ${e.message}"
       )
       checkoutFailed(exception)
-      promise.reject(exception.errorType.name, exception.description, e)
+      promise.reject(exception.errorId, exception.errorDescription, e)
     }
   }
 
@@ -214,30 +195,24 @@ class PrimerRN(reactContext: ReactApplicationContext) :
       removeCallbacksAndHandlers()
       promise.resolve(null)
     } catch (e: Exception) {
-      val exception = PrimerErrorRN(
-        ErrorTypeRN.CheckoutFlowFailed,
+      val exception = ErrorTypeRN.CheckoutFlowFailed errorTo
         "Call of Primer SDK is failed: ${e.message}"
-      )
       checkoutFailed(exception)
-      promise.reject(exception.errorType.name, exception.description, e)
+      promise.reject(exception.errorId, exception.errorDescription, e)
     }
   }
 
   @ReactMethod
   fun setImplementedRNCallbacks(implementedRNCallbacksStr: String, promise: Promise) {
     try {
-      Log.d(
-        javaClass.simpleName,
-        "Method not implemented on Android SDK part of RN ($implementedRNCallbacksStr)"
-      )
+      Log.d("PrimerRN", "implementedRNCallbacks: $implementedRNCallbacksStr")
+      val implementedRNCallbacks = json.decodeFromString<PrimerImplementedRNCallbacks>(implementedRNCallbacksStr)
+      this.mListener.setImplementedCallbacks(implementedRNCallbacks)
       promise.resolve(null)
     } catch (e: Exception) {
-      val exception = PrimerErrorRN(
-        ErrorTypeRN.CheckoutFlowFailed,
-        "Call of Primer SDK is failed: ${e.message}"
-      )
+      val exception = ErrorTypeRN.ParseJsonFailed errorTo "Fail to parse implemented callbacks"
       checkoutFailed(exception)
-      promise.reject(exception.errorType.name, exception.description, e)
+      promise.reject(exception.errorId, exception.errorDescription, e)
     }
   }
 
@@ -252,13 +227,12 @@ class PrimerRN(reactContext: ReactApplicationContext) :
 
     Primer.instance.configure(config, mListener)
     sdkWasInitialised = true
-    sendEvent(PrimerEventsRN.OnClientTokenCallback.string, null)
   }
 
   private fun checkoutFailed(exception: PrimerErrorRN) {
     val params = Arguments.createMap()
-    params.putString(Keys.ERROR, exception.description)
-    sendEvent(exception.errorType.name, params)
+    params.putString(Keys.ERROR, exception.errorDescription)
+    sendEvent(PrimerEventsRN.OnError.string, params)
   }
 
   private fun sendEvent(name: String, params: WritableMap) {
@@ -267,10 +241,25 @@ class PrimerRN(reactContext: ReactApplicationContext) :
     ).emit(name, params)
   }
 
-  private fun sendEvent(name: String, paramsJson: String?) {
+  private fun sendEvent(name: String, data: JSONObject?) {
+    val params = Arguments.createMap()
+    prepareData(params, data)
     reactApplicationContext.getJSModule(
       DeviceEventManagerModule.RCTDeviceEventEmitter::class.java
-    ).emit(name, paramsJson)
+    ).emit(name, params)
+  }
+
+  private fun prepareData(params: WritableMap, data: JSONObject?) {
+    data?.keys()?.forEach { key ->
+      when (val dataValue = data.opt(key)) {
+        is String -> params.putString(key, dataValue)
+        is Boolean -> params.putBoolean(key, dataValue)
+        is Double -> params.putDouble(key, dataValue)
+        is Int -> params.putInt(key, dataValue)
+        is JSONObject -> prepareData(params, dataValue)
+        else -> params.putNull(key)
+      }
+    }
   }
 }
 

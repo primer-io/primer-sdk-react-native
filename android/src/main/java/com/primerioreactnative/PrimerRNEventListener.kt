@@ -2,40 +2,42 @@ package com.primerioreactnative
 
 import android.util.Log
 import com.primerioreactnative.datamodels.*
+import com.primerioreactnative.utils.PrimerImplementedRNCallbacks
+import com.primerioreactnative.utils.asError
+import com.primerioreactnative.utils.errorTo
 import io.primer.android.CheckoutEventListener
-import io.primer.android.completion.ActionResumeHandler
 import io.primer.android.completion.ResumeHandler
 import io.primer.android.events.CheckoutEvent
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.json.JSONObject
 
 class PrimerRNEventListener : CheckoutEventListener {
 
-  private var clientTokenCallback: ((String?, Error?) -> Unit)? = null
-  private var onClientSessionActions: ((String?, Error?) -> Unit)? = null
-  private var onTokenizeSuccess: ((String?, Error?) -> Unit)? = null
-  private var onResumeSuccess: ((String?, Error?) -> Unit)? = null
+  private var clientTokenCallback: ((String?, PrimerErrorRN?) -> Unit)? = null
+  private var onClientSessionActions: ((String?, PrimerErrorRN?) -> Unit)? = null
+  private var onTokenizeSuccess: ((String?, PrimerErrorRN?) -> Unit)? = null
+  private var onResumeSuccess: ((String?, PrimerErrorRN?) -> Unit)? = null
+  private var implementedRNCallbacks: PrimerImplementedRNCallbacks? = null
 
-  var sendEvent: ((eventName: String, paramsJson: String?) -> Unit)? = null
-  var sendError: ((paramsJson: String) -> Unit)? = null
+  private var resumeHandler: ResumeHandler? = null
 
-  var resumeHandler: ResumeHandler? = null
-  var actionResumeHandler: ActionResumeHandler? = null
+  var sendEvent: ((eventName: String, paramsJson: JSONObject?) -> Unit)? = null
+  var sendError: ((error: PrimerErrorRN) -> Unit)? = null
 
   override fun onClientSessionActions(event: CheckoutEvent.OnClientSessionActions) {
     val token = PrimerOnClientSessionActionsRequestRN.build(event.data)
-    val request = Json.encodeToString(token)
+    val request = JSONObject(Json.encodeToString(token))
 
     onClientSessionActions = { newClientToken, err ->
       when {
-          err != null -> resumeHandler?.handleError(err)
+          err != null -> resumeHandler?.handleError(err.asError())
           newClientToken != null -> resumeHandler?.handleNewClientToken(newClientToken)
           else -> resumeHandler?.handleSuccess()
       }
     }
 
-    actionResumeHandler = event.resumeHandler
-
+    event.resumeHandler.handleClientToken(null)
     sendEvent?.invoke(PrimerEventsRN.OnClientSessionActions.string, request)
   }
 
@@ -43,10 +45,10 @@ class PrimerRNEventListener : CheckoutEventListener {
     when (e) {
       is CheckoutEvent.TokenizationSuccess -> {
         val token = PrimerPaymentInstrumentTokenRN.fromPaymentMethodToken(e.data)
-        val request = Json.encodeToString(token)
+        val request = JSONObject(Json.encodeToString(token))
         onTokenizeSuccess = { newClientToken, err ->
           when {
-            err != null -> resumeHandler?.handleError(err)
+            err != null -> resumeHandler?.handleError(err.asError())
             newClientToken != null -> resumeHandler?.handleNewClientToken(newClientToken)
             else -> resumeHandler?.handleSuccess()
           }
@@ -57,32 +59,34 @@ class PrimerRNEventListener : CheckoutEventListener {
       }
       is CheckoutEvent.ResumeSuccess -> {
         val token = e.resumeToken
-        onResumeSuccess = { newClientToken, err ->
-          when {
-            err != null -> resumeHandler?.handleError(err)
-            newClientToken != null -> resumeHandler?.handleNewClientToken(newClientToken)
-            else -> resumeHandler?.handleSuccess()
+        if (implementedRNCallbacks?.isOnResumeSuccessImplemented == true) {
+          onResumeSuccess = { newClientToken, err ->
+            when {
+              err != null -> resumeHandler?.handleError(err.asError())
+              newClientToken != null -> resumeHandler?.handleNewClientToken(newClientToken)
+              else -> resumeHandler?.handleSuccess()
+            }
           }
+
+          resumeHandler = e.resumeHandler
+          val resumeToken = token to Keys.RESUME_TOKEN
+          sendEvent?.invoke(
+            PrimerEventsRN.OnResumeSuccess.string,
+            JSONObject(Json.encodeToString(resumeToken))
+          )
+        } else {
+          sendError?.invoke(ErrorTypeRN.InitFailed
+            errorTo "Callback [onResumeSuccess] should had been implemented.")
         }
-        resumeHandler = e.resumeHandler
-        val resumeToken = token to Keys.RESUME_TOKEN
-        sendEvent?.invoke(
-          PrimerEventsRN.OnResumeSuccess.string,
-          Json.encodeToString(resumeToken)
-        )
       }
       is CheckoutEvent.ApiError -> {
         Log.e("PrimerRN", "ApiError: ${e.data}")
-        val exception = PrimerErrorRN(
-          ErrorTypeRN.CheckoutFlowFailed,
-          e.data.description,
-        )
-        val data = Json.encodeToString(exception)
-        sendError?.invoke(data)
+        val exception = ErrorTypeRN.CheckoutFlowFailed errorTo e.data.description
+        sendError?.invoke(exception)
       }
       is CheckoutEvent.TokenAddedToVault -> {
         val token = PrimerPaymentInstrumentTokenRN.fromPaymentMethodToken(e.data)
-        val request = Json.encodeToString(token)
+        val request = JSONObject(Json.encodeToString(token))
         sendEvent?.invoke(
           PrimerEventsRN.OnVaultSuccess.string,
           request
@@ -90,10 +94,10 @@ class PrimerRNEventListener : CheckoutEventListener {
       }
       is CheckoutEvent.TokenSelected -> {
         val token = PrimerPaymentInstrumentTokenRN.fromPaymentMethodToken(e.data)
-        val request = Json.encodeToString(token)
+        val request = JSONObject(Json.encodeToString(token))
         onTokenizeSuccess = { newClientToken, err ->
           when {
-            err != null -> resumeHandler?.handleError(err)
+            err != null -> resumeHandler?.handleError(err.asError())
             newClientToken != null -> resumeHandler?.handleNewClientToken(newClientToken)
             else -> resumeHandler?.handleSuccess()
           }
@@ -104,38 +108,64 @@ class PrimerRNEventListener : CheckoutEventListener {
       }
       is CheckoutEvent.Exit -> {
         removeCallbacksAndHandlers()
-        sendEvent?.invoke(
-          PrimerEventsRN.OnCheckoutDismissed.string,
-          null
-        )
+        if (implementedRNCallbacks?.isOnCheckoutDismissedImplemented == true) {
+          sendEvent?.invoke(
+            PrimerEventsRN.OnCheckoutDismissed.string,
+            null
+          )
+        } else {
+          sendError?.invoke(ErrorTypeRN.InitFailed
+            errorTo "Callback [onCheckoutDismissed] should had been implemented.")
+        }
       }
       is CheckoutEvent.TokenizationError -> {
-        Log.e("PrimerRN", "TokenizationError: ${e.data}")
-        val exception = PrimerErrorRN(
-          ErrorTypeRN.TokenizationFailed,
-          e.data.description,
-        )
-        val data = Json.encodeToString(exception)
-        sendError?.invoke(data)
+        if (implementedRNCallbacks?.isCheckoutFailedImplemented == true) {
+          Log.e("PrimerRN", "TokenizationError: ${e.data}")
+          val exception = ErrorTypeRN.TokenizationFailed errorTo e.data.description
+          sendError?.invoke(exception)
+        } else {
+          sendError?.invoke(ErrorTypeRN.InitFailed
+            errorTo "Callback [onResumeError] should had been implemented.")
+        }
       }
       else -> Unit
     }
   }
 
-  fun onClientTokenCallback(clientToken: String?, error: Error?) {
-    this.clientTokenCallback?.invoke(clientToken, error)
+  fun onClientTokenCallback(clientToken: String?, error: PrimerErrorRN?) {
+    if (implementedRNCallbacks?.isClientTokenCallbackImplemented == true) {
+      this.clientTokenCallback?.invoke(clientToken, error)
+      sendEvent?.invoke(PrimerEventsRN.OnClientTokenCallback.string, null)
+    } else {
+      this.clientTokenCallback?.invoke(
+        null,
+        PrimerErrorRN(
+          errorDescription = "Callback [clientTokenCallback] should had been implemented."
+        )
+      )
+    }
   }
 
-  fun onClientSessionActions(clientToken: String?, error: Error?) {
-    this.onClientSessionActions?.invoke(clientToken, error)
+  fun onClientSessionActions(clientToken: String?, error: PrimerErrorRN?) {
+    if (implementedRNCallbacks?.isClientSessionActionsImplemented == true) {
+      this.onClientSessionActions?.invoke(clientToken, error)
+    } else {
+      sendError?.invoke(ErrorTypeRN.InitFailed
+        errorTo "Callback [onClientSessionActions] should had been implemented.")
+    }
   }
 
-  fun onTokenizeSuccess(clientToken: String?, error: Error?) {
+  fun onTokenizeSuccess(clientToken: String?, error: PrimerErrorRN?) {
     this.onTokenizeSuccess?.invoke(clientToken, error)
   }
 
-  fun onResumeSuccess(clientToken: String?, error: Error?) {
-    this.onResumeSuccess?.invoke(clientToken, error)
+  fun onResumeSuccess(clientToken: String?, error: PrimerErrorRN?) {
+    if (implementedRNCallbacks?.isOnResumeSuccessImplemented == true) {
+      this.onResumeSuccess?.invoke(clientToken, error)
+    } else {
+      sendError?.invoke(ErrorTypeRN.CheckoutFlowFailed
+        errorTo "Callback [onResumeSuccess] should had been implemented.")
+    }
   }
 
   fun removeCallbacksAndHandlers() {
@@ -143,5 +173,9 @@ class PrimerRNEventListener : CheckoutEventListener {
     onClientSessionActions = null
     onTokenizeSuccess = null
     onResumeSuccess = null
+  }
+
+  fun setImplementedCallbacks(implementedRNCallbacks: PrimerImplementedRNCallbacks) {
+    this.implementedRNCallbacks = implementedRNCallbacks
   }
 }
