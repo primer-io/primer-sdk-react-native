@@ -12,8 +12,8 @@ import type { IClientSession } from '../models/IClientSession';
 import { makeRandomString } from '../helpers/helpers';
 import type { IPayment } from '../models/IPayment';
 import type { PrimerPaymentMethodIntent } from 'lib/typescript/models/primer-intent';
-import type { OnResumeCallback } from 'src/models/primer-callbacks';
 import type { PrimerConfig } from 'lib/typescript/models/primer-config';
+import type { OnResumeCallback } from 'src/models/primer-callbacks';
 
 let currentClientToken: string | null = null;
 let paymentId: string | null = null;
@@ -140,9 +140,7 @@ const CheckoutScreen = (props: any) => {
                 paymentId = payment.id;
                 resumeHandler.handleNewClientToken(payment.requiredAction.clientToken);
             } else {
-                debugger;
                 props.navigation.navigate('Result', payment);
-                debugger;
                 resumeHandler.handleSuccess();
             }
         } catch (err) {
@@ -192,8 +190,8 @@ const CheckoutScreen = (props: any) => {
         currentClientToken = null;
     }
 
-    const onError: OnPrimerErrorCallback = async (primerError, _resumeHandler) => {
-        console.error(primerError.errorDescription);
+    const onError: OnPrimerErrorCallback = async (primerError) => {
+        console.error(primerError.name);
     };
 
     const onUniversalCheckoutButtonTapped = async () => {
