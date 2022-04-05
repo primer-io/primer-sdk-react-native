@@ -27,10 +27,10 @@ export let environment: Environment = Environment.Sandbox;
 const SettingsScreen = ({ navigation }) => {
     const isDarkMode = useColorScheme() === 'dark';
     const [amount, setAmount] = React.useState<number | null>(1000);
-    const [currency, setCurrency] = React.useState<string>("EUR");
-    const [countryCode, setCountryCode] = React.useState<string>("DE");
+    const [currency, setCurrency] = React.useState<string>("SGD");
+    const [countryCode, setCountryCode] = React.useState<string>("SG");
     const [customerId, setCustomerId] = React.useState<string | null>(null);
-    const [phoneNumber, setPhoneNumber] = React.useState<string | null>(null);
+    const [phoneNumber, setPhoneNumber] = React.useState<string | null>('+447867267218');
 
     const backgroundStyle = {
         backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
@@ -185,15 +185,8 @@ const SettingsScreen = ({ navigation }) => {
                     style={{ ...styles.button, marginHorizontal: 20, marginTop: 5, marginBottom: 20, backgroundColor: 'black' }}
                     onPress={() => {
                         console.log(`Amount: ${amount}\nCurrency: ${currency}\nCountry Code: ${countryCode}\nCustomer ID: ${customerId}\nPhone Number: ${phoneNumber}`);
-                        const appSettings: IAppSettings = {
-                            amount: amount,
-                            currencyCode: currency,
-                            countryCode: countryCode,
-                            customerId: customerId || undefined,
-                            phoneNumber: phoneNumber || undefined,
-                        };
                         
-                        navigation.navigate('Checkout', appSettings);
+                        navigation.navigate('Checkout');
                     }}
                 >
                     <Text
