@@ -12,8 +12,8 @@ import type { IClientSession } from '../models/IClientSession';
 import { makeRandomString } from '../helpers/helpers';
 import type { IPayment } from '../models/IPayment';
 import type { PrimerPaymentMethodIntent } from 'lib/typescript/models/primer-intent';
-import type { IPrimerConfig } from 'lib/typescript/models/primer-config';
 import type { OnResumeCallback } from 'src/models/primer-callbacks';
+import type { PrimerConfig } from 'lib/typescript/models/primer-config';
 
 let currentClientToken: string | null = null;
 let paymentId: string | null = null;
@@ -72,60 +72,60 @@ const CheckoutScreen = (props: any) => {
         },
         paymentMethod: {
             vaultOnSuccess: false,
-            options: {
-                GOOGLE_PAY: {
-                    surcharge: {
-                        amount: 50,
-                    },
-                },
-                ADYEN_IDEAL: {
-                    surcharge: {
-                        amount: 50,
-                    },
-                },
-                ADYEN_SOFORT: {
-                    surcharge: {
-                        amount: 50,
-                    },
-                },
-                APPLE_PAY: {
-                    surcharge: {
-                        amount: 150,
-                    },
-                },
-                PAYMENT_CARD: {
-                    networks: {
-                        VISA: {
-                            surcharge: {
-                                amount: 100,
-                            },
-                        },
-                        MASTERCARD: {
-                            surcharge: {
-                                amount: 200,
-                            },
-                        },
-                    },
-                },
-            },
+            // options: {
+            //     GOOGLE_PAY: {
+            //         surcharge: {
+            //             amount: 50,
+            //         },
+            //     },
+            //     ADYEN_IDEAL: {
+            //         surcharge: {
+            //             amount: 50,
+            //         },
+            //     },
+            //     ADYEN_SOFORT: {
+            //         surcharge: {
+            //             amount: 50,
+            //         },
+            //     },
+            //     APPLE_PAY: {
+            //         surcharge: {
+            //             amount: 150,
+            //         },
+            //     },
+            //     PAYMENT_CARD: {
+            //         networks: {
+            //             VISA: {
+            //                 surcharge: {
+            //                     amount: 100,
+            //                 },
+            //             },
+            //             MASTERCARD: {
+            //                 surcharge: {
+            //                     amount: 200,
+            //                 },
+            //             },
+            //         },
+            //     },
+            // },
         },
     };
 
-    const onClientSessionActions: OnClientSessionActionsCallback = async (clientSessionActions, resumeHandler) => {
-        if (currentClientToken) {
-            const clientSessionActionsRequestBody: any = {
-                clientToken: currentClientToken,
-                actions: clientSessionActions
-            };
+    // const onClientSessionActions: OnClientSessionActionsCallback = async (clientSessionActions, resumeHandler) => {
+    //     if (currentClientToken) {
+    //         const clientSessionActionsRequestBody: any = {
+    //             clientToken: currentClientToken,
+    //             actions: clientSessionActions
+    //         };
 
-            const clientSession: IClientSession = await setClientSessionActions(clientSessionActionsRequestBody);
-            currentClientToken = clientSession.clientToken;
-            resumeHandler.handleNewClientToken(currentClientToken);
-        } else {
-            const err = new Error("Failed to find client token");
-            resumeHandler.handleError(err.message);
-        }
-    }
+    //         const clientSession: IClientSession = await setClientSessionActions(clientSessionActionsRequestBody);
+    //         currentClientToken = clientSession.clientToken;
+    //         resumeHandler.handleNewClientToken(currentClientToken);
+    //     } else {
+    //         const err = new Error("Failed to find client token");
+    //         resumeHandler.handleError(err.message);
+    //     }
+    // }
 
     const onTokenizeSuccess: OnTokenizeSuccessCallback = async (paymentInstrument, resumeHandler) => {
         try {
@@ -202,7 +202,7 @@ const CheckoutScreen = (props: any) => {
             const clientSession: IClientSession = await createClientSession(clientSessionRequestBody);
             currentClientToken = clientSession.clientToken;
 
-            const primerConfig: IPrimerConfig = {
+            const primerConfig: PrimerConfig = {
                 settings: {
                     options: {
                         isResultScreenEnabled: true,
@@ -212,10 +212,12 @@ const CheckoutScreen = (props: any) => {
                             urlScheme: 'primer',
                             merchantIdentifier: 'merchant.checkout.team'
                         },
-                        redirectScheme: 'primer'
+                        android: {
+                            redirectScheme: 'primer'
+                        }
                     }
                 },
-                onClientSessionActions: onClientSessionActions,
+                // onClientSessionActions: onClientSessionActions,
                 onTokenizeSuccess: onTokenizeSuccess,
                 onResumeSuccess: onResumeSuccess,
                 onError: onError,
