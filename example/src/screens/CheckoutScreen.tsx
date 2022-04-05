@@ -72,60 +72,60 @@ const CheckoutScreen = (props: any) => {
         },
         paymentMethod: {
             vaultOnSuccess: false,
-            options: {
-                GOOGLE_PAY: {
-                    surcharge: {
-                        amount: 50,
-                    },
-                },
-                ADYEN_IDEAL: {
-                    surcharge: {
-                        amount: 50,
-                    },
-                },
-                ADYEN_SOFORT: {
-                    surcharge: {
-                        amount: 50,
-                    },
-                },
-                APPLE_PAY: {
-                    surcharge: {
-                        amount: 150,
-                    },
-                },
-                PAYMENT_CARD: {
-                    networks: {
-                        VISA: {
-                            surcharge: {
-                                amount: 100,
-                            },
-                        },
-                        MASTERCARD: {
-                            surcharge: {
-                                amount: 200,
-                            },
-                        },
-                    },
-                },
-            },
+            // options: {
+            //     GOOGLE_PAY: {
+            //         surcharge: {
+            //             amount: 50,
+            //         },
+            //     },
+            //     ADYEN_IDEAL: {
+            //         surcharge: {
+            //             amount: 50,
+            //         },
+            //     },
+            //     ADYEN_SOFORT: {
+            //         surcharge: {
+            //             amount: 50,
+            //         },
+            //     },
+            //     APPLE_PAY: {
+            //         surcharge: {
+            //             amount: 150,
+            //         },
+            //     },
+            //     PAYMENT_CARD: {
+            //         networks: {
+            //             VISA: {
+            //                 surcharge: {
+            //                     amount: 100,
+            //                 },
+            //             },
+            //             MASTERCARD: {
+            //                 surcharge: {
+            //                     amount: 200,
+            //                 },
+            //             },
+            //         },
+            //     },
+            // },
         },
     };
 
-    const onClientSessionActions: OnClientSessionActionsCallback = async (clientSessionActions, resumeHandler) => {
-        if (currentClientToken) {
-            const clientSessionActionsRequestBody: any = {
-                clientToken: currentClientToken,
-                actions: clientSessionActions
-            };
+    // const onClientSessionActions: OnClientSessionActionsCallback = async (clientSessionActions, resumeHandler) => {
+    //     if (currentClientToken) {
+    //         const clientSessionActionsRequestBody: any = {
+    //             clientToken: currentClientToken,
+    //             actions: clientSessionActions
+    //         };
 
-            const clientSession: IClientSession = await setClientSessionActions(clientSessionActionsRequestBody);
-            currentClientToken = clientSession.clientToken;
-            resumeHandler.handleNewClientToken(currentClientToken);
-        } else {
-            const err = new Error("Failed to find client token");
-            resumeHandler.handleError(err.message);
-        }
-    }
+    //         const clientSession: IClientSession = await setClientSessionActions(clientSessionActionsRequestBody);
+    //         currentClientToken = clientSession.clientToken;
+    //         resumeHandler.handleNewClientToken(currentClientToken);
+    //     } else {
+    //         const err = new Error("Failed to find client token");
+    //         resumeHandler.handleError(err.message);
+    //     }
+    // }
 
     const onTokenizeSuccess: OnTokenizeSuccessCallback = async (paymentInstrument, resumeHandler) => {
         try {
@@ -140,9 +140,7 @@ const CheckoutScreen = (props: any) => {
                 paymentId = payment.id;
                 resumeHandler.handleNewClientToken(payment.requiredAction.clientToken);
             } else {
-                debugger;
                 props.navigation.navigate('Result', payment);
-                debugger;
                 resumeHandler.handleSuccess();
             }
         } catch (err) {
@@ -193,7 +191,6 @@ const CheckoutScreen = (props: any) => {
     }
 
     const onError: OnPrimerErrorCallback = async (primerError) => {
-        debugger;
         console.error(primerError.name);
     };
 
@@ -217,7 +214,7 @@ const CheckoutScreen = (props: any) => {
                         }
                     }
                 },
-                onClientSessionActions: onClientSessionActions,
+                // onClientSessionActions: onClientSessionActions,
                 onTokenizeSuccess: onTokenizeSuccess,
                 onResumeSuccess: onResumeSuccess,
                 onError: onError,
