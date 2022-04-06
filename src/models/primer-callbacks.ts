@@ -1,14 +1,37 @@
-import type { IPrimerError } from 'src/RNPrimer';
-import type { IClientSessionAction } from 'src/Primer';
+import type { ActionRequest } from './action-request';
+import type { ClientSessionActionsRequest } from './client-session-actions-request';
 import type { PaymentInstrumentToken } from './payment-instrument-token';
+import type { PrimerError } from './primer-error';
 import type { PrimerResumeHandler } from './primer-request';
 
-// Not implemented
-// export type OnClientTokenCallback = (resumeHandler: PrimerResumeHandler) => void;
+export type OnTokenizeSuccessCallback = (
+  paymentInstrumentToken: PaymentInstrumentToken,
+  completion: PrimerResumeHandler
+) => void;
 
-export type OnClientSessionActionsCallback = (clientSessionActions: IClientSessionAction[], resumeHandler: PrimerResumeHandler | null) => void;
-export type OnTokenizeSuccessCallback = (paymentInstrument: PaymentInstrumentToken, resumeHandler: PrimerResumeHandler) => void;
-export type OnTokenAddedToVaultCallback = (paymentInstrument: PaymentInstrumentToken) => void;
-export type OnResumeCallback = (resumeToken: string, resumeHandler: PrimerResumeHandler | null) => void;
-export type OnPrimerErrorCallback = (err: IPrimerError, resumeHandler: PrimerResumeHandler) => void;
+export type OnResumeSuccessCallback = (
+  resumeToken: string,
+  resumeHandler: PrimerResumeHandler
+) => void;
+
+export type OnClientSessionActionsCallback = (
+  request: ClientSessionActionsRequest,
+  resumeHandler: PrimerResumeHandler
+) => void;
+
+export type OnDataChangeCallback = (
+  req: ActionRequest,
+  completion: PrimerResumeHandler
+) => void;
+
+export type OnTokenAddedToVaultCallback = (
+  paymentInstrumentToken: PaymentInstrumentToken
+) => void;
+
 export type OnDismissCallback = () => void;
+
+export type OnPrimerErrorCallback = (error: PrimerError) => void;
+
+export type OnSavedPaymentInstrumentsFetchedCallback = (
+  paymentInstrumentTokens: PaymentInstrumentToken[]
+) => void;
