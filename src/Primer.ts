@@ -137,7 +137,7 @@ export const PrimerNativeMapping: IPrimer = {
           RNPrimer.addListener('onError', data => {
             const err: IPrimerError = data.error;
             if (config.onError) {
-              config.onError(new Error(err.errorDescription), resumeHandler);
+              config.onError(err, resumeHandler);
             }
           });
 
@@ -212,7 +212,7 @@ export const PrimerNativeMapping: IPrimer = {
     RNPrimer.addListener('onError', data => {
       const err: IPrimerError = data.error;
       if (config.onError) {
-        config.onError(new Error(err.errorDescription), resumeHandler);
+        config.onError(err, resumeHandler);
       }
     });
 

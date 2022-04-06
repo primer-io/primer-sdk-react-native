@@ -11,6 +11,7 @@ import io.primer.android.Primer
 import io.primer.android.model.dto.PrimerConfig
 import io.primer.android.model.dto.PrimerPaymentMethod
 import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
 
@@ -231,7 +232,10 @@ class PrimerRN(reactContext: ReactApplicationContext) :
 
   private fun checkoutFailed(exception: PrimerErrorRN) {
     val params = Arguments.createMap()
-    params.putString(Keys.ERROR, exception.errorDescription)
+    val errorJson = JSONObject(Json.encodeToString(exception))
+    val data = Arguments.createMap()
+    prepareData(data, errorJson)
+    params.putMap(Keys.ERROR, data)
     sendEvent(PrimerEventsRN.OnError.string, params)
   }
 
