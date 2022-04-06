@@ -192,9 +192,8 @@ const CheckoutScreen = (props: any) => {
         currentClientToken = null;
     }
 
-    const onError: OnPrimerErrorCallback = async (primerError) => {
-        debugger;
-        console.error(primerError.name);
+    const onError: OnPrimerErrorCallback = async (primerError, _resumeHandler) => {
+        console.error(primerError.errorDescription);
     };
 
     const onUniversalCheckoutButtonTapped = async () => {

@@ -1,4 +1,5 @@
 import type { IClientSessionAction } from 'src/Primer';
+import type { IPrimerError } from 'src/RNPrimer';
 import type { PaymentInstrumentToken } from './payment-instrument-token';
 import type { PrimerResumeHandler } from './primer-request';
 import type { PrimerSettings } from './primer-settings';
@@ -40,7 +41,7 @@ export interface IPrimerConfig {
   /**
    * Use this callback to perform some action when the SDK throws an error.
    */
-  onError?: (err: Error, resumeHandler: PrimerResumeHandler) => void;
+  onError?: (err: IPrimerError, resumeHandler: PrimerResumeHandler) => void;
 
   /**
    * Use this callback to perform actions on payment methods, like surcharging.
