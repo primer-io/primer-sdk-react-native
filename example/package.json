@@ -8,7 +8,7 @@
     "ios": "react-native run-ios",
     "start": "react-native start",
     "clean-caches": "watchman watch-del-all && rm -rf $TMPDIR/react-native-packager-cache-* && rm -rf $TMPDIR/metro-bundler-cache-* && npm cache clean --force && yarn cache clean && rm -rf ~/Documents/Derived\\ Data/",
-    "clean-install": "yarn run clean-caches && yarn run clean-node-modules-install && yarn run clean-install-ios && clean-android",
+    "clean-install": "yarn run clean-caches && yarn run clean-node-modules-install && yarn run clean-install-ios && yarn run clean-android",
     "clean-node-modules": "rm -rf node_modules",
     "clean-node-modules-install": "yarn run clean-node-modules && yarn",
     "clean-android": "cd android && ./gradlew clean && cd ..",
