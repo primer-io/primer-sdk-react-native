@@ -6,6 +6,7 @@ import type {
   OnClientSessionActionsCallback,
   OnDismissCallback,
   OnPrimerErrorCallback,
+  OnResumeSuccessCallback,
   OnTokenAddedToVaultCallback,
   OnTokenizeSuccessCallback,
 } from './models/primer-callbacks';
@@ -159,7 +160,7 @@ function configureOnClientSessionActions(
 }
 
 function configureOnResumeSuccess(
-  callback: OnTokenizeSuccessCallback = (_, __) => {}
+  callback: OnResumeSuccessCallback = (_, __) => {}
 ) {
   NativeModule.configureOnResumeSuccess((paymentMethodToken: any) => {
     try {
