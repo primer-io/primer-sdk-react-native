@@ -69,7 +69,7 @@ class PrimerRNEventListener : CheckoutEventListener {
           }
 
           resumeHandler = e.resumeHandler
-          val resumeToken = token to Keys.RESUME_TOKEN
+          val resumeToken = mapOf(Keys.RESUME_TOKEN to token)
           sendEvent?.invoke(
             PrimerEventsRN.OnResumeSuccess.string,
             JSONObject(Json.encodeToString(resumeToken))
@@ -133,17 +133,8 @@ class PrimerRNEventListener : CheckoutEventListener {
   }
 
   fun onClientTokenCallback(clientToken: String?, error: PrimerErrorRN?) {
-    if (implementedRNCallbacks?.isClientTokenCallbackImplemented == true) {
-      this.clientTokenCallback?.invoke(clientToken, error)
-      sendEvent?.invoke(PrimerEventsRN.OnClientTokenCallback.string, null)
-    } else {
-      this.clientTokenCallback?.invoke(
-        null,
-        PrimerErrorRN(
-          errorDescription = "Callback [clientTokenCallback] should had been implemented."
-        )
-      )
-    }
+    this.clientTokenCallback?.invoke(clientToken, error)
+    sendEvent?.invoke(PrimerEventsRN.OnClientTokenCallback.string, null)
   }
 
   fun onClientSessionActions(clientToken: String?, error: PrimerErrorRN?) {
