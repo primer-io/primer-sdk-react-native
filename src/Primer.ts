@@ -1,9 +1,24 @@
 import type { PaymentInstrumentToken } from './models/payment-instrument-token';
 import type { IPrimer } from './models/primer';
-import type { IPrimerConfig } from './models/primer-config';
-import type { PrimerPaymentMethodIntent } from './models/primer-intent';
-import type { PrimerResumeHandler } from './models/primer-request';
-import RNPrimer, { IPrimerError } from './RNPrimer';
+import type {
+  OnClientSessionActionsCallback,
+  OnDismissCallback,
+  OnPrimerErrorCallback,
+  OnResumeSuccessCallback,
+  OnTokenAddedToVaultCallback,
+  OnTokenizeSuccessCallback,
+} from './models/primer-callbacks';
+import type { PrimerConfig } from './models/primer-config';
+import type { PrimerError } from './models/primer-error';
+import type {
+  PrimerIntent,
+  PrimerPaymentMethodIntent,
+} from './models/primer-intent';
+import type { PrimerSettings } from './models/primer-settings';
+import type { PrimerTheme } from './models/primer-theme';
+import { parseCallback } from './utils';
+
+const { PrimerRN: NativeModule } = NativeModules;
 
 const resumeHandler: PrimerResumeHandler = {
   handleNewClientToken: async (clientToken) => {
@@ -196,12 +211,24 @@ export const PrimerNativeMapping: IPrimer = {
       }
     });
 
-    RNPrimer.addListener('onResumeSuccess', data => {
-      const resumeToken: string = data.resumeToken;
-      if (config.onResumeSuccess) {
-        config.onResumeSuccess(resumeToken, resumeHandler);
-      }
-    });
+function configureOnResumeSuccess(
+  callback: OnResumeSuccessCallback = (_, __) => {}
+) {
+  NativeModule.configureOnResumeSuccess((paymentMethodToken: any) => {
+    try {
+      callback(paymentMethodToken, {
+        handleError: (error) => resume({ error, token: null }),
+        handleSuccess: () => resume({ error: null, token: null }),
+        handleNewClientToken: (token) => resume({ error: null, token }),
+        // deprecated
+        resumeWithError: (error) => resume({ error, token: null }),
+        resumeWithSuccess: (token) => resume({ error: null, token }),
+      });
+    } catch (e) {
+      console.log('failed to parse json', e);
+    }
+  });
+}
 
     RNPrimer.addListener('onCheckoutDismissed', () => {
       if (config.onDismiss) {
