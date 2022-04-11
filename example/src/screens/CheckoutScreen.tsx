@@ -130,7 +130,7 @@ const CheckoutScreen = (props: any) => {
     const onTokenizeSuccess: OnTokenizeSuccessCallback = async (paymentInstrument, resumeHandler) => {
         try {
             const payment: IPayment = await createPayment(paymentInstrument.token);
-            
+
             if (payment.requiredAction && payment.requiredAction.clientToken) {
                 paymentId = payment.id;
 
@@ -140,9 +140,7 @@ const CheckoutScreen = (props: any) => {
                 paymentId = payment.id;
                 resumeHandler.handleNewClientToken(payment.requiredAction.clientToken);
             } else {
-                debugger;
                 props.navigation.navigate('Result', payment);
-                debugger;
                 resumeHandler.handleSuccess();
             }
         } catch (err) {

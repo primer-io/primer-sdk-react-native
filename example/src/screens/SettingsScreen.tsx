@@ -30,7 +30,7 @@ const SettingsScreen = ({ navigation }) => {
     const [currency, setCurrency] = React.useState<string>("EUR");
     const [countryCode, setCountryCode] = React.useState<string>("DE");
     const [customerId, setCustomerId] = React.useState<string | null>(null);
-    const [phoneNumber, setPhoneNumber] = React.useState<string | null>(null);
+    const [phoneNumber, setPhoneNumber] = React.useState<string | null>('+447867267218');
 
     const backgroundStyle = {
         backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
@@ -169,7 +169,7 @@ const SettingsScreen = ({ navigation }) => {
                                 customerId: customerId || undefined,
                                 phoneNumber: phoneNumber || undefined,
                             };
-    
+
                             navigation.navigate('Checkout', appSettings);
                         }
                     }}
@@ -192,7 +192,7 @@ const SettingsScreen = ({ navigation }) => {
                             customerId: customerId || undefined,
                             phoneNumber: phoneNumber || undefined,
                         };
-                        
+
                         navigation.navigate('Checkout', appSettings);
                     }}
                 >
