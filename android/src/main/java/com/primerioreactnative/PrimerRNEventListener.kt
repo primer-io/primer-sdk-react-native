@@ -140,9 +140,6 @@ class PrimerRNEventListener : CheckoutEventListener {
   fun onClientSessionActions(clientToken: String?, error: PrimerErrorRN?) {
     if (implementedRNCallbacks?.isClientSessionActionsImplemented == true) {
       this.onClientSessionActions?.invoke(clientToken, error)
-    } else {
-      sendError?.invoke(ErrorTypeRN.InitFailed
-        errorTo "Callback [onClientSessionActions] should had been implemented.")
     }
   }
 
