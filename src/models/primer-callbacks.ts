@@ -5,13 +5,18 @@ import type { PrimerError } from './primer-error';
 import type { PrimerResumeHandler } from './primer-request';
 
 export type OnTokenizeSuccessCallback = (
-  req: PaymentInstrumentToken,
+  paymentInstrumentToken: PaymentInstrumentToken,
   completion: PrimerResumeHandler
 ) => void;
 
+export type OnResumeSuccessCallback = (
+  resumeToken: string,
+  resumeHandler: PrimerResumeHandler
+) => void;
+
 export type OnClientSessionActionsCallback = (
-  req: ClientSessionActionsRequest,
-  completion: PrimerResumeHandler
+  request: ClientSessionActionsRequest,
+  resumeHandler: PrimerResumeHandler
 ) => void;
 
 export type OnDataChangeCallback = (
@@ -20,13 +25,13 @@ export type OnDataChangeCallback = (
 ) => void;
 
 export type OnTokenAddedToVaultCallback = (
-  data: PaymentInstrumentToken
+  paymentInstrumentToken: PaymentInstrumentToken
 ) => void;
 
 export type OnDismissCallback = () => void;
 
-export type OnPrimerErrorCallback = (data: PrimerError) => void;
+export type OnPrimerErrorCallback = (error: PrimerError) => void;
 
 export type OnSavedPaymentInstrumentsFetchedCallback = (
-  data: PaymentInstrumentToken[]
+  paymentInstrumentTokens: PaymentInstrumentToken[]
 ) => void;

@@ -2,6 +2,7 @@ import type {
   OnClientSessionActionsCallback,
   OnDismissCallback,
   OnPrimerErrorCallback,
+  OnResumeSuccessCallback,
   OnSavedPaymentInstrumentsFetchedCallback,
   OnTokenAddedToVaultCallback,
   OnTokenizeSuccessCallback,
@@ -24,7 +25,7 @@ interface IPrimerConfig {
    */
   onTokenizeSuccess?: OnTokenizeSuccessCallback;
 
-  onResumeSuccess?: OnTokenizeSuccessCallback;
+  onResumeSuccess?: OnResumeSuccessCallback;
 
   /**
    * Use this callback to perform some action when a payment instrument was saved to Primer.
