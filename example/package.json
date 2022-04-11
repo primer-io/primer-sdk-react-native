@@ -8,9 +8,14 @@
     "ios": "react-native run-ios",
     "start": "react-native start",
     "clean-caches": "watchman watch-del-all && rm -rf $TMPDIR/react-native-packager-cache-* && rm -rf $TMPDIR/metro-bundler-cache-* && npm cache clean --force && yarn cache clean && rm -rf ~/Documents/Derived\\ Data/",
-    "clean-install": "yarn run clean-caches && yarn run clean-node-modules-install && yarn run clean-pod-install",
-    "clean-node-modules-install": "rm -rf node_modules/ && yarn",
-    "clean-pod-install": "cd ios && pod deintegrate && rm -rf Podfile.lock && pod install --repo-update && cd .."
+    "clean-install": "yarn run clean-caches && yarn run clean-node-modules-install && yarn run clean-install-ios && yarn run clean-android",
+    "clean-node-modules": "rm -rf node_modules",
+    "clean-node-modules-install": "yarn run clean-node-modules && yarn",
+    "clean-android": "cd android && ./gradlew clean && cd ..",
+    "clean-run-android": "yarn clean-install && npx react-native run-android",
+    "clean-ios": "cd ios && pod deintegrate && rm -rf Podfile.lock && cd ..",
+    "clean-install-ios": "yarn run clean-ios && cd ios && pod install --repo-update && cd ..",
+    "clean-run-ios": "yarn clean-install && npx react-native run-ios"
   },
   "dependencies": {
     "@react-native-masked-view/masked-view": "^0.2.6",
