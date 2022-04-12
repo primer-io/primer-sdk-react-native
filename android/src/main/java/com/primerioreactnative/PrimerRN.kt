@@ -30,8 +30,8 @@ class PrimerRN(reactContext: ReactApplicationContext) :
   private val json = Json { ignoreUnknownKeys = true }
 
   init {
-      mListener.sendEvent = { eventName, paramsJson -> sendEvent(eventName, paramsJson) }
-      mListener.sendError = { paramsJson -> checkoutFailed(paramsJson) }
+    mListener.sendEvent = { eventName, paramsJson -> sendEvent(eventName, paramsJson) }
+    mListener.sendError = { paramsJson -> checkoutFailed(paramsJson) }
   }
 
   override fun getName(): String = "NativePrimer"
@@ -71,7 +71,7 @@ class PrimerRN(reactContext: ReactApplicationContext) :
   @ReactMethod
   fun showUniversalCheckout(promise: Promise) {
     val exception = ErrorTypeRN.CheckoutFlowFailed errorTo
-      "This method not implemented, please use showUniversalCheckoutWithClientToken"
+      "This method is deprecated. Use the new showUniversalCheckoutWithClientToken method"
     checkoutFailed(exception)
     promise.reject(exception.errorId, exception.errorDescription)
   }
@@ -86,7 +86,7 @@ class PrimerRN(reactContext: ReactApplicationContext) :
       promise.resolve(null)
     } catch (e: Exception) {
       val exception = ErrorTypeRN.CheckoutFlowFailed errorTo
-        "Call of Primer SDK is failed: ${e.message}"
+        "Primer SDK failed: ${e.message}"
       checkoutFailed(exception)
       promise.reject(exception.errorId, exception.errorDescription, e)
     }
@@ -95,7 +95,7 @@ class PrimerRN(reactContext: ReactApplicationContext) :
   @ReactMethod
   fun showVaultManager(promise: Promise) {
     val exception = ErrorTypeRN.CheckoutFlowFailed errorTo
-      "This method not implemented, please use showVaultManager with client Token"
+      "This method is deprecated. Use the new showUniversalCheckoutWithClientToken method"
     checkoutFailed(exception)
     promise.reject(exception.errorId, exception.errorDescription)
   }
@@ -107,7 +107,7 @@ class PrimerRN(reactContext: ReactApplicationContext) :
       promise.resolve(null)
     } catch (e: Exception) {
       val exception = ErrorTypeRN.CheckoutFlowFailed errorTo
-        "Call of Primer SDK is failed: ${e.message}"
+        "Primer SDK failed: ${e.message}"
       checkoutFailed(exception)
       promise.reject(exception.errorId, exception.errorDescription, e)
     }
@@ -150,7 +150,7 @@ class PrimerRN(reactContext: ReactApplicationContext) :
       promise.resolve(null)
     } catch (e: Exception) {
       val exception = ErrorTypeRN.CheckoutFlowFailed errorTo
-        "Call of Primer SDK is failed: ${e.message}"
+        "Primer SDK failed: ${e.message}"
       checkoutFailed(exception)
       promise.reject(exception.errorId, exception.errorDescription, e)
     }
@@ -179,7 +179,7 @@ class PrimerRN(reactContext: ReactApplicationContext) :
     } catch (e: Exception) {
       val exception = PrimerErrorRN(
         ErrorTypeRN.CheckoutFlowFailed.name,
-        "Call of Primer SDK is failed: ${e.message}"
+        "Primer SDK failed: ${e.message}"
       )
       checkoutFailed(exception)
       promise.reject(exception.errorId, exception.errorDescription, e)
@@ -197,7 +197,7 @@ class PrimerRN(reactContext: ReactApplicationContext) :
       promise.resolve(null)
     } catch (e: Exception) {
       val exception = ErrorTypeRN.CheckoutFlowFailed errorTo
-        "Call of Primer SDK is failed: ${e.message}"
+        "Primer SDK failed: ${e.message}"
       checkoutFailed(exception)
       promise.reject(exception.errorId, exception.errorDescription, e)
     }
@@ -207,11 +207,12 @@ class PrimerRN(reactContext: ReactApplicationContext) :
   fun setImplementedRNCallbacks(implementedRNCallbacksStr: String, promise: Promise) {
     try {
       Log.d("PrimerRN", "implementedRNCallbacks: $implementedRNCallbacksStr")
-      val implementedRNCallbacks = json.decodeFromString<PrimerImplementedRNCallbacks>(implementedRNCallbacksStr)
+      val implementedRNCallbacks =
+        json.decodeFromString<PrimerImplementedRNCallbacks>(implementedRNCallbacksStr)
       this.mListener.setImplementedCallbacks(implementedRNCallbacks)
       promise.resolve(null)
     } catch (e: Exception) {
-      val exception = ErrorTypeRN.ParseJsonFailed errorTo "Fail to parse implemented callbacks"
+      val exception = ErrorTypeRN.ParseJsonFailed errorTo "Failed to parse implemented callbacks"
       checkoutFailed(exception)
       promise.reject(exception.errorId, exception.errorDescription, e)
     }
