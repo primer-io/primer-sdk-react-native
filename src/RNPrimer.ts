@@ -163,7 +163,7 @@ const RNPrimer = {
   },
 
   dispose: (): void => {
-    
+
   }
 };
 
