@@ -1,169 +1,210 @@
-import React, { useState } from 'react';
-import { View, Picker, TextInput, TouchableOpacity, Text } from 'react-native';
-import type { PrimerSettings } from 'src/models/primer-settings';
-import type { CountryCode } from 'src/models/utils/countryCode';
-import type { CurrencyCode } from 'src/models/utils/currencyCode';
+import * as React from 'react';
+import {
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    useColorScheme,
+    View,
+} from 'react-native';
+
+import {
+    Colors,
+} from 'react-native/Libraries/NewAppScreen';
 import { styles } from '../styles';
+import SegmentedControl from '@react-native-segmented-control/segmented-control';
+import { Environment, makeEnvironmentFromIntVal } from '../models/Environment';
+import { Picker } from "@react-native-picker/picker";
+import { Section } from '../models/Section';
+import type { IAppSettings } from '../models/IAppSettings';
 
-interface ISettingsScreenArguments {
-  navigation: any;
-}
+// import { NavigationContainer, NavigationContainerProps } from '@react-navigation/native';
+// import { NavigatorScreenParams } from '@react-navigation/native';
 
-export const SettingsScreen = (args: ISettingsScreenArguments) => {
-  const [customerId, setCustomerId] = React.useState('customer1');
-  const [amount, setAmount] = React.useState<number>(50);
-  const [intent, setIntent] = React.useState<'checkout' | 'vault' | 'card'>(
-    'checkout'
-  );
-  const [country, setCountry] = useState<CountryCode>('DE');
+export let environment: Environment = Environment.Sandbox;
 
-  const getCurrencyFromCountry = (): CurrencyCode => {
-    switch (country) {
-      case 'SE':
-        return 'SEK';
-      case 'GB':
-        return 'GBP';
-      case 'FR':
-      case 'AT':
-      case 'NL':
-      case 'DE':
-        return 'EUR';
-      case 'SG':
-        return 'SGD';
-      case 'US':
-        return 'USD';
-      default:
-        throw 'this currency is not yet defined in the test app!';
-    }
-  };
+// @ts-ignore
+const SettingsScreen = ({ navigation }) => {
+    const isDarkMode = useColorScheme() === 'dark';
+    const [amount, setAmount] = React.useState<number | null>(1000);
+    const [currency, setCurrency] = React.useState<string>("EUR");
+    const [countryCode, setCountryCode] = React.useState<string>("DE");
+    const [customerId, setCustomerId] = React.useState<string | null>(null);
+    const [phoneNumber, setPhoneNumber] = React.useState<string | null>('+447867267218');
 
-  const presentWallet = () => {
-    const settings: PrimerSettings = {
-      order: {
-        id: 'order_id',
-        amount: amount,
-        currency: getCurrencyFromCountry(),
-        countryCode: country,
-        items: [
-          {
-            name: 'coffee',
-            unitAmount: amount,
-            quantity: 1,
-            isPending: false,
-          },
-        ],
-      },
-      customer: {
-        id: 'customer_id',
-        firstName: 'John',
-        lastName: 'Smith',
-        email: 'john.smith@primer.io',
-        billing: {
-          line1: '122 Clerkenwell Rd',
-          line2: '',
-          city: 'London',
-          country: 'GB',
-          postalCode: 'WC1X8AS',
-        },
-      },
-      options: {
-        isFullScreenEnabled: false,
-        isLoadingScreenEnabled: true,
-        isResultScreenEnabled: true,
-        is3DSOnVaultingEnabled: true,
-        ios: {
-          merchantIdentifier: 'merchant.checkout.team',
-          urlScheme: 'primer',
-          urlSchemeIdentifier: 'primer',
-        },
-        is3DSDevelopmentModeEnabled: false,
-        android: {
-          redirectScheme: 'primer',
-        },
-      },
+    const backgroundStyle = {
+        backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
     };
 
-    args.navigation.navigate('Wallet', {
-      settings,
-      customerId,
-      intent,
-    });
-  };
+    const onChangeAmount = (text: string) => {
+        if (text) {
+            setAmount(-(-text));
+        } else {
+            setAmount(null);
+        }
+    }
 
-  return (
-    <View style={styles.container}>
-      <View style={[styles.frame, styles.column]}>
-        <View style={[styles.row]}>
-          <TextInput
-            style={styles.input}
-            autoCapitalize="none"
-            onChangeText={setCustomerId}
-            value={customerId}
-          />
-        </View>
-        <View style={[styles.row, styles.container]}>
-          <View style={[styles.container]}>
-            <Picker
-              selectedValue={country}
-              style={styles.picker}
-              onValueChange={(itemValue, _) => setCountry(itemValue)}
-            >
-              <Picker.Item label="🇩🇪" value="DE" />
-              <Picker.Item label="🇬🇧" value="GB" />
-              <Picker.Item label="🇸🇪" value="SE" />
-              <Picker.Item label="🇸🇬" value="SG" />
-              <Picker.Item label="🇳🇱" value="NL" />
-              <Picker.Item label="🇦🇹" value="AT" />
-            </Picker>
-          </View>
-          <View style={[styles.container]}>
-            <Picker
-              selectedValue={amount}
-              style={styles.picker}
-              onValueChange={(itemValue, _) => setAmount(itemValue)}
-            >
-              <Picker.Item label="0.50" value={50} />
-              <Picker.Item label="1.00" value={100} />
-              <Picker.Item label="2.00" value={200} />
-              <Picker.Item label="3.00" value={300} />
-              <Picker.Item label="4.00" value={400} />
-              <Picker.Item label="5.00" value={500} />
-              <Picker.Item label="6.00" value={600} />
-              <Picker.Item label="7.00" value={700} />
-              <Picker.Item label="8.00" value={800} />
-              <Picker.Item label="9.00" value={900} />
-              <Picker.Item label="10.00" value={1000} />
-              <Picker.Item label="20.00" value={2000} />
-              <Picker.Item label="30.00" value={3000} />
-              <Picker.Item label="50.00" value={5000} />
-              <Picker.Item label="100.00" value={10000} />
-            </Picker>
-          </View>
-        </View>
+    const onChangeCustomerId = (text: string) => {
+        if (text) {
+            setCustomerId(text);
+        } else {
+            setCustomerId(null);
+        }
+    }
 
-        {/* Pick Intent */}
-        <View style={[styles.row, styles.container]}>
-          <View style={[styles.container]}>
-            <Picker
-              selectedValue={intent}
-              style={styles.picker}
-              onValueChange={(itemValue, _) => setIntent(itemValue)}
-            >
-              <Picker.Item label="Vault Manager" value="vault" />
-              <Picker.Item label="Universal Checkout" value="checkout" />
-            </Picker>
-          </View>
-        </View>
+    const onChangePhoneNumber = (text: string) => {
+        if (text) {
+            setPhoneNumber(text);
+        } else {
+            setPhoneNumber(null);
+        }
+    }
 
-        {/* Next Button */}
-        <View style={[styles.row, styles.button]}>
-          <View style={[styles.container, styles.button]}>
-            <TouchableOpacity onPress={presentWallet}>
-              <Text style={[styles.buttonText]}>Next</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-    </View>
-  );
+    return (
+        <ScrollView
+            contentInsetAdjustmentBehavior="automatic"
+            style={backgroundStyle}>
+            {/* <Header /> */}
+            <View
+                style={{
+                    backgroundColor: isDarkMode ? Colors.black : Colors.white,
+                }}>
+
+                <Section title="Environment">
+                    Set your environment
+                </Section>
+
+                <SegmentedControl
+                    style={{ marginHorizontal: 20, marginVertical: 10 }}
+                    values={['Dev', 'Sandbox', 'Staging', 'Production']}
+                    selectedIndex={environment}
+                    onChange={(event) => {
+                        const selectedIndex = event.nativeEvent.selectedSegmentIndex;
+                        let selectedEnvironment = makeEnvironmentFromIntVal(selectedIndex);
+                        environment = selectedEnvironment;
+                    }}
+                />
+
+                <Section title="Required Settings">
+                    Amount, currency and country code are required to all payment methods
+                </Section>
+
+                <TextInput
+                    style={{ ...styles.textInput, marginHorizontal: 20, marginVertical: 10 }}
+                    onChangeText={onChangeAmount}
+                    value={`${amount === null ? "" : amount}`}
+                    placeholder="Type amount in minor units, e.g. 1000"
+                    placeholderTextColor={'grey'}
+                    keyboardType="numeric"
+                />
+
+                <View
+                    style={{ flexDirection: 'row', marginHorizontal: 20, marginTop: -30, marginBottom: 140 }}
+                >
+                    <Picker
+                        selectedValue={currency}
+                        style={{ height: 50, flex: 1 }}
+                        onValueChange={(itemValue) => {
+                            setCurrency(itemValue);
+                        }}
+                    >
+                        <Picker.Item label="EUR" value="EUR" />
+                        <Picker.Item label="GBP" value="GBP" />
+                        <Picker.Item label="USD" value="USD" />
+                        <Picker.Item label="SEK" value="SEK" />
+                        <Picker.Item label="SGD" value="SGD" />
+                        <Picker.Item label="PLN" value="PLN" />
+                    </Picker>
+
+                    <Picker
+                        selectedValue={countryCode}
+                        style={{ height: 50, flex: 1 }}
+                        onValueChange={(itemValue) => {
+                            setCountryCode(itemValue);
+                        }}
+                    >
+                        <Picker.Item label="DE" value="DE" />
+                        <Picker.Item label="FR" value="FR" />
+                        <Picker.Item label="GB" value="GB" />
+                        <Picker.Item label="SE" value="SE" />
+                        <Picker.Item label="SG" value="SG" />
+                        <Picker.Item label="PL" value="PL" />
+                    </Picker>
+                </View>
+
+                <Section title="Optional Settings">
+                    The settings below are not required, however some payment methods may need them.
+                </Section>
+
+                <TextInput
+                    style={{ ...styles.textInput, marginHorizontal: 20, marginVertical: 10 }}
+                    onChangeText={onChangeCustomerId}
+                    value={`${customerId === null ? "" : customerId}`}
+                    placeholder="Set the customer ID, e.g. rn_customer_0"
+                    placeholderTextColor={'grey'}
+                    keyboardType='default'
+                    autoCapitalize='none'
+                    autoCorrect={false}
+                />
+
+                <TextInput
+                    style={{ ...styles.textInput, marginHorizontal: 20, marginVertical: 10 }}
+                    onChangeText={onChangePhoneNumber}
+                    value={`${phoneNumber === null ? "" : phoneNumber}`}
+                    placeholder="Set the customer's phone number"
+                    placeholderTextColor={'grey'}
+                    keyboardType="numeric"
+                />
+
+                <TouchableOpacity
+                    style={{ ...styles.button, marginHorizontal: 20, marginTop: 20, marginBottom: 5, backgroundColor: 'black' }}
+                    onPress={() => {
+                        console.log(`Amount: ${amount}\nCurrency: ${currency}\nCountry Code: ${countryCode}\nCustomer ID: ${customerId}\nPhone Number: ${phoneNumber}`);
+
+                        if (amount && currency && countryCode) {
+                            const appSettings: IAppSettings = {
+                                amount: amount,
+                                currencyCode: currency,
+                                countryCode: countryCode,
+                                customerId: customerId || undefined,
+                                phoneNumber: phoneNumber || undefined,
+                            };
+
+                            navigation.navigate('Checkout', appSettings);
+                        }
+                    }}
+                >
+                    <Text
+                        style={{ ...styles.buttonText, color: 'white' }}
+                    >
+                        Continue with Primer SDK
+                    </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    style={{ ...styles.button, marginHorizontal: 20, marginTop: 5, marginBottom: 20, backgroundColor: 'black' }}
+                    onPress={() => {
+                        console.log(`Amount: ${amount}\nCurrency: ${currency}\nCountry Code: ${countryCode}\nCustomer ID: ${customerId}\nPhone Number: ${phoneNumber}`);
+                        const appSettings: IAppSettings = {
+                            amount: amount,
+                            currencyCode: currency,
+                            countryCode: countryCode,
+                            customerId: customerId || undefined,
+                            phoneNumber: phoneNumber || undefined,
+                        };
+
+                        navigation.navigate('Checkout', appSettings);
+                    }}
+                >
+                    <Text
+                        style={{ ...styles.buttonText, color: 'white' }}
+                    >
+                        Initialize App with HUC
+                    </Text>
+                </TouchableOpacity>
+            </View>
+        </ScrollView>
+    );
 };
+
+export default SettingsScreen;

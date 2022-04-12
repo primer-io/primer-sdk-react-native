@@ -6,14 +6,24 @@
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
-    "start": "react-native start"
+    "start": "react-native start",
+    "clean-caches": "watchman watch-del-all && rm -rf $TMPDIR/react-native-packager-cache-* && rm -rf $TMPDIR/metro-bundler-cache-* && npm cache clean --force && yarn cache clean && rm -rf ~/Documents/Derived\\ Data/",
+    "clean-install": "yarn run clean-caches && yarn run clean-node-modules-install && yarn run clean-install-ios && yarn run clean-android",
+    "clean-node-modules": "rm -rf node_modules",
+    "clean-node-modules-install": "yarn run clean-node-modules && yarn",
+    "clean-android": "cd android && ./gradlew clean && cd ..",
+    "clean-run-android": "yarn clean-install && npx react-native run-android",
+    "clean-ios": "cd ios && pod deintegrate && rm -rf Podfile.lock && cd ..",
+    "clean-install-ios": "yarn run clean-ios && cd ios && pod install --repo-update && cd ..",
+    "clean-run-ios": "yarn clean-install && npx react-native run-ios"
   },
   "dependencies": {
     "@react-native-masked-view/masked-view": "^0.2.6",
+    "@react-native-picker/picker": "^2.4.0",
+    "@react-native-segmented-control/segmented-control": "^2.4.0",
     "@react-navigation/native": "^6.0.2",
     "@react-navigation/native-stack": "^6.1.0",
-    "@types/react": "^17.0.24",
-    "@types/react-native": "^0.65.2",
+    "axios": "^0.26.1",
     "react": "16.13.1",
     "react-native": "0.63.4",
     "react-native-safe-area-context": "^3.3.2",
@@ -23,6 +33,8 @@
   "devDependencies": {
     "@babel/core": "^7.12.10",
     "@babel/runtime": "^7.12.5",
+    "@types/react": "^17.0.24",
+    "@types/react-native": "^0.65.2",
     "babel-plugin-module-resolver": "^4.0.0",
     "metro-react-native-babel-preset": "^0.64.0"
   }

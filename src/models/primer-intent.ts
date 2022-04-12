@@ -34,7 +34,7 @@ const paymentMethods = [
 export type SinglePrimerPaymentMethod = typeof paymentMethods[number];
 export interface AnyPrimerPaymentMethodIntent {
   vault: boolean;
-  paymentMethod: 'Any';
+  paymentMethod: SinglePrimerPaymentMethod;
 }
 
 export type PrimerPaymentMethodIntent = ISinglePrimerPaymentMethodIntent;
