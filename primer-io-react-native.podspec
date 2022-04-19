@@ -17,5 +17,5 @@ Pod::Spec.new do |s|
   s.source_files = "ios/**/*.{h,m,mm,swift}"
 
   s.dependency "React-Core"
-  s.dependency "PrimerSDK", "1.32.0"
+  s.dependency "PrimerSDK", "1.32.3"
 end
