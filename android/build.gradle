@@ -37,7 +37,11 @@ android {
   }
 
   buildTypes {
+    debug {
+      consumerProguardFiles 'consumer-rules.pro'
+    }
     release {
+      consumerProguardFiles 'consumer-rules.pro'
       minifyEnabled false
     }
   }
