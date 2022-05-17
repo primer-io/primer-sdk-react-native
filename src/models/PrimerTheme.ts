@@ -1,5 +1,5 @@
 export type PrimerTheme = IPrimerTheme;
-interface IPrimerTheme {
+export interface IPrimerTheme {
   colors?: ColorTheme;
   darkModeColors?: ColorTheme;
 }
