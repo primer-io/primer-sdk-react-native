@@ -179,4 +179,4 @@ const currencies = [
   'ZMW',
 ] as const;
 
-export type CurrencyCode = typeof currencies[number];
+export type PrimerCurrencyCode = typeof currencies[number];
