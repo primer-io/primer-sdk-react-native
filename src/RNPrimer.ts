@@ -1,18 +1,19 @@
 import { NativeEventEmitter, NativeModules } from 'react-native';
-import type { PrimerSettings } from './models/primer-settings';
-import type { PrimerTheme } from './models/primer-theme';
+import type { PrimerSessionIntent } from './models/PrimerSessionIntent';
+import type { PrimerSettings } from './models/PrimerSettings';
 
 const { NativePrimer } = NativeModules;
 const eventEmitter = new NativeEventEmitter(NativePrimer);
 
 type EventType =
-  | 'onClientTokenCallback'
-  | 'onClientSessionActions'
-  | 'onTokenizeSuccessCallback'
-  | 'onVaultSuccess'
-  | 'onResumeSuccess'
-  | 'onCheckoutDismissed'
-  | 'onError'
+  | 'primerDidCompleteCheckoutWithData'
+  | 'primerClientSessionWillUpdate'
+  | 'primerClientSessionDidUpdate'
+  | 'primerWillCreatePaymentWithData'
+  | 'primerDidFailWithError'
+  | 'primerDidDismiss'
+  | 'primerDidTokenizePaymentMethod'
+  | 'primerDidResumeWith'
   | 'detectImplementedRNCallbacks';
 
 export interface IPrimerError {
@@ -38,35 +39,24 @@ const RNPrimer = {
   },
 
   removeAllListeners() {
-    eventEmitter.removeAllListeners('onClientTokenCallback');
-    eventEmitter.removeAllListeners('onClientSessionActions');
-    eventEmitter.removeAllListeners('onTokenizeSuccessCallback');
-    eventEmitter.removeAllListeners('onVaultSuccess');
-    eventEmitter.removeAllListeners('onResumeSuccess');
-    eventEmitter.removeAllListeners('onCheckoutDismissed');
-    eventEmitter.removeAllListeners('onError');
+    eventEmitter.removeAllListeners('primerDidCompleteCheckoutWithData');
+    eventEmitter.removeAllListeners('primerClientSessionWillUpdate');
+    eventEmitter.removeAllListeners('primerClientSessionDidUpdate');
+    eventEmitter.removeAllListeners('primerWillCreatePaymentWithData');
+    eventEmitter.removeAllListeners('primerDidFailWithError');
+    eventEmitter.removeAllListeners('primerDidDismiss');
+    eventEmitter.removeAllListeners('primerDidTokenizePaymentMethod');
+    eventEmitter.removeAllListeners('primerDidResumeWith');
     eventEmitter.removeAllListeners('detectImplementedRNCallbacks');
   },
 
   ///////////////////////////////////////////
   // Native API
   ///////////////////////////////////////////
-  configure: (
-    settings: PrimerSettings | null,
-    theme: PrimerTheme | null
-  ): Promise<void> => {
+  configure: (settings: PrimerSettings | undefined): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {
-        if (settings === null && theme === null) {
-          // Do nothing, SDK will use default settings and theme.
-        } else if (settings && theme === null) {
-          await NativePrimer.configureWithSettings(JSON.stringify(settings));
-        } else if (settings === null && theme) {
-          await NativePrimer.configureWithTheme(JSON.stringify(theme));
-        } else {
-          await NativePrimer.configureWithSettings(JSON.stringify(settings));
-          await NativePrimer.configureWithTheme(JSON.stringify(theme));
-        }
+        await NativePrimer.configureSettings(JSON.stringify(settings) || "");
         resolve();
       } catch (err) {
         reject(err);
@@ -74,14 +64,10 @@ const RNPrimer = {
     });
   },
 
-  showUniversalCheckout: (clientToken: string | undefined): Promise<void> => {
+  showUniversalCheckout: (clientToken: string): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {
-        if (clientToken) {
-          await NativePrimer.showUniversalCheckoutWithClientToken(clientToken);
-        } else {
-          await NativePrimer.showUniversalCheckout();
-        }
+        await NativePrimer.showUniversalCheckoutWithClientToken(clientToken);
         resolve();
       } catch (err) {
         reject(err);
@@ -92,11 +78,7 @@ const RNPrimer = {
   showVaultManager: (clientToken: string | undefined): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {
-        if (clientToken) {
-          await NativePrimer.showVaultManager(clientToken);
-        } else {
-          await NativePrimer.showVaultManager();
-        }
+        await NativePrimer.showUniversalCheckoutWithClientToken(clientToken);
         resolve();
       } catch (err) {
         reject(err);
@@ -105,9 +87,9 @@ const RNPrimer = {
   },
 
   showPaymentMethod: (
-    clientToken: string,
     paymentMethodType: string,
-    intent: "checkout" | "vault"
+    intent: PrimerSessionIntent,
+    clientToken: string
   ): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {

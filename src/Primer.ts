@@ -1,108 +1,149 @@
-import type { PaymentInstrumentToken } from './models/payment-instrument-token';
-import type { IPrimer } from './models/primer';
-import type { IPrimerConfig } from './models/primer-config';
-import type { PrimerPaymentMethodIntent } from './models/primer-intent';
-import type { PrimerResumeHandler } from './models/primer-request';
+import type { IPrimer } from './models/IPrimer';
+import type { PrimerSessionIntent } from './models/PrimerSessionIntent';
+import type { PrimerSettings } from './models/PrimerSettings';
 import RNPrimer, { IPrimerError } from './RNPrimer';
 
-const resumeHandler: PrimerResumeHandler = {
-  handleNewClientToken: async (clientToken) => {
-    try {
-      await RNPrimer.handleNewClientToken(clientToken);
-    } catch (err) {
-      let primerError: IPrimerError;
-      if (err instanceof Error) {
-        primerError = {
-          errorId: "react-native-bridge",
-          errorDescription: err.message
-        }
-      } else {
-        primerError = {
-          errorId: "react-native-bridge",
-          errorDescription: "unknown error"
-        }
+// const resumeHandler: PrimerResumeHandler = {
+//   handleNewClientToken: async (clientToken) => {
+//     try {
+//       await RNPrimer.handleNewClientToken(clientToken);
+//     } catch (err) {
+//       let primerError: IPrimerError;
+//       if (err instanceof Error) {
+//         primerError = {
+//           errorId: "react-native-bridge",
+//           errorDescription: err.message
+//         }
+//       } else {
+//         primerError = {
+//           errorId: "react-native-bridge",
+//           errorDescription: "unknown error"
+//         }
+//       }
+//       await RNPrimer.handleError(primerError);
+//     }
+//   },
+//   handleError: async (err) => {
+//     try {
+//       const primerError: IPrimerError = {
+//         errorId: "react-native",
+//         errorDescription: err.message
+//       }
+//       await RNPrimer.handleError(primerError);
+//     } catch (err) {
+//       let primerError: IPrimerError;
+//       if (err instanceof Error) {
+//         primerError = {
+//           errorId: "react-native-bridge",
+//           errorDescription: err.message
+//         }
+//       } else {
+//         primerError = {
+//           errorId: "react-native-bridge",
+//           errorDescription: "unknown error"
+//         }
+//       }
+//       await RNPrimer.handleError(primerError);
+//     }
+//   },
+//   handleSuccess: async () => {
+//     try {
+//       await RNPrimer.handleSuccess();
+//     } catch (err) {
+//       let primerError: IPrimerError;
+//       if (err instanceof Error) {
+//         primerError = {
+//           errorId: "react-native-bridge",
+//           errorDescription: err.message
+//         }
+//       } else {
+//         primerError = {
+//           errorId: "react-native-bridge",
+//           errorDescription: "unknown error"
+//         }
+//       }
+//       await RNPrimer.handleError(primerError);
+//     }
+//   }
+// }
+
+export const PrimerNativeMapping: IPrimer = {
+  async configure(settings?: PrimerSettings): Promise<void> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        await RNPrimer.configure(settings);
+        resolve();
+      } catch (err) {
+        reject(err);
       }
-      await RNPrimer.handleError(primerError);
-    }
+    });
   },
-  handleError: async (err) => {
-    try {
-      const primerError: IPrimerError = {
-        errorId: "react-native",
-        errorDescription: err.message
+
+  async showUniversalCheckout(clientToken: string): Promise<void> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        RNPrimer.removeAllListeners();
+        RNPrimer.showUniversalCheckout(clientToken);
+        resolve();
+      } catch (err) {
+        reject(err);
       }
-      await RNPrimer.handleError(primerError);
-    } catch (err) {
-      let primerError: IPrimerError;
-      if (err instanceof Error) {
-        primerError = {
-          errorId: "react-native-bridge",
-          errorDescription: err.message
-        }
-      } else {
-        primerError = {
-          errorId: "react-native-bridge",
-          errorDescription: "unknown error"
-        }
-      }
-      await RNPrimer.handleError(primerError);
-    }
-  },
-  handleSuccess: async () => {
-    try {
-      await RNPrimer.handleSuccess();
-    } catch (err) {
-      let primerError: IPrimerError;
-      if (err instanceof Error) {
-        primerError = {
-          errorId: "react-native-bridge",
-          errorDescription: err.message
-        }
-      } else {
-        primerError = {
-          errorId: "react-native-bridge",
-          errorDescription: "unknown error"
-        }
-      }
-      await RNPrimer.handleError(primerError);
-    }
-  }
-}
+    });
+    // if (config.settings || config.theme) {
+    //   RNPrimer.configure(config.settings || null, config.theme || null);
 
-export interface IClientSessionAction {
-  type:
-  | 'SELECT_PAYMENT_METHOD'
-  | 'UNSELECT_PAYMENT_METHOD'
-  | 'SET_BILLING_ADDRESS';
-  params?: IActionParams;
-}
+    //   let implementedRNCallbacks: any = {
+    //     // isClientTokenCallbackImplemented: (config.onClientTokenCallback !== undefined),
+    //     isTokenAddedToVaultImplemented: (config.onTokenAddedToVault !== undefined),
+    //     isOnResumeSuccessImplemented: (config.onResumeSuccess !== undefined),
+    //     isOnResumeErrorImplemented: (config.onError !== undefined),
+    //     isOnCheckoutDismissedImplemented: (config.onDismiss !== undefined),
+    //     isCheckoutFailedImplemented: (config.onError !== undefined),
+    //     isClientSessionActionsImplemented: (config.onClientSessionActions !== undefined)
+    //   };
 
-interface IActionParams {
-  billingAddress: Record<string, string | null>;
-  paymentMethodType?: string;
-  binData?: IBinData;
-}
+    //   RNPrimer.setImplementedRNCallbacks(implementedRNCallbacks)
+    //     .then(() => {
+    //       RNPrimer.addListener('onClientSessionActions', data => {
+    //         const clientSessionActions: IClientSessionAction[] = data;
+    //         if (config.onClientSessionActions) {
+    //           config.onClientSessionActions(clientSessionActions, resumeHandler);
+    //         }
+    //       });
 
-interface IBinData {
-  network: string;
-}
+    //       RNPrimer.addListener('onTokenizeSuccessCallback', data => {
+    //         const paymentInstrumentToken: PaymentInstrumentToken = data;
+    //         if (config.onTokenizeSuccess) {
+    //           config.onTokenizeSuccess(paymentInstrumentToken, resumeHandler);
+    //         }
+    //       });
 
-function configureListeners(config: IPrimerConfig) {
-  RNPrimer.removeAllListeners();
+    //       RNPrimer.addListener('onResumeSuccess', data => {
+    //         const resumeToken: string = data.resumeToken;
+    //         if (config.onResumeSuccess) {
+    //           config.onResumeSuccess(resumeToken, resumeHandler);
+    //         }
+    //       });
 
-  RNPrimer.addListener('onVaultSuccess', data => {
-    const paymentInstrumentToken: PaymentInstrumentToken = data;
-    if (config.onVaultSuccess) {
-      config.onVaultSuccess(paymentInstrumentToken);
-    }
-  });
+    //       RNPrimer.addListener('onCheckoutDismissed', _ => {
+    //         if (config.onDismiss) {
+    //           config.onDismiss();
+    //         }
+    //       });
 
-  RNPrimer.addListener('onClientSessionActions', data => {
-    const clientSessionActions: IClientSessionAction[] = data;
-    if (config.onClientSessionActions) {
-      config.onClientSessionActions(clientSessionActions, resumeHandler);
-    }
-  });
+    //       RNPrimer.addListener('onError', data => {
+    //         const err: IPrimerError = data.error;
+    //         if (config.onError) {
+    //           config.onError(err, resumeHandler);
+    //         }
+    //       });
+
+    //       RNPrimer.showUniversalCheckout(clientToken);
+    //     })
+    //     .catch( err => {
+    //       console.error(err);
+    //     })
+    //   }
 
   RNPrimer.addListener('onTokenizeSuccessCallback', data => {
     const paymentInstrumentToken: PaymentInstrumentToken = data;
@@ -111,102 +152,112 @@ function configureListeners(config: IPrimerConfig) {
     }
   });
 
-  RNPrimer.addListener('onResumeSuccess', data => {
-    const resumeToken: string = data.resumeToken;
-    if (config.onResumeSuccess) {
-      config.onResumeSuccess(resumeToken, resumeHandler);
-    }
-  });
+  async showVaultManager(clientToken: string): Promise<void> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        RNPrimer.removeAllListeners();
+        await RNPrimer.showVaultManager(clientToken);
+        resolve();
+      } catch (err) {
+        reject(err);
+      }
+    });
 
-  RNPrimer.addListener('onCheckoutDismissed', _ => {
-    if (config.onDismiss) {
-      config.onDismiss();
-    }
+    // if (config.settings || config.theme) {
+    //   RNPrimer.configure(config.settings || null, config.theme || null);
 
-    RNPrimer.removeAllListeners();
-  });
+    //   let implementedRNCallbacks: any = {
+    //     // isClientTokenCallbackImplemented: (config.onClientTokenCallback !== undefined),
+    //     isTokenAddedToVaultImplemented: (config.onTokenAddedToVault !== undefined),
+    //     isOnResumeSuccessImplemented: (config.onResumeSuccess !== undefined),
+    //     isOnResumeErrorImplemented: (config.onError !== undefined),
+    //     isOnCheckoutDismissedImplemented: (config.onDismiss !== undefined),
+    //     isCheckoutFailedImplemented: (config.onError !== undefined),
+    //     isClientSessionActionsImplemented: (config.onClientSessionActions !== undefined)
+    //   };
 
-  RNPrimer.addListener('onError', data => {
-    const err: IPrimerError = data.error;
-    if (config.onError) {
-      config.onError(err, resumeHandler);
-    }
-  });
-}
+    //   RNPrimer.setImplementedRNCallbacks(implementedRNCallbacks);
+    // }
 
-export const PrimerNativeMapping: IPrimer = {
+    // // RNPrimer.addListener('onClientTokenCallback', _ => {
+    // //   if (config.onClientTokenCallback) {
+    // //     config.onClientTokenCallback(resumeHandler);
+    // //   }
+    // // });
 
-  showUniversalCheckout(clientToken: string, config: IPrimerConfig): void {
-    RNPrimer.configure(config.settings || null, config.theme || null);
+    // RNPrimer.addListener('onClientSessionActions', data => {
+    //   const clientSessionActions: IClientSessionAction[] = data;
+    //   if (config.onClientSessionActions) {
+    //     config.onClientSessionActions(clientSessionActions, resumeHandler);
+    //   } else {
+    //     RNPrimer.handleSuccess();
+    //   }
+    // });
 
-    let implementedRNCallbacks: any = {
-      isTokenAddedToVaultImplemented: (config.onVaultSuccess !== undefined),
-      isOnResumeSuccessImplemented: (config.onResumeSuccess !== undefined),
-      isOnResumeErrorImplemented: (config.onError !== undefined),
-      isOnCheckoutDismissedImplemented: (config.onDismiss !== undefined),
-      isCheckoutFailedImplemented: (config.onError !== undefined),
-      isClientSessionActionsImplemented: (config.onClientSessionActions !== undefined)
-    };
+    // RNPrimer.addListener('onTokenizeSuccessCallback', data => {
+    //   const paymentInstrumentToken: PaymentInstrumentToken = data;
+    //   if (config.onTokenizeSuccess) {
+    //     config.onTokenizeSuccess(paymentInstrumentToken, resumeHandler);
+    //   }
+    // });
 
-    RNPrimer.setImplementedRNCallbacks(implementedRNCallbacks)
-      .then(() => {
-        configureListeners(config);
-        RNPrimer.showUniversalCheckout(clientToken);
-      })
-      .catch(err => {
-        console.error(err);
-      })
+    // RNPrimer.addListener('onResumeSuccess', data => {
+    //   const resumeToken: string = data.resumeToken;
+    //   if (config.onResumeSuccess) {
+    //     config.onResumeSuccess(resumeToken, resumeHandler);
+    //   }
+    // });
+
+    // RNPrimer.addListener('onCheckoutDismissed', () => {
+    //   if (config.onDismiss) {
+    //     config.onDismiss();
+    //   }
+    // });
+
+    // RNPrimer.addListener('onError', data => {
+    //   const err: IPrimerError = data.error;
+    //   if (config.onError) {
+    //     config.onError(err, resumeHandler);
+    //   }
+    // });
   },
 
-  showVaultManager(clientToken: string, config: IPrimerConfig): void {
-    RNPrimer.configure(config.settings || null, config.theme || null);
+  async showPaymentMethod(
+    paymentMethodType: string,
+    intent: PrimerSessionIntent,
+    clientToken: string
+  ): Promise<void> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        RNPrimer.removeAllListeners();
+        await RNPrimer.showPaymentMethod(paymentMethodType, intent, clientToken);
+        resolve();
+      } catch (err) {
+        reject(err);
+      }
+    });
 
-    let implementedRNCallbacks: any = {
-      isTokenAddedToVaultImplemented: (config.onVaultSuccess !== undefined),
-      isOnResumeSuccessImplemented: (config.onResumeSuccess !== undefined),
-      isOnResumeErrorImplemented: (config.onError !== undefined),
-      isOnCheckoutDismissedImplemented: (config.onDismiss !== undefined),
-      isCheckoutFailedImplemented: (config.onError !== undefined),
-      isClientSessionActionsImplemented: (config.onClientSessionActions !== undefined)
-    };
+    // RNPrimer.removeAllListeners();
 
-    RNPrimer.setImplementedRNCallbacks(implementedRNCallbacks)
-      .then((() => {
-        configureListeners(config);
-        RNPrimer.showVaultManager(clientToken);
-      }))
-      .catch(err => {
-        console.error(err);
-      })
+    // if (config.settings || config.theme) {
+    //   RNPrimer.configure(config.settings || null, config.theme || null);
+    // }
+
+    // let implementedRNCallbacks: any = {
+    //   // isClientTokenCallbackImplemented: (config.onClientTokenCallback !== undefined),
+    //   isTokenAddedToVaultImplemented: (config.onTokenAddedToVault !== undefined),
+    //   isOnResumeSuccessImplemented: (config.onResumeSuccess !== undefined),
+    //   isOnResumeErrorImplemented: (config.onError !== undefined),
+    //   isOnCheckoutDismissedImplemented: (config.onDismiss !== undefined),
+    //   isCheckoutFailedImplemented: (config.onError !== undefined),
+    //   isClientSessionActionsImplemented: (config.onClientSessionActions !== undefined)
+    // };
+
+    // RNPrimer.setImplementedRNCallbacks(implementedRNCallbacks);
+    // RNPrimer.showPaymentMethod(clientToken, intent.paymentMethod, intent.vault === true ? "vault" : "checkout");
   },
 
-  showPaymentMethod(
-    clientToken: string,
-    intent: PrimerPaymentMethodIntent,
-    config: IPrimerConfig
-  ): void {
-    RNPrimer.configure(config.settings || null, config.theme || null);
-
-    let implementedRNCallbacks: any = {
-      isTokenAddedToVaultImplemented: (config.onVaultSuccess !== undefined),
-      isOnResumeSuccessImplemented: (config.onResumeSuccess !== undefined),
-      isOnResumeErrorImplemented: (config.onError !== undefined),
-      isOnCheckoutDismissedImplemented: (config.onDismiss !== undefined),
-      isCheckoutFailedImplemented: (config.onError !== undefined),
-      isClientSessionActionsImplemented: (config.onClientSessionActions !== undefined)
-    };
-
-    RNPrimer.setImplementedRNCallbacks(implementedRNCallbacks)
-      .then(() => {
-        configureListeners(config);
-        RNPrimer.showPaymentMethod(clientToken, intent.paymentMethod, intent.vault === true ? "vault" : "checkout");
-      })
-      .catch(err => {
-        console.error(err);
-      })
-  },
-
-  dispose(): void {
+  dismiss(): void {
     RNPrimer.removeAllListeners();
     RNPrimer.dispose();
   },
