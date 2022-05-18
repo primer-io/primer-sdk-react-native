@@ -3,20 +3,18 @@ import * as React from 'react';
 import { Primer } from '@primer-io/react-native';
 import { View, Text, useColorScheme, TouchableOpacity } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
-import { createClientSession, createPayment, resumePayment, setClientSessionActions } from '../network/api';
+import { createClientSession, createPayment, resumePayment } from '../network/api';
 import { styles } from '../styles';
 import type { IAppSettings } from '../models/IAppSettings';
 import type { IClientSessionRequestBody } from '../models/IClientSessionRequestBody';
-import type { OnClientSessionActionsCallback, OnPrimerErrorCallback, OnTokenizeSuccessCallback } from 'lib/typescript/models/primer-callbacks';
 import type { IClientSession } from '../models/IClientSession';
 import { makeRandomString } from '../helpers/helpers';
-import type { IPayment } from '../models/IPayment';
-import type { PrimerPaymentMethodIntent } from 'lib/typescript/models/primer-intent';
-import type { PrimerConfig } from 'lib/typescript/models/primer-config';
-import type { OnResumeCallback } from 'src/models/primer-callbacks';
+import type { ErrorHandler } from 'src/models/IPrimer';
+import type { PrimerSettings } from 'src/models/PrimerSettings';
+import { PrimerSessionIntent } from 'src/models/PrimerSessionIntent';
+import type { IPrimerCheckoutData } from 'src/models/IPrimerCheckoutData';
 
-let currentClientToken: string | null = null;
-let paymentId: string | null = null;
+let clientToken: string | null = null;
 
 const CheckoutScreen = (props: any) => {
     const isDarkMode = useColorScheme() === 'dark';
@@ -127,102 +125,91 @@ const CheckoutScreen = (props: any) => {
     //     }
     // }
 
-    const onTokenizeSuccess: OnTokenizeSuccessCallback = async (paymentInstrument, resumeHandler) => {
-        try {
-            const payment: IPayment = await createPayment(paymentInstrument.token);
-            
-            if (payment.requiredAction && payment.requiredAction.clientToken) {
-                paymentId = payment.id;
+    const onCheckoutComplete = (checkoutData: IPrimerCheckoutData) => {
 
-                if (payment.requiredAction.name === "3DS_AUTHENTICATION") {
-                    console.warn("Make sure you have used a card number that supports 3DS, otherwise the SDK will hang.")
-                }
-                paymentId = payment.id;
-                resumeHandler.handleNewClientToken(payment.requiredAction.clientToken);
-            } else {
-                props.navigation.navigate('Result', payment);
-                resumeHandler.handleSuccess();
-            }
-        } catch (err) {
-            if (resumeHandler) {
-                if (err instanceof Error) {
-                    resumeHandler.handleError(err.message);
-                } else if (typeof err === "string") {
-                    resumeHandler.handleError(err);
-                } else {
-                    resumeHandler.handleError('Unknown error');
-                }
-            }
-        }
-    };
-
-    const onResumeSuccess: OnResumeCallback = async (resumeToken, resumeHandler) => {
-        try {
-            if (paymentId) {
-                const payment: IPayment = await resumePayment(paymentId, resumeToken);
-                props.navigation.navigate('Result', payment);
-
-                if (resumeHandler) {
-                    resumeHandler.handleSuccess();
-                }
-            } else {
-                const err = new Error("Invalid value for paymentId");
-                throw err;
-            }
-            paymentId = null;
-
-        } catch (err) {
-            paymentId = null;
-
-            if (resumeHandler) {
-                if (err instanceof Error) {
-                    resumeHandler.handleError(err);
-                } else if (typeof err === "string") {
-                    resumeHandler.handleError(new Error(err));
-                } else {
-                    resumeHandler.handleError(new Error('Unknown error'));
-                }
-            }
-        }
-    };
-
-    const onDismiss = () => {
-        currentClientToken = null;
     }
 
-    const onError: OnPrimerErrorCallback = async (primerError) => {
-        console.error(primerError.name);
-    };
+    // const onTokenizeSuccess: OnTokenizeSuccessCallback = async (paymentInstrument, resumeHandler) => {
+    //     try {
+    //         const payment: IPayment = await createPayment(paymentInstrument.token);
+
+    //         if (payment.requiredAction && payment.requiredAction.clientToken) {
+    //             paymentId = payment.id;
+
+    //             if (payment.requiredAction.name === "3DS_AUTHENTICATION") {
+    //                 console.warn("Make sure you have used a card number that supports 3DS, otherwise the SDK will hang.")
+    //             }
+    //             paymentId = payment.id;
+    //             resumeHandler.handleNewClientToken(payment.requiredAction.clientToken);
+    //         } else {
+    //             props.navigation.navigate('Result', payment);
+    //             resumeHandler.handleSuccess();
+    //         }
+    //     } catch (err) {
+    //         if (resumeHandler) {
+    //             if (err instanceof Error) {
+    //                 resumeHandler.handleError(err.message);
+    //             } else if (typeof err === "string") {
+    //                 resumeHandler.handleError(err);
+    //             } else {
+    //                 resumeHandler.handleError('Unknown error');
+    //             }
+    //         }
+    //     }
+    // };
+
+    // const onResumeSuccess: OnResumeCallback = async (resumeToken, resumeHandler) => {
+    //     try {
+    //         if (paymentId) {
+    //             const payment: IPayment = await resumePayment(paymentId, resumeToken);
+    //             props.navigation.navigate('Result', payment);
+
+    //             if (resumeHandler) {
+    //                 resumeHandler.handleSuccess();
+    //             }
+    //         } else {
+    //             const err = new Error("Invalid value for paymentId");
+    //             throw err;
+    //         }
+    //         paymentId = null;
+
+    //     } catch (err) {
+    //         paymentId = null;
+
+    //         if (resumeHandler) {
+    //             if (err instanceof Error) {
+    //                 resumeHandler.handleError(err);
+    //             } else if (typeof err === "string") {
+    //                 resumeHandler.handleError(new Error(err));
+    //             } else {
+    //                 resumeHandler.handleError(new Error('Unknown error'));
+    //             }
+    //         }
+    //     }
+    // };
+
+    const onDismiss = () => {
+        clientToken = null;
+    }
+
+    const onCheckoutFail = (error: Error, handler: ErrorHandler) => {
+        console.error(error);
+    }
 
     const onUniversalCheckoutButtonTapped = async () => {
         try {
             const clientSession: IClientSession = await createClientSession(clientSessionRequestBody);
-            currentClientToken = clientSession.clientToken;
+            clientToken = clientSession.clientToken;
 
-            const primerConfig: PrimerConfig = {
-                settings: {
-                    options: {
-                        isResultScreenEnabled: true,
-                        isLoadingScreenEnabled: true,
-                        // is3DSDevelopmentModeEnabled: true,
-                        ios: {
-                            urlScheme: 'primer',
-                            merchantIdentifier: 'merchant.checkout.team'
-                        },
-                        android: {
-                            redirectScheme: 'primer'
-                        }
+            const settings: PrimerSettings = {
+                paymentMethodOptions: {
+                    iOS: {
+                        urlScheme: 'merchant://'
                     }
-                },
-                // onClientSessionActions: onClientSessionActions,
-                onTokenizeSuccess: onTokenizeSuccess,
-                onResumeSuccess: onResumeSuccess,
-                onError: onError,
-                onDismiss: onDismiss
+                }
             };
-
-            //@ts-ignore
-            Primer.showUniversalCheckout(currentClientToken, primerConfig);
+            await Primer.configure(settings);
+            await Primer.showUniversalCheckout(clientToken);
 
         } catch (err) {
             if (err instanceof Error) {
@@ -238,35 +225,17 @@ const CheckoutScreen = (props: any) => {
     const onApplePayButtonTapped = async () => {
         try {
             const clientSession: IClientSession = await createClientSession(clientSessionRequestBody);
-            currentClientToken = clientSession.clientToken;
+            clientToken = clientSession.clientToken;
 
-            const primerConfig = {
-                settings: {
-                    options: {
-                        isResultScreenEnabled: true,
-                        isLoadingScreenEnabled: true,
-                        is3DSDevelopmentModeEnabled: true,
-                        ios: {
-                            urlScheme: 'primer',
-                            merchantIdentifier: 'merchant.checkout.team'
-                        },
-                        android: {
-                            redirectScheme: 'primer'
-                        }
+            const settings: PrimerSettings = {
+                paymentMethodOptions: {
+                    iOS: {
+                        urlScheme: 'merchant://'
                     }
-                },
-                // onClientSessionActions: onClientSessionActions,
-                onTokenizeSuccess: onTokenizeSuccess,
-                onResumeSuccess: onResumeSuccess
+                }
             };
-
-            const intent: PrimerPaymentMethodIntent = {
-                vault: false,
-                paymentMethod: 'APPLE_PAY'
-            };
-
-            //@ts-ignore
-            Primer.showPaymentMethod(currentClientToken, intent, primerConfig);
+            await Primer.configure(settings);
+            await Primer.showPaymentMethod('APPLE_PAY', PrimerSessionIntent.CHECKOUT, clientToken);
 
         } catch (err) {
             if (err instanceof Error) {
