@@ -99,13 +99,9 @@ fileprivate struct BusinessRN: Decodable {
 
 fileprivate extension BusinessRN {
     var primerFormat: BusinessDetails? {
-        guard let address = address else {
-            return nil
-        }
-        
         return BusinessDetails(
             name: name,
-            address: address.primerFormat
+            address: address?.primerFormat
         )
     }
 }
