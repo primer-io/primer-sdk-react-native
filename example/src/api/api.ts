@@ -18,13 +18,27 @@ export const createClientSession = async () => {
         order: {
             countryCode: 'NL',
             lineItems: [
-            {
-                amount: 30,
-                quantity: 1,
-                itemId: 'item-123',
-                description: 'this item',
-                discountAmount: 0,
-            },
+                {
+                    amount: 10,
+                    quantity: 1,
+                    itemId: 'shoes-321',
+                    description: 'Fancy shoes',
+                    discountAmount: 0,
+                },
+                {
+                    amount: 20,
+                    quantity: 2,
+                    itemId: 'hoodie-738921',
+                    description: 'Cool hoodie',
+                    discountAmount: 0,
+                },
+                {
+                    amount: 30,
+                    quantity: 3,
+                    itemId: 'tshirt-3721',
+                    description: 'T-shirt',
+                    discountAmount: 0,
+                },
             ],
         },
         customer: {

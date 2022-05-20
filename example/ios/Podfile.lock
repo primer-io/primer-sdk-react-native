@@ -19,12 +19,12 @@ PODS:
     - DoubleConversion
     - glog
   - glog (0.3.5)
-  - primer-io-react-native (0.13.0-beta.1):
-    - PrimerSDK (= 1.28.0-beta.6)
+  - primer-io-react-native (0.13.0-beta.2):
+    - PrimerSDK (= 1.28.0-beta.9)
     - React-Core
-  - PrimerSDK (1.28.0-beta.6):
-    - PrimerSDK/Core (= 1.28.0-beta.6)
-  - PrimerSDK/Core (1.28.0-beta.6)
+  - PrimerSDK (1.28.0-beta.9):
+    - PrimerSDK/Core (= 1.28.0-beta.9)
+  - PrimerSDK/Core (1.28.0-beta.9)
   - RCTRequired (0.63.4)
   - RCTTypeSafety (0.63.4):
     - FBLazyVector (= 0.63.4)
@@ -191,7 +191,7 @@ PODS:
     - React-cxxreact (= 0.63.4)
     - React-jsi (= 0.63.4)
   - React-jsinspector (0.63.4)
-  - react-native-safe-area-context (3.3.2):
+  - react-native-safe-area-context (3.4.1):
     - React-Core
   - React-RCTActionSheet (0.63.4):
     - React-Core/RCTActionSheetHeaders (= 0.63.4)
@@ -255,7 +255,7 @@ PODS:
     - React-jsi (= 0.63.4)
   - RNCMaskedView (0.2.6):
     - React-Core
-  - RNScreens (3.7.2):
+  - RNScreens (3.13.1):
     - React-Core
     - React-RCTImage
   - Yoga (1.14.0)
@@ -368,8 +368,8 @@ SPEC CHECKSUMS:
   FBReactNativeSpec: f2c97f2529dd79c083355182cc158c9f98f4bd6e
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
   glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
-  primer-io-react-native: 5c97fe5763d4e009ab3cc8e2c9d538ca8e521b25
-  PrimerSDK: 2c38f09bc095b35c8e9448ab2002505e0f3a4050
+  primer-io-react-native: 0bf1a293e81728cf1176d9ab67e78bfabdf0239b
+  PrimerSDK: fefedf1f209025942e568833a4693fd80dff010c
   RCTRequired: 082f10cd3f905d6c124597fd1c14f6f2655ff65e
   RCTTypeSafety: 8c9c544ecbf20337d069e4ae7fd9a377aadf504b
   React: b0a957a2c44da4113b0c4c9853d8387f8e64e615
@@ -380,7 +380,7 @@ SPEC CHECKSUMS:
   React-jsi: a0418934cf48f25b485631deb27c64dc40fb4c31
   React-jsiexecutor: 93bd528844ad21dc07aab1c67cb10abae6df6949
   React-jsinspector: 58aef7155bc9a9683f5b60b35eccea8722a4f53a
-  react-native-safe-area-context: 584dc04881deb49474363f3be89e4ca0e854c057
+  react-native-safe-area-context: 9e40fb181dac02619414ba1294d6c2a807056ab9
   React-RCTActionSheet: 89a0ca9f4a06c1f93c26067af074ccdce0f40336
   React-RCTAnimation: 1bde3ecc0c104c55df246eda516e0deb03c4e49b
   React-RCTBlob: a97d378b527740cc667e03ebfa183a75231ab0f0
@@ -392,7 +392,7 @@ SPEC CHECKSUMS:
   React-RCTVibration: ae4f914cfe8de7d4de95ae1ea6cc8f6315d73d9d
   ReactCommon: 73d79c7039f473b76db6ff7c6b159c478acbbb3b
   RNCMaskedView: c298b644a10c0c142055b3ae24d83879ecb13ccd
-  RNScreens: 0591543e343c7444ea1756b6265d81a4295922c9
+  RNScreens: 40a2cb40a02a609938137a1e0acfbf8fc9eebf19
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
 
 PODFILE CHECKSUM: d296aff9309b573f72b66664f86018a234c8cff8
