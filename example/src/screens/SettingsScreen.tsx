@@ -86,12 +86,13 @@ export const SettingsScreen = (args: ISettingsScreenArguments) => {
         isFullScreenEnabled: false,
         isLoadingScreenEnabled: true,
         isResultScreenEnabled: true,
-        isThreeDsEnabled: true,
+        is3DSOnVaultingEnabled: true,
         ios: {
           merchantIdentifier: 'merchant.checkout.team',
           urlScheme: 'primer',
           urlSchemeIdentifier: 'primer',
         },
+        is3DSDevelopmentModeEnabled: false,
         android: {
           redirectScheme: 'primer',
         },
