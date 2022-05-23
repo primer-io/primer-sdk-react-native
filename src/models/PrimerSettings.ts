@@ -1,10 +1,15 @@
-import type { PrimerErrorHandler, PrimerPaymentCreationHandler, PrimerResumeHandler, PrimerTokenizationHandler } from "./Primer";
-import type { PrimerCheckoutData } from "./PrimerCheckoutData";
-import type { PrimerCheckoutPaymentMethodData } from "./PrimerCheckoutPaymentMethodData";
-import type { PrimerClientSession } from "./PrimerClientSession";
-import type { PrimerPaymentMethodTokenData } from "./PrimerPaymentMethodTokenData";
-import type { PrimerError } from "./PrimerError";
-import type { IPrimerTheme } from "./PrimerTheme";
+import type {
+  PrimerErrorHandler,
+  PrimerPaymentCreationHandler,
+  PrimerResumeHandler,
+  PrimerTokenizationHandler,
+} from './Primer';
+import type { PrimerCheckoutData } from './PrimerCheckoutData';
+import type { PrimerCheckoutPaymentMethodData } from './PrimerCheckoutPaymentMethodData';
+import type { PrimerClientSession } from './PrimerClientSession';
+import type { PrimerPaymentMethodTokenData } from './PrimerPaymentMethodTokenData';
+import type { PrimerError } from './PrimerError';
+import type { IPrimerTheme } from './PrimerTheme';
 
 export type PrimerSettings = IPrimerSettings;
 
@@ -17,9 +22,15 @@ interface IPrimerSettings {
 
   onBeforeClientSessionUpdate?: () => void;
   onClientSessionUpdate?: (clientSession: PrimerClientSession) => void;
-  onBeforePaymentCreate?: (checkoutPaymentMethodData: PrimerCheckoutPaymentMethodData, handler: PrimerPaymentCreationHandler) => void;
+  onBeforePaymentCreate?: (
+    checkoutPaymentMethodData: PrimerCheckoutPaymentMethodData,
+    handler: PrimerPaymentCreationHandler
+  ) => void;
   onCheckoutComplete?: (checkoutData: PrimerCheckoutData) => void;
-  onTokenizeSuccess?: (paymentMethodTokenData: PrimerPaymentMethodTokenData, handler: PrimerTokenizationHandler) => void;
+  onTokenizeSuccess?: (
+    paymentMethodTokenData: PrimerPaymentMethodTokenData,
+    handler: PrimerTokenizationHandler
+  ) => void;
   onResumeSuccess?: (resumeToken: string, handler: PrimerResumeHandler) => void;
   onCheckoutFail?: (error: PrimerError, handler: PrimerErrorHandler) => void;
   onDismiss?: () => void;
@@ -28,8 +39,8 @@ interface IPrimerSettings {
 //----------------------------------------
 
 interface IPrimerLocaleData {
-  languageCode?: string
-  localeCode?: string
+  languageCode?: string;
+  localeCode?: string;
 }
 
 //----------------------------------------
@@ -37,10 +48,10 @@ interface IPrimerLocaleData {
 interface IPrimerPaymentMethodOptions {
   iOS?: {
     urlScheme?: string;
-  }
+  };
   android?: {
     redirectScheme?: string;
-  },
+  };
   apayaOptions?: IPrimerApayaOptions;
   applePayOptions?: IPrimerApplePayOptions;
   cardPaymentOptions?: IPrimerCardPaymentOptions;

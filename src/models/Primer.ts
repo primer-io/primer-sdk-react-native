@@ -1,5 +1,5 @@
-import type { PrimerSessionIntent } from "./PrimerSessionIntent";
-import type { PrimerSettings } from "./PrimerSettings";
+import type { PrimerSessionIntent } from './PrimerSessionIntent';
+import type { PrimerSettings } from './PrimerSettings';
 
 export interface Primer {
   configure(settings: PrimerSettings): Promise<void>;
@@ -9,7 +9,7 @@ export interface Primer {
     paymentMethodType: string,
     intent: PrimerSessionIntent,
     clientToken: string
-  ): Promise<void>
+  ): Promise<void>;
   dismiss(): void;
 }
 

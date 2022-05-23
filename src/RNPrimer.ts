@@ -17,9 +17,9 @@ type EventType =
   | 'detectImplementedRNCallbacks';
 
 export interface IPrimerError {
-  errorId: string
-  errorDescription?: string
-  recoverySuggestion?: string
+  errorId: string;
+  errorDescription?: string;
+  recoverySuggestion?: string;
 }
 
 const RNPrimer = {
@@ -57,7 +57,7 @@ const RNPrimer = {
   configure: (settings: PrimerSettings | undefined): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {
-        await NativePrimer.configure(JSON.stringify(settings) || "");
+        await NativePrimer.configure(JSON.stringify(settings) || '');
         resolve();
       } catch (err) {
         reject(err);
@@ -94,7 +94,11 @@ const RNPrimer = {
   ): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {
-        await NativePrimer.showPaymentMethod(clientToken, paymentMethodType, intent);
+        await NativePrimer.showPaymentMethod(
+          clientToken,
+          paymentMethodType,
+          intent
+        );
         resolve();
       } catch (err) {
         reject(err);
@@ -144,7 +148,7 @@ const RNPrimer = {
   handleTokenizationFailure: (errorMessage: string | null): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {
-        await NativePrimer.handleTokenizationFailure(errorMessage || "");
+        await NativePrimer.handleTokenizationFailure(errorMessage || '');
         resolve();
       } catch (err) {
         reject(err);
@@ -152,47 +156,47 @@ const RNPrimer = {
     });
   },
 
-    // Resume Handlers
+  // Resume Handlers
 
-    handleResumeWithNewClientToken: (newClientToken: string): Promise<void> => {
-      return new Promise(async (resolve, reject) => {
-        try {
-          await NativePrimer.handleResumeWithNewClientToken(newClientToken);
-          resolve();
-        } catch (err) {
-          reject(err);
-        }
-      });
-    },
-  
-    handleResumeSuccess: (): Promise<void> => {
-      return new Promise(async (resolve, reject) => {
-        try {
-          await NativePrimer.handleResumeSuccess();
-          resolve();
-        } catch (err) {
-          reject(err);
-        }
-      });
-    },
-  
-    handleResumeFailure: (errorMessage: string | null): Promise<void> => {
-      return new Promise(async (resolve, reject) => {
-        try {
-          await NativePrimer.handleTokenizationFailure(errorMessage || "");
-          resolve();
-        } catch (err) {
-          reject(err);
-        }
-      });
-    },
+  handleResumeWithNewClientToken: (newClientToken: string): Promise<void> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        await NativePrimer.handleResumeWithNewClientToken(newClientToken);
+        resolve();
+      } catch (err) {
+        reject(err);
+      }
+    });
+  },
+
+  handleResumeSuccess: (): Promise<void> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        await NativePrimer.handleResumeSuccess();
+        resolve();
+      } catch (err) {
+        reject(err);
+      }
+    });
+  },
+
+  handleResumeFailure: (errorMessage: string | null): Promise<void> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        await NativePrimer.handleTokenizationFailure(errorMessage || '');
+        resolve();
+      } catch (err) {
+        reject(err);
+      }
+    });
+  },
 
   // Payment Creation Handlers
 
   handlePaymentCreationAbort: (errorMessage: string | null): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {
-        await NativePrimer.handlePaymentCreationAbort(errorMessage || "");
+        await NativePrimer.handlePaymentCreationAbort(errorMessage || '');
         resolve();
       } catch (err) {
         reject(err);
@@ -211,18 +215,18 @@ const RNPrimer = {
     });
   },
 
-    // Error Handler
+  // Error Handler
 
-    handleErrorMessage: (errorMessage: string | null): Promise<void> => {
-      return new Promise(async (resolve, reject) => {
-        try {
-          await NativePrimer.handleErrorMessage(errorMessage || "");
-          resolve();
-        } catch (err) {
-          reject(err);
-        }
-      });
-    },
+  handleErrorMessage: (errorMessage: string | null): Promise<void> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        await NativePrimer.handleErrorMessage(errorMessage || '');
+        resolve();
+      } catch (err) {
+        reject(err);
+      }
+    });
+  },
 
   handleSuccess: (): Promise<void> => {
     return new Promise(async (resolve, reject) => {
@@ -238,14 +242,15 @@ const RNPrimer = {
   setImplementedRNCallbacks: (implementedRNCallbacks: any): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {
-        await NativePrimer.setImplementedRNCallbacks(JSON.stringify(implementedRNCallbacks));
+        await NativePrimer.setImplementedRNCallbacks(
+          JSON.stringify(implementedRNCallbacks)
+        );
         resolve();
       } catch (err) {
         reject(err);
       }
     });
   },
-
 };
 
 export default RNPrimer;
