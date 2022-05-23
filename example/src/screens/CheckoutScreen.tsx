@@ -1,18 +1,22 @@
 
 import * as React from 'react';
-import { Primer } from '@primer-io/react-native';
+import { 
+    PrimerCheckoutData, 
+    PrimerCheckoutPaymentMethodData, 
+    Primer, 
+    PrimerErrorHandler, 
+    PrimerPaymentCreationHandler, 
+    PrimerSessionIntent, 
+    PrimerSettings 
+} from '@primer-io/react-native';
 import { View, Text, useColorScheme, TouchableOpacity } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
-import { createClientSession, createPayment, resumePayment } from '../network/api';
+import { createClientSession } from '../network/api';
 import { styles } from '../styles';
 import type { IAppSettings } from '../models/IAppSettings';
 import type { IClientSessionRequestBody } from '../models/IClientSessionRequestBody';
 import type { IClientSession } from '../models/IClientSession';
 import { makeRandomString } from '../helpers/helpers';
-import type { ErrorHandler } from 'src/models/IPrimer';
-import type { PrimerSettings } from 'src/models/PrimerSettings';
-import { PrimerSessionIntent } from 'src/models/PrimerSessionIntent';
-import type { IPrimerCheckoutData } from 'src/models/IPrimerCheckoutData';
 
 let clientToken: string | null = null;
 
@@ -125,9 +129,6 @@ const CheckoutScreen = (props: any) => {
     //     }
     // }
 
-    const onCheckoutComplete = (checkoutData: IPrimerCheckoutData) => {
-
-    }
 
     // const onTokenizeSuccess: OnTokenizeSuccessCallback = async (paymentInstrument, resumeHandler) => {
     //     try {
@@ -190,11 +191,22 @@ const CheckoutScreen = (props: any) => {
 
     const onDismiss = () => {
         clientToken = null;
-    }
+    };
 
-    const onCheckoutFail = (error: Error, handler: ErrorHandler) => {
+    const onCheckoutComplete = (checkoutData: PrimerCheckoutData) => {
+        console.log(`PrimerCheckoutData:\n${JSON.stringify(checkoutData)}`);
+    };
+
+    const onCheckoutFail = (error: Error, handler: PrimerErrorHandler) => {
         console.error(error);
+        handler.handleFailure("My RN message");
+    };
+
+    const onBeforePaymentCreate = (checkoutPaymentMethodData: PrimerCheckoutPaymentMethodData, handler: PrimerPaymentCreationHandler) => {
+        console.warn(`onBeforePaymentCreate`);
+        handler.continuePaymentCreation();
     }
+    
 
     const onUniversalCheckoutButtonTapped = async () => {
         try {
@@ -206,10 +218,17 @@ const CheckoutScreen = (props: any) => {
                     iOS: {
                         urlScheme: 'merchant://'
                     }
-                }
+                },
+                onCheckoutComplete: onCheckoutComplete,
+                onCheckoutFail: onCheckoutFail,
+                onBeforePaymentCreate: onBeforePaymentCreate,
             };
             await Primer.configure(settings);
             await Primer.showUniversalCheckout(clientToken);
+
+            setTimeout(() => {
+                Primer.dismiss();
+            }, 3000);
 
         } catch (err) {
             if (err instanceof Error) {
