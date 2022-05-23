@@ -1,4 +1,4 @@
-import type { RgbaColor } from 'src/models/primer-theme';
+import type { RgbaColor } from "../models/PrimerTheme";
 
 export function toRgbColor(hex: string): RgbaColor | null {
   // Make sure it looks like a proper color hex string
