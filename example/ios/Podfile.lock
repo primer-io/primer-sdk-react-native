@@ -379,7 +379,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   PrimerSDK:
-    :commit: 2b4ad16d68f44d32ef55ed9005ed2998c5e99466
+    :commit: c4115ae5b8022b0a2cf6a31788352150ab445317
     :git: https://github.com/primer-io/primer-sdk-ios.git
 
 SPEC CHECKSUMS:
