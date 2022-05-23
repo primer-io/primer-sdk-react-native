@@ -9,23 +9,23 @@ import Foundation
 
 internal struct ImplementedRNCallbacks: Codable {
     
-    public var isPrimerDidCompleteCheckoutWithDataImplemented: Bool = false
-    public var isPrimerWillCreatePaymentWithDataImplemented: Bool = false
-    public var isPrimerClientSessionWillUpdateImplemented: Bool = false
-    public var isPrimerClientSessionDidUpdateImplemented: Bool = false
-    public var isPrimerDidTokenizePaymentMethodImplemented: Bool = false
-    public var isPrimerDidResumeWithImplemented: Bool = false
-    public var isPrimerDidDismissImplemented: Bool = false
-    public var isPrimerDidFailWithErrorImplemented: Bool = false
+    public var isOnCheckoutCompleteImplemented: Bool = false
+    public var isOnBeforeClientSessionUpdateImplemented: Bool = false
+    public var isOnClientSessionUpdateImplemented: Bool = false
+    public var isOnBeforePaymentCreateImplemented: Bool = false
+    public var isOnCheckoutFailImplemented: Bool = false
+    public var isOnDismissImplemented: Bool = false
+    public var isOnTokenizeSuccessImplemented: Bool = false
+    public var isOnResumeSuccessImplemented: Bool = false
     
     enum CodingKeys: String, CodingKey {
-        case isPrimerDidCompleteCheckoutWithDataImplemented = "primerDidCompleteCheckoutWithData"
-        case isPrimerWillCreatePaymentWithDataImplemented = "primerWillCreatePaymentWithData"
-        case isPrimerClientSessionWillUpdateImplemented = "primerClientSessionWillUpdate"
-        case isPrimerClientSessionDidUpdateImplemented = "primerClientSessionDidUpdate"
-        case isPrimerDidTokenizePaymentMethodImplemented = "primerDidTokenizePaymentMethod"
-        case isPrimerDidResumeWithImplemented = "primerDidResumeWith"
-        case isPrimerDidDismissImplemented = "primerDidDismiss"
-        case isPrimerDidFailWithErrorImplemented = "primerDidFailWithError"
+        case isOnCheckoutCompleteImplemented = "onCheckoutComplete"
+        case isOnBeforeClientSessionUpdateImplemented = "onBeforeClientSessionUpdate"
+        case isOnClientSessionUpdateImplemented = "onClientSessionUpdate"
+        case isOnBeforePaymentCreateImplemented = "onBeforePaymentCreate"
+        case isOnCheckoutFailImplemented = "onCheckoutFail"
+        case isOnDismissImplemented = "onDismiss"
+        case isOnTokenizeSuccessImplemented = "onTokenizeSuccess"
+        case isOnResumeSuccessImplemented = "onResumeSuccess"
     }
 }
