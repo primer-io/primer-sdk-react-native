@@ -225,11 +225,6 @@ const CheckoutScreen = (props: any) => {
             };
             await Primer.configure(settings);
             await Primer.showUniversalCheckout(clientToken);
-
-            setTimeout(() => {
-                Primer.dismiss();
-            }, 3000);
-
         } catch (err) {
             if (err instanceof Error) {
                 setError(err);
