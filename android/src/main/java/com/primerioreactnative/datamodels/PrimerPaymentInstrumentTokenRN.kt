@@ -1,8 +1,8 @@
 package com.primerioreactnative.datamodels
 
-import io.primer.android.model.dto.PaymentInstrumentData
-import io.primer.android.model.dto.PaymentMethodToken
-import io.primer.android.model.dto.TokenType
+import io.primer.android.data.tokenization.models.PaymentInstrumentData
+import io.primer.android.data.tokenization.models.TokenType
+import io.primer.android.domain.tokenization.models.PrimerPaymentMethodTokenData
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -31,7 +31,7 @@ data class PrimerPaymentInstrumentTokenRN(
   )
 
   companion object {
-    fun fromPaymentMethodToken(token: PaymentMethodToken): PrimerPaymentInstrumentTokenRN {
+    fun fromPaymentMethodToken(token: PrimerPaymentMethodTokenData): PrimerPaymentInstrumentTokenRN {
       return PrimerPaymentInstrumentTokenRN(
         token.token,
         token.analyticsId,

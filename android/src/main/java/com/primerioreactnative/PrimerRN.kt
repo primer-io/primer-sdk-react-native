@@ -6,10 +6,10 @@ import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.primerioreactnative.datamodels.*
 import com.primerioreactnative.utils.PrimerImplementedRNCallbacks
 import com.primerioreactnative.utils.errorTo
-import io.primer.android.PaymentMethodIntent
 import io.primer.android.Primer
-import io.primer.android.model.dto.PrimerConfig
-import io.primer.android.model.dto.PrimerPaymentMethod
+import io.primer.android.PrimerPaymentMethodIntent
+import io.primer.android.data.configuration.models.PrimerPaymentMethodType
+import io.primer.android.data.settings.PrimerSettings
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -18,10 +18,8 @@ import org.json.JSONObject
 
 class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
 
-  private var settings: PrimerSettingsRN = PrimerSettingsRN()
-  private var theme: PrimerThemeRN = PrimerThemeRN()
-  private var intent: PaymentMethodIntent? = null
-  private var paymentMethod: PrimerPaymentMethod? = null
+  private var intent: PrimerPaymentMethodIntent? = null
+  private var paymentMethod: PrimerPaymentMethodType? = null
 
   private var mListener = PrimerRNEventListener()
 
@@ -37,12 +35,11 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
   override fun getName(): String = "NativePrimer"
 
   @ReactMethod
-  fun configureWithSettings(settingsStr: String, promise: Promise) {
+  fun configure(settingsStr: String, promise: Promise) {
     try {
       Log.d("PrimerRN", "settings: $settingsStr")
-      val settings = json.decodeFromString<PrimerSettingsRN>(settingsStr)
-      this.settings = settings
-      startSdk()
+      val settings = json.decodeFromString<PrimerSettings>(settingsStr)
+      startSdk(settings)
       promise.resolve(null)
     } catch (e: Exception) {
       Log.e("PrimerRN", "configure settings error: $e")
@@ -50,30 +47,6 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
       checkoutFailed(exception)
       promise.reject(exception.errorId, exception.errorDescription, e)
     }
-  }
-
-  @ReactMethod
-  fun configureWithTheme(themeStr: String, promise: Promise) {
-    try {
-      Log.d("PrimerRN", "theme: $themeStr")
-      val theme = json.decodeFromString<PrimerThemeRN>(themeStr)
-      this.theme = theme
-      startSdk()
-      promise.resolve(null)
-    } catch (e: Exception) {
-      Log.e("PrimerRN", "configure theme error: $e")
-      val exception = ErrorTypeRN.ParseJsonFailed errorTo "failed to parse theme."
-      checkoutFailed(exception)
-      promise.reject(exception.errorId, exception.errorDescription, e)
-    }
-  }
-
-  @ReactMethod
-  fun showUniversalCheckout(promise: Promise) {
-    val exception = ErrorTypeRN.CheckoutFlowFailed errorTo
-      "This method is deprecated. Use the new showUniversalCheckoutWithClientToken method"
-    checkoutFailed(exception)
-    promise.reject(exception.errorId, exception.errorDescription)
   }
 
   @ReactMethod
@@ -92,13 +65,6 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
     }
   }
 
-  @ReactMethod
-  fun showVaultManager(promise: Promise) {
-    val exception = ErrorTypeRN.CheckoutFlowFailed errorTo
-      "This method is deprecated. Use the new showUniversalCheckoutWithClientToken method"
-    checkoutFailed(exception)
-    promise.reject(exception.errorId, exception.errorDescription)
-  }
 
   @ReactMethod
   fun showVaultManager(clientToken: String, promise: Promise) {
@@ -121,7 +87,7 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
     promise: Promise
   ) {
     try {
-      this.intent = PaymentMethodIntent.valueOf(intentStr)
+      this.intent = PrimerPaymentMethodIntent.valueOf(intentStr)
     } catch (e: Exception) {
       val exception = ErrorTypeRN.ParseJsonFailed errorTo "failed to parse intent."
       checkoutFailed(exception)
@@ -129,7 +95,7 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
       return
     }
     try {
-      val paymentMethod = PrimerPaymentMethod.valueOf(paymentMethodTypeStr)
+      val paymentMethod = PrimerPaymentMethodType.valueOf(paymentMethodTypeStr)
       this.paymentMethod = paymentMethod
     } catch (e: Exception) {
       val exception = ErrorTypeRN.CheckoutFlowFailed errorTo "failed to parse payment method type."
@@ -159,7 +125,6 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
   @ReactMethod
   fun handleNewClientToken(clientToken: String, promise: Promise) {
     mListener.onClientTokenCallback(clientToken, null)
-    mListener.onClientSessionActions(clientToken, null)
     mListener.onTokenizeSuccess(clientToken, null)
     mListener.onResumeSuccess(clientToken, null)
     removeCallbacksAndHandlers()
@@ -171,7 +136,6 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
     try {
       val err = json.decodeFromString<PrimerErrorRN>(errorStr)
       mListener.onClientTokenCallback(null, err)
-      mListener.onClientSessionActions(null, err)
       mListener.onTokenizeSuccess(null, err)
       mListener.onResumeSuccess(null, err)
       removeCallbacksAndHandlers()
@@ -190,7 +154,6 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
   fun handleSuccess(promise: Promise) {
     try {
       mListener.onClientTokenCallback(null, null)
-      mListener.onClientSessionActions(null, null)
       mListener.onTokenizeSuccess(null, null)
       mListener.onResumeSuccess(null, null)
       removeCallbacksAndHandlers()
@@ -222,12 +185,8 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
     mListener.removeCallbacksAndHandlers()
   }
 
-  private fun startSdk() {
-    val theme = theme.format()
-    val settings = settings.format()
-    val config = PrimerConfig(theme, settings)
-
-    Primer.instance.configure(config, mListener)
+  private fun startSdk(settings: PrimerSettings) {
+    Primer.instance.configure(settings, mListener)
     sdkWasInitialised = true
   }
 

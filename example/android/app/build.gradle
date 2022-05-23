@@ -182,6 +182,7 @@ repositories {
   maven {
     url "${ARTIFACTORY_3DS_URL}"
   }
+  mavenLocal()
 }
 
 dependencies {

@@ -1,7 +1,7 @@
 package com.primerioreactnative.datamodels
 
-import io.primer.android.InputThemeData
-import io.primer.android.PrimerTheme
+import io.primer.android.ui.settings.InputThemeData
+import io.primer.android.ui.settings.PrimerTheme
 import kotlinx.serialization.Serializable
 
 @Serializable

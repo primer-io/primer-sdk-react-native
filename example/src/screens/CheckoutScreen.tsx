@@ -1,13 +1,13 @@
 
 import * as React from 'react';
-import { 
-    PrimerCheckoutData, 
-    PrimerCheckoutPaymentMethodData, 
-    Primer, 
-    PrimerErrorHandler, 
-    PrimerPaymentCreationHandler, 
-    PrimerSessionIntent, 
-    PrimerSettings 
+import {
+    PrimerCheckoutData,
+    PrimerCheckoutPaymentMethodData,
+    Primer,
+    PrimerErrorHandler,
+    PrimerPaymentCreationHandler,
+    PrimerSessionIntent,
+    PrimerSettings
 } from '@primer-io/react-native';
 import { View, Text, useColorScheme, TouchableOpacity } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
@@ -206,7 +206,7 @@ const CheckoutScreen = (props: any) => {
         console.warn(`onBeforePaymentCreate`);
         handler.continuePaymentCreation();
     }
-    
+
 
     const onUniversalCheckoutButtonTapped = async () => {
         try {
@@ -214,9 +214,13 @@ const CheckoutScreen = (props: any) => {
             clientToken = clientSession.clientToken;
 
             const settings: PrimerSettings = {
+                paymentHandling: 'MANUAL',
                 paymentMethodOptions: {
                     iOS: {
                         urlScheme: 'merchant://'
+                    },
+                    cardPaymentOptions : {
+                        is3DSOnVaultingEnabled: true
                     }
                 },
                 onCheckoutComplete: onCheckoutComplete,
