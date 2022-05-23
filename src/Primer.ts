@@ -1,74 +1,115 @@
-import type { IPrimer } from './models/IPrimer';
+import type { PrimerCheckoutData } from './models/PrimerCheckoutData';
+import type { Primer as IPrimer, PrimerErrorHandler, PrimerPaymentCreationHandler, PrimerResumeHandler, PrimerTokenizationHandler } from './models/Primer';
 import type { PrimerSessionIntent } from './models/PrimerSessionIntent';
 import type { PrimerSettings } from './models/PrimerSettings';
-import RNPrimer, { IPrimerError } from './RNPrimer';
+import RNPrimer from './RNPrimer';
+import type { PrimerCheckoutPaymentMethodData } from './models/PrimerCheckoutPaymentMethodData';
+import type { PrimerClientSession } from 'lib/typescript';
+import type { PrimerPaymentMethodTokenData } from './models/PrimerPaymentMethodTokenData';
+import { PrimerError } from './models/PrimerError';
 
-// const resumeHandler: PrimerResumeHandler = {
-//   handleNewClientToken: async (clientToken) => {
-//     try {
-//       await RNPrimer.handleNewClientToken(clientToken);
-//     } catch (err) {
-//       let primerError: IPrimerError;
-//       if (err instanceof Error) {
-//         primerError = {
-//           errorId: "react-native-bridge",
-//           errorDescription: err.message
-//         }
-//       } else {
-//         primerError = {
-//           errorId: "react-native-bridge",
-//           errorDescription: "unknown error"
-//         }
-//       }
-//       await RNPrimer.handleError(primerError);
-//     }
-//   },
-//   handleError: async (err) => {
-//     try {
-//       const primerError: IPrimerError = {
-//         errorId: "react-native",
-//         errorDescription: err.message
-//       }
-//       await RNPrimer.handleError(primerError);
-//     } catch (err) {
-//       let primerError: IPrimerError;
-//       if (err instanceof Error) {
-//         primerError = {
-//           errorId: "react-native-bridge",
-//           errorDescription: err.message
-//         }
-//       } else {
-//         primerError = {
-//           errorId: "react-native-bridge",
-//           errorDescription: "unknown error"
-//         }
-//       }
-//       await RNPrimer.handleError(primerError);
-//     }
-//   },
-//   handleSuccess: async () => {
-//     try {
-//       await RNPrimer.handleSuccess();
-//     } catch (err) {
-//       let primerError: IPrimerError;
-//       if (err instanceof Error) {
-//         primerError = {
-//           errorId: "react-native-bridge",
-//           errorDescription: err.message
-//         }
-//       } else {
-//         primerError = {
-//           errorId: "react-native-bridge",
-//           errorDescription: "unknown error"
-//         }
-//       }
-//       await RNPrimer.handleError(primerError);
-//     }
-//   }
-// }
+///////////////////////////////////////////
+// DECISION HANDLERS
+///////////////////////////////////////////
 
-export const PrimerNativeMapping: IPrimer = {
+// Tokenization Handler
+
+const tokenizationHandler: PrimerTokenizationHandler = {
+  handleFailure: async (errorMessage: string) => {
+    try {
+      RNPrimer.handleTokenizationFailure(errorMessage);
+    } catch (err) {
+      console.error(err);
+    }
+  },
+
+  handleSuccess: async () => {
+    try {
+      RNPrimer.handleTokenizationSuccess();
+    } catch (err) {
+      console.error(err);
+    }
+  },
+
+  continueWithNewClientToken: async (newClientToken: string) => {
+    try {
+      RNPrimer.handleTokenizationNewClientToken(newClientToken);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+}
+
+// Resume Handler
+
+const resumeHandler: PrimerResumeHandler = {
+  handleFailure: async (errorMessage: string) => {
+    try {
+      RNPrimer.handleResumeFailure(errorMessage);
+    } catch (err) {
+      console.error(err);
+    }
+  },
+
+  handleSuccess: async () => {
+    try {
+      RNPrimer.handleResumeSuccess();
+    } catch (err) {
+      console.error(err);
+    }
+  },
+
+  continueWithNewClientToken: async (newClientToken: string) => {
+    try {
+      RNPrimer.handleResumeWithNewClientToken(newClientToken);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+}
+
+// Payment Creation Handler
+
+const paymentCreationHandler: PrimerPaymentCreationHandler = {
+  abortPaymentCreation: async (errorMessage: string) => {
+    try {
+      RNPrimer.handlePaymentCreationAbort(errorMessage);
+    } catch (err) {
+      console.error(err);
+    }
+  },
+
+  continuePaymentCreation: async () => {
+    try {
+      RNPrimer.handlePaymentCreationContinue();
+    } catch (err) {
+      console.error(err);
+    }
+  }
+}
+
+// Error Handler
+
+const errorHandler: PrimerErrorHandler = {
+  handleFailure: async (errorMessage: string) => {
+    try {
+      RNPrimer.handleErrorMessage(errorMessage || "");
+    } catch (err) {
+      console.error(err);
+    }
+  }
+}
+
+let primerSettings: PrimerSettings | undefined = undefined;
+
+export const Primer: IPrimer = {
+
+  ///////////////////////////////////////////
+  // SDK API
+  ///////////////////////////////////////////
+
   async configure(settings?: PrimerSettings): Promise<void> {
+    primerSettings = settings;
     return new Promise(async (resolve, reject) => {
       try {
         await RNPrimer.configure(settings);
@@ -83,143 +124,180 @@ export const PrimerNativeMapping: IPrimer = {
     return new Promise(async (resolve, reject) => {
       try {
         RNPrimer.removeAllListeners();
-        RNPrimer.showUniversalCheckout(clientToken);
+
+        let implementedRNCallbacks: any = {
+          primerDidCompleteCheckoutWithData: (primerSettings?.onCheckoutComplete !== undefined),
+          primerWillCreatePaymentWithData: (primerSettings?.onBeforePaymentCreate !== undefined),
+          primerClientSessionWillUpdate: (primerSettings?.onBeforeClientSessionUpdate !== undefined),
+          primerClientSessionDidUpdate: (primerSettings?.onClientSessionUpdate !== undefined),
+          primerDidTokenizePaymentMethod: (primerSettings?.onTokenizeSuccess !== undefined),
+          primerDidResumeWith: (primerSettings?.onResumeSuccess !== undefined),
+          primerDidDismiss: (primerSettings?.onDismiss !== undefined),
+          primerDidFailWithError: (primerSettings?.onCheckoutFail !== undefined),
+        };
+
+        await RNPrimer.setImplementedRNCallbacks(implementedRNCallbacks);
+
+        if (implementedRNCallbacks.primerDidCompleteCheckoutWithData) {
+          RNPrimer.addListener('primerDidCompleteCheckoutWithData', data => {
+            if (primerSettings && primerSettings.onCheckoutComplete) {
+              const checkoutData: PrimerCheckoutData = data;
+              primerSettings.onCheckoutComplete(checkoutData);
+            }
+          });
+        }
+
+        if (implementedRNCallbacks.primerWillCreatePaymentWithData) {
+          RNPrimer.addListener('primerWillCreatePaymentWithData', data => {
+            if (primerSettings && primerSettings.onBeforePaymentCreate) {
+              const checkoutPaymentMethodData: PrimerCheckoutPaymentMethodData = data;
+              primerSettings.onBeforePaymentCreate(checkoutPaymentMethodData, paymentCreationHandler);
+            }
+          });
+        }
+
+        if (implementedRNCallbacks.primerClientSessionWillUpdate) {
+          RNPrimer.addListener('primerClientSessionWillUpdate', _ => {
+            if (primerSettings && primerSettings.onBeforeClientSessionUpdate) {
+              primerSettings.onBeforeClientSessionUpdate();
+            }
+          });
+        }
+
+        if (implementedRNCallbacks.primerClientSessionDidUpdate) {
+          RNPrimer.addListener('primerClientSessionDidUpdate', data => {
+            if (primerSettings && primerSettings.onClientSessionUpdate) {
+              const clientSession: PrimerClientSession = data;
+              primerSettings.onClientSessionUpdate(clientSession);
+            }
+          });
+        }
+
+        if (implementedRNCallbacks.primerDidTokenizePaymentMethod) {
+          RNPrimer.addListener('primerDidTokenizePaymentMethod', data => {
+            if (primerSettings && primerSettings.onTokenizeSuccess) {
+              const paymentMethodTokenData: PrimerPaymentMethodTokenData = data;
+              primerSettings.onTokenizeSuccess(paymentMethodTokenData, tokenizationHandler);
+            }
+          });
+        }
+
+        if (implementedRNCallbacks.primerDidResumeWith) {
+          RNPrimer.addListener('primerDidResumeWith', resumeToken => {
+            if (primerSettings && primerSettings.onResumeSuccess) {
+              primerSettings.onResumeSuccess(resumeToken, resumeHandler);
+            }
+          });
+        }
+
+        if (implementedRNCallbacks.primerDidDismiss) {
+          RNPrimer.addListener('primerDidDismiss', _ => {
+            if (primerSettings && primerSettings.onDismiss) {
+              primerSettings.onDismiss();
+            }
+          });
+        }
+
+        if (implementedRNCallbacks.primerDidFailWithError) {
+          RNPrimer.addListener('primerDidFailWithError', data => {
+            let recoverySuggestion: string | undefined = undefined;
+            if (data.recoverySuggestion) {
+              recoverySuggestion = data.recoverySuggestion
+            }
+            const primerError = new PrimerError(data.errorId, data.description, recoverySuggestion);
+            if (primerSettings && primerSettings.onCheckoutFail) {
+              primerSettings.onCheckoutFail(primerError, errorHandler);
+            }
+          });
+        }
+
+        await RNPrimer.showUniversalCheckout(clientToken);
         resolve();
       } catch (err) {
         reject(err);
       }
     });
-    // if (config.settings || config.theme) {
-    //   RNPrimer.configure(config.settings || null, config.theme || null);
-
-    //   let implementedRNCallbacks: any = {
-    //     // isClientTokenCallbackImplemented: (config.onClientTokenCallback !== undefined),
-    //     isTokenAddedToVaultImplemented: (config.onTokenAddedToVault !== undefined),
-    //     isOnResumeSuccessImplemented: (config.onResumeSuccess !== undefined),
-    //     isOnResumeErrorImplemented: (config.onError !== undefined),
-    //     isOnCheckoutDismissedImplemented: (config.onDismiss !== undefined),
-    //     isCheckoutFailedImplemented: (config.onError !== undefined),
-    //     isClientSessionActionsImplemented: (config.onClientSessionActions !== undefined)
-    //   };
-
-    //   RNPrimer.setImplementedRNCallbacks(implementedRNCallbacks)
-    //     .then(() => {
-    //       RNPrimer.addListener('onClientSessionActions', data => {
-    //         const clientSessionActions: IClientSessionAction[] = data;
-    //         if (config.onClientSessionActions) {
-    //           config.onClientSessionActions(clientSessionActions, resumeHandler);
-    //         }
-    //       });
-
-    //       RNPrimer.addListener('onTokenizeSuccessCallback', data => {
-    //         const paymentInstrumentToken: PaymentInstrumentToken = data;
-    //         if (config.onTokenizeSuccess) {
-    //           config.onTokenizeSuccess(paymentInstrumentToken, resumeHandler);
-    //         }
-    //       });
-
-    //       RNPrimer.addListener('onResumeSuccess', data => {
-    //         const resumeToken: string = data.resumeToken;
-    //         if (config.onResumeSuccess) {
-    //           config.onResumeSuccess(resumeToken, resumeHandler);
-    //         }
-    //       });
-
-    //       RNPrimer.addListener('onCheckoutDismissed', _ => {
-    //         if (config.onDismiss) {
-    //           config.onDismiss();
-    //         }
-    //       });
-
-    //       RNPrimer.addListener('onError', data => {
-    //         const err: IPrimerError = data.error;
-    //         if (config.onError) {
-    //           config.onError(err, resumeHandler);
-    //         }
-    //       });
-
-    //       RNPrimer.showUniversalCheckout(clientToken);
-    //     })
-    //     .catch( err => {
-    //       console.error(err);
-    //     })
-    //   }
-
-  RNPrimer.addListener('onTokenizeSuccessCallback', data => {
-    const paymentInstrumentToken: PaymentInstrumentToken = data;
-    if (config.onTokenizeSuccess) {
-      config.onTokenizeSuccess(paymentInstrumentToken, resumeHandler);
-    }
-  });
+  },
 
   async showVaultManager(clientToken: string): Promise<void> {
     return new Promise(async (resolve, reject) => {
       try {
         RNPrimer.removeAllListeners();
+
+        let implementedRNCallbacks: any = {
+          primerDidCompleteCheckoutWithData: (primerSettings?.onCheckoutComplete !== undefined),
+          primerWillCreatePaymentWithData: (primerSettings?.onBeforePaymentCreate !== undefined),
+          primerClientSessionWillUpdate: (primerSettings?.onBeforeClientSessionUpdate !== undefined),
+          primerClientSessionDidUpdate: (primerSettings?.onClientSessionUpdate !== undefined),
+          primerDidTokenizePaymentMethod: (primerSettings?.onTokenizeSuccess !== undefined),
+          primerDidResumeWith: (primerSettings?.onResumeSuccess !== undefined),
+          primerDidDismiss: (primerSettings?.onDismiss !== undefined),
+          primerDidFailWithError: (primerSettings?.onCheckoutFail !== undefined),
+        };
+
+        await RNPrimer.setImplementedRNCallbacks(implementedRNCallbacks);
+
+        if (implementedRNCallbacks.primerClientSessionWillUpdate) {
+          RNPrimer.addListener('primerClientSessionWillUpdate', _ => {
+            if (primerSettings && primerSettings.onBeforeClientSessionUpdate) {
+              primerSettings.onBeforeClientSessionUpdate();
+            }
+          });
+        }
+
+        if (implementedRNCallbacks.primerClientSessionDidUpdate) {
+          RNPrimer.addListener('primerClientSessionDidUpdate', data => {
+            if (primerSettings && primerSettings.onClientSessionUpdate) {
+              const clientSession: PrimerClientSession = data;
+              primerSettings.onClientSessionUpdate(clientSession);
+            }
+          });
+        }
+
+        if (implementedRNCallbacks.primerDidTokenizePaymentMethod) {
+          RNPrimer.addListener('primerDidTokenizePaymentMethod', data => {
+            if (primerSettings && primerSettings.onTokenizeSuccess) {
+              const paymentMethodTokenData: PrimerPaymentMethodTokenData = data;
+              primerSettings.onTokenizeSuccess(paymentMethodTokenData, tokenizationHandler);
+            }
+          });
+        }
+
+        if (implementedRNCallbacks.primerDidResumeWith) {
+          RNPrimer.addListener('primerDidResumeWith', resumeToken => {
+            if (primerSettings && primerSettings.onResumeSuccess) {
+              primerSettings.onResumeSuccess(resumeToken, resumeHandler);
+            }
+          });
+        }
+
+        if (implementedRNCallbacks.primerDidDismiss) {
+          RNPrimer.addListener('primerDidDismiss', _ => {
+            if (primerSettings && primerSettings.onDismiss) {
+              primerSettings.onDismiss();
+            }
+          });
+        }
+
+        if (implementedRNCallbacks.primerDidFailWithError) {
+          RNPrimer.addListener('primerDidFailWithError', data => {
+            let recoverySuggestion: string | undefined = undefined;
+            if (data.recoverySuggestion) {
+              recoverySuggestion = data.recoverySuggestion
+            }
+            const primerError = new PrimerError(data.errorId, data.description, recoverySuggestion);
+            if (primerSettings && primerSettings.onCheckoutFail) {
+              primerSettings.onCheckoutFail(primerError, errorHandler);
+            }
+          });
+        }
+
         await RNPrimer.showVaultManager(clientToken);
         resolve();
       } catch (err) {
         reject(err);
       }
     });
-
-    // if (config.settings || config.theme) {
-    //   RNPrimer.configure(config.settings || null, config.theme || null);
-
-    //   let implementedRNCallbacks: any = {
-    //     // isClientTokenCallbackImplemented: (config.onClientTokenCallback !== undefined),
-    //     isTokenAddedToVaultImplemented: (config.onTokenAddedToVault !== undefined),
-    //     isOnResumeSuccessImplemented: (config.onResumeSuccess !== undefined),
-    //     isOnResumeErrorImplemented: (config.onError !== undefined),
-    //     isOnCheckoutDismissedImplemented: (config.onDismiss !== undefined),
-    //     isCheckoutFailedImplemented: (config.onError !== undefined),
-    //     isClientSessionActionsImplemented: (config.onClientSessionActions !== undefined)
-    //   };
-
-    //   RNPrimer.setImplementedRNCallbacks(implementedRNCallbacks);
-    // }
-
-    // // RNPrimer.addListener('onClientTokenCallback', _ => {
-    // //   if (config.onClientTokenCallback) {
-    // //     config.onClientTokenCallback(resumeHandler);
-    // //   }
-    // // });
-
-    // RNPrimer.addListener('onClientSessionActions', data => {
-    //   const clientSessionActions: IClientSessionAction[] = data;
-    //   if (config.onClientSessionActions) {
-    //     config.onClientSessionActions(clientSessionActions, resumeHandler);
-    //   } else {
-    //     RNPrimer.handleSuccess();
-    //   }
-    // });
-
-    // RNPrimer.addListener('onTokenizeSuccessCallback', data => {
-    //   const paymentInstrumentToken: PaymentInstrumentToken = data;
-    //   if (config.onTokenizeSuccess) {
-    //     config.onTokenizeSuccess(paymentInstrumentToken, resumeHandler);
-    //   }
-    // });
-
-    // RNPrimer.addListener('onResumeSuccess', data => {
-    //   const resumeToken: string = data.resumeToken;
-    //   if (config.onResumeSuccess) {
-    //     config.onResumeSuccess(resumeToken, resumeHandler);
-    //   }
-    // });
-
-    // RNPrimer.addListener('onCheckoutDismissed', () => {
-    //   if (config.onDismiss) {
-    //     config.onDismiss();
-    //   }
-    // });
-
-    // RNPrimer.addListener('onError', data => {
-    //   const err: IPrimerError = data.error;
-    //   if (config.onError) {
-    //     config.onError(err, resumeHandler);
-    //   }
-    // });
   },
 
   async showPaymentMethod(
@@ -230,36 +308,102 @@ export const PrimerNativeMapping: IPrimer = {
     return new Promise(async (resolve, reject) => {
       try {
         RNPrimer.removeAllListeners();
+
+        let implementedRNCallbacks: any = {
+          primerDidCompleteCheckoutWithData: (primerSettings?.onCheckoutComplete !== undefined),
+          primerWillCreatePaymentWithData: (primerSettings?.onBeforePaymentCreate !== undefined),
+          primerClientSessionWillUpdate: (primerSettings?.onBeforeClientSessionUpdate !== undefined),
+          primerClientSessionDidUpdate: (primerSettings?.onClientSessionUpdate !== undefined),
+          primerDidTokenizePaymentMethod: (primerSettings?.onTokenizeSuccess !== undefined),
+          primerDidResumeWith: (primerSettings?.onResumeSuccess !== undefined),
+          primerDidDismiss: (primerSettings?.onDismiss !== undefined),
+          primerDidFailWithError: (primerSettings?.onCheckoutFail !== undefined),
+        };
+
+        await RNPrimer.setImplementedRNCallbacks(implementedRNCallbacks);
+
+        if (implementedRNCallbacks.primerDidCompleteCheckoutWithData) {
+          RNPrimer.addListener('primerDidCompleteCheckoutWithData', data => {
+            if (primerSettings && primerSettings.onCheckoutComplete) {
+              const checkoutData: PrimerCheckoutData = data;
+              primerSettings.onCheckoutComplete(checkoutData);
+            }
+          });
+        }
+
+        if (implementedRNCallbacks.primerWillCreatePaymentWithData) {
+          RNPrimer.addListener('primerWillCreatePaymentWithData', data => {
+            if (primerSettings && primerSettings.onBeforePaymentCreate) {
+              const checkoutPaymentMethodData: PrimerCheckoutPaymentMethodData = data;
+              primerSettings.onBeforePaymentCreate(checkoutPaymentMethodData, paymentCreationHandler);
+            }
+          });
+        }
+
+        if (implementedRNCallbacks.primerClientSessionWillUpdate) {
+          RNPrimer.addListener('primerClientSessionWillUpdate', _ => {
+            if (primerSettings && primerSettings.onBeforeClientSessionUpdate) {
+              primerSettings.onBeforeClientSessionUpdate();
+            }
+          });
+        }
+
+        if (implementedRNCallbacks.primerClientSessionDidUpdate) {
+          RNPrimer.addListener('primerClientSessionDidUpdate', data => {
+            if (primerSettings && primerSettings.onClientSessionUpdate) {
+              const clientSession: PrimerClientSession = data;
+              primerSettings.onClientSessionUpdate(clientSession);
+            }
+          });
+        }
+
+        if (implementedRNCallbacks.primerDidTokenizePaymentMethod) {
+          RNPrimer.addListener('primerDidTokenizePaymentMethod', data => {
+            if (primerSettings && primerSettings.onTokenizeSuccess) {
+              const paymentMethodTokenData: PrimerPaymentMethodTokenData = data;
+              primerSettings.onTokenizeSuccess(paymentMethodTokenData, tokenizationHandler);
+            }
+          });
+        }
+
+        if (implementedRNCallbacks.primerDidResumeWith) {
+          RNPrimer.addListener('primerDidResumeWith', resumeToken => {
+            if (primerSettings && primerSettings.onResumeSuccess) {
+              primerSettings.onResumeSuccess(resumeToken, resumeHandler);
+            }
+          });
+        }
+
+        if (implementedRNCallbacks.primerDidDismiss) {
+          RNPrimer.addListener('primerDidDismiss', _ => {
+            if (primerSettings && primerSettings.onDismiss) {
+              primerSettings.onDismiss();
+            }
+          });
+        }
+
+        if (implementedRNCallbacks.primerDidFailWithError) {
+          RNPrimer.addListener('primerDidFailWithError', data => {
+            let recoverySuggestion: string | undefined = undefined;
+            if (data.recoverySuggestion) {
+              recoverySuggestion = data.recoverySuggestion
+            }
+            const primerError = new PrimerError(data.errorId, data.description, recoverySuggestion);
+            if (primerSettings && primerSettings.onCheckoutFail) {
+              primerSettings.onCheckoutFail(primerError, errorHandler);
+            }
+          });
+        }
+
         await RNPrimer.showPaymentMethod(paymentMethodType, intent, clientToken);
         resolve();
       } catch (err) {
         reject(err);
       }
     });
-
-    // RNPrimer.removeAllListeners();
-
-    // if (config.settings || config.theme) {
-    //   RNPrimer.configure(config.settings || null, config.theme || null);
-    // }
-
-    // let implementedRNCallbacks: any = {
-    //   // isClientTokenCallbackImplemented: (config.onClientTokenCallback !== undefined),
-    //   isTokenAddedToVaultImplemented: (config.onTokenAddedToVault !== undefined),
-    //   isOnResumeSuccessImplemented: (config.onResumeSuccess !== undefined),
-    //   isOnResumeErrorImplemented: (config.onError !== undefined),
-    //   isOnCheckoutDismissedImplemented: (config.onDismiss !== undefined),
-    //   isCheckoutFailedImplemented: (config.onError !== undefined),
-    //   isClientSessionActionsImplemented: (config.onClientSessionActions !== undefined)
-    // };
-
-    // RNPrimer.setImplementedRNCallbacks(implementedRNCallbacks);
-    // RNPrimer.showPaymentMethod(clientToken, intent.paymentMethod, intent.vault === true ? "vault" : "checkout");
   },
 
   dismiss(): void {
-    RNPrimer.removeAllListeners();
-    RNPrimer.dispose();
+    RNPrimer.dismiss();
   },
-
 };

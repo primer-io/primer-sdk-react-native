@@ -16,8 +16,5 @@ export class PrimerError extends Error {
       this.errorId = errorId;
       this.description = description;
       this.recoverySuggestion = recoverySuggestion;
-
-      Object.setPrototypeOf(this, PrimerError.prototype);
   }
-
 }
