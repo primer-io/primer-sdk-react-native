@@ -26,6 +26,7 @@ const RNPrimer = {
   ///////////////////////////////////////////
   // Event Emitter
   ///////////////////////////////////////////
+
   addListener: (eventType: EventType, listener: (...args: any[]) => any) => {
     eventEmitter.addListener(eventType, listener);
   },
@@ -39,15 +40,15 @@ const RNPrimer = {
   },
 
   removeAllListeners() {
-    eventEmitter.removeAllListeners('primerDidCompleteCheckoutWithData');
-    eventEmitter.removeAllListeners('primerClientSessionWillUpdate');
-    eventEmitter.removeAllListeners('primerClientSessionDidUpdate');
-    eventEmitter.removeAllListeners('primerWillCreatePaymentWithData');
-    eventEmitter.removeAllListeners('primerDidFailWithError');
-    eventEmitter.removeAllListeners('primerDidDismiss');
-    eventEmitter.removeAllListeners('primerDidTokenizePaymentMethod');
-    eventEmitter.removeAllListeners('primerDidResumeWith');
-    eventEmitter.removeAllListeners('detectImplementedRNCallbacks');
+    RNPrimer.removeAllListenersForEvent('primerDidCompleteCheckoutWithData');
+    RNPrimer.removeAllListenersForEvent('primerClientSessionWillUpdate');
+    RNPrimer.removeAllListenersForEvent('primerClientSessionDidUpdate');
+    RNPrimer.removeAllListenersForEvent('primerWillCreatePaymentWithData');
+    RNPrimer.removeAllListenersForEvent('primerDidFailWithError');
+    RNPrimer.removeAllListenersForEvent('primerDidDismiss');
+    RNPrimer.removeAllListenersForEvent('primerDidTokenizePaymentMethod');
+    RNPrimer.removeAllListenersForEvent('primerDidResumeWith');
+    RNPrimer.removeAllListenersForEvent('detectImplementedRNCallbacks');
   },
 
   ///////////////////////////////////////////
@@ -56,7 +57,7 @@ const RNPrimer = {
   configure: (settings: PrimerSettings | undefined): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {
-        await NativePrimer.configureSettings(JSON.stringify(settings) || "");
+        await NativePrimer.configure(JSON.stringify(settings) || "");
         resolve();
       } catch (err) {
         reject(err);
@@ -101,10 +102,10 @@ const RNPrimer = {
     });
   },
 
-  handleNewClientToken: (clientToken: string | undefined): Promise<void> => {
+  dismiss: (): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {
-        await NativePrimer.handleNewClientToken(clientToken);
+        await NativePrimer.dismiss();
         resolve();
       } catch (err) {
         reject(err);
@@ -112,16 +113,116 @@ const RNPrimer = {
     });
   },
 
-  handleError: (err: IPrimerError): Promise<void> => {
+  ///////////////////////////////////////////
+  // DECISION HANDLERS
+  ///////////////////////////////////////////
+
+  // Tokenization Handlers
+
+  handleTokenizationNewClientToken: (newClientToken: string): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {
-        await NativePrimer.handleError(JSON.stringify(err));
+        await NativePrimer.handleTokenizationNewClientToken(newClientToken);
         resolve();
       } catch (err) {
         reject(err);
       }
     });
   },
+
+  handleTokenizationSuccess: (): Promise<void> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        await NativePrimer.handleTokenizationSuccess();
+        resolve();
+      } catch (err) {
+        reject(err);
+      }
+    });
+  },
+
+  handleTokenizationFailure: (errorMessage: string | null): Promise<void> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        await NativePrimer.handleTokenizationFailure(errorMessage || "");
+        resolve();
+      } catch (err) {
+        reject(err);
+      }
+    });
+  },
+
+    // Resume Handlers
+
+    handleResumeWithNewClientToken: (newClientToken: string): Promise<void> => {
+      return new Promise(async (resolve, reject) => {
+        try {
+          await NativePrimer.handleResumeWithNewClientToken(newClientToken);
+          resolve();
+        } catch (err) {
+          reject(err);
+        }
+      });
+    },
+  
+    handleResumeSuccess: (): Promise<void> => {
+      return new Promise(async (resolve, reject) => {
+        try {
+          await NativePrimer.handleResumeSuccess();
+          resolve();
+        } catch (err) {
+          reject(err);
+        }
+      });
+    },
+  
+    handleResumeFailure: (errorMessage: string | null): Promise<void> => {
+      return new Promise(async (resolve, reject) => {
+        try {
+          await NativePrimer.handleTokenizationFailure(errorMessage || "");
+          resolve();
+        } catch (err) {
+          reject(err);
+        }
+      });
+    },
+
+  // Payment Creation Handlers
+
+  handlePaymentCreationAbort: (errorMessage: string | null): Promise<void> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        await NativePrimer.handlePaymentCreationAbort(errorMessage || "");
+        resolve();
+      } catch (err) {
+        reject(err);
+      }
+    });
+  },
+
+  handlePaymentCreationContinue: (): Promise<void> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        await NativePrimer.handlePaymentCreationContinue();
+        resolve();
+      } catch (err) {
+        reject(err);
+      }
+    });
+  },
+
+    // Error Handler
+
+    handleErrorMessage: (errorMessage: string | null): Promise<void> => {
+      return new Promise(async (resolve, reject) => {
+        try {
+          await NativePrimer.handleErrorMessage(errorMessage || "");
+          resolve();
+        } catch (err) {
+          reject(err);
+        }
+      });
+    },
 
   handleSuccess: (): Promise<void> => {
     return new Promise(async (resolve, reject) => {
@@ -145,9 +246,6 @@ const RNPrimer = {
     });
   },
 
-  dispose: (): void => {
-
-  }
 };
 
 export default RNPrimer;
