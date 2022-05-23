@@ -1,4 +1,6 @@
-export interface IPrimerClientSession {
+export type PrimerClientSession = IPrimerClientSession;
+
+interface IPrimerClientSession {
     customerId?: string;
     orderId?: string;
     currencyCode?: string;
@@ -8,7 +10,9 @@ export interface IPrimerClientSession {
     customer?: IPrimerCustomer;
 }
 
-export interface IPrimerLineItem {
+export type PrimerLineItem = IPrimerLineItem;
+
+interface IPrimerLineItem {
     itemId?: string;
     itemDescription?: string;
     amount?: number;
@@ -18,11 +22,15 @@ export interface IPrimerLineItem {
     taxAmount?: number;
 }
 
-export interface IPrimerOrder {
+export type PrimerOrder = IPrimerOrder;
+
+interface IPrimerOrder {
     countryCode?: string;
 }
 
-export interface IPrimerCustomer {
+export type PrimerCustomer = IPrimerCustomer;
+
+interface IPrimerCustomer {
     emailAddress?: string;
     mobileNumber?: string;
     firstName?: string;
@@ -31,7 +39,9 @@ export interface IPrimerCustomer {
     shippingAddress?: IPrimerAddress;
 }
 
-export interface IPrimerAddress {
+export type PrimerAddress = IPrimerAddress;
+
+interface IPrimerAddress {
     firstName?: string;
     lastName?: string;
     addressLine1?: string;
