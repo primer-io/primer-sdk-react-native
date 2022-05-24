@@ -7,7 +7,7 @@ import com.primerioreactnative.datamodels.*
 import com.primerioreactnative.utils.PrimerImplementedRNCallbacks
 import com.primerioreactnative.utils.errorTo
 import io.primer.android.Primer
-import io.primer.android.PrimerPaymentMethodIntent
+import io.primer.android.PrimerSessionIntent
 import io.primer.android.data.configuration.models.PrimerPaymentMethodType
 import io.primer.android.data.settings.PrimerSettings
 import kotlinx.serialization.decodeFromString
@@ -17,14 +17,7 @@ import org.json.JSONObject
 
 
 class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
-
-  private var intent: PrimerPaymentMethodIntent? = null
-  private var paymentMethod: PrimerPaymentMethodType? = null
-
   private var mListener = PrimerRNEventListener()
-
-  private var sdkWasInitialised = false
-
   private val json = Json { ignoreUnknownKeys = true }
 
   init {
@@ -38,14 +31,14 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
   fun configure(settingsStr: String, promise: Promise) {
     try {
       Log.d("PrimerRN", "settings: $settingsStr")
-      val settings = json.decodeFromString<PrimerSettings>(settingsStr)
-      startSdk(settings)
+      val settings = json.decodeFromString<PrimerSettingsRN>(settingsStr)
+      startSdk(settings.toPrimerSettings())
       promise.resolve(null)
     } catch (e: Exception) {
       Log.e("PrimerRN", "configure settings error: $e")
-      val exception = ErrorTypeRN.ParseJsonFailed errorTo "failed to parse settings."
+      val exception = ErrorTypeRN.NativeBridgeFailed errorTo "failed to parse settings."
       checkoutFailed(exception)
-      promise.reject(exception.errorId, exception.errorDescription, e)
+      promise.reject(exception.errorId, exception.description, e)
     }
   }
 
@@ -58,16 +51,16 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
       Primer.instance.showUniversalCheckout(reactApplicationContext.applicationContext, clientToken)
       promise.resolve(null)
     } catch (e: Exception) {
-      val exception = ErrorTypeRN.CheckoutFlowFailed errorTo
+      val exception = ErrorTypeRN.NativeBridgeFailed errorTo
         "Primer SDK failed: ${e.message}"
       checkoutFailed(exception)
-      promise.reject(exception.errorId, exception.errorDescription, e)
+      promise.reject(exception.errorId, exception.description, e)
     }
   }
 
 
   @ReactMethod
-  fun showVaultManager(clientToken: String, promise: Promise) {
+  fun showVaultManagerWithToken(clientToken: String, promise: Promise) {
     try {
       Primer.instance.showVaultManager(reactApplicationContext.applicationContext, clientToken)
       promise.resolve(null)
@@ -75,7 +68,7 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
       val exception = ErrorTypeRN.CheckoutFlowFailed errorTo
         "Primer SDK failed: ${e.message}"
       checkoutFailed(exception)
-      promise.reject(exception.errorId, exception.errorDescription, e)
+      promise.reject(exception.errorId, exception.description, e)
     }
   }
 
@@ -86,27 +79,27 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
     intentStr: String,
     promise: Promise
   ) {
+    val intent: PrimerSessionIntent
     try {
-      this.intent = PrimerPaymentMethodIntent.valueOf(intentStr)
+      intent = PrimerSessionIntent.valueOf(intentStr)
     } catch (e: Exception) {
-      val exception = ErrorTypeRN.ParseJsonFailed errorTo "failed to parse intent."
+      val exception = ErrorTypeRN.NativeBridgeFailed errorTo "Intent $intentStr is not valid."
       checkoutFailed(exception)
-      promise.reject(exception.errorId, exception.errorDescription, e)
+      promise.reject(exception.errorId, exception.description, e)
       return
     }
+    val paymentMethod: PrimerPaymentMethodType
     try {
-      val paymentMethod = PrimerPaymentMethodType.valueOf(paymentMethodTypeStr)
-      this.paymentMethod = paymentMethod
+      paymentMethod = PrimerPaymentMethodType.valueOf(paymentMethodTypeStr)
     } catch (e: Exception) {
-      val exception = ErrorTypeRN.CheckoutFlowFailed errorTo "failed to parse payment method type."
+      val exception =
+        ErrorTypeRN.NativeBridgeFailed errorTo "Payment method type $paymentMethodTypeStr is not valid."
       checkoutFailed(exception)
-      promise.reject(exception.errorId, exception.errorDescription, e)
+      promise.reject(exception.errorId, exception.description, e)
       return
     }
 
     try {
-      val paymentMethod = this.paymentMethod ?: return
-      val intent = this.intent ?: return
       Primer.instance.showPaymentMethod(
         reactApplicationContext.applicationContext,
         clientToken,
@@ -118,53 +111,77 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
       val exception = ErrorTypeRN.CheckoutFlowFailed errorTo
         "Primer SDK failed: ${e.message}"
       checkoutFailed(exception)
-      promise.reject(exception.errorId, exception.errorDescription, e)
+      promise.reject(exception.errorId, exception.description, e)
     }
   }
 
   @ReactMethod
-  fun handleNewClientToken(clientToken: String, promise: Promise) {
-    mListener.onClientTokenCallback(clientToken, null)
-    mListener.onTokenizeSuccess(clientToken, null)
-    mListener.onResumeSuccess(clientToken, null)
-    removeCallbacksAndHandlers()
+  fun dismiss(promise: Promise) {
+    Primer.instance.dismiss()
+    promise.resolve(null)
+  }
+
+  // region tokenization handlers
+  @ReactMethod
+  fun handleTokenizationNewClientToken(newClientToken: String, promise: Promise) {
+    mListener.handleTokenizationNewClientToken(newClientToken)
     promise.resolve(null)
   }
 
   @ReactMethod
-  fun handleError(errorStr: String, promise: Promise) {
-    try {
-      val err = json.decodeFromString<PrimerErrorRN>(errorStr)
-      mListener.onClientTokenCallback(null, err)
-      mListener.onTokenizeSuccess(null, err)
-      mListener.onResumeSuccess(null, err)
-      removeCallbacksAndHandlers()
-      promise.resolve(null)
-    } catch (e: Exception) {
-      val exception = PrimerErrorRN(
-        ErrorTypeRN.CheckoutFlowFailed.name,
-        "Primer SDK failed: ${e.message}"
-      )
-      checkoutFailed(exception)
-      promise.reject(exception.errorId, exception.errorDescription, e)
-    }
+  fun handleTokenizationSuccess(promise: Promise) {
+    mListener.handleTokenizationSuccess()
+    promise.resolve(null)
   }
 
   @ReactMethod
-  fun handleSuccess(promise: Promise) {
-    try {
-      mListener.onClientTokenCallback(null, null)
-      mListener.onTokenizeSuccess(null, null)
-      mListener.onResumeSuccess(null, null)
-      removeCallbacksAndHandlers()
-      promise.resolve(null)
-    } catch (e: Exception) {
-      val exception = ErrorTypeRN.CheckoutFlowFailed errorTo
-        "Primer SDK failed: ${e.message}"
-      checkoutFailed(exception)
-      promise.reject(exception.errorId, exception.errorDescription, e)
-    }
+  fun handleTokenizationFailure(errorMessage: String?, promise: Promise) {
+    mListener.handleTokenizationFailure(errorMessage.orEmpty())
+    promise.resolve(null)
   }
+  // endregion
+
+  // region resume handlers
+  @ReactMethod
+  fun handleResumeNewClientToken(newClientToken: String, promise: Promise) {
+    mListener.handleResumeNewClientToken(newClientToken)
+    promise.resolve(null)
+  }
+
+  @ReactMethod
+  fun handleResumeSuccess(promise: Promise) {
+    mListener.handleResumeSuccess()
+    promise.resolve(null)
+  }
+
+  @ReactMethod
+  fun handleResumeFailure(errorMessage: String?, promise: Promise) {
+    mListener.handleResumeFailure(errorMessage.orEmpty())
+    promise.resolve(null)
+  }
+  // endregion
+
+  // region payment handlers
+  @ReactMethod
+  fun handlePaymentCreationContinue(promise: Promise) {
+    mListener.handlePaymentCreationContinue()
+    promise.resolve(null)
+  }
+
+  @ReactMethod
+  fun handlePaymentCreationAbort(errorMessage: String?, promise: Promise) {
+    mListener.handlePaymentCreationAbort(errorMessage.orEmpty())
+    promise.resolve(null)
+  }
+  // endregion
+
+  // region error handlers
+  @ReactMethod
+  fun handleErrorMessage(errorMessage: String?, promise: Promise) {
+    mListener.handleErrorMessage(errorMessage.orEmpty())
+    promise.resolve(null)
+  }
+  // endregion
 
   @ReactMethod
   fun setImplementedRNCallbacks(implementedRNCallbacksStr: String, promise: Promise) {
@@ -175,19 +192,15 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
       this.mListener.setImplementedCallbacks(implementedRNCallbacks)
       promise.resolve(null)
     } catch (e: Exception) {
-      val exception = ErrorTypeRN.ParseJsonFailed errorTo "Failed to parse implemented callbacks"
+      val exception =
+        ErrorTypeRN.NativeBridgeFailed errorTo "Implemented callbacks $implementedRNCallbacksStr is not valid."
       checkoutFailed(exception)
-      promise.reject(exception.errorId, exception.errorDescription, e)
+      promise.reject(exception.errorId, exception.description, e)
     }
-  }
-
-  private fun removeCallbacksAndHandlers() {
-    mListener.removeCallbacksAndHandlers()
   }
 
   private fun startSdk(settings: PrimerSettings) {
     Primer.instance.configure(settings, mListener)
-    sdkWasInitialised = true
   }
 
   private fun checkoutFailed(exception: PrimerErrorRN) {
@@ -196,7 +209,7 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
     val data = Arguments.createMap()
     prepareData(data, errorJson)
     params.putMap(Keys.ERROR, data)
-    sendEvent(PrimerEventsRN.OnError.string, params)
+    sendEvent(PrimerEvents.ON_CHECKOUT_FAIL.eventName, params)
   }
 
   private fun sendEvent(name: String, params: WritableMap) {
