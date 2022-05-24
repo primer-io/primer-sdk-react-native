@@ -253,17 +253,7 @@ class RNTPrimer: RCTEventEmitter {
     // MARK: Helpers
         
     private func configure(settingsStr: String? = nil) throws {
-        var settings: PrimerSettings?
-        if let settingsStr = settingsStr {
-            guard let settingsData = settingsStr.data(using: .utf8) else {
-                let err = NSError(domain: "native-bridge", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to convert string to data"])
-                throw err
-            }
-            let settingsRN = try JSONDecoder().decode(PrimerSettingsRN.self, from: settingsData)
-            settings = settingsRN.asPrimerSettings()
-        }
-    
-        PrimerSDK.Primer.shared.configure(settings: settings, delegate: self)
+        try PrimerSDK.Primer.shared.configure(settings: PrimerSettings.initialize(with: settingsStr), delegate: self)
     }
     
     private func detectImplemetedCallbacks() {
