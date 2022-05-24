@@ -6,14 +6,14 @@ const { NativePrimer } = NativeModules;
 const eventEmitter = new NativeEventEmitter(NativePrimer);
 
 type EventType =
-  | 'primerDidCompleteCheckoutWithData'
-  | 'primerClientSessionWillUpdate'
-  | 'primerClientSessionDidUpdate'
-  | 'primerWillCreatePaymentWithData'
-  | 'primerDidFailWithError'
-  | 'primerDidDismiss'
-  | 'primerDidTokenizePaymentMethod'
-  | 'primerDidResumeWith'
+  | 'onCheckoutComplete'
+  | 'onBeforeClientSessionUpdate'
+  | 'onClientSessionUpdate'
+  | 'onBeforePaymentCreate'
+  | 'onCheckoutFail'
+  | 'onDismiss'
+  | 'onTokenizeSuccess'
+  | 'onResumeSuccess'
   | 'detectImplementedRNCallbacks';
 
 export interface IPrimerError {
@@ -40,14 +40,14 @@ const RNPrimer = {
   },
 
   removeAllListeners() {
-    RNPrimer.removeAllListenersForEvent('primerDidCompleteCheckoutWithData');
-    RNPrimer.removeAllListenersForEvent('primerClientSessionWillUpdate');
-    RNPrimer.removeAllListenersForEvent('primerClientSessionDidUpdate');
-    RNPrimer.removeAllListenersForEvent('primerWillCreatePaymentWithData');
-    RNPrimer.removeAllListenersForEvent('primerDidFailWithError');
-    RNPrimer.removeAllListenersForEvent('primerDidDismiss');
-    RNPrimer.removeAllListenersForEvent('primerDidTokenizePaymentMethod');
-    RNPrimer.removeAllListenersForEvent('primerDidResumeWith');
+    RNPrimer.removeAllListenersForEvent('onCheckoutComplete');
+    RNPrimer.removeAllListenersForEvent('onBeforeClientSessionUpdate');
+    RNPrimer.removeAllListenersForEvent('onClientSessionUpdate');
+    RNPrimer.removeAllListenersForEvent('onBeforePaymentCreate');
+    RNPrimer.removeAllListenersForEvent('onCheckoutFail');
+    RNPrimer.removeAllListenersForEvent('onDismiss');
+    RNPrimer.removeAllListenersForEvent('onTokenizeSuccess');
+    RNPrimer.removeAllListenersForEvent('onResumeSuccess');
     RNPrimer.removeAllListenersForEvent('detectImplementedRNCallbacks');
   },
 
