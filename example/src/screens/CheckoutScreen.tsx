@@ -214,10 +214,32 @@ const CheckoutScreen = (props: any) => {
             clientToken = clientSession.clientToken;
 
             const settings: PrimerSettings = {
+                paymentHandling: 'MANUAL',
+                localeData: {
+                    languageCode: 'el',
+                    localeCode: 'GR'
+                },
                 paymentMethodOptions: {
                     iOS: {
                         urlScheme: 'merchant://'
+                    },
+                    applePayOptions: {
+                        merchantIdentifier: "merchant.checkout.team"
+                    },
+                    cardPaymentOptions: {
+                        is3DSOnVaultingEnabled: false
+                    },
+                    klarnaOptions: {
+                        recurringPaymentDescription: "Description"
                     }
+                },
+                uiOptions: {
+                    isInitScreenEnabled: false,
+                    isSuccessScreenEnabled: false,
+                    isErrorScreenEnabled: false
+                },
+                debugOptions: {
+                    is3DSSanityCheckEnabled: false
                 },
                 onCheckoutComplete: onCheckoutComplete,
                 onCheckoutFail: onCheckoutFail,
