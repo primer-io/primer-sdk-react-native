@@ -79,7 +79,7 @@ const RNPrimer = {
   showVaultManager: (clientToken: string | undefined): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {
-        await NativePrimer.showUniversalCheckoutWithClientToken(clientToken);
+        await NativePrimer.showVaultManagerWithClientToken(clientToken);
         resolve();
       } catch (err) {
         reject(err);
