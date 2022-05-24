@@ -237,7 +237,7 @@ class RNTPrimer: RCTEventEmitter {
     // MARK: Error Handler
     
     @objc
-    public func handleErrorMessage(_ errorMessage: String?, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
+    public func showErrorMessage(_ errorMessage: String?, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
         DispatchQueue.main.async {
             self.primerDidFailWithErrorDecisionHandler?(errorMessage ?? "")
             self.primerDidFailWithErrorDecisionHandler = nil

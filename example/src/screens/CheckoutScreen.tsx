@@ -199,7 +199,7 @@ const CheckoutScreen = (props: any) => {
 
     const onCheckoutFail = (error: Error, handler: PrimerErrorHandler) => {
         console.error(error);
-        handler.handleFailure("My RN message");
+        handler.showErrorMessage("My RN message");
     };
 
     const onBeforePaymentCreate = (checkoutPaymentMethodData: PrimerCheckoutPaymentMethodData, handler: PrimerPaymentCreationHandler) => {
