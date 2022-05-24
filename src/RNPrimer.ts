@@ -22,6 +22,18 @@ export interface IPrimerError {
   recoverySuggestion?: string
 }
 
+const eventTypes: EventType[] = [
+  'onCheckoutComplete',
+  'onBeforeClientSessionUpdate',
+  'onClientSessionUpdate',
+  'onBeforePaymentCreate',
+  'onCheckoutFail',
+  'onDismiss',
+  'onTokenizeSuccess',
+  'onResumeSuccess',
+  'detectImplementedRNCallbacks'
+];
+
 const RNPrimer = {
   ///////////////////////////////////////////
   // Event Emitter
@@ -40,15 +52,7 @@ const RNPrimer = {
   },
 
   removeAllListeners() {
-    RNPrimer.removeAllListenersForEvent('onCheckoutComplete');
-    RNPrimer.removeAllListenersForEvent('onBeforeClientSessionUpdate');
-    RNPrimer.removeAllListenersForEvent('onClientSessionUpdate');
-    RNPrimer.removeAllListenersForEvent('onBeforePaymentCreate');
-    RNPrimer.removeAllListenersForEvent('onCheckoutFail');
-    RNPrimer.removeAllListenersForEvent('onDismiss');
-    RNPrimer.removeAllListenersForEvent('onTokenizeSuccess');
-    RNPrimer.removeAllListenersForEvent('onResumeSuccess');
-    RNPrimer.removeAllListenersForEvent('detectImplementedRNCallbacks');
+    eventTypes.forEach((eventType) => RNPrimer.removeAllListenersForEvent(eventType));
   },
 
   ///////////////////////////////////////////
