@@ -217,7 +217,7 @@ const SettingsScreen = ({ navigation }) => {
               `Amount: ${amount}\nCurrency: ${currency}\nCountry Code: ${countryCode}\nCustomer ID: ${customerId}\nPhone Number: ${phoneNumber}`
             );
             const appSettings: IAppSettings = {
-              amount: amount,
+              amount: amount ?? 0,
               currencyCode: currency,
               countryCode: countryCode,
               customerId: customerId || undefined,
