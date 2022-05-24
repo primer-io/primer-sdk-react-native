@@ -52,6 +52,6 @@ RCT_EXTERN_METHOD(handlePaymentCreationContinue:(RCTPromiseResolveBlock)resolver
 
 // MARK: Error Handler
 
-RCT_EXTERN_METHOD(handleErrorMessage:(NSString *)errorMessage resolver:(RCTPromiseResolveBlock)resolver rejecter:(RCTPromiseRejectBlock)rejecter)
+RCT_EXTERN_METHOD(showErrorMessage:(NSString *)errorMessage resolver:(RCTPromiseResolveBlock)resolver rejecter:(RCTPromiseRejectBlock)rejecter)
 
 @end

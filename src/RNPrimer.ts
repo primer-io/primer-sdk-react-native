@@ -217,10 +217,10 @@ const RNPrimer = {
 
     // Error Handler
 
-    handleErrorMessage: (errorMessage: string | null): Promise<void> => {
+    showErrorMessage: (errorMessage: string | null): Promise<void> => {
       return new Promise(async (resolve, reject) => {
         try {
-          await NativePrimer.handleErrorMessage(errorMessage || "");
+          await NativePrimer.showErrorMessage(errorMessage || "");
           resolve();
         } catch (err) {
           reject(err);
