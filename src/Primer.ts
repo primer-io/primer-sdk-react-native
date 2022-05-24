@@ -4,7 +4,7 @@ import type { PrimerSessionIntent } from './models/PrimerSessionIntent';
 import type { PrimerSettings } from './models/PrimerSettings';
 import RNPrimer from './RNPrimer';
 import type { PrimerCheckoutPaymentMethodData } from './models/PrimerCheckoutPaymentMethodData';
-import type { PrimerClientSession } from 'lib/typescript';
+import type { PrimerClientSession } from './models/PrimerClientSession';
 import type { PrimerPaymentMethodTokenData } from './models/PrimerPaymentMethodTokenData';
 import { PrimerError } from './models/PrimerError';
 
