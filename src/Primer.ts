@@ -91,9 +91,9 @@ const paymentCreationHandler: PrimerPaymentCreationHandler = {
 // Error Handler
 
 const errorHandler: PrimerErrorHandler = {
-  handleFailure: async (errorMessage: string) => {
+  showErrorMessage: async (errorMessage: string) => {
     try {
-      RNPrimer.handleErrorMessage(errorMessage || "");
+      RNPrimer.showErrorMessage(errorMessage || "");
     } catch (err) {
       console.error(err);
     }

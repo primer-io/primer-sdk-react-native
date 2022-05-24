@@ -31,5 +31,5 @@ export interface PrimerResumeHandler {
 }
 
 export interface PrimerErrorHandler {
-  handleFailure(errorMessage: string | null): void;
+  showErrorMessage(errorMessage: string | null): void;
 }
