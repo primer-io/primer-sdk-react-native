@@ -138,7 +138,7 @@ export const Primer: IPrimer = {
 
         await RNPrimer.setImplementedRNCallbacks(implementedRNCallbacks);
 
-        if (implementedRNCallbacks.primerDidCompleteCheckoutWithData) {
+        if (implementedRNCallbacks.onCheckoutComplete) {
           RNPrimer.addListener('onCheckoutComplete', data => {
             if (primerSettings && primerSettings.onCheckoutComplete) {
               const checkoutData: PrimerCheckoutData = data;
@@ -147,7 +147,7 @@ export const Primer: IPrimer = {
           });
         }
 
-        if (implementedRNCallbacks.primerWillCreatePaymentWithData) {
+        if (implementedRNCallbacks.onBeforePaymentCreate) {
           RNPrimer.addListener('onBeforePaymentCreate', data => {
             if (primerSettings && primerSettings.onBeforePaymentCreate) {
               const checkoutPaymentMethodData: PrimerCheckoutPaymentMethodData = data;
@@ -156,7 +156,7 @@ export const Primer: IPrimer = {
           });
         }
 
-        if (implementedRNCallbacks.primerClientSessionWillUpdate) {
+        if (implementedRNCallbacks.onBeforeClientSessionUpdate) {
           RNPrimer.addListener('onBeforeClientSessionUpdate', _ => {
             if (primerSettings && primerSettings.onBeforeClientSessionUpdate) {
               primerSettings.onBeforeClientSessionUpdate();
@@ -164,7 +164,7 @@ export const Primer: IPrimer = {
           });
         }
 
-        if (implementedRNCallbacks.primerClientSessionDidUpdate) {
+        if (implementedRNCallbacks.onClientSessionUpdate) {
           RNPrimer.addListener('onClientSessionUpdate', data => {
             if (primerSettings && primerSettings.onClientSessionUpdate) {
               const clientSession: PrimerClientSession = data;
@@ -173,7 +173,7 @@ export const Primer: IPrimer = {
           });
         }
 
-        if (implementedRNCallbacks.primerDidTokenizePaymentMethod) {
+        if (implementedRNCallbacks.onTokenizeSuccess) {
           RNPrimer.addListener('onTokenizeSuccess', data => {
             if (primerSettings && primerSettings.onTokenizeSuccess) {
               const paymentMethodTokenData: PrimerPaymentMethodTokenData = data;
@@ -182,7 +182,7 @@ export const Primer: IPrimer = {
           });
         }
 
-        if (implementedRNCallbacks.primerDidResumeWith) {
+        if (implementedRNCallbacks.onResumeSuccess) {
           RNPrimer.addListener('onResumeSuccess', resumeToken => {
             if (primerSettings && primerSettings.onResumeSuccess) {
               primerSettings.onResumeSuccess(resumeToken, resumeHandler);
@@ -190,7 +190,7 @@ export const Primer: IPrimer = {
           });
         }
 
-        if (implementedRNCallbacks.primerDidDismiss) {
+        if (implementedRNCallbacks.onDismiss) {
           RNPrimer.addListener('onDismiss', _ => {
             if (primerSettings && primerSettings.onDismiss) {
               primerSettings.onDismiss();
@@ -198,7 +198,7 @@ export const Primer: IPrimer = {
           });
         }
 
-        if (implementedRNCallbacks.primerDidFailWithError) {
+        if (implementedRNCallbacks.onCheckoutFail) {
           RNPrimer.addListener('onCheckoutFail', data => {
             let recoverySuggestion: string | undefined = undefined;
             if (data.recoverySuggestion) {
