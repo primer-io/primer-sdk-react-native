@@ -48,12 +48,7 @@ enum PrimerEvents: Int, CaseIterable {
 
 @objc(NativePrimer)
 class RNTPrimer: RCTEventEmitter {
-    
-//    private var isClientTokenCallbackImplementedInRN: Bool?
-//    private var clientTokenCallback: ((String?, Error?) -> Void)?
-//    private var isOnClientSessionActionsImplementedInRN: Bool?
-//    private var onClientSessionActions: ((String?, Error?) -> Void)?
-    
+
     private var primerWillCreatePaymentWithDataDecisionHandler: ((_ errorMessage: String?) -> Void)?
     private var primerDidTokenizePaymentMethodDecisionHandler: ((_ resumeToken: String?, _ errorMessage: String?) -> Void)?
     private var primerDidResumeWithDecisionHandler: ((_ resumeToken: String?, _ errorMessage: String?) -> Void)?
