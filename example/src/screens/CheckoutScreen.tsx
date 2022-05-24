@@ -128,7 +128,7 @@ const CheckoutScreen = (props: any) => {
     }
 
     const onBeforePaymentCreate = (checkoutPaymentMethodData: PrimerCheckoutPaymentMethodData, handler: PrimerPaymentCreationHandler) => {
-        console.warn(`onBeforePaymentCreate\n${JSON.stringify(checkoutPaymentMethodData)}`);
+        console.log(`onBeforePaymentCreate\n${JSON.stringify(checkoutPaymentMethodData)}`);
         handler.continuePaymentCreation();
     }
 
@@ -198,7 +198,7 @@ const CheckoutScreen = (props: any) => {
             clientToken = clientSession.clientToken;
 
             const settings: PrimerSettings = {
-                paymentHandling: 'MANUAL',
+                paymentHandling: 'AUTO',
                 localeData: {
                     languageCode: 'el',
                     localeCode: 'GR'
