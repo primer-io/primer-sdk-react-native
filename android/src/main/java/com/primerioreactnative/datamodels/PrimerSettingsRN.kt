@@ -1,9 +1,6 @@
 package com.primerioreactnative.datamodels
 
-import io.primer.android.data.settings.PrimerDebugOptions
-import io.primer.android.data.settings.PrimerPaymentHandling
-import io.primer.android.data.settings.PrimerPaymentMethodOptions
-import io.primer.android.data.settings.PrimerSettings
+import io.primer.android.data.settings.*
 import io.primer.android.ui.settings.PrimerUIOptions
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -11,11 +8,9 @@ import java.util.*
 
 @Serializable
 data class PrimerSettingsRN(
-  @SerialName("android")
-  var androidSettings: AndroidSettingsRN = AndroidSettingsRN(),
   var paymentHandling: PrimerPaymentHandling = PrimerPaymentHandling.AUTO,
   var localeData: LocaleSettingsRN = LocaleSettingsRN(),
-  var paymentMethodOptions: PrimerPaymentMethodOptions = PrimerPaymentMethodOptions(),
+  var paymentMethodOptions: PrimerPaymentMethodOptionsRN = PrimerPaymentMethodOptionsRN(),
   var uiOptions: PrimerUIOptions = PrimerUIOptions(),
   var debugOptions: PrimerDebugOptions = PrimerDebugOptions(),
 )
@@ -27,7 +22,7 @@ data class LocaleSettingsRN(
 )
 
 fun LocaleSettingsRN.toLocale(): Locale {
- return when {
+  return when {
     languageCode == null -> Locale.getDefault()
     localeCode == null -> Locale(languageCode)
     else -> Locale(languageCode, localeCode)
@@ -35,11 +30,34 @@ fun LocaleSettingsRN.toLocale(): Locale {
 }
 
 @Serializable
-data class AndroidSettingsRN(val redirectSchema: String? = null)
+data class PrimerPaymentMethodOptionsRN(
+  @SerialName("android")
+  val androidSettingsRN: AndroidSettingsRN = AndroidSettingsRN(),
+  var cardPaymentOptions: PrimerCardPaymentOptions = PrimerCardPaymentOptions(),
+  var googlePayOptions: PrimerGooglePayOptions = PrimerGooglePayOptions(),
+  var klarnaOptions: PrimerKlarnaOptions = PrimerKlarnaOptions(),
+  var apayaOptions: PrimerApayaOptions = PrimerApayaOptions(),
+  var goCardlessOptions: PrimerGoCardlessOptions = PrimerGoCardlessOptions()
+)
+
+fun PrimerPaymentMethodOptionsRN.toPrimerPaymentMethodOptions() = PrimerPaymentMethodOptions(
+  androidSettingsRN.redirectScheme,
+  cardPaymentOptions,
+  googlePayOptions,
+  klarnaOptions,
+  apayaOptions,
+  goCardlessOptions
+)
+
+@Serializable
+data class AndroidSettingsRN(val redirectScheme: String? = null)
 
 fun PrimerSettingsRN.toPrimerSettings() = PrimerSettings(
-  paymentHandling, localeData.toLocale(),
-  paymentMethodOptions, uiOptions, debugOptions
+  paymentHandling,
+  localeData.toLocale(),
+  paymentMethodOptions.toPrimerPaymentMethodOptions(),
+  uiOptions,
+  debugOptions
 )
 
 

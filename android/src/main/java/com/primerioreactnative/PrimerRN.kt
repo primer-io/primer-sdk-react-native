@@ -5,6 +5,7 @@ import com.facebook.react.bridge.*
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.primerioreactnative.datamodels.*
 import com.primerioreactnative.utils.PrimerImplementedRNCallbacks
+import com.primerioreactnative.utils.convertJsonToMap
 import com.primerioreactnative.utils.errorTo
 import io.primer.android.Primer
 import io.primer.android.PrimerSessionIntent
@@ -15,14 +16,15 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
 
-
 class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
   private var mListener = PrimerRNEventListener()
   private val json = Json { ignoreUnknownKeys = true }
 
   init {
     mListener.sendEvent = { eventName, paramsJson -> sendEvent(eventName, paramsJson) }
-    mListener.sendError = { paramsJson -> checkoutFailed(paramsJson) }
+    mListener.sendError = { paramsJson -> onError(paramsJson) }
+    mListener.sendErrorWithCheckoutData =
+      { paramsJson, checkoutData -> onError(paramsJson, checkoutData) }
   }
 
   override fun getName(): String = "NativePrimer"
@@ -31,13 +33,16 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
   fun configure(settingsStr: String, promise: Promise) {
     try {
       Log.d("PrimerRN", "settings: $settingsStr")
-      val settings = json.decodeFromString<PrimerSettingsRN>(settingsStr)
+      val settings =
+        if (settingsStr.isBlank()) PrimerSettingsRN() else json.decodeFromString(
+          settingsStr
+        )
       startSdk(settings.toPrimerSettings())
       promise.resolve(null)
     } catch (e: Exception) {
       Log.e("PrimerRN", "configure settings error: $e")
       val exception = ErrorTypeRN.NativeBridgeFailed errorTo "failed to parse settings."
-      checkoutFailed(exception)
+      onError(exception)
       promise.reject(exception.errorId, exception.description, e)
     }
   }
@@ -53,21 +58,20 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
     } catch (e: Exception) {
       val exception = ErrorTypeRN.NativeBridgeFailed errorTo
         "Primer SDK failed: ${e.message}"
-      checkoutFailed(exception)
+      onError(exception)
       promise.reject(exception.errorId, exception.description, e)
     }
   }
 
-
   @ReactMethod
-  fun showVaultManagerWithToken(clientToken: String, promise: Promise) {
+  fun showVaultManagerWithClientToken(clientToken: String, promise: Promise) {
     try {
       Primer.instance.showVaultManager(reactApplicationContext.applicationContext, clientToken)
       promise.resolve(null)
     } catch (e: Exception) {
       val exception = ErrorTypeRN.CheckoutFlowFailed errorTo
         "Primer SDK failed: ${e.message}"
-      checkoutFailed(exception)
+      onError(exception)
       promise.reject(exception.errorId, exception.description, e)
     }
   }
@@ -84,7 +88,7 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
       intent = PrimerSessionIntent.valueOf(intentStr)
     } catch (e: Exception) {
       val exception = ErrorTypeRN.NativeBridgeFailed errorTo "Intent $intentStr is not valid."
-      checkoutFailed(exception)
+      onError(exception)
       promise.reject(exception.errorId, exception.description, e)
       return
     }
@@ -94,7 +98,7 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
     } catch (e: Exception) {
       val exception =
         ErrorTypeRN.NativeBridgeFailed errorTo "Payment method type $paymentMethodTypeStr is not valid."
-      checkoutFailed(exception)
+      onError(exception)
       promise.reject(exception.errorId, exception.description, e)
       return
     }
@@ -110,7 +114,7 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
     } catch (e: Exception) {
       val exception = ErrorTypeRN.CheckoutFlowFailed errorTo
         "Primer SDK failed: ${e.message}"
-      checkoutFailed(exception)
+      onError(exception)
       promise.reject(exception.errorId, exception.description, e)
     }
   }
@@ -194,7 +198,7 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
     } catch (e: Exception) {
       val exception =
         ErrorTypeRN.NativeBridgeFailed errorTo "Implemented callbacks $implementedRNCallbacksStr is not valid."
-      checkoutFailed(exception)
+      onError(exception)
       promise.reject(exception.errorId, exception.description, e)
     }
   }
@@ -203,13 +207,17 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
     Primer.instance.configure(settings, mListener)
   }
 
-  private fun checkoutFailed(exception: PrimerErrorRN) {
+  private fun onError(exception: PrimerErrorRN, checkoutDataRN: PrimerCheckoutDataRN? = null) {
     val params = Arguments.createMap()
     val errorJson = JSONObject(Json.encodeToString(exception))
-    val data = Arguments.createMap()
-    prepareData(data, errorJson)
-    params.putMap(Keys.ERROR, data)
-    sendEvent(PrimerEvents.ON_CHECKOUT_FAIL.eventName, params)
+    val errorData = prepareData(errorJson)
+    params.putMap(Keys.ERROR, errorData)
+    checkoutDataRN?.let {
+      val checkoutDataJson = JSONObject(Json.encodeToString(it))
+      val checkoutData = prepareData(checkoutDataJson)
+      params.putMap(Keys.CHECKOUT_DATA, checkoutData)
+    }
+    sendEvent(PrimerEvents.ON_ERROR.eventName, params)
   }
 
   private fun sendEvent(name: String, params: WritableMap) {
@@ -219,28 +227,19 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
   }
 
   private fun sendEvent(name: String, data: JSONObject?) {
-    val params = Arguments.createMap()
-    prepareData(params, data)
+    val params = prepareData(data)
     reactApplicationContext.getJSModule(
       DeviceEventManagerModule.RCTDeviceEventEmitter::class.java
     ).emit(name, params)
   }
 
-  private fun prepareData(params: WritableMap, data: JSONObject?) {
-    data?.keys()?.forEach { key ->
-      when (val dataValue = data.opt(key)) {
-        is String -> params.putString(key, dataValue)
-        is Boolean -> params.putBoolean(key, dataValue)
-        is Double -> params.putDouble(key, dataValue)
-        is Int -> params.putInt(key, dataValue)
-        is JSONObject -> prepareData(params, dataValue)
-        else -> params.putNull(key)
-      }
-    }
+  private fun prepareData(data: JSONObject?): WritableMap {
+    return data?.let { convertJsonToMap(data) } ?: Arguments.createMap()
   }
 }
 
 internal object Keys {
   const val ERROR = "error"
   const val RESUME_TOKEN = "resumeToken"
+  const val CHECKOUT_DATA = "checkoutData"
 }

@@ -207,6 +207,9 @@ const CheckoutScreen = (props: any) => {
                     iOS: {
                         urlScheme: 'merchant://'
                     },
+                    android: {
+                        redirectScheme: 'primer'
+                    },
                     applePayOptions: {
                         merchantIdentifier: "merchant.checkout.team"
                     },
@@ -239,6 +242,7 @@ const CheckoutScreen = (props: any) => {
             await Primer.showUniversalCheckout(clientToken);
 
         } catch (err) {
+            console.error(err);
             if (err instanceof Error) {
                 setError(err);
             } else if (typeof err === "string") {
@@ -259,12 +263,20 @@ const CheckoutScreen = (props: any) => {
                     iOS: {
                         urlScheme: 'merchant://'
                     }
-                }
+                },
+                onBeforeClientSessionUpdate: onBeforeClientSessionUpdate,
+                onClientSessionUpdate: onClientSessionUpdate,
+                onBeforePaymentCreate: onBeforePaymentCreate,
+                onCheckoutComplete: onCheckoutComplete,
+                onTokenizeSuccess: onTokenizeSuccess,
+                onResumeSuccess: onResumeSuccess,
+                onError: onError,
+                onDismiss: onDismiss,
             };
             await Primer.configure(settings);
             await Primer.showPaymentMethod('APPLE_PAY', PrimerSessionIntent.CHECKOUT, clientToken);
-
         } catch (err) {
+            console.error(err);
             if (err instanceof Error) {
                 setError(err);
             } else if (typeof err === "string") {

@@ -13,8 +13,8 @@ data class PrimerImplementedRNCallbacks(
   val isOnClientSessionUpdateImplemented: Boolean? = null,
   @SerialName("onBeforePaymentCreate")
   val isOnBeforePaymentCreateImplemented: Boolean? = null,
-  @SerialName("onCheckoutFail")
-  val isOnCheckoutFailImplemented: Boolean? = null,
+  @SerialName("onError")
+  val isOnErrorImplemented: Boolean? = null,
   @SerialName("onDismiss")
   val isOnDismissImplemented: Boolean? = null,
   @SerialName("onTokenizeSuccess")

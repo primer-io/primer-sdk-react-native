@@ -1,6 +1,8 @@
 package com.primerioreactnative
 
 import com.primerioreactnative.datamodels.*
+import com.primerioreactnative.extensions.toPrimerCheckoutDataRN
+import com.primerioreactnative.extensions.toPrimerClientSessionRN
 import com.primerioreactnative.utils.PrimerImplementedRNCallbacks
 import com.primerioreactnative.utils.errorTo
 import io.primer.android.PrimerCheckoutListener
@@ -28,6 +30,8 @@ class PrimerRNEventListener : PrimerCheckoutListener {
 
   var sendEvent: ((eventName: String, paramsJson: JSONObject?) -> Unit)? = null
   var sendError: ((error: PrimerErrorRN) -> Unit)? = null
+  var sendErrorWithCheckoutData: ((error: PrimerErrorRN, checkoutData: PrimerCheckoutDataRN?) -> Unit)? =
+    null
 
   override fun onCheckoutCompleted(checkoutData: PrimerCheckoutData) {
     if (implementedRNCallbacks?.isOnCheckoutCompleteImplemented == true) {
@@ -78,7 +82,7 @@ class PrimerRNEventListener : PrimerCheckoutListener {
     if (implementedRNCallbacks?.isOnClientSessionUpdateImplemented == true) {
       sendEvent?.invoke(
         PrimerEvents.ON_CLIENT_SESSION_UPDATE.eventName,
-        JSONObject(Json.encodeToString(clientSession))
+        JSONObject(Json.encodeToString(clientSession.toPrimerClientSessionRN()))
       )
     } else {
       super.onClientSessionUpdated(clientSession)
@@ -135,13 +139,13 @@ class PrimerRNEventListener : PrimerCheckoutListener {
   }
 
   override fun onDismissed() {
-    removeCallbacksAndHandlers()
     if (implementedRNCallbacks?.isOnDismissImplemented == true) {
       sendEvent?.invoke(
         PrimerEvents.ON_DISMISS.eventName,
         null
       )
     }
+    removeCallbacksAndHandlers()
   }
 
   override fun onFailed(
@@ -149,18 +153,24 @@ class PrimerRNEventListener : PrimerCheckoutListener {
     checkoutData: PrimerCheckoutData?,
     errorHandler: PrimerErrorDecisionHandler?
   ) {
-    if (implementedRNCallbacks?.isOnCheckoutFailImplemented == true) {
+    if (implementedRNCallbacks?.isOnErrorImplemented == true) {
       primerErrorDecisionHandler = { errorMessage: String? ->
         errorHandler?.showErrorMessage(errorMessage?.ifBlank { null })
       }
-      sendError?.invoke(PrimerErrorRN(error.errorId, error.description, error.recoverySuggestion))
+      sendErrorWithCheckoutData?.invoke(
+        PrimerErrorRN(
+          error.errorId,
+          error.description,
+          error.recoverySuggestion
+        ), checkoutData?.toPrimerCheckoutDataRN()
+      )
     } else {
       super.onFailed(error, checkoutData, errorHandler)
     }
   }
 
   override fun onFailed(error: PrimerError, errorHandler: PrimerErrorDecisionHandler?) {
-    if (implementedRNCallbacks?.isOnCheckoutFailImplemented == true) {
+    if (implementedRNCallbacks?.isOnErrorImplemented == true) {
       primerErrorDecisionHandler = { errorMessage: String? ->
         errorHandler?.showErrorMessage(errorMessage)
       }
@@ -169,7 +179,6 @@ class PrimerRNEventListener : PrimerCheckoutListener {
       super.onFailed(error, errorHandler)
     }
   }
-
 
   // region tokenization handlers
   fun handleTokenizationNewClientToken(newClientToken: String) {
@@ -211,6 +220,7 @@ class PrimerRNEventListener : PrimerCheckoutListener {
   }
   // endregion
 
+  // region payment create handlers
   fun handlePaymentCreationContinue() {
     paymentCreationDecisionHandler?.invoke(null)
     paymentCreationDecisionHandler = null
@@ -220,11 +230,14 @@ class PrimerRNEventListener : PrimerCheckoutListener {
     paymentCreationDecisionHandler?.invoke(errorMessage)
     paymentCreationDecisionHandler = null
   }
+  // endregion
 
+  // region error handlers
   fun handleErrorMessage(errorMessage: String) {
     primerErrorDecisionHandler?.invoke(errorMessage)
     primerErrorDecisionHandler = null
   }
+  // endregion
 
   fun setImplementedCallbacks(implementedRNCallbacks: PrimerImplementedRNCallbacks) {
     this.implementedRNCallbacks = implementedRNCallbacks
