@@ -3,6 +3,7 @@ package com.primerioreactnative
 import com.primerioreactnative.datamodels.*
 import com.primerioreactnative.extensions.toPrimerCheckoutDataRN
 import com.primerioreactnative.extensions.toPrimerClientSessionRN
+import com.primerioreactnative.extensions.toPrimerPaymentMethodDataRN
 import com.primerioreactnative.utils.PrimerImplementedRNCallbacks
 import com.primerioreactnative.utils.errorTo
 import io.primer.android.PrimerCheckoutListener

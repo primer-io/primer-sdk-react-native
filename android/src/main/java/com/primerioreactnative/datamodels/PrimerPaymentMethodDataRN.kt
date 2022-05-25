@@ -6,6 +6,3 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class PrimerPaymentMethodDataRN(val paymentMethodType: PrimerPaymentMethodType)
-
-fun PrimerPaymentMethodData.toPrimerPaymentMethodDataRN() =
-  PrimerPaymentMethodDataRN(paymentMethodType)
