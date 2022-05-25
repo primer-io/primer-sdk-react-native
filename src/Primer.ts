@@ -165,9 +165,9 @@ async function configureListeners(): Promise<void> {
       }
 
       if (implementedRNCallbacks.onResumeSuccess) {
-        RNPrimer.addListener('onResumeSuccess', resumeToken => {
-          if (primerSettings && primerSettings.onResumeSuccess) {
-            primerSettings.onResumeSuccess(resumeToken, resumeHandler);
+        RNPrimer.addListener('onResumeSuccess', data => {
+          if (primerSettings && primerSettings.onResumeSuccess && data.resumeToken) {
+            primerSettings.onResumeSuccess(data.resumeToken, resumeHandler);
           }
         });
       }
