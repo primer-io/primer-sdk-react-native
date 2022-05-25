@@ -182,13 +182,17 @@ async function configureListeners(): Promise<void> {
 
       if (implementedRNCallbacks.onCheckoutFail) {
         RNPrimer.addListener('onCheckoutFail', data => {
-          let recoverySuggestion: string | undefined = undefined;
-          if (data.recoverySuggestion) {
-            recoverySuggestion = data.recoverySuggestion
-          }
-          const primerError = new PrimerError(data.errorId, data.description, recoverySuggestion);
-          if (primerSettings && primerSettings.onCheckoutFail) {
-            primerSettings.onCheckoutFail(primerError, errorHandler);
+          if (data && data.error && data.error.errorId && primerSettings && primerSettings.onCheckoutFail) {
+            const errorId: string = data.error.errorId;
+            const description: string | undefined = data.error.description;
+            const recoverySuggestion: string | undefined = data.error.recoverySuggestion;
+            const primerError = new PrimerError(errorId, description || 'Unknown error', recoverySuggestion);
+
+            if (data.checkoutData) {
+              primerSettings.onCheckoutFail(primerError, data.checkoutData, errorHandler);
+            } else {
+              primerSettings.onCheckoutFail(primerError, null, errorHandler);
+            }
           }
         });
       }
