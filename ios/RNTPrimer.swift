@@ -274,12 +274,20 @@ class RNTPrimer: RCTEventEmitter {
         }
     }
     
-    private func handleRNBridgeError(_ error: Error, stopOnDebug: Bool) {
+    private func handleRNBridgeError(_ error: Error, checkoutData: PrimerCheckoutData?, stopOnDebug: Bool) {
         DispatchQueue.main.async {
             if stopOnDebug {
                 assertionFailure(error.localizedDescription)
             }
-            self.sendEvent(withName: PrimerEvents.onCheckoutFail.stringValue, body: error.rnError)
+            
+            var body: [String: Any] = ["error": error.rnError]
+            if let checkoutData = checkoutData,
+               let data = try? JSONEncoder().encode(checkoutData),
+               let json = try? JSONSerialization.jsonObject(with: data){
+                body["checkoutData"] = json
+            }
+            print(body)
+            self.sendEvent(withName: PrimerEvents.onCheckoutFail.stringValue, body: body)
         }
     }
 }
@@ -296,11 +304,11 @@ extension RNTPrimer: PrimerDelegate {
                     let checkoutJson = try JSONSerialization.jsonObject(with: checkoutData, options: .allowFragments)
                     self.sendEvent(withName: PrimerEvents.onCheckoutComplete.stringValue, body: checkoutJson)
                 } catch {
-                    self.handleRNBridgeError(error, stopOnDebug: true)
+                    self.handleRNBridgeError(error, checkoutData: data, stopOnDebug: true)
                 }
             } else {
                 let err = NSError(domain: "native-bridge", code: 1, userInfo: [NSLocalizedDescriptionKey: "Callback [onCheckoutComplete] should be implemented."])
-                self.handleRNBridgeError(err, stopOnDebug: false)
+                self.handleRNBridgeError(err, checkoutData: data, stopOnDebug: false)
             }
         }
     }
@@ -323,7 +331,7 @@ extension RNTPrimer: PrimerDelegate {
                     let checkoutPaymentmethodJson = try JSONSerialization.jsonObject(with: checkoutPaymentmethodData, options: .allowFragments)
                     self.sendEvent(withName: PrimerEvents.onBeforePaymentCreate.stringValue, body: checkoutPaymentmethodJson)
                 } catch {
-                    self.handleRNBridgeError(error, stopOnDebug: true)
+                    self.handleRNBridgeError(error, checkoutData: nil, stopOnDebug: true)
                 }
             }
         } else {
@@ -353,7 +361,7 @@ extension RNTPrimer: PrimerDelegate {
                     self.sendEvent(withName: PrimerEvents.onClientSessionUpdate.stringValue, body: json)
                 }
             } catch {
-                self.handleRNBridgeError(error, stopOnDebug: true)
+                self.handleRNBridgeError(error, checkoutData: nil, stopOnDebug: true)
             }
         } else {
             // RN Dev hasn't implemented this callback, ignore.
@@ -381,7 +389,7 @@ extension RNTPrimer: PrimerDelegate {
                     self.sendEvent(withName: PrimerEvents.onTokenizeSuccess.stringValue, body: json)
                 }
             } catch {
-                self.handleRNBridgeError(error, stopOnDebug: true)
+                self.handleRNBridgeError(error, checkoutData: nil, stopOnDebug: true)
             }
         } else {
             // RN dev hasn't opted in on listening the tokenization callback.
@@ -436,7 +444,7 @@ extension RNTPrimer: PrimerDelegate {
             }
             
             // Send the error message to the RN bridge.
-            self.handleRNBridgeError(error, stopOnDebug: false)
+            self.handleRNBridgeError(error, checkoutData: nil, stopOnDebug: false)
             
         } else {
             // RN dev hasn't opted in on listening SDK dismiss.
