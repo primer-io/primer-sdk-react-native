@@ -13,7 +13,7 @@ internal struct ImplementedRNCallbacks: Codable {
     public var isOnBeforeClientSessionUpdateImplemented: Bool = false
     public var isOnClientSessionUpdateImplemented: Bool = false
     public var isOnBeforePaymentCreateImplemented: Bool = false
-    public var isOnCheckoutFailImplemented: Bool = false
+    public var isOnErrorImplemented: Bool = false
     public var isOnDismissImplemented: Bool = false
     public var isOnTokenizeSuccessImplemented: Bool = false
     public var isOnResumeSuccessImplemented: Bool = false
@@ -23,7 +23,7 @@ internal struct ImplementedRNCallbacks: Codable {
         case isOnBeforeClientSessionUpdateImplemented = "onBeforeClientSessionUpdate"
         case isOnClientSessionUpdateImplemented = "onClientSessionUpdate"
         case isOnBeforePaymentCreateImplemented = "onBeforePaymentCreate"
-        case isOnCheckoutFailImplemented = "onCheckoutFail"
+        case isOnErrorImplemented = "onError"
         case isOnDismissImplemented = "onDismiss"
         case isOnTokenizeSuccessImplemented = "onTokenizeSuccess"
         case isOnResumeSuccessImplemented = "onResumeSuccess"

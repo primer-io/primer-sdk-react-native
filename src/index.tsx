@@ -29,3 +29,6 @@ export {
 export { 
     PrimerCheckoutPaymentMethodData
 } from './models/PrimerCheckoutPaymentMethodData';
+export { 
+    PrimerError
+} from './models/PrimerError';

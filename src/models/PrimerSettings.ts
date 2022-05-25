@@ -21,7 +21,7 @@ interface IPrimerSettings {
   onCheckoutComplete?: (checkoutData: PrimerCheckoutData) => void;
   onTokenizeSuccess?: (paymentMethodTokenData: PrimerPaymentMethodTokenData, handler: PrimerTokenizationHandler) => void;
   onResumeSuccess?: (resumeToken: string, handler: PrimerResumeHandler) => void;
-  onCheckoutFail?: (error: PrimerError, handler: PrimerErrorHandler) => void;
+  onError?: (error: PrimerError, checkoutData: PrimerCheckoutData | null, handler: PrimerErrorHandler) => void;
   onDismiss?: () => void;
 }
 

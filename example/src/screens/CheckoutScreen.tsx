@@ -11,7 +11,8 @@ import {
     PrimerResumeHandler,
     PrimerPaymentMethodTokenData,
     PrimerTokenizationHandler,
-    PrimerClientSession
+    PrimerClientSession,
+    PrimerError
 } from '@primer-io/react-native';
 import { View, Text, useColorScheme, TouchableOpacity } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
@@ -181,9 +182,8 @@ const CheckoutScreen = (props: any) => {
         }
     }
 
-    const onCheckoutFail = (error: Error, handler: PrimerErrorHandler) => {
-        console.log(`onCheckoutFail:\n${JSON.stringify(error)}`);
-        console.error(error);
+    const onError = (error: PrimerError, checkoutData: PrimerCheckoutData | null, handler: PrimerErrorHandler) => {
+        console.log(`onError:\n${JSON.stringify(error)}\n\n${JSON.stringify(checkoutData)}`);
         handler.showErrorMessage("My RN message");
     };
 
@@ -231,7 +231,7 @@ const CheckoutScreen = (props: any) => {
                 onCheckoutComplete: onCheckoutComplete,
                 onTokenizeSuccess: onTokenizeSuccess,
                 onResumeSuccess: onResumeSuccess,
-                onCheckoutFail: onCheckoutFail,
+                onError: onError,
                 onDismiss: onDismiss,
             };
 
