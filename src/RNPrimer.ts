@@ -10,7 +10,7 @@ type EventType =
   | 'onBeforeClientSessionUpdate'
   | 'onClientSessionUpdate'
   | 'onBeforePaymentCreate'
-  | 'onCheckoutFail'
+  | 'onError'
   | 'onDismiss'
   | 'onTokenizeSuccess'
   | 'onResumeSuccess'
@@ -27,7 +27,7 @@ const eventTypes: EventType[] = [
   'onBeforeClientSessionUpdate',
   'onClientSessionUpdate',
   'onBeforePaymentCreate',
-  'onCheckoutFail',
+  'onError',
   'onDismiss',
   'onTokenizeSuccess',
   'onResumeSuccess',

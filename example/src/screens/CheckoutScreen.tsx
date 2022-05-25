@@ -182,8 +182,8 @@ const CheckoutScreen = (props: any) => {
         }
     }
 
-    const onCheckoutFail = (error: PrimerError, checkoutData: PrimerCheckoutData | null, handler: PrimerErrorHandler) => {
-        console.log(`onCheckoutFail:\n${JSON.stringify(error)}\n\n${JSON.stringify(checkoutData)}`);
+    const onError = (error: PrimerError, checkoutData: PrimerCheckoutData | null, handler: PrimerErrorHandler) => {
+        console.log(`onError:\n${JSON.stringify(error)}\n\n${JSON.stringify(checkoutData)}`);
         handler.showErrorMessage("My RN message");
     };
 
@@ -231,7 +231,7 @@ const CheckoutScreen = (props: any) => {
                 onCheckoutComplete: onCheckoutComplete,
                 onTokenizeSuccess: onTokenizeSuccess,
                 onResumeSuccess: onResumeSuccess,
-                onCheckoutFail: onCheckoutFail,
+                onError: onError,
                 onDismiss: onDismiss,
             };
 
