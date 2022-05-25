@@ -19,7 +19,7 @@ enum PrimerEvents: Int, CaseIterable {
     case onDismiss
     case onTokenizeSuccess
     case onResumeSuccess
-    case onCheckoutFail
+    case onError
     case detectImplementedRNCallbacks
     
     var stringValue: String {
@@ -38,8 +38,8 @@ enum PrimerEvents: Int, CaseIterable {
             return "onTokenizeSuccess"
         case .onResumeSuccess:
             return "onResumeSuccess"
-        case .onCheckoutFail:
-            return "onCheckoutFail"
+        case .onError:
+            return "onError"
         case .detectImplementedRNCallbacks:
             return "detectImplementedRNCallbacks"
         }
@@ -287,7 +287,7 @@ class RNTPrimer: RCTEventEmitter {
                 body["checkoutData"] = json
             }
             print(body)
-            self.sendEvent(withName: PrimerEvents.onCheckoutFail.stringValue, body: body)
+            self.sendEvent(withName: PrimerEvents.onError.stringValue, body: body)
         }
     }
 }
@@ -433,7 +433,7 @@ extension RNTPrimer: PrimerDelegate {
     }
     
     func primerDidFailWithError(_ error: Error, data: PrimerCheckoutData?, decisionHandler: @escaping ((PrimerErrorDecision) -> Void)) {
-        if self.implementedRNCallbacks?.isOnCheckoutFailImplemented == true {
+        if self.implementedRNCallbacks?.isOnErrorImplemented == true {
             // Set up the callback that will be called by **handleErrorMessage** when the RN
             // bridge invokes it.
             self.primerDidFailWithErrorDecisionHandler = { errorMessage in

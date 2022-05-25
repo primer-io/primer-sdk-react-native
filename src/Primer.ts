@@ -115,7 +115,7 @@ async function configureListeners(): Promise<void> {
         onTokenizeSuccess: (primerSettings?.onTokenizeSuccess !== undefined),
         onResumeSuccess: (primerSettings?.onResumeSuccess !== undefined),
         onDismiss: (primerSettings?.onDismiss !== undefined),
-        onCheckoutFail: (primerSettings?.onCheckoutFail !== undefined),
+        onError: (primerSettings?.onError !== undefined),
       };
 
       await RNPrimer.setImplementedRNCallbacks(implementedRNCallbacks);
@@ -180,18 +180,18 @@ async function configureListeners(): Promise<void> {
         });
       }
 
-      if (implementedRNCallbacks.onCheckoutFail) {
-        RNPrimer.addListener('onCheckoutFail', data => {
-          if (data && data.error && data.error.errorId && primerSettings && primerSettings.onCheckoutFail) {
+      if (implementedRNCallbacks.onError) {
+        RNPrimer.addListener('onError', data => {
+          if (data && data.error && data.error.errorId && primerSettings && primerSettings.onError) {
             const errorId: string = data.error.errorId;
             const description: string | undefined = data.error.description;
             const recoverySuggestion: string | undefined = data.error.recoverySuggestion;
             const primerError = new PrimerError(errorId, description || 'Unknown error', recoverySuggestion);
 
             if (data.checkoutData) {
-              primerSettings.onCheckoutFail(primerError, data.checkoutData, errorHandler);
+              primerSettings.onError(primerError, data.checkoutData, errorHandler);
             } else {
-              primerSettings.onCheckoutFail(primerError, null, errorHandler);
+              primerSettings.onError(primerError, null, errorHandler);
             }
           }
         });
