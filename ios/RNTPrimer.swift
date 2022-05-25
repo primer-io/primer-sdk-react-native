@@ -413,7 +413,7 @@ extension RNTPrimer: PrimerDelegate {
             }
             
             DispatchQueue.main.async {
-                self.sendEvent(withName: PrimerEvents.onResumeSuccess.stringValue, body: resumeToken)
+                self.sendEvent(withName: PrimerEvents.onResumeSuccess.stringValue, body: ["resumeToken": resumeToken])
             }
         } else {
             // RN dev hasn't opted in on listening the tokenization callback.
