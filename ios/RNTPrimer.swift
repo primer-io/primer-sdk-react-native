@@ -48,12 +48,7 @@ enum PrimerEvents: Int, CaseIterable {
 
 @objc(NativePrimer)
 class RNTPrimer: RCTEventEmitter {
-    
-//    private var isClientTokenCallbackImplementedInRN: Bool?
-//    private var clientTokenCallback: ((String?, Error?) -> Void)?
-//    private var isOnClientSessionActionsImplementedInRN: Bool?
-//    private var onClientSessionActions: ((String?, Error?) -> Void)?
-    
+
     private var primerWillCreatePaymentWithDataDecisionHandler: ((_ errorMessage: String?) -> Void)?
     private var primerDidTokenizePaymentMethodDecisionHandler: ((_ resumeToken: String?, _ errorMessage: String?) -> Void)?
     private var primerDidResumeWithDecisionHandler: ((_ resumeToken: String?, _ errorMessage: String?) -> Void)?
@@ -242,7 +237,7 @@ class RNTPrimer: RCTEventEmitter {
     // MARK: Error Handler
     
     @objc
-    public func handleErrorMessage(_ errorMessage: String?, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
+    public func showErrorMessage(_ errorMessage: String?, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
         DispatchQueue.main.async {
             self.primerDidFailWithErrorDecisionHandler?(errorMessage ?? "")
             self.primerDidFailWithErrorDecisionHandler = nil
@@ -253,17 +248,7 @@ class RNTPrimer: RCTEventEmitter {
     // MARK: Helpers
         
     private func configure(settingsStr: String? = nil) throws {
-        var settings: PrimerSettings?
-        if let settingsStr = settingsStr {
-            guard let settingsData = settingsStr.data(using: .utf8) else {
-                let err = NSError(domain: "native-bridge", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to convert string to data"])
-                throw err
-            }
-            let settingsRN = try JSONDecoder().decode(PrimerSettingsRN.self, from: settingsData)
-            settings = settingsRN.asPrimerSettings()
-        }
-    
-        PrimerSDK.Primer.shared.configure(settings: settings, delegate: self)
+        try PrimerSDK.Primer.shared.configure(settings: PrimerSettings.initialize(with: settingsStr), delegate: self)
     }
     
     private func detectImplemetedCallbacks() {

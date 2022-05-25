@@ -22,6 +22,18 @@ export interface IPrimerError {
   recoverySuggestion?: string
 }
 
+const eventTypes: EventType[] = [
+  'onCheckoutComplete',
+  'onBeforeClientSessionUpdate',
+  'onClientSessionUpdate',
+  'onBeforePaymentCreate',
+  'onCheckoutFail',
+  'onDismiss',
+  'onTokenizeSuccess',
+  'onResumeSuccess',
+  'detectImplementedRNCallbacks'
+];
+
 const RNPrimer = {
   ///////////////////////////////////////////
   // Event Emitter
@@ -40,15 +52,7 @@ const RNPrimer = {
   },
 
   removeAllListeners() {
-    RNPrimer.removeAllListenersForEvent('onCheckoutComplete');
-    RNPrimer.removeAllListenersForEvent('onBeforeClientSessionUpdate');
-    RNPrimer.removeAllListenersForEvent('onClientSessionUpdate');
-    RNPrimer.removeAllListenersForEvent('onBeforePaymentCreate');
-    RNPrimer.removeAllListenersForEvent('onCheckoutFail');
-    RNPrimer.removeAllListenersForEvent('onDismiss');
-    RNPrimer.removeAllListenersForEvent('onTokenizeSuccess');
-    RNPrimer.removeAllListenersForEvent('onResumeSuccess');
-    RNPrimer.removeAllListenersForEvent('detectImplementedRNCallbacks');
+    eventTypes.forEach((eventType) => RNPrimer.removeAllListenersForEvent(eventType));
   },
 
   ///////////////////////////////////////////
@@ -79,7 +83,7 @@ const RNPrimer = {
   showVaultManager: (clientToken: string | undefined): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {
-        await NativePrimer.showUniversalCheckoutWithClientToken(clientToken);
+        await NativePrimer.showVaultManagerWithClientToken(clientToken);
         resolve();
       } catch (err) {
         reject(err);
@@ -213,10 +217,10 @@ const RNPrimer = {
 
     // Error Handler
 
-    handleErrorMessage: (errorMessage: string | null): Promise<void> => {
+    showErrorMessage: (errorMessage: string | null): Promise<void> => {
       return new Promise(async (resolve, reject) => {
         try {
-          await NativePrimer.handleErrorMessage(errorMessage || "");
+          await NativePrimer.showErrorMessage(errorMessage || "");
           resolve();
         } catch (err) {
           reject(err);

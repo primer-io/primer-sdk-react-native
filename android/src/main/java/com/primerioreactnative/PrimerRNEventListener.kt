@@ -50,8 +50,7 @@ class PrimerRNEventListener : PrimerCheckoutListener {
     if (implementedRNCallbacks?.isOnBeforePaymentCreateImplemented == true) {
       paymentCreationDecisionHandler = { errorMessage ->
         when {
-          errorMessage.orEmpty().ifBlank { null }.isNullOrBlank()
-            .not() -> decisionHandler.abortPaymentCreation(errorMessage)
+          errorMessage != null -> decisionHandler.abortPaymentCreation(errorMessage.ifBlank { null })
           else -> decisionHandler.continuePaymentCreation()
         }
       }
@@ -95,7 +94,7 @@ class PrimerRNEventListener : PrimerCheckoutListener {
       val request = JSONObject(Json.encodeToString(token))
       tokenizeSuccessDecisionHandler = { newClientToken, err ->
         when {
-          err != null -> decisionHandler.handleFailure(err)
+          err != null -> decisionHandler.handleFailure(err.ifBlank { null })
           newClientToken != null -> decisionHandler.continueWithNewClientToken(newClientToken)
           else -> decisionHandler.handleSuccess()
         }
@@ -116,7 +115,7 @@ class PrimerRNEventListener : PrimerCheckoutListener {
     if (implementedRNCallbacks?.isOnResumeSuccessImplemented == true) {
       resumeSuccessDecisionHandler = { newClientToken, err ->
         when {
-          err != null -> decisionHandler.handleFailure(err)
+          err != null -> decisionHandler.handleFailure(err.ifBlank { null })
           newClientToken != null -> decisionHandler.continueWithNewClientToken(newClientToken)
           else -> decisionHandler.handleSuccess()
         }
@@ -152,7 +151,7 @@ class PrimerRNEventListener : PrimerCheckoutListener {
   ) {
     if (implementedRNCallbacks?.isOnCheckoutFailImplemented == true) {
       primerErrorDecisionHandler = { errorMessage: String? ->
-        errorHandler?.showErrorMessage(errorMessage)
+        errorHandler?.showErrorMessage(errorMessage?.ifBlank { null })
       }
       sendError?.invoke(PrimerErrorRN(error.errorId, error.description, error.recoverySuggestion))
     } else {

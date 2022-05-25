@@ -177,7 +177,7 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
 
   // region error handlers
   @ReactMethod
-  fun handleErrorMessage(errorMessage: String?, promise: Promise) {
+  fun showErrorMessage(errorMessage: String?, promise: Promise) {
     mListener.handleErrorMessage(errorMessage.orEmpty())
     promise.resolve(null)
   }
