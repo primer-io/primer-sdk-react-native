@@ -1,0 +1,10 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:base"],
+  "bumpVersion": "patch",
+  "regexManagers": [{
+    "fileMatch": ["\\.podspec"],
+    "matchStrings": ["s\\.dependency\\s+\"(?<depName>.+?)\",\\s*\"(?<currentValue>.+?)\""],
+    "datasourceTemplate": "pod"
+  }]
+}
