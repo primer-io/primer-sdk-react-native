@@ -143,10 +143,10 @@ export const PrimerNativeMapping: IPrimer = {
 
           RNPrimer.showUniversalCheckout(clientToken);
         })
-        .catch( err => {
+        .catch(err => {
           console.error(err);
         })
-      }
+    }
 
     // RNPrimer.addListener('onClientTokenCallback', _ => {
     //   if (config.onClientTokenCallback) {
@@ -158,21 +158,19 @@ export const PrimerNativeMapping: IPrimer = {
   showVaultManager(clientToken: string, config: IPrimerConfig): void {
     RNPrimer.removeAllListeners();
 
-    if (config.settings || config.theme) {
-      RNPrimer.configure(config.settings || null, config.theme || null);
+    RNPrimer.configure(config.settings || null, config.theme || null);
 
-      let implementedRNCallbacks: any = {
-        // isClientTokenCallbackImplemented: (config.onClientTokenCallback !== undefined),
-        isTokenAddedToVaultImplemented: (config.onTokenAddedToVault !== undefined),
-        isOnResumeSuccessImplemented: (config.onResumeSuccess !== undefined),
-        isOnResumeErrorImplemented: (config.onError !== undefined),
-        isOnCheckoutDismissedImplemented: (config.onDismiss !== undefined),
-        isCheckoutFailedImplemented: (config.onError !== undefined),
-        isClientSessionActionsImplemented: (config.onClientSessionActions !== undefined)
-      };
+    let implementedRNCallbacks: any = {
+      // isClientTokenCallbackImplemented: (config.onClientTokenCallback !== undefined),
+      isTokenAddedToVaultImplemented: (config.onTokenAddedToVault !== undefined),
+      isOnResumeSuccessImplemented: (config.onResumeSuccess !== undefined),
+      isOnResumeErrorImplemented: (config.onError !== undefined),
+      isOnCheckoutDismissedImplemented: (config.onDismiss !== undefined),
+      isCheckoutFailedImplemented: (config.onError !== undefined),
+      isClientSessionActionsImplemented: (config.onClientSessionActions !== undefined)
+    };
 
-      RNPrimer.setImplementedRNCallbacks(implementedRNCallbacks);
-    }
+    RNPrimer.setImplementedRNCallbacks(implementedRNCallbacks);
 
     // RNPrimer.addListener('onClientTokenCallback', _ => {
     //   if (config.onClientTokenCallback) {
@@ -241,6 +239,43 @@ export const PrimerNativeMapping: IPrimer = {
     };
 
     RNPrimer.setImplementedRNCallbacks(implementedRNCallbacks);
+
+    RNPrimer.addListener('onClientSessionActions', data => {
+      const clientSessionActions: IClientSessionAction[] = data;
+      if (config.onClientSessionActions) {
+        config.onClientSessionActions(clientSessionActions, resumeHandler);
+      } else {
+        RNPrimer.handleSuccess();
+      }
+    });
+
+    RNPrimer.addListener('onTokenizeSuccessCallback', data => {
+      const paymentInstrumentToken: PaymentInstrumentToken = data;
+      if (config.onTokenizeSuccess) {
+        config.onTokenizeSuccess(paymentInstrumentToken, resumeHandler);
+      }
+    });
+
+    RNPrimer.addListener('onResumeSuccess', data => {
+      const resumeToken: string = data.resumeToken;
+      if (config.onResumeSuccess) {
+        config.onResumeSuccess(resumeToken, resumeHandler);
+      }
+    });
+
+    RNPrimer.addListener('onCheckoutDismissed', () => {
+      if (config.onDismiss) {
+        config.onDismiss();
+      }
+    });
+
+    RNPrimer.addListener('onError', data => {
+      const err: IPrimerError = data.error;
+      if (config.onError) {
+        config.onError(err, resumeHandler);
+      }
+    });
+    
     RNPrimer.showPaymentMethod(clientToken, intent.paymentMethod, intent.vault === true ? "vault" : "checkout");
   },
 
