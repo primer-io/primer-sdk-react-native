@@ -22,7 +22,7 @@ extension PrimerSettingsRN {
         }
         
         let debugOptions = PrimerDebugOptions(is3DSSanityCheckEnabled: !(options?.is3DSDevelopmentModeEnabled ?? false))
-    
+        
         return PrimerSettings(
             merchantIdentifier: options?.ios?.merchantIdentifier,
             customerId: customer?.id,
@@ -103,13 +103,9 @@ fileprivate struct BusinessRN: Decodable {
 
 fileprivate extension BusinessRN {
     var primerFormat: BusinessDetails? {
-        guard let address = address else {
-            return nil
-        }
-        
         return BusinessDetails(
             name: name,
-            address: address.primerFormat
+            address: address?.primerFormat
         )
     }
 }
