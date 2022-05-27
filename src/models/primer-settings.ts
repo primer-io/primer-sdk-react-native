@@ -51,13 +51,17 @@ interface IOptions {
   is3DSDevelopmentModeEnabled?: boolean;
   locale?: string;
   ios?: IIosOptions;
-  redirectScheme?: RedirectScheme;
+  android?: IAndroidOptions;
 }
 
 interface IIosOptions {
   urlScheme?: string;
   urlSchemeIdentifier?: string;
   merchantIdentifier?: string;
+}
+
+interface IAndroidOptions {
+    redirectScheme?: string;
 }
 
 interface IAddress {

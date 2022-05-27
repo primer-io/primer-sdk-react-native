@@ -10,6 +10,7 @@ import io.primer.android.PaymentMethodIntent
 import io.primer.android.Primer
 import io.primer.android.model.dto.PrimerConfig
 import io.primer.android.model.dto.PrimerPaymentMethod
+import io.primer.android.model.dto.PrimerPaymentMethodType
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -121,7 +122,7 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
     promise: Promise
   ) {
     try {
-      this.intent = PaymentMethodIntent.valueOf(intentStr)
+      this.intent = PaymentMethodIntent.valueOf(intentStr.uppercase())
     } catch (e: Exception) {
       val exception = ErrorTypeRN.ParseJsonFailed errorTo "failed to parse intent."
       checkoutFailed(exception)
@@ -129,7 +130,7 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
       return
     }
     try {
-      val paymentMethod = PrimerPaymentMethod.valueOf(paymentMethodTypeStr)
+      val paymentMethod = getPrimerPaymentMethod(paymentMethodTypeStr)
       this.paymentMethod = paymentMethod
     } catch (e: Exception) {
       val exception = ErrorTypeRN.CheckoutFlowFailed errorTo "failed to parse payment method type."
@@ -265,6 +266,14 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
         else -> params.putNull(key)
       }
     }
+  }
+
+  private fun getPrimerPaymentMethod(paymentMethodTypeStr: String): PrimerPaymentMethod {
+    if (PrimerPaymentMethodType.PAYMENT_CARD.name == paymentMethodTypeStr) {
+      return PrimerPaymentMethod.CARD
+    }
+
+    return PrimerPaymentMethod.valueOf(paymentMethodTypeStr)
   }
 }
 
