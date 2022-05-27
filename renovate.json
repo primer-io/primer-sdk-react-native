@@ -1,10 +1,24 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:base"],
-  "bumpVersion": "patch",
-  "regexManagers": [{
-    "fileMatch": ["\\.podspec"],
-    "matchStrings": ["s\\.dependency\\s+\"(?<depName>.+?)\",\\s*\"(?<currentValue>.+?)\""],
-    "datasourceTemplate": "pod"
-  }]
+  "extends": ["config:base", ":disableRateLimiting", "group:all"],
+  "recreateClosed": true,
+  "regexManagers": [
+    {
+      "fileMatch": ["\\.podspec"],
+      "matchStrings": ["s\\.dependency\\s+\"(?<depName>.+?)\",\\s*\"(?<currentValue>.+?)\""],
+      "datasourceTemplate": "pod"
+    }
+  ],
+  "packageRules": [
+    {
+      "packagePatterns": ["*"],
+      "excludePackagePatterns": ["PrimerSDK", "io.primer:android"],
+      "enabled": false
+    }
+  ],
+  "postUpgradeTasks": {
+    "commands": ["npm version patch --no-git-tag-version"],
+    "fileFilters": ["**"],
+    "executionMode": "branch"
+  }
 }
