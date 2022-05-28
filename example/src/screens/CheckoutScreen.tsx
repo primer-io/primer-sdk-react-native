@@ -186,6 +186,10 @@ const CheckoutScreen = (props: any) => {
         }
     };
 
+    const onVaultSuccess = (paymentInstrument: PaymentInstrumentToken) => {
+        console.log(`onVaultSuccess: ${JSON.stringify(paymentInstrument)}`);
+    };
+
     const onDismiss = () => {
         currentClientToken = null;
     }
@@ -212,13 +216,17 @@ const CheckoutScreen = (props: any) => {
                         android: {
                             redirectScheme: 'primer'
                         }
+                    },
+                    business: {
+                        name: "Test Merchant"
                     }
                 },
                 // onClientSessionActions: onClientSessionActions,
                 onTokenizeSuccess: onTokenizeSuccess,
                 onResumeSuccess: onResumeSuccess,
                 onError: onError,
-                onDismiss: onDismiss
+                onDismiss: onDismiss,
+                onVaultSuccess: onVaultSuccess
             };
 
             //@ts-ignore
@@ -253,6 +261,9 @@ const CheckoutScreen = (props: any) => {
                         android: {
                             redirectScheme: 'primer'
                         }
+                    },
+                    business: {
+                        name: "Test Merchant"
                     }
                 },
                 // onClientSessionActions: onClientSessionActions,
