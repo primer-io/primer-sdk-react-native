@@ -268,7 +268,10 @@ const CheckoutScreen = (props: any) => {
                 },
                 // onClientSessionActions: onClientSessionActions,
                 onTokenizeSuccess: onTokenizeSuccess,
-                onResumeSuccess: onResumeSuccess
+                onResumeSuccess: onResumeSuccess,
+                onError: onError,
+                onDismiss: onDismiss,
+                onVaultSuccess: onVaultSuccess
             };
 
             const intent: PrimerPaymentMethodIntent = {

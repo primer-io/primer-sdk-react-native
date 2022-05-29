@@ -125,7 +125,7 @@ class PrimerRNEventListener : CheckoutEventListener {
           sendError?.invoke(exception)
         } else {
           sendError?.invoke(ErrorTypeRN.InitFailed
-            errorTo "Callback [onResumeError] should had been implemented.")
+            errorTo "Callback [onError] should had been implemented.")
         }
       }
       else -> Unit
