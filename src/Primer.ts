@@ -95,8 +95,7 @@ export const PrimerNativeMapping: IPrimer = {
     RNPrimer.configure(config.settings || null, config.theme || null);
 
     let implementedRNCallbacks: any = {
-      // isClientTokenCallbackImplemented: (config.onClientTokenCallback !== undefined),
-      isTokenAddedToVaultImplemented: (config.onTokenAddedToVault !== undefined),
+      isTokenAddedToVaultImplemented: (config.onVaultSuccess !== undefined),
       isOnResumeSuccessImplemented: (config.onResumeSuccess !== undefined),
       isOnResumeErrorImplemented: (config.onError !== undefined),
       isOnCheckoutDismissedImplemented: (config.onDismiss !== undefined),
@@ -155,8 +154,7 @@ export const PrimerNativeMapping: IPrimer = {
     RNPrimer.configure(config.settings || null, config.theme || null);
 
     let implementedRNCallbacks: any = {
-      // isClientTokenCallbackImplemented: (config.onClientTokenCallback !== undefined),
-      isTokenAddedToVaultImplemented: (config.onTokenAddedToVault !== undefined),
+      isTokenAddedToVaultImplemented: (config.onVaultSuccess !== undefined),
       isOnResumeSuccessImplemented: (config.onResumeSuccess !== undefined),
       isOnResumeErrorImplemented: (config.onError !== undefined),
       isOnCheckoutDismissedImplemented: (config.onDismiss !== undefined),
@@ -228,8 +226,7 @@ export const PrimerNativeMapping: IPrimer = {
     }
 
     let implementedRNCallbacks: any = {
-      // isClientTokenCallbackImplemented: (config.onClientTokenCallback !== undefined),
-      isTokenAddedToVaultImplemented: (config.onTokenAddedToVault !== undefined),
+      isTokenAddedToVaultImplemented: (config.onVaultSuccess !== undefined),
       isOnResumeSuccessImplemented: (config.onResumeSuccess !== undefined),
       isOnResumeErrorImplemented: (config.onError !== undefined),
       isOnCheckoutDismissedImplemented: (config.onDismiss !== undefined),
