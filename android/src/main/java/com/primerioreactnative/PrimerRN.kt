@@ -85,7 +85,7 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
   ) {
     val intent: PrimerSessionIntent
     try {
-      intent = PrimerSessionIntent.valueOf(intentStr)
+      intent = PrimerSessionIntent.valueOf(intentStr.uppercase())
     } catch (e: Exception) {
       val exception = ErrorTypeRN.NativeBridgeFailed errorTo "Intent $intentStr is not valid."
       onError(exception)
