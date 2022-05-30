@@ -24,6 +24,11 @@ export interface IPrimerConfig {
   onTokenizeSuccess?: (paymentInstrument: PaymentInstrumentToken, resumeHandler: PrimerResumeHandler) => void;
 
   /**
+   * Use this callback to grab a Primer payment instrument and complete a payment.
+   */
+   onVaultSuccess?: (paymentInstrument: PaymentInstrumentToken) => void;
+
+  /**
    * Use this callback to resume a PENDING payment with the token provided.
    */
   onResumeSuccess?: (resumeToken: string, resumeHandler: PrimerResumeHandler | null) => void;

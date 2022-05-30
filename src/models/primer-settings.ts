@@ -1,6 +1,5 @@
 import type { CountryCode } from './utils/countryCode';
 import type { CurrencyCode } from './utils/currencyCode';
-import type { RedirectScheme } from './utils/redirectScheme';
 
 export type PrimerSettings = IPrimerSettings;
 interface IPrimerSettings {
@@ -51,13 +50,17 @@ interface IOptions {
   is3DSDevelopmentModeEnabled?: boolean;
   locale?: string;
   ios?: IIosOptions;
-  redirectScheme?: RedirectScheme;
+  android?: IAndroidOptions;
 }
 
 interface IIosOptions {
   urlScheme?: string;
   urlSchemeIdentifier?: string;
   merchantIdentifier?: string;
+}
+
+interface IAndroidOptions {
+    redirectScheme?: string;
 }
 
 interface IAddress {

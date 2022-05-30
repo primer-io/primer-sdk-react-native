@@ -41,6 +41,7 @@ const RNPrimer = {
     eventEmitter.removeAllListeners('onClientTokenCallback');
     eventEmitter.removeAllListeners('onClientSessionActions');
     eventEmitter.removeAllListeners('onTokenizeSuccessCallback');
+    eventEmitter.removeAllListeners('onVaultSuccess');
     eventEmitter.removeAllListeners('onResumeSuccess');
     eventEmitter.removeAllListeners('onCheckoutDismissed');
     eventEmitter.removeAllListeners('onError');
