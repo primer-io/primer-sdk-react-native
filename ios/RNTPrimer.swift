@@ -320,6 +320,20 @@ extension RNTPrimer: PrimerDelegate {
         }
     }
     
+    func tokenAddedToVault(_ token: PaymentMethodToken) {
+        DispatchQueue.main.async {
+            if self.implementedReactNativeCallbacks?.isTokenAddedToVaultImplemented == true {
+                do {
+                    let paymentMethodTokenData = try JSONEncoder().encode(token)
+                    let paymentMethodTokenJson = try JSONSerialization.jsonObject(with: paymentMethodTokenData, options: .allowFragments)
+                    self.sendEvent(withName: PrimerEvents.onVaultSuccess.stringValue, body: paymentMethodTokenJson)
+                } catch {
+                    self.checkoutFailed(with: error)
+                }
+            }
+        }
+    }
+    
     func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, resumeHandler: ResumeHandlerProtocol) {
         DispatchQueue.main.async {
             self.onTokenizeSuccess = { (newClientToken, err) in
