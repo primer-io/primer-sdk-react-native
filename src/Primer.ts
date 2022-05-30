@@ -87,11 +87,56 @@ interface IBinData {
   network: string;
 }
 
+function configureListeners(config: IPrimerConfig) {
+  RNPrimer.removeAllListeners();
+
+  RNPrimer.addListener('onVaultSuccess', data => {
+    const paymentInstrumentToken: PaymentInstrumentToken = data;
+    if (config.onVaultSuccess) {
+      config.onVaultSuccess(paymentInstrumentToken);
+    }
+  });
+
+  RNPrimer.addListener('onClientSessionActions', data => {
+    const clientSessionActions: IClientSessionAction[] = data;
+    if (config.onClientSessionActions) {
+      config.onClientSessionActions(clientSessionActions, resumeHandler);
+    }
+  });
+
+  RNPrimer.addListener('onTokenizeSuccessCallback', data => {
+    const paymentInstrumentToken: PaymentInstrumentToken = data;
+    if (config.onTokenizeSuccess) {
+      config.onTokenizeSuccess(paymentInstrumentToken, resumeHandler);
+    }
+  });
+
+  RNPrimer.addListener('onResumeSuccess', data => {
+    const resumeToken: string = data.resumeToken;
+    if (config.onResumeSuccess) {
+      config.onResumeSuccess(resumeToken, resumeHandler);
+    }
+  });
+
+  RNPrimer.addListener('onCheckoutDismissed', _ => {
+    if (config.onDismiss) {
+      config.onDismiss();
+    }
+
+    RNPrimer.removeAllListeners();
+  });
+
+  RNPrimer.addListener('onError', data => {
+    const err: IPrimerError = data.error;
+    if (config.onError) {
+      config.onError(err, resumeHandler);
+    }
+  });
+}
+
 export const PrimerNativeMapping: IPrimer = {
 
   showUniversalCheckout(clientToken: string, config: IPrimerConfig): void {
-    RNPrimer.removeAllListeners();
-
     RNPrimer.configure(config.settings || null, config.theme || null);
 
     let implementedRNCallbacks: any = {
@@ -105,42 +150,7 @@ export const PrimerNativeMapping: IPrimer = {
 
     RNPrimer.setImplementedRNCallbacks(implementedRNCallbacks)
       .then(() => {
-        RNPrimer.addListener('onClientSessionActions', data => {
-          const clientSessionActions: IClientSessionAction[] = data;
-          if (config.onClientSessionActions) {
-            config.onClientSessionActions(clientSessionActions, resumeHandler);
-          }
-        });
-
-        RNPrimer.addListener('onTokenizeSuccessCallback', data => {
-          const paymentInstrumentToken: PaymentInstrumentToken = data;
-          if (config.onTokenizeSuccess) {
-            config.onTokenizeSuccess(paymentInstrumentToken, resumeHandler);
-          }
-        });
-
-        RNPrimer.addListener('onResumeSuccess', data => {
-          const resumeToken: string = data.resumeToken;
-          if (config.onResumeSuccess) {
-            config.onResumeSuccess(resumeToken, resumeHandler);
-          }
-        });
-
-        RNPrimer.addListener('onCheckoutDismissed', _ => {
-          if (config.onDismiss) {
-            config.onDismiss();
-          }
-
-          RNPrimer.removeAllListeners();
-        });
-
-        RNPrimer.addListener('onError', data => {
-          const err: IPrimerError = data.error;
-          if (config.onError) {
-            config.onError(err, resumeHandler);
-          }
-        });
-
+        configureListeners(config);
         RNPrimer.showUniversalCheckout(clientToken);
       })
       .catch(err => {
@@ -149,8 +159,6 @@ export const PrimerNativeMapping: IPrimer = {
   },
 
   showVaultManager(clientToken: string, config: IPrimerConfig): void {
-    RNPrimer.removeAllListeners();
-
     RNPrimer.configure(config.settings || null, config.theme || null);
 
     let implementedRNCallbacks: any = {
@@ -164,49 +172,7 @@ export const PrimerNativeMapping: IPrimer = {
 
     RNPrimer.setImplementedRNCallbacks(implementedRNCallbacks)
       .then((() => {
-        RNPrimer.addListener('onVaultSuccess', data => {
-          const paymentInstrumentToken: PaymentInstrumentToken = data;
-          if (config.onVaultSuccess) {
-            config.onVaultSuccess(paymentInstrumentToken);
-          }
-        });
-
-        RNPrimer.addListener('onClientSessionActions', data => {
-          const clientSessionActions: IClientSessionAction[] = data;
-          if (config.onClientSessionActions) {
-            config.onClientSessionActions(clientSessionActions, resumeHandler);
-          }
-        });
-
-        RNPrimer.addListener('onTokenizeSuccessCallback', data => {
-          const paymentInstrumentToken: PaymentInstrumentToken = data;
-          if (config.onTokenizeSuccess) {
-            config.onTokenizeSuccess(paymentInstrumentToken, resumeHandler);
-          }
-        });
-
-        RNPrimer.addListener('onResumeSuccess', data => {
-          const resumeToken: string = data.resumeToken;
-          if (config.onResumeSuccess) {
-            config.onResumeSuccess(resumeToken, resumeHandler);
-          }
-        });
-
-        RNPrimer.addListener('onCheckoutDismissed', _ => {
-          if (config.onDismiss) {
-            config.onDismiss();
-          }
-
-          RNPrimer.removeAllListeners();
-        });
-
-        RNPrimer.addListener('onError', data => {
-          const err: IPrimerError = data.error;
-          if (config.onError) {
-            config.onError(err, resumeHandler);
-          }
-        });
-
+        configureListeners(config);
         RNPrimer.showVaultManager(clientToken);
       }))
       .catch(err => {
@@ -219,11 +185,7 @@ export const PrimerNativeMapping: IPrimer = {
     intent: PrimerPaymentMethodIntent,
     config: IPrimerConfig
   ): void {
-    RNPrimer.removeAllListeners();
-
-    if (config.settings || config.theme) {
-      RNPrimer.configure(config.settings || null, config.theme || null);
-    }
+    RNPrimer.configure(config.settings || null, config.theme || null);
 
     let implementedRNCallbacks: any = {
       isTokenAddedToVaultImplemented: (config.onVaultSuccess !== undefined),
@@ -236,49 +198,7 @@ export const PrimerNativeMapping: IPrimer = {
 
     RNPrimer.setImplementedRNCallbacks(implementedRNCallbacks)
       .then(() => {
-        RNPrimer.addListener('onVaultSuccess', data => {
-          const paymentInstrumentToken: PaymentInstrumentToken = data;
-          if (config.onVaultSuccess) {
-            config.onVaultSuccess(paymentInstrumentToken);
-          }
-        });
-
-        RNPrimer.addListener('onClientSessionActions', data => {
-          const clientSessionActions: IClientSessionAction[] = data;
-          if (config.onClientSessionActions) {
-            config.onClientSessionActions(clientSessionActions, resumeHandler);
-          }
-        });
-
-        RNPrimer.addListener('onTokenizeSuccessCallback', data => {
-          const paymentInstrumentToken: PaymentInstrumentToken = data;
-          if (config.onTokenizeSuccess) {
-            config.onTokenizeSuccess(paymentInstrumentToken, resumeHandler);
-          }
-        });
-
-        RNPrimer.addListener('onResumeSuccess', data => {
-          const resumeToken: string = data.resumeToken;
-          if (config.onResumeSuccess) {
-            config.onResumeSuccess(resumeToken, resumeHandler);
-          }
-        });
-
-        RNPrimer.addListener('onCheckoutDismissed', _ => {
-          if (config.onDismiss) {
-            config.onDismiss();
-          }
-
-          RNPrimer.removeAllListeners();
-        });
-
-        RNPrimer.addListener('onError', data => {
-          const err: IPrimerError = data.error;
-          if (config.onError) {
-            config.onError(err, resumeHandler);
-          }
-        });
-
+        configureListeners(config);
         RNPrimer.showPaymentMethod(clientToken, intent.paymentMethod, intent.vault === true ? "vault" : "checkout");
       })
       .catch(err => {
