@@ -13,10 +13,10 @@ Pod::Spec.new do |s|
   s.platforms    = { :ios => "10.0" }
   s.source       = { :git => "https://github.com/primer-io/primer-sdk-react-native.git", :tag => "#{s.version}" }
 
-  
+
   s.source_files = "ios/**/*.{h,m,mm,swift}"
-  
+
 
   s.dependency "React-Core"
-  s.dependency "PrimerSDK", "1.28.0-beta.9"
+  s.dependency "PrimerSDK", "1.28.0-beta.11"
 end
