@@ -1,14 +1,16 @@
 import axios from 'axios';
-import { primer_environment } from '../constants/environment';
-import { root } from '../constants/url';
+import { getEnvironmentStringVal } from '../models/Environment';
+import { environment } from '../screens/SettingsScreen';
+
+const rootUrl = "https://us-central1-primerdemo-8741b.cloudfunctions.net";
 
 export const createClientSession = async () => {
-    const url = root + '/client-session';
+    const url = rootUrl + '/client-session';
 
     const headers = {
         'Content-Type': 'application/json',
         'X-Api-Version': '2021-10-19',
-        'environment': primer_environment,
+        'environment': getEnvironmentStringVal(environment),
       };
 
       const body = JSON.stringify({
@@ -123,13 +125,13 @@ export const createClientSession = async () => {
 }
 
 export const createPayment = async (paymentMethod: string) => {
-    const url = root + '/payments';
+    const url = rootUrl + '/payments';
 
     const headers = {
         'Content-Type': 'application/json',
         'X-API-Version': '2021-09-27',
-        'environment': primer_environment,
-      };
+        'environment': getEnvironmentStringVal(environment),
+    };
 
     const body = {paymentMethodToken: paymentMethod};
     try {
@@ -148,12 +150,12 @@ export const createPayment = async (paymentMethod: string) => {
 };
 
 export const resumePayment = async (id: string, resumeToken: string) => {
-    const url = root + `/payments/${id}/resume`;
+    const url = rootUrl + `/payments/${id}/resume`;
 
     const headers = {
         'Content-Type': 'application/json',
         'X-API-Version': '2021-09-27',
-        'environment': primer_environment,
+        'environment': getEnvironmentStringVal(environment),
     };
 
     const body = {resumeToken: resumeToken};

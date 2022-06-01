@@ -1,4 +1,7 @@
 import { NativeEventEmitter, NativeModules } from 'react-native';
+import type { PrimerSettings } from 'src/models/primer-settings';
+import RNPrimer from '../RNPrimer';
+import type { PrimerHeadlessUniversalCheckoutCallbacks } from './types';
 
 const { PrimerHeadlessUniversalCheckout } = NativeModules;
 
@@ -12,12 +15,31 @@ type EventType =
   | 'resume'
   | 'error';
 
+let primerSettings: (PrimerSettings & PrimerHeadlessUniversalCheckoutCallbacks) | null = null;
+
 const NativePrimerHeadlessUniversalCheckout = {
   ///////////////////////////////////////////
   // Event Emitter
   ///////////////////////////////////////////
   addListener: (eventType: EventType, listener: (...args: any[]) => any) => {
     eventEmitter.addListener(eventType, listener);
+  },
+
+  removeListener: (eventType: EventType, listener: (...args: any[]) => any) => {
+    eventEmitter.removeListener(eventType, listener);
+  },
+
+  removeAllListenersForEvent(eventType: EventType) {
+    eventEmitter.removeAllListeners(eventType);
+  },
+
+  removeAllListeners() {
+    eventEmitter.removeAllListeners('preparationStarted');
+    eventEmitter.removeAllListeners('paymentMethodPresented');
+    eventEmitter.removeAllListeners('tokenizationStarted');
+    eventEmitter.removeAllListeners('tokenizationSucceeded');
+    eventEmitter.removeAllListeners('resume');
+    eventEmitter.removeAllListeners('error');
   },
 
   ///////////////////////////////////////////
@@ -68,6 +90,8 @@ const NativePrimerHeadlessUniversalCheckout = {
   },
 
   startWithClientToken(clientToken: string, settings: any): Promise<any> {
+    primerSettings = settings;
+
     return new Promise((resolve, reject) => {
       PrimerHeadlessUniversalCheckout.startWithClientToken(
         clientToken,
@@ -83,12 +107,26 @@ const NativePrimerHeadlessUniversalCheckout = {
     });
   },
 
-  showPaymentMethod: (paymentMethod: string) =>
-    PrimerHeadlessUniversalCheckout.showPaymentMethod(paymentMethod),
+  showPaymentMethod: async (paymentMethod: string) => {
+    if (primerSettings) {
+      let implementedRNCallbacks: any = {
+        isTokenAddedToVaultImplemented: false,
+        isOnResumeSuccessImplemented: (primerSettings.onResumeSuccess !== undefined),
+        isOnResumeErrorImplemented: (primerSettings.onFailure !== undefined),
+        isOnCheckoutDismissedImplemented: false,
+        isCheckoutFailedImplemented: (primerSettings.onFailure !== undefined),
+        isClientSessionActionsImplemented: false
+      };
+  
+      await RNPrimer.setImplementedRNCallbacks(implementedRNCallbacks);
+    }
+    
+    PrimerHeadlessUniversalCheckout.showPaymentMethod(paymentMethod);
+  },
 
   resumeWithClientToken(resumeToken: string) {
     PrimerHeadlessUniversalCheckout.resumeWithClientToken(resumeToken);
-  },
+  }
 };
 
 export default NativePrimerHeadlessUniversalCheckout;

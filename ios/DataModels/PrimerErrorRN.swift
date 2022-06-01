@@ -15,7 +15,7 @@ enum ErrorTypeRN: String, Error, Encodable {
     case generic
 }
 
-struct NativeError: CustomNSError, LocalizedError {
+struct NativeError: CustomNSError, LocalizedError, Codable {
     let errorId: String
     let errorDescription: String?
     let recoverySuggestion: String?

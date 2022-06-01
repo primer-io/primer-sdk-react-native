@@ -22,7 +22,7 @@ extension PrimerSettingsRN {
         }
         
         let debugOptions = PrimerDebugOptions(is3DSSanityCheckEnabled: !(options?.is3DSDevelopmentModeEnabled ?? false))
-    
+        
         return PrimerSettings(
             merchantIdentifier: options?.ios?.merchantIdentifier,
             customerId: customer?.id,

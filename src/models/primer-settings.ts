@@ -20,7 +20,7 @@ interface IOrder {
 
 interface IOrderItem {
   name: string;
-  unitAmount?: number;
+  amount: number;
   quantity: number;
   isPending?: boolean;
 }
@@ -58,8 +58,9 @@ interface IIosOptions {
   urlSchemeIdentifier?: string;
   merchantIdentifier?: string;
 }
+
 interface IAndroidOptions {
-  redirectScheme?: string;
+    redirectScheme?: string;
 }
 
 interface IAddress {

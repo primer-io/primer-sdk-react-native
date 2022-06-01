@@ -30,7 +30,7 @@
           <action android:name="android.intent.action.VIEW" />
           <category android:name="android.intent.category.DEFAULT" />
           <category android:name="android.intent.category.BROWSABLE" />
-          <data android:scheme="io.primer.ReactNativeExample.primer" />
+          <data android:scheme="primer" />
         </intent-filter>
       </activity>
     </application>

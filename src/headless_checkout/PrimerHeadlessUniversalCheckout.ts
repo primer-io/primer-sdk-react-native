@@ -7,23 +7,25 @@ import type {
   PrimerHeadlessUniversalCheckoutCallbacks,
 } from './types';
 
+let callbacks: PrimerHeadlessUniversalCheckoutCallbacks | undefined;
+
 class PrimerHeadlessUniversalCheckoutClass {
-  private callbacks: PrimerHeadlessUniversalCheckoutCallbacks | undefined;
 
   ///////////////////////////////////////////
   // Init
   ///////////////////////////////////////////
   constructor() {
-    this.callbacks = undefined;
-    this.configureListeners();
+
   }
 
   private configureListeners() {
+    NativePrimerHeadlessUniversalCheckout.removeAllListeners();
+
     NativePrimerHeadlessUniversalCheckout.addListener(
       'preparationStarted',
       () => {
         console.log('preparationStarted');
-        this.callbacks?.onPreparationStarted?.();
+        callbacks?.onPreparationStarted?.();
       }
     );
 
@@ -31,7 +33,7 @@ class PrimerHeadlessUniversalCheckoutClass {
       'paymentMethodPresented',
       () => {
         console.log('paymentMethodPresented');
-        this.callbacks?.onPaymentMethodPresented?.();
+        callbacks?.onPaymentMethodPresented?.();
       }
     );
 
@@ -39,7 +41,7 @@ class PrimerHeadlessUniversalCheckoutClass {
       'tokenizationStarted',
       () => {
         console.log('tokenizationStarted');
-        this.callbacks?.onTokenizeStart?.();
+        callbacks?.onTokenizeStart?.();
       }
     );
 
@@ -52,26 +54,26 @@ class PrimerHeadlessUniversalCheckoutClass {
           const paymentMethodTokenObj: PaymentInstrumentToken = JSON.parse(
             data.paymentMethodToken
           );
-          this.callbacks?.onTokenizeSuccess?.(paymentMethodTokenObj);
+          callbacks?.onTokenizeSuccess?.(paymentMethodTokenObj);
         } else {
           const err: PrimerError = {
             name: 'ParseJsonFailed',
             description: 'Failed to parse payment method token',
           };
           //@ts-ignore
-          this.callbacks?.onFailure?.(err);
+          callbacks?.onFailure?.(err);
         }
       }
     );
 
     NativePrimerHeadlessUniversalCheckout.addListener('resume', (data) => {
       console.log('resume', data);
-      this.callbacks?.onResumeSuccess?.(data.resumeToken);
+      callbacks?.onResumeSuccess?.(data.resumeToken);
     });
 
     NativePrimerHeadlessUniversalCheckout.addListener('error', (data) => {
       console.log('error', data);
-      this.callbacks?.onFailure?.(data.error);
+      callbacks?.onFailure?.(data.error);
     });
   }
 
@@ -83,7 +85,7 @@ class PrimerHeadlessUniversalCheckoutClass {
     settings: PrimerSettings & PrimerHeadlessUniversalCheckoutCallbacks
   ): Promise<PrimerHeadlessUniversalCheckoutStartResponse> {
     // Copy callback
-    this.callbacks = {
+    callbacks = {
       onPreparationStarted: settings.onPreparationStarted,
       onPaymentMethodPresented: settings.onPaymentMethodPresented,
       onTokenizeStart: settings.onTokenizeStart,
@@ -99,6 +101,8 @@ class PrimerHeadlessUniversalCheckoutClass {
   }
 
   showPaymentMethod(paymentMethod: string) {
+    this.configureListeners();
+
     return NativePrimerHeadlessUniversalCheckout.showPaymentMethod(
       paymentMethod
     );
