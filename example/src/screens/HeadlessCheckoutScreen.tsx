@@ -84,6 +84,8 @@ export const HeadlessCheckoutScreen = (props: any) => {
     }
   };
 
+  
+
   const onFailure = (err: any) => {
     console.error(err);
   };
@@ -219,6 +221,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
   };
 
   return (
+    //@ts-ignore
     <View style={(styles.container, styles.frame)}>
       {/* <PrimerCardNumberEditText style={{width: 300, height: 50, backgroundColor: 'red'}} /> */}
       {renderPaymentMethods()}

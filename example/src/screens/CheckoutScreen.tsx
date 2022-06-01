@@ -9,7 +9,6 @@ import type { IAppSettings } from '../models/IAppSettings';
 import type { IClientSessionRequestBody } from '../models/IClientSessionRequestBody';
 import type { OnPrimerErrorCallback, OnTokenizeSuccessCallback } from 'lib/typescript/models/primer-callbacks';
 import type { IClientSession } from '../models/IClientSession';
-import { makeRandomString } from '../helpers/helpers';
 import type { IPayment } from '../models/IPayment';
 import type { PrimerPaymentMethodIntent } from 'lib/typescript/models/primer-intent';
 import type { OnResumeCallback } from 'src/models/primer-callbacks';
@@ -27,30 +26,13 @@ const CheckoutScreen = (props: any) => {
     };
 
     const appSettings: IAppSettings = props.route.params;
-    const clientSessionRequestBody: IClientSessionRequestBody = 
-        createClientSessionRequestBody(
-            appSettings.amount, 
-            appSettings.currencyCode, 
-            appSettings.countryCode, 
-            appSettings.customerId || null, 
-            appSettings.phoneNumber || null, 
-            false);
-
-    // const onClientSessionActions: OnClientSessionActionsCallback = async (clientSessionActions, resumeHandler) => {
-    //     if (currentClientToken) {
-    //         const clientSessionActionsRequestBody: any = {
-    //             clientToken: currentClientToken,
-    //             actions: clientSessionActions
-    //         };
-
-    //         const clientSession: IClientSession = await setClientSessionActions(clientSessionActionsRequestBody);
-    //         currentClientToken = clientSession.clientToken;
-    //         resumeHandler.handleNewClientToken(currentClientToken);
-    //     } else {
-    //         const err = new Error("Failed to find client token");
-    //         resumeHandler.handleError(err.message);
-    //     }
-    // }
+    const clientSessionRequestBody: IClientSessionRequestBody = createClientSessionRequestBody(
+        appSettings.amount,
+        appSettings.currencyCode,
+        appSettings.countryCode,
+        appSettings.customerId || null,
+        appSettings.phoneNumber || null,
+        false);
 
     const onTokenizeSuccess: OnTokenizeSuccessCallback = async (paymentInstrument, resumeHandler) => {
         console.log(`onTokenizeSuccess\npaymentInstrument: ${JSON.stringify(paymentInstrument)}`);
@@ -335,6 +317,7 @@ const CheckoutScreen = (props: any) => {
             const clientSession: IClientSession = await createClientSession(clientSessionRequestBody);
             currentClientToken = clientSession.clientToken;
 
+            //@ts-ignore
             const primerConfig: PrimerConfig = {
                 settings: {
                     options: {
@@ -379,6 +362,7 @@ const CheckoutScreen = (props: any) => {
             const clientSession: IClientSession = await createClientSession(clientSessionRequestBody);
             currentClientToken = clientSession.clientToken;
 
+            //@ts-ignore
             const primerConfig: PrimerConfig = {
                 settings: {
                     options: {
