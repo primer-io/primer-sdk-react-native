@@ -4,15 +4,14 @@ import androidx.annotation.Nullable
 import androidx.core.content.ContextCompat
 import com.facebook.react.bridge.*
 import com.facebook.react.modules.core.DeviceEventManagerModule
-import com.primerioreactnative.datamodels.ErrorTypeRN
-import com.primerioreactnative.datamodels.PrimerErrorRN
-import com.primerioreactnative.datamodels.PrimerPaymentInstrumentTokenRN
-import com.primerioreactnative.datamodels.PrimerSettingsRN
+import com.primerioreactnative.datamodels.*
 import com.primerioreactnative.huc.assets.AssetsManager
 import com.primerioreactnative.huc.assets.AssetsManager.drawableToBitmap
 import com.primerioreactnative.huc.assets.AssetsManager.getFile
 import com.primerioreactnative.huc.events.PrimerHeadlessUniversalCheckoutEvent
 import com.primerioreactnative.huc.extensions.toArgumentsMap
+import com.primerioreactnative.utils.Keys
+import com.primerioreactnative.utils.errorTo
 import io.primer.android.completion.ResumeHandler
 import io.primer.android.components.PrimerHeadlessUniversalCheckout
 import io.primer.android.components.PrimerHeadlessUniversalCheckoutListener
@@ -22,6 +21,7 @@ import io.primer.android.model.dto.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.json.JSONObject
 
 class PrimerHeadlessUniversalCheckout(
   private val reactContext: ReactApplicationContext,
@@ -43,7 +43,8 @@ class PrimerHeadlessUniversalCheckout(
     successCallback: Callback
   ) {
     try {
-      val settings = json.decodeFromString<PrimerSettingsRN>(settingsStr.orEmpty())
+      val settings = if (settingsStr.isNullOrBlank()) PrimerSettingsRN() else
+        json.decodeFromString(settingsStr.orEmpty())
       this.successCallback = successCallback
       PrimerHeadlessUniversalCheckout.current.start(
         reactContext,
@@ -54,10 +55,8 @@ class PrimerHeadlessUniversalCheckout(
     } catch (e: Exception) {
       errorCallback.invoke(
         json.encodeToString(
-          PrimerErrorRN(
-            ErrorTypeRN.InitFailed,
+          ErrorTypeRN.InitFailed errorTo
             "failed to initialise PrimerHeadlessUniversalCheckout SDK, error: $e",
-          )
         )
       )
     }
@@ -96,20 +95,16 @@ class PrimerHeadlessUniversalCheckout(
       primerPaymentMethodType == PaymentMethodType.UNKNOWN -> {
         errorCallback.invoke(
           json.encodeToString(
-            PrimerErrorRN(
-              ErrorTypeRN.AssetMissing,
+            ErrorTypeRN.AssetMissing errorTo
               "Asset for $paymentMethodType does not exist, make sure you don't have any typos."
-            )
           )
         )
       }
       type == null -> {
         errorCallback.invoke(
           json.encodeToString(
-            PrimerErrorRN(
-              ErrorTypeRN.AssetMismatch,
+            ErrorTypeRN.AssetMismatch errorTo
               "You have provided assetType=$assetType, but variable assetType can be 'LOGO' or 'ICON'."
-            )
           )
         )
       }
@@ -124,10 +119,8 @@ class PrimerHeadlessUniversalCheckout(
         } ?: run {
           errorCallback.invoke(
             json.encodeToString(
-              PrimerErrorRN(
-                ErrorTypeRN.AssetMissing,
+              ErrorTypeRN.AssetMissing errorTo
                 "Failed to find $paymentMethodType for $assetType"
-              )
             )
           )
         }
@@ -163,7 +156,7 @@ class PrimerHeadlessUniversalCheckout(
     sendEvent(
       PrimerHeadlessUniversalCheckoutEvent.TOKENIZATION_SUCCESS,
       mapOf(
-        "paymentMethodToken" to json.encodeToString(
+        Keys.PAYMENT_METHOD_TOKEN to json.encodeToString(
           PrimerPaymentInstrumentTokenRN.fromPaymentMethodToken(
             paymentMethodToken
           )
@@ -177,15 +170,19 @@ class PrimerHeadlessUniversalCheckout(
 
     sendEvent(
       PrimerHeadlessUniversalCheckoutEvent.RESUME,
-      mapOf("resumeToken" to resumeToken).toArgumentsMap()
+      mapOf(Keys.RESUME_TOKEN to resumeToken).toArgumentsMap()
     )
-
   }
 
   override fun onError(error: APIError) {
     sendEvent(
       PrimerHeadlessUniversalCheckoutEvent.ERROR,
-      mapOf("error" to error.toString()).toArgumentsMap()
+      mapOf(
+        Keys.ERROR to json.encodeToString(
+          ErrorTypeRN.CheckoutFlowFailed errorTo
+            error.description
+        )
+      ).toArgumentsMap()
     )
   }
 

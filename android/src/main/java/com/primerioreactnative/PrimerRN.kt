@@ -4,6 +4,7 @@ import android.util.Log
 import com.facebook.react.bridge.*
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.primerioreactnative.datamodels.*
+import com.primerioreactnative.utils.Keys
 import com.primerioreactnative.utils.PrimerImplementedRNCallbacks
 import com.primerioreactnative.utils.errorTo
 import io.primer.android.PaymentMethodIntent
@@ -275,9 +276,4 @@ class PrimerRN(reactContext: ReactApplicationContext) :
 
     return PrimerPaymentMethod.valueOf(paymentMethodTypeStr)
   }
-}
-
-internal object Keys {
-  const val ERROR = "error"
-  const val RESUME_TOKEN = "resumeToken"
 }
