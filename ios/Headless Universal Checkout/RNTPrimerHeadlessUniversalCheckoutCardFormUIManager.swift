@@ -19,11 +19,7 @@ class RNTPrimerHeadlessUniversalCheckoutCardFormUIManager: RCTViewManager {
     private lazy var cardFormUIManager: PrimerHeadlessUniversalCheckout.CardFormUIManager = {
         return try! PrimerHeadlessUniversalCheckout.CardFormUIManager()
     }()
-    private var successCallback: RCTResponseSenderBlock? {
-        didSet {
-            
-        }
-    }
+    private var successCallback: RCTResponseSenderBlock?
     
     deinit {
         print("🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
