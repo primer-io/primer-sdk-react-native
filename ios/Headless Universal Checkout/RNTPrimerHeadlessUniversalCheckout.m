@@ -26,5 +26,33 @@ RCT_EXTERN_METHOD(getAssetForCardNetwork:(NSString *)cardNetworkStr
                   errorCallback:(RCTResponseSenderBlock)errorCallback
                   successCallback: (RCTResponseSenderBlock)successCallback)
 
+// MARK: - HELPERS
+
+RCT_EXTERN_METHOD(setImplementedRNCallbacks:(NSString *)implementedRNCallbacksStr resolver:(RCTPromiseResolveBlock)resolver rejecter:(RCTPromiseRejectBlock)rejecter)
+
+// MARK: - DECISION HANDLERS
+
+// MARK: Tokenization Handlers
+
+RCT_EXTERN_METHOD(handleTokenizationNewClientToken:(NSString *)newClientToken resolver:(RCTPromiseResolveBlock)resolver rejecter:(RCTPromiseRejectBlock)rejecter)
+
+RCT_EXTERN_METHOD(handleTokenizationSuccess:(RCTPromiseResolveBlock)resolver rejecter:(RCTPromiseRejectBlock)rejecter)
+
+RCT_EXTERN_METHOD(handleTokenizationFailure:(NSString *)errorMessage resolver:(RCTPromiseResolveBlock)resolver rejecter:(RCTPromiseRejectBlock)rejecter)
+
+// MARK: Resume Handlers
+
+RCT_EXTERN_METHOD(handleResumeWithNewClientToken:(NSString *)newClientToken resolver:(RCTPromiseResolveBlock)resolver rejecter:(RCTPromiseRejectBlock)rejecter)
+
+RCT_EXTERN_METHOD(handleResumeSuccess:(RCTPromiseResolveBlock)resolver rejecter:(RCTPromiseRejectBlock)rejecter)
+
+RCT_EXTERN_METHOD(handleResumeFailure:(NSString *)errorMessage resolver:(RCTPromiseResolveBlock)resolver rejecter:(RCTPromiseRejectBlock)rejecter)
+
+// MARK: Payment Creation Handlers
+
+RCT_EXTERN_METHOD(handlePaymentCreationAbort:(NSString *)errorMessage resolver:(RCTPromiseResolveBlock)resolver rejecter:(RCTPromiseRejectBlock)rejecter)
+
+RCT_EXTERN_METHOD(handlePaymentCreationContinue:(RCTPromiseResolveBlock)resolver rejecter:(RCTPromiseRejectBlock)rejecter)
+
 
 @end

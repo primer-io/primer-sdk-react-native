@@ -1,44 +1,40 @@
 import { NativeEventEmitter, NativeModules } from 'react-native';
-import type { PrimerSessionIntent } from './models/PrimerSessionIntent';
-import type { PrimerSettings } from './models/PrimerSettings';
 
-const { NativePrimer } = NativeModules;
-const eventEmitter = new NativeEventEmitter(NativePrimer);
+const { PrimerHeadlessUniversalCheckout } = NativeModules;
+
+const eventEmitter = new NativeEventEmitter(PrimerHeadlessUniversalCheckout);
 
 type EventType =
-  | 'onCheckoutComplete'
-  | 'onBeforeClientSessionUpdate'
-  | 'onClientSessionUpdate'
-  | 'onBeforePaymentCreate'
-  | 'onError'
-  | 'onDismiss'
+  | 'onHUCTokenizeStart'
+  | 'onHUCPrepareStart'
+  | 'onHUCClientSessionSetup'
+  | 'onHUCPaymentMethodPresent'
   | 'onTokenizeSuccess'
   | 'onResumeSuccess'
-  | 'detectImplementedRNCallbacks';
-
-export interface IPrimerError {
-  errorId: string
-  errorDescription?: string
-  recoverySuggestion?: string
-}
+  | 'onBeforePaymentCreate'
+  | 'onBeforeClientSessionUpdate'
+  | 'onClientSessionUpdate'
+  | 'onCheckoutComplete'
+  | 'onError';
 
 const eventTypes: EventType[] = [
-  'onCheckoutComplete',
-  'onBeforeClientSessionUpdate',
-  'onClientSessionUpdate',
-  'onBeforePaymentCreate',
-  'onError',
-  'onDismiss',
+  'onHUCTokenizeStart',
+  'onHUCPrepareStart',
+  'onHUCClientSessionSetup',
+  'onHUCPaymentMethodPresent',
   'onTokenizeSuccess',
   'onResumeSuccess',
-  'detectImplementedRNCallbacks'
+  'onBeforePaymentCreate',
+  'onBeforeClientSessionUpdate',
+  'onClientSessionUpdate',
+  'onCheckoutComplete',
+  'onError'
 ];
 
-const RNPrimer = {
+const RNPrimerHeadlessUniversalCheckout = {
   ///////////////////////////////////////////
   // Event Emitter
   ///////////////////////////////////////////
-
   addListener: (eventType: EventType, listener: (...args: any[]) => any) => {
     eventEmitter.addListener(eventType, listener);
   },
@@ -52,64 +48,76 @@ const RNPrimer = {
   },
 
   removeAllListeners() {
-    eventTypes.forEach((eventType) => RNPrimer.removeAllListenersForEvent(eventType));
+    eventTypes.forEach((eventType) => RNPrimerHeadlessUniversalCheckout.removeAllListenersForEvent(eventType));
   },
 
   ///////////////////////////////////////////
   // Native API
   ///////////////////////////////////////////
-  configure: (settings: PrimerSettings | undefined): Promise<void> => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        await NativePrimer.configure(JSON.stringify(settings) || "");
-        resolve();
-      } catch (err) {
-        reject(err);
-      }
-    });
-  },
-
-  showUniversalCheckout: (clientToken: string): Promise<void> => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        await NativePrimer.showUniversalCheckoutWithClientToken(clientToken);
-        resolve();
-      } catch (err) {
-        reject(err);
-      }
-    });
-  },
-
-  showVaultManager: (clientToken: string | undefined): Promise<void> => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        await NativePrimer.showVaultManagerWithClientToken(clientToken);
-        resolve();
-      } catch (err) {
-        reject(err);
-      }
-    });
-  },
-
-  showPaymentMethod: (
+  getAssetForPaymentMethod: (
     paymentMethodType: string,
-    intent: PrimerSessionIntent,
-    clientToken: string
-  ): Promise<void> => {
-    return new Promise(async (resolve, reject) => {
+    assetType: 'logo' | 'icon'
+  ): Promise<string> => {
+    return new Promise((resolve, reject) => {
       try {
-        await NativePrimer.showPaymentMethod(clientToken, paymentMethodType, intent);
-        resolve();
-      } catch (err) {
-        reject(err);
+        PrimerHeadlessUniversalCheckout.getAssetForPaymentMethodType(
+          paymentMethodType,
+          assetType,
+          (err: Error) => {
+            reject(err);
+          },
+          (url: string) => {
+            resolve(url);
+          }
+        );
+      } catch (e) {
+        reject(e);
       }
     });
   },
 
-  dismiss: (): Promise<void> => {
+  getAssetForCardNetwork: (
+    cardNetwork: string,
+    assetType: 'logo' | 'icon'
+  ): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      try {
+        PrimerHeadlessUniversalCheckout.getAssetForPaymentMethodType(
+          cardNetwork,
+          assetType,
+          (err: Error) => {
+            reject(err);
+          },
+          (url: string) => {
+            resolve(url);
+          }
+        );
+      } catch (e) {
+        reject(e);
+      }
+    });
+  },
+
+  startWithClientToken(clientToken: string, settings: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      PrimerHeadlessUniversalCheckout.startWithClientToken(
+        clientToken,
+        JSON.stringify(settings),
+        (err: Error) => {
+          console.error(err);
+          reject(err);
+        },
+        (paymentMethodTypes: string[]) => {
+          resolve({ paymentMethodTypes });
+        }
+      );
+    });
+  },
+
+  showPaymentMethod: (paymentMethod: string): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {
-        await NativePrimer.dismiss();
+        await PrimerHeadlessUniversalCheckout.showPaymentMethod(paymentMethod);
         resolve();
       } catch (err) {
         reject(err);
@@ -126,7 +134,7 @@ const RNPrimer = {
   handleTokenizationNewClientToken: (newClientToken: string): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {
-        await NativePrimer.handleTokenizationNewClientToken(newClientToken);
+        await PrimerHeadlessUniversalCheckout.handleTokenizationNewClientToken(newClientToken);
         resolve();
       } catch (err) {
         reject(err);
@@ -137,7 +145,7 @@ const RNPrimer = {
   handleTokenizationSuccess: (): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {
-        await NativePrimer.handleTokenizationSuccess();
+        await PrimerHeadlessUniversalCheckout.handleTokenizationSuccess();
         resolve();
       } catch (err) {
         reject(err);
@@ -148,7 +156,7 @@ const RNPrimer = {
   handleTokenizationFailure: (errorMessage: string | null): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {
-        await NativePrimer.handleTokenizationFailure(errorMessage || "");
+        await PrimerHeadlessUniversalCheckout.handleTokenizationFailure(errorMessage || "");
         resolve();
       } catch (err) {
         reject(err);
@@ -161,7 +169,7 @@ const RNPrimer = {
   handleResumeWithNewClientToken: (newClientToken: string): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {
-        await NativePrimer.handleResumeWithNewClientToken(newClientToken);
+        await PrimerHeadlessUniversalCheckout.handleResumeWithNewClientToken(newClientToken);
         resolve();
       } catch (err) {
         reject(err);
@@ -172,7 +180,7 @@ const RNPrimer = {
   handleResumeSuccess: (): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {
-        await NativePrimer.handleResumeSuccess();
+        await PrimerHeadlessUniversalCheckout.handleResumeSuccess();
         resolve();
       } catch (err) {
         reject(err);
@@ -183,7 +191,7 @@ const RNPrimer = {
   handleResumeFailure: (errorMessage: string | null): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {
-        await NativePrimer.handleTokenizationFailure(errorMessage || "");
+        await PrimerHeadlessUniversalCheckout.handleTokenizationFailure(errorMessage || "");
         resolve();
       } catch (err) {
         reject(err);
@@ -196,7 +204,7 @@ const RNPrimer = {
   handlePaymentCreationAbort: (errorMessage: string | null): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {
-        await NativePrimer.handlePaymentCreationAbort(errorMessage || "");
+        await PrimerHeadlessUniversalCheckout.handlePaymentCreationAbort(errorMessage || "");
         resolve();
       } catch (err) {
         reject(err);
@@ -207,31 +215,7 @@ const RNPrimer = {
   handlePaymentCreationContinue: (): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {
-        await NativePrimer.handlePaymentCreationContinue();
-        resolve();
-      } catch (err) {
-        reject(err);
-      }
-    });
-  },
-
-  // Error Handler
-
-  showErrorMessage: (errorMessage: string | null): Promise<void> => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        await NativePrimer.showErrorMessage(errorMessage || "");
-        resolve();
-      } catch (err) {
-        reject(err);
-      }
-    });
-  },
-
-  handleSuccess: (): Promise<void> => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        await NativePrimer.handleSuccess();
+        await PrimerHeadlessUniversalCheckout.handlePaymentCreationContinue();
         resolve();
       } catch (err) {
         reject(err);
@@ -244,14 +228,13 @@ const RNPrimer = {
   setImplementedRNCallbacks: (implementedRNCallbacks: any): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {
-        await NativePrimer.setImplementedRNCallbacks(JSON.stringify(implementedRNCallbacks));
+        await PrimerHeadlessUniversalCheckout.setImplementedRNCallbacks(JSON.stringify(implementedRNCallbacks));
         resolve();
       } catch (err) {
         reject(err);
       }
     });
   },
-
 };
 
-export default RNPrimer;
+export default RNPrimerHeadlessUniversalCheckout;

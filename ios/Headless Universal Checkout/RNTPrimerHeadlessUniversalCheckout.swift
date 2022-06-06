@@ -10,30 +10,43 @@ import PrimerSDK
 
 @objc
 enum PrimerHeadlessUniversalCheckoutEvents: Int, CaseIterable {
-    case clientSessionDidSetUpSuccessfully = 0
-    case preparationStarted
-    case paymentMethodPresented
-    case tokenizationStarted
-    case tokenizationSucceeded
-    case resume
-    case error
+    
+    case onHUCTokenizeStart = 0
+    case onHUCPrepareStart
+    case onHUCClientSessionSetup
+    case onHUCPaymentMethodPresent
+    case onTokenizeSuccess
+    case onResumeSuccess
+    case onBeforePaymentCreate
+    case onBeforeClientSessionUpdate
+    case onClientSessionUpdate
+    case onCheckoutComplete
+    case onError
     
     var stringValue: String {
         switch self {
-        case .clientSessionDidSetUpSuccessfully:
-            return "clientSessionDidSetUpSuccessfully"
-        case .preparationStarted:
-            return "preparationStarted"
-        case .paymentMethodPresented:
-            return "paymentMethodPresented"
-        case .tokenizationStarted:
-            return "tokenizationStarted"
-        case .tokenizationSucceeded:
-            return "tokenizationSucceeded"
-        case .resume:
-            return "resume"
-        case .error:
-            return "error"
+        case .onHUCPrepareStart:
+            return "onHUCPrepareStart"
+        case .onHUCTokenizeStart:
+            return "onHUCTokenizeStart"
+        case .onHUCPaymentMethodPresent:
+            return "onHUCPaymentMethodPresent"
+        case .onTokenizeSuccess:
+            return "onTokenizeSuccess"
+        case .onResumeSuccess:
+            return "onResumeSuccess"
+        case .onBeforePaymentCreate:
+            return "onBeforePaymentCreate"
+        case .onBeforeClientSessionUpdate:
+            return "onBeforeClientSessionUpdate"
+        case .onClientSessionUpdate:
+            return "onClientSessionUpdate"
+        case .onCheckoutComplete:
+            return "onCheckoutComplete"
+        case .onHUCClientSessionSetup:
+            return "onHUCClientSessionSetup"
+        case .onError:
+            return "onError"
         }
     }
 }
@@ -41,7 +54,11 @@ enum PrimerHeadlessUniversalCheckoutEvents: Int, CaseIterable {
 @objc(PrimerHeadlessUniversalCheckout)
 class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
     
-    private var resumeTokenCompletion: ((_ resumeToken: String) -> Void)?
+    private var primerWillCreatePaymentWithDataDecisionHandler: ((_ errorMessage: String?) -> Void)?
+    private var primerDidTokenizePaymentMethodDecisionHandler: ((_ resumeToken: String?, _ errorMessage: String?) -> Void)?
+    private var primerDidResumeWithDecisionHandler: ((_ resumeToken: String?, _ errorMessage: String?) -> Void)?
+    private var primerDidFailWithErrorDecisionHandler: ((_ errorMessage: String) -> Void)?
+    private var implementedRNCallbacks: ImplementedRNCallbacks?
     
     override class func requiresMainQueueSetup() -> Bool {
         return true
@@ -67,9 +84,7 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
         var settings: PrimerSettings?
         if let settingsStr = settingsStr {
             do {
-                let settingsData = settingsStr.data(using: .utf8)!
-                let settingsRN = try JSONDecoder().decode(PrimerSettingsRN.self, from: settingsData)
-                settings = settingsRN.asPrimerSettings()
+                settings = try PrimerSettings.initialize(with: settingsStr)
             } catch {
                 errorCallback([error.rnError])
                 return
@@ -86,11 +101,6 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
     }
     
     @objc
-    public func resumeWithClientToken(_ resumeToken: String) {
-        self.resumeTokenCompletion?(resumeToken)
-    }
-    
-    @objc
     public func getAssetForPaymentMethodType(_ paymentMethodTypeStr: String,
                                              assetType assetTypeStr: String,
                                              errorCallback: @escaping RCTResponseSenderBlock,
@@ -98,7 +108,7 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
     {
         do {
             try validate(assetStr: paymentMethodTypeStr, assetTypeStr: assetTypeStr)
-            let paymentMethodType = PaymentMethodConfigType(rawValue: paymentMethodTypeStr)
+            let paymentMethodType = PrimerPaymentMethodType(rawValue: paymentMethodTypeStr)
             
             guard let image = PrimerHeadlessUniversalCheckout.getAsset(for: paymentMethodType, assetType: PrimerAsset.ImageType(rawValue: assetTypeStr)!) else {
                 let err = NativeError(errorId: "missing-asset", errorDescription: "Failed to find \(assetTypeStr) for \(paymentMethodTypeStr)", recoverySuggestion: nil)
@@ -153,7 +163,7 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
     private func validate(assetStr: String, assetTypeStr: String) throws {
         var errors: [NativeError] = []
         
-        if PaymentMethodConfigType(rawValue: assetStr) != .other(rawValue: assetStr) {
+        if PrimerPaymentMethodType(rawValue: assetStr) != .other(rawValue: assetStr) {
             // ...
         } else if CardNetwork(rawValue: assetStr) != nil {
             // ...
@@ -194,48 +204,282 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
         try pngData.write(to: imageURL)
         return imageURL
     }
+    
+    // MARK: - DECISION HANDLERS
+    
+    // MARK: Tokenization
+    
+    @objc
+    public func handleTokenizationNewClientToken(_ newClientToken: String, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
+        DispatchQueue.main.async {
+            self.primerDidTokenizePaymentMethodDecisionHandler?(newClientToken, nil)
+            self.primerDidTokenizePaymentMethodDecisionHandler = nil
+            resolver(nil)
+        }
+    }
+    
+    @objc
+    public func handleTokenizationSuccess(_ resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
+        DispatchQueue.main.async {
+            self.primerDidTokenizePaymentMethodDecisionHandler?(nil, nil)
+            self.primerDidTokenizePaymentMethodDecisionHandler = nil
+            resolver(nil)
+        }
+    }
+    
+    @objc
+    public func handleTokenizationFailure(_ errorMessage: String?, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
+        DispatchQueue.main.async {
+            self.primerDidTokenizePaymentMethodDecisionHandler?(nil, errorMessage ?? "")
+            self.primerDidTokenizePaymentMethodDecisionHandler = nil
+            resolver(nil)
+        }
+    }
+    
+    // MARK: Resume Payment
+    
+    @objc
+    public func handleResumeWithNewClientToken(_ newClientToken: String, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
+        DispatchQueue.main.async {
+            self.primerDidResumeWithDecisionHandler?(newClientToken, nil)
+            self.primerDidResumeWithDecisionHandler = nil
+            resolver(nil)
+        }
+    }
+    
+    @objc
+    public func handleResumeSuccess(_ resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
+        DispatchQueue.main.async {
+            self.primerDidResumeWithDecisionHandler?(nil, nil)
+            self.primerDidResumeWithDecisionHandler = nil
+            resolver(nil)
+        }
+    }
+    
+    @objc
+    public func handleResumeFailure(_ errorMessage: String?, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
+        DispatchQueue.main.async {
+            self.primerDidResumeWithDecisionHandler?(nil, errorMessage ?? "")
+            self.primerDidResumeWithDecisionHandler = nil
+            resolver(nil)
+        }
+    }
+    
+    // MARK: Payment Creation
+    
+    @objc
+    public func handlePaymentCreationAbort(_ errorMessage: String?, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
+        DispatchQueue.main.async {
+            self.primerWillCreatePaymentWithDataDecisionHandler?(errorMessage ?? "")
+            self.primerWillCreatePaymentWithDataDecisionHandler = nil
+            resolver(nil)
+        }
+    }
+    
+    @objc
+    public func handlePaymentCreationContinue(_ resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
+        DispatchQueue.main.async {
+            self.primerWillCreatePaymentWithDataDecisionHandler?(nil)
+            self.primerWillCreatePaymentWithDataDecisionHandler = nil
+            resolver(nil)
+        }
+    }
+    
+    // MARK: Helpers
+    
+    private func detectImplemetedCallbacks() {
+        sendEvent(withName: PrimerEvents.detectImplementedRNCallbacks.stringValue, body: nil)
+    }
+    
+    @objc
+    public func setImplementedRNCallbacks(_ implementedRNCallbacksStr: String, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
+        DispatchQueue.main.async {
+            do {
+                print(implementedRNCallbacksStr)
+                guard let implementedRNCallbacksData = implementedRNCallbacksStr.data(using: .utf8) else {
+                    let err = NSError(domain: "native-bridge", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to convert string to data"])
+                    throw err
+                }
+                self.implementedRNCallbacks = try JSONDecoder().decode(ImplementedRNCallbacks.self, from: implementedRNCallbacksData)
+                resolver(nil)
+            } catch {
+                self.handleRNBridgeError(error, checkoutData: nil, stopOnDebug: false)
+                rejecter(error.rnError["errorId"]!, error.rnError["description"], error)
+            }
+        }
+    }
+    
+    private func handleRNBridgeError(_ error: Error, checkoutData: PrimerCheckoutData?, stopOnDebug: Bool) {
+        DispatchQueue.main.async {
+            if stopOnDebug {
+                assertionFailure(error.localizedDescription)
+            }
+            
+            var body: [String: Any] = ["error": error.rnError]
+            if let checkoutData = checkoutData,
+               let data = try? JSONEncoder().encode(checkoutData),
+               let json = try? JSONSerialization.jsonObject(with: data){
+                body["checkoutData"] = json
+            }
+            print(body)
+            self.sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onError.stringValue, body: body)
+        }
+    }
 }
 
 // MARK: - EVENTS
 
 extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDelegate {
-    func primerHeadlessUniversalCheckoutClientSessionDidSetUpSuccessfully() {
-        sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.clientSessionDidSetUpSuccessfully.stringValue, body: nil)
-    }
     
     func primerHeadlessUniversalCheckoutPreparationStarted() {
-        sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.preparationStarted.stringValue, body: nil)
+        sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onHUCPrepareStart.stringValue, body: ["paymentMethod": "paymentMethodType"])
     }
     
-    func primerHeadlessUniversalCheckoutTokenizationStarted() {
-        sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.tokenizationStarted.stringValue, body: nil)
+    func primerHeadlessUniversalCheckoutClientSessionDidSetUpSuccessfully(paymentMethods: [String]) {
+        sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onHUCClientSessionSetup.stringValue, body: ["paymentMethods": paymentMethods])
     }
     
-    func primerHeadlessUniversalCheckoutPaymentMethodPresented() {
-        sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.paymentMethodPresented.stringValue, body: nil)
+    func primerHeadlessUniversalCheckoutTokenizationStarted(paymentMethodType: String) {
+        sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onHUCTokenizeStart.stringValue, body: ["paymentMethod": paymentMethodType])
     }
     
-    func primerHeadlessUniversalCheckoutTokenizationSucceeded(paymentMethodToken: PaymentMethodToken, resumeHandler: ResumeHandlerProtocol?) {
-        do {
-            let paymentMethodTokenData = try JSONEncoder().encode(paymentMethodToken)
-            let paymentMethodTokenStr = String(data: paymentMethodTokenData, encoding: .utf8)!
-            
-            self.resumeTokenCompletion = { (resumeToken) in
-                resumeHandler?.handle(newClientToken: resumeToken)
+    func primerHeadlessUniversalCheckoutPaymentMethodPresented(paymentMethodType: String) {
+        sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onHUCPaymentMethodPresent.stringValue, body: ["paymentMethod": paymentMethodType])
+    }
+    
+    func primerHeadlessUniversalCheckoutDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
+        if self.implementedRNCallbacks?.isOnTokenizeSuccessImplemented == true {
+            self.primerDidTokenizePaymentMethodDecisionHandler = { (newClientToken, errorMessage) in
+                DispatchQueue.main.async {
+                    if let errorMessage = errorMessage {
+                        decisionHandler(.fail(withErrorMessage: errorMessage.isEmpty ? nil : errorMessage))
+                    } else if let newClientToken = newClientToken {
+                        decisionHandler(.continueWithNewClientToken(newClientToken))
+                    } else {
+                        decisionHandler(.succeed())
+                    }
+                }
             }
             
-            sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.tokenizationSucceeded.stringValue, body: ["paymentMethodToken": paymentMethodTokenStr])
-            
-        } catch {
-            self.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: error)
+            do {
+                let data = try JSONEncoder().encode(paymentMethodTokenData)
+                let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
+                DispatchQueue.main.async {
+                    self.sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onTokenizeSuccess.stringValue, body: json)
+                }
+            } catch {
+                self.handleRNBridgeError(error, checkoutData: nil, stopOnDebug: true)
+            }
+        } else {
+            // RN dev hasn't opted in on listening the tokenization callback.
+            // Throw an error if it's the manual flow, ignore if it's the
+            // auto flow.
         }
     }
     
-    func primerHeadlessUniversalCheckoutResume(withResumeToken resumeToken: String, resumeHandler: ResumeHandlerProtocol?) {
-        sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.resume.stringValue, body: ["resumeToken": resumeToken])
+    func primerHeadlessUniversalDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
+        if self.implementedRNCallbacks?.isOnResumeSuccessImplemented == true {
+            self.primerDidResumeWithDecisionHandler = { (resumeToken, errorMessage) in
+                DispatchQueue.main.async {
+                    if let errorMessage = errorMessage {
+                        decisionHandler(.fail(withErrorMessage: errorMessage.isEmpty ? nil : errorMessage))
+                    } else if let resumeToken = resumeToken {
+                        decisionHandler(.continueWithNewClientToken(resumeToken))
+                    } else {
+                        decisionHandler(.succeed())
+                    }
+                }
+            }
+            
+            DispatchQueue.main.async {
+                self.sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onResumeSuccess.stringValue, body: ["resumeToken": resumeToken])
+            }
+        } else {
+            // RN dev hasn't opted in on listening the tokenization callback.
+            // Throw an error if it's the manual flow.
+        }
     }
     
-    func primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError err: Error) {
-        sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.error.stringValue, body: ["error": err.rnError])
+    func primerHeadlessUniversalCheckoutDidFail(withError err: Error) {
+        if self.implementedRNCallbacks?.isOnErrorImplemented == true {
+            // Send the error message to the RN bridge.
+            self.handleRNBridgeError(err, checkoutData: nil, stopOnDebug: false)
+            
+        } else {
+            // RN dev hasn't opted in on listening SDK dismiss.
+            // Ignore!
+        }
+    }
+    
+    func primerDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
+        DispatchQueue.main.async {
+            if self.implementedRNCallbacks?.isOnCheckoutCompleteImplemented == true {
+                do {
+                    let checkoutData = try JSONEncoder().encode(data)
+                    let checkoutJson = try JSONSerialization.jsonObject(with: checkoutData, options: .allowFragments)
+                    self.sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onCheckoutComplete.stringValue, body: checkoutJson)
+                } catch {
+                    self.handleRNBridgeError(error, checkoutData: data, stopOnDebug: true)
+                }
+            } else {
+                let err = NSError(domain: "native-bridge", code: 1, userInfo: [NSLocalizedDescriptionKey: "Callback [onCheckoutComplete] should be implemented."])
+                self.handleRNBridgeError(err, checkoutData: data, stopOnDebug: false)
+            }
+        }
+    }
+    
+    func primerClientSessionWillUpdate() {
+        if self.implementedRNCallbacks?.isOnBeforeClientSessionUpdateImplemented == true {
+            DispatchQueue.main.async {
+                self.sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onBeforeClientSessionUpdate.stringValue, body: nil)
+            }
+        } else {
+            // RN Dev hasn't implemented this callback, ignore.
+        }
+    }
+    
+    func primerClientSessionDidUpdate(_ clientSession: PrimerClientSession) {
+        if self.implementedRNCallbacks?.isOnClientSessionUpdateImplemented == true {
+            do {
+                let data = try JSONEncoder().encode(clientSession)
+                let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
+                DispatchQueue.main.async {
+                    self.sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onClientSessionUpdate.stringValue, body: json)
+                }
+            } catch {
+                self.handleRNBridgeError(error, checkoutData: nil, stopOnDebug: true)
+            }
+        } else {
+            // RN Dev hasn't implemented this callback, ignore.
+        }
+    }
+    
+    func primerWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) {
+        if self.implementedRNCallbacks?.isOnBeforePaymentCreateImplemented == true {
+            self.primerWillCreatePaymentWithDataDecisionHandler = { errorMessage in
+                DispatchQueue.main.async {
+                    if let errorMessage = errorMessage {
+                        decisionHandler(.abortPaymentCreation(withErrorMessage: errorMessage.isEmpty ? nil : errorMessage))
+                    } else {
+                        decisionHandler(.continuePaymentCreation())
+                    }
+                }
+            }
+            
+            DispatchQueue.main.async {
+                do {
+                    let checkoutPaymentmethodData = try JSONEncoder().encode(data)
+                    let checkoutPaymentmethodJson = try JSONSerialization.jsonObject(with: checkoutPaymentmethodData, options: .allowFragments)
+                    self.sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onBeforePaymentCreate.stringValue, body: checkoutPaymentmethodJson)
+                } catch {
+                    self.handleRNBridgeError(error, checkoutData: nil, stopOnDebug: true)
+                }
+            }
+        } else {
+            // RN Dev hasn't implemented this callback, send a decision to continue the flow.
+            DispatchQueue.main.async {
+                decisionHandler(.continuePaymentCreation())
+            }
+        }
     }
 }

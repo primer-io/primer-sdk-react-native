@@ -16,13 +16,13 @@ import {
 } from '@primer-io/react-native';
 import { View, Text, useColorScheme, TouchableOpacity } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
-import { createClientSession, createPayment, resumePayment } from '../network/api';
 import { styles } from '../styles';
 import type { IAppSettings } from '../models/IAppSettings';
 import type { IClientSessionRequestBody } from '../models/IClientSessionRequestBody';
 import type { IClientSession } from '../models/IClientSession';
 import { makeRandomString } from '../helpers/helpers';
 import type { IPayment } from '../models/IPayment';
+import { createClientSession, createPayment, resumePayment } from '../network/API';
 
 let clientToken: string | null = null;
 
@@ -182,9 +182,9 @@ const CheckoutScreen = (props: any) => {
         }
     }
 
-    const onError = (error: PrimerError, checkoutData: PrimerCheckoutData | null, handler: PrimerErrorHandler) => {
+    const onError = (error: PrimerError, checkoutData: PrimerCheckoutData | null, handler: PrimerErrorHandler | undefined) => {
         console.log(`onError:\n${JSON.stringify(error)}\n\n${JSON.stringify(checkoutData)}`);
-        handler.showErrorMessage("My RN message");
+        handler?.showErrorMessage("My RN message");
     };
 
     const onDismiss = () => {
@@ -208,7 +208,8 @@ const CheckoutScreen = (props: any) => {
                         urlScheme: 'merchant://'
                     },
                     applePayOptions: {
-                        merchantIdentifier: "merchant.checkout.team"
+                        merchantIdentifier: "merchant.checkout.team",
+                        merchantName: "Primer Merchant"
                     },
                     cardPaymentOptions: {
                         is3DSOnVaultingEnabled: false
