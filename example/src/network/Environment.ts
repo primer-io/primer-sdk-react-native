@@ -49,3 +49,41 @@ export function makeEnvironmentFromIntVal(env: number): Environment {
             throw new Error("Failed to create environment.");
     }
 }
+
+export enum PaymentHandling {
+    Auto = 0,
+    Manual
+}
+
+export function makePaymentHandlingFromIntVal(env: number): PaymentHandling {
+    switch (env) {
+        case 0:
+            return PaymentHandling.Auto;
+        case 1:
+            return PaymentHandling.Manual;
+        default:
+            throw new Error("Failed to create payment handling.");
+    }
+}
+
+export function makePaymentHandlingFromStringVal(env: string): PaymentHandling {
+    switch (env.toUpperCase()) {
+        case "AUTO":
+            return PaymentHandling.Auto;
+        case "MANUAL":
+            return PaymentHandling.Manual;
+        default:
+            throw new Error("Failed to create payment handling.");
+    }
+}
+
+export function getPaymentHandlingStringVal(env: PaymentHandling): 'AUTO' | 'MANUAL' | undefined {
+    switch (env) {
+        case PaymentHandling.Auto:
+            return "AUTO";
+        case PaymentHandling.Manual:
+            return "MANUAL";
+        default:
+            return undefined;
+    }
+}

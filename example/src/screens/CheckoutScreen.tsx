@@ -1,13 +1,13 @@
 
 import * as React from 'react';
-import { 
-    PrimerCheckoutData, 
-    PrimerCheckoutPaymentMethodData, 
-    Primer, 
-    PrimerErrorHandler, 
-    PrimerPaymentCreationHandler, 
-    PrimerSessionIntent, 
-    PrimerSettings, 
+import {
+    PrimerCheckoutData,
+    PrimerCheckoutPaymentMethodData,
+    Primer,
+    PrimerErrorHandler,
+    PrimerPaymentCreationHandler,
+    PrimerSessionIntent,
+    PrimerSettings,
     PrimerResumeHandler,
     PrimerPaymentMethodTokenData,
     PrimerTokenizationHandler,
@@ -17,68 +17,33 @@ import {
 import { View, Text, useColorScheme, TouchableOpacity } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { styles } from '../styles';
-import type { IAppSettings } from '../models/IAppSettings';
 import type { IClientSessionRequestBody } from '../models/IClientSessionRequestBody';
 import type { IClientSession } from '../models/IClientSession';
-import { makeRandomString } from '../helpers/helpers';
 import type { IPayment } from '../models/IPayment';
+import { clientSessionParams, paymentHandling } from './SettingsScreen';
+import { getPaymentHandlingStringVal } from '../network/Environment';
+import Spinner from 'react-native-loading-spinner-overlay';
 import { createClientSession, createPayment, resumePayment } from '../network/API';
+
 
 let clientToken: string | null = null;
 
 const CheckoutScreen = (props: any) => {
     const isDarkMode = useColorScheme() === 'dark';
+    const [isLoading, setIsLoading] = React.useState<boolean>(false);
+    const [loadingMessage, setLoadingMessage] = React.useState<string | undefined>('undefined');
     const [error, setError] = React.useState<Error | null>(null);
 
     const backgroundStyle = {
         backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
     };
 
-    const appSettings: IAppSettings = props.route.params;
     let paymentId: string | null = null;
 
     const clientSessionRequestBody: IClientSessionRequestBody = {
-        customerId: appSettings.customerId,
-        orderId: 'rn-test-' + makeRandomString(8),
-        currencyCode: appSettings.currencyCode,
-        order: {
-            countryCode: appSettings.countryCode,
-            lineItems: [
-                {
-                    amount: appSettings.amount,
-                    quantity: 1,
-                    itemId: 'item-123',
-                    description: 'this item',
-                    discountAmount: 0,
-                },
-            ],
-        },
-        customer: {
-            emailAddress: 'test@mail.com',
-            mobileNumber: appSettings.phoneNumber,
-            firstName: 'John',
-            lastName: 'Doe',
-            billingAddress: {
-                firstName: 'John',
-                lastName: 'Doe',
-                postalCode: '12345',
-                addressLine1: '1 test',
-                addressLine2: undefined,
-                countryCode: appSettings.countryCode,
-                city: 'test',
-                state: 'test',
-            },
-            shippingAddress: {
-                firstName: 'John',
-                lastName: 'Doe',
-                addressLine1: '1 test',
-                postalCode: '12345',
-                city: 'test',
-                state: 'test',
-                countryCode: appSettings.countryCode,
-            },
-            nationalDocumentId: '9011211234567',
-        },
+        ...clientSessionParams,
+        //@ts-ignore
+        merchantName: undefined,
         paymentMethod: {
             vaultOnSuccess: false,
             // options: {
@@ -122,19 +87,26 @@ const CheckoutScreen = (props: any) => {
 
     const onBeforeClientSessionUpdate = () => {
         console.log(`onBeforeClientSessionUpdate`);
+        setIsLoading(true);
+        setLoadingMessage('onBeforeClientSessionUpdate');
     }
 
     const onClientSessionUpdate = (clientSession: PrimerClientSession) => {
         console.log(`onClientSessionUpdate\n${JSON.stringify(clientSession)}`);;
+        setLoadingMessage('onClientSessionUpdate');
     }
 
     const onBeforePaymentCreate = (checkoutPaymentMethodData: PrimerCheckoutPaymentMethodData, handler: PrimerPaymentCreationHandler) => {
         console.log(`onBeforePaymentCreate\n${JSON.stringify(checkoutPaymentMethodData)}`);
         handler.continuePaymentCreation();
+        setLoadingMessage('onBeforePaymentCreate');
     }
 
     const onCheckoutComplete = (checkoutData: PrimerCheckoutData) => {
         console.log(`PrimerCheckoutData:\n${JSON.stringify(checkoutData)}`);
+        setLoadingMessage(undefined);
+        setIsLoading(false);
+        props.navigation.navigate('Result', checkoutData);
     };
 
     const onTokenizeSuccess = async (paymentMethodTokenData: PrimerPaymentMethodTokenData, handler: PrimerTokenizationHandler) => {
@@ -154,10 +126,15 @@ const CheckoutScreen = (props: any) => {
             } else {
                 props.navigation.navigate('Result', payment);
                 handler.handleSuccess();
+                setLoadingMessage(undefined);
+                setIsLoading(false);
             }
         } catch (err) {
             console.error(err);
-            handler.handleFailure("RN app error");
+            handler.handleFailure("Merchant error");
+            setLoadingMessage(undefined);
+            setIsLoading(false);
+            props.navigation.navigate('Result', err);
         }
     }
 
@@ -169,6 +146,8 @@ const CheckoutScreen = (props: any) => {
                 const payment: IPayment = await resumePayment(paymentId, resumeToken);
                 props.navigation.navigate('Result', payment);
                 handler.handleSuccess();
+                setLoadingMessage(undefined);
+                setIsLoading(false);
             } else {
                 const err = new Error("Invalid value for paymentId");
                 throw err;
@@ -179,93 +158,75 @@ const CheckoutScreen = (props: any) => {
             console.error(err);
             paymentId = null;
             handler.handleFailure("RN app error");
+            setLoadingMessage(undefined);
+            setIsLoading(false);
+            props.navigation.navigate('Result', err);
         }
     }
 
     const onError = (error: PrimerError, checkoutData: PrimerCheckoutData | null, handler: PrimerErrorHandler | undefined) => {
         console.log(`onError:\n${JSON.stringify(error)}\n\n${JSON.stringify(checkoutData)}`);
         handler?.showErrorMessage("My RN message");
+        setLoadingMessage(undefined);
+        setIsLoading(false);
+        props.navigation.navigate('Result', error);
     };
 
     const onDismiss = () => {
         console.log(`onDismiss`);
         clientToken = null;
+        setLoadingMessage(undefined);
+        setIsLoading(false);
     };
 
-    const onUniversalCheckoutButtonTapped = async () => {
-        try {
-            const clientSession: IClientSession = await createClientSession(clientSessionRequestBody);
-            clientToken = clientSession.clientToken;
-
-            const settings: PrimerSettings = {
-                paymentHandling: 'AUTO',
-                localeData: {
-                    languageCode: 'el',
-                    localeCode: 'GR'
-                },
-                paymentMethodOptions: {
-                    iOS: {
-                        urlScheme: 'merchant://'
-                    },
-                    applePayOptions: {
-                        merchantIdentifier: "merchant.checkout.team",
-                        merchantName: "Primer Merchant"
-                    },
-                    cardPaymentOptions: {
-                        is3DSOnVaultingEnabled: false
-                    },
-                    klarnaOptions: {
-                        recurringPaymentDescription: "Description"
-                    }
-                },
-                uiOptions: {
-                    isInitScreenEnabled: false,
-                    isSuccessScreenEnabled: false,
-                    isErrorScreenEnabled: false
-                },
-                debugOptions: {
-                    is3DSSanityCheckEnabled: false
-                },
-                onBeforeClientSessionUpdate: onBeforeClientSessionUpdate,
-                onClientSessionUpdate: onClientSessionUpdate,
-                onBeforePaymentCreate: onBeforePaymentCreate,
-                onCheckoutComplete: onCheckoutComplete,
-                onTokenizeSuccess: onTokenizeSuccess,
-                onResumeSuccess: onResumeSuccess,
-                onError: onError,
-                onDismiss: onDismiss,
-            };
-
-            await Primer.configure(settings);
-            await Primer.showUniversalCheckout(clientToken);
-
-        } catch (err) {
-            if (err instanceof Error) {
-                setError(err);
-            } else if (typeof err === "string") {
-                setError(new Error(err));
-            } else {
-                setError(new Error('Unknown error'));
+    const settings: PrimerSettings = {
+        paymentHandling: getPaymentHandlingStringVal(paymentHandling),
+        paymentMethodOptions: {
+            iOS: {
+                urlScheme: 'merchant://primer.io'
+            },
+            applePayOptions: {
+                merchantIdentifier: 'merchant.checkout.team',
+                merchantName: clientSessionParams.merchantName || 'Primer Merchant'
+            },
+            cardPaymentOptions: {
+                is3DSOnVaultingEnabled: false
+            },
+            klarnaOptions: {
+                recurringPaymentDescription: "Recurring payment description"
             }
-        }
-    }
+        },
+        uiOptions: {
+            isInitScreenEnabled: true,
+            isSuccessScreenEnabled: true,
+            isErrorScreenEnabled: true
+        },
+        debugOptions: {
+            is3DSSanityCheckEnabled: true
+        },
+        onBeforeClientSessionUpdate: onBeforeClientSessionUpdate,
+        onClientSessionUpdate: onClientSessionUpdate,
+        onBeforePaymentCreate: onBeforePaymentCreate,
+        onCheckoutComplete: onCheckoutComplete,
+        onTokenizeSuccess: onTokenizeSuccess,
+        onResumeSuccess: onResumeSuccess,
+        onError: onError,
+        onDismiss: onDismiss,
+    };
 
     const onApplePayButtonTapped = async () => {
         try {
+            setIsLoading(true);
+            //@ts-ignore
             const clientSession: IClientSession = await createClientSession(clientSessionRequestBody);
             clientToken = clientSession.clientToken;
-
-            const settings: PrimerSettings = {
-                paymentMethodOptions: {
-                    iOS: {
-                        urlScheme: 'merchant://'
-                    }
-                }
-            };
+            //@ts-ignore
             await Primer.configure(settings);
             await Primer.showPaymentMethod('APPLE_PAY', PrimerSessionIntent.CHECKOUT, clientToken);
 
         } catch (err) {
+            setIsLoading(false);
+
             if (err instanceof Error) {
                 setError(err);
             } else if (typeof err === "string") {
@@ -276,8 +237,62 @@ const CheckoutScreen = (props: any) => {
         }
     }
 
+    const onVaultManagerButtonTapped = async () => {
+        try {
+            setIsLoading(true);
+            //@ts-ignore
+            const clientSession: IClientSession = await createClientSession(clientSessionRequestBody);
+            clientToken = clientSession.clientToken;
+            //@ts-ignore
+            await Primer.configure(settings);
+            await Primer.showVaultManager(clientToken);
+
+        } catch (err) {
+            setIsLoading(false);
+
+            if (err instanceof Error) {
+                setError(err);
+            } else if (typeof err === "string") {
+                setError(new Error(err));
+            } else {
+                setError(new Error('Unknown error'));
+            }
+        }
+    }
+
+    const onUniversalCheckoutButtonTapped = async () => {
+        try {
+            setIsLoading(true);
+            //@ts-ignore
+            const clientSession: IClientSession = await createClientSession(clientSessionRequestBody);
+            clientToken = clientSession.clientToken;
+            //@ts-ignore
+            await Primer.configure(settings);
+            await Primer.showUniversalCheckout(clientToken);
+
+        } catch (err) {
+            setIsLoading(false);
+
+            if (err instanceof Error) {
+                setError(err);
+            } else if (typeof err === "string") {
+                setError(new Error(err));
+            } else {
+                setError(new Error('Unknown error'));
+            }
+        }
+    }
+
+    console.log(`RENDER\nisLoading: ${isLoading}`)
     return (
         <View style={backgroundStyle}>
+            <Spinner
+                visible={isLoading}
+                textContent={loadingMessage}
+                textStyle={{
+                    color: '#FFF'
+                }}
+            />
             <View style={{ flex: 1 }} />
             <TouchableOpacity
                 style={{ ...styles.button, marginHorizontal: 20, marginVertical: 5, backgroundColor: 'black' }}
@@ -289,15 +304,16 @@ const CheckoutScreen = (props: any) => {
                     Apple Pay
                 </Text>
             </TouchableOpacity>
-            {/* <TouchableOpacity
+            <TouchableOpacity
                 style={{ ...styles.button, marginHorizontal: 20, marginVertical: 5, backgroundColor: 'black' }}
+                onPress={onVaultManagerButtonTapped}
             >
                 <Text
                     style={{ ...styles.buttonText, color: 'white' }}
                 >
                     Vault Manager
                 </Text>
-            </TouchableOpacity> */}
+            </TouchableOpacity>
             <TouchableOpacity
                 style={{ ...styles.button, marginHorizontal: 20, marginBottom: 20, marginTop: 5, backgroundColor: 'black' }}
                 onPress={onUniversalCheckoutButtonTapped}
