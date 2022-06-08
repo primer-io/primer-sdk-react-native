@@ -12,5 +12,4 @@ data class PrimerErrorRN(
 @Serializable
 enum class ErrorTypeRN(val errorId: String) {
   NativeBridgeFailed("native-bridge"),
-  CheckoutFlowFailed("checkout-flow-failed")
 }

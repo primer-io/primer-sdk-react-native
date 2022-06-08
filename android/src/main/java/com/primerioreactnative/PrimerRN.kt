@@ -69,7 +69,7 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
       Primer.instance.showVaultManager(reactApplicationContext.applicationContext, clientToken)
       promise.resolve(null)
     } catch (e: Exception) {
-      val exception = ErrorTypeRN.CheckoutFlowFailed errorTo
+      val exception = ErrorTypeRN.NativeBridgeFailed errorTo
         "Primer SDK failed: ${e.message}"
       onError(exception)
       promise.reject(exception.errorId, exception.description, e)
@@ -112,7 +112,7 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
       )
       promise.resolve(null)
     } catch (e: Exception) {
-      val exception = ErrorTypeRN.CheckoutFlowFailed errorTo
+      val exception = ErrorTypeRN.NativeBridgeFailed errorTo
         "Primer SDK failed: ${e.message}"
       onError(exception)
       promise.reject(exception.errorId, exception.description, e)
