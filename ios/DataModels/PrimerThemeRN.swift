@@ -7,16 +7,7 @@ struct PrimerThemeRN: Decodable {
 
 extension PrimerThemeRN {
     func asPrimerTheme() -> PrimerTheme {
-        if #available(iOS 13.0, *) {
-            return PrimerTheme(
-                colorTheme: colors?.primerColorTheme ?? PrimerDefaultTheme(),
-                darkTheme: darkModeColors?.primerDarkModeTheme ?? PrimerDarkTheme()
-            )
-        } else {
-            return PrimerTheme(
-                colorTheme: colors?.primerColorTheme ?? PrimerDefaultTheme()
-            )
-        }
+        return PrimerTheme()
     }
 }
 

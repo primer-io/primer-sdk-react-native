@@ -55,6 +55,7 @@ interface IPrimerApayaOptions {
 
 interface IPrimerApplePayOptions {
   merchantIdentifier: string;
+  merchantName: string;
 }
 
 interface IPrimerCardPaymentOptions {

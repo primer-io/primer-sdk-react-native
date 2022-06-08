@@ -17,6 +17,7 @@ import { Environment, makeEnvironmentFromIntVal } from '../models/Environment';
 import { Picker } from "@react-native-picker/picker";
 import { Section } from '../models/Section';
 import type { IAppSettings } from '../models/IAppSettings';
+import { makeRandomString } from '../helpers/helpers';
 
 // import { NavigationContainer, NavigationContainerProps } from '@react-navigation/native';
 // import { NavigatorScreenParams } from '@react-navigation/native';
@@ -26,10 +27,10 @@ export let environment: Environment = Environment.Sandbox;
 // @ts-ignore
 const SettingsScreen = ({ navigation }) => {
     const isDarkMode = useColorScheme() === 'dark';
-    const [amount, setAmount] = React.useState<number | null>(1000);
+    const [amount, setAmount] = React.useState<number | null>(10100);
     const [currency, setCurrency] = React.useState<string>("EUR");
-    const [countryCode, setCountryCode] = React.useState<string>("DE");
-    const [customerId, setCustomerId] = React.useState<string | null>(null);
+    const [countryCode, setCountryCode] = React.useState<string>("FR");
+    const [customerId, setCustomerId] = React.useState<string | null>(`rn-ios-customer-${makeRandomString(8)}`);
     const [phoneNumber, setPhoneNumber] = React.useState<string | null>('+447867267218');
 
     const backgroundStyle = {

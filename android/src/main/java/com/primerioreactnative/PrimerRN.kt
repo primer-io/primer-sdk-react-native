@@ -78,9 +78,9 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
 
   @ReactMethod
   fun showPaymentMethod(
-    clientToken: String,
     paymentMethodTypeStr: String,
     intentStr: String,
+    clientToken: String,
     promise: Promise
   ) {
     val intent: PrimerSessionIntent
@@ -94,7 +94,7 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
     }
     val paymentMethod: PrimerPaymentMethodType
     try {
-      paymentMethod = PrimerPaymentMethodType.valueOf(paymentMethodTypeStr)
+      paymentMethod = getPrimerPaymentMethod(paymentMethodTypeStr)
     } catch (e: Exception) {
       val exception =
         ErrorTypeRN.NativeBridgeFailed errorTo "Payment method type $paymentMethodTypeStr is not valid."
@@ -235,6 +235,14 @@ class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
 
   private fun prepareData(data: JSONObject?): WritableMap {
     return data?.let { convertJsonToMap(data) } ?: Arguments.createMap()
+  }
+
+  private fun getPrimerPaymentMethod(paymentMethodTypeStr: String): PrimerPaymentMethodType {
+    if (PrimerPaymentMethodType.PAYMENT_CARD.name == paymentMethodTypeStr) {
+      return PrimerPaymentMethodType.PAYMENT_CARD
+    }
+
+    return PrimerPaymentMethodType.valueOf(paymentMethodTypeStr)
   }
 }
 
