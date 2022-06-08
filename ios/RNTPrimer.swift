@@ -129,7 +129,7 @@ class RNTPrimer: RCTEventEmitter {
                     throw err
                 }
                 
-                guard let primerIntent = PrimerSessionIntent(rawValue: intent) else {
+                guard let primerIntent = PrimerSessionIntent(rawValue: intent.lowercased()) else {
                     let err = NSError(domain: "native-bridge", code: 0, userInfo: [NSLocalizedDescriptionKey: "Intent \(intent) is not valid."])
                     throw err
                 }
