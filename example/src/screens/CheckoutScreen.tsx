@@ -1,13 +1,13 @@
 
 import * as React from 'react';
-import { 
-    PrimerCheckoutData, 
-    PrimerCheckoutPaymentMethodData, 
-    Primer, 
-    PrimerErrorHandler, 
-    PrimerPaymentCreationHandler, 
-    PrimerSessionIntent, 
-    PrimerSettings, 
+import {
+    PrimerCheckoutData,
+    PrimerCheckoutPaymentMethodData,
+    Primer,
+    PrimerErrorHandler,
+    PrimerPaymentCreationHandler,
+    PrimerSessionIntent,
+    PrimerSettings,
     PrimerResumeHandler,
     PrimerPaymentMethodTokenData,
     PrimerTokenizationHandler,

@@ -1,14 +1,24 @@
 package com.primerioreactnative.utils
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class PrimerImplementedRNCallbacks(
-  val isClientTokenCallbackImplemented: Boolean? = null,
-  val isTokenAddedToVaultImplemented: Boolean? = null,
+  @SerialName("onCheckoutComplete")
+  val isOnCheckoutCompleteImplemented: Boolean? = null,
+  @SerialName("onBeforeClientSessionUpdate")
+  val isOnBeforeClientSessionUpdateImplemented: Boolean? = null,
+  @SerialName("onClientSessionUpdate")
+  val isOnClientSessionUpdateImplemented: Boolean? = null,
+  @SerialName("onBeforePaymentCreate")
+  val isOnBeforePaymentCreateImplemented: Boolean? = null,
+  @SerialName("onError")
+  val isOnErrorImplemented: Boolean? = null,
+  @SerialName("onDismiss")
+  val isOnDismissImplemented: Boolean? = null,
+  @SerialName("onTokenizeSuccess")
+  val isOnTokenizeSuccessImplemented: Boolean? = null,
+  @SerialName("onResumeSuccess")
   val isOnResumeSuccessImplemented: Boolean? = null,
-  val isOnResumeErrorImplemented: Boolean? = null,
-  val isOnCheckoutDismissedImplemented: Boolean? = null,
-  val isCheckoutFailedImplemented: Boolean? = null,
-  val isClientSessionActionsImplemented: Boolean? = null
 )

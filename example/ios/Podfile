@@ -7,11 +7,11 @@ target 'ReactNativeExample' do
   config = use_native_modules!
 
   use_react_native!(:path => config["reactNativePath"])
-  
+
   pod 'primer-io-react-native', :path => '../..'
 #  pod 'PrimerSDK' , :git => 'https://github.com/primer-io/primer-sdk-ios.git', :branch => 'release/2.0.0'
   pod 'Primer3DS'
-      
+
   # Enables Flipper.
   #
   # Note that if you have use_frameworks! enabled, Flipper will not work and
@@ -20,7 +20,7 @@ target 'ReactNativeExample' do
   # post_install do |installer|
   #   flipper_post_install(installer)
   # end
-  
+
   # Enables Primer3DS if it has been added in your podfile.
   #
   # Note that if you have use_frameworks! enabled, Primer3DS will not work without
@@ -38,5 +38,5 @@ target 'ReactNativeExample' do
        end
      end
    end
-  
+
 end

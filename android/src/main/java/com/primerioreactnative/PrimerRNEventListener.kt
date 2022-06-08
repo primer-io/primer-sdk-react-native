@@ -1,169 +1,254 @@
 package com.primerioreactnative
 
-import android.util.Log
 import com.primerioreactnative.datamodels.*
+import com.primerioreactnative.extensions.toPrimerCheckoutDataRN
+import com.primerioreactnative.extensions.toPrimerClientSessionRN
+import com.primerioreactnative.extensions.toPrimerPaymentMethodDataRN
 import com.primerioreactnative.utils.PrimerImplementedRNCallbacks
-import com.primerioreactnative.utils.asError
 import com.primerioreactnative.utils.errorTo
-import io.primer.android.CheckoutEventListener
-import io.primer.android.completion.ResumeHandler
-import io.primer.android.events.CheckoutEvent
+import io.primer.android.PrimerCheckoutListener
+import io.primer.android.completion.PrimerErrorDecisionHandler
+import io.primer.android.completion.PrimerPaymentCreationDecisionHandler
+import io.primer.android.completion.PrimerResumeDecisionHandler
+import io.primer.android.domain.PrimerCheckoutData
+import io.primer.android.domain.action.models.PrimerClientSession
+import io.primer.android.domain.error.models.PrimerError
+import io.primer.android.domain.tokenization.models.PrimerPaymentMethodData
+import io.primer.android.domain.tokenization.models.PrimerPaymentMethodTokenData
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
 
-class PrimerRNEventListener : CheckoutEventListener {
+class PrimerRNEventListener : PrimerCheckoutListener {
 
-  private var clientTokenCallback: ((String?, PrimerErrorRN?) -> Unit)? = null
-  private var onClientSessionActions: ((String?, PrimerErrorRN?) -> Unit)? = null
-  private var onTokenizeSuccess: ((String?, PrimerErrorRN?) -> Unit)? = null
-  private var onResumeSuccess: ((String?, PrimerErrorRN?) -> Unit)? = null
+  private var paymentCreationDecisionHandler: ((errorMessage: String?) -> Unit)? = null
+  private var primerErrorDecisionHandler: ((errorMessage: String?) -> Unit)? = null
+  private var tokenizeSuccessDecisionHandler: ((resumeToken: String?, errorMessage: String?) -> Unit)? =
+    null
+  private var resumeSuccessDecisionHandler: ((resumeToken: String?, errorMessage: String?) -> Unit)? =
+    null
   private var implementedRNCallbacks: PrimerImplementedRNCallbacks? = null
-
-  private var resumeHandler: ResumeHandler? = null
 
   var sendEvent: ((eventName: String, paramsJson: JSONObject?) -> Unit)? = null
   var sendError: ((error: PrimerErrorRN) -> Unit)? = null
+  var sendErrorWithCheckoutData: ((error: PrimerErrorRN, checkoutData: PrimerCheckoutDataRN?) -> Unit)? =
+    null
 
-  override fun onClientSessionActions(event: CheckoutEvent.OnClientSessionActions) {
-    val token = PrimerOnClientSessionActionsRequestRN.build(event.data)
-    val request = JSONObject(Json.encodeToString(token))
-
-    onClientSessionActions = { newClientToken, err ->
-      when {
-          err != null -> resumeHandler?.handleError(err.asError())
-          newClientToken != null -> resumeHandler?.handleNewClientToken(newClientToken)
-          else -> resumeHandler?.handleSuccess()
-      }
-    }
-
-    event.resumeHandler.handleClientToken(null)
-    sendEvent?.invoke(PrimerEventsRN.OnClientSessionActions.string, request)
-  }
-
-  override fun onCheckoutEvent(e: CheckoutEvent) {
-    when (e) {
-      is CheckoutEvent.TokenizationSuccess -> {
-        val token = PrimerPaymentInstrumentTokenRN.fromPaymentMethodToken(e.data)
-        val request = JSONObject(Json.encodeToString(token))
-        onTokenizeSuccess = { newClientToken, err ->
-          when {
-            err != null -> resumeHandler?.handleError(err.asError())
-            newClientToken != null -> resumeHandler?.handleNewClientToken(newClientToken)
-            else -> resumeHandler?.handleSuccess()
-          }
-        }
-
-        resumeHandler = e.resumeHandler
-        sendEvent?.invoke(PrimerEventsRN.OnTokenizeSuccessCallback.string, request)
-      }
-      is CheckoutEvent.ResumeSuccess -> {
-        val token = e.resumeToken
-        if (implementedRNCallbacks?.isOnResumeSuccessImplemented == true) {
-          onResumeSuccess = { newClientToken, err ->
-            when {
-              err != null -> resumeHandler?.handleError(err.asError())
-              newClientToken != null -> resumeHandler?.handleNewClientToken(newClientToken)
-              else -> resumeHandler?.handleSuccess()
-            }
-          }
-
-          resumeHandler = e.resumeHandler
-          val resumeToken = mapOf(Keys.RESUME_TOKEN to token)
-          sendEvent?.invoke(
-            PrimerEventsRN.OnResumeSuccess.string,
-            JSONObject(Json.encodeToString(resumeToken))
-          )
-        } else {
-          sendError?.invoke(ErrorTypeRN.InitFailed
-            errorTo "Callback [onResumeSuccess] should had been implemented.")
-        }
-      }
-      is CheckoutEvent.ApiError -> {
-        Log.e("PrimerRN", "ApiError: ${e.data}")
-        val exception = ErrorTypeRN.CheckoutFlowFailed errorTo e.data.description
-        sendError?.invoke(exception)
-      }
-      is CheckoutEvent.TokenAddedToVault -> {
-        val token = PrimerPaymentInstrumentTokenRN.fromPaymentMethodToken(e.data)
-        val request = JSONObject(Json.encodeToString(token))
-        sendEvent?.invoke(
-          PrimerEventsRN.OnVaultSuccess.string,
-          request
-        )
-      }
-      is CheckoutEvent.TokenSelected -> {
-        val token = PrimerPaymentInstrumentTokenRN.fromPaymentMethodToken(e.data)
-        val request = JSONObject(Json.encodeToString(token))
-        onTokenizeSuccess = { newClientToken, err ->
-          when {
-            err != null -> resumeHandler?.handleError(err.asError())
-            newClientToken != null -> resumeHandler?.handleNewClientToken(newClientToken)
-            else -> resumeHandler?.handleSuccess()
-          }
-        }
-
-        resumeHandler = e.resumeHandler
-        sendEvent?.invoke(PrimerEventsRN.OnTokenizeSuccessCallback.string, request)
-      }
-      is CheckoutEvent.Exit -> {
-        removeCallbacksAndHandlers()
-        if (implementedRNCallbacks?.isOnCheckoutDismissedImplemented == true) {
-          sendEvent?.invoke(
-            PrimerEventsRN.OnCheckoutDismissed.string,
-            null
-          )
-        } else {
-          sendError?.invoke(ErrorTypeRN.InitFailed
-            errorTo "Callback [onCheckoutDismissed] should had been implemented.")
-        }
-      }
-      is CheckoutEvent.TokenizationError -> {
-        if (implementedRNCallbacks?.isCheckoutFailedImplemented == true) {
-          Log.e("PrimerRN", "TokenizationError: ${e.data}")
-          val exception = ErrorTypeRN.TokenizationFailed errorTo e.data.description
-          sendError?.invoke(exception)
-        } else {
-          sendError?.invoke(ErrorTypeRN.InitFailed
-            errorTo "Callback [onError] should had been implemented.")
-        }
-      }
-      else -> Unit
-    }
-  }
-
-  fun onClientTokenCallback(clientToken: String?, error: PrimerErrorRN?) {
-    this.clientTokenCallback?.invoke(clientToken, error)
-    sendEvent?.invoke(PrimerEventsRN.OnClientTokenCallback.string, null)
-  }
-
-  fun onClientSessionActions(clientToken: String?, error: PrimerErrorRN?) {
-    if (implementedRNCallbacks?.isClientSessionActionsImplemented == true) {
-      this.onClientSessionActions?.invoke(clientToken, error)
-    }
-  }
-
-  fun onTokenizeSuccess(clientToken: String?, error: PrimerErrorRN?) {
-    this.onTokenizeSuccess?.invoke(clientToken, error)
-  }
-
-  fun onResumeSuccess(clientToken: String?, error: PrimerErrorRN?) {
-    if (implementedRNCallbacks?.isOnResumeSuccessImplemented == true) {
-      this.onResumeSuccess?.invoke(clientToken, error)
+  override fun onCheckoutCompleted(checkoutData: PrimerCheckoutData) {
+    if (implementedRNCallbacks?.isOnCheckoutCompleteImplemented == true) {
+      sendEvent?.invoke(
+        PrimerEvents.ON_CHECKOUT_COMPLETE.eventName,
+        JSONObject(Json.encodeToString(checkoutData.toPrimerCheckoutDataRN()))
+      )
     } else {
-      sendError?.invoke(ErrorTypeRN.CheckoutFlowFailed
-        errorTo "Callback [onResumeSuccess] should had been implemented.")
+      sendError?.invoke(
+        ErrorTypeRN.NativeBridgeFailed
+          errorTo "Callback [onCheckoutComplete] should be implemented."
+      )
     }
   }
 
-  fun removeCallbacksAndHandlers() {
-    clientTokenCallback = null
-    onClientSessionActions = null
-    onTokenizeSuccess = null
-    onResumeSuccess = null
+  override fun onBeforePaymentCreated(
+    paymentMethodData: PrimerPaymentMethodData,
+    decisionHandler: PrimerPaymentCreationDecisionHandler
+  ) {
+    if (implementedRNCallbacks?.isOnBeforePaymentCreateImplemented == true) {
+      paymentCreationDecisionHandler = { errorMessage ->
+        when {
+          errorMessage != null -> decisionHandler.abortPaymentCreation(errorMessage.ifBlank { null })
+          else -> decisionHandler.continuePaymentCreation()
+        }
+      }
+      sendEvent?.invoke(
+        PrimerEvents.ON_BEFORE_PAYMENT_CREATE.eventName,
+        JSONObject(Json.encodeToString(paymentMethodData.toPrimerPaymentMethodDataRN()))
+      )
+    } else {
+      super.onBeforePaymentCreated(paymentMethodData, decisionHandler)
+    }
   }
+
+  override fun onBeforeClientSessionUpdated() {
+    if (implementedRNCallbacks?.isOnBeforeClientSessionUpdateImplemented == true) {
+      sendEvent?.invoke(
+        PrimerEvents.ON_BEFORE_CLIENT_SESSION_UPDATE.eventName,
+        null
+      )
+    } else {
+      super.onBeforeClientSessionUpdated()
+    }
+  }
+
+  override fun onClientSessionUpdated(clientSession: PrimerClientSession) {
+    if (implementedRNCallbacks?.isOnClientSessionUpdateImplemented == true) {
+      sendEvent?.invoke(
+        PrimerEvents.ON_CLIENT_SESSION_UPDATE.eventName,
+        JSONObject(Json.encodeToString(clientSession.toPrimerClientSessionRN()))
+      )
+    } else {
+      super.onClientSessionUpdated(clientSession)
+    }
+  }
+
+  override fun onTokenizeSuccess(
+    paymentMethodTokenData: PrimerPaymentMethodTokenData,
+    decisionHandler: PrimerResumeDecisionHandler
+  ) {
+    if (implementedRNCallbacks?.isOnTokenizeSuccessImplemented == true) {
+      val token = PrimerPaymentInstrumentTokenRN.fromPaymentMethodToken(paymentMethodTokenData)
+      val request = JSONObject(Json.encodeToString(token))
+      tokenizeSuccessDecisionHandler = { newClientToken, err ->
+        when {
+          err != null -> decisionHandler.handleFailure(err.ifBlank { null })
+          newClientToken != null -> decisionHandler.continueWithNewClientToken(newClientToken)
+          else -> decisionHandler.handleSuccess()
+        }
+      }
+      sendEvent?.invoke(PrimerEvents.ON_TOKENIZE_SUCCESS.eventName, request)
+    } else {
+      sendError?.invoke(
+        ErrorTypeRN.NativeBridgeFailed
+          errorTo "Callback [onTokenizeSuccess] should be implemented."
+      )
+    }
+  }
+
+  override fun onResumeSuccess(
+    resumeToken: String,
+    decisionHandler: PrimerResumeDecisionHandler
+  ) {
+    if (implementedRNCallbacks?.isOnResumeSuccessImplemented == true) {
+      resumeSuccessDecisionHandler = { newClientToken, err ->
+        when {
+          err != null -> decisionHandler.handleFailure(err.ifBlank { null })
+          newClientToken != null -> decisionHandler.continueWithNewClientToken(newClientToken)
+          else -> decisionHandler.handleSuccess()
+        }
+      }
+
+      val resumeToken = mapOf(Keys.RESUME_TOKEN to resumeToken)
+      sendEvent?.invoke(
+        PrimerEvents.ON_RESUME_SUCCESS.eventName,
+        JSONObject(Json.encodeToString(resumeToken))
+      )
+    } else {
+      sendError?.invoke(
+        ErrorTypeRN.NativeBridgeFailed
+          errorTo "Callback [onResumeSuccess] should be implemented."
+      )
+    }
+  }
+
+  override fun onDismissed() {
+    if (implementedRNCallbacks?.isOnDismissImplemented == true) {
+      sendEvent?.invoke(
+        PrimerEvents.ON_DISMISS.eventName,
+        null
+      )
+    }
+    removeCallbacksAndHandlers()
+  }
+
+  override fun onFailed(
+    error: PrimerError,
+    checkoutData: PrimerCheckoutData?,
+    errorHandler: PrimerErrorDecisionHandler?
+  ) {
+    if (implementedRNCallbacks?.isOnErrorImplemented == true) {
+      primerErrorDecisionHandler = { errorMessage: String? ->
+        errorHandler?.showErrorMessage(errorMessage?.ifBlank { null })
+      }
+      sendErrorWithCheckoutData?.invoke(
+        PrimerErrorRN(
+          error.errorId,
+          error.description,
+          error.recoverySuggestion
+        ), checkoutData?.toPrimerCheckoutDataRN()
+      )
+    } else {
+      super.onFailed(error, checkoutData, errorHandler)
+    }
+  }
+
+  override fun onFailed(error: PrimerError, errorHandler: PrimerErrorDecisionHandler?) {
+    if (implementedRNCallbacks?.isOnErrorImplemented == true) {
+      primerErrorDecisionHandler = { errorMessage: String? ->
+        errorHandler?.showErrorMessage(errorMessage)
+      }
+      sendError?.invoke(PrimerErrorRN(error.errorId, error.description, error.recoverySuggestion))
+    } else {
+      super.onFailed(error, errorHandler)
+    }
+  }
+
+  // region tokenization handlers
+  fun handleTokenizationNewClientToken(newClientToken: String) {
+    tokenizeSuccessDecisionHandler?.invoke(newClientToken, null)
+    tokenizeSuccessDecisionHandler = null
+  }
+
+  fun handleTokenizationSuccess() {
+    tokenizeSuccessDecisionHandler?.invoke(null, null)
+    tokenizeSuccessDecisionHandler = null
+  }
+
+  fun handleTokenizationFailure(errorMessage: String) {
+    tokenizeSuccessDecisionHandler?.invoke(
+      null,
+      errorMessage.ifBlank { null }
+    )
+    tokenizeSuccessDecisionHandler = null
+  }
+  // endregion
+
+  // region resume handlers
+  fun handleResumeNewClientToken(newClientToken: String) {
+    resumeSuccessDecisionHandler?.invoke(newClientToken, null)
+    resumeSuccessDecisionHandler = null
+  }
+
+  fun handleResumeSuccess() {
+    resumeSuccessDecisionHandler?.invoke(null, null)
+    resumeSuccessDecisionHandler = null
+  }
+
+  fun handleResumeFailure(errorMessage: String) {
+    resumeSuccessDecisionHandler?.invoke(
+      null,
+      errorMessage.ifBlank { null }
+    )
+    resumeSuccessDecisionHandler = null
+  }
+  // endregion
+
+  // region payment create handlers
+  fun handlePaymentCreationContinue() {
+    paymentCreationDecisionHandler?.invoke(null)
+    paymentCreationDecisionHandler = null
+  }
+
+  fun handlePaymentCreationAbort(errorMessage: String) {
+    paymentCreationDecisionHandler?.invoke(errorMessage)
+    paymentCreationDecisionHandler = null
+  }
+  // endregion
+
+  // region error handlers
+  fun handleErrorMessage(errorMessage: String) {
+    primerErrorDecisionHandler?.invoke(errorMessage)
+    primerErrorDecisionHandler = null
+  }
+  // endregion
 
   fun setImplementedCallbacks(implementedRNCallbacks: PrimerImplementedRNCallbacks) {
     this.implementedRNCallbacks = implementedRNCallbacks
+  }
+
+  private fun removeCallbacksAndHandlers() {
+    paymentCreationDecisionHandler = null
+    primerErrorDecisionHandler = null
+    tokenizeSuccessDecisionHandler = null
+    resumeSuccessDecisionHandler = null
+    implementedRNCallbacks = null
   }
 }

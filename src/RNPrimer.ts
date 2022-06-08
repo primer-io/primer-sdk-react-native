@@ -168,7 +168,7 @@ const RNPrimer = {
         }
       });
     },
-  
+
     handleResumeSuccess: (): Promise<void> => {
       return new Promise(async (resolve, reject) => {
         try {
@@ -179,7 +179,7 @@ const RNPrimer = {
         }
       });
     },
-  
+
     handleResumeFailure: (errorMessage: string | null): Promise<void> => {
       return new Promise(async (resolve, reject) => {
         try {
