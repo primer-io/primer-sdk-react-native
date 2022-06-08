@@ -199,9 +199,9 @@ const CheckoutScreen = (props: any) => {
             localeCode: 'GR'
         },
         paymentMethodOptions: {
-            // iOS: {
-            //     urlScheme: 'merchant://primer.io'
-            // },
+            iOS: {
+                urlScheme: 'merchant://primer.io'
+            },
             applePayOptions: {
                 merchantIdentifier: "merchant.checkout.team",
                 merchantName: "Primer Merchant"
