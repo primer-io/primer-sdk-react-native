@@ -100,7 +100,7 @@ const CheckoutScreen = (props: any) => {
       // ...
 
       // Present Universal Checkout
-			await Primer.showUniversalCheckout(clientToken);
+      await Primer.showUniversalCheckout(clientToken);
     } catch (err) {
       // ...
     }
