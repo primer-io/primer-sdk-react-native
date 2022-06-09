@@ -33,6 +33,7 @@ Once you are done, navigate to the \/ios folder and run pod install.
 Import the Primer SDK, construct your settings and call the SDK’s configure function.
 
 ```js
+import * as React from 'react';
 import {
   Primer,  
   PrimerSettings,
@@ -110,6 +111,7 @@ const CheckoutScreen = (props: any) => {
 ## Full Code Snippet
 
 ```js
+import * as React from 'react';
 import {
   Primer,  
   PrimerSettings,
