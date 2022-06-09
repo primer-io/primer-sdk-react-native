@@ -140,7 +140,9 @@ const CheckoutScreen = async (props: any) => {
 }
 ```
 
-You should now be able to see Universal Checkout! The user can now interact with Universal Checkout, and the SDK will create the payment. The payment’s data will be returned in the onCheckoutComplete callback configured in Step 2. 
+You should now be able to see Universal Checkout! The user can now interact with Universal Checkout, and the SDK will create the payment. The payment’s data will be returned in the onCheckoutComplete callback configured in Step 2.
+
+**Note:** For more info & help troubleshooting, check out our [docs](http://primer.io/docs).
 
 ## 📚 License
 
