@@ -32,3 +32,5 @@ export {
 export { 
     PrimerError
 } from './models/PrimerError';
+import PrimerHeadlessUniversalCheckout from './headless_checkout/PrimerHeadlessUniversalCheckout';
+export { PrimerHeadlessUniversalCheckout as HeadlessUniversalCheckout };

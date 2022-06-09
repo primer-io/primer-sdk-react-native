@@ -13,25 +13,65 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 import { styles } from '../styles';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
-import { Environment, makeEnvironmentFromIntVal } from '../models/Environment';
 import { Picker } from "@react-native-picker/picker";
 import { Section } from '../models/Section';
-import type { IAppSettings } from '../models/IAppSettings';
+import type { IClientSessionParams } from '../models/IAppSettings';
+import { Environment, makeEnvironmentFromIntVal, makePaymentHandlingFromIntVal, PaymentHandling } from '../network/Environment';
 import { makeRandomString } from '../helpers/helpers';
 
-// import { NavigationContainer, NavigationContainerProps } from '@react-navigation/native';
-// import { NavigatorScreenParams } from '@react-navigation/native';
-
 export let environment: Environment = Environment.Sandbox;
+export let paymentHandling: PaymentHandling = PaymentHandling.Auto;
+export let clientSessionParams: IClientSessionParams = {
+    currencyCode: 'EUR',
+    customerId: `rn-customer-${makeRandomString(8)}`,
+    orderId: `rn-order-${makeRandomString(8)}`,
+    order: {
+        countryCode: 'FR',
+        lineItems: [
+            {
+                amount: 1000,
+                quantity: 1,
+                itemId: 'shoes-261816',
+                description: 'Fancy Shoes',
+                discountAmount: 0
+            }
+        ]
+    },
+    merchantName: 'Primer Merchant',
+    customer: {
+        firstName: 'John',
+        lastName: "Smith",
+        emailAddress: 'john.smith@primer.io',
+        mobileNumber: '+447867267218',
+        nationalDocumentId: '7281082747',
+        billingAddress: {
+            firstName: 'John',
+            lastName: 'Smith',
+            postalCode: '12345',
+            addressLine1: '1 Test st.',
+            addressLine2: undefined,
+            countryCode: 'GB',
+            city: 'London',
+            state: undefined
+        },
+        shippingAddress: {
+            firstName: 'John',
+            lastName: 'Smith',
+            postalCode: '12345',
+            addressLine1: '1 Test st.',
+            addressLine2: undefined,
+            countryCode: 'GB',
+            city: 'London',
+            state: undefined
+        }
+    }
+}
 
 // @ts-ignore
 const SettingsScreen = ({ navigation }) => {
     const isDarkMode = useColorScheme() === 'dark';
-    const [amount, setAmount] = React.useState<number | null>(10100);
     const [currency, setCurrency] = React.useState<string>("EUR");
     const [countryCode, setCountryCode] = React.useState<string>("FR");
-    const [customerId, setCustomerId] = React.useState<string | null>(`rn-ios-customer-${makeRandomString(8)}`);
-    const [phoneNumber, setPhoneNumber] = React.useState<string | null>('+447867267218');
 
     const backgroundStyle = {
         backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
@@ -39,25 +79,39 @@ const SettingsScreen = ({ navigation }) => {
 
     const onChangeAmount = (text: string) => {
         if (text) {
-            setAmount(-(-text));
+            const amount = -(-text);
+            clientSessionParams.order = {
+                countryCode: 'FR',
+                lineItems: [
+                    {
+                        amount: amount,
+                        quantity: 1,
+                        itemId: 'shoes-261816',
+                        description: 'Fancy Shoes',
+                        discountAmount: 0
+                    }
+                ]
+            }
         } else {
-            setAmount(null);
+            clientSessionParams.order = undefined;
         }
     }
 
     const onChangeCustomerId = (text: string) => {
         if (text) {
-            setCustomerId(text);
+            clientSessionParams.customerId = text;
         } else {
-            setCustomerId(null);
+            clientSessionParams.customerId = undefined;
         }
     }
 
     const onChangePhoneNumber = (text: string) => {
         if (text) {
-            setPhoneNumber(text);
+            //@ts-ignore
+            clientSessionParams.customer.mobileNumber = text;
         } else {
-            setPhoneNumber(null);
+            //@ts-ignore
+            clientSessionParams.customer.mobileNumber = undefined;
         }
     }
 
@@ -86,6 +140,21 @@ const SettingsScreen = ({ navigation }) => {
                     }}
                 />
 
+                <Section title="Payment Handling">
+                    Set payment handling
+                </Section>
+
+                <SegmentedControl
+                    style={{ marginHorizontal: 20, marginVertical: 10 }}
+                    values={['Auto', 'Manual']}
+                    selectedIndex={paymentHandling}
+                    onChange={(event) => {
+                        const selectedIndex = event.nativeEvent.selectedSegmentIndex;
+                        let selectedPaymentHandling = makePaymentHandlingFromIntVal(selectedIndex);
+                        paymentHandling = selectedPaymentHandling;
+                    }}
+                />
+
                 <Section title="Required Settings">
                     Amount, currency and country code are required to all payment methods
                 </Section>
@@ -93,7 +162,7 @@ const SettingsScreen = ({ navigation }) => {
                 <TextInput
                     style={{ ...styles.textInput, marginHorizontal: 20, marginVertical: 10 }}
                     onChangeText={onChangeAmount}
-                    value={`${amount === null ? "" : amount}`}
+                    value={`${clientSessionParams.order?.lineItems[0].amount === undefined ? "" : clientSessionParams.order?.lineItems[0].amount}`}
                     placeholder="Type amount in minor units, e.g. 1000"
                     placeholderTextColor={'grey'}
                     keyboardType="numeric"
@@ -107,6 +176,7 @@ const SettingsScreen = ({ navigation }) => {
                         style={{ height: 50, flex: 1 }}
                         onValueChange={(itemValue) => {
                             setCurrency(itemValue);
+                            clientSessionParams.currencyCode = itemValue;
                         }}
                     >
                         <Picker.Item label="EUR" value="EUR" />
@@ -122,6 +192,8 @@ const SettingsScreen = ({ navigation }) => {
                         style={{ height: 50, flex: 1 }}
                         onValueChange={(itemValue) => {
                             setCountryCode(itemValue);
+                            //@ts-ignore
+                            clientSessionParams.order.countryCode = itemValue;
                         }}
                     >
                         <Picker.Item label="DE" value="DE" />
@@ -140,7 +212,7 @@ const SettingsScreen = ({ navigation }) => {
                 <TextInput
                     style={{ ...styles.textInput, marginHorizontal: 20, marginVertical: 10 }}
                     onChangeText={onChangeCustomerId}
-                    value={`${customerId === null ? "" : customerId}`}
+                    value={`${clientSessionParams.customerId === undefined ? "" : clientSessionParams.customerId}`}
                     placeholder="Set the customer ID, e.g. rn_customer_0"
                     placeholderTextColor={'grey'}
                     keyboardType='default'
@@ -151,7 +223,7 @@ const SettingsScreen = ({ navigation }) => {
                 <TextInput
                     style={{ ...styles.textInput, marginHorizontal: 20, marginVertical: 10 }}
                     onChangeText={onChangePhoneNumber}
-                    value={`${phoneNumber === null ? "" : phoneNumber}`}
+                    value={`${clientSessionParams.customer?.mobileNumber === null ? "" : clientSessionParams.customer?.mobileNumber}`}
                     placeholder="Set the customer's phone number"
                     placeholderTextColor={'grey'}
                     keyboardType="numeric"
@@ -160,47 +232,27 @@ const SettingsScreen = ({ navigation }) => {
                 <TouchableOpacity
                     style={{ ...styles.button, marginHorizontal: 20, marginTop: 20, marginBottom: 5, backgroundColor: 'black' }}
                     onPress={() => {
-                        console.log(`Amount: ${amount}\nCurrency: ${currency}\nCountry Code: ${countryCode}\nCustomer ID: ${customerId}\nPhone Number: ${phoneNumber}`);
-
-                        if (amount && currency && countryCode) {
-                            const appSettings: IAppSettings = {
-                                amount: amount,
-                                currencyCode: currency,
-                                countryCode: countryCode,
-                                customerId: customerId || undefined,
-                                phoneNumber: phoneNumber || undefined,
-                            };
-
-                            navigation.navigate('Checkout', appSettings);
-                        }
+                        console.log(clientSessionParams);
+                        navigation.navigate('Checkout');
                     }}
                 >
                     <Text
                         style={{ ...styles.buttonText, color: 'white' }}
                     >
-                        Continue with Primer SDK
+                        Primer SDK
                     </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                     style={{ ...styles.button, marginHorizontal: 20, marginTop: 5, marginBottom: 20, backgroundColor: 'black' }}
                     onPress={() => {
-                        console.log(`Amount: ${amount}\nCurrency: ${currency}\nCountry Code: ${countryCode}\nCustomer ID: ${customerId}\nPhone Number: ${phoneNumber}`);
-                        const appSettings: IAppSettings = {
-                            amount: amount,
-                            currencyCode: currency,
-                            countryCode: countryCode,
-                            customerId: customerId || undefined,
-                            phoneNumber: phoneNumber || undefined,
-                        };
-
-                        navigation.navigate('Checkout', appSettings);
+                        navigation.navigate('HUC');
                     }}
                 >
                     <Text
                         style={{ ...styles.buttonText, color: 'white' }}
                     >
-                        Initialize App with HUC
+                        Headless Universal Checkout (Beta)
                     </Text>
                 </TouchableOpacity>
             </View>

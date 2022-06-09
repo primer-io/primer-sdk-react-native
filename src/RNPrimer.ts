@@ -239,6 +239,8 @@ const RNPrimer = {
     });
   },
 
+  // HELPERS
+
   setImplementedRNCallbacks: (implementedRNCallbacks: any): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {
