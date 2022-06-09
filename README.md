@@ -119,25 +119,24 @@ import {
 } from '@primer-io/react-native';
 
 const CheckoutScreen = async (props: any) => {
-
-		const onCheckoutComplete = (checkoutData: PrimerCheckoutData) => {
-        // Show a success screen
+  const onCheckoutComplete = (checkoutData: PrimerCheckoutData) => {
+    // Show a success screen
+  };
+  
+  const onUniversalCheckoutButtonTapped = async () => {
+    const settings: PrimerSettings = {
+      onCheckoutComplete: onCheckoutComplete
     };
-
-		const onUniversalCheckoutButtonTapped = async () => {
-				const settings: PrimerSettings = {
-				    onCheckoutComplete: onCheckoutComplete
-				};
-				
-				// Configure the SDK
-				await Primer.configure(settings);
-		
-				// Ask your backend to create a client session
-				const clientToken = await createClientSession(clientSessionRequestParams);
-
-				// Present Universal Checkout
-				await Primer.showUniversalCheckout(clientToken);
-    };
+    
+    // Configure the SDK
+    await Primer.configure(settings);
+    
+    // Ask your backend to create a client session
+    const clientToken = await createClientSession(clientSessionRequestParams);
+    
+    // Present Universal Checkout
+    await Primer.showUniversalCheckout(clientToken);
+  };
 }
 ```
 
