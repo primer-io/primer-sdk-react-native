@@ -34,9 +34,9 @@ Import the Primer SDK, construct your settings and call the SDK’s configure fu
 
 ```js
 import {
-	Primer,  
+  Primer,  
   PrimerSettings,
-	PrimerCheckoutData
+  PrimerCheckoutData
 } from '@primer-io/react-native';
 
 const CheckoutScreen = (props: any) => {
@@ -111,9 +111,9 @@ const CheckoutScreen = (props: any) => {
 
 ```js
 import {
-		Primer,  
-    PrimerSettings,
-		PrimerCheckoutData
+  Primer,  
+  PrimerSettings,
+  PrimerCheckoutData
 } from '@primer-io/react-native';
 
 const CheckoutScreen = async (props: any) => {
