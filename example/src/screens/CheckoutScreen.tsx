@@ -1,25 +1,30 @@
 
 import * as React from 'react';
-import { Primer } from '@primer-io/react-native';
+import {
+    PrimerCheckoutData,
+    PrimerCheckoutPaymentMethodData,
+    Primer,
+    PrimerErrorHandler,
+    PrimerPaymentCreationHandler,
+    PrimerSessionIntent,
+    PrimerSettings,
+    PrimerResumeHandler,
+    PrimerPaymentMethodTokenData,
+    PrimerTokenizationHandler,
+    PrimerClientSession,
+    PrimerError
+} from '@primer-io/react-native';
 import { View, Text, useColorScheme, TouchableOpacity } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
-import { createClientSession, createPayment, resumePayment, setClientSessionActions } from '../network/api';
+import { createClientSession, createPayment, resumePayment } from '../network/api';
 import { styles } from '../styles';
 import type { IAppSettings } from '../models/IAppSettings';
 import type { IClientSessionRequestBody } from '../models/IClientSessionRequestBody';
-import type { OnClientSessionActionsCallback, OnPrimerErrorCallback, OnTokenizeSuccessCallback } from 'lib/typescript/models/primer-callbacks';
 import type { IClientSession } from '../models/IClientSession';
 import { makeRandomString } from '../helpers/helpers';
 import type { IPayment } from '../models/IPayment';
-import type { PrimerPaymentMethodIntent } from 'lib/typescript/models/primer-intent';
-import type { OnResumeCallback } from 'src/models/primer-callbacks';
-import type { PrimerConfig } from 'lib/typescript/models/primer-config';
-import type { PaymentInstrumentToken } from 'src/models/payment-instrument-token';
-import type { IPrimerError } from 'src/RNPrimer';
-import type { PrimerResumeHandler } from 'src/models/primer-request';
 
-let currentClientToken: string | null = null;
-let paymentId: string | null = null;
+let clientToken: string | null = null;
 
 const CheckoutScreen = (props: any) => {
     const isDarkMode = useColorScheme() === 'dark';
@@ -30,10 +35,11 @@ const CheckoutScreen = (props: any) => {
     };
 
     const appSettings: IAppSettings = props.route.params;
+    let paymentId: string | null = null;
 
     const clientSessionRequestBody: IClientSessionRequestBody = {
         customerId: appSettings.customerId,
-        orderId: 'rn-test-' + makeRandomString(8),
+        orderId: 'rn-ios-order-' + makeRandomString(8),
         currencyCode: appSettings.currencyCode,
         order: {
             countryCode: appSettings.countryCode,
@@ -41,8 +47,8 @@ const CheckoutScreen = (props: any) => {
                 {
                     amount: appSettings.amount,
                     quantity: 1,
-                    itemId: 'item-123',
-                    description: 'this item',
+                    itemId: 'shoes-423132',
+                    description: 'Fancy Shoes',
                     discountAmount: 0,
                 },
             ],
@@ -51,10 +57,10 @@ const CheckoutScreen = (props: any) => {
             emailAddress: 'test@mail.com',
             mobileNumber: appSettings.phoneNumber,
             firstName: 'John',
-            lastName: 'Doe',
+            lastName: 'Smith',
             billingAddress: {
                 firstName: 'John',
-                lastName: 'Doe',
+                lastName: 'Smith',
                 postalCode: '12345',
                 addressLine1: '1 test',
                 addressLine2: undefined,
@@ -64,7 +70,7 @@ const CheckoutScreen = (props: any) => {
             },
             shippingAddress: {
                 firstName: 'John',
-                lastName: 'Doe',
+                lastName: 'Smith',
                 addressLine1: '1 test',
                 postalCode: '12345',
                 city: 'test',
@@ -75,65 +81,67 @@ const CheckoutScreen = (props: any) => {
         },
         paymentMethod: {
             vaultOnSuccess: false,
-            // options: {
-            //     GOOGLE_PAY: {
-            //         surcharge: {
-            //             amount: 50,
-            //         },
-            //     },
-            //     ADYEN_IDEAL: {
-            //         surcharge: {
-            //             amount: 50,
-            //         },
-            //     },
-            //     ADYEN_SOFORT: {
-            //         surcharge: {
-            //             amount: 50,
-            //         },
-            //     },
-            //     APPLE_PAY: {
-            //         surcharge: {
-            //             amount: 150,
-            //         },
-            //     },
-            //     PAYMENT_CARD: {
-            //         networks: {
-            //             VISA: {
-            //                 surcharge: {
-            //                     amount: 100,
-            //                 },
-            //             },
-            //             MASTERCARD: {
-            //                 surcharge: {
-            //                     amount: 200,
-            //                 },
-            //             },
-            //         },
-            //     },
-            // },
+            options: {
+                GOOGLE_PAY: {
+                    surcharge: {
+                        amount: 50,
+                    },
+                },
+                ADYEN_IDEAL: {
+                    surcharge: {
+                        amount: 50,
+                    },
+                },
+                ADYEN_SOFORT: {
+                    surcharge: {
+                        amount: 50,
+                    },
+                },
+                PAYPAL: {
+                    surcharge: {
+                        amount: 150,
+                    },
+                },
+                PAYMENT_CARD: {
+                    networks: {
+                        VISA: {
+                            surcharge: {
+                                amount: 100,
+                            },
+                        },
+                        MASTERCARD: {
+                            surcharge: {
+                                amount: 200,
+                            },
+                        },
+                    },
+                },
+            },
         },
     };
 
-    // const onClientSessionActions: OnClientSessionActionsCallback = async (clientSessionActions, resumeHandler) => {
-    //     if (currentClientToken) {
-    //         const clientSessionActionsRequestBody: any = {
-    //             clientToken: currentClientToken,
-    //             actions: clientSessionActions
-    //         };
+    const onBeforeClientSessionUpdate = () => {
+        console.log(`onBeforeClientSessionUpdate`);
+    }
 
-    //         const clientSession: IClientSession = await setClientSessionActions(clientSessionActionsRequestBody);
-    //         currentClientToken = clientSession.clientToken;
-    //         resumeHandler.handleNewClientToken(currentClientToken);
-    //     } else {
-    //         const err = new Error("Failed to find client token");
-    //         resumeHandler.handleError(err.message);
-    //     }
-    // }
+    const onClientSessionUpdate = (clientSession: PrimerClientSession) => {
+        console.log(`onClientSessionUpdate\n${JSON.stringify(clientSession)}`);;
+    }
 
-    const onTokenizeSuccess: OnTokenizeSuccessCallback = async (paymentInstrument, resumeHandler) => {
-        console.log(`onTokenizeSuccess\npaymentInstrument: ${JSON.stringify(paymentInstrument)}`);
+    const onBeforePaymentCreate = (checkoutPaymentMethodData: PrimerCheckoutPaymentMethodData, handler: PrimerPaymentCreationHandler) => {
+        console.log(`onBeforePaymentCreate\n${JSON.stringify(checkoutPaymentMethodData)}`);
+        handler.continuePaymentCreation();
+    }
+
+    const onCheckoutComplete = (checkoutData: PrimerCheckoutData) => {
+        console.log(`PrimerCheckoutData:\n${JSON.stringify(checkoutData)}`);
+    };
+
+    const onTokenizeSuccess = async (paymentMethodTokenData: PrimerPaymentMethodTokenData, handler: PrimerTokenizationHandler) => {
+        console.log(`onTokenizeSuccess:\n${JSON.stringify(paymentMethodTokenData)}`);
+
         try {
-            const payment: IPayment = await createPayment(paymentInstrument.token);
+            const payment: IPayment = await createPayment(paymentMethodTokenData.token);
 
             if (payment.requiredAction && payment.requiredAction.clientToken) {
                 paymentId = payment.id;
@@ -142,38 +150,25 @@ const CheckoutScreen = (props: any) => {
                     console.warn("Make sure you have used a card number that supports 3DS, otherwise the SDK will hang.")
                 }
                 paymentId = payment.id;
-                resumeHandler.handleNewClientToken(payment.requiredAction.clientToken);
+                handler.continueWithNewClientToken(payment.requiredAction.clientToken);
             } else {
                 props.navigation.navigate('Result', payment);
-                resumeHandler.handleSuccess();
+                handler.handleSuccess();
             }
         } catch (err) {
-            if (resumeHandler) {
-                if (err instanceof Error) {
-                    resumeHandler.handleError(err.message);
-                } else if (typeof err === "string") {
-                    resumeHandler.handleError(err);
-                } else {
-                    resumeHandler.handleError('Unknown error');
-                }
-            }
+            console.error(err);
+            handler.handleFailure("RN app error");
         }
-    };
+    }
 
-    const onVaultSuccess = (paymentInstrument: PaymentInstrumentToken) => {
-        console.log(`onVaultSuccess: ${JSON.stringify(paymentInstrument)}`);
-    };
+    const onResumeSuccess = async (resumeToken: string, handler: PrimerResumeHandler) => {
+        console.log(`onResumeSuccess:\n${JSON.stringify(resumeToken)}`);
 
-    const onResumeSuccess: OnResumeCallback = async (resumeToken, resumeHandler) => {
-        console.log(`onResumeSuccess\nresumeToken: ${resumeToken}`);
         try {
             if (paymentId) {
                 const payment: IPayment = await resumePayment(paymentId, resumeToken);
                 props.navigation.navigate('Result', payment);
-
-                if (resumeHandler) {
-                    resumeHandler.handleSuccess();
-                }
+                handler.handleSuccess();
             } else {
                 const err = new Error("Invalid value for paymentId");
                 throw err;
@@ -181,218 +176,67 @@ const CheckoutScreen = (props: any) => {
             paymentId = null;
 
         } catch (err) {
+            console.error(err);
             paymentId = null;
-
-            if (resumeHandler) {
-                if (err instanceof Error) {
-                    resumeHandler.handleError(err);
-                } else if (typeof err === "string") {
-                    resumeHandler.handleError(new Error(err));
-                } else {
-                    resumeHandler.handleError(new Error('Unknown error'));
-                }
-            }
+            handler.handleFailure("RN app error");
         }
+    }
+
+    const onError = (error: PrimerError, checkoutData: PrimerCheckoutData | null, handler: PrimerErrorHandler) => {
+        console.log(`onError:\n${JSON.stringify(error)}\n\n${JSON.stringify(checkoutData)}`);
+        handler.showErrorMessage("My RN message");
     };
 
     const onDismiss = () => {
         console.log(`onDismiss`);
-        currentClientToken = null;
-    }
-
-    const onError: OnPrimerErrorCallback = async (primerError, _resumeHandler) => {
-        console.log(`onError`);
-        console.error(primerError.errorDescription);
+        clientToken = null;
     };
 
-    const onCheckoutWithApplePayButtonTapped = async () => {
-        try {
-            const clientSession: IClientSession = await createClientSession(clientSessionRequestBody);
-            currentClientToken = clientSession.clientToken;
-
-            const primerConfig = {
-                settings: {
-                    options: {
-                        isResultScreenEnabled: true,
-                        isLoadingScreenEnabled: true,
-                        is3DSDevelopmentModeEnabled: true,
-                        ios: {
-                            urlScheme: 'primer',
-                            merchantIdentifier: 'merchant.checkout.team'
-                        },
-                        android: {
-                            redirectScheme: 'primer'
-                        }
-                    },
-                    business: {
-                        name: "Test Merchant"
-                    }
-                },
-                // onClientSessionActions: onClientSessionActions,
-                onTokenizeSuccess: onTokenizeSuccess,
-                onResumeSuccess: onResumeSuccess,
-                onError: onError,
-                onDismiss: onDismiss,
-                onVaultSuccess: onVaultSuccess
-            };
-
-            const intent: PrimerPaymentMethodIntent = {
-                vault: false,
-                paymentMethod: 'APPLE_PAY'
-            };
-
-            //@ts-ignore
-            Primer.showPaymentMethod(currentClientToken, intent, primerConfig);
-
-        } catch (err) {
-            if (err instanceof Error) {
-                setError(err);
-            } else if (typeof err === "string") {
-                setError(new Error(err));
-            } else {
-                setError(new Error('Unknown error'));
+    const settings: PrimerSettings = {
+        paymentHandling: 'MANUAL',
+        localeData: {
+            languageCode: 'el',
+            localeCode: 'GR'
+        },
+        paymentMethodOptions: {
+            iOS: {
+                urlScheme: 'merchant://primer.io'
+            },
+            applePayOptions: {
+                merchantIdentifier: "merchant.checkout.team",
+                merchantName: "Primer Merchant"
+            },
+            cardPaymentOptions: {
+                is3DSOnVaultingEnabled: false
+            },
+            klarnaOptions: {
+                recurringPaymentDescription: "Description"
             }
-        }
-    }
+        },
+        uiOptions: {
+            isInitScreenEnabled: false,
+            isSuccessScreenEnabled: false,
+            isErrorScreenEnabled: false
+        },
+        debugOptions: {
+            is3DSSanityCheckEnabled: false
+        },
+        onBeforeClientSessionUpdate: onBeforeClientSessionUpdate,
+        onClientSessionUpdate: onClientSessionUpdate,
+        onBeforePaymentCreate: onBeforePaymentCreate,
+        onCheckoutComplete: onCheckoutComplete,
+        onTokenizeSuccess: onTokenizeSuccess,
+        onResumeSuccess: onResumeSuccess,
+        onError: onError,
+        onDismiss: onDismiss,
+    };
 
-    const onCheckoutWithPayPalButtonTapped = async () => {
+    const onUniversalCheckoutButtonTapped = async () => {
         try {
             const clientSession: IClientSession = await createClientSession(clientSessionRequestBody);
-            currentClientToken = clientSession.clientToken;
-
-            const primerConfig = {
-                settings: {
-                    options: {
-                        isResultScreenEnabled: true,
-                        isLoadingScreenEnabled: true,
-                        is3DSDevelopmentModeEnabled: true,
-                        ios: {
-                            urlScheme: 'primer',
-                            merchantIdentifier: 'merchant.checkout.team'
-                        },
-                        android: {
-                            redirectScheme: 'primer'
-                        }
-                    },
-                    business: {
-                        name: "Test Merchant"
-                    }
-                },
-                // onClientSessionActions: onClientSessionActions,
-                onTokenizeSuccess: onTokenizeSuccess,
-                onResumeSuccess: onResumeSuccess,
-                onError: onError,
-                onDismiss: onDismiss,
-                onVaultSuccess: onVaultSuccess
-            };
-
-            const intent: PrimerPaymentMethodIntent = {
-                vault: false,
-                paymentMethod: 'PAYPAL'
-            };
-
-            //@ts-ignore
-            Primer.showPaymentMethod(currentClientToken, intent, primerConfig);
-
-        } catch (err) {
-            if (err instanceof Error) {
-                setError(err);
-            } else if (typeof err === "string") {
-                setError(new Error(err));
-            } else {
-                setError(new Error('Unknown error'));
-            }
-        }
-    }
-
-    const onVaultPayPalButtonTapped = async () => {
-        try {
-            const clientSession: IClientSession = await createClientSession(clientSessionRequestBody);
-            currentClientToken = clientSession.clientToken;
-
-            const primerConfig = {
-                settings: {
-                    options: {
-                        isResultScreenEnabled: true,
-                        isLoadingScreenEnabled: true,
-                        is3DSDevelopmentModeEnabled: true,
-                        ios: {
-                            urlScheme: 'primer',
-                            merchantIdentifier: 'merchant.checkout.team'
-                        },
-                        android: {
-                            redirectScheme: 'primer'
-                        }
-                    },
-                    business: {
-                        name: "Test Merchant"
-                    }
-                },
-                // onClientSessionActions: onClientSessionActions,
-                onTokenizeSuccess: onTokenizeSuccess,
-                onResumeSuccess: onResumeSuccess,
-                onError: onError,
-                onDismiss: onDismiss,
-                onVaultSuccess: onVaultSuccess
-            };
-
-            const intent: PrimerPaymentMethodIntent = {
-                vault: true,
-                paymentMethod: 'PAYPAL'
-            };
-
-            //@ts-ignore
-            Primer.showPaymentMethod(currentClientToken, intent, primerConfig);
-
-        } catch (err) {
-            if (err instanceof Error) {
-                setError(err);
-            } else if (typeof err === "string") {
-                setError(new Error(err));
-            } else {
-                setError(new Error('Unknown error'));
-            }
-        }
-    }
-
-    const onVaultKlarnaButtonTapped = async () => {
-        try {
-            const clientSession: IClientSession = await createClientSession(clientSessionRequestBody);
-            currentClientToken = clientSession.clientToken;
-
-            const primerConfig = {
-                settings: {
-                    options: {
-                        isResultScreenEnabled: true,
-                        isLoadingScreenEnabled: true,
-                        is3DSDevelopmentModeEnabled: true,
-                        ios: {
-                            urlScheme: 'primer',
-                            merchantIdentifier: 'merchant.checkout.team'
-                        },
-                        android: {
-                            redirectScheme: 'primer'
-                        }
-                    },
-                    business: {
-                        name: "Test Merchant"
-                    }
-                },
-                // onClientSessionActions: onClientSessionActions,
-                onTokenizeSuccess: onTokenizeSuccess,
-                onResumeSuccess: onResumeSuccess,
-                onError: onError,
-                onDismiss: onDismiss,
-                onVaultSuccess: onVaultSuccess
-            };
-
-            const intent: PrimerPaymentMethodIntent = {
-                vault: true,
-                paymentMethod: 'KLARNA'
-            };
-
-            //@ts-ignore
-            Primer.showPaymentMethod(currentClientToken, intent, primerConfig);
+            clientToken = clientSession.clientToken;
+            await Primer.configure(settings);
+            await Primer.showUniversalCheckout(clientToken);
 
         } catch (err) {
             if (err instanceof Error) {
@@ -408,35 +252,9 @@ const CheckoutScreen = (props: any) => {
     const onVaultManagerButtonTapped = async () => {
         try {
             const clientSession: IClientSession = await createClientSession(clientSessionRequestBody);
-            currentClientToken = clientSession.clientToken;
-
-            const primerConfig: PrimerConfig = {
-                settings: {
-                    options: {
-                        isResultScreenEnabled: true,
-                        isLoadingScreenEnabled: true,
-                        // is3DSDevelopmentModeEnabled: true,
-                        ios: {
-                            urlScheme: 'primer',
-                            merchantIdentifier: 'merchant.checkout.team'
-                        },
-                        android: {
-                            redirectScheme: 'primer'
-                        }
-                    },
-                    business: {
-                        name: "Test Merchant"
-                    }
-                },
-                onTokenizeSuccess: onTokenizeSuccess,
-                onResumeSuccess: onResumeSuccess,
-                onError: onError,
-                onDismiss: onDismiss,
-                onVaultSuccess: onVaultSuccess
-            };
-
-            //@ts-ignore
-            Primer.showVaultManager(currentClientToken, primerConfig);
+            clientToken = clientSession.clientToken;
+            await Primer.configure(settings);
+            await Primer.showVaultManager(clientToken);
 
         } catch (err) {
             if (err instanceof Error) {
@@ -449,39 +267,12 @@ const CheckoutScreen = (props: any) => {
         }
     }
 
-    const onUniversalCheckoutButtonTapped = async () => {
+    const onApplePayButtonTapped = async () => {
         try {
             const clientSession: IClientSession = await createClientSession(clientSessionRequestBody);
-            currentClientToken = clientSession.clientToken;
-
-            const primerConfig: PrimerConfig = {
-                settings: {
-                    options: {
-                        isResultScreenEnabled: true,
-                        isLoadingScreenEnabled: true,
-                        // is3DSDevelopmentModeEnabled: true,
-                        ios: {
-                            urlScheme: 'primer',
-                            merchantIdentifier: 'merchant.checkout.team'
-                        },
-                        android: {
-                            redirectScheme: 'primer'
-                        }
-                    },
-                    business: {
-                        name: "Test Merchant"
-                    }
-                },
-                // onClientSessionActions: onClientSessionActions,
-                onTokenizeSuccess: onTokenizeSuccess,
-                onResumeSuccess: onResumeSuccess,
-                onError: onError,
-                onDismiss: onDismiss,
-                onVaultSuccess: onVaultSuccess
-            };
-
-            //@ts-ignore
-            Primer.showUniversalCheckout(currentClientToken, primerConfig);
+            clientToken = clientSession.clientToken;
+            await Primer.configure(settings);
+            await Primer.showPaymentMethod('APPLE_PAY', PrimerSessionIntent.CHECKOUT, clientToken);
 
         } catch (err) {
             if (err instanceof Error) {
@@ -499,42 +290,12 @@ const CheckoutScreen = (props: any) => {
             <View style={{ flex: 1 }} />
             <TouchableOpacity
                 style={{ ...styles.button, marginHorizontal: 20, marginVertical: 5, backgroundColor: 'black' }}
-                onPress={onCheckoutWithApplePayButtonTapped}
+                onPress={onApplePayButtonTapped}
             >
                 <Text
                     style={{ ...styles.buttonText, color: 'white' }}
                 >
-                    Checkout with Apple Pay
-                </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-                style={{ ...styles.button, marginHorizontal: 20, marginVertical: 5, backgroundColor: 'black' }}
-                onPress={onCheckoutWithPayPalButtonTapped}
-            >
-                <Text
-                    style={{ ...styles.buttonText, color: 'white' }}
-                >
-                    Checkout with PayPal
-                </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-                style={{ ...styles.button, marginHorizontal: 20, marginVertical: 5, backgroundColor: 'black' }}
-                onPress={onVaultPayPalButtonTapped}
-            >
-                <Text
-                    style={{ ...styles.buttonText, color: 'white' }}
-                >
-                    Vault PayPal
-                </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-                style={{ ...styles.button, marginHorizontal: 20, marginVertical: 5, backgroundColor: 'black' }}
-                onPress={onVaultKlarnaButtonTapped}
-            >
-                <Text
-                    style={{ ...styles.buttonText, color: 'white' }}
-                >
-                    Vault Klarna
+                    Apple Pay
                 </Text>
             </TouchableOpacity>
             <TouchableOpacity

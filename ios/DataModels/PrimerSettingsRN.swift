@@ -1,164 +1,87 @@
 import PrimerSDK
 
-struct PrimerSettingsRN: Decodable {
-    fileprivate let order: OrderRN?
-    fileprivate let business: BusinessRN?
-    fileprivate let customer: CustomerRN?
-    fileprivate let options: OptionsRN?
-}
+extension PrimerSettings {
 
-extension PrimerSettingsRN {
-    func asPrimerSettings() -> PrimerSettings {
-        var address: Address?
-        if let billingAddress = customer?.billing {
-            address = Address(
-                addressLine1: billingAddress.line1,
-                addressLine2: billingAddress.line2,
-                city: billingAddress.city,
-                state: billingAddress.state,
-                countryCode: billingAddress.country?.rawValue,
-                postalCode: billingAddress.postalCode
-            )
+    static func initialize(with settingsStr: String?) throws -> PrimerSettings {
+        guard let settingsStr = settingsStr,
+              let settingsData = settingsStr.data(using: .utf8)
+        else {
+            return PrimerSettings()
         }
-        
-        let debugOptions = PrimerDebugOptions(is3DSSanityCheckEnabled: !(options?.is3DSDevelopmentModeEnabled ?? false))
-        
-        return PrimerSettings(
-            merchantIdentifier: options?.ios?.merchantIdentifier,
-            customerId: customer?.id,
-            amount: order?.amount,
-            currency: order?.currency,
-            countryCode: order?.countryCode,
-            klarnaSessionType: .recurringPayment, // need to update
-            urlScheme: options?.ios?.urlScheme,
-            urlSchemeIdentifier: options?.ios?.urlSchemeIdentifier,
-            isFullScreenOnly: options?.isFullScreenEnabled ?? false,
-            hasDisabledSuccessScreen: !(options?.isResultScreenEnabled ?? true),
-            businessDetails: business?.primerFormat,
-            orderItems: order?.itemsFormatted ?? [],
-            isInitialLoadingHidden: !(options?.isLoadingScreenEnabled ?? true),
-            is3DSOnVaultingEnabled: options?.is3DSOnVaultingEnabled ?? false,
-            orderId: order?.id,
-            debugOptions: debugOptions,
-            customer: Customer(
-                firstName: customer?.firstName,
-                lastName: customer?.lastName,
-                emailAddress: customer?.email,
-                homePhoneNumber: nil,
-                mobilePhoneNumber: customer?.phone,
-                workPhoneNumber: nil,
-                billingAddress: address
-            )
-        )
+
+        guard let settingsJson = (try JSONSerialization.jsonObject(with: settingsData)) as? [String: Any]
+        else {
+            return PrimerSettings()
+        }
+
+        var paymentHandling: PrimerPaymentHandling = .auto
+        if let rnPaymentHandling = settingsJson["paymentHandling"] as? String,
+           rnPaymentHandling == "MANUAL" {
+            paymentHandling = .manual
+        }
+
+        let rnLocaleDataLanguageCode = (settingsJson["localeData"] as? [String: Any])?["languageCode"] as? String
+        let rnLocaleDataLocaleCode = (settingsJson["localeData"] as? [String: Any])?["localeCode"] as? String
+        let localeData = PrimerLocaleData(
+            languageCode: rnLocaleDataLanguageCode,
+            regionCode: rnLocaleDataLocaleCode)
+
+        let rnUrlScheme = ((settingsJson["paymentMethodOptions"] as? [String: Any])?["iOS"] as? [String: Any])?["urlScheme"] as? String
+
+        var applePayOptions: PrimerApplePayOptions?
+        if let rnApplePayOptions = ((settingsJson["paymentMethodOptions"] as? [String: Any])?["applePayOptions"] as? [String: Any]),
+           let rnApplePayMerchantIdentifier = rnApplePayOptions["merchantIdentifier"] as? String,
+           let rnApplePayMerchantName = rnApplePayOptions["merchantName"] as? String {
+            applePayOptions = PrimerApplePayOptions(merchantIdentifier: rnApplePayMerchantIdentifier, merchantName: rnApplePayMerchantName)
+        }
+
+        var klarnaOptions: PrimerKlarnaOptions?
+        if let rnKlarnaRecurringPaymentDescription = ((settingsJson["paymentMethodOptions"] as? [String: Any])?["klarnaOptions"] as? [String: Any])?["recurringPaymentDescription"] as? String {
+            klarnaOptions = PrimerKlarnaOptions(recurringPaymentDescription: rnKlarnaRecurringPaymentDescription)
+        }
+
+        var cardPaymentOptions: PrimerCardPaymentOptions?
+        if let rnIs3DSOnVaultingEnabled = ((settingsJson["paymentMethodOptions"] as? [String: Any])?["cardPaymentOptions"] as? [String: Any])?["is3DSOnVaultingEnabled"] as? Bool {
+            cardPaymentOptions = PrimerCardPaymentOptions(is3DSOnVaultingEnabled: rnIs3DSOnVaultingEnabled)
+        }
+
+        var uiOptions: PrimerUIOptions?
+        if let rnUIOptions = settingsJson["uiOptions"] as? [String: Any] {
+
+            var theme: PrimerTheme?
+            if let rnTheme = rnUIOptions["theme"] as? [String: Any] {
+                let rnThemeData = (try JSONSerialization.data(withJSONObject: rnTheme))
+                let rnTheme = try JSONDecoder().decode(PrimerThemeRN.self, from: rnThemeData)
+                theme = rnTheme.asPrimerTheme()
+            }
+
+            uiOptions = PrimerUIOptions(
+                isInitScreenEnabled: rnUIOptions["isInitScreenEnabled"] as? Bool,
+                isSuccessScreenEnabled: rnUIOptions["isSuccessScreenEnabled"] as? Bool,
+                isErrorScreenEnabled: rnUIOptions["isErrorScreenEnabled"] as? Bool,
+                theme: theme)
+        }
+
+        var debugOptions: PrimerDebugOptions?
+        if let rnIs3DSSanityCheckEnabled = (settingsJson["debugOptions"] as? [String: Any])?["is3DSSanityCheckEnabled"] as? Bool {
+            debugOptions = PrimerDebugOptions(is3DSSanityCheckEnabled: rnIs3DSSanityCheckEnabled)
+        }
+
+
+        let paymentMethodOptions = PrimerPaymentMethodOptions(
+            urlScheme: rnUrlScheme,
+            applePayOptions: applePayOptions,
+            klarnaOptions: klarnaOptions,
+            cardPaymentOptions: cardPaymentOptions)
+
+        let settings = PrimerSettings(
+            paymentHandling: paymentHandling,
+            localeData: localeData,
+            paymentMethodOptions: paymentMethodOptions,
+            uiOptions: uiOptions,
+            debugOptions: debugOptions)
+
+
+        return settings
     }
-}
-
-fileprivate struct OrderRN: Decodable {
-    let id: String?
-    let amount: Int?
-    let currency: Currency?
-    // FIXME: Move countryCode only within Address (RN & Android)
-    let countryCode: CountryCode?
-    let items: [OrderItemRN]?
-    let shipping: AddressRN?
-}
-
-fileprivate extension OrderRN {
-    var itemsFormatted: [OrderItem]? {
-        return items?.compactMap { try? $0.primerFormat() }
-    }
-}
-
-//extension Array where Element == OrderItemRN {
-//    var primerFormat: [OrderItem] {
-//        return self.map { $0.primerFormat }
-//    }
-//}
-
-fileprivate struct OrderItemRN: Decodable {
-    let name: String
-    let unitAmount: Int?
-    let quantity: Int
-    let isPending: Bool?
-}
-
-fileprivate extension OrderItemRN {
-    func primerFormat() throws -> OrderItem {
-        return try OrderItem(
-            name: name,
-            unitAmount: unitAmount,
-            quantity: quantity,
-            isPending: isPending ?? false
-        )
-    }
-}
-
-fileprivate struct BusinessRN: Decodable {
-    let name: String
-    let registrationNumber: String?
-    let email: String?
-    let phone: String?
-    let address: AddressRN?
-}
-
-fileprivate extension BusinessRN {
-    var primerFormat: BusinessDetails? {
-        return BusinessDetails(
-            name: name,
-            address: address?.primerFormat
-        )
-    }
-}
-
-fileprivate struct CustomerRN: Decodable {
-    let id: String?
-    let firstName: String?
-    let lastName: String?
-    let email: String?
-    let phone: String?
-    let billing: AddressRN?
-}
-
-fileprivate struct AddressRN: Decodable {
-    let line1: String?
-    let line2: String?
-    let postalCode: String?
-    let city: String?
-    let state: String?
-    let country: CountryCode?
-}
-
-fileprivate extension AddressRN {
-    var primerFormat: Address {
-        return Address(
-            addressLine1: line1,
-            addressLine2: line2,
-            city: city,
-            state: state,
-            countryCode: country?.rawValue,
-            postalCode: postalCode
-        )
-    }
-}
-
-fileprivate struct OptionsRN: Decodable {
-    let isResultScreenEnabled: Bool?
-    let isLoadingScreenEnabled: Bool?
-    let isFullScreenEnabled: Bool?
-    let is3DSOnVaultingEnabled: Bool?
-    let is3DSDevelopmentModeEnabled: Bool?
-    let locale: String?
-    let ios: IosOptionsRN?
-}
-
-fileprivate extension String {
-    var localeFormatted: Locale {
-        return Locale(identifier: self)
-    }
-}
-
-fileprivate struct IosOptionsRN: Decodable {
-    let urlScheme: String?
-    let urlSchemeIdentifier: String?
-    let merchantIdentifier: String?
 }
