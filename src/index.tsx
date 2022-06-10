@@ -1,4 +1,3 @@
-
 export {
     Primer
 } from './Primer';
@@ -13,7 +12,7 @@ export {
     PrimerTokenizationHandler,
     PrimerResumeHandler,
     PrimerErrorHandler,
-} from './models/Primer';
+} from './models/PrimerInterfaces';
 export { PrimerPaymentMethodTokenData } from './models/PrimerPaymentMethodTokenData';
 export { 
     PrimerClientSession,

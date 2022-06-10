@@ -1,19 +1,12 @@
-import RNPrimer from '../RNPrimer';
 import RNPrimerHeadlessUniversalCheckout from './RNPrimerHeadlessUniversalCheckout';
-import { 
-  PrimerCheckoutData,
-  PrimerCheckoutPaymentMethodData, 
-  PrimerClientSession, 
-  PrimerError, 
-  PrimerPaymentCreationHandler, 
-  PrimerPaymentMethodTokenData, 
-  PrimerResumeHandler, 
-  PrimerSettings, 
-  PrimerTokenizationHandler 
-} from '..';
-import type {
-  PrimerHeadlessUniversalCheckoutStartResponse,
-} from './types';
+import type { PrimerCheckoutData } from '../models/PrimerCheckoutData';
+import type { PrimerCheckoutPaymentMethodData } from '../models/PrimerCheckoutPaymentMethodData';
+import type { PrimerTokenizationHandler, PrimerResumeHandler, PrimerPaymentCreationHandler } from '../models/PrimerInterfaces';
+import type { PrimerHeadlessUniversalCheckoutStartResponse } from './types';
+import type { PrimerSettings } from '../models/PrimerSettings';
+import type { PrimerClientSession } from '../models/PrimerClientSession';
+import { PrimerError } from '../models/PrimerError'; 
+import type { PrimerPaymentMethodTokenData } from '../models/PrimerPaymentMethodTokenData';  
 
 ///////////////////////////////////////////
 // DECISION HANDLERS

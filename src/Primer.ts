@@ -1,5 +1,4 @@
 import type { PrimerCheckoutData } from './models/PrimerCheckoutData';
-import type { Primer as IPrimer, PrimerErrorHandler, PrimerPaymentCreationHandler, PrimerResumeHandler, PrimerTokenizationHandler } from './models/Primer';
 import type { PrimerSessionIntent } from './models/PrimerSessionIntent';
 import type { PrimerSettings } from './models/PrimerSettings';
 import RNPrimer from './RNPrimer';
@@ -7,6 +6,7 @@ import type { PrimerCheckoutPaymentMethodData } from './models/PrimerCheckoutPay
 import type { PrimerClientSession } from './models/PrimerClientSession';
 import type { PrimerPaymentMethodTokenData } from './models/PrimerPaymentMethodTokenData';
 import { PrimerError } from './models/PrimerError';
+import type { IPrimer, PrimerErrorHandler, PrimerPaymentCreationHandler, PrimerResumeHandler, PrimerTokenizationHandler } from './models/PrimerInterfaces';
 
 ///////////////////////////////////////////
 // DECISION HANDLERS

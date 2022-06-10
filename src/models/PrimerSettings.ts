@@ -1,4 +1,9 @@
-import type { PrimerErrorHandler, PrimerPaymentCreationHandler, PrimerResumeHandler, PrimerTokenizationHandler } from "./Primer";
+import type { 
+  PrimerErrorHandler, 
+  PrimerPaymentCreationHandler, 
+  PrimerResumeHandler, 
+  PrimerTokenizationHandler 
+} from "./PrimerInterfaces";
 import type { PrimerCheckoutData } from "./PrimerCheckoutData";
 import type { PrimerCheckoutPaymentMethodData } from "./PrimerCheckoutPaymentMethodData";
 import type { PrimerClientSession } from "./PrimerClientSession";
