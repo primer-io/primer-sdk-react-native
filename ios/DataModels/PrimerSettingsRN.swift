@@ -28,6 +28,7 @@ extension PrimerSettings {
         
         let rnUrlScheme = ((settingsJson["paymentMethodOptions"] as? [String: Any])?["iOS"] as? [String: Any])?["urlScheme"] as? String
         
+        var applePayOptions: PrimerApplePayOptions?
         if let rnApplePayOptions = ((settingsJson["paymentMethodOptions"] as? [String: Any])?["applePayOptions"] as? [String: Any]),
            let rnApplePayMerchantIdentifier = rnApplePayOptions["merchantIdentifier"] as? String,
            let rnApplePayMerchantName = rnApplePayOptions["merchantName"] as? String {
@@ -65,7 +66,6 @@ extension PrimerSettings {
         if let rnIs3DSSanityCheckEnabled = (settingsJson["debugOptions"] as? [String: Any])?["is3DSSanityCheckEnabled"] as? Bool {
             debugOptions = PrimerDebugOptions(is3DSSanityCheckEnabled: rnIs3DSSanityCheckEnabled)
         }
-        
         
         let paymentMethodOptions = PrimerPaymentMethodOptions(
             urlScheme: rnUrlScheme,
