@@ -15,13 +15,11 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-import { styles } from '../styles';
-import { createClientSession, createPayment, resumePayment } from '../network/API';
-import type { IClientSessionRequestBody } from '../models/IClientSessionRequestBody';
+import { createClientSession, createPayment, resumePayment } from '../network/api';
+import { appPaymentParameters, IClientSessionRequestBody } from '../models/IClientSessionRequestBody';
 import type { IPayment } from '../models/IPayment';
-import { clientSessionParams, paymentHandling } from './SettingsScreen';
 import { getPaymentHandlingStringVal } from '../network/Environment';
-import Spinner from 'react-native-loading-spinner-overlay';
+import { ActivityIndicator } from 'react-native';
 
 let paymentId: string | null = null;
 
@@ -136,16 +134,12 @@ export const HeadlessCheckoutScreen = (props: any) => {
     setLoadingMessage(undefined);
   };
 
-  const settings: PrimerSettings = {
-    paymentHandling: getPaymentHandlingStringVal(paymentHandling),
+  let settings: PrimerSettings = {
+    paymentHandling: getPaymentHandlingStringVal(appPaymentParameters.paymentHandling),
     paymentMethodOptions: {
       iOS: {
         urlScheme: 'merchant://primer.io'
       },
-      applePayOptions: {
-        merchantIdentifier: 'merchant.checkout.team',
-        merchantName: clientSessionParams.merchantName || 'Primer Merchant'
-      }
     },
     onCheckoutComplete: onCheckoutComplete,
     onTokenizeSuccess: onTokenizeSuccess,
@@ -157,54 +151,16 @@ export const HeadlessCheckoutScreen = (props: any) => {
     onError: onError
   };
 
-  const clientSessionRequestBody: IClientSessionRequestBody = {
-
-    paymentMethod: {
-      ...clientSessionParams,
-      //@ts-ignore
-      merchantName: undefined,
-      vaultOnSuccess: false,
-      // options: {
-      //     GOOGLE_PAY: {
-      //         surcharge: {
-      //             amount: 50,
-      //         },
-      //     },
-      //     ADYEN_IDEAL: {
-      //         surcharge: {
-      //             amount: 50,
-      //         },
-      //     },
-      //     ADYEN_SOFORT: {
-      //         surcharge: {
-      //             amount: 50,
-      //         },
-      //     },
-      //     APPLE_PAY: {
-      //         surcharge: {
-      //             amount: 150,
-      //         },
-      //     },
-      //     PAYMENT_CARD: {
-      //         networks: {
-      //             VISA: {
-      //                 surcharge: {
-      //                     amount: 100,
-      //                 },
-      //             },
-      //             MASTERCARD: {
-      //                 surcharge: {
-      //                     amount: 200,
-      //                 },
-      //             },
-      //         },
-      //     },
-      // },
-    },
-  };
+  if (appPaymentParameters.merchantName) {
+    //@ts-ignore
+    settings.paymentMethodOptions.applePayOptions = {
+      merchantIdentifier: 'merchant.checkout.team',
+      merchantName: appPaymentParameters.merchantName
+    }
+  }
 
   useEffect(() => {
-    createClientSession(clientSessionRequestBody)
+    createClientSession()
       .then((session) => {
         setIsLoading(false);
         HeadlessUniversalCheckout.startWithClientToken(session.clientToken, settings)
@@ -224,7 +180,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
   }, []);
 
   const payWithPaymentMethod = (paymentMethod: string) => {
-    createClientSession(clientSessionRequestBody)
+    createClientSession()
       .then((session) => {
         setIsLoading(false);
         HeadlessUniversalCheckout.startWithClientToken(session.clientToken, settings)
@@ -303,20 +259,46 @@ export const HeadlessCheckoutScreen = (props: any) => {
     }
   };
 
+  const renderLoadingOverlay = () => {
+    if (!isLoading) {
+      return null;
+    } else {
+      return <View style={{
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'rgba(200, 200, 200, 0.5)',
+        zIndex: 1000
+      }}>
+        <ActivityIndicator size='small' />
+        <Text
+          style={{
+            fontSize: 14,
+            color: 'black',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginHorizontal: 24,
+            marginTop: 8,
+            marginBottom: 24
+          }}
+        >
+          {loadingMessage}
+        </Text>
+      </View>
+    }
+  };
+
   return (
-    <View style={(styles.sectionContainer)}>
-      {/* <PrimerCardNumberEditText style={{width: 300, height: 50, backgroundColor: 'red'}} /> */}
-      <Spinner
-        visible={isLoading}
-        textContent={loadingMessage}
-        textStyle={{
-          color: '#FFF'
-        }}
-      />
+    <View style={{ paddingHorizontal: 24, flex: 1 }}>
       {renderPaymentMethods()}
       {renderTestImage()}
       {renderResponse()}
       {renderError()}
+      {renderLoadingOverlay()}
     </View>
   );
 };

@@ -5,6 +5,7 @@ import SettingsScreen from './screens/SettingsScreen';
 import CheckoutScreen from './screens/CheckoutScreen';
 import ResultScreen from './screens/ResultScreen';
 import { HeadlessCheckoutScreen } from './screens/HeadlessCheckoutScreen';
+import NewLineItemScreen from './screens/NewLineItemSreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -13,6 +14,7 @@ const App = () => {
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen name="Settings" component={SettingsScreen} />
+          <Stack.Screen name="NewLineItem" component={NewLineItemScreen} />
           <Stack.Screen name="Checkout" component={CheckoutScreen} />
           <Stack.Screen name="HUC" component={HeadlessCheckoutScreen} />
           <Stack.Screen name="Result" component={ResultScreen} />

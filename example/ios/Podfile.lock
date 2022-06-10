@@ -19,13 +19,13 @@ PODS:
     - DoubleConversion
     - glog
   - glog (0.3.5)
-  - primer-io-react-native (0.15.8):
-    - PrimerSDK
+  - primer-io-react-native (2.0.0):
+    - PrimerSDK (= 2.0.0)
     - React-Core
   - Primer3DS (1.0.0)
-  - PrimerSDK (1.36.0):
-    - PrimerSDK/Core (= 1.36.0)
-  - PrimerSDK/Core (1.36.0)
+  - PrimerSDK (2.0.0):
+    - PrimerSDK/Core (= 2.0.0)
+  - PrimerSDK/Core (2.0.0)
   - RCTRequired (0.63.4)
   - RCTTypeSafety (0.63.4):
     - FBLazyVector (= 0.63.4)
@@ -273,7 +273,7 @@ DEPENDENCIES:
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - primer-io-react-native (from `../..`)
   - Primer3DS
-  - PrimerSDK (from `https://github.com/primer-io/primer-sdk-ios.git`, branch `release/2.0.0`)
+  - PrimerSDK (from `https://github.com/primer-io/primer-sdk-ios.git`, branch `feature/SDK_v2_1.28.0-beta.11`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
   - RCTTypeSafety (from `../node_modules/react-native/Libraries/TypeSafety`)
   - React (from `../node_modules/react-native/`)
@@ -322,7 +322,7 @@ EXTERNAL SOURCES:
   primer-io-react-native:
     :path: "../.."
   PrimerSDK:
-    :branch: release/2.0.0
+    :branch: feature/SDK_v2_1.28.0-beta.11
     :git: https://github.com/primer-io/primer-sdk-ios.git
   RCTRequired:
     :path: "../node_modules/react-native/Libraries/RCTRequired"
@@ -379,7 +379,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   PrimerSDK:
-    :commit: a479cbcac8a87112b2a62842c6b3aa3afa17c76e
+    :commit: 1347e30ed0d227a4668fc369f0f8bb8b8b7483e1
     :git: https://github.com/primer-io/primer-sdk-ios.git
 
 SPEC CHECKSUMS:
@@ -389,9 +389,9 @@ SPEC CHECKSUMS:
   FBReactNativeSpec: f2c97f2529dd79c083355182cc158c9f98f4bd6e
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
   glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
-  primer-io-react-native: 5c320673f1b35eb75cd16315b550f7327ba1665c
+  primer-io-react-native: 20e9a3c37b2fbbd9e626a51be1dd24bbf3db6ddd
   Primer3DS: 0b298ca54adb07e3f5ae3d74e574b6d3084e8a0d
-  PrimerSDK: 991a1f395aee3a1c8e7126aaed1ef9d76240ea55
+  PrimerSDK: ccc8e929b9d9c737037b7733d6d953a7cd74e53a
   RCTRequired: 082f10cd3f905d6c124597fd1c14f6f2655ff65e
   RCTTypeSafety: 8c9c544ecbf20337d069e4ae7fd9a377aadf504b
   React: b0a957a2c44da4113b0c4c9853d8387f8e64e615
@@ -419,6 +419,6 @@ SPEC CHECKSUMS:
   RNScreens: 40a2cb40a02a609938137a1e0acfbf8fc9eebf19
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
 
-PODFILE CHECKSUM: 3657759a4355b4d2ba6993680ade1ad3779dc373
+PODFILE CHECKSUM: 7d90b62e27c96d3ed5ec3743c31851b84faf4ced
 
 COCOAPODS: 1.11.3

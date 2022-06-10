@@ -1,7 +1,6 @@
 import axios from 'axios';
-import { environment } from '../screens/SettingsScreen';
 import { getEnvironmentStringVal } from './Environment';
-import type { IClientSessionActionsRequestBody, IClientSessionRequestBody } from '../models/IClientSessionRequestBody';
+import { appPaymentParameters, IClientSessionActionsRequestBody, IClientSessionRequestBody } from '../models/IClientSessionRequestBody';
 import type { IPayment } from '../models/IPayment';
 import { APIVersion, getAPIVersionStringVal } from './APIVersion';
 
@@ -9,10 +8,10 @@ const baseUrl = 'https://us-central1-primerdemo-8741b.cloudfunctions.net/api';
 
 let staticHeaders = {
     'Content-Type': 'application/json',
-    'environment': getEnvironmentStringVal(environment),
+    'environment': getEnvironmentStringVal(appPaymentParameters.environment),
 }
 
-export const createClientSession = async (body: IClientSessionRequestBody) => {
+export const createClientSession = async () => {
     const url = baseUrl + '/client-session';
     const headers = { 
         ...staticHeaders, 
@@ -25,13 +24,13 @@ export const createClientSession = async (body: IClientSessionRequestBody) => {
         console.log(`HEADERS:`);
         console.log(headers);
         console.log(`BODY:`);
-        console.log(body);
+        console.log(appPaymentParameters.clientSessionRequestBody);
         //@ts-ignore
-        const response = await axios.post(url, body, { headers: headers });
+        const response = await axios.post(url, appPaymentParameters.clientSessionRequestBody, { headers: headers });
         console.log('\n\n');
         console.log(`RESPONSE:\n [${response.status}] ${url}`);
         console.log(`BODY:`);
-        console.log(body);
+        console.log(response.data);
         console.log('\n\n');
 
         if (response.status >= 200 && response.status < 300) {

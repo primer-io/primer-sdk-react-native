@@ -17,14 +17,12 @@ import {
 import { View, Text, useColorScheme, TouchableOpacity } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { styles } from '../styles';
-import type { IClientSessionRequestBody } from '../models/IClientSessionRequestBody';
+import { appPaymentParameters, IClientSessionRequestBody } from '../models/IClientSessionRequestBody';
 import type { IClientSession } from '../models/IClientSession';
 import type { IPayment } from '../models/IPayment';
-import { clientSessionParams, paymentHandling } from './SettingsScreen';
 import { getPaymentHandlingStringVal } from '../network/Environment';
 import Spinner from 'react-native-loading-spinner-overlay';
-import { createClientSession, createPayment, resumePayment } from '../network/API';
-
+import { createClientSession, createPayment, resumePayment } from '../network/api';
 
 let clientToken: string | null = null;
 
@@ -39,51 +37,6 @@ const CheckoutScreen = (props: any) => {
     };
 
     let paymentId: string | null = null;
-
-    const clientSessionRequestBody: IClientSessionRequestBody = {
-        ...clientSessionParams,
-        //@ts-ignore
-        merchantName: undefined,
-        paymentMethod: {
-            vaultOnSuccess: false,
-            // options: {
-            //     GOOGLE_PAY: {
-            //         surcharge: {
-            //             amount: 50,
-            //         },
-            //     },
-            //     ADYEN_IDEAL: {
-            //         surcharge: {
-            //             amount: 50,
-            //         },
-            //     },
-            //     ADYEN_SOFORT: {
-            //         surcharge: {
-            //             amount: 50,
-            //         },
-            //     },
-            //     APPLE_PAY: {
-            //         surcharge: {
-            //             amount: 150,
-            //         },
-            //     },
-            //     PAYMENT_CARD: {
-            //         networks: {
-            //             VISA: {
-            //                 surcharge: {
-            //                     amount: 100,
-            //                 },
-            //             },
-            //             MASTERCARD: {
-            //                 surcharge: {
-            //                     amount: 200,
-            //                 },
-            //             },
-            //         },
-            //     },
-            // },
-        },
-    };
 
     const onBeforeClientSessionUpdate = () => {
         console.log(`onBeforeClientSessionUpdate`);
@@ -179,15 +132,11 @@ const CheckoutScreen = (props: any) => {
         setIsLoading(false);
     };
 
-    const settings: PrimerSettings = {
-        paymentHandling: getPaymentHandlingStringVal(paymentHandling),
+    let settings: PrimerSettings = {
+        paymentHandling: getPaymentHandlingStringVal(appPaymentParameters.paymentHandling),
         paymentMethodOptions: {
             iOS: {
                 urlScheme: 'merchant://primer.io'
-            },
-            applePayOptions: {
-                merchantIdentifier: 'merchant.checkout.team',
-                merchantName: clientSessionParams.merchantName || 'Primer Merchant'
             },
             cardPaymentOptions: {
                 is3DSOnVaultingEnabled: false
@@ -214,13 +163,19 @@ const CheckoutScreen = (props: any) => {
         onDismiss: onDismiss,
     };
 
+    if (appPaymentParameters.merchantName) {
+        //@ts-ignore
+        settings.paymentMethodOptions.applePayOptions = {
+            merchantIdentifier: 'merchant.checkout.team',
+            merchantName: appPaymentParameters.merchantName
+        };
+    }
+
     const onApplePayButtonTapped = async () => {
         try {
             setIsLoading(true);
-            //@ts-ignore
-            const clientSession: IClientSession = await createClientSession(clientSessionRequestBody);
+            const clientSession: IClientSession = await createClientSession();
             clientToken = clientSession.clientToken;
-            //@ts-ignore
             await Primer.configure(settings);
             await Primer.showPaymentMethod('APPLE_PAY', PrimerSessionIntent.CHECKOUT, clientToken);
 
@@ -240,10 +195,8 @@ const CheckoutScreen = (props: any) => {
     const onVaultManagerButtonTapped = async () => {
         try {
             setIsLoading(true);
-            //@ts-ignore
-            const clientSession: IClientSession = await createClientSession(clientSessionRequestBody);
+            const clientSession: IClientSession = await createClientSession();
             clientToken = clientSession.clientToken;
-            //@ts-ignore
             await Primer.configure(settings);
             await Primer.showVaultManager(clientToken);
 
@@ -263,10 +216,8 @@ const CheckoutScreen = (props: any) => {
     const onUniversalCheckoutButtonTapped = async () => {
         try {
             setIsLoading(true);
-            //@ts-ignore
-            const clientSession: IClientSession = await createClientSession(clientSessionRequestBody);
+            const clientSession: IClientSession = await createClientSession();
             clientToken = clientSession.clientToken;
-            //@ts-ignore
             await Primer.configure(settings);
             await Primer.showUniversalCheckout(clientToken);
 

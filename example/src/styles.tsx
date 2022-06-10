@@ -3,11 +3,24 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
     sectionContainer: {
       marginTop: 32,
-      paddingHorizontal: 24,
+      // paddingHorizontal: 24,
     },
     sectionTitle: {
       fontSize: 24,
       fontWeight: '600',
+      marginBottom: 12
+    },
+    heading1: {
+      fontSize: 18,
+      fontWeight: '600',
+    },
+    heading2: {
+      fontSize: 14,
+      fontWeight: '700',
+    },
+    heading3: {
+      fontSize: 17,
+      fontWeight: '400',
     },
     sectionDescription: {
       marginTop: 8,
@@ -32,5 +45,10 @@ export const styles = StyleSheet.create({
       borderColor: 'black',
       borderWidth: 1,
       borderRadius: 4
+    },
+    textFieldTitle: {
+      fontSize: 14,
+      color: 'black',
+      fontWeight: '600'
     }
   });
