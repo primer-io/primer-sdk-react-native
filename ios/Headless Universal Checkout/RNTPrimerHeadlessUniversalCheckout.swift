@@ -295,7 +295,7 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
     public func setImplementedRNCallbacks(_ implementedRNCallbacksStr: String, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
         DispatchQueue.main.async {
             do {
-                print(implementedRNCallbacksStr)
+                print("implementedRNCallbacksStr:\n\(implementedRNCallbacksStr)")
                 guard let implementedRNCallbacksData = implementedRNCallbacksStr.data(using: .utf8) else {
                     let err = NSError(domain: "native-bridge", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to convert string to data"])
                     throw err
