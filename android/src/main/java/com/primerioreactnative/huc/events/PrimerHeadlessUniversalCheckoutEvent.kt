@@ -1,11 +1,15 @@
 package com.primerioreactnative.huc.events
 
 internal enum class PrimerHeadlessUniversalCheckoutEvent(val eventName: String) {
-  CLIENT_SESSION_SETUP_SUCCESS("clientSessionDidSetUpSuccessfully"),
-  TOKENIZATION_PREPARATION_STARTED("preparationStarted"),
-  PAYMENT_METH0D_SHOWED("paymentMethodPresented"),
-  TOKENIZATION_STARTED("tokenizationStarted"),
-  TOKENIZATION_SUCCESS("tokenizationSucceeded"),
-  RESUME("resume"),
-  ERROR("error");
+  ON_HUC_CLIENT_SESSION_SETUP("onHUCClientSessionSetup"),
+  ON_HUC_PREPARE_START("onHUCPrepareStart"),
+  ON_HUC_PAYMENT_METHOD_PRESENT("onHUCPaymentMethodPresent"),
+  ON_HUC_TOKENIZE_START("onHUCTokenizeStart"),
+  ON_CHECKOUT_COMPLETE("onCheckoutComplete"),
+  ON_BEFORE_CLIENT_SESSION_UPDATE("onBeforeClientSessionUpdate"),
+  ON_CLIENT_SESSION_UPDATE("onClientSessionUpdate"),
+  ON_BEFORE_PAYMENT_CREATE("onBeforePaymentCreate"),
+  ON_TOKENIZE_SUCCESS("onTokenizeSuccess"),
+  ON_RESUME_SUCCESS("onResumeSuccess"),
+  ON_ERROR("onError"),
 }

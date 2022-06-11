@@ -1,15 +1,14 @@
-import RNPrimer from '../RNPrimer';
 import RNPrimerHeadlessUniversalCheckout from './RNPrimerHeadlessUniversalCheckout';
-import { 
+import {
   PrimerCheckoutData,
-  PrimerCheckoutPaymentMethodData, 
-  PrimerClientSession, 
-  PrimerError, 
-  PrimerPaymentCreationHandler, 
-  PrimerPaymentMethodTokenData, 
-  PrimerResumeHandler, 
-  PrimerSettings, 
-  PrimerTokenizationHandler 
+  PrimerCheckoutPaymentMethodData,
+  PrimerClientSession,
+  PrimerError,
+  PrimerPaymentCreationHandler,
+  PrimerPaymentMethodTokenData,
+  PrimerResumeHandler,
+  PrimerSettings,
+  PrimerTokenizationHandler
 } from '..';
 import type {
   PrimerHeadlessUniversalCheckoutStartResponse,

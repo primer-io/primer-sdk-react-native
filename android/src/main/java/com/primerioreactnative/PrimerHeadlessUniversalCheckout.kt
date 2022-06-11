@@ -1,39 +1,42 @@
 package com.primerioreactnative
 
-import androidx.annotation.Nullable
+import android.util.Log
 import androidx.core.content.ContextCompat
 import com.facebook.react.bridge.*
 import com.facebook.react.modules.core.DeviceEventManagerModule
-import com.primerioreactnative.datamodels.ErrorTypeRN
-import com.primerioreactnative.datamodels.PrimerErrorRN
-import com.primerioreactnative.datamodels.PrimerPaymentInstrumentTokenRN
-import com.primerioreactnative.datamodels.PrimerSettingsRN
+import com.primerioreactnative.datamodels.*
 import com.primerioreactnative.huc.assets.AssetsManager
 import com.primerioreactnative.huc.assets.AssetsManager.drawableToBitmap
 import com.primerioreactnative.huc.assets.AssetsManager.getFile
-import com.primerioreactnative.huc.events.PrimerHeadlessUniversalCheckoutEvent
-import com.primerioreactnative.huc.extensions.toArgumentsMap
-import io.primer.android.completion.ResumeHandler
+import com.primerioreactnative.utils.PrimerHeadlessUniversalCheckoutImplementedRNCallbacks
+import com.primerioreactnative.utils.convertJsonToMap
+import com.primerioreactnative.utils.errorTo
 import io.primer.android.components.PrimerHeadlessUniversalCheckout
-import io.primer.android.components.PrimerHeadlessUniversalCheckoutListener
-import io.primer.android.components.domain.core.models.PrimerHeadlessUniversalCheckoutPaymentMethod
 import io.primer.android.components.ui.assets.ImageType
-import io.primer.android.model.dto.*
+import io.primer.android.data.configuration.models.PaymentMethodType
+import io.primer.android.data.configuration.models.PrimerPaymentMethodType
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.json.JSONObject
 
 class PrimerHeadlessUniversalCheckout(
   private val reactContext: ReactApplicationContext,
   private val json: Json,
-) : ReactContextBaseJavaModule(reactContext), PrimerHeadlessUniversalCheckoutListener {
+) : ReactContextBaseJavaModule(reactContext) {
+
+  private val listener = PrimerRNHeadlessUniversalCheckoutListener()
+
+  init {
+    listener.sendEvent = { eventName, paramsJson -> sendEvent(eventName, paramsJson) }
+    listener.sendError = { paramsJson -> onError(paramsJson) }
+    listener.sendErrorWithCheckoutData =
+      { paramsJson, checkoutData -> onError(paramsJson, checkoutData) }
+  }
 
   override fun getName(): String {
     return "PrimerHeadlessUniversalCheckout"
   }
-
-  private var resumeHandler: ResumeHandler? = null
-  private var successCallback: Callback? = null
 
   @ReactMethod
   fun startWithClientToken(
@@ -42,35 +45,31 @@ class PrimerHeadlessUniversalCheckout(
     errorCallback: Callback,
     successCallback: Callback
   ) {
+    listener.successCallback = successCallback
     try {
-      val settings = json.decodeFromString<PrimerSettingsRN>(settingsStr.orEmpty())
-      this.successCallback = successCallback
+      val settings =
+        if (settingsStr.isNullOrBlank()) PrimerSettingsRN() else json.decodeFromString(
+          settingsStr
+        )
       PrimerHeadlessUniversalCheckout.current.start(
         reactContext,
         clientToken,
-        PrimerConfig(settings = settings.format()),
-        this
+        settings.toPrimerSettings(),
+        listener
       )
     } catch (e: Exception) {
       errorCallback.invoke(
         json.encodeToString(
-          PrimerErrorRN(
-            ErrorTypeRN.InitFailed,
+          ErrorTypeRN.NativeBridgeFailed errorTo
             "failed to initialise PrimerHeadlessUniversalCheckout SDK, error: $e",
-          )
         )
       )
     }
   }
 
   @ReactMethod
-  fun resumeWithClientToken(resumeToken: String) {
-    this.resumeHandler?.handleNewClientToken(resumeToken)
-  }
-
-  @ReactMethod
   fun showPaymentMethod(paymentMethodType: String) {
-    val primerPaymentMethodType = PrimerPaymentMethodType.safeValueOf(paymentMethodType)
+    val primerPaymentMethodType = PrimerPaymentMethodType.valueOf(paymentMethodType)
     PrimerHeadlessUniversalCheckout.current.showPaymentMethod(
       reactContext,
       primerPaymentMethodType
@@ -90,26 +89,22 @@ class PrimerHeadlessUniversalCheckout(
     successCallback: Callback
   ) {
 
-    val primerPaymentMethodType = PrimerPaymentMethodType.safeValueOf(paymentMethodType)
+    val primerPaymentMethodType = PrimerPaymentMethodType.valueOf(paymentMethodType)
     val type = ImageType.values().find { it.name.equals(assetType, ignoreCase = true) }
     when {
       primerPaymentMethodType == PaymentMethodType.UNKNOWN -> {
         errorCallback.invoke(
           json.encodeToString(
-            PrimerErrorRN(
-              ErrorTypeRN.AssetMissing,
+            ErrorTypeRN.AssetMissing errorTo
               "Asset for $paymentMethodType does not exist, make sure you don't have any typos."
-            )
           )
         )
       }
       type == null -> {
         errorCallback.invoke(
           json.encodeToString(
-            PrimerErrorRN(
-              ErrorTypeRN.AssetMismatch,
+            ErrorTypeRN.AssetMismatch errorTo
               "You have provided assetType=$assetType, but variable assetType can be 'LOGO' or 'ICON'."
-            )
           )
         )
       }
@@ -124,10 +119,8 @@ class PrimerHeadlessUniversalCheckout(
         } ?: run {
           errorCallback.invoke(
             json.encodeToString(
-              PrimerErrorRN(
-                ErrorTypeRN.AssetMissing,
+              ErrorTypeRN.AssetMissing errorTo
                 "Failed to find $paymentMethodType for $assetType"
-              )
             )
           )
         }
@@ -135,67 +128,109 @@ class PrimerHeadlessUniversalCheckout(
     }
   }
 
-  override fun onClientSessionSetupSuccessfully(paymentMethods: List<PrimerHeadlessUniversalCheckoutPaymentMethod>) {
-    sendEvent(PrimerHeadlessUniversalCheckoutEvent.CLIENT_SESSION_SETUP_SUCCESS)
-    successCallback?.invoke(
-      Arguments.fromList(paymentMethods.map { it.paymentMethodType.name })
-    )
+  // region tokenization handlers
+  @ReactMethod
+  fun handleTokenizationNewClientToken(newClientToken: String, promise: Promise) {
+    listener.handleTokenizationNewClientToken(newClientToken)
+    promise.resolve(null)
   }
 
-  override fun onTokenizationPreparation() {
-    sendEvent(PrimerHeadlessUniversalCheckoutEvent.TOKENIZATION_PREPARATION_STARTED)
+  @ReactMethod
+  fun handleTokenizationSuccess(promise: Promise) {
+    listener.handleTokenizationSuccess()
+    promise.resolve(null)
   }
 
-  override fun onTokenizationStarted() {
-    sendEvent(PrimerHeadlessUniversalCheckoutEvent.TOKENIZATION_STARTED)
+  @ReactMethod
+  fun handleTokenizationFailure(errorMessage: String?, promise: Promise) {
+    listener.handleTokenizationFailure(errorMessage.orEmpty())
+    promise.resolve(null)
+  }
+  // endregion
+
+  // region resume handlers
+  @ReactMethod
+  fun handleResumeNewClientToken(newClientToken: String, promise: Promise) {
+    listener.handleResumeNewClientToken(newClientToken)
+    promise.resolve(null)
   }
 
-  override fun onPaymentMethodShowed() {
-    sendEvent(PrimerHeadlessUniversalCheckoutEvent.PAYMENT_METH0D_SHOWED)
+  @ReactMethod
+  fun handleResumeSuccess(promise: Promise) {
+    listener.handleResumeSuccess()
+    promise.resolve(null)
   }
 
-  override fun onTokenizationSuccess(
-    paymentMethodToken: PaymentMethodToken,
-    resumeHandler: ResumeHandler
-  ) {
-    this.resumeHandler = resumeHandler
+  @ReactMethod
+  fun handleResumeFailure(errorMessage: String?, promise: Promise) {
+    listener.handleResumeFailure(errorMessage.orEmpty())
+    promise.resolve(null)
+  }
+  // endregion
 
-    sendEvent(
-      PrimerHeadlessUniversalCheckoutEvent.TOKENIZATION_SUCCESS,
-      mapOf(
-        "paymentMethodToken" to json.encodeToString(
-          PrimerPaymentInstrumentTokenRN.fromPaymentMethodToken(
-            paymentMethodToken
-          )
+  // region payment handlers
+  @ReactMethod
+  fun handlePaymentCreationContinue(promise: Promise) {
+    listener.handlePaymentCreationContinue()
+    promise.resolve(null)
+  }
+
+  @ReactMethod
+  fun handlePaymentCreationAbort(errorMessage: String?, promise: Promise) {
+    listener.handlePaymentCreationAbort(errorMessage.orEmpty())
+    promise.resolve(null)
+  }
+  // endregion
+
+  @ReactMethod
+  fun setImplementedRNCallbacks(implementedRNCallbacksStr: String, promise: Promise) {
+    try {
+      Log.d(TAG, "implementedRNCallbacks: $implementedRNCallbacksStr")
+      val implementedRNCallbacks =
+        json.decodeFromString<PrimerHeadlessUniversalCheckoutImplementedRNCallbacks>(
+          implementedRNCallbacksStr
         )
-      ).toArgumentsMap()
-    )
+      listener.setImplementedCallbacks(implementedRNCallbacks)
+      promise.resolve(null)
+    } catch (e: Exception) {
+      val exception =
+        ErrorTypeRN.NativeBridgeFailed errorTo "Implemented callbacks $implementedRNCallbacksStr is not valid."
+      onError(exception)
+      promise.reject(exception.errorId, exception.description, e)
+    }
   }
 
-  override fun onResumeSuccess(resumeToken: String, resumeHandler: ResumeHandler) {
-    this.resumeHandler = resumeHandler
-
-    sendEvent(
-      PrimerHeadlessUniversalCheckoutEvent.RESUME,
-      mapOf("resumeToken" to resumeToken).toArgumentsMap()
-    )
-
+  private fun onError(exception: PrimerErrorRN, checkoutDataRN: PrimerCheckoutDataRN? = null) {
+    val params = Arguments.createMap()
+    val errorJson = JSONObject(Json.encodeToString(exception))
+    val errorData = prepareData(errorJson)
+    params.putMap(Keys.ERROR, errorData)
+    checkoutDataRN?.let {
+      val checkoutDataJson = JSONObject(Json.encodeToString(it))
+      val checkoutData = prepareData(checkoutDataJson)
+      params.putMap(Keys.CHECKOUT_DATA, checkoutData)
+    }
+    sendEvent(PrimerEvents.ON_ERROR.eventName, params)
   }
 
-  override fun onError(error: APIError) {
-    sendEvent(
-      PrimerHeadlessUniversalCheckoutEvent.ERROR,
-      mapOf("error" to error.toString()).toArgumentsMap()
-    )
+  private fun sendEvent(name: String, params: WritableMap) {
+    reactApplicationContext.getJSModule(
+      DeviceEventManagerModule.RCTDeviceEventEmitter::class.java
+    ).emit(name, params)
   }
 
+  private fun sendEvent(name: String, data: JSONObject?) {
+    val params = prepareData(data)
+    reactApplicationContext.getJSModule(
+      DeviceEventManagerModule.RCTDeviceEventEmitter::class.java
+    ).emit(name, params)
+  }
 
-  private fun sendEvent(
-    event: PrimerHeadlessUniversalCheckoutEvent,
-    @Nullable params: WritableMap? = null
-  ) {
-    reactContext
-      .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
-      .emit(event.eventName, params)
+  private fun prepareData(data: JSONObject?): WritableMap {
+    return data?.let { convertJsonToMap(data) } ?: Arguments.createMap()
+  }
+
+  private companion object {
+    const val TAG = "PrimerHUC"
   }
 }
