@@ -584,6 +584,8 @@ const SettingsScreen = ({ navigation }) => {
                 <TouchableOpacity
                     style={{ ...styles.button, marginTop: 5, marginBottom: 20, backgroundColor: 'black' }}
                     onPress={() => {
+                        updateAppPaymentParameters();
+                        console.log(appPaymentParameters);
                         navigation.navigate('HUC');
                     }}
                 >
