@@ -28,7 +28,6 @@ let log: string | undefined;
 
 export const HeadlessCheckoutScreen = (props: any) => {
   const [isLoading, setIsLoading] = useState(true);
-  const [loadingMessage, setLoadingMessage] = React.useState<string | undefined>(undefined);
   const [paymentMethods, setPaymentMethods] = useState<undefined | string[]>(undefined);
   const [paymentResponse, setPaymentResponse] = useState<null | string>(null);
   const [localImageUrl, setLocalImageUrl] = useState<null | string>(null);
@@ -37,7 +36,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
 
   const updateLogs = (str: string) => {
     const currentLog = log || '';
-    const combinedLog = currentLog + '\n\n' + str;
+    const combinedLog = currentLog + '\n' + str;
     log = combinedLog;
   }
 
@@ -49,43 +48,38 @@ export const HeadlessCheckoutScreen = (props: any) => {
       );
       setLocalImageUrl(assetUrl);
     } catch (err) {
-      updateLogs(`\n\nError:\n${JSON.stringify(err, null, 2)}`);
+      updateLogs(`\n🛑 Error:\n${JSON.stringify(err, null, 2)}`);
     }
   };
 
   const onHUCPrepareStart = (paymentMethod: string) => {
-    updateLogs(`HUC started preparing for ${paymentMethod}`);
+    updateLogs(`\nℹ️ HUC started preparing for ${paymentMethod}`);
     setIsLoading(true);
-    setLoadingMessage(`HUC started preparing payment with ${paymentMethod}`);
   };
 
   const onHUCPaymentMethodPresent = (paymentMethod: string) => {
-    updateLogs(`HUC presented ${paymentMethod}`);
+    updateLogs(`\nℹ️ HUC presented ${paymentMethod}`);
     setIsLoading(true);
-    setLoadingMessage(`HUC presented ${paymentMethod}`);
   };
 
   const onHUCTokenizeStart = (paymentMethod: string) => {
-    updateLogs(`HUC started tokenization for ${paymentMethod}`);
+    updateLogs(`\nℹ️ HUC started tokenization for ${paymentMethod}`);
     setIsLoading(true);
-    setLoadingMessage(`HUC started tokenizing ${paymentMethod}`);
   };
 
   const onHUCClientSessionSetup = (paymentMethods: string[]) => {
-    updateLogs(`HUC did set up client session for payment methods ${JSON.stringify(paymentMethods)}`);
+    updateLogs(`\nℹ️ HUC did set up client session for payment methods ${JSON.stringify(paymentMethods)}`);
     setIsLoading(true);
-    setLoadingMessage(`HUC did set up client session for payment methods ${JSON.stringify(paymentMethods)}`);
   };
 
   const onCheckoutComplete = (checkoutData: PrimerCheckoutData) => {
-    updateLogs(`PrimerCheckoutData:\n${JSON.stringify(checkoutData)}`);
-    setLoadingMessage(undefined);
+    updateLogs(`\n✅ PrimerCheckoutData:\n${JSON.stringify(checkoutData)}`);
     setIsLoading(false);
     props.navigation.navigate('Result', checkoutData);
   };
 
   const onTokenizeSuccess = async (paymentMethodTokenData: PrimerPaymentMethodTokenData, handler: PrimerTokenizationHandler) => {
-    updateLogs(`onTokenizeSuccess:\n${JSON.stringify(paymentMethodTokenData, null, 2)}`);
+    updateLogs(`\n✅ onTokenizeSuccess:\n${JSON.stringify(paymentMethodTokenData, null, 2)}`);
 
     try {
       const payment: IPayment = await createPayment(paymentMethodTokenData.token);
@@ -94,33 +88,30 @@ export const HeadlessCheckoutScreen = (props: any) => {
         paymentId = payment.id;
 
         if (payment.requiredAction.name === "3DS_AUTHENTICATION") {
-          updateLogs("\n\nMake sure you have used a card number that supports 3DS, otherwise the SDK will hang.")
+          updateLogs("\n🛑 Make sure you have used a card number that supports 3DS, otherwise the SDK will hang.")
         }
         paymentId = payment.id;
         handler.continueWithNewClientToken(payment.requiredAction.clientToken);
       } else {
         props.navigation.navigate('Result', payment);
         setIsLoading(false);
-        setLoadingMessage(undefined);
       }
     } catch (err) {
-      updateLogs(`\n\nError:\n${JSON.stringify(err, null, 2)}`);
+      updateLogs(`\n🛑 Error:\n${JSON.stringify(err, null, 2)}`);
       console.error(err);
       setIsLoading(false);
-      setLoadingMessage(undefined);
       props.navigation.navigate('Result', err);
     }
   }
 
   const onResumeSuccess = async (resumeToken: string, handler: PrimerResumeHandler) => {
-    updateLogs(`\n\nonResumeSuccess:\n${JSON.stringify(resumeToken)}`);
+    updateLogs(`\n✅ onResumeSuccess:\n${JSON.stringify(resumeToken)}`);
 
     try {
       if (paymentId) {
         const payment: IPayment = await resumePayment(paymentId, resumeToken);
         props.navigation.navigate('Result', payment);
         setIsLoading(false);
-        setLoadingMessage(undefined);
 
       } else {
         const err = new Error("Invalid value for paymentId");
@@ -133,24 +124,22 @@ export const HeadlessCheckoutScreen = (props: any) => {
       paymentId = null;
       props.navigation.navigate('Result', err);
       setIsLoading(false);
-      setLoadingMessage(undefined);
     }
   }
 
   const onError = (error: PrimerError, checkoutData: PrimerCheckoutData | null, handler: PrimerErrorHandler | undefined) => {
-    updateLogs(`\n\nHUC failed with error:\n\n${JSON.stringify(error, null, 2)}\n\ncheckoutData:\n${JSON.stringify(checkoutData, null, 2)}`);
+    updateLogs(`\n🛑 HUC failed with error:\n\n${JSON.stringify(error, null, 2)}\n\ncheckoutData:\n${JSON.stringify(checkoutData, null, 2)}`);
     console.error(error);
     handler?.showErrorMessage("My RN message");
     setIsLoading(false);
-    setLoadingMessage(undefined);
   };
 
   const onBeforeClientSessionUpdate = () => {
-    updateLogs(`\n\nonBeforeClientSessionUpdate`);
+    updateLogs(`\nℹ️ onBeforeClientSessionUpdate`);
   };
 
   const onClientSessionUpdate = (clientSession: PrimerClientSession) => {
-    updateLogs(`\n\nonClientSessionUpdate`);
+    updateLogs(`\nℹ️ onClientSessionUpdate`);
   }
 
   let settings: PrimerSettings = {
@@ -170,7 +159,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
     onBeforeClientSessionUpdate: onBeforeClientSessionUpdate,
     onClientSessionUpdate: onClientSessionUpdate,
     onBeforePaymentCreate: (checkoutPaymentMethodData, handler) => {
-      updateLogs(`\n\nonBeforePaymentCreate`);
+      updateLogs(`\nℹ️ onBeforePaymentCreate`);
       handler.continuePaymentCreation();
     },
     onError: onError
@@ -190,11 +179,11 @@ export const HeadlessCheckoutScreen = (props: any) => {
         setIsLoading(false);
         HeadlessUniversalCheckout.startWithClientToken(session.clientToken, settings)
           .then((response) => {
-            updateLogs(`\n\nAvailable payment methods:\n${JSON.stringify(response.paymentMethodTypes, null, 2)}`);
+            updateLogs(`\nℹ️ Available payment methods:\n${JSON.stringify(response.paymentMethodTypes, null, 2)}`);
             setPaymentMethods(response.paymentMethodTypes);
           })
           .catch((err) => {
-            updateLogs(`\n\nError:\n${JSON.stringify(err, null, 2)}`);
+            updateLogs(`\n🛑 Error:\n${JSON.stringify(err, null, 2)}`);
             console.error(err);
             setError(err);
           });
@@ -214,7 +203,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
             HeadlessUniversalCheckout.showPaymentMethod(paymentMethod);
           })
           .catch((err) => {
-            updateLogs(`\n\nError:\n${JSON.stringify(err, null, 2)}`);
+            updateLogs(`\n🛑 Error:\n${JSON.stringify(err, null, 2)}`);
             setError(err);
           });
       });
@@ -301,19 +290,6 @@ export const HeadlessCheckoutScreen = (props: any) => {
         zIndex: 1000
       }}>
         <ActivityIndicator size='small' />
-        <Text
-          style={{
-            fontSize: 14,
-            color: 'black',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginHorizontal: 24,
-            marginTop: 8,
-            marginBottom: 24
-          }}
-        >
-          {loadingMessage}
-        </Text>
       </View>
     }
   };
