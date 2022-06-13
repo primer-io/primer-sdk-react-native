@@ -330,9 +330,9 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
 // MARK: - EVENTS
 
 extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDelegate {
-    
-    func primerHeadlessUniversalCheckoutPreparationStarted() {
-        sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onHUCPrepareStart.stringValue, body: ["paymentMethod": "paymentMethodType"])
+
+    func primerHeadlessUniversalCheckoutPreparationStarted(paymentMethodType: String) {
+        sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onHUCPrepareStart.stringValue, body: ["paymentMethod": paymentMethodType])
     }
     
     func primerHeadlessUniversalCheckoutClientSessionDidSetUpSuccessfully(paymentMethods: [String]) {
