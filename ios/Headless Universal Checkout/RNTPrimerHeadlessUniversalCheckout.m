@@ -14,7 +14,9 @@ RCT_EXTERN_METHOD(startWithClientToken:(NSString *)clientToken settingsStr:(NSSt
 
 RCT_EXTERN_METHOD(resumeWithClientToken:(NSString *)resumeToken)
 
-RCT_EXTERN_METHOD(showPaymentMethod:(NSString *)paymentMethodTypeStr)
+RCT_EXTERN_METHOD(showPaymentMethod:(NSString *)paymentMethodTypeStr
+                  resolver:(RCTPromiseResolveBlock)resolver
+                  rejecter:(RCTPromiseRejectBlock)rejecter)
 
 RCT_EXTERN_METHOD(getAssetForPaymentMethodType:(NSString *)paymentMethodTypeStr
                   assetType:(NSString *)assetTypeStr

@@ -153,9 +153,13 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
     }
     
     @objc
-    public func showPaymentMethod(_ paymentMethodTypeStr: String) {
+    public func showPaymentMethod(_ paymentMethodTypeStr: String,
+                                  resolver: RCTPromiseResolveBlock,
+                                  rejecter: RCTPromiseRejectBlock)
+    {
         let paymentMethodType = PrimerPaymentMethodType(rawValue: paymentMethodTypeStr)
         PrimerHeadlessUniversalCheckout.current.showPaymentMethod(paymentMethodType)
+        resolver(nil)
     }
     
     // MARK: - HELPERS
