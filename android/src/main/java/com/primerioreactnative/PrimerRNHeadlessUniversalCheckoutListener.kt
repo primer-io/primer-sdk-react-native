@@ -2,7 +2,6 @@ package com.primerioreactnative
 
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Callback
-import com.facebook.react.bridge.WritableMap
 import com.primerioreactnative.datamodels.*
 import com.primerioreactnative.extensions.toPrimerCheckoutDataRN
 import com.primerioreactnative.extensions.toPrimerClientSessionRN
@@ -42,53 +41,37 @@ class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckou
 
   var successCallback: Callback? = null
 
-  override fun onClientSessionSetupSuccessfully(paymentMethods: List<PrimerHeadlessUniversalCheckoutPaymentMethod>) {
-    if (implementedRNCallbacks?.isOnHUCClientSessionSetupImplemented == true) {
-      sendEvent?.invoke(
-        PrimerHeadlessUniversalCheckoutEvent.ON_HUC_CLIENT_SESSION_SETUP.eventName,
-        JSONObject().apply {
-          put("paymentMethods", paymentMethods.map { it.paymentMethodType.name })
-        }
-      )
-      successCallback?.invoke(
-        Arguments.fromList(paymentMethods.map { it.paymentMethodType.name })
-      )
-    } else {
-      super.onClientSessionSetupSuccessfully(paymentMethods)
-    }
+  override fun onAvailablePaymentMethodsLoaded(paymentMethods: List<PrimerHeadlessUniversalCheckoutPaymentMethod>) {
+    sendEvent?.invoke(
+      PrimerHeadlessUniversalCheckoutEvent.ON_HUC_CLIENT_SESSION_SETUP.eventName,
+      JSONObject().apply {
+        put("paymentMethodTypes", paymentMethods.map { it.paymentMethodType.name })
+      }
+    )
+    successCallback?.invoke(
+      Arguments.fromList(paymentMethods.map { it.paymentMethodType.name })
+    )
   }
 
   override fun onPreparationStarted(paymentMethodType: PrimerPaymentMethodType) {
-    if (implementedRNCallbacks?.isOnHUCPrepareStartImplemented == true) {
-      sendEvent?.invoke(
-        PrimerHeadlessUniversalCheckoutEvent.ON_HUC_PREPARE_START.eventName,
-        JSONObject(Json.encodeToString(PrimerPaymentMethodDataRN(paymentMethodType)))
-      )
-    } else {
-      super.onPreparationStarted(paymentMethodType)
-    }
+    sendEvent?.invoke(
+      PrimerHeadlessUniversalCheckoutEvent.ON_HUC_PREPARE_START.eventName,
+      JSONObject(Json.encodeToString(PrimerPaymentMethodDataRN(paymentMethodType)))
+    )
   }
 
   override fun onPaymentMethodPresented(paymentMethodType: PrimerPaymentMethodType) {
-    if (implementedRNCallbacks?.isOnHUCPaymentMethodPresentImplemented == true) {
-      sendEvent?.invoke(
-        PrimerHeadlessUniversalCheckoutEvent.ON_HUC_PAYMENT_METHOD_PRESENT.eventName,
-        JSONObject(Json.encodeToString(PrimerPaymentMethodDataRN(paymentMethodType)))
-      )
-    } else {
-      super.onPaymentMethodPresented(paymentMethodType)
-    }
+    sendEvent?.invoke(
+      PrimerHeadlessUniversalCheckoutEvent.ON_HUC_PAYMENT_METHOD_PRESENT.eventName,
+      JSONObject(Json.encodeToString(PrimerPaymentMethodDataRN(paymentMethodType)))
+    )
   }
 
   override fun onTokenizationStarted(paymentMethodType: PrimerPaymentMethodType) {
-    if (implementedRNCallbacks?.isOnHUCPrepareStartImplemented == true) {
-      sendEvent?.invoke(
-        PrimerHeadlessUniversalCheckoutEvent.ON_HUC_TOKENIZE_START.eventName,
-        JSONObject(Json.encodeToString(PrimerPaymentMethodDataRN(paymentMethodType)))
-      )
-    } else {
-      super.onTokenizationStarted(paymentMethodType)
-    }
+    sendEvent?.invoke(
+      PrimerHeadlessUniversalCheckoutEvent.ON_HUC_TOKENIZE_START.eventName,
+      JSONObject(Json.encodeToString(PrimerPaymentMethodDataRN(paymentMethodType)))
+    )
   }
 
   override fun onCheckoutCompleted(checkoutData: PrimerCheckoutData) {

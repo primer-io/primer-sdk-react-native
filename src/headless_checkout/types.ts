@@ -1,13 +1,17 @@
-import type { PrimerCheckoutData, PrimerCheckoutPaymentMethodData, PrimerClientSession, PrimerErrorHandler, PrimerPaymentCreationHandler, PrimerPaymentMethodTokenData, PrimerResumeHandler, PrimerTokenizationHandler } from "..";
+import type { PrimerCheckoutData } from '../models/PrimerCheckoutData';
+import type { PrimerCheckoutPaymentMethodData } from '../models/PrimerCheckoutPaymentMethodData';
+import type { 
+  PrimerTokenizationHandler, 
+  PrimerResumeHandler, 
+  PrimerPaymentCreationHandler, 
+  PrimerErrorHandler
+} from '../models/PrimerInterfaces';
+import type { PrimerClientSession } from '../models/PrimerClientSession';
+import type { PrimerPaymentMethodTokenData } from '../models/PrimerPaymentMethodTokenData'; 
+import type { PrimerError } from '../models/PrimerError';
 
 export interface PrimerHeadlessUniversalCheckoutStartResponse {
   paymentMethodTypes: string[];
-}
-
-export interface PrimerError {
-  errorId: string;
-  description: string;
-  recoverySuggestion?: string;
 }
 
 export interface PrimerHeadlessUniversalCheckoutCallbacks {
@@ -23,6 +27,6 @@ export interface PrimerHeadlessUniversalCheckoutCallbacks {
   // Only on HUC
   onHUCPrepareStart?: (paymentMethod: string) => void;
   onHUCTokenizeStart?: (paymentMethod: string) => void;
-  onHUCPaymentMethodPresent?: (paymentMethod: string) => void;
-  onHUCClientSessionSetup?: (paymentMethods: string[]) => void;
+  onHUCPaymentMethodShow?: (paymentMethod: string) => void;
+  onHUCAvailablePaymentMethodsLoaded?: (paymentMethods: string[]) => void;
 }

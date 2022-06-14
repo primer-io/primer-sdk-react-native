@@ -1,7 +1,7 @@
 import type { PrimerSessionIntent } from "./PrimerSessionIntent";
 import type { PrimerSettings } from "./PrimerSettings";
 
-export interface Primer {
+export interface IPrimer {
   configure(settings: PrimerSettings): Promise<void>;
   showUniversalCheckout(clientToken: string): Promise<void>;
   showVaultManager(clientToken: string): Promise<void>;

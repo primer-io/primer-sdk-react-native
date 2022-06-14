@@ -1,18 +1,12 @@
 import RNPrimerHeadlessUniversalCheckout from './RNPrimerHeadlessUniversalCheckout';
-import {
-  PrimerCheckoutData,
-  PrimerCheckoutPaymentMethodData,
-  PrimerClientSession,
-  PrimerError,
-  PrimerPaymentCreationHandler,
-  PrimerPaymentMethodTokenData,
-  PrimerResumeHandler,
-  PrimerSettings,
-  PrimerTokenizationHandler
-} from '..';
-import type {
-  PrimerHeadlessUniversalCheckoutStartResponse,
-} from './types';
+import type { PrimerCheckoutData } from '../models/PrimerCheckoutData';
+import type { PrimerCheckoutPaymentMethodData } from '../models/PrimerCheckoutPaymentMethodData';
+import type { PrimerTokenizationHandler, PrimerResumeHandler, PrimerPaymentCreationHandler } from '../models/PrimerInterfaces';
+import type { PrimerHeadlessUniversalCheckoutStartResponse } from './types';
+import type { PrimerSettings } from '../models/PrimerSettings';
+import type { PrimerClientSession } from '../models/PrimerClientSession';
+import { PrimerError } from '../models/PrimerError';
+import type { PrimerPaymentMethodTokenData } from '../models/PrimerPaymentMethodTokenData';
 
 ///////////////////////////////////////////
 // DECISION HANDLERS
@@ -113,7 +107,7 @@ async function configureListeners(): Promise<void> {
         onHUCClientSessionSetup: (primerSettings?.onHUCClientSessionSetup !== undefined),
         onHUCPrepareStart: (primerSettings?.onHUCPrepareStart !== undefined),
         onHUCTokenizeStart: (primerSettings?.onHUCTokenizeStart !== undefined),
-        onHUCPaymentMethodPresent: (primerSettings?.onHUCPaymentMethodPresent !== undefined),
+        onHUCPaymentMethodShow: (primerSettings?.onHUCPaymentMethodShow !== undefined),
       };
 
       await RNPrimerHeadlessUniversalCheckout.setImplementedRNCallbacks(implementedRNCallbacks);
@@ -139,7 +133,7 @@ async function configureListeners(): Promise<void> {
           (data) => {
             console.log('onHUCPrepareStart');
             if (primerSettings && primerSettings.onHUCPrepareStart) {
-              primerSettings.onHUCPrepareStart(data.paymentMethod || 'not implemented');
+              primerSettings.onHUCPrepareStart(data.paymentMethodType || 'not implemented');
             } else {
               // Ignore!
             }
@@ -153,7 +147,7 @@ async function configureListeners(): Promise<void> {
           (data) => {
             console.log('onHUCTokenizeStart');
             if (primerSettings && primerSettings.onHUCTokenizeStart) {
-              primerSettings.onHUCTokenizeStart(data.paymentMethod || 'not implemented');
+              primerSettings.onHUCTokenizeStart(data.paymentMethodType || 'not implemented');
             } else {
               // Ignore!
             }
@@ -161,13 +155,13 @@ async function configureListeners(): Promise<void> {
         );
       }
 
-      if (implementedRNCallbacks.onHUCPaymentMethodPresent) {
+      if (implementedRNCallbacks.onHUCPaymentMethodShow) {
         RNPrimerHeadlessUniversalCheckout.addListener(
-          'onHUCPaymentMethodPresent',
+          'onHUCPaymentMethodShow',
           (data) => {
-            console.log('onHUCPaymentMethodPresent');
-            if (primerSettings && primerSettings.onHUCPaymentMethodPresent) {
-              primerSettings.onHUCPaymentMethodPresent(data.paymentMethod || 'not implemented');
+            console.log('onHUCPaymentMethodShow');
+            if (primerSettings && primerSettings.onHUCPaymentMethodShow) {
+              primerSettings.onHUCPaymentMethodShow(data.paymentMethodType || 'not implemented');
             } else {
               // Ignore!
             }
@@ -175,13 +169,13 @@ async function configureListeners(): Promise<void> {
         );
       }
 
-      if (implementedRNCallbacks.onHUCClientSessionSetup) {
+      if (implementedRNCallbacks.onHUCAvailablePaymentMethodsLoaded) {
         RNPrimerHeadlessUniversalCheckout.addListener(
-          'onHUCClientSessionSetup',
+          'onHUCAvailablePaymentMethodsLoaded',
           (data) => {
-            console.log('onHUCClientSessionSetup');
-            if (primerSettings && primerSettings.onHUCClientSessionSetup) {
-              primerSettings.onHUCClientSessionSetup(data.paymentMethods || ['not implemented']);
+            console.log('onHUCAvailablePaymentMethodsLoaded');
+            if (primerSettings && primerSettings.onHUCAvailablePaymentMethodsLoaded) {
+              primerSettings.onHUCAvailablePaymentMethodsLoaded(data.paymentMethodTypes || ['not implemented']);
             } else {
               // Ignore!
             }
@@ -286,10 +280,10 @@ class PrimerHeadlessUniversalCheckoutClass {
     });
   }
 
-  async showPaymentMethod(paymentMethod: string): Promise<void> {
+  async showPaymentMethod(paymentMethodType: string): Promise<void> {
     return new Promise(async (resolve, reject) => {
       try {
-        await RNPrimerHeadlessUniversalCheckout.showPaymentMethod(paymentMethod);
+        await RNPrimerHeadlessUniversalCheckout.showPaymentMethod(paymentMethodType);
         resolve();
       } catch (err) {
         reject(err);
@@ -297,11 +291,11 @@ class PrimerHeadlessUniversalCheckoutClass {
     });
   }
 
-  getAssetForPaymentMethod(
+  getAssetForPaymentMethodType(
     paymentMethodType: string,
     assetType: 'logo' | 'icon'
   ): Promise<string> {
-    return RNPrimerHeadlessUniversalCheckout.getAssetForPaymentMethod(
+    return RNPrimerHeadlessUniversalCheckout.getAssetForPaymentMethodType(
       paymentMethodType,
       assetType
     );

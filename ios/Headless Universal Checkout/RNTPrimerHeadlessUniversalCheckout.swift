@@ -13,8 +13,8 @@ enum PrimerHeadlessUniversalCheckoutEvents: Int, CaseIterable {
     
     case onHUCTokenizeStart = 0
     case onHUCPrepareStart
-    case onHUCClientSessionSetup
-    case onHUCPaymentMethodPresent
+    case onHUCAvailablePaymentMethodsLoaded
+    case onHUCPaymentMethodShow
     case onTokenizeSuccess
     case onResumeSuccess
     case onBeforePaymentCreate
@@ -29,8 +29,8 @@ enum PrimerHeadlessUniversalCheckoutEvents: Int, CaseIterable {
             return "onHUCPrepareStart"
         case .onHUCTokenizeStart:
             return "onHUCTokenizeStart"
-        case .onHUCPaymentMethodPresent:
-            return "onHUCPaymentMethodPresent"
+        case .onHUCPaymentMethodShow:
+            return "onHUCPaymentMethodShow"
         case .onTokenizeSuccess:
             return "onTokenizeSuccess"
         case .onResumeSuccess:
@@ -43,8 +43,8 @@ enum PrimerHeadlessUniversalCheckoutEvents: Int, CaseIterable {
             return "onClientSessionUpdate"
         case .onCheckoutComplete:
             return "onCheckoutComplete"
-        case .onHUCClientSessionSetup:
-            return "onHUCClientSessionSetup"
+        case .onHUCAvailablePaymentMethodsLoaded:
+            return "onHUCAvailablePaymentMethodsLoaded"
         case .onError:
             return "onError"
         }
@@ -153,9 +153,13 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
     }
     
     @objc
-    public func showPaymentMethod(_ paymentMethodTypeStr: String) {
+    public func showPaymentMethod(_ paymentMethodTypeStr: String,
+                                  resolver: RCTPromiseResolveBlock,
+                                  rejecter: RCTPromiseRejectBlock)
+    {
         let paymentMethodType = PrimerPaymentMethodType(rawValue: paymentMethodTypeStr)
         PrimerHeadlessUniversalCheckout.current.showPaymentMethod(paymentMethodType)
+        resolver(nil)
     }
     
     // MARK: - HELPERS
@@ -221,6 +225,7 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
     @objc
     public func handleTokenizationSuccess(_ resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
         DispatchQueue.main.async {
+            
             self.primerDidTokenizePaymentMethodDecisionHandler?(nil, nil)
             self.primerDidTokenizePaymentMethodDecisionHandler = nil
             resolver(nil)
@@ -250,18 +255,16 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
     @objc
     public func handleResumeSuccess(_ resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
         DispatchQueue.main.async {
-            self.primerDidResumeWithDecisionHandler?(nil, nil)
-            self.primerDidResumeWithDecisionHandler = nil
-            resolver(nil)
+            let err = NSError(domain: "native-bridge", code: 0, userInfo: [NSLocalizedDescriptionKey: "PrimerTokenizationHandler's handleSuccess function is not available on HUC."])
+            rejecter(err.rnError["errorId"]!, err.rnError["description"], err)
         }
     }
     
     @objc
     public func handleResumeFailure(_ errorMessage: String?, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
         DispatchQueue.main.async {
-            self.primerDidResumeWithDecisionHandler?(nil, errorMessage ?? "")
-            self.primerDidResumeWithDecisionHandler = nil
-            resolver(nil)
+            let err = NSError(domain: "native-bridge", code: 0, userInfo: [NSLocalizedDescriptionKey: "PrimerTokenizationHandler's handleFailure function is not available on HUC."])
+            rejecter(err.rnError["errorId"]!, err.rnError["description"], err)
         }
     }
     
@@ -295,7 +298,6 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
     public func setImplementedRNCallbacks(_ implementedRNCallbacksStr: String, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
         DispatchQueue.main.async {
             do {
-                print(implementedRNCallbacksStr)
                 guard let implementedRNCallbacksData = implementedRNCallbacksStr.data(using: .utf8) else {
                     let err = NSError(domain: "native-bridge", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to convert string to data"])
                     throw err
@@ -321,7 +323,7 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
                let json = try? JSONSerialization.jsonObject(with: data){
                 body["checkoutData"] = json
             }
-            print(body)
+
             self.sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onError.stringValue, body: body)
         }
     }
@@ -330,21 +332,21 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
 // MARK: - EVENTS
 
 extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDelegate {
-    
-    func primerHeadlessUniversalCheckoutPreparationStarted() {
-        sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onHUCPrepareStart.stringValue, body: ["paymentMethod": "paymentMethodType"])
+
+    func primerHeadlessUniversalCheckoutPreparationStarted(paymentMethodType: String) {
+        sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onHUCPrepareStart.stringValue, body: ["paymentMethodType": paymentMethodType])
     }
     
-    func primerHeadlessUniversalCheckoutClientSessionDidSetUpSuccessfully(paymentMethods: [String]) {
-        sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onHUCClientSessionSetup.stringValue, body: ["paymentMethods": paymentMethods])
+    func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethodTypes: [String]) {
+        sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onHUCAvailablePaymentMethodsLoaded.stringValue, body: ["paymentMethodTypes": paymentMethodTypes])
     }
     
     func primerHeadlessUniversalCheckoutTokenizationStarted(paymentMethodType: String) {
-        sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onHUCTokenizeStart.stringValue, body: ["paymentMethod": paymentMethodType])
+        sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onHUCTokenizeStart.stringValue, body: ["paymentMethodType": paymentMethodType])
     }
     
     func primerHeadlessUniversalCheckoutPaymentMethodPresented(paymentMethodType: String) {
-        sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onHUCPaymentMethodPresent.stringValue, body: ["paymentMethod": paymentMethodType])
+        sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onHUCPaymentMethodShow.stringValue, body: ["paymentMethodType": paymentMethodType])
     }
     
     func primerHeadlessUniversalCheckoutDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {

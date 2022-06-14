@@ -1,4 +1,9 @@
-import type { PrimerErrorHandler, PrimerPaymentCreationHandler, PrimerResumeHandler, PrimerTokenizationHandler } from "./Primer";
+import type { 
+  PrimerErrorHandler, 
+  PrimerPaymentCreationHandler, 
+  PrimerResumeHandler, 
+  PrimerTokenizationHandler 
+} from "./PrimerInterfaces";
 import type { PrimerCheckoutData } from "./PrimerCheckoutData";
 import type { PrimerCheckoutPaymentMethodData } from "./PrimerCheckoutPaymentMethodData";
 import type { PrimerClientSession } from "./PrimerClientSession";
@@ -31,8 +36,8 @@ interface IPrimerSettings {
   // Only on HUC
   onHUCPrepareStart?: (paymentMethod: string) => void;
   onHUCTokenizeStart?: (paymentMethod: string) => void;
-  onHUCPaymentMethodPresent?: (paymentMethod: string) => void;
-  onHUCClientSessionSetup?: (paymentMethods: string[]) => void;
+  onHUCPaymentMethodShow?: (paymentMethod: string) => void;
+  onHUCAvailablePaymentMethodsLoaded?: (paymentMethods: string[]) => void;
 }
 
 //----------------------------------------
