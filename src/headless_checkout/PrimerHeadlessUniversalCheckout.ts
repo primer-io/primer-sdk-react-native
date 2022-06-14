@@ -279,10 +279,10 @@ class PrimerHeadlessUniversalCheckoutClass {
     });
   }
 
-  async showPaymentMethod(paymentMethod: string): Promise<void> {
+  async showPaymentMethod(paymentMethodType: string): Promise<void> {
     return new Promise(async (resolve, reject) => {
       try {
-        await RNPrimerHeadlessUniversalCheckout.showPaymentMethod(paymentMethod);
+        await RNPrimerHeadlessUniversalCheckout.showPaymentMethod(paymentMethodType);
         resolve();
       } catch (err) {
         reject(err);
@@ -290,11 +290,11 @@ class PrimerHeadlessUniversalCheckoutClass {
     });
   }
 
-  getAssetForPaymentMethod(
+  getAssetForPaymentMethodType(
     paymentMethodType: string,
     assetType: 'logo' | 'icon'
   ): Promise<string> {
-    return RNPrimerHeadlessUniversalCheckout.getAssetForPaymentMethod(
+    return RNPrimerHeadlessUniversalCheckout.getAssetForPaymentMethodType(
       paymentMethodType,
       assetType
     );

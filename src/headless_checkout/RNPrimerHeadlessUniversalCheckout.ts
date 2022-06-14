@@ -54,7 +54,7 @@ const RNPrimerHeadlessUniversalCheckout = {
   ///////////////////////////////////////////
   // Native API
   ///////////////////////////////////////////
-  getAssetForPaymentMethod: (
+  getAssetForPaymentMethodType: (
     paymentMethodType: string,
     assetType: 'logo' | 'icon'
   ): Promise<string> => {
@@ -114,10 +114,10 @@ const RNPrimerHeadlessUniversalCheckout = {
     });
   },
 
-  showPaymentMethod: (paymentMethod: string): Promise<void> => {
+  showPaymentMethod: (paymentMethodType: string): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {
-        await PrimerHeadlessUniversalCheckout.showPaymentMethod(paymentMethod);
+        await PrimerHeadlessUniversalCheckout.showPaymentMethod(paymentMethodType);
         resolve();
       } catch (err) {
         reject(err);
