@@ -63,7 +63,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
 
   const onHUCClientSessionSetup = (paymentMethods: string[]) => {
     console.log(`HUC did set up client session for payment methods ${JSON.stringify(paymentMethods)}`);
-    setIsLoading(true);
+    setIsLoading(false);
     setLoadingMessage(`HUC did set up client session for payment methods ${JSON.stringify(paymentMethods)}`);
   };
 

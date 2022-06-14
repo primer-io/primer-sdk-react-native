@@ -10,10 +10,12 @@ import com.primerioreactnative.extensions.toPrimerPaymentMethodDataRN
 import com.primerioreactnative.huc.events.PrimerHeadlessUniversalCheckoutEvent
 import com.primerioreactnative.utils.PrimerHeadlessUniversalCheckoutImplementedRNCallbacks
 import com.primerioreactnative.utils.errorTo
+import io.primer.android.ExperimentalPrimerApi
 import io.primer.android.completion.PrimerPaymentCreationDecisionHandler
 import io.primer.android.completion.PrimerResumeDecisionHandler
 import io.primer.android.components.PrimerHeadlessUniversalCheckoutListener
 import io.primer.android.components.domain.core.models.PrimerHeadlessUniversalCheckoutPaymentMethod
+import io.primer.android.data.configuration.models.PrimerPaymentMethodType
 import io.primer.android.domain.PrimerCheckoutData
 import io.primer.android.domain.action.models.PrimerClientSession
 import io.primer.android.domain.error.models.PrimerError
@@ -23,6 +25,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
 
+@OptIn(ExperimentalPrimerApi::class)
 class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckoutListener {
   private var paymentCreationDecisionHandler: ((errorMessage: String?) -> Unit)? = null
   private var tokenizeSuccessDecisionHandler: ((resumeToken: String?, errorMessage: String?) -> Unit)? =
@@ -39,31 +42,53 @@ class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckou
 
   var successCallback: Callback? = null
 
-  override fun onTokenizationPreparation() {
-    if (implementedRNCallbacks?.isOnHUCPrepareStartImplemented == true) {
+  override fun onClientSessionSetupSuccessfully(paymentMethods: List<PrimerHeadlessUniversalCheckoutPaymentMethod>) {
+    if (implementedRNCallbacks?.isOnHUCClientSessionSetupImplemented == true) {
       sendEvent?.invoke(
-        PrimerHeadlessUniversalCheckoutEvent.ON_HUC_PREPARE_START.eventName,
-        null
+        PrimerHeadlessUniversalCheckoutEvent.ON_HUC_CLIENT_SESSION_SETUP.eventName,
+        JSONObject().apply {
+          put("paymentMethods", paymentMethods.map { it.paymentMethodType.name })
+        }
+      )
+      successCallback?.invoke(
+        Arguments.fromList(paymentMethods.map { it.paymentMethodType.name })
       )
     } else {
-      super.onTokenizationPreparation()
+      super.onClientSessionSetupSuccessfully(paymentMethods)
     }
   }
 
-  override fun onClientSessionSetupSuccessfully(paymentMethods: List<PrimerHeadlessUniversalCheckoutPaymentMethod>) {
-    //  if (implementedRNCallbacks?.isOnHUCClientSessionSetupImplemented == true) {
-    sendEvent?.invoke(
-      PrimerHeadlessUniversalCheckoutEvent.ON_HUC_CLIENT_SESSION_SETUP.eventName,
-      JSONObject().apply {
-        put("paymentMethods", paymentMethods.map { it.paymentMethodType.name })
-      }
-    )
-    successCallback?.invoke(
-      Arguments.fromList(paymentMethods.map { it.paymentMethodType.name })
-    )
-//    } else {
-//      super.onClientSessionSetupSuccessfully(paymentMethods)
-//    }
+  override fun onPreparationStarted(paymentMethodType: PrimerPaymentMethodType) {
+    if (implementedRNCallbacks?.isOnHUCPrepareStartImplemented == true) {
+      sendEvent?.invoke(
+        PrimerHeadlessUniversalCheckoutEvent.ON_HUC_PREPARE_START.eventName,
+        JSONObject(Json.encodeToString(PrimerPaymentMethodDataRN(paymentMethodType)))
+      )
+    } else {
+      super.onPreparationStarted(paymentMethodType)
+    }
+  }
+
+  override fun onPaymentMethodPresented(paymentMethodType: PrimerPaymentMethodType) {
+    if (implementedRNCallbacks?.isOnHUCPaymentMethodPresentImplemented == true) {
+      sendEvent?.invoke(
+        PrimerHeadlessUniversalCheckoutEvent.ON_HUC_PAYMENT_METHOD_PRESENT.eventName,
+        JSONObject(Json.encodeToString(PrimerPaymentMethodDataRN(paymentMethodType)))
+      )
+    } else {
+      super.onPaymentMethodPresented(paymentMethodType)
+    }
+  }
+
+  override fun onTokenizationStarted(paymentMethodType: PrimerPaymentMethodType) {
+    if (implementedRNCallbacks?.isOnHUCPrepareStartImplemented == true) {
+      sendEvent?.invoke(
+        PrimerHeadlessUniversalCheckoutEvent.ON_HUC_TOKENIZE_START.eventName,
+        JSONObject(Json.encodeToString(PrimerPaymentMethodDataRN(paymentMethodType)))
+      )
+    } else {
+      super.onTokenizationStarted(paymentMethodType)
+    }
   }
 
   override fun onCheckoutCompleted(checkoutData: PrimerCheckoutData) {

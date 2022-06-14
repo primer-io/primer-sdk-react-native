@@ -8,9 +8,11 @@ import com.primerioreactnative.datamodels.*
 import com.primerioreactnative.huc.assets.AssetsManager
 import com.primerioreactnative.huc.assets.AssetsManager.drawableToBitmap
 import com.primerioreactnative.huc.assets.AssetsManager.getFile
+import com.primerioreactnative.huc.events.PrimerHeadlessUniversalCheckoutEvent
 import com.primerioreactnative.utils.PrimerHeadlessUniversalCheckoutImplementedRNCallbacks
 import com.primerioreactnative.utils.convertJsonToMap
 import com.primerioreactnative.utils.errorTo
+import io.primer.android.ExperimentalPrimerApi
 import io.primer.android.components.PrimerHeadlessUniversalCheckout
 import io.primer.android.components.ui.assets.ImageType
 import io.primer.android.data.configuration.models.PaymentMethodType
@@ -20,7 +22,8 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
 
-class PrimerHeadlessUniversalCheckout(
+@ExperimentalPrimerApi
+class PrimerRNHeadlessUniversalCheckout(
   private val reactContext: ReactApplicationContext,
   private val json: Json,
 ) : ReactContextBaseJavaModule(reactContext) {
@@ -68,12 +71,20 @@ class PrimerHeadlessUniversalCheckout(
   }
 
   @ReactMethod
-  fun showPaymentMethod(paymentMethodType: String) {
-    val primerPaymentMethodType = PrimerPaymentMethodType.valueOf(paymentMethodType)
-    PrimerHeadlessUniversalCheckout.current.showPaymentMethod(
-      reactContext,
-      primerPaymentMethodType
-    )
+  fun showPaymentMethod(paymentMethodTypeStr: String, promise: Promise) {
+    val primerPaymentMethodType = PrimerPaymentMethodType.safeValueOf(paymentMethodTypeStr)
+    if (primerPaymentMethodType == PaymentMethodType.UNKNOWN) {
+      val exception =
+        ErrorTypeRN.NativeBridgeFailed errorTo "Payment method type $paymentMethodTypeStr is not valid."
+      onError(exception)
+      promise.reject(exception.errorId, exception.description)
+    } else {
+      PrimerHeadlessUniversalCheckout.current.showPaymentMethod(
+        reactContext,
+        primerPaymentMethodType
+      )
+      promise.resolve(null)
+    }
   }
 
   @ReactMethod
@@ -89,13 +100,13 @@ class PrimerHeadlessUniversalCheckout(
     successCallback: Callback
   ) {
 
-    val primerPaymentMethodType = PrimerPaymentMethodType.valueOf(paymentMethodType)
+    val primerPaymentMethodType = PrimerPaymentMethodType.safeValueOf(paymentMethodType)
     val type = ImageType.values().find { it.name.equals(assetType, ignoreCase = true) }
     when {
       primerPaymentMethodType == PaymentMethodType.UNKNOWN -> {
         errorCallback.invoke(
           json.encodeToString(
-            ErrorTypeRN.AssetMissing errorTo
+            ErrorTypeRN.InvalidPaymentMethodType errorTo
               "Asset for $paymentMethodType does not exist, make sure you don't have any typos."
           )
         )
@@ -120,7 +131,7 @@ class PrimerHeadlessUniversalCheckout(
           errorCallback.invoke(
             json.encodeToString(
               ErrorTypeRN.AssetMissing errorTo
-                "Failed to find $paymentMethodType for $assetType"
+                "Failed to find $assetType for $paymentMethodType"
             )
           )
         }
@@ -210,7 +221,7 @@ class PrimerHeadlessUniversalCheckout(
       val checkoutData = prepareData(checkoutDataJson)
       params.putMap(Keys.CHECKOUT_DATA, checkoutData)
     }
-    sendEvent(PrimerEvents.ON_ERROR.eventName, params)
+    sendEvent(PrimerHeadlessUniversalCheckoutEvent.ON_ERROR.eventName, params)
   }
 
   private fun sendEvent(name: String, params: WritableMap) {
