@@ -7,7 +7,7 @@ const eventEmitter = new NativeEventEmitter(PrimerHeadlessUniversalCheckout);
 type EventType =
   | 'onHUCTokenizeStart'
   | 'onHUCPrepareStart'
-  | 'onHUCClientSessionSetup'
+  | 'onHUCAvailablePaymentMethodsLoaded'
   | 'onHUCPaymentMethodShow'
   | 'onTokenizeSuccess'
   | 'onResumeSuccess'
@@ -20,7 +20,7 @@ type EventType =
 const eventTypes: EventType[] = [
   'onHUCTokenizeStart',
   'onHUCPrepareStart',
-  'onHUCClientSessionSetup',
+  'onHUCAvailablePaymentMethodsLoaded',
   'onHUCPaymentMethodShow',
   'onTokenizeSuccess',
   'onResumeSuccess',

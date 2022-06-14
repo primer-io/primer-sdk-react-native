@@ -13,7 +13,7 @@ enum PrimerHeadlessUniversalCheckoutEvents: Int, CaseIterable {
     
     case onHUCTokenizeStart = 0
     case onHUCPrepareStart
-    case onHUCClientSessionSetup
+    case onHUCAvailablePaymentMethodsLoaded
     case onHUCPaymentMethodShow
     case onTokenizeSuccess
     case onResumeSuccess
@@ -43,8 +43,8 @@ enum PrimerHeadlessUniversalCheckoutEvents: Int, CaseIterable {
             return "onClientSessionUpdate"
         case .onCheckoutComplete:
             return "onCheckoutComplete"
-        case .onHUCClientSessionSetup:
-            return "onHUCClientSessionSetup"
+        case .onHUCAvailablePaymentMethodsLoaded:
+            return "onHUCAvailablePaymentMethodsLoaded"
         case .onError:
             return "onError"
         }
@@ -298,7 +298,6 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
     public func setImplementedRNCallbacks(_ implementedRNCallbacksStr: String, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
         DispatchQueue.main.async {
             do {
-                print("implementedRNCallbacksStr:\n\(implementedRNCallbacksStr)")
                 guard let implementedRNCallbacksData = implementedRNCallbacksStr.data(using: .utf8) else {
                     let err = NSError(domain: "native-bridge", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to convert string to data"])
                     throw err
@@ -324,7 +323,7 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
                let json = try? JSONSerialization.jsonObject(with: data){
                 body["checkoutData"] = json
             }
-            print(body)
+
             self.sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onError.stringValue, body: body)
         }
     }
@@ -338,8 +337,8 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
         sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onHUCPrepareStart.stringValue, body: ["paymentMethodType": paymentMethodType])
     }
     
-    func primerHeadlessUniversalCheckoutClientSessionDidSetUpSuccessfully(paymentMethods: [String]) {
-        sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onHUCClientSessionSetup.stringValue, body: ["paymentMethodTypes": paymentMethods])
+    func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethodTypes: [String]) {
+        sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onHUCAvailablePaymentMethodsLoaded.stringValue, body: ["paymentMethodTypes": paymentMethodTypes])
     }
     
     func primerHeadlessUniversalCheckoutTokenizationStarted(paymentMethodType: String) {

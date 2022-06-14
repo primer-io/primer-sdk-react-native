@@ -168,13 +168,13 @@ async function configureListeners(): Promise<void> {
         );
       }
 
-      if (implementedRNCallbacks.onHUCClientSessionSetup) {
+      if (implementedRNCallbacks.onHUCAvailablePaymentMethodsLoaded) {
         RNPrimerHeadlessUniversalCheckout.addListener(
-          'onHUCClientSessionSetup',
+          'onHUCAvailablePaymentMethodsLoaded',
           (data) => {
-            console.log('onHUCClientSessionSetup');
-            if (primerSettings && primerSettings.onHUCClientSessionSetup) {
-              primerSettings.onHUCClientSessionSetup(data.paymentMethodTypes || ['not implemented']);
+            console.log('onHUCAvailablePaymentMethodsLoaded');
+            if (primerSettings && primerSettings.onHUCAvailablePaymentMethodsLoaded) {
+              primerSettings.onHUCAvailablePaymentMethodsLoaded(data.paymentMethodTypes || ['not implemented']);
             } else {
               // Ignore!
             }

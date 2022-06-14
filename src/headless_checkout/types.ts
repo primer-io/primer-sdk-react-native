@@ -28,5 +28,5 @@ export interface PrimerHeadlessUniversalCheckoutCallbacks {
   onHUCPrepareStart?: (paymentMethod: string) => void;
   onHUCTokenizeStart?: (paymentMethod: string) => void;
   onHUCPaymentMethodShow?: (paymentMethod: string) => void;
-  onHUCClientSessionSetup?: (paymentMethods: string[]) => void;
+  onHUCAvailablePaymentMethodsLoaded?: (paymentMethods: string[]) => void;
 }
