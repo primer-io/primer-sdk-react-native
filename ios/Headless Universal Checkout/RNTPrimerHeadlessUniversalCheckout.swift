@@ -225,6 +225,7 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
     @objc
     public func handleTokenizationSuccess(_ resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
         DispatchQueue.main.async {
+            
             self.primerDidTokenizePaymentMethodDecisionHandler?(nil, nil)
             self.primerDidTokenizePaymentMethodDecisionHandler = nil
             resolver(nil)
@@ -254,18 +255,16 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
     @objc
     public func handleResumeSuccess(_ resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
         DispatchQueue.main.async {
-            self.primerDidResumeWithDecisionHandler?(nil, nil)
-            self.primerDidResumeWithDecisionHandler = nil
-            resolver(nil)
+            let err = NSError(domain: "native-bridge", code: 0, userInfo: [NSLocalizedDescriptionKey: "PrimerTokenizationHandler's handleSuccess function is not available on HUC."])
+            rejecter(err.rnError["errorId"]!, err.rnError["description"], err)
         }
     }
     
     @objc
     public func handleResumeFailure(_ errorMessage: String?, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
         DispatchQueue.main.async {
-            self.primerDidResumeWithDecisionHandler?(nil, errorMessage ?? "")
-            self.primerDidResumeWithDecisionHandler = nil
-            resolver(nil)
+            let err = NSError(domain: "native-bridge", code: 0, userInfo: [NSLocalizedDescriptionKey: "PrimerTokenizationHandler's handleFailure function is not available on HUC."])
+            rejecter(err.rnError["errorId"]!, err.rnError["description"], err)
         }
     }
     
