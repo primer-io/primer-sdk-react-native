@@ -266,7 +266,7 @@ class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckou
     this.implementedRNCallbacks = implementedRNCallbacks
   }
 
-  private fun removeCallbacksAndHandlers() {
+  fun removeCallbacksAndHandlers() {
     paymentCreationDecisionHandler = null
     tokenizeSuccessDecisionHandler = null
     resumeSuccessDecisionHandler = null
