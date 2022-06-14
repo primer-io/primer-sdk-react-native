@@ -335,19 +335,19 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
 extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDelegate {
 
     func primerHeadlessUniversalCheckoutPreparationStarted(paymentMethodType: String) {
-        sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onHUCPrepareStart.stringValue, body: ["paymentMethod": paymentMethodType])
+        sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onHUCPrepareStart.stringValue, body: ["paymentMethodType": paymentMethodType])
     }
     
     func primerHeadlessUniversalCheckoutClientSessionDidSetUpSuccessfully(paymentMethods: [String]) {
-        sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onHUCClientSessionSetup.stringValue, body: ["paymentMethods": paymentMethods])
+        sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onHUCClientSessionSetup.stringValue, body: ["paymentMethodTypes": paymentMethods])
     }
     
     func primerHeadlessUniversalCheckoutTokenizationStarted(paymentMethodType: String) {
-        sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onHUCTokenizeStart.stringValue, body: ["paymentMethod": paymentMethodType])
+        sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onHUCTokenizeStart.stringValue, body: ["paymentMethodType": paymentMethodType])
     }
     
     func primerHeadlessUniversalCheckoutPaymentMethodPresented(paymentMethodType: String) {
-        sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onHUCPaymentMethodPresent.stringValue, body: ["paymentMethod": paymentMethodType])
+        sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onHUCPaymentMethodPresent.stringValue, body: ["paymentMethodType": paymentMethodType])
     }
     
     func primerHeadlessUniversalCheckoutDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
