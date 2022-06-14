@@ -16,4 +16,6 @@ enum class ErrorTypeRN {
   InitFailed,
   CheckoutFlowFailed,
   TokenizationFailed,
+  AssetMissing,
+  AssetMismatch
 }

@@ -1,7 +1,8 @@
+import PrimerHeadlessUniversalCheckout from './headless_checkout/PrimerHeadlessUniversalCheckout';
 import type { IPrimer } from './models/primer';
 import { PrimerNativeMapping } from './Primer';
-// import type { IPrimerConfig as PrimerConfig } from './models/primer-config';
+export * from './PrimerInput';
 
 const Primer: IPrimer = PrimerNativeMapping;
 
-export { Primer };
+export { Primer, PrimerHeadlessUniversalCheckout as HeadlessUniversalCheckout };

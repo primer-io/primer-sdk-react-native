@@ -3,20 +3,16 @@ import * as React from 'react';
 import { Primer } from '@primer-io/react-native';
 import { View, Text, useColorScheme, TouchableOpacity } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
-import { createClientSession, createPayment, resumePayment, setClientSessionActions } from '../network/api';
+import { createClientSession, createClientSessionRequestBody, createPayment, resumePayment } from '../network/api';
 import { styles } from '../styles';
 import type { IAppSettings } from '../models/IAppSettings';
 import type { IClientSessionRequestBody } from '../models/IClientSessionRequestBody';
-import type { OnClientSessionActionsCallback, OnPrimerErrorCallback, OnTokenizeSuccessCallback } from 'lib/typescript/models/primer-callbacks';
+import type { OnPrimerErrorCallback, OnTokenizeSuccessCallback } from 'lib/typescript/models/primer-callbacks';
 import type { IClientSession } from '../models/IClientSession';
-import { makeRandomString } from '../helpers/helpers';
 import type { IPayment } from '../models/IPayment';
 import type { PrimerPaymentMethodIntent } from 'lib/typescript/models/primer-intent';
 import type { OnResumeCallback } from 'src/models/primer-callbacks';
-import type { PrimerConfig } from 'lib/typescript/models/primer-config';
 import type { PaymentInstrumentToken } from 'src/models/payment-instrument-token';
-import type { IPrimerError } from 'src/RNPrimer';
-import type { PrimerResumeHandler } from 'src/models/primer-request';
 
 let currentClientToken: string | null = null;
 let paymentId: string | null = null;
@@ -30,105 +26,13 @@ const CheckoutScreen = (props: any) => {
     };
 
     const appSettings: IAppSettings = props.route.params;
-
-    const clientSessionRequestBody: IClientSessionRequestBody = {
-        customerId: appSettings.customerId,
-        orderId: 'rn-test-' + makeRandomString(8),
-        currencyCode: appSettings.currencyCode,
-        order: {
-            countryCode: appSettings.countryCode,
-            lineItems: [
-                {
-                    amount: appSettings.amount,
-                    quantity: 1,
-                    itemId: 'item-123',
-                    description: 'this item',
-                    discountAmount: 0,
-                },
-            ],
-        },
-        customer: {
-            emailAddress: 'test@mail.com',
-            mobileNumber: appSettings.phoneNumber,
-            firstName: 'John',
-            lastName: 'Doe',
-            billingAddress: {
-                firstName: 'John',
-                lastName: 'Doe',
-                postalCode: '12345',
-                addressLine1: '1 test',
-                addressLine2: undefined,
-                countryCode: appSettings.countryCode,
-                city: 'test',
-                state: 'test',
-            },
-            shippingAddress: {
-                firstName: 'John',
-                lastName: 'Doe',
-                addressLine1: '1 test',
-                postalCode: '12345',
-                city: 'test',
-                state: 'test',
-                countryCode: appSettings.countryCode,
-            },
-            nationalDocumentId: '9011211234567',
-        },
-        paymentMethod: {
-            vaultOnSuccess: false,
-            // options: {
-            //     GOOGLE_PAY: {
-            //         surcharge: {
-            //             amount: 50,
-            //         },
-            //     },
-            //     ADYEN_IDEAL: {
-            //         surcharge: {
-            //             amount: 50,
-            //         },
-            //     },
-            //     ADYEN_SOFORT: {
-            //         surcharge: {
-            //             amount: 50,
-            //         },
-            //     },
-            //     APPLE_PAY: {
-            //         surcharge: {
-            //             amount: 150,
-            //         },
-            //     },
-            //     PAYMENT_CARD: {
-            //         networks: {
-            //             VISA: {
-            //                 surcharge: {
-            //                     amount: 100,
-            //                 },
-            //             },
-            //             MASTERCARD: {
-            //                 surcharge: {
-            //                     amount: 200,
-            //                 },
-            //             },
-            //         },
-            //     },
-            // },
-        },
-    };
-
-    // const onClientSessionActions: OnClientSessionActionsCallback = async (clientSessionActions, resumeHandler) => {
-    //     if (currentClientToken) {
-    //         const clientSessionActionsRequestBody: any = {
-    //             clientToken: currentClientToken,
-    //             actions: clientSessionActions
-    //         };
-
-    //         const clientSession: IClientSession = await setClientSessionActions(clientSessionActionsRequestBody);
-    //         currentClientToken = clientSession.clientToken;
-    //         resumeHandler.handleNewClientToken(currentClientToken);
-    //     } else {
-    //         const err = new Error("Failed to find client token");
-    //         resumeHandler.handleError(err.message);
-    //     }
-    // }
+    const clientSessionRequestBody: IClientSessionRequestBody = createClientSessionRequestBody(
+        appSettings.amount,
+        appSettings.currencyCode,
+        appSettings.countryCode,
+        appSettings.customerId || null,
+        appSettings.phoneNumber || null,
+        false);
 
     const onTokenizeSuccess: OnTokenizeSuccessCallback = async (paymentInstrument, resumeHandler) => {
         console.log(`onTokenizeSuccess\npaymentInstrument: ${JSON.stringify(paymentInstrument)}`);
@@ -150,10 +54,13 @@ const CheckoutScreen = (props: any) => {
         } catch (err) {
             if (resumeHandler) {
                 if (err instanceof Error) {
+                    //@ts-ignore
                     resumeHandler.handleError(err.message);
                 } else if (typeof err === "string") {
+                    //@ts-ignore
                     resumeHandler.handleError(err);
                 } else {
+                    //@ts-ignore
                     resumeHandler.handleError('Unknown error');
                 }
             }
@@ -410,6 +317,7 @@ const CheckoutScreen = (props: any) => {
             const clientSession: IClientSession = await createClientSession(clientSessionRequestBody);
             currentClientToken = clientSession.clientToken;
 
+            //@ts-ignore
             const primerConfig: PrimerConfig = {
                 settings: {
                     options: {
@@ -454,6 +362,7 @@ const CheckoutScreen = (props: any) => {
             const clientSession: IClientSession = await createClientSession(clientSessionRequestBody);
             currentClientToken = clientSession.clientToken;
 
+            //@ts-ignore
             const primerConfig: PrimerConfig = {
                 settings: {
                     options: {

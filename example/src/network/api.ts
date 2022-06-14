@@ -3,12 +3,122 @@ import { environment } from '../screens/SettingsScreen';
 import { getEnvironmentStringVal } from '../models/Environment';
 import type { IClientSessionActionsRequestBody, IClientSessionRequestBody } from '../models/IClientSessionRequestBody';
 import type { IPayment } from '../models/IPayment';
+import { makeRandomString } from '../helpers/helpers';
 
 const baseUrl = 'https://us-central1-primerdemo-8741b.cloudfunctions.net/api';
 
 let staticHeaders = {
     'Content-Type': 'application/json',
     'environment': getEnvironmentStringVal(environment),
+}
+
+export function createClientSessionRequestBody(
+    amount: number | null,
+    currencyCode: string,
+    countryCode: string,
+    customerId: string | null,
+    phoneNumber: string | null,
+    isSurchargeEnabled: boolean
+): IClientSessionRequestBody {
+    let clientSessionRequestBody: IClientSessionRequestBody = {
+        customerId: customerId || undefined,
+        orderId: 'rn-test-' + makeRandomString(8),
+        currencyCode: currencyCode,
+        customer: {
+            emailAddress: 'test@mail.com',
+            mobileNumber: phoneNumber || undefined,
+            firstName: 'John',
+            lastName: 'Doe',
+            billingAddress: {
+                firstName: 'John',
+                lastName: 'Doe',
+                postalCode: '12345',
+                addressLine1: '1 test',
+                addressLine2: undefined,
+                countryCode: countryCode,
+                city: 'test',
+                state: 'test',
+            },
+            shippingAddress: {
+                firstName: 'John',
+                lastName: 'Doe',
+                addressLine1: '1 test',
+                postalCode: '12345',
+                city: 'test',
+                state: 'test',
+                countryCode: countryCode,
+            },
+            nationalDocumentId: '9011211234567',
+        },
+        paymentMethod: {
+            vaultOnSuccess: false
+        },
+    };
+
+    if (amount) {
+        clientSessionRequestBody.order = {
+            countryCode: countryCode,
+            lineItems: [
+                {
+                    amount: amount,
+                    quantity: 1,
+                    itemId: 'item-123',
+                    description: 'this item',
+                    discountAmount: 0,
+                },
+            ],
+        }
+
+        if (clientSessionRequestBody.customerId === undefined) {
+            // If there's an amount, it's the checkout flow.
+            // A customerId is needed
+            clientSessionRequestBody.customerId = `rn-customer-${makeRandomString(8)}`;
+        }
+    }
+
+    if (isSurchargeEnabled) {
+        clientSessionRequestBody.paymentMethod = {
+            vaultOnSuccess: false,
+            options: {
+                GOOGLE_PAY: {
+                    surcharge: {
+                        amount: 50,
+                    },
+                },
+                ADYEN_IDEAL: {
+                    surcharge: {
+                        amount: 50,
+                    },
+                },
+                ADYEN_SOFORT: {
+                    surcharge: {
+                        amount: 50,
+                    },
+                },
+                APPLE_PAY: {
+                    surcharge: {
+                        amount: 150,
+                    },
+                },
+                PAYMENT_CARD: {
+                    networks: {
+                        VISA: {
+                            surcharge: {
+                                amount: 100,
+                            },
+                        },
+                        MASTERCARD: {
+                            surcharge: {
+                                amount: 200,
+                            },
+                        },
+                    },
+                },
+            },
+        }
+    }
+
+    return clientSessionRequestBody;
 }
 
 export const createClientSession = async (body: IClientSessionRequestBody) => {

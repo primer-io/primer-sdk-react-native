@@ -1,30 +1,33 @@
 import React from 'react';
-import { useColorScheme } from 'react-native';
-
-import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { HeadlessCheckoutScreen } from './screens/HeadlessCheckoutScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import CheckoutScreen from './screens/CheckoutScreen';
-import ResultScreen from './screens/ResultScreen';
 
 const Stack = createNativeStackNavigator();
 
 const App = () => {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
   return (
-      <NavigationContainer>
-        <Stack.Navigator>
-          <Stack.Screen name="Settings" component={SettingsScreen} />
-          <Stack.Screen name="Checkout" component={CheckoutScreen} />
-          <Stack.Screen name="Result" component={ResultScreen} />
-        </Stack.Navigator>
-      </NavigationContainer>
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen
+          name="Settings"
+          component={SettingsScreen}
+          options={{ title: 'Settings' }}
+        />
+        <Stack.Screen
+          name="HUC"
+          component={HeadlessCheckoutScreen}
+          options={{ title: 'Headless Universal Checkout' }}
+        />
+        <Stack.Screen
+          name="UniversalCheckout"
+          component={CheckoutScreen}
+          options={{ title: 'Universal Checkout' }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 };
 

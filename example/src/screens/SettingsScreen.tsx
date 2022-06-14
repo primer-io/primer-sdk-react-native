@@ -170,7 +170,7 @@ const SettingsScreen = ({ navigation }) => {
                                 phoneNumber: phoneNumber || undefined,
                             };
 
-                            navigation.navigate('Checkout', appSettings);
+                            navigation.navigate('UniversalCheckout', appSettings);
                         }
                     }}
                 >
@@ -186,20 +186,20 @@ const SettingsScreen = ({ navigation }) => {
                     onPress={() => {
                         console.log(`Amount: ${amount}\nCurrency: ${currency}\nCountry Code: ${countryCode}\nCustomer ID: ${customerId}\nPhone Number: ${phoneNumber}`);
                         const appSettings: IAppSettings = {
-                            amount: amount,
+                            amount: amount || 0,
                             currencyCode: currency,
                             countryCode: countryCode,
                             customerId: customerId || undefined,
                             phoneNumber: phoneNumber || undefined,
                         };
 
-                        navigation.navigate('Checkout', appSettings);
+                        navigation.navigate('HUC', appSettings);
                     }}
                 >
                     <Text
                         style={{ ...styles.buttonText, color: 'white' }}
                     >
-                        Initialize App with HUC
+                        Headless Universal Checkout
                     </Text>
                 </TouchableOpacity>
             </View>
