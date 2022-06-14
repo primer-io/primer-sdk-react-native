@@ -8,7 +8,7 @@ type EventType =
   | 'onHUCTokenizeStart'
   | 'onHUCPrepareStart'
   | 'onHUCClientSessionSetup'
-  | 'onHUCPaymentMethodPresent'
+  | 'onHUCPaymentMethodShow'
   | 'onTokenizeSuccess'
   | 'onResumeSuccess'
   | 'onBeforePaymentCreate'
@@ -21,7 +21,7 @@ const eventTypes: EventType[] = [
   'onHUCTokenizeStart',
   'onHUCPrepareStart',
   'onHUCClientSessionSetup',
-  'onHUCPaymentMethodPresent',
+  'onHUCPaymentMethodShow',
   'onTokenizeSuccess',
   'onResumeSuccess',
   'onBeforePaymentCreate',

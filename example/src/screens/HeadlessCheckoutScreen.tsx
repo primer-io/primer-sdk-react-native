@@ -57,8 +57,8 @@ export const HeadlessCheckoutScreen = (props: any) => {
     setIsLoading(true);
   };
 
-  const onHUCPaymentMethodPresent = (paymentMethod: string) => {
-    updateLogs(`\nℹ️ HUC presented ${paymentMethod}`);
+  const onHUCPaymentMethodShow = (paymentMethod: string) => {
+    updateLogs(`\nℹ️ HUC showed ${paymentMethod}`);
     setIsLoading(true);
   };
 
@@ -153,7 +153,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
     onTokenizeSuccess: onTokenizeSuccess,
     onResumeSuccess: onResumeSuccess,
     onHUCPrepareStart: onHUCPrepareStart,
-    onHUCPaymentMethodPresent: onHUCPaymentMethodPresent,
+    onHUCPaymentMethodShow: onHUCPaymentMethodShow,
     onHUCTokenizeStart: onHUCTokenizeStart,
     onHUCClientSessionSetup: onHUCClientSessionSetup,
     onBeforeClientSessionUpdate: onBeforeClientSessionUpdate,

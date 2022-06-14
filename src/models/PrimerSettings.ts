@@ -36,7 +36,7 @@ interface IPrimerSettings {
   // Only on HUC
   onHUCPrepareStart?: (paymentMethod: string) => void;
   onHUCTokenizeStart?: (paymentMethod: string) => void;
-  onHUCPaymentMethodPresent?: (paymentMethod: string) => void;
+  onHUCPaymentMethodShow?: (paymentMethod: string) => void;
   onHUCClientSessionSetup?: (paymentMethods: string[]) => void;
 }
 

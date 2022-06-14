@@ -14,7 +14,7 @@ enum PrimerHeadlessUniversalCheckoutEvents: Int, CaseIterable {
     case onHUCTokenizeStart = 0
     case onHUCPrepareStart
     case onHUCClientSessionSetup
-    case onHUCPaymentMethodPresent
+    case onHUCPaymentMethodShow
     case onTokenizeSuccess
     case onResumeSuccess
     case onBeforePaymentCreate
@@ -29,8 +29,8 @@ enum PrimerHeadlessUniversalCheckoutEvents: Int, CaseIterable {
             return "onHUCPrepareStart"
         case .onHUCTokenizeStart:
             return "onHUCTokenizeStart"
-        case .onHUCPaymentMethodPresent:
-            return "onHUCPaymentMethodPresent"
+        case .onHUCPaymentMethodShow:
+            return "onHUCPaymentMethodShow"
         case .onTokenizeSuccess:
             return "onTokenizeSuccess"
         case .onResumeSuccess:
@@ -347,7 +347,7 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
     }
     
     func primerHeadlessUniversalCheckoutPaymentMethodPresented(paymentMethodType: String) {
-        sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onHUCPaymentMethodPresent.stringValue, body: ["paymentMethodType": paymentMethodType])
+        sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onHUCPaymentMethodShow.stringValue, body: ["paymentMethodType": paymentMethodType])
     }
     
     func primerHeadlessUniversalCheckoutDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {

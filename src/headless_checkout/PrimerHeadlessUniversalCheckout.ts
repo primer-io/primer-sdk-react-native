@@ -106,7 +106,7 @@ async function configureListeners(): Promise<void> {
         onError: (primerSettings?.onError !== undefined),
         onHUCPrepareStart: (primerSettings?.onHUCPrepareStart !== undefined),
         onHUCTokenizeStart: (primerSettings?.onHUCTokenizeStart !== undefined),
-        onHUCPaymentMethodPresent: (primerSettings?.onHUCPaymentMethodPresent !== undefined),
+        onHUCPaymentMethodShow: (primerSettings?.onHUCPaymentMethodShow !== undefined),
       };
 
       await RNPrimerHeadlessUniversalCheckout.setImplementedRNCallbacks(implementedRNCallbacks);
@@ -154,13 +154,13 @@ async function configureListeners(): Promise<void> {
         );
       }
 
-      if (implementedRNCallbacks.onHUCPaymentMethodPresent) {
+      if (implementedRNCallbacks.onHUCPaymentMethodShow) {
         RNPrimerHeadlessUniversalCheckout.addListener(
-          'onHUCPaymentMethodPresent',
+          'onHUCPaymentMethodShow',
           (data) => {
-            console.log('onHUCPaymentMethodPresent');
-            if (primerSettings && primerSettings.onHUCPaymentMethodPresent) {
-              primerSettings.onHUCPaymentMethodPresent(data.paymentMethodType || 'not implemented');
+            console.log('onHUCPaymentMethodShow');
+            if (primerSettings && primerSettings.onHUCPaymentMethodShow) {
+              primerSettings.onHUCPaymentMethodShow(data.paymentMethodType || 'not implemented');
             } else {
               // Ignore!
             }
