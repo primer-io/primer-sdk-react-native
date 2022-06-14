@@ -148,14 +148,12 @@ class PrimerRNHeadlessUniversalCheckout(
 
   @ReactMethod
   fun handleTokenizationSuccess(promise: Promise) {
-    listener.handleTokenizationSuccess()
-    promise.resolve(null)
+    listener.handleTokenizationSuccess(promise)
   }
 
   @ReactMethod
   fun handleTokenizationFailure(errorMessage: String?, promise: Promise) {
-    listener.handleTokenizationFailure(errorMessage.orEmpty())
-    promise.resolve(null)
+    listener.handleTokenizationFailure(errorMessage.orEmpty(), promise)
   }
   // endregion
 
@@ -168,14 +166,12 @@ class PrimerRNHeadlessUniversalCheckout(
 
   @ReactMethod
   fun handleResumeSuccess(promise: Promise) {
-    listener.handleResumeSuccess()
-    promise.resolve(null)
+    listener.handleResumeSuccess(promise)
   }
 
   @ReactMethod
   fun handleResumeFailure(errorMessage: String?, promise: Promise) {
-    listener.handleResumeFailure(errorMessage.orEmpty())
-    promise.resolve(null)
+    listener.handleResumeFailure(errorMessage.orEmpty(), promise)
   }
   // endregion
 

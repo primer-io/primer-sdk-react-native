@@ -2,6 +2,7 @@ package com.primerioreactnative
 
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Callback
+import com.facebook.react.bridge.Promise
 import com.primerioreactnative.datamodels.*
 import com.primerioreactnative.extensions.toPrimerCheckoutDataRN
 import com.primerioreactnative.extensions.toPrimerClientSessionRN
@@ -210,17 +211,18 @@ class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckou
     tokenizeSuccessDecisionHandler = null
   }
 
-  fun handleTokenizationSuccess() {
-    tokenizeSuccessDecisionHandler?.invoke(null, null)
-    tokenizeSuccessDecisionHandler = null
+  fun handleTokenizationSuccess(promise: Promise) {
+    val error =
+      ErrorTypeRN.NativeBridgeFailed errorTo "PrimerTokenizationHandler's " +
+        "handleSuccess function is not available on HUC."
+    promise.reject(error.errorId, error.description)
   }
 
-  fun handleTokenizationFailure(errorMessage: String) {
-    tokenizeSuccessDecisionHandler?.invoke(
-      null,
-      errorMessage.ifBlank { null }
-    )
-    tokenizeSuccessDecisionHandler = null
+  fun handleTokenizationFailure(errorMessage: String, promise: Promise) {
+    val error =
+      ErrorTypeRN.NativeBridgeFailed errorTo "PrimerTokenizationHandler's " +
+        "handleFailure function is not available on HUC."
+    promise.reject(error.errorId, error.description)
   }
   // endregion
 
@@ -230,17 +232,18 @@ class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckou
     resumeSuccessDecisionHandler = null
   }
 
-  fun handleResumeSuccess() {
-    resumeSuccessDecisionHandler?.invoke(null, null)
-    resumeSuccessDecisionHandler = null
+  fun handleResumeSuccess(promise: Promise) {
+    val error =
+      ErrorTypeRN.NativeBridgeFailed errorTo "PrimerResumeHandler's " +
+        "handleSuccess function is not available on HUC."
+    promise.reject(error.errorId, error.description)
   }
 
-  fun handleResumeFailure(errorMessage: String) {
-    resumeSuccessDecisionHandler?.invoke(
-      null,
-      errorMessage.ifBlank { null }
-    )
-    resumeSuccessDecisionHandler = null
+  fun handleResumeFailure(errorMessage: String, promise: Promise) {
+    val error =
+      ErrorTypeRN.NativeBridgeFailed errorTo "PrimerResumeHandler's " +
+        "handleFailure function is not available on HUC."
+    promise.reject(error.errorId, error.description)
   }
   // endregion
 
