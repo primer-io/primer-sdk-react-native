@@ -273,7 +273,7 @@ DEPENDENCIES:
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - primer-io-react-native (from `../..`)
   - Primer3DS
-  - PrimerSDK (from `https://github.com/primer-io/primer-sdk-ios.git`, branch `feature/SDK_v2_1.28.0-beta.11`)
+  - PrimerSDK (from `https://github.com/primer-io/primer-sdk-ios.git`, branch `feature/SDK_v2_1.28.0-beta.13`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
   - RCTTypeSafety (from `../node_modules/react-native/Libraries/TypeSafety`)
   - React (from `../node_modules/react-native/`)
@@ -322,7 +322,7 @@ EXTERNAL SOURCES:
   primer-io-react-native:
     :path: "../.."
   PrimerSDK:
-    :branch: feature/SDK_v2_1.28.0-beta.11
+    :branch: feature/SDK_v2_1.28.0-beta.13
     :git: https://github.com/primer-io/primer-sdk-ios.git
   RCTRequired:
     :path: "../node_modules/react-native/Libraries/RCTRequired"
@@ -379,7 +379,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   PrimerSDK:
-    :commit: 2d5fe2880e02070da5fce0159f1052b1fbbff667
+    :commit: 5b1b6131af23e8e5d11a8a42279e0331f563b235
     :git: https://github.com/primer-io/primer-sdk-ios.git
 
 SPEC CHECKSUMS:
@@ -419,6 +419,6 @@ SPEC CHECKSUMS:
   RNScreens: 40a2cb40a02a609938137a1e0acfbf8fc9eebf19
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
 
-PODFILE CHECKSUM: 7d90b62e27c96d3ed5ec3743c31851b84faf4ced
+PODFILE CHECKSUM: 48c6b58faea3cca0a09da0e24f68c64ffb366d49
 
 COCOAPODS: 1.11.3
