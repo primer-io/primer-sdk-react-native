@@ -104,7 +104,7 @@ async function configureListeners(): Promise<void> {
         onResumeSuccess: (primerSettings?.onResumeSuccess !== undefined),
         onDismiss: false,
         onError: (primerSettings?.onError !== undefined),
-        onHUCClientSessionSetup: (primerSettings?.onHUCClientSessionSetup !== undefined),
+        onHUCAvailablePaymentMethodsLoaded: (primerSettings?.onHUCAvailablePaymentMethodsLoaded !== undefined),
         onHUCPrepareStart: (primerSettings?.onHUCPrepareStart !== undefined),
         onHUCTokenizeStart: (primerSettings?.onHUCTokenizeStart !== undefined),
         onHUCPaymentMethodShow: (primerSettings?.onHUCPaymentMethodShow !== undefined),
