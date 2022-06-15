@@ -88,7 +88,7 @@ class PrimerRNHeadlessUniversalCheckout(
   }
 
   @ReactMethod
-  fun disposeHeadlessCheckout() {
+  fun disposePrimerHeadlessUniversalCheckout() {
     PrimerHeadlessUniversalCheckout.current.cleanup()
     listener.removeCallbacksAndHandlers()
   }
