@@ -43,7 +43,7 @@ class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckou
   var successCallback: Callback? = null
 
   override fun onAvailablePaymentMethodsLoaded(paymentMethods: List<PrimerHeadlessUniversalCheckoutPaymentMethod>) {
-    if (implementedRNCallbacks?.isOnHUCClientSessionSetupImplemented == true) {
+    if (implementedRNCallbacks?.isOnHUCAvailablePaymentMethodsLoadedImplemented == true) {
       sendEvent?.invoke(
         PrimerHeadlessUniversalCheckoutEvent.ON_HUC_AVAILABLE_PAYMENT_METHODS_LOADED.eventName,
         JSONObject().apply {

@@ -69,7 +69,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
 
   const onHUCAvailablePaymentMethodsLoaded = (paymentMethods: string[]) => {
     updateLogs(`\nℹ️ HUC did set up client session for payment methods ${JSON.stringify(paymentMethods)}`);
-    setIsLoading(true);
+    setIsLoading(false);
   };
 
   const onCheckoutComplete = (checkoutData: PrimerCheckoutData) => {
