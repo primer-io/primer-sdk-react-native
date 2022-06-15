@@ -351,7 +351,7 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
         sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onHUCTokenizeStart.stringValue, body: ["paymentMethodType": paymentMethodType])
     }
     
-    func primerHeadlessUniversalCheckoutPaymentMethodPresented(paymentMethodType: String) {
+    func primerHeadlessUniversalCheckoutPaymentMethodShowed(paymentMethodType: String) {
         sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onHUCPaymentMethodShow.stringValue, body: ["paymentMethodType": paymentMethodType])
     }
     
@@ -385,7 +385,7 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
         }
     }
     
-    func primerHeadlessUniversalDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
+    func primerHeadlessUniversalCheckoutDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
         if self.implementedRNCallbacks?.isOnResumeSuccessImplemented == true {
             self.primerDidResumeWithDecisionHandler = { (resumeToken, errorMessage) in
                 DispatchQueue.main.async {
@@ -419,7 +419,7 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
         }
     }
     
-    func primerDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
+    func primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
         DispatchQueue.main.async {
             if self.implementedRNCallbacks?.isOnCheckoutCompleteImplemented == true {
                 do {
@@ -436,7 +436,7 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
         }
     }
     
-    func primerClientSessionWillUpdate() {
+    func primerHeadlessUniversalCheckoutClientSessionWillUpdate() {
         if self.implementedRNCallbacks?.isOnBeforeClientSessionUpdateImplemented == true {
             DispatchQueue.main.async {
                 self.sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onBeforeClientSessionUpdate.stringValue, body: nil)
@@ -446,7 +446,7 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
         }
     }
     
-    func primerClientSessionDidUpdate(_ clientSession: PrimerClientSession) {
+    func primerHeadlessUniversalCheckoutClientSessionDidUpdate(_ clientSession: PrimerClientSession) {
         if self.implementedRNCallbacks?.isOnClientSessionUpdateImplemented == true {
             do {
                 let data = try JSONEncoder().encode(clientSession)
@@ -462,7 +462,7 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
         }
     }
     
-    func primerWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) {
+    func primerHeadlessUniversalCheckoutWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) {
         if self.implementedRNCallbacks?.isOnBeforePaymentCreateImplemented == true {
             self.primerWillCreatePaymentWithDataDecisionHandler = { errorMessage in
                 DispatchQueue.main.async {
