@@ -235,6 +235,18 @@ const RNPrimerHeadlessUniversalCheckout = {
       }
     });
   },
+
+  
+  disposePrimerHeadlessUniversalCheckout: (): Promise<void> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        await PrimerHeadlessUniversalCheckout.disposePrimerHeadlessUniversalCheckout();
+        resolve();
+      } catch (err) {
+        reject(err);
+      }
+    });
+  },
 };
 
 export default RNPrimerHeadlessUniversalCheckout;

@@ -22,6 +22,8 @@ RCT_EXTERN_METHOD(showPaymentMethod:(NSString *)paymentMethodStr intent:(NSStrin
 
 RCT_EXTERN_METHOD(dismiss)
 
+RCT_EXTERN_METHOD(dispose)
+
 // MARK: - HELPERS
 
 RCT_EXTERN_METHOD(setImplementedRNCallbacks:(NSString *)implementedRNCallbacksStr resolver:(RCTPromiseResolveBlock)resolver rejecter:(RCTPromiseRejectBlock)rejecter)

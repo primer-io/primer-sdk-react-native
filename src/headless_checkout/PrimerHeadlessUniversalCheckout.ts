@@ -310,6 +310,10 @@ class PrimerHeadlessUniversalCheckoutClass {
       assetType
     );
   }
+
+  disposePrimerHeadlessUniversalCheckout(): Promise<void> {
+    return RNPrimerHeadlessUniversalCheckout.disposePrimerHeadlessUniversalCheckout();
+  }
 }
 
 const PrimerHeadlessUniversalCheckout = new PrimerHeadlessUniversalCheckoutClass();

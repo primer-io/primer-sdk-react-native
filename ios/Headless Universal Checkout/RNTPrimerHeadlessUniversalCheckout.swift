@@ -162,6 +162,11 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
         resolver(nil)
     }
     
+    @objc
+    public func disposePrimerHeadlessUniversalCheckout() {
+        
+    }
+    
     // MARK: - HELPERS
     
     private func validate(assetStr: String, assetTypeStr: String) throws {

@@ -11,6 +11,7 @@ export interface IPrimer {
     clientToken: string
   ): Promise<void>
   dismiss(): void;
+  dispose(): void;
 }
 
 export interface PrimerPaymentCreationHandler {

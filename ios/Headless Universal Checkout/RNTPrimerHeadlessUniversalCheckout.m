@@ -28,6 +28,8 @@ RCT_EXTERN_METHOD(getAssetForCardNetwork:(NSString *)cardNetworkStr
                   errorCallback:(RCTResponseSenderBlock)errorCallback
                   successCallback: (RCTResponseSenderBlock)successCallback)
 
+RCT_EXTERN_METHOD(disposePrimerHeadlessUniversalCheckout)
+
 // MARK: - HELPERS
 
 RCT_EXTERN_METHOD(setImplementedRNCallbacks:(NSString *)implementedRNCallbacksStr resolver:(RCTPromiseResolveBlock)resolver rejecter:(RCTPromiseRejectBlock)rejecter)

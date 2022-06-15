@@ -154,6 +154,11 @@ class RNTPrimer: RCTEventEmitter {
         Primer.shared.dismiss()
     }
     
+    @objc
+    public func dispose() {
+        Primer.shared.dismiss()
+    }
+    
     // MARK: - DECISION HANDLERS
     
     // MARK: Tokenization
