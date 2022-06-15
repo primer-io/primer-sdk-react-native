@@ -12,8 +12,8 @@ class ReactNativePackage : ReactPackage {
 
   override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
     return listOf(
-      PrimerRN(reactContext),
-      PrimerHeadlessUniversalCheckout(reactContext, json)
+      PrimerRN(reactContext, json),
+      PrimerRNHeadlessUniversalCheckout(reactContext, json)
     )
   }
 

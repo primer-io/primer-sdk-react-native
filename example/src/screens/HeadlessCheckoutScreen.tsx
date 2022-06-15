@@ -320,7 +320,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
       {renderTestImage()}
       {renderResponse()}
       {renderError()}
-      <ScrollView 
+      <ScrollView
         key={`${clearLogs}`}
         style={{ backgroundColor: 'lightgrey', marginVertical: 10, marginBottom: 40 }}
       >

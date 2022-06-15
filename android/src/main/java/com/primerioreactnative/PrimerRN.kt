@@ -16,9 +16,9 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
 
-class PrimerRN(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
+class PrimerRN(private val reactContext: ReactApplicationContext, private val json: Json) :
+  ReactContextBaseJavaModule(reactContext) {
   private var mListener = PrimerRNEventListener()
-  private val json = Json { ignoreUnknownKeys = true }
 
   init {
     mListener.sendEvent = { eventName, paramsJson -> sendEvent(eventName, paramsJson) }

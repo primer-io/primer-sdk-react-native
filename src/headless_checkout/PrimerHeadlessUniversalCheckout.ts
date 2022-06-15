@@ -5,8 +5,8 @@ import type { PrimerTokenizationHandler, PrimerResumeHandler, PrimerPaymentCreat
 import type { PrimerHeadlessUniversalCheckoutStartResponse } from './types';
 import type { PrimerSettings } from '../models/PrimerSettings';
 import type { PrimerClientSession } from '../models/PrimerClientSession';
-import { PrimerError } from '../models/PrimerError'; 
-import type { PrimerPaymentMethodTokenData } from '../models/PrimerPaymentMethodTokenData';  
+import { PrimerError } from '../models/PrimerError';
+import type { PrimerPaymentMethodTokenData } from '../models/PrimerPaymentMethodTokenData';
 
 ///////////////////////////////////////////
 // DECISION HANDLERS
@@ -104,6 +104,7 @@ async function configureListeners(): Promise<void> {
         onResumeSuccess: (primerSettings?.onResumeSuccess !== undefined),
         onDismiss: false,
         onError: (primerSettings?.onError !== undefined),
+        onHUCClientSessionSetup: (primerSettings?.onHUCClientSessionSetup !== undefined),
         onHUCPrepareStart: (primerSettings?.onHUCPrepareStart !== undefined),
         onHUCTokenizeStart: (primerSettings?.onHUCTokenizeStart !== undefined),
         onHUCPaymentMethodShow: (primerSettings?.onHUCPaymentMethodShow !== undefined),
