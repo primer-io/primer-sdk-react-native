@@ -1,7 +1,7 @@
 package com.primerioreactnative.huc.events
 
 internal enum class PrimerHeadlessUniversalCheckoutEvent(val eventName: String) {
-  ON_HUC_CLIENT_SESSION_SETUP("onHUCClientSessionSetup"),
+  ON_HUC_AVAILABLE_PAYMENT_METHODS_LOADED("onHUCAvailablePaymentMethodsLoaded"),
   ON_HUC_PREPARE_START("onHUCPrepareStart"),
   ON_HUC_PAYMENT_METHOD_SHOW("onHUCPaymentMethodShow"),
   ON_HUC_TOKENIZE_START("onHUCTokenizeStart"),

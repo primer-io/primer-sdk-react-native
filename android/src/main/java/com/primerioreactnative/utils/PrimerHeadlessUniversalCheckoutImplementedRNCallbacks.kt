@@ -23,8 +23,8 @@ data class PrimerHeadlessUniversalCheckoutImplementedRNCallbacks(
   val isOnHUCTokenizeStartsImplemented: Boolean? = null,
   @SerialName("onHUCPrepareStart")
   val isOnHUCPrepareStartImplemented: Boolean? = null,
-  @SerialName("onHUCClientSessionSetup")
-  val isOnHUCClientSessionSetupImplemented: Boolean? = null,
+  @SerialName("onHUCAvailablePaymentMethodsLoaded")
+  val isOnHUCAvailablePaymentMethodsLoadedImplemented: Boolean? = null,
   @SerialName("onHUCPaymentMethodShow")
   val isOnHUCPaymentMethodShowImplemented: Boolean? = null,
 )
