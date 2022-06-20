@@ -35,3 +35,4 @@ import PrimerHeadlessUniversalCheckout from './headless_checkout/PrimerHeadlessU
 export { PrimerHeadlessUniversalCheckout as HeadlessUniversalCheckout };
 export { NativeCardNumberInputElementView } from './headless_checkout/NativeCardNumberInputElementView';
 export { NativeExpiryDateInputElementView } from './headless_checkout/NativeExpiryDateInputElementView';
+export { NativeCVVInputElementView } from './headless_checkout/NativeCVVInputElementView';

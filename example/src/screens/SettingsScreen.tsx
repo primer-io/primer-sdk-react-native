@@ -19,7 +19,7 @@ import { Switch } from 'react-native';
 import { FlatList } from 'react-native';
 import TextField from '../components/TextField';
 import type { NewLineItemScreenProps } from './NewLineItemSreen';
-import { NativeCardNumberInputElementView, NativeExpiryDateInputElementView } from '@primer-io/react-native';
+import { NativeCardNumberInputElementView, NativeCVVInputElementView, NativeExpiryDateInputElementView } from '@primer-io/react-native';
 
 export interface AppPaymentParameters {
     environment: Environment;
@@ -755,6 +755,18 @@ const SettingsScreen = ({ navigation }) => {
             />
             <NativeExpiryDateInputElementView 
                 style={{ width: '100%', height: 50, flex: 1, backgroundColor: 'red' }}
+                onFocus={() => {
+                    // debugger
+                }}
+                onValueIsValid={(isValid: boolean) => {
+                    // debugger;
+                }}
+                onValueTypeDetect={(type: string) => {
+                    // debugger
+                }}
+            />
+            <NativeCVVInputElementView
+                style={{ width: '100%', height: 50, flex: 1, backgroundColor: 'yellow' }}
                 onFocus={() => {
                     // debugger
                 }}
