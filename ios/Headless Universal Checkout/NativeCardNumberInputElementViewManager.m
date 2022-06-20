@@ -11,5 +11,9 @@
 @interface RCT_EXTERN_MODULE(NativeCardNumberInputElementViewManager, RCTViewManager)
 
 RCT_EXPORT_VIEW_PROPERTY(onFocus, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onBlur, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onValueChange, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onValueIsValid, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onValueTypeDetect, RCTBubblingEventBlock)
 
 @end
