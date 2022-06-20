@@ -1,8 +1,8 @@
 import * as React from 'react';
 import {
+    NativeSyntheticEvent,
     ScrollView,
     Text,
-    TextInput,
     TouchableOpacity,
     useColorScheme,
     View,
@@ -19,6 +19,7 @@ import { Switch } from 'react-native';
 import { FlatList } from 'react-native';
 import TextField from '../components/TextField';
 import type { NewLineItemScreenProps } from './NewLineItemSreen';
+import { NativeCardNumberInputElementView } from '@primer-io/react-native';
 
 export interface AppPaymentParameters {
     environment: Environment;
@@ -740,6 +741,12 @@ const SettingsScreen = ({ navigation }) => {
             contentInsetAdjustmentBehavior="automatic"
             style={backgroundStyle}>
             {/* <Header /> */}
+            <NativeCardNumberInputElementView 
+                style={{ width: '100%', height: 50, flex: 1, backgroundColor: 'blue' }}
+                onCardNumberInputElementFocus={(e: NativeSyntheticEvent<{}>) => {
+                    debugger
+                }}
+            />
             <View
                 style={{
                     marginHorizontal: 24

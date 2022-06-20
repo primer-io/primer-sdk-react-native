@@ -10,4 +10,6 @@
 
 @interface RCT_EXTERN_MODULE(NativeCardNumberInputElementViewManager, RCTViewManager)
 
+RCT_EXPORT_VIEW_PROPERTY(onCardNumberInputElementFocus, RCTDirectEventBlock)
+
 @end

@@ -11,14 +11,27 @@ import UIKit
 @objc (NativeCardNumberInputElementViewManager)
 class NativeCardNumberInputElementViewManager: RCTViewManager {
     
-    var primerCardNumberInputElement: PrimerCardNumberInputElement!
+    var primerCardNumberInputElement: RNTCardNumberInputElement!
+    
     
     override class func requiresMainQueueSetup() -> Bool {
         return true
     }
     
     override func view() -> UIView! {
-        primerCardNumberInputElement = PrimerCardNumberInputElement(type: .cardNumber, frame: .zero)
+        primerCardNumberInputElement = RNTCardNumberInputElement(type: .cardNumber, frame: .zero)
+        primerCardNumberInputElement.inputElementDelegate = self
         return primerCardNumberInputElement
     }
+}
+
+extension NativeCardNumberInputElementViewManager: PrimerInputElementDelegate {
+    
+    func inputElementDidFocus(_ sender: PrimerInputElement) {
+        primerCardNumberInputElement?.onCardNumberInputElementFocus?(nil)
+    }
+}
+
+class RNTCardNumberInputElement: PrimerCardNumberInputElement {
+    @objc var onCardNumberInputElementFocus: RCTDirectEventBlock!
 }
