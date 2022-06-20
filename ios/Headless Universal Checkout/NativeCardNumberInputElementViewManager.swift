@@ -33,5 +33,5 @@ extension NativeCardNumberInputElementViewManager: PrimerInputElementDelegate {
 }
 
 class RNTCardNumberInputElement: PrimerCardNumberInputElement {
-    @objc var onCardNumberInputElementFocus: RCTDirectEventBlock!
+    @objc var onCardNumberInputElementFocus: RCTBubblingEventBlock!
 }
