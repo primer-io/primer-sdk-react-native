@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 
 interface NativeCardNumberInputElementViewCallbacks {
-    onCardNumberInputElementFocus?: (event: NativeSyntheticEvent<{}>) => void;
+    onFocus?: (event: NativeSyntheticEvent<{}>) => void;
 }
 
 // export const NativeCardNumberInputElementViewRaw = requireNativeComponent<NativeCardNumberInputElementViewCallbacks>(
@@ -40,19 +40,19 @@ type NativeCardNumberInputElementViewProps = ViewProps & NativeCardNumberInputEl
 
 
 export class NativeCardNumberInputElementView extends React.PureComponent<NativeCardNumberInputElementViewProps, any> {
-    _onCardNumberInputElementFocus = (event: any) => {
-      if (!this.props.onCardNumberInputElementFocus) {
+    _onFocus = (event: any) => {
+      if (!this.props.onFocus) {
         debugger;
         return;
       }
-      this.props.onCardNumberInputElementFocus(event.nativeEvent)
+      this.props.onFocus(event.nativeEvent)
     }
 
     render() {
       // Re-assign onEnd to the private _onEnd and store it in `nativeProps`
       const nativeProps = {
         ...this.props,
-        onCardNumberInputElementFocus: this._onCardNumberInputElementFocus,
+        onFocus: this._onFocus,
       }
       return (
         <NativeCardNumberInputElementViewRaw

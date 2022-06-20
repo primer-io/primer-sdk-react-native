@@ -743,7 +743,7 @@ const SettingsScreen = ({ navigation }) => {
             {/* <Header /> */}
             <NativeCardNumberInputElementView 
                 style={{ width: '100%', height: 50, flex: 1, backgroundColor: 'blue' }}
-                onCardNumberInputElementFocus={(e: NativeSyntheticEvent<{}>) => {
+                onFocus={(e: NativeSyntheticEvent<{}>) => {
                     debugger
                 }}
             />

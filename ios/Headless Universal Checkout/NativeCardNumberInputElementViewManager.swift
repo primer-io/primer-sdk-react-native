@@ -13,7 +13,6 @@ class NativeCardNumberInputElementViewManager: RCTViewManager {
     
     var primerCardNumberInputElement: RNTCardNumberInputElement!
     
-    
     override class func requiresMainQueueSetup() -> Bool {
         return true
     }
@@ -28,10 +27,10 @@ class NativeCardNumberInputElementViewManager: RCTViewManager {
 extension NativeCardNumberInputElementViewManager: PrimerInputElementDelegate {
     
     func inputElementDidFocus(_ sender: PrimerInputElement) {
-        primerCardNumberInputElement?.onCardNumberInputElementFocus?(nil)
+        primerCardNumberInputElement?.onFocus?(nil)
     }
 }
 
 class RNTCardNumberInputElement: PrimerCardNumberInputElement {
-    @objc var onCardNumberInputElementFocus: RCTBubblingEventBlock!
+    @objc var onFocus: RCTBubblingEventBlock!
 }
