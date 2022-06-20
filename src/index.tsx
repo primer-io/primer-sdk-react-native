@@ -34,3 +34,4 @@ export {
 import PrimerHeadlessUniversalCheckout from './headless_checkout/PrimerHeadlessUniversalCheckout';
 export { PrimerHeadlessUniversalCheckout as HeadlessUniversalCheckout };
 export { NativeCardNumberInputElementView } from './headless_checkout/NativeCardNumberInputElementView';
+export { NativeExpiryDateInputElementView } from './headless_checkout/NativeExpiryDateInputElementView';
