@@ -33,3 +33,4 @@ export {
 } from './models/PrimerError';
 import PrimerHeadlessUniversalCheckout from './headless_checkout/PrimerHeadlessUniversalCheckout';
 export { PrimerHeadlessUniversalCheckout as HeadlessUniversalCheckout };
+export { NativeCardNumberInputElementView } from './headless_checkout/NativeCardNumberInputElementView';
