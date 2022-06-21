@@ -10,6 +10,8 @@
 
 @interface RCT_EXTERN_MODULE(NativeCardHolderInputElementViewManager, RCTViewManager)
 
+RCT_EXPORT_VIEW_PROPERTY(placeholder, NSString)
+
 RCT_EXPORT_VIEW_PROPERTY(onFocus, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onBlur, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onValueChange, RCTBubblingEventBlock)

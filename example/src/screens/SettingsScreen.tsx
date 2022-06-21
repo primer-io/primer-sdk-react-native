@@ -763,7 +763,16 @@ const SettingsScreen = ({ navigation }) => {
                 }}
             />
             <NativeExpiryDateInputElementView 
-                style={{ width: '100%', height: 50, flex: 1, backgroundColor: 'red' }}
+                style={{ 
+                    marginHorizontal: 16, 
+                    marginVertical: 4,
+                    height: 50, 
+                    flex: 1, 
+                    borderColor: 'black',
+                    borderWidth: 1,
+                    borderRadius: 4,
+                }}
+                placeholder={'e.g. 02/25'}
                 onFocus={() => {
                     // debugger
                 }}
@@ -775,7 +784,16 @@ const SettingsScreen = ({ navigation }) => {
                 }}
             />
             <NativeCVVInputElementView
-                style={{ width: '100%', height: 50, flex: 1, backgroundColor: 'yellow' }}
+                style={{ 
+                    marginHorizontal: 16, 
+                    marginVertical: 4,
+                    height: 50, 
+                    flex: 1, 
+                    borderColor: 'black',
+                    borderWidth: 1,
+                    borderRadius: 4,
+                }}
+                placeholder={'e.g. 726'}
                 onFocus={() => {
                     // debugger
                 }}
@@ -787,7 +805,16 @@ const SettingsScreen = ({ navigation }) => {
                 }}
             />
             <NativeCardHolderInputElementView
-                style={{ width: '100%', height: 50, flex: 1, backgroundColor: 'pink' }}
+                style={{ 
+                    marginHorizontal: 16, 
+                    marginVertical: 4,
+                    height: 50, 
+                    flex: 1, 
+                    borderColor: 'black',
+                    borderWidth: 1,
+                    borderRadius: 4,
+                }}
+                placeholder={'e.g. John Smith'}
                 onFocus={() => {
                     // debugger
                 }}
