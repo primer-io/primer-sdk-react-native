@@ -5,6 +5,10 @@ import {
     NativeSyntheticEvent
 } from 'react-native';
 
+interface NativeExpiryDateElementViewGeneralProps {
+    placeholder?: string;
+}
+
 interface NativeExpiryDateInputElementViewCallbacks {
     onFocus?: () => void;
     onBlur?: () => void;
@@ -15,7 +19,7 @@ interface NativeExpiryDateInputElementViewCallbacks {
 
 const NativeExpiryDateInputElementViewRaw = requireNativeComponent('NativeExpiryDateInputElementView');
 
-type NativeExpiryDateInputElementViewProps = ViewProps & NativeExpiryDateInputElementViewCallbacks;
+type NativeExpiryDateInputElementViewProps = ViewProps & NativeExpiryDateInputElementViewCallbacks & NativeExpiryDateElementViewGeneralProps;
 
 export class NativeExpiryDateInputElementView extends React.PureComponent<NativeExpiryDateInputElementViewProps, any> {
     _onFocus = (event: any) => {

@@ -5,6 +5,10 @@ import {
     NativeSyntheticEvent
 } from 'react-native';
 
+interface NativeCVVInputElementViewGeneralProps {
+    placeholder?: string;
+}
+
 interface NativeCVVInputElementViewCallbacks {
     onFocus?: () => void;
     onBlur?: () => void;
@@ -15,7 +19,7 @@ interface NativeCVVInputElementViewCallbacks {
 
 const NativeCVVInputElementViewRaw = requireNativeComponent('NativeCVVInputElementView');
 
-type NativeCVVInputElementViewProps = ViewProps & NativeCVVInputElementViewCallbacks;
+type NativeCVVInputElementViewProps = ViewProps & NativeCVVInputElementViewCallbacks & NativeCVVInputElementViewGeneralProps;
 
 export class NativeCVVInputElementView extends React.PureComponent<NativeCVVInputElementViewProps, any> {
     _onFocus = (event: any) => {

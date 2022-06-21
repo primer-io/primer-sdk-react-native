@@ -2,9 +2,12 @@ import React from 'react';
 import {
     requireNativeComponent,
     ViewProps,
-    TextProps,
     NativeSyntheticEvent
 } from 'react-native';
+
+interface NativeCardHolderInputElementViewGeneralProps {
+    placeholder?: string;
+}
 
 interface NativeCardHolderInputElementViewCallbacks {
     onFocus?: () => void;
@@ -16,7 +19,7 @@ interface NativeCardHolderInputElementViewCallbacks {
 
 const NativeCardHolderInputElementViewRaw = requireNativeComponent('NativeCardHolderInputElementView');
 
-type NativeCardHolderInputElementViewProps = ViewProps & TextProps & NativeCardHolderInputElementViewCallbacks;
+type NativeCardHolderInputElementViewProps = ViewProps & NativeCardHolderInputElementViewCallbacks & NativeCardHolderInputElementViewGeneralProps;
 
 export class NativeCardHolderInputElementView extends React.PureComponent<NativeCardHolderInputElementViewProps, any> {
     _onFocus = (event: any) => {
