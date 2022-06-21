@@ -19,7 +19,7 @@ import { Switch } from 'react-native';
 import { FlatList } from 'react-native';
 import TextField from '../components/TextField';
 import type { NewLineItemScreenProps } from './NewLineItemSreen';
-import { NativeCardNumberInputElementView, NativeCVVInputElementView, NativeExpiryDateInputElementView } from '@primer-io/react-native';
+import { NativeCardHolderInputElementView, NativeCardNumberInputElementView, NativeCVVInputElementView, NativeExpiryDateInputElementView } from '@primer-io/react-native';
 
 export interface AppPaymentParameters {
     environment: Environment;
@@ -742,7 +742,16 @@ const SettingsScreen = ({ navigation }) => {
             style={backgroundStyle}>
             {/* <Header /> */}
             <NativeCardNumberInputElementView 
-                style={{ width: '100%', height: 50, flex: 1, backgroundColor: 'blue' }}
+                style={{ 
+                    marginHorizontal: 16, 
+                    marginVertical: 4,
+                    height: 50, 
+                    flex: 1, 
+                    borderColor: 'black',
+                    borderWidth: 1,
+                    borderRadius: 4,
+                }}
+                placeholder={'e.g. 4242 4242 4242 4242'}
                 onFocus={() => {
                     debugger
                 }}
@@ -767,6 +776,18 @@ const SettingsScreen = ({ navigation }) => {
             />
             <NativeCVVInputElementView
                 style={{ width: '100%', height: 50, flex: 1, backgroundColor: 'yellow' }}
+                onFocus={() => {
+                    // debugger
+                }}
+                onValueIsValid={(isValid: boolean) => {
+                    // debugger;
+                }}
+                onValueTypeDetect={(type: string) => {
+                    // debugger
+                }}
+            />
+            <NativeCardHolderInputElementView
+                style={{ width: '100%', height: 50, flex: 1, backgroundColor: 'pink' }}
                 onFocus={() => {
                     // debugger
                 }}

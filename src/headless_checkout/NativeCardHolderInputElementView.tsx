@@ -2,14 +2,11 @@ import React from 'react';
 import {
     requireNativeComponent,
     ViewProps,
+    TextProps,
     NativeSyntheticEvent
 } from 'react-native';
 
-interface NativeCardNumberInputElementViewGeneralProps {
-    placeholder?: string;
-}
-
-interface NativeCardNumberInputElementViewCallbacks {
+interface NativeCardHolderInputElementViewCallbacks {
     onFocus?: () => void;
     onBlur?: () => void;
     onValueChange?: () => void;
@@ -17,31 +14,11 @@ interface NativeCardNumberInputElementViewCallbacks {
     onValueTypeDetect?: (type: string) => void;
 }
 
-// export const NativeCardNumberInputElementViewRaw = requireNativeComponent<NativeCardNumberInputElementViewCallbacks>(
-//     'NativeCardNumberInputElementView'
-// );
+const NativeCardHolderInputElementViewRaw = requireNativeComponent('NativeCardHolderInputElementView');
 
-const NativeCardNumberInputElementViewRaw = requireNativeComponent('NativeCardNumberInputElementView');
+type NativeCardHolderInputElementViewProps = ViewProps & TextProps & NativeCardHolderInputElementViewCallbacks;
 
-type NativeCardNumberInputElementViewProps = ViewProps & NativeCardNumberInputElementViewCallbacks & NativeCardNumberInputElementViewGeneralProps;
-
-// export const NativeCardNumberInputElementView: React.FC<NativeCardNumberInputElementViewProps> = (
-//     props: NativeCardNumberInputElementViewProps
-// ) => {
-
-//     const _onFocus = (event: NativeSyntheticEvent<{}>) => {
-//         debugger;
-//     }
-
-//     return (
-//         <NativeCardNumberInputElementViewRaw 
-//             {...props}
-//             onCardNumberInputElementFocus={_onFocus}
-//         />
-//     );
-// }
-
-export class NativeCardNumberInputElementView extends React.PureComponent<NativeCardNumberInputElementViewProps, any> {
+export class NativeCardHolderInputElementView extends React.PureComponent<NativeCardHolderInputElementViewProps, any> {
     _onFocus = (event: any) => {
         if (!this.props.onFocus) {
             return;
@@ -89,16 +66,9 @@ export class NativeCardNumberInputElementView extends React.PureComponent<Native
         }
 
         return (
-            <NativeCardNumberInputElementViewRaw
+            <NativeCardHolderInputElementViewRaw
                 {...nativeProps}
             />
         )
     }
 }
-
-//   NativeCardNumberInputElementView.propTypes = {
-//     /**
-//      *  Callback that is called when the current player item ends.
-//      */
-//      onCardNumberInputElementFocus: PropTypes.func,
-//   }
