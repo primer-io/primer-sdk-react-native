@@ -22,6 +22,19 @@ class NativeCardHolderInputElementViewManager: RCTViewManager {
         primerCardHolderInputElement.inputElementDelegate = self
         return primerCardHolderInputElement
     }
+    
+    @objc
+    func registerInputElement(_ reactTag: NSNumber) {
+        
+        self.bridge.uiManager.addUIBlock { uiManager, viewRegistry in
+            guard let view = viewRegistry?[reactTag],
+                  view.isKind(of: NativeCardHolderInputElementViewManager.self) else {
+                return
+            }
+
+            
+        }
+    }
 }
 
 extension NativeCardHolderInputElementViewManager: PrimerInputElementDelegate {
@@ -49,4 +62,6 @@ class RNTCardHolderInputElement: PrimerCardholderNameInputElement {
     @objc var onValueChange: RCTBubblingEventBlock!
     @objc var onValueIsValid: RCTBubblingEventBlock!
     @objc var onValueTypeDetect: RCTBubblingEventBlock!
+    
+    
 }

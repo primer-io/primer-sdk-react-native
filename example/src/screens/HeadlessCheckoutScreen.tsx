@@ -1,16 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import {
   HeadlessUniversalCheckout,
+  NativeCardHolderInputElementView,
+  NativeCardNumberInputElementView,
+  NativeCVVInputElementView,
+  NativeExpiryDateInputElementView,
   PrimerCheckoutData,
   PrimerClientSession,
   PrimerError,
   PrimerErrorHandler,
+  PrimerHeadlessCheckoutCardComponentsManager,
+  PrimerInputElementType,
   PrimerPaymentMethodTokenData,
   PrimerResumeHandler,
   PrimerSettings,
   PrimerTokenizationHandler
 } from '@primer-io/react-native';
 import {
+  findNodeHandle,
   Image,
   ScrollView,
   Text,
@@ -32,6 +39,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
   const [paymentResponse, setPaymentResponse] = useState<null | string>(null);
   const [localImageUrl, setLocalImageUrl] = useState<null | string>(null);
   const [clearLogs, setClearLogs] = useState<boolean>(false);
+  const [inputElementsNodes, setInputElementsNodes] = useState<React.ReactNode[] | null>(null);
   const [error, setError] = useState<null | any>(null);
 
   const updateLogs = (str: string) => {
@@ -178,9 +186,16 @@ export const HeadlessCheckoutScreen = (props: any) => {
       .then((session) => {
         setIsLoading(false);
         HeadlessUniversalCheckout.startWithClientToken(session.clientToken, settings)
-          .then((response) => {
-            updateLogs(`\nℹ️ Available payment methods:\n${JSON.stringify(response.paymentMethodTypes, null, 2)}`);
-            setPaymentMethods(response.paymentMethodTypes);
+          .then(async (response) => {
+            try {
+              const listRequiredInputElementTypes = await PrimerHeadlessCheckoutCardComponentsManager.listRequiredInputElementTypes();
+              createCardComponentsForInputElementTypes(listRequiredInputElementTypes);
+              // updateLogs(`\nℹ️ Available payment methods:\n${JSON.stringify(response.paymentMethodTypes, null, 2)}`);
+              // setPaymentMethods(response.paymentMethodTypes);
+              // PrimerHeadlessCheckoutCardComponentsManager.setInputElements('dsadas');
+            } catch (err) {
+
+            }
           })
           .catch((err) => {
             updateLogs(`\n🛑 Error:\n${JSON.stringify(err, null, 2)}`);
@@ -209,36 +224,259 @@ export const HeadlessCheckoutScreen = (props: any) => {
       });
   };
 
-  const renderPaymentMethods = () => {
-    if (!paymentMethods) {
-      return null;
-    } else {
-      return (
-        <View>
-          {paymentMethods.map((pm) => {
-            return (
-              <TouchableOpacity
-                key={pm}
-                style={{
-                  marginHorizontal: 20,
-                  marginVertical: 4,
-                  height: 50,
-                  backgroundColor: 'black',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  borderRadius: 4,
-                }}
-                onPress={() => {
-                  payWithPaymentMethod(pm);
-                }}
-              >
-                <Text style={{ color: 'white' }}>{pm}</Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-      );
+  const createCardComponentsForInputElementTypes = (inputElementTypes: PrimerInputElementType[]) => {
+    if (inputElementTypes.length === 0) { return null; }
+
+    const inputElements: React.ReactNode[] = [];
+
+    for (var inputElementType of inputElementTypes) {
+      switch (inputElementType) {
+        case PrimerInputElementType.CardNumber:
+          const props = {
+            style: {
+              marginHorizontal: 16,
+              marginVertical: 4,
+              height: 50,
+              flex: 1,
+              borderColor: 'black',
+              borderWidth: 1,
+              borderRadius: 4,
+            },
+            placeholder: 'e.g. 4242 4242 4242 4242',
+            onFocus: () => {
+              debugger
+            },
+            onValueIsValid: (isValid: boolean) => {
+
+            },
+            onValueTypeDetect: (type: string) => {
+
+            }
+          }
+          
+          const cardNumberInputElementView = <NativeCardNumberInputElementView
+            key={'NativeCardNumberInputElementView'}
+            style={{
+              marginHorizontal: 16,
+              marginVertical: 4,
+              height: 50,
+              flex: 1,
+              borderColor: 'black',
+              borderWidth: 1,
+              borderRadius: 4,
+            }}
+            placeholder={'e.g. 4242 4242 4242 4242'}
+            onFocus={() => {
+
+            }}
+            onValueIsValid={(isValid: boolean) => {
+
+            }}
+            onValueTypeDetect={(type: string) => {
+
+            }}
+          />
+
+          cardNumberInputElementView.reactTag
+
+          inputElements.push(cardNumberInputElementView);
+          break;
+
+        case PrimerInputElementType.ExpiryDate:
+          const expiryDateInputElementView = <NativeExpiryDateInputElementView
+            key={'NativeExpiryDateInputElementView'}
+            style={{
+              marginHorizontal: 16,
+              marginVertical: 4,
+              height: 50,
+              width: 200,
+              flex: 1,
+              borderColor: 'black',
+              borderWidth: 1,
+              borderRadius: 4,
+            }}
+            placeholder={'e.g. 02/25'}
+            onFocus={() => {
+              // debugger
+            }}
+            onValueIsValid={(isValid: boolean) => {
+              // debugger;
+            }}
+            onValueTypeDetect={(type: string) => {
+              // debugger
+            }}
+          />
+
+          inputElements.push(expiryDateInputElementView);
+          break;
+
+        case PrimerInputElementType.CVV:
+          const cvvInputElementView = <NativeCVVInputElementView
+            key={'NativeCVVInputElementView'}
+            style={{
+              marginHorizontal: 16,
+              marginVertical: 4,
+              height: 50,
+              flex: 1,
+              borderColor: 'black',
+              borderWidth: 1,
+              borderRadius: 4,
+            }}
+            placeholder={'e.g. 726'}
+            onFocus={() => {
+              // debugger
+            }}
+            onValueIsValid={(isValid: boolean) => {
+              // debugger;
+            }}
+            onValueTypeDetect={(type: string) => {
+              // debugger
+            }}
+          />
+
+          inputElements.push(cvvInputElementView);
+          break;
+      }
     }
+
+    setInputElementsNodes(inputElements);
+
+    PrimerHeadlessCheckoutCardComponentsManager.registerInputElements([]);
+  }
+
+  const renderPaymentMethods = () => {
+    if (!inputElementsNodes) { return null; }
+
+    return (
+      <View
+        style={{
+          backgroundColor: 'red',
+          flex: 1
+        }}
+      >
+        {
+          inputElementsNodes.map(n => {
+            return n;
+          })
+        }
+      </View>
+    )
+
+    // if (!paymentMethods) {
+    //   return null;
+    // } else {
+    //   return (
+    //     <View>
+    //       {paymentMethods.map((pm) => {
+    //         return (
+    //           <TouchableOpacity
+    //             key={pm}
+    //             style={{
+    //               marginHorizontal: 20,
+    //               marginVertical: 4,
+    //               height: 50,
+    //               backgroundColor: 'black',
+    //               justifyContent: 'center',
+    //               alignItems: 'center',
+    //               borderRadius: 4,
+    //             }}
+    //             onPress={() => {
+    //               payWithPaymentMethod(pm);
+    //             }}
+    //           >
+    //             <Text style={{ color: 'white' }}>{pm}</Text>
+    //           </TouchableOpacity>
+    //         );
+    //       })}
+    //       <View>
+    //         <NativeCardNumberInputElementView
+    //           style={{
+    //             marginHorizontal: 16,
+    //             marginVertical: 4,
+    //             height: 50,
+    //             flex: 1,
+    //             borderColor: 'black',
+    //             borderWidth: 1,
+    //             borderRadius: 4,
+    //           }}
+    //           placeholder={'e.g. 4242 4242 4242 4242'}
+    //           onFocus={() => {
+    //             debugger
+    //           }}
+    //           onValueIsValid={(isValid: boolean) => {
+    //             debugger;
+    //           }}
+    //           onValueTypeDetect={(type: string) => {
+    //             debugger
+    //           }}
+    //         />
+    //         <NativeExpiryDateInputElementView
+    //           style={{
+    //             marginHorizontal: 16,
+    //             marginVertical: 4,
+    //             height: 50,
+    //             flex: 1,
+    //             borderColor: 'black',
+    //             borderWidth: 1,
+    //             borderRadius: 4,
+    //           }}
+    //           placeholder={'e.g. 02/25'}
+    //           onFocus={() => {
+    //             // debugger
+    //           }}
+    //           onValueIsValid={(isValid: boolean) => {
+    //             // debugger;
+    //           }}
+    //           onValueTypeDetect={(type: string) => {
+    //             // debugger
+    //           }}
+    //         />
+    //         <NativeCVVInputElementView
+    //           style={{
+    //             marginHorizontal: 16,
+    //             marginVertical: 4,
+    //             height: 50,
+    //             flex: 1,
+    //             borderColor: 'black',
+    //             borderWidth: 1,
+    //             borderRadius: 4,
+    //           }}
+    //           placeholder={'e.g. 726'}
+    //           onFocus={() => {
+    //             // debugger
+    //           }}
+    //           onValueIsValid={(isValid: boolean) => {
+    //             // debugger;
+    //           }}
+    //           onValueTypeDetect={(type: string) => {
+    //             // debugger
+    //           }}
+    //         />
+    //         <NativeCardHolderInputElementView
+    //           style={{
+    //             marginHorizontal: 16,
+    //             marginVertical: 4,
+    //             height: 50,
+    //             flex: 1,
+    //             borderColor: 'black',
+    //             borderWidth: 1,
+    //             borderRadius: 4,
+    //           }}
+    //           placeholder={'e.g. John Smith'}
+    //           onFocus={() => {
+    //             // debugger
+    //           }}
+    //           onValueIsValid={(isValid: boolean) => {
+    //             // debugger;
+    //           }}
+    //           onValueTypeDetect={(type: string) => {
+    //             // debugger
+    //           }}
+    //         />
+    //       </View>
+    //     </View>
+    //   );
+    // }
   };
 
   const renderResponse = () => {

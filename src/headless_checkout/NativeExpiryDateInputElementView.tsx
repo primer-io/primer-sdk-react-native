@@ -1,9 +1,13 @@
 import React from 'react';
 import {
+    findNodeHandle,
     requireNativeComponent,
     ViewProps,
     NativeSyntheticEvent
 } from 'react-native';
+import { PrimerInputElement } from './NativeCardNumberInputElementView';
+import { PrimerHeadlessCheckoutCardComponentsManager } from './PrimerHeadlessCheckoutCardComponentsManager';
+import { PrimerInputElementType } from './PrimerInputElementType';
 
 interface NativeExpiryDateElementViewGeneralProps {
     placeholder?: string;
@@ -21,7 +25,22 @@ const NativeExpiryDateInputElementViewRaw = requireNativeComponent('NativeExpiry
 
 type NativeExpiryDateInputElementViewProps = ViewProps & NativeExpiryDateInputElementViewCallbacks & NativeExpiryDateElementViewGeneralProps;
 
-export class NativeExpiryDateInputElementView extends React.PureComponent<NativeExpiryDateInputElementViewProps, any> {
+export class NativeExpiryDateInputElementView extends PrimerInputElement {
+
+    type: PrimerInputElementType = PrimerInputElementType.ExpiryDate;
+
+    constructor(props: any) {
+        super(props);
+    }
+
+    componentDidMount() {
+        this.reactTag = findNodeHandle(this);
+        console.log(`reactTag: ${this.reactTag}`);
+        if (this.reactTag) {
+            PrimerHeadlessCheckoutCardComponentsManager.registerInputElement(this);
+        }
+    }
+
     _onFocus = (event: any) => {
         if (!this.props.onFocus) {
             return;

@@ -18,4 +18,6 @@ RCT_EXPORT_VIEW_PROPERTY(onValueChange, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onValueIsValid, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onValueTypeDetect, RCTBubblingEventBlock)
 
+//RCT_EXPORT_METHOD(registerInputElement:(nonnull NSNumber*) reactTag)
+
 @end

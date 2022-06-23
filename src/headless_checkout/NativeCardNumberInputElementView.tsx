@@ -1,9 +1,12 @@
 import React from 'react';
 import {
+    findNodeHandle,
     requireNativeComponent,
     ViewProps,
     NativeSyntheticEvent
 } from 'react-native';
+import { PrimerHeadlessCheckoutCardComponentsManager } from './PrimerHeadlessCheckoutCardComponentsManager';
+import { PrimerInputElementType } from './PrimerInputElementType';
 
 interface NativeCardNumberInputElementViewGeneralProps {
     placeholder?: string;
@@ -41,7 +44,28 @@ type NativeCardNumberInputElementViewProps = ViewProps & NativeCardNumberInputEl
 //     );
 // }
 
-export class NativeCardNumberInputElementView extends React.PureComponent<NativeCardNumberInputElementViewProps, any> {
+export class PrimerInputElement extends React.PureComponent<NativeCardNumberInputElementViewProps, any> {
+    reactTag: number | null = null;
+    type: PrimerInputElementType = PrimerInputElementType.Unknown
+    onReactTagSet: ((reactTag: number) => void) | undefined = undefined;
+}
+
+export class NativeCardNumberInputElementView extends PrimerInputElement {
+
+    type: PrimerInputElementType = PrimerInputElementType.CardNumber
+    
+    constructor(props: any) {
+        super(props);
+    }
+
+    componentDidMount() {
+        this.reactTag = findNodeHandle(this);
+        console.log(`reactTag: ${this.reactTag}`);
+        if (this.reactTag) {
+            PrimerHeadlessCheckoutCardComponentsManager.registerInputElement(this);
+        }
+    }
+    
     _onFocus = (event: any) => {
         if (!this.props.onFocus) {
             return;

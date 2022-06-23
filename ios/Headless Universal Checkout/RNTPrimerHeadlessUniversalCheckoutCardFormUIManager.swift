@@ -64,6 +64,15 @@ class RNTPrimerHeadlessUniversalCheckoutCardFormUIManager: RCTViewManager {
             guard let rctUIManager = self.bridge.module(for: RCTUIManager.self) as? RCTUIManager else {
                 return
             }
+            
+            self.bridge.uiManager.addUIBlock { uiManager, viewRegistry in
+                guard let view = viewRegistry?[tags.first!],
+                      view.isKind(of: NativeCardHolderInputElementViewManager.self) else {
+                    return
+                }
+
+                print(view)
+            }
 
             for tag in tags {
                 if let view = rctUIManager.view(forReactTag: tag) {

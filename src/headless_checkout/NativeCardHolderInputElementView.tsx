@@ -1,9 +1,13 @@
 import React from 'react';
 import {
+    findNodeHandle,
     requireNativeComponent,
     ViewProps,
     NativeSyntheticEvent
 } from 'react-native';
+import { PrimerInputElement } from './NativeCardNumberInputElementView';
+import { PrimerHeadlessCheckoutCardComponentsManager } from './PrimerHeadlessCheckoutCardComponentsManager';
+import { PrimerInputElementType } from './PrimerInputElementType';
 
 interface NativeCardHolderInputElementViewGeneralProps {
     placeholder?: string;
@@ -21,7 +25,22 @@ const NativeCardHolderInputElementViewRaw = requireNativeComponent('NativeCardHo
 
 type NativeCardHolderInputElementViewProps = ViewProps & NativeCardHolderInputElementViewCallbacks & NativeCardHolderInputElementViewGeneralProps;
 
-export class NativeCardHolderInputElementView extends React.PureComponent<NativeCardHolderInputElementViewProps, any> {
+export class NativeCardHolderInputElementView extends PrimerInputElement {
+
+    type: PrimerInputElementType = PrimerInputElementType.CardholderName;
+
+    constructor(props: any) {
+        super(props);
+    }
+
+    componentDidMount() {
+        this.reactTag = findNodeHandle(this);
+        console.log(`reactTag: ${this.reactTag}`);
+        if (this.reactTag) {
+            PrimerHeadlessCheckoutCardComponentsManager.registerInputElement(this);
+        }
+    }
+
     _onFocus = (event: any) => {
         if (!this.props.onFocus) {
             return;

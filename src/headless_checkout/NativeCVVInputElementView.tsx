@@ -1,9 +1,13 @@
 import React from 'react';
 import {
+    findNodeHandle,
     requireNativeComponent,
     ViewProps,
     NativeSyntheticEvent
 } from 'react-native';
+import { PrimerInputElement } from './NativeCardNumberInputElementView';
+import { PrimerHeadlessCheckoutCardComponentsManager } from './PrimerHeadlessCheckoutCardComponentsManager';
+import { PrimerInputElementType } from './PrimerInputElementType';
 
 interface NativeCVVInputElementViewGeneralProps {
     placeholder?: string;
@@ -21,7 +25,22 @@ const NativeCVVInputElementViewRaw = requireNativeComponent('NativeCVVInputEleme
 
 type NativeCVVInputElementViewProps = ViewProps & NativeCVVInputElementViewCallbacks & NativeCVVInputElementViewGeneralProps;
 
-export class NativeCVVInputElementView extends React.PureComponent<NativeCVVInputElementViewProps, any> {
+export class NativeCVVInputElementView extends PrimerInputElement {
+
+    type: PrimerInputElementType = PrimerInputElementType.CVV;
+
+    constructor(props: any) {
+        super(props);
+    }
+
+    componentDidMount() {
+        this.reactTag = findNodeHandle(this);
+        console.log(`reactTag: ${this.reactTag}`);
+        if (this.reactTag) {
+            PrimerHeadlessCheckoutCardComponentsManager.registerInputElement(this);
+        }
+    }
+
     _onFocus = (event: any) => {
         if (!this.props.onFocus) {
             return;
