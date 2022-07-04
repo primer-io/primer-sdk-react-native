@@ -338,20 +338,20 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
 // MARK: - EVENTS
 
 extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDelegate {
-
-    func primerHeadlessUniversalCheckoutPreparationStarted(paymentMethodType: String) {
+    
+    func primerHeadlessUniversalCheckoutPreparationDidStart(for paymentMethodType: String) {
         sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onHUCPrepareStart.stringValue, body: ["paymentMethodType": paymentMethodType])
+    }
+    
+    func primerHeadlessUniversalCheckoutTokenizationDidStart(for paymentMethodType: String) {
+        sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onHUCTokenizeStart.stringValue, body: ["paymentMethodType": paymentMethodType])
     }
     
     func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethodTypes: [String]) {
         sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onHUCAvailablePaymentMethodsLoaded.stringValue, body: ["paymentMethodTypes": paymentMethodTypes])
     }
     
-    func primerHeadlessUniversalCheckoutTokenizationStarted(paymentMethodType: String) {
-        sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onHUCTokenizeStart.stringValue, body: ["paymentMethodType": paymentMethodType])
-    }
-    
-    func primerHeadlessUniversalCheckoutPaymentMethodShowed(paymentMethodType: String) {
+    func primerHeadlessUniversalCheckoutPaymentMethodDidShow(for paymentMethodType: String) {
         sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onHUCPaymentMethodShow.stringValue, body: ["paymentMethodType": paymentMethodType])
     }
     
