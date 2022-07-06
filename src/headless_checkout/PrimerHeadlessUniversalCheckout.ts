@@ -316,6 +316,4 @@ class PrimerHeadlessUniversalCheckoutClass {
   }
 }
 
-const PrimerHeadlessUniversalCheckout = new PrimerHeadlessUniversalCheckoutClass();
-
-export default PrimerHeadlessUniversalCheckout;
+export const PrimerHeadlessUniversalCheckout = new PrimerHeadlessUniversalCheckoutClass();
