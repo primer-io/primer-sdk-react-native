@@ -21,7 +21,6 @@ import { appPaymentParameters, IClientSessionRequestBody } from '../models/IClie
 import type { IClientSession } from '../models/IClientSession';
 import type { IPayment } from '../models/IPayment';
 import { getPaymentHandlingStringVal } from '../network/Environment';
-import Spinner from 'react-native-loading-spinner-overlay';
 import { createClientSession, createPayment, resumePayment } from '../network/api';
 
 let clientToken: string | null = null;
@@ -237,13 +236,6 @@ const CheckoutScreen = (props: any) => {
     console.log(`RENDER\nisLoading: ${isLoading}`)
     return (
         <View style={backgroundStyle}>
-            <Spinner
-                visible={isLoading}
-                textContent={loadingMessage}
-                textStyle={{
-                    color: '#FFF'
-                }}
-            />
             <View style={{ flex: 1 }} />
             <TouchableOpacity
                 style={{ ...styles.button, marginHorizontal: 20, marginVertical: 5, backgroundColor: 'black' }}
