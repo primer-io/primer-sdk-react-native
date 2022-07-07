@@ -43,23 +43,23 @@ export const HeadlessCheckoutScreen = (props: any) => {
     }
   };
 
-  const onPrepareStart = (paymentMethod: string) => {
-    updateLogs(`\nℹ️ HUC started preparing for ${paymentMethod}`);
+  const onPrepareStart = (paymentMethodType: string) => {
+    updateLogs(`\nℹ️ HUC started preparing for ${paymentMethodType}`);
     setIsLoading(true);
   };
 
-  const onPaymentMethodShow = (paymentMethod: string) => {
-    updateLogs(`\nℹ️ HUC showed ${paymentMethod}`);
+  const onPaymentMethodShow = (paymentMethodType: string) => {
+    updateLogs(`\nℹ️ HUC showed ${paymentMethodType}`);
     setIsLoading(true);
   };
 
-  const onTokenizeStart = (paymentMethod: string) => {
-    updateLogs(`\nℹ️ HUC started tokenization for ${paymentMethod}`);
+  const onTokenizeStart = (paymentMethodType: string) => {
+    updateLogs(`\nℹ️ HUC started tokenization for ${paymentMethodType}`);
     setIsLoading(true);
   };
 
-  const onAvailablePaymentMethodsLoad = (paymentMethods: string[]) => {
-    updateLogs(`\nℹ️ HUC did set up client session for payment methods ${JSON.stringify(paymentMethods)}`);
+  const onAvailablePaymentMethodsLoad = (paymentMethodTypes: string[]) => {
+    updateLogs(`\nℹ️ HUC did set up client session for payment methods ${JSON.stringify(paymentMethodTypes)}`);
     setIsLoading(false);
   };
 

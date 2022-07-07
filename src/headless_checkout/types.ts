@@ -25,8 +25,8 @@ export interface PrimerHeadlessUniversalCheckoutCallbacks {
   onError?: (error: PrimerError, checkoutData: PrimerCheckoutData | null, handler: PrimerErrorHandler | undefined) => void;
 
   // Only on HUC
-  onPrepareStart?: (paymentMethod: string) => void;
-  onTokenizeStart?: (paymentMethod: string) => void;
-  onPaymentMethodShow?: (paymentMethod: string) => void;
-  onAvailablePaymentMethodsLoad?: (paymentMethods: string[]) => void;
+  onPrepareStart?: (paymentMethodType: string) => void;
+  onTokenizeStart?: (paymentMethodType: string) => void;
+  onPaymentMethodShow?: (paymentMethodType: string) => void;
+  onAvailablePaymentMethodTypesLoad?: (paymentMethodTypes: string[]) => void;
 }
