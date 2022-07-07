@@ -104,10 +104,10 @@ async function configureListeners(): Promise<void> {
         onResumeSuccess: (primerSettings?.onResumeSuccess !== undefined),
         onDismiss: false,
         onError: (primerSettings?.onError !== undefined),
-        onHUCAvailablePaymentMethodsLoaded: (primerSettings?.onHUCAvailablePaymentMethodsLoaded !== undefined),
-        onHUCPrepareStart: (primerSettings?.onHUCPrepareStart !== undefined),
-        onHUCTokenizeStart: (primerSettings?.onHUCTokenizeStart !== undefined),
-        onHUCPaymentMethodShow: (primerSettings?.onHUCPaymentMethodShow !== undefined),
+        onHUCAvailablePaymentMethodsLoaded: (primerSettings?.onAvailablePaymentMethodsLoad !== undefined),
+        onHUCPrepareStart: (primerSettings?.onPrepareStart !== undefined),
+        onHUCTokenizeStart: (primerSettings?.onTokenizeStart !== undefined),
+        onHUCPaymentMethodShow: (primerSettings?.onPaymentMethodShow !== undefined),
       };
 
       await RNPrimerHeadlessUniversalCheckout.setImplementedRNCallbacks(implementedRNCallbacks);
@@ -132,8 +132,8 @@ async function configureListeners(): Promise<void> {
           'onHUCPrepareStart',
           (data) => {
             console.log('onHUCPrepareStart');
-            if (primerSettings && primerSettings.onHUCPrepareStart) {
-              primerSettings.onHUCPrepareStart(data.paymentMethodType || 'not implemented');
+            if (primerSettings && primerSettings.onPrepareStart) {
+              primerSettings.onPrepareStart(data.paymentMethodType || 'not implemented');
             } else {
               // Ignore!
             }
@@ -146,8 +146,8 @@ async function configureListeners(): Promise<void> {
           'onHUCTokenizeStart',
           (data) => {
             console.log('onHUCTokenizeStart');
-            if (primerSettings && primerSettings.onHUCTokenizeStart) {
-              primerSettings.onHUCTokenizeStart(data.paymentMethodType || 'not implemented');
+            if (primerSettings && primerSettings.onTokenizeStart) {
+              primerSettings.onTokenizeStart(data.paymentMethodType || 'not implemented');
             } else {
               // Ignore!
             }
@@ -160,8 +160,8 @@ async function configureListeners(): Promise<void> {
           'onHUCPaymentMethodShow',
           (data) => {
             console.log('onHUCPaymentMethodShow');
-            if (primerSettings && primerSettings.onHUCPaymentMethodShow) {
-              primerSettings.onHUCPaymentMethodShow(data.paymentMethodType || 'not implemented');
+            if (primerSettings && primerSettings.onPaymentMethodShow) {
+              primerSettings.onPaymentMethodShow(data.paymentMethodType || 'not implemented');
             } else {
               // Ignore!
             }
@@ -174,8 +174,8 @@ async function configureListeners(): Promise<void> {
           'onHUCAvailablePaymentMethodsLoaded',
           (data) => {
             console.log('onHUCAvailablePaymentMethodsLoaded');
-            if (primerSettings && primerSettings.onHUCAvailablePaymentMethodsLoaded) {
-              primerSettings.onHUCAvailablePaymentMethodsLoaded(data.paymentMethodTypes || ['not implemented']);
+            if (primerSettings && primerSettings.onAvailablePaymentMethodsLoad) {
+              primerSettings.onAvailablePaymentMethodsLoad(data.paymentMethodTypes || ['not implemented']);
             } else {
               // Ignore!
             }

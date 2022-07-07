@@ -34,10 +34,10 @@ interface IPrimerSettings {
   onDismiss?: () => void;
 
   // Only on HUC
-  onHUCPrepareStart?: (paymentMethod: string) => void;
-  onHUCTokenizeStart?: (paymentMethod: string) => void;
-  onHUCPaymentMethodShow?: (paymentMethod: string) => void;
-  onHUCAvailablePaymentMethodsLoaded?: (paymentMethods: string[]) => void;
+  onPrepareStart?: (paymentMethod: string) => void;
+  onTokenizeStart?: (paymentMethod: string) => void;
+  onPaymentMethodShow?: (paymentMethod: string) => void;
+  onAvailablePaymentMethodsLoad?: (paymentMethods: string[]) => void;
 }
 
 //----------------------------------------

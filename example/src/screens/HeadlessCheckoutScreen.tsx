@@ -43,22 +43,22 @@ export const HeadlessCheckoutScreen = (props: any) => {
     }
   };
 
-  const onHUCPrepareStart = (paymentMethod: string) => {
+  const onPrepareStart = (paymentMethod: string) => {
     updateLogs(`\nℹ️ HUC started preparing for ${paymentMethod}`);
     setIsLoading(true);
   };
 
-  const onHUCPaymentMethodShow = (paymentMethod: string) => {
+  const onPaymentMethodShow = (paymentMethod: string) => {
     updateLogs(`\nℹ️ HUC showed ${paymentMethod}`);
     setIsLoading(true);
   };
 
-  const onHUCTokenizeStart = (paymentMethod: string) => {
+  const onTokenizeStart = (paymentMethod: string) => {
     updateLogs(`\nℹ️ HUC started tokenization for ${paymentMethod}`);
     setIsLoading(true);
   };
 
-  const onHUCAvailablePaymentMethodsLoaded = (paymentMethods: string[]) => {
+  const onAvailablePaymentMethodsLoad = (paymentMethods: string[]) => {
     updateLogs(`\nℹ️ HUC did set up client session for payment methods ${JSON.stringify(paymentMethods)}`);
     setIsLoading(false);
   };
@@ -144,10 +144,10 @@ export const HeadlessCheckoutScreen = (props: any) => {
     onCheckoutComplete: onCheckoutComplete,
     onTokenizeSuccess: onTokenizeSuccess,
     onResumeSuccess: onResumeSuccess,
-    onHUCPrepareStart: onHUCPrepareStart,
-    onHUCPaymentMethodShow: onHUCPaymentMethodShow,
-    onHUCTokenizeStart: onHUCTokenizeStart,
-    onHUCAvailablePaymentMethodsLoaded: onHUCAvailablePaymentMethodsLoaded,
+    onPrepareStart: onPrepareStart,
+    onPaymentMethodShow: onPaymentMethodShow,
+    onTokenizeStart: onTokenizeStart,
+    onAvailablePaymentMethodsLoad: onAvailablePaymentMethodsLoad,
     onBeforeClientSessionUpdate: onBeforeClientSessionUpdate,
     onClientSessionUpdate: onClientSessionUpdate,
     onBeforePaymentCreate: (checkoutPaymentMethodData, handler) => {
