@@ -19,7 +19,7 @@ PODS:
     - DoubleConversion
     - glog
   - glog (0.3.5)
-  - primer-io-react-native (2.0.0):
+  - primer-io-react-native (2.1.0):
     - PrimerSDK (= 2.1.0)
     - React-Core
   - Primer3DS (1.0.0)
@@ -273,7 +273,6 @@ DEPENDENCIES:
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - primer-io-react-native (from `../..`)
   - Primer3DS
-  - PrimerSDK (from `https://github.com/primer-io/primer-sdk-ios.git`, branch `release/2.1.0`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
   - RCTTypeSafety (from `../node_modules/react-native/Libraries/TypeSafety`)
   - React (from `../node_modules/react-native/`)
@@ -307,6 +306,7 @@ SPEC REPOS:
   trunk:
     - boost-for-react-native
     - Primer3DS
+    - PrimerSDK
 
 EXTERNAL SOURCES:
   DoubleConversion:
@@ -321,9 +321,6 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
   primer-io-react-native:
     :path: "../.."
-  PrimerSDK:
-    :branch: release/2.1.0
-    :git: https://github.com/primer-io/primer-sdk-ios.git
   RCTRequired:
     :path: "../node_modules/react-native/Libraries/RCTRequired"
   RCTTypeSafety:
@@ -377,11 +374,6 @@ EXTERNAL SOURCES:
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
-CHECKOUT OPTIONS:
-  PrimerSDK:
-    :commit: 29e0ab9c24102466335b0adc5514b4339f377da7
-    :git: https://github.com/primer-io/primer-sdk-ios.git
-
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: cde416483dac037923206447da6e1454df403714
@@ -389,7 +381,7 @@ SPEC CHECKSUMS:
   FBReactNativeSpec: f2c97f2529dd79c083355182cc158c9f98f4bd6e
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
   glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
-  primer-io-react-native: 99402b64a3f6a09d5a95a739964f035da4f491cc
+  primer-io-react-native: b59c792ae4e1751446bd3eee4a8d37f9bca50519
   Primer3DS: 0b298ca54adb07e3f5ae3d74e574b6d3084e8a0d
   PrimerSDK: 3ca9ba9734d606b3ac2093f5cea9bb730a4119ec
   RCTRequired: 082f10cd3f905d6c124597fd1c14f6f2655ff65e
@@ -419,6 +411,6 @@ SPEC CHECKSUMS:
   RNScreens: 40a2cb40a02a609938137a1e0acfbf8fc9eebf19
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
 
-PODFILE CHECKSUM: 49fb005fc216bd8df0445cc987601e7a87228ff6
+PODFILE CHECKSUM: 6b7d85377d0827b5352673642fdd4a997a0b27ca
 
 COCOAPODS: 1.11.3
