@@ -175,7 +175,14 @@ async function configureListeners(): Promise<void> {
           (data) => {
             console.log('onHUCAvailablePaymentMethodsLoaded');
             if (primerSettings && primerSettings.onAvailablePaymentMethodsLoad) {
-              primerSettings.onAvailablePaymentMethodsLoad(data.paymentMethodTypes || ['not implemented']);
+              if (data && data.paymentMethodTypes) {
+                const paymentMethodTypes: string[] = data.paymentMethodTypes;
+                const availablePaymentMethodTypes = paymentMethodTypes.filter(pmt => pmt !== 'PAYMENT_CARD');
+                primerSettings.onAvailablePaymentMethodsLoad(availablePaymentMethodTypes || ['not implemented']);
+              } else {
+                primerSettings.onAvailablePaymentMethodsLoad(['not implemented']);
+              }
+              
             } else {
               // Ignore!
             }
