@@ -43,22 +43,15 @@ class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckou
   var successCallback: Callback? = null
 
   override fun onAvailablePaymentMethodsLoaded(paymentMethods: List<PrimerHeadlessUniversalCheckoutPaymentMethod>) {
-    if (implementedRNCallbacks?.isOnHUCAvailablePaymentMethodsLoadedImplemented == true) {
-      sendEvent?.invoke(
-        PrimerHeadlessUniversalCheckoutEvent.ON_HUC_AVAILABLE_PAYMENT_METHODS_LOADED.eventName,
-        JSONObject().apply {
-          put("paymentMethodTypes", paymentMethods.map { it.paymentMethodType.name })
-        }
-      )
-      successCallback?.invoke(
-        Arguments.fromList(paymentMethods.map { it.paymentMethodType.name })
-      )
-    } else {
-      sendError?.invoke(
-        ErrorTypeRN.NativeBridgeFailed
-          errorTo "Callback [onAvailablePaymentMethodsLoaded] should be implemented."
-      )
-    }
+    sendEvent?.invoke(
+      PrimerHeadlessUniversalCheckoutEvent.ON_HUC_AVAILABLE_PAYMENT_METHODS_LOADED.eventName,
+      JSONObject().apply {
+        put("paymentMethodTypes", paymentMethods.map { it.paymentMethodType.name })
+      }
+    )
+    successCallback?.invoke(
+      Arguments.fromList(paymentMethods.map { it.paymentMethodType.name })
+    )
   }
 
   override fun onPreparationStarted(paymentMethodType: PrimerPaymentMethodType) {
