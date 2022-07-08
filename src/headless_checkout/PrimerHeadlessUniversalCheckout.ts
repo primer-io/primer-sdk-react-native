@@ -266,14 +266,15 @@ class PrimerHeadlessUniversalCheckoutClass {
   startWithClientToken(
     clientToken: string,
     settings: PrimerSettings
-  ): Promise<PrimerHeadlessUniversalCheckoutStartResponse> {
+  ): Promise<string[]> {
     primerSettings = settings;
 
     return new Promise(async (resolve, reject) => {
       try {
         await configureListeners();
-        const hucResponse = await RNPrimerHeadlessUniversalCheckout.startWithClientToken(clientToken, settings);
-        resolve(hucResponse);
+        const hucResponse: PrimerHeadlessUniversalCheckoutStartResponse = await RNPrimerHeadlessUniversalCheckout.startWithClientToken(clientToken, settings);
+        const availablePaymentMethodTypes: string[] = hucResponse.paymentMethodTypes.filter(pmt => pmt !== 'PAYMENT_CARD');
+        resolve(availablePaymentMethodTypes);
       } catch (err) {
         reject(err);
       }

@@ -170,9 +170,9 @@ export const HeadlessCheckoutScreen = (props: any) => {
       .then((session) => {
         setIsLoading(false);
         PrimerHeadlessUniversalCheckout.startWithClientToken(session.clientToken, settings)
-          .then((response) => {
-            updateLogs(`\nℹ️ Available payment methods:\n${JSON.stringify(response.paymentMethodTypes, null, 2)}`);
-            setPaymentMethods(response.paymentMethodTypes);
+          .then((paymentMethodTypes) => {
+            updateLogs(`\nℹ️ Available payment methods:\n${JSON.stringify(paymentMethodTypes, null, 2)}`);
+            setPaymentMethods(paymentMethodTypes);
           })
           .catch((err) => {
             updateLogs(`\n🛑 Error:\n${JSON.stringify(err, null, 2)}`);
