@@ -7,16 +7,20 @@
 
 import Foundation
 
-internal struct ImplementedRNCallbacks: Codable {
+internal struct ImplementedRNCallbacks: Decodable {
     
-    public var isOnCheckoutCompleteImplemented: Bool = false
-    public var isOnBeforeClientSessionUpdateImplemented: Bool = false
-    public var isOnClientSessionUpdateImplemented: Bool = false
-    public var isOnBeforePaymentCreateImplemented: Bool = false
-    public var isOnErrorImplemented: Bool = false
-    public var isOnDismissImplemented: Bool = false
-    public var isOnTokenizeSuccessImplemented: Bool = false
-    public var isOnResumeSuccessImplemented: Bool = false
+    internal var isOnCheckoutCompleteImplemented: Bool = false
+    internal var isOnBeforeClientSessionUpdateImplemented: Bool = false
+    internal var isOnClientSessionUpdateImplemented: Bool = false
+    internal var isOnBeforePaymentCreateImplemented: Bool = false
+    internal var isOnErrorImplemented: Bool = false
+    internal var isOnDismissImplemented: Bool = false
+    internal var isOnTokenizeSuccessImplemented: Bool = false
+    internal var isOnResumeSuccessImplemented: Bool = false
+    internal var isOnHUCTokenizeStartImplemented: Bool = false
+    internal var isOnHUCPrepareStartImplemented: Bool = false
+    internal var isOnHUCAvailablePaymentMethodsLoadedImplemented: Bool = false
+    internal var isOnHUCPaymentMethodShowImplemented: Bool = false
     
     enum CodingKeys: String, CodingKey {
         case isOnCheckoutCompleteImplemented = "onCheckoutComplete"
@@ -27,5 +31,26 @@ internal struct ImplementedRNCallbacks: Codable {
         case isOnDismissImplemented = "onDismiss"
         case isOnTokenizeSuccessImplemented = "onTokenizeSuccess"
         case isOnResumeSuccessImplemented = "onResumeSuccess"
+        case isOnHUCTokenizeStartImplemented = "onHUCTokenizeStart"
+        case isOnHUCPrepareStartImplemented = "onHUCPrepareStart"
+        case isOnHUCAvailablePaymentMethodsLoadedImplemented = "onHUCAvailablePaymentMethodsLoaded"
+        case isOnHUCPaymentMethodShowImplemented = "onHUCPaymentMethodShow"
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        self.isOnCheckoutCompleteImplemented = (try? container.decode(Bool?.self, forKey: .isOnCheckoutCompleteImplemented)) ?? false
+        self.isOnBeforeClientSessionUpdateImplemented = (try? container.decode(Bool?.self, forKey: .isOnBeforeClientSessionUpdateImplemented)) ?? false
+        self.isOnClientSessionUpdateImplemented = (try? container.decode(Bool?.self, forKey: .isOnClientSessionUpdateImplemented)) ?? false
+        self.isOnBeforePaymentCreateImplemented = (try? container.decode(Bool?.self, forKey: .isOnBeforePaymentCreateImplemented)) ?? false
+        self.isOnErrorImplemented = (try? container.decode(Bool?.self, forKey: .isOnErrorImplemented)) ?? false
+        self.isOnDismissImplemented = (try? container.decode(Bool?.self, forKey: .isOnDismissImplemented)) ?? false
+        self.isOnTokenizeSuccessImplemented = (try? container.decode(Bool?.self, forKey: .isOnTokenizeSuccessImplemented)) ?? false
+        self.isOnResumeSuccessImplemented = (try? container.decode(Bool?.self, forKey: .isOnResumeSuccessImplemented)) ?? false
+        self.isOnHUCTokenizeStartImplemented = (try? container.decode(Bool?.self, forKey: .isOnHUCTokenizeStartImplemented)) ?? false
+        self.isOnHUCPrepareStartImplemented = (try? container.decode(Bool?.self, forKey: .isOnHUCPrepareStartImplemented)) ?? false
+        self.isOnHUCAvailablePaymentMethodsLoadedImplemented = (try? container.decode(Bool?.self, forKey: .isOnHUCAvailablePaymentMethodsLoadedImplemented)) ?? false
+        self.isOnHUCPaymentMethodShowImplemented = (try? container.decode(Bool?.self, forKey: .isOnHUCPaymentMethodShowImplemented)) ?? false
     }
 }

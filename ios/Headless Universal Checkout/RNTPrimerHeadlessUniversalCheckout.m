@@ -1,28 +1,34 @@
 //
-//  RNTPrimer.m
+//  RNTPrimerHeadlessUniversalCheckout.m
 //  primer-io-react-native
 //
-//  Created by Evangelos on 15/3/22.
+//  Created by Evangelos on 8/3/22.
 //
 
 #import <React/RCTBridgeModule.h>
 #import <React/RCTEventEmitter.h>
 
-@interface RCT_EXTERN_MODULE(NativePrimer, RCTEventEmitter)
+@interface RCT_EXTERN_MODULE(PrimerHeadlessUniversalCheckout, RCTEventEmitter)
 
-// MARK: - PRIMER SDK API
+RCT_EXTERN_METHOD(startWithClientToken:(NSString *)clientToken settingsStr:(NSString *)settingsStr errorCallback:(RCTResponseSenderBlock)errorCallback successCallback: (RCTResponseSenderBlock)successCallback)
 
-RCT_EXTERN_METHOD(configure:(NSString *)settingsStr resolver:(RCTPromiseResolveBlock)resolver rejecter:(RCTPromiseRejectBlock)rejecter)
+RCT_EXTERN_METHOD(resumeWithClientToken:(NSString *)resumeToken)
 
-RCT_EXTERN_METHOD(showUniversalCheckoutWithClientToken:(NSString *)clientToken resolver:(RCTPromiseResolveBlock)resolver rejecter:(RCTPromiseRejectBlock)rejecter)
+RCT_EXTERN_METHOD(showPaymentMethod:(NSString *)paymentMethodTypeStr
+                  resolver:(RCTPromiseResolveBlock)resolver
+                  rejecter:(RCTPromiseRejectBlock)rejecter)
 
-RCT_EXTERN_METHOD(showVaultManagerWithClientToken: (NSString *)clientToken resolver:(RCTPromiseResolveBlock)resolver rejecter:(RCTPromiseRejectBlock)rejecter)
+RCT_EXTERN_METHOD(getAssetForPaymentMethodType:(NSString *)paymentMethodTypeStr
+                  assetType:(NSString *)assetTypeStr
+                  errorCallback:(RCTResponseSenderBlock)errorCallback
+                  successCallback: (RCTResponseSenderBlock)successCallback)
 
-RCT_EXTERN_METHOD(showPaymentMethod:(NSString *)paymentMethodStr intent:(NSString *)intentStr clientToken:(NSString *)clientToken resolver:(RCTPromiseResolveBlock)resolver rejecter:(RCTPromiseRejectBlock)rejecter)
+RCT_EXTERN_METHOD(getAssetForCardNetwork:(NSString *)cardNetworkStr
+                  assetType:(NSString *)assetTypeStr
+                  errorCallback:(RCTResponseSenderBlock)errorCallback
+                  successCallback: (RCTResponseSenderBlock)successCallback)
 
-RCT_EXTERN_METHOD(dismiss)
-
-RCT_EXTERN_METHOD(dispose)
+RCT_EXTERN_METHOD(disposePrimerHeadlessUniversalCheckout)
 
 // MARK: - HELPERS
 
@@ -52,8 +58,5 @@ RCT_EXTERN_METHOD(handlePaymentCreationAbort:(NSString *)errorMessage resolver:(
 
 RCT_EXTERN_METHOD(handlePaymentCreationContinue:(RCTPromiseResolveBlock)resolver rejecter:(RCTPromiseRejectBlock)rejecter)
 
-// MARK: Error Handler
-
-RCT_EXTERN_METHOD(showErrorMessage:(NSString *)errorMessage resolver:(RCTPromiseResolveBlock)resolver rejecter:(RCTPromiseRejectBlock)rejecter)
 
 @end

@@ -117,6 +117,17 @@ const RNPrimer = {
     });
   },
 
+  dispose: (): Promise<void> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        await NativePrimer.dispose();
+        resolve();
+      } catch (err) {
+        reject(err);
+      }
+    });
+  },
+
   ///////////////////////////////////////////
   // DECISION HANDLERS
   ///////////////////////////////////////////
@@ -238,6 +249,8 @@ const RNPrimer = {
       }
     });
   },
+
+  // HELPERS
 
   setImplementedRNCallbacks: (implementedRNCallbacks: any): Promise<void> => {
     return new Promise(async (resolve, reject) => {

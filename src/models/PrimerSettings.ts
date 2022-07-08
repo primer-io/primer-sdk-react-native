@@ -1,4 +1,9 @@
-import type { PrimerErrorHandler, PrimerPaymentCreationHandler, PrimerResumeHandler, PrimerTokenizationHandler } from "./Primer";
+import type { 
+  PrimerErrorHandler, 
+  PrimerPaymentCreationHandler, 
+  PrimerResumeHandler, 
+  PrimerTokenizationHandler 
+} from "./PrimerInterfaces";
 import type { PrimerCheckoutData } from "./PrimerCheckoutData";
 import type { PrimerCheckoutPaymentMethodData } from "./PrimerCheckoutPaymentMethodData";
 import type { PrimerClientSession } from "./PrimerClientSession";
@@ -15,14 +20,24 @@ interface IPrimerSettings {
   uiOptions?: IPrimerUIOptions;
   debugOptions?: IPrimerDebugOptions;
 
+  // Common
   onBeforeClientSessionUpdate?: () => void;
   onClientSessionUpdate?: (clientSession: PrimerClientSession) => void;
   onBeforePaymentCreate?: (checkoutPaymentMethodData: PrimerCheckoutPaymentMethodData, handler: PrimerPaymentCreationHandler) => void;
   onCheckoutComplete?: (checkoutData: PrimerCheckoutData) => void;
   onTokenizeSuccess?: (paymentMethodTokenData: PrimerPaymentMethodTokenData, handler: PrimerTokenizationHandler) => void;
   onResumeSuccess?: (resumeToken: string, handler: PrimerResumeHandler) => void;
-  onError?: (error: PrimerError, checkoutData: PrimerCheckoutData | null, handler: PrimerErrorHandler) => void;
+  // PrimerErrorHandler will be undefined on the HUC flow.
+  onError?: (error: PrimerError, checkoutData: PrimerCheckoutData | null, handler: PrimerErrorHandler | undefined) => void;
+  
+  // Only on main SDK
   onDismiss?: () => void;
+
+  // Only on HUC
+  onPrepareStart?: (paymentMethod: string) => void;
+  onTokenizeStart?: (paymentMethod: string) => void;
+  onPaymentMethodShow?: (paymentMethod: string) => void;
+  onAvailablePaymentMethodsLoad?: (paymentMethods: string[]) => void;
 }
 
 //----------------------------------------
