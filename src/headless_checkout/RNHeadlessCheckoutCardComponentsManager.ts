@@ -6,52 +6,32 @@ const { NativeHeadlessCheckoutCardComponentsManager } = NativeModules;
 
 const eventEmitter = new NativeEventEmitter(NativeHeadlessCheckoutCardComponentsManager);
 
-// type EventType =
-//   | 'onHUCTokenizeStart'
-//   | 'onHUCPrepareStart'
-//   | 'onHUCAvailablePaymentMethodsLoaded'
-//   | 'onHUCPaymentMethodShow'
-//   | 'onTokenizeSuccess'
-//   | 'onResumeSuccess'
-//   | 'onBeforePaymentCreate'
-//   | 'onBeforeClientSessionUpdate'
-//   | 'onClientSessionUpdate'
-//   | 'onCheckoutComplete'
-//   | 'onError';
+type HUCCardFormManagerEventType = 'onCardFormIsValidValueChange';
 
-// const eventTypes: EventType[] = [
-//   'onHUCTokenizeStart',
-//   'onHUCPrepareStart',
-//   'onHUCAvailablePaymentMethodsLoaded',
-//   'onHUCPaymentMethodShow',
-//   'onTokenizeSuccess',
-//   'onResumeSuccess',
-//   'onBeforePaymentCreate',
-//   'onBeforeClientSessionUpdate',
-//   'onClientSessionUpdate',
-//   'onCheckoutComplete',
-//   'onError'
-// ];
+const eventTypes: HUCCardFormManagerEventType[] = [
+  'onCardFormIsValidValueChange'
+];
 
 const RNHeadlessCheckoutCardComponentsManager = {
+
   ///////////////////////////////////////////
   // Event Emitter
   ///////////////////////////////////////////
-//   addListener: (eventType: EventType, listener: (...args: any[]) => any) => {
-//     eventEmitter.addListener(eventType, listener);
-//   },
+  addListener: (eventType: HUCCardFormManagerEventType, listener: (...args: any[]) => any) => {
+    eventEmitter.addListener(eventType, listener);
+  },
 
-//   removeListener: (eventType: EventType, listener: (...args: any[]) => any) => {
-//     eventEmitter.removeListener(eventType, listener);
-//   },
+  removeListener: (eventType: HUCCardFormManagerEventType, listener: (...args: any[]) => any) => {
+    eventEmitter.removeListener(eventType, listener);
+  },
 
-//   removeAllListenersForEvent(eventType: EventType) {
-//     eventEmitter.removeAllListeners(eventType);
-//   },
+  removeAllListenersForEvent(eventType: HUCCardFormManagerEventType) {
+    eventEmitter.removeAllListeners(eventType);
+  },
 
-//   removeAllListeners() {
-//     eventTypes.forEach((eventType) => RNPrimerHeadlessUniversalCheckout.removeAllListenersForEvent(eventType));
-//   },
+  removeAllListeners() {
+    eventTypes.forEach((eventType) => RNHeadlessCheckoutCardComponentsManager.removeAllListenersForEvent(eventType));
+  },
 
   ///////////////////////////////////////////
   // Native API
@@ -75,6 +55,9 @@ const RNHeadlessCheckoutCardComponentsManager = {
     NativeHeadlessCheckoutCardComponentsManager.setInputElementsWithTags(inputElementsTags);
   },
 
+  tokenize() {
+    NativeHeadlessCheckoutCardComponentsManager.tokenize();
+  }
 };
 
 export default RNHeadlessCheckoutCardComponentsManager;

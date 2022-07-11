@@ -29,11 +29,24 @@ extension PrimerInputElementType {
     }
 }
 
+@objc
+enum PrimerHeadlessUniversalCheckoutCardFormManagerEvents: Int, CaseIterable {
+    
+    case onCardFormIsValidValueChange = 0
+    
+    var stringValue: String {
+        switch self {
+        case .onCardFormIsValidValueChange:
+            return "onCardFormIsValidValueChange"
+        }
+    }
+}
 
 @objc(NativeHeadlessCheckoutCardComponentsManager)
 class NativeHeadlessCheckoutCardComponentsManager: RCTEventEmitter {
     
     var headlessUniversalCheckoutCardComponentsUIManager: PrimerHeadlessUniversalCheckout.CardFormUIManager?
+    var inputElements: [PrimerInputElement]?
     
     override class func requiresMainQueueSetup() -> Bool {
         return true
@@ -42,18 +55,16 @@ class NativeHeadlessCheckoutCardComponentsManager: RCTEventEmitter {
     override init() {
         super.init()
         headlessUniversalCheckoutCardComponentsUIManager = try! PrimerHeadlessUniversalCheckout.CardFormUIManager()
-        headlessUniversalCheckoutCardComponentsUIManager!.cardFormUIManagerDelegate = self
     }
     
     override func supportedEvents() -> [String]! {
-        return []//PrimerHeadlessUniversalCheckoutEvents.allCases.compactMap({ $0.stringValue })
+        return PrimerHeadlessUniversalCheckoutCardFormManagerEvents.allCases.compactMap({ $0.stringValue })
     }
     
     // MARK: - API
     
     @objc
     public func listRequiredInputElementTypes(_ resolver: RCTPromiseResolveBlock, rejecter: RCTPromiseRejectBlock) {
-        print(#function)
         let requiredInputElementTypesStrArr = (headlessUniversalCheckoutCardComponentsUIManager?.requiredInputElementTypes ?? []).compactMap({ $0.stringValue })
         resolver(["requiredInputElementTypes": requiredInputElementTypesStrArr])
     }
@@ -65,32 +76,31 @@ class NativeHeadlessCheckoutCardComponentsManager: RCTEventEmitter {
         }
         
         rctUIManager.methodQueue.async {
-            var inputElements: [PrimerInputElement] = []
+            self.inputElements = []
             
             for tag in tags {
                 DispatchQueue.main.async {
                     if let view = rctUIManager.view(forReactTag: tag) {
                         if let rntCardNumberInputElement = view as? RNTCardNumberInputElement {
-                            //                            rntCardNumberInputElement.inputElementDelegate = self
-                            inputElements.append(rntCardNumberInputElement)
+                            self.inputElements!.append(rntCardNumberInputElement)
                         } else if let rntExpiryDateInputElement = view as? RNTExpiryDateInputElement {
-                            //                            rntExpiryDateInputElement.inputElementDelegate = self
-                            inputElements.append(rntExpiryDateInputElement)
+                            self.inputElements!.append(rntExpiryDateInputElement)
                         } else if let rntCVVInputElement = view as? RNTCVVInputElement {
-                            //                            rntCVVInputElement.inputElementDelegate = self
-                            inputElements.append(rntCVVInputElement)
+                            self.inputElements!.append(rntCVVInputElement)
                         } else if let rntCardHolderInputElement = view as? RNTCardHolderInputElement {
-                            //                            rntCardHolderInputElement.inputElementDelegate = self
-                            inputElements.append(rntCardHolderInputElement)
+                            self.inputElements!.append(rntCardHolderInputElement)
                         }
                         
-                        if inputElements.count == tags.count {
-                            self.headlessUniversalCheckoutCardComponentsUIManager?.inputElements = inputElements
+                        if self.inputElements!.count == tags.count {
+                            // Set the input elements
+                            self.headlessUniversalCheckoutCardComponentsUIManager?.inputElements = self.inputElements!
                             
-                            for inputElement in inputElements {
+                            // But override its elements' delegates
+                            for inputElement in self.inputElements! {
                                 inputElement.inputElementDelegate = self
                             }
                         }
+                        
                     } else {
                         print("Failure")
                     }
@@ -98,18 +108,12 @@ class NativeHeadlessCheckoutCardComponentsManager: RCTEventEmitter {
             }
         }
     }
+    
+    @objc
+    func tokenize() {
+        headlessUniversalCheckoutCardComponentsUIManager!.tokenize()
+    }
 }
-
-//extension NativeHeadlessCheckoutCardComponentsManager: PrimerHeadlessUniversalCheckoutDelegate {
-//
-//    func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethodTypes: [String]) {
-//
-//    }
-//
-//    func primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
-//
-//    }
-//}
 
 extension NativeHeadlessCheckoutCardComponentsManager: PrimerInputElementDelegate {
     
@@ -159,6 +163,19 @@ extension NativeHeadlessCheckoutCardComponentsManager: PrimerInputElementDelegat
         } else if let primerCardHolderNameInputElement = sender as? RNTCardHolderInputElement {
             primerCardHolderNameInputElement.onValueIsValid?(["isValid": isValid])
         }
+        
+        guard let inputElements = self.inputElements else { return }
+        
+        var isCardFormValid = false
+        
+        if isValid {
+            let otherInputTextFields = inputElements.compactMap({ $0 as? PrimerInputTextField }).filter({ $0 != (sender as? PrimerInputTextField) })
+            if otherInputTextFields.allSatisfy({ $0.isValid }) {
+                isCardFormValid = true
+            }
+        }
+        
+        sendEvent(withName: PrimerHeadlessUniversalCheckoutCardFormManagerEvents.onCardFormIsValidValueChange.stringValue, body: ["isCardFormValid": isCardFormValid])
     }
     
     func inputElementDidDetectType(_ sender: PrimerInputElement, type: Any?) {

@@ -14,5 +14,7 @@ RCT_EXTERN_METHOD(listRequiredInputElementTypes:(RCTPromiseResolveBlock)resolver
 
 RCT_EXTERN_METHOD(setInputElementsWithTags:(NSArray* __nonnull)tag)
 
+RCT_EXTERN_METHOD(tokenize)
+
 @end
 

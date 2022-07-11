@@ -37,5 +37,5 @@ export { NativeCardNumberInputElementView } from './headless_checkout/NativeCard
 export { NativeExpiryDateInputElementView } from './headless_checkout/NativeExpiryDateInputElementView';
 export { NativeCVVInputElementView } from './headless_checkout/NativeCVVInputElementView';
 export { NativeCardHolderInputElementView } from './headless_checkout/NativeCardHolderInputElementView';
-export { PrimerHeadlessCheckoutCardComponentsManager } from './headless_checkout/PrimerHeadlessCheckoutCardComponentsManager';
+export { primerHeadlessCheckoutCardComponentsManager } from './headless_checkout/PrimerHeadlessCheckoutCardComponentsManager';
 export { PrimerInputElementType } from './headless_checkout/PrimerInputElementType';

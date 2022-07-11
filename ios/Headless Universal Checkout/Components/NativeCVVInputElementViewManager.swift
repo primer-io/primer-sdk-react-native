@@ -27,7 +27,7 @@ class NativeCVVInputElementViewManager: RCTViewManager {
 extension NativeCVVInputElementViewManager: PrimerInputElementDelegate {
     
     func inputElementDidFocus(_ sender: PrimerInputElement) {
-        primerCVVInputElement?.onFocus?(nil)
+            primerCVVInputElement?.onFocus?(nil)
     }
     
     func inputElementDidBlur(_ sender: PrimerInputElement) {

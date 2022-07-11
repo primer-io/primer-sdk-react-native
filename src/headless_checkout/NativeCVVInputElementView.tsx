@@ -6,7 +6,7 @@ import {
     NativeSyntheticEvent
 } from 'react-native';
 import { PrimerInputElement } from './NativeCardNumberInputElementView';
-import { PrimerHeadlessCheckoutCardComponentsManager } from './PrimerHeadlessCheckoutCardComponentsManager';
+import { primerHeadlessCheckoutCardComponentsManager } from './PrimerHeadlessCheckoutCardComponentsManager';
 import { PrimerInputElementType } from './PrimerInputElementType';
 
 interface NativeCVVInputElementViewGeneralProps {
@@ -36,9 +36,7 @@ export class NativeCVVInputElementView extends PrimerInputElement {
     componentDidMount() {
         this.reactTag = findNodeHandle(this);
         console.log(`reactTag: ${this.reactTag}`);
-        if (this.reactTag) {
-            PrimerHeadlessCheckoutCardComponentsManager.registerInputElement(this);
-        }
+        primerHeadlessCheckoutCardComponentsManager.registerInputElement(this);
     }
 
     _onFocus = (event: any) => {
