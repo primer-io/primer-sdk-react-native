@@ -34,8 +34,8 @@ const SettingsScreen = ({ navigation }) => {
     const [environment, setEnvironment] = React.useState<Environment>(Environment.Sandbox);
     const [paymentHandling, setPaymentHandling] = React.useState<PaymentHandling>(PaymentHandling.Auto);
     const [lineItems, setLineItems] = React.useState<IClientSessionLineItem[]>(appPaymentParameters.clientSessionRequestBody.order?.lineItems || []);
-    const [currency, setCurrency] = React.useState<string>("EUR");
-    const [countryCode, setCountryCode] = React.useState<string>("FR");
+    const [currency, setCurrency] = React.useState<string>("GBP");
+    const [countryCode, setCountryCode] = React.useState<string>("GB");
     const [orderId, setOrderId] = React.useState<string | undefined>(appPaymentParameters.clientSessionRequestBody.orderId);
 
     const [merchantName, setMerchantName] = React.useState<string | undefined>(appPaymentParameters.merchantName);

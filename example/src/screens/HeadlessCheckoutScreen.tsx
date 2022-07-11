@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   HeadlessUniversalCheckout,
   NativeCardHolderInputElementView,
@@ -9,7 +9,7 @@ import {
   PrimerClientSession,
   PrimerError,
   PrimerErrorHandler,
-  PrimerHeadlessCheckoutCardComponentsManager,
+  primerHeadlessCheckoutCardComponentsManager,
   PrimerInputElementType,
   PrimerPaymentMethodTokenData,
   PrimerResumeHandler,
@@ -17,7 +17,6 @@ import {
   PrimerTokenizationHandler
 } from '@primer-io/react-native';
 import {
-  findNodeHandle,
   Image,
   ScrollView,
   Text,
@@ -29,18 +28,21 @@ import { appPaymentParameters } from '../models/IClientSessionRequestBody';
 import type { IPayment } from '../models/IPayment';
 import { getPaymentHandlingStringVal } from '../network/Environment';
 import { ActivityIndicator } from 'react-native';
+import type { PrimerInputElement } from 'src/headless_checkout/NativeCardNumberInputElementView';
 
 let paymentId: string | null = null;
 let log: string | undefined;
 
 export const HeadlessCheckoutScreen = (props: any) => {
   const [isLoading, setIsLoading] = useState(true);
+  // const [headlessCheckoutCardComponentsManager, setHeadlessCheckoutCardComponentsManager] = useState<undefined | PrimerHeadlessCheckoutCardComponentsManager>(undefined);
   const [paymentMethods, setPaymentMethods] = useState<undefined | string[]>(undefined);
   const [paymentResponse, setPaymentResponse] = useState<null | string>(null);
   const [localImageUrl, setLocalImageUrl] = useState<null | string>(null);
   const [clearLogs, setClearLogs] = useState<boolean>(false);
   const [inputElementsNodes, setInputElementsNodes] = useState<React.ReactNode[] | null>(null);
   const [error, setError] = useState<null | any>(null);
+  const [isCardFormValid, setIsCardFormValid] = useState<boolean>(false);
 
   const updateLogs = (str: string) => {
     const currentLog = log || '';
@@ -50,7 +52,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
 
   const getLogo = async (identifier: string) => {
     try {
-      const assetUrl = await HeadlessUniversalCheckout.getAssetForPaymentMethod(
+      const assetUrl = await HeadlessUniversalCheckout.getAssetForPaymentMethodType(
         identifier,
         'logo'
       );
@@ -61,27 +63,37 @@ export const HeadlessCheckoutScreen = (props: any) => {
   };
 
   const onHUCPrepareStart = (paymentMethod: string) => {
-    updateLogs(`\nℹ️ HUC started preparing for ${paymentMethod}`);
+    const tmpLog = `\nℹ️ HUC started preparing for ${paymentMethod}`;
+    updateLogs(tmpLog);
+    console.log(tmpLog);
     setIsLoading(true);
   };
 
   const onHUCPaymentMethodShow = (paymentMethod: string) => {
-    updateLogs(`\nℹ️ HUC showed ${paymentMethod}`);
+    const tmpLog = `\nℹ️ HUC showed ${paymentMethod}`;
+    updateLogs(tmpLog);
+    console.log(tmpLog);
     setIsLoading(true);
   };
 
   const onHUCTokenizeStart = (paymentMethod: string) => {
-    updateLogs(`\nℹ️ HUC started tokenization for ${paymentMethod}`);
+    const tmpLog = `\nℹ️ HUC started tokenization for ${paymentMethod}`;
+    updateLogs(tmpLog);
+    console.log(tmpLog);
     setIsLoading(true);
   };
 
   const onHUCAvailablePaymentMethodsLoaded = (paymentMethods: string[]) => {
-    updateLogs(`\nℹ️ HUC did set up client session for payment methods ${JSON.stringify(paymentMethods)}`);
+    const tmpLog = `\nℹ️ HUC did set up client session for payment methods ${JSON.stringify(paymentMethods)}`;
+    updateLogs(tmpLog);
+    console.log(tmpLog);
     setIsLoading(false);
   };
 
   const onCheckoutComplete = (checkoutData: PrimerCheckoutData) => {
-    updateLogs(`\n✅ PrimerCheckoutData:\n${JSON.stringify(checkoutData)}`);
+    const tmpLog = `\n✅ PrimerCheckoutData:\n${JSON.stringify(checkoutData)}`;
+    updateLogs(tmpLog);
+    console.log(tmpLog);
     setIsLoading(false);
     props.navigation.navigate('Result', checkoutData);
   };
@@ -188,11 +200,126 @@ export const HeadlessCheckoutScreen = (props: any) => {
         HeadlessUniversalCheckout.startWithClientToken(session.clientToken, settings)
           .then(async (response) => {
             try {
-              const listRequiredInputElementTypes = await PrimerHeadlessCheckoutCardComponentsManager.listRequiredInputElementTypes();
-              createCardComponentsForInputElementTypes(listRequiredInputElementTypes);
-              // updateLogs(`\nℹ️ Available payment methods:\n${JSON.stringify(response.paymentMethodTypes, null, 2)}`);
-              // setPaymentMethods(response.paymentMethodTypes);
-              // PrimerHeadlessCheckoutCardComponentsManager.setInputElements('dsadas');
+              const listRequiredInputElementTypes = await primerHeadlessCheckoutCardComponentsManager.listRequiredInputElementTypes();
+
+              if (listRequiredInputElementTypes.length === 0) { return null; }
+
+              const inputElements: (NativeCardNumberInputElementView | NativeExpiryDateInputElementView | NativeCVVInputElementView)[] = [];
+
+              for (var inputElementType of listRequiredInputElementTypes) {
+                switch (inputElementType) {
+                  case PrimerInputElementType.CardNumber:
+                    // const props = {
+                    //   style: {
+                    //     marginHorizontal: 16,
+                    //     marginVertical: 4,
+                    //     height: 50,
+                    //     flex: 1,
+                    //     borderColor: 'black',
+                    //     borderWidth: 1,
+                    //     borderRadius: 4,
+                    //   },
+                    //   placeholder: 'e.g. 4242 4242 4242 4242',
+                    //   onFocus: () => {
+                    //     console.log('CardNumber textField onFocus');
+                    //   },
+                    //   onValueIsValid: (isValid: boolean) => {
+                    //     console.log(`CardNumber textField onValueIsValid: ${isValid}`);
+                    //   },
+                    //   onValueTypeDetect: (type: string) => {
+                    //     console.log(`CardNumber textField onValueTypeDetect: ${type}`);
+                    //   }
+                    // }
+
+                    const cardNumberInputElementView = <NativeCardNumberInputElementView
+                      key={'NativeCardNumberInputElementView'}
+                      style={{
+                        marginHorizontal: 16,
+                        marginVertical: 4,
+                        height: 50,
+                        flex: 1,
+                        borderColor: 'black',
+                        borderWidth: 1,
+                        borderRadius: 4,
+                      }}
+                      placeholder={'e.g. 4242 4242 4242 4242'}
+                      onFocus={() => {
+                        console.log('CardNumber textField onFocus');
+                      }}
+                      onValueIsValid={(isValid: boolean) => {
+                        console.log(`CardNumber textField onValueIsValid: ${isValid}`);
+                      }}
+                      onValueTypeDetect={(type: string) => {
+                        console.log(`CardNumber textField onValueTypeDetect: ${type}`);
+                      }}
+                    />
+
+                    inputElements.push(cardNumberInputElementView);
+                    break;
+
+                  case PrimerInputElementType.ExpiryDate:
+                    const expiryDateInputElementView = <NativeExpiryDateInputElementView
+                      key={'NativeExpiryDateInputElementView'}
+                      style={{
+                        marginHorizontal: 16,
+                        marginVertical: 4,
+                        height: 50,
+                        width: 200,
+                        flex: 1,
+                        borderColor: 'black',
+                        borderWidth: 1,
+                        borderRadius: 4,
+                      }}
+                      placeholder={'e.g. 02/25'}
+                      onFocus={() => {
+                        console.log('ExpiryDate textField onFocus');
+                      }}
+                      onValueIsValid={(isValid: boolean) => {
+                        console.log(`ExpiryDate textField onValueIsValid: ${isValid}`);
+                      }}
+                      onValueTypeDetect={(type: string) => {
+                        console.log(`ExpiryDate textField onValueTypeDetect: ${type}`);
+                      }}
+                    />
+
+                    inputElements.push(expiryDateInputElementView);
+                    break;
+
+                  case PrimerInputElementType.CVV:
+                    const cvvInputElementView = <NativeCVVInputElementView
+                      key={'NativeCVVInputElementView'}
+                      style={{
+                        marginHorizontal: 16,
+                        marginVertical: 4,
+                        height: 50,
+                        flex: 1,
+                        borderColor: 'black',
+                        borderWidth: 1,
+                        borderRadius: 4,
+                      }}
+                      placeholder={'e.g. 726'}
+                      onFocus={() => {
+                        console.log('CVV textField onFocus');
+                      }}
+                      onValueIsValid={(isValid: boolean) => {
+                        console.log(`CVV textField onValueIsValid: ${isValid}`);
+                      }}
+                      onValueTypeDetect={(type: string) => {
+                        console.log(`CVV textField onValueTypeDetect: ${type}`);
+                      }}
+                    />
+
+                    inputElements.push(cvvInputElementView);
+                    break;
+                }
+              }
+
+              setInputElementsNodes(inputElements);
+
+              primerHeadlessCheckoutCardComponentsManager.onCardFormIsValidValueChange = (isValid) => {
+                setIsCardFormValid(isValid);
+              }
+              
             } catch (err) {
 
             }
@@ -223,126 +350,6 @@ export const HeadlessCheckoutScreen = (props: any) => {
           });
       });
   };
-
-  const createCardComponentsForInputElementTypes = (inputElementTypes: PrimerInputElementType[]) => {
-    if (inputElementTypes.length === 0) { return null; }
-
-    const inputElements: React.ReactNode[] = [];
-
-    for (var inputElementType of inputElementTypes) {
-      switch (inputElementType) {
-        case PrimerInputElementType.CardNumber:
-          const props = {
-            style: {
-              marginHorizontal: 16,
-              marginVertical: 4,
-              height: 50,
-              flex: 1,
-              borderColor: 'black',
-              borderWidth: 1,
-              borderRadius: 4,
-            },
-            placeholder: 'e.g. 4242 4242 4242 4242',
-            onFocus: () => {
-              debugger
-            },
-            onValueIsValid: (isValid: boolean) => {
-
-            },
-            onValueTypeDetect: (type: string) => {
-
-            }
-          }
-          
-          const cardNumberInputElementView = <NativeCardNumberInputElementView
-            key={'NativeCardNumberInputElementView'}
-            style={{
-              marginHorizontal: 16,
-              marginVertical: 4,
-              height: 50,
-              flex: 1,
-              borderColor: 'black',
-              borderWidth: 1,
-              borderRadius: 4,
-            }}
-            placeholder={'e.g. 4242 4242 4242 4242'}
-            onFocus={() => {
-
-            }}
-            onValueIsValid={(isValid: boolean) => {
-
-            }}
-            onValueTypeDetect={(type: string) => {
-
-            }}
-          />
-
-          cardNumberInputElementView.reactTag
-
-          inputElements.push(cardNumberInputElementView);
-          break;
-
-        case PrimerInputElementType.ExpiryDate:
-          const expiryDateInputElementView = <NativeExpiryDateInputElementView
-            key={'NativeExpiryDateInputElementView'}
-            style={{
-              marginHorizontal: 16,
-              marginVertical: 4,
-              height: 50,
-              width: 200,
-              flex: 1,
-              borderColor: 'black',
-              borderWidth: 1,
-              borderRadius: 4,
-            }}
-            placeholder={'e.g. 02/25'}
-            onFocus={() => {
-              // debugger
-            }}
-            onValueIsValid={(isValid: boolean) => {
-              // debugger;
-            }}
-            onValueTypeDetect={(type: string) => {
-              // debugger
-            }}
-          />
-
-          inputElements.push(expiryDateInputElementView);
-          break;
-
-        case PrimerInputElementType.CVV:
-          const cvvInputElementView = <NativeCVVInputElementView
-            key={'NativeCVVInputElementView'}
-            style={{
-              marginHorizontal: 16,
-              marginVertical: 4,
-              height: 50,
-              flex: 1,
-              borderColor: 'black',
-              borderWidth: 1,
-              borderRadius: 4,
-            }}
-            placeholder={'e.g. 726'}
-            onFocus={() => {
-              // debugger
-            }}
-            onValueIsValid={(isValid: boolean) => {
-              // debugger;
-            }}
-            onValueTypeDetect={(type: string) => {
-              // debugger
-            }}
-          />
-
-          inputElements.push(cvvInputElementView);
-          break;
-      }
-    }
-
-    setInputElementsNodes(inputElements);
-
-    PrimerHeadlessCheckoutCardComponentsManager.registerInputElements([]);
-  }
 
   const renderPaymentMethods = () => {
     if (!inputElementsNodes) { return null; }
@@ -479,6 +486,54 @@ export const HeadlessCheckoutScreen = (props: any) => {
     // }
   };
 
+  const renderCardPaymentButton = () => {
+    if (isCardFormValid) {
+      return (
+        <TouchableOpacity
+          key={'card-payment'}
+          style={{
+            marginHorizontal: 20,
+            marginVertical: 4,
+            height: 50,
+            backgroundColor: 'white',
+            borderWidth: 1,
+            borderColor: 'black',
+            justifyContent: 'center',
+            alignItems: 'center',
+            borderRadius: 4,
+          }}
+          onPress={() => {
+            primerHeadlessCheckoutCardComponentsManager.tokenize();
+          }}
+        >
+          <Text style={{ color: 'black' }}>Pay with card</Text>
+        </TouchableOpacity>
+      );
+    } else {
+      return (
+        <TouchableOpacity
+          key={'card-payment'}
+          style={{
+            marginHorizontal: 20,
+            marginVertical: 4,
+            height: 50,
+            backgroundColor: 'white',
+            borderWidth: 1,
+            borderColor: 'black',
+            justifyContent: 'center',
+            alignItems: 'center',
+            borderRadius: 4,
+          }}
+          onPress={() => {
+            
+          }}
+        >
+          <Text style={{ color: 'black' }}>Card form is not valid</Text>
+        </TouchableOpacity>
+      );
+    }
+  }
+
   const renderResponse = () => {
     if (!paymentResponse) {
       return null;
@@ -535,6 +590,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
   return (
     <View style={{ paddingHorizontal: 24, flex: 1 }}>
       {renderPaymentMethods()}
+      {renderCardPaymentButton()}
       <TouchableOpacity
         key={'clear-logs'}
         style={{
