@@ -182,7 +182,6 @@ async function configureListeners(): Promise<void> {
               } else {
                 primerSettings.onAvailablePaymentMethodsLoad(['not implemented']);
               }
-              
             } else {
               // Ignore!
             }
