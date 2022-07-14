@@ -23,6 +23,7 @@ import io.primer.android.domain.tokenization.models.PrimerPaymentMethodData
 import io.primer.android.domain.tokenization.models.PrimerPaymentMethodTokenData
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.json.JSONArray
 import org.json.JSONObject
 
 @OptIn(ExperimentalPrimerApi::class)
@@ -46,7 +47,7 @@ class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckou
     sendEvent?.invoke(
       PrimerHeadlessUniversalCheckoutEvent.ON_HUC_AVAILABLE_PAYMENT_METHODS_LOADED.eventName,
       JSONObject().apply {
-        put("paymentMethodTypes", paymentMethods.map { it.paymentMethodType.name })
+        put("paymentMethodTypes", JSONArray(paymentMethods.map { it.paymentMethodType.name }))
       }
     )
     successCallback?.invoke(
