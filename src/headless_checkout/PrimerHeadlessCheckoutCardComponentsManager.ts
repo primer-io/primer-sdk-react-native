@@ -14,7 +14,7 @@ interface IPrimerHeadlessCheckoutCardComponentsManager {
 //     return new Promise(async (resolve, reject) => {
 //       try {
 //         RNHeadlessCheckoutCardComponentsManager.removeAllListeners();
-  
+
 //         let implementedRNCallbacks: any = {
 //           onCheckoutComplete: (primerSettings?.onCheckoutComplete !== undefined),
 //           onBeforePaymentCreate: (primerSettings?.onBeforePaymentCreate !== undefined),
@@ -25,9 +25,9 @@ interface IPrimerHeadlessCheckoutCardComponentsManager {
 //           onDismiss: (primerSettings?.onDismiss !== undefined),
 //           onError: (primerSettings?.onError !== undefined),
 //         };
-  
+
 //         await RNPrimer.setImplementedRNCallbacks(implementedRNCallbacks);
-  
+
 //         if (implementedRNCallbacks.onCheckoutComplete) {
 //           RNPrimer.addListener('onCheckoutComplete', data => {
 //             if (primerSettings && primerSettings.onCheckoutComplete) {
@@ -37,7 +37,7 @@ interface IPrimerHeadlessCheckoutCardComponentsManager {
 //           });
 //         }
 
-//         resolve();  
+//         resolve();
 //       } catch (err) {
 //         reject(err);
 //       }
@@ -73,12 +73,14 @@ class PrimerHeadlessCheckoutCardComponentsManager implements IPrimerHeadlessChec
         if ((this.requiredInputElementTypes || []).length >= 3 && Object.keys(this.requiredInputElementsTags).length === (this.requiredInputElementTypes || []).length) {
             const reactTags = Object.values(this.requiredInputElementsTags).map(e => e.reactTag).filter(notEmpty);
             RNHeadlessCheckoutCardComponentsManager.setInputElementsWithTags(reactTags);
+
         }
     }
 
     public registerInputElements(inputElements: PrimerInputElement[]) {
         if ((this.requiredInputElementTypes || []).length >= 3 && Object.keys(inputElements).length === (this.requiredInputElementTypes || []).length) {
             const reactTags = Object.values(inputElements).map(e => e.reactTag).filter(notEmpty);
+
             RNHeadlessCheckoutCardComponentsManager.setInputElementsWithTags(reactTags);
         }
     }

@@ -204,7 +204,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
 
               if (listRequiredInputElementTypes.length === 0) { return null; }
 
-              const inputElements: (NativeCardNumberInputElementView | NativeExpiryDateInputElementView | NativeCVVInputElementView)[] = [];
+              const inputElements: (NativeCardNumberInputElementView | NativeExpiryDateInputElementView | NativeCVVInputElementView | NativeCardHolderInputElementView)[] = [];
 
               for (var inputElementType of listRequiredInputElementTypes) {
                 switch (inputElementType) {
@@ -246,6 +246,9 @@ export const HeadlessCheckoutScreen = (props: any) => {
                       onFocus={() => {
                         console.log('CardNumber textField onFocus');
                       }}
+                        onBlur={() => {
+                                              console.log('CardNumber textField onBlur');
+                                            }}
                       onValueIsValid={(isValid: boolean) => {
                         console.log(`CardNumber textField onValueIsValid: ${isValid}`);
                       }}
@@ -311,6 +314,33 @@ export const HeadlessCheckoutScreen = (props: any) => {
 
                     inputElements.push(cvvInputElementView);
                     break;
+                                      case PrimerInputElementType.CardholderName:
+
+                         const cardHolderInputElementView = <NativeCardHolderInputElementView
+                                          key={'NativeCardHolderInputElementView'}
+                                          style={{
+                                            marginHorizontal: 16,
+                                            marginVertical: 4,
+                                            height: 50,
+                                            flex: 1,
+                                            borderColor: 'black',
+                                            borderWidth: 1,
+                                            borderRadius: 4,
+                                          }}
+                                          placeholder={'e.g. John Doe'}
+                                          onFocus={() => {
+                                            console.log('Cardholder textField onFocus');
+                                          }}
+                                          onValueIsValid={(isValid: boolean) => {
+                                            console.log(`Cardholder textField onValueIsValid: ${isValid}`);
+                                          }}
+                                          onValueTypeDetect={(type: string) => {
+                                            console.log(`Cardholder textField onValueTypeDetect: ${type}`);
+                                          }}
+                                        />
+
+                                        inputElements.push(cardHolderInputElementView);
+                                        break;
                 }
               }
 
@@ -319,7 +349,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
               primerHeadlessCheckoutCardComponentsManager.onCardFormIsValidValueChange = (isValid) => {
                 setIsCardFormValid(isValid);
               }
-              
+
             } catch (err) {
 
             }
@@ -525,7 +555,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
             borderRadius: 4,
           }}
           onPress={() => {
-            
+
           }}
         >
           <Text style={{ color: 'black' }}>Card form is not valid</Text>
