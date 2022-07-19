@@ -13,7 +13,7 @@ internal class PrimerRNInputElementListener(
   private val view: View
 ) : PrimerInputElementListener {
 
-  override fun inputElementValueIsValid(inputElement: PrimerInputElement, isValid: Boolean) {
+  override fun onValueIsValid(inputElement: PrimerInputElement, isValid: Boolean) {
     val event = Arguments.createMap().apply {
       putBoolean("isValid", isValid)
     }
@@ -22,13 +22,13 @@ internal class PrimerRNInputElementListener(
       .receiveEvent(view.id, InputElementEventType.ON_VALUE_IS_VALID.nativeEventName, event)
   }
 
-  override fun inputElementValueChanged(inputElement: PrimerInputElement) {
+  override fun onValueChanged(inputElement: PrimerInputElement) {
     reactContext
       .getJSModule(RCTEventEmitter::class.java)
       .receiveEvent(view.id, InputElementEventType.ON_VALUE_CHANGE.nativeEventName, null)
   }
 
-  override fun inputElementDidDetectCardType(type: CardType.Type) {
+  override fun onValueTypeDetected(type: CardType.Type) {
     val event = Arguments.createMap().apply {
       putString("type", type.name)
     }

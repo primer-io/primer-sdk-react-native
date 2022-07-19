@@ -236,13 +236,13 @@ export const HeadlessCheckoutScreen = (props: any) => {
                       style={{
                         marginHorizontal: 16,
                         marginVertical: 4,
-                        height: 50,
+                        height: 60,
                         flex: 1,
-                        borderColor: 'black',
+                        borderColor: 'red',
                         borderWidth: 1,
                         borderRadius: 4,
                       }}
-                      placeholder={'e.g. 4242 4242 4242 4242'}
+                      placeholder= {"e.g. 4242 4242 4242 4242"}
                       onFocus={() => {
                         console.log('CardNumber textField onFocus');
                       }}
@@ -292,14 +292,11 @@ export const HeadlessCheckoutScreen = (props: any) => {
                     const cvvInputElementView = <NativeCVVInputElementView
                       key={'NativeCVVInputElementView'}
                       style={{
-                        marginHorizontal: 16,
-                        marginVertical: 4,
-                        height: 50,
-                        flex: 1,
-                        borderColor: 'black',
+                        height: 40,
+                        margin: 12,
                         borderWidth: 1,
-                        borderRadius: 4,
-                      }}
+                        padding: 10,
+                       }}
                       placeholder={'e.g. 726'}
                       onFocus={() => {
                         console.log('CVV textField onFocus');
@@ -322,7 +319,6 @@ export const HeadlessCheckoutScreen = (props: any) => {
                                             marginHorizontal: 16,
                                             marginVertical: 4,
                                             height: 50,
-                                            flex: 1,
                                             borderColor: 'black',
                                             borderWidth: 1,
                                             borderRadius: 4,
@@ -387,7 +383,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
     return (
       <View
         style={{
-          backgroundColor: 'red',
+          backgroundColor: 'white',
           flex: 1
         }}
       >
