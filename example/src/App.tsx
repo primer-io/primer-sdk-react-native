@@ -6,6 +6,7 @@ import CheckoutScreen from './screens/CheckoutScreen';
 import ResultScreen from './screens/ResultScreen';
 import { HeadlessCheckoutScreen } from './screens/HeadlessCheckoutScreen';
 import NewLineItemScreen from './screens/NewLineItemSreen';
+import { HUCRawCardDataScreen } from './screens/HUCRawCardDataScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -18,6 +19,7 @@ const App = () => {
           <Stack.Screen name="Checkout" component={CheckoutScreen} />
           <Stack.Screen name="HUC" component={HeadlessCheckoutScreen} />
           <Stack.Screen name="Result" component={ResultScreen} />
+          <Stack.Screen name="HUCRawCardData" component={HUCRawCardDataScreen} />
         </Stack.Navigator>
       </NavigationContainer>
   );
