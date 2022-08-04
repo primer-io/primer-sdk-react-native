@@ -88,7 +88,7 @@ const paymentCreationHandler: PrimerPaymentCreationHandler = {
   }
 }
 
-let primerSettings: PrimerSettings | undefined = undefined;
+export let primerSettings: PrimerSettings | undefined = undefined;
 
 async function configureListeners(): Promise<void> {
   return new Promise(async (resolve, reject) => {
@@ -177,7 +177,7 @@ async function configureListeners(): Promise<void> {
             if (primerSettings && primerSettings.onAvailablePaymentMethodsLoad) {
               if (data && data.paymentMethodTypes) {
                 const paymentMethodTypes: string[] = data.paymentMethodTypes;
-                const availablePaymentMethodTypes = paymentMethodTypes.filter(pmt => pmt !== 'PAYMENT_CARD');
+                const availablePaymentMethodTypes = paymentMethodTypes;
                 primerSettings.onAvailablePaymentMethodsLoad(availablePaymentMethodTypes || ['not implemented']);
               } else {
                 primerSettings.onAvailablePaymentMethodsLoad(['not implemented']);
@@ -280,7 +280,7 @@ class PrimerHeadlessUniversalCheckoutClass {
       try {
         await configureListeners();
         const hucResponse: PrimerHeadlessUniversalCheckoutStartResponse = await RNPrimerHeadlessUniversalCheckout.startWithClientToken(clientToken, settings);
-        const availablePaymentMethodTypes: string[] = hucResponse.paymentMethodTypes.filter(pmt => pmt !== 'PAYMENT_CARD');
+        const availablePaymentMethodTypes: string[] = hucResponse.paymentMethodTypes;
         resolve(availablePaymentMethodTypes);
       } catch (err) {
         reject(err);

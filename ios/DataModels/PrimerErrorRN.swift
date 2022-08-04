@@ -1,4 +1,6 @@
+
 struct NativeError: CustomNSError, LocalizedError, Codable {
+    
     let errorId: String
     let errorDescription: String?
     let recoverySuggestion: String?
