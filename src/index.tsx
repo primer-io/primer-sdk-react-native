@@ -36,8 +36,8 @@ export {
     PrimerError
 } from './models/PrimerError';
 export {
-    PrimerHeadlessUniversalCheckout
+    PrimerHeadlessUniversalCheckout as HeadlessUniversalCheckout
 } from './headless_checkout/PrimerHeadlessUniversalCheckout';
 export {
-    PrimerHeadlessUniversalCheckoutRawDataManager
+    PrimerHeadlessUniversalCheckoutRawDataManager as HeadlessUniversalCheckoutRawDataManager
 } from './headless_checkout/PrimerHeadlessUniversalCheckoutRawDataManager';

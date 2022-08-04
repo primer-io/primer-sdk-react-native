@@ -17,12 +17,12 @@ import {
     PrimerClientSession,
     PrimerError,
     PrimerErrorHandler,
-    PrimerHeadlessUniversalCheckout,
+    HeadlessUniversalCheckout,
     PrimerPaymentMethodTokenData,
     PrimerResumeHandler,
     PrimerSettings,
     PrimerTokenizationHandler,
-    PrimerHeadlessUniversalCheckoutRawDataManager,
+    HeadlessUniversalCheckoutRawDataManager,
     PrimerRawCardData
 } from '@primer-io/react-native';
 import type { PrimerHeadlessUniversalCheckoutRawDataManagerOptions } from 'src/headless_checkout/PrimerHeadlessUniversalCheckoutRawDataManager';
@@ -170,7 +170,7 @@ export const HUCRawCardDataScreen = (props: any) => {
         createClientSession()
             .then((session) => {
                 setIsLoading(false);
-                PrimerHeadlessUniversalCheckout.startWithClientToken(session.clientToken, settings)
+                HeadlessUniversalCheckout.startWithClientToken(session.clientToken, settings)
                     .then((paymentMethodTypes) => {
                         updateLogs(`\nℹ️ Available payment methods:\n${JSON.stringify(paymentMethodTypes, null, 2)}`);
                         setPaymentMethods(paymentMethodTypes);
@@ -193,9 +193,9 @@ export const HUCRawCardDataScreen = (props: any) => {
         createClientSession()
             .then((session) => {
                 setIsLoading(false);
-                PrimerHeadlessUniversalCheckout.startWithClientToken(session.clientToken, settings)
+                HeadlessUniversalCheckout.startWithClientToken(session.clientToken, settings)
                     .then((response) => {
-                        PrimerHeadlessUniversalCheckout.showPaymentMethod(paymentMethod);
+                        HeadlessUniversalCheckout.showPaymentMethod(paymentMethod);
                     })
                     .catch((err) => {
                         updateLogs(`\n🛑 Error:\n${JSON.stringify(err, null, 2)}`);
@@ -252,8 +252,8 @@ export const HUCRawCardDataScreen = (props: any) => {
                     }
                 }
             }
-            await PrimerHeadlessUniversalCheckoutRawDataManager.configure(options);
-            const requiredInputElementTypes = await PrimerHeadlessUniversalCheckoutRawDataManager.getRequiredInputElementTypesForPaymentMethodType("PAYMENT_CARD");
+            await HeadlessUniversalCheckoutRawDataManager.configure(options);
+            const requiredInputElementTypes = await HeadlessUniversalCheckoutRawDataManager.getRequiredInputElementTypesForPaymentMethodType("PAYMENT_CARD");
 
             let rawCardData: PrimerRawCardData = {
                 cardNumber: "",
@@ -262,24 +262,24 @@ export const HUCRawCardDataScreen = (props: any) => {
                 cvv: "1",
                 cardholderName: "John"
             }
-            await PrimerHeadlessUniversalCheckoutRawDataManager.setRawData(rawCardData);
+            await HeadlessUniversalCheckoutRawDataManager.setRawData(rawCardData);
 
             setTimeout(async () => {
                 rawCardData.expiryMonth = "12"
-                await PrimerHeadlessUniversalCheckoutRawDataManager.setRawData(rawCardData);
+                await HeadlessUniversalCheckoutRawDataManager.setRawData(rawCardData);
 
                 setTimeout(async () => {
                     rawCardData.cardNumber = "4"
-                    await PrimerHeadlessUniversalCheckoutRawDataManager.setRawData(rawCardData);
+                    await HeadlessUniversalCheckoutRawDataManager.setRawData(rawCardData);
 
                     setTimeout(async () => {
                         rawCardData.cvv = "123"
-                        await PrimerHeadlessUniversalCheckoutRawDataManager.setRawData(rawCardData);
+                        await HeadlessUniversalCheckoutRawDataManager.setRawData(rawCardData);
 
                         setTimeout(async () => {
                             rawCardData.cardNumber = "4242424242424242"
-                            await PrimerHeadlessUniversalCheckoutRawDataManager.setRawData(rawCardData);
-                            await PrimerHeadlessUniversalCheckoutRawDataManager.submit();
+                            await HeadlessUniversalCheckoutRawDataManager.setRawData(rawCardData);
+                            await HeadlessUniversalCheckoutRawDataManager.submit();
                             
                         }, 1000);
                     }, 1000);
