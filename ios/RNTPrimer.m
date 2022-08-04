@@ -18,7 +18,7 @@ RCT_EXTERN_METHOD(showUniversalCheckoutWithClientToken:(NSString *)clientToken r
 
 RCT_EXTERN_METHOD(showVaultManagerWithClientToken: (NSString *)clientToken resolver:(RCTPromiseResolveBlock)resolver rejecter:(RCTPromiseRejectBlock)rejecter)
 
-RCT_EXTERN_METHOD(showPaymentMethod:(NSString *)paymentMethodStr intent:(NSString *)intentStr clientToken:(NSString *)clientToken resolver:(RCTPromiseResolveBlock)resolver rejecter:(RCTPromiseRejectBlock)rejecter)
+RCT_EXTERN_METHOD(showPaymentMethod:(NSString *)paymentMethodTypeStr intent:(NSString *)intentStr clientToken:(NSString *)clientToken resolver:(RCTPromiseResolveBlock)resolver rejecter:(RCTPromiseRejectBlock)rejecter)
 
 RCT_EXTERN_METHOD(dismiss)
 
