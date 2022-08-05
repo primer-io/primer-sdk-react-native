@@ -27,7 +27,7 @@ enum PrimerHeadlessUniversalCheckoutRawDataManagerEvents: Int, CaseIterable {
     }
 }
 
-@objc(PrimerHeadlessUniversalCheckoutRawDatamanager)
+@objc(PrimerHeadlessUniversalCheckoutRawDataManager)
 class RNTPrimerHeadlessUniversalCheckoutRawDataManager: RCTEventEmitter {
     
     private var rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager!
@@ -35,10 +35,6 @@ class RNTPrimerHeadlessUniversalCheckoutRawDataManager: RCTEventEmitter {
     
     override class func requiresMainQueueSetup() -> Bool {
         return true
-    }
-    
-    override init() {
-        super.init()
     }
     
     override func supportedEvents() -> [String]! {
@@ -77,7 +73,7 @@ class RNTPrimerHeadlessUniversalCheckoutRawDataManager: RCTEventEmitter {
         }
         
         let inputElementTypes = rawDataManager.listRequiredInputElementTypes(for: rawDataManager.paymentMethodType).compactMap({ $0.rawValue })
-        resolver(inputElementTypes)
+        resolver(["inputElementTypes": inputElementTypes])
     }
     
     @objc
