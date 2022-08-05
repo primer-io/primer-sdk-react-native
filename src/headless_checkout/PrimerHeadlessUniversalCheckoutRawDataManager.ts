@@ -1,5 +1,5 @@
 import type { PrimerRawData } from "..";
-import RNPrimerHeadlessUniversalCheckoutRawDatamanager from "./RNPrimerHeadlessUniversalCheckoutRawDataManager";
+import RNPrimerHeadlessUniversalCheckoutRawDataManager from "./RNPrimerHeadlessUniversalCheckoutRawDataManager";
 import { primerSettings } from "./PrimerHeadlessUniversalCheckout"
 import { PrimerError } from '../models/PrimerError';
 
@@ -8,15 +8,15 @@ let primerHeadlessUniversalCheckoutRawDataManagerOptions: PrimerHeadlessUniversa
 async function configureListeners(): Promise<void> {
     return new Promise(async (resolve, reject) => {
         try {
-            RNPrimerHeadlessUniversalCheckoutRawDatamanager.removeAllListeners();
+            RNPrimerHeadlessUniversalCheckoutRawDataManager.removeAllListeners();
 
-            RNPrimerHeadlessUniversalCheckoutRawDatamanager.addListener('onMetadataChange', data => {
+            RNPrimerHeadlessUniversalCheckoutRawDataManager.addListener('onMetadataChange', data => {
                 if (primerHeadlessUniversalCheckoutRawDataManagerOptions && primerHeadlessUniversalCheckoutRawDataManagerOptions.onMetadataChange) {
                     primerHeadlessUniversalCheckoutRawDataManagerOptions.onMetadataChange(data);
                 }
             });
 
-            RNPrimerHeadlessUniversalCheckoutRawDatamanager.addListener('onValidation', data => {
+            RNPrimerHeadlessUniversalCheckoutRawDataManager.addListener('onValidation', data => {
                 if (primerHeadlessUniversalCheckoutRawDataManagerOptions && primerHeadlessUniversalCheckoutRawDataManagerOptions.onValidation) {
                     let errors: PrimerError[] = [];
                     for (const errData of (data.errors || [])) {
@@ -31,7 +31,7 @@ async function configureListeners(): Promise<void> {
                 }
             });
 
-            RNPrimerHeadlessUniversalCheckoutRawDatamanager.addListener('onNativeError', data => {
+            RNPrimerHeadlessUniversalCheckoutRawDataManager.addListener('onNativeError', data => {
                 if (primerSettings && primerSettings.onError) {
                     const errorId: string = data.error.errorId;
                     const description: string | undefined = data.error.description;
@@ -70,19 +70,19 @@ class PrimerHeadlessUniversalCheckoutRawDataManagerClass {
     configure(options: PrimerHeadlessUniversalCheckoutRawDataManagerOptions): Promise<void> {
         primerHeadlessUniversalCheckoutRawDataManagerOptions = options;
         configureListeners();
-        return RNPrimerHeadlessUniversalCheckoutRawDatamanager.initialize(primerHeadlessUniversalCheckoutRawDataManagerOptions.paymentMethodType);
+        return RNPrimerHeadlessUniversalCheckoutRawDataManager.initialize(primerHeadlessUniversalCheckoutRawDataManagerOptions.paymentMethodType);
     }
 
     async getRequiredInputElementTypesForPaymentMethodType(paymentMethodType: string): Promise<string[]> {
-        return RNPrimerHeadlessUniversalCheckoutRawDatamanager.listRequiredInputElementTypesForPaymentMethodType(paymentMethodType);
+        return RNPrimerHeadlessUniversalCheckoutRawDataManager.listRequiredInputElementTypesForPaymentMethodType(paymentMethodType);
     }
 
     setRawData(rawData: PrimerRawData): Promise<void> {
-        return RNPrimerHeadlessUniversalCheckoutRawDatamanager.setRawData(JSON.stringify(rawData));
+        return RNPrimerHeadlessUniversalCheckoutRawDataManager.setRawData(JSON.stringify(rawData));
     }
 
     submit(): Promise<void> {
-        return RNPrimerHeadlessUniversalCheckoutRawDatamanager.submit();
+        return RNPrimerHeadlessUniversalCheckoutRawDataManager.submit();
     }
 }
 
