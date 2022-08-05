@@ -73,7 +73,7 @@ class RNTPrimerHeadlessUniversalCheckoutRawDataManager: RCTEventEmitter {
         }
         
         let inputElementTypes = rawDataManager.listRequiredInputElementTypes(for: rawDataManager.paymentMethodType).compactMap({ $0.rawValue })
-        resolver(inputElementTypes)
+        resolver(["inputElementTypes": inputElementTypes])
     }
     
     @objc
