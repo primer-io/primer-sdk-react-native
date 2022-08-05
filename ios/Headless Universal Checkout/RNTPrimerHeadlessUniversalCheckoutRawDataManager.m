@@ -8,7 +8,7 @@
 #import <React/RCTBridgeModule.h>
 #import <React/RCTEventEmitter.h>
 
-@interface RCT_EXTERN_MODULE(PrimerHeadlessUniversalCheckoutRawDatamanager, RCTEventEmitter)
+@interface RCT_EXTERN_MODULE(PrimerHeadlessUniversalCheckoutRawDataManager, RCTEventEmitter)
 
 RCT_EXTERN_METHOD(initialize:(NSString *)paymentMethodTypeStr resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 

@@ -27,7 +27,7 @@ enum PrimerHeadlessUniversalCheckoutRawDataManagerEvents: Int, CaseIterable {
     }
 }
 
-@objc(PrimerHeadlessUniversalCheckoutRawDatamanager)
+@objc(PrimerHeadlessUniversalCheckoutRawDataManager)
 class RNTPrimerHeadlessUniversalCheckoutRawDataManager: RCTEventEmitter {
     
     private var rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager!
