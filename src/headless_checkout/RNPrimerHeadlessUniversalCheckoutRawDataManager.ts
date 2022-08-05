@@ -53,8 +53,12 @@ const RNPrimerHeadlessUniversalCheckoutRawDataManager = {
     listRequiredInputElementTypesForPaymentMethodType: (paymentMethodType: string): Promise<string[]> => {
         return new Promise(async (resolve, reject) => {
             try {
-                const inputElementTypes = await PrimerHeadlessUniversalCheckoutRawDataManager.listRequiredInputElementTypesForPaymentMethodType(paymentMethodType);
-                resolve(inputElementTypes);
+                const res = await PrimerHeadlessUniversalCheckoutRawDataManager.listRequiredInputElementTypesForPaymentMethodType(paymentMethodType);
+                if (res.inputElementTypes) {
+                    resolve(res.inputElementTypes);
+                } else {
+                    resolve([])
+                }
             } catch (e) {
                 reject(e);
             }
