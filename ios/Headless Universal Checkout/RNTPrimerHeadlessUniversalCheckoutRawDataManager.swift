@@ -37,10 +37,6 @@ class RNTPrimerHeadlessUniversalCheckoutRawDataManager: RCTEventEmitter {
         return true
     }
     
-    override init() {
-        super.init()
-    }
-    
     override func supportedEvents() -> [String]! {
         return PrimerHeadlessUniversalCheckoutRawDataManagerEvents.allCases.compactMap({ $0.stringValue })
     }
