@@ -1,8 +1,7 @@
 import { NativeEventEmitter, NativeModules } from 'react-native';
 
-const { PrimerHeadlessUniversalCheckoutRawDatamanager } = NativeModules;
-
-const eventEmitter = new NativeEventEmitter(PrimerHeadlessUniversalCheckoutRawDatamanager);
+const { PrimerHeadlessUniversalCheckoutRawDataManager } = NativeModules;
+const eventEmitter = new NativeEventEmitter(PrimerHeadlessUniversalCheckoutRawDataManager);
 
 type EventType =
     | 'onMetadataChange'
@@ -15,7 +14,7 @@ const eventTypes: EventType[] = [
     'onNativeError'
 ];
 
-const RNPrimerHeadlessUniversalCheckoutRawDatamanager = {
+const RNPrimerHeadlessUniversalCheckoutRawDataManager = {
 
     ///////////////////////////////////////////
     // Event Emitter
@@ -33,7 +32,7 @@ const RNPrimerHeadlessUniversalCheckoutRawDatamanager = {
     },
 
     removeAllListeners() {
-        eventTypes.forEach((eventType) => RNPrimerHeadlessUniversalCheckoutRawDatamanager.removeAllListenersForEvent(eventType));
+        eventTypes.forEach((eventType) => RNPrimerHeadlessUniversalCheckoutRawDataManager.removeAllListenersForEvent(eventType));
     },
 
     ///////////////////////////////////////////
@@ -43,7 +42,7 @@ const RNPrimerHeadlessUniversalCheckoutRawDatamanager = {
     initialize: (paymentMethodType: string): Promise<void> => {
         return new Promise(async (resolve, reject) => {
             try {
-                await PrimerHeadlessUniversalCheckoutRawDatamanager.initialize(paymentMethodType);
+                await PrimerHeadlessUniversalCheckoutRawDataManager.initialize(paymentMethodType);
                 resolve();
             } catch (e) {
                 reject(e);
@@ -54,7 +53,7 @@ const RNPrimerHeadlessUniversalCheckoutRawDatamanager = {
     listRequiredInputElementTypesForPaymentMethodType: (paymentMethodType: string): Promise<string[]> => {
         return new Promise(async (resolve, reject) => {
             try {
-                const inputElementTypes = await PrimerHeadlessUniversalCheckoutRawDatamanager.listRequiredInputElementTypesForPaymentMethodType(paymentMethodType);
+                const inputElementTypes = await PrimerHeadlessUniversalCheckoutRawDataManager.listRequiredInputElementTypesForPaymentMethodType(paymentMethodType);
                 resolve(inputElementTypes);
             } catch (e) {
                 reject(e);
@@ -65,7 +64,7 @@ const RNPrimerHeadlessUniversalCheckoutRawDatamanager = {
     setRawData: (rawData: string): Promise<void> => {
         return new Promise(async (resolve, reject) => {
             try {
-                await PrimerHeadlessUniversalCheckoutRawDatamanager.setRawData(rawData);
+                await PrimerHeadlessUniversalCheckoutRawDataManager.setRawData(rawData);
                 resolve();
             } catch (e) {
                 reject(e);
@@ -76,7 +75,7 @@ const RNPrimerHeadlessUniversalCheckoutRawDatamanager = {
     submit: (): Promise<void> => {
         return new Promise(async (resolve, reject) => {
             try {
-                await PrimerHeadlessUniversalCheckoutRawDatamanager.submit();
+                await PrimerHeadlessUniversalCheckoutRawDataManager.submit();
                 resolve();
             } catch (e) {
                 reject(e);
@@ -85,4 +84,4 @@ const RNPrimerHeadlessUniversalCheckoutRawDatamanager = {
     },
 }
 
-export default RNPrimerHeadlessUniversalCheckoutRawDatamanager;
+export default RNPrimerHeadlessUniversalCheckoutRawDataManager;
