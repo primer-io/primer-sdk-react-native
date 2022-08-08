@@ -5,13 +5,13 @@ import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.primerioreactnative.Keys
 import com.primerioreactnative.datamodels.ErrorTypeRN
 import com.primerioreactnative.datamodels.PrimerErrorRN
-import com.primerioreactnative.huc.datamodels.manager.raw.PrimerRNHeadlessCheckoutCardInputData
+import com.primerioreactnative.huc.datamodels.manager.raw.PrimerRNPrimerCardRawData
 import com.primerioreactnative.huc.events.PrimerHeadlessUniversalCheckoutEvent
 import com.primerioreactnative.utils.convertJsonToMap
 import com.primerioreactnative.utils.errorTo
 import io.primer.android.ExperimentalPrimerApi
-import io.primer.android.components.manager.raw.PrimerPaymentMethodRawDataManager
-import io.primer.android.components.manager.raw.PrimerPaymentMethodRawDataManagerInterface
+import io.primer.android.components.manager.raw.PrimerHeadlessUniversalCheckoutRawDataManager
+import io.primer.android.components.manager.raw.PrimerHeadlessUniversalCheckoutRawDataManagerInterface
 import io.primer.android.data.configuration.models.PrimerPaymentMethodType
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -26,7 +26,7 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
 ) : ReactContextBaseJavaModule(reactContext) {
 
   private val listener = PrimerRNHeadlessUniversalCheckoutRawManagerListener()
-  private lateinit var rawManager: PrimerPaymentMethodRawDataManagerInterface
+  private lateinit var rawManager: PrimerHeadlessUniversalCheckoutRawDataManagerInterface
 
   init {
     listener.sendEvent = { eventName, paramsJson -> sendEvent(eventName, paramsJson) }
@@ -36,13 +36,19 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
 
   @ReactMethod
   fun initialize(paymentMethodTypeStr: String, promise: Promise) {
-    rawManager = PrimerPaymentMethodRawDataManager.newInstance(
-      PrimerPaymentMethodType.safeValueOf(
-        paymentMethodTypeStr
+    try {
+      rawManager = PrimerHeadlessUniversalCheckoutRawDataManager.newInstance(
+        PrimerPaymentMethodType.safeValueOf(
+          paymentMethodTypeStr
+        )
       )
-    )
-    rawManager.setManagerListener(listener)
-    promise.resolve(null)
+      rawManager.setManagerListener(listener)
+      promise.resolve(null)
+    } catch (e: Exception) {
+      val exception =
+        ErrorTypeRN.NativeBridgeFailed errorTo e.message.orEmpty()
+      promise.reject(exception.errorId, exception.description)
+    }
   }
 
   @ReactMethod
@@ -52,7 +58,9 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
   ) {
     if (::rawManager.isInitialized.not()) {
       val exception =
-        ErrorTypeRN.NativeBridgeFailed errorTo "The PrimerHeadlessUniversalCheckoutRawDataManager has not been initialized. Make sure you have called the PrimerHeadlessUniversalCheckoutRawDataManager.configure function first."
+        ErrorTypeRN.NativeBridgeFailed errorTo "The PrimerHeadlessUniversalCheckoutRawDataManager" +
+          " has not been initialized. Make sure you have called the" +
+          " PrimerHeadlessUniversalCheckoutRawDataManager.configure function first."
       promise.reject(exception.errorId, exception.description)
     } else {
       promise.resolve(
@@ -72,19 +80,22 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
   fun setRawData(rawDataStr: String, promise: Promise) {
     if (::rawManager.isInitialized.not()) {
       val exception =
-        ErrorTypeRN.NativeBridgeFailed errorTo "The PrimerHeadlessUniversalCheckoutRawDataManager has not been initialized. Make sure you have called the PrimerHeadlessUniversalCheckoutRawDataManager.configure function first."
+        ErrorTypeRN.NativeBridgeFailed errorTo "The PrimerHeadlessUniversalCheckoutRawDataManager" +
+          " has not been initialized. Make sure you have called the" +
+          " PrimerHeadlessUniversalCheckoutRawDataManager.configure function first."
       promise.reject(exception.errorId, exception.description)
     } else {
       try {
-        val inputData =
-          json.decodeFromString<PrimerRNHeadlessCheckoutCardInputData>(
+        val rawData =
+          json.decodeFromString<PrimerRNPrimerCardRawData>(
             rawDataStr
           )
-        rawManager.setRawData(inputData.toPrimerCardInputData())
+        rawManager.setRawData(rawData.toPrimerCardData())
         promise.resolve(null)
       } catch (e: Exception) {
         val exception =
-          ErrorTypeRN.NativeBridgeFailed errorTo "Failed to decode PrimerCardData on Android. Make sure you're providing a valid 'PrimerRawCardData' object"
+          ErrorTypeRN.NativeBridgeFailed errorTo "Failed to decode PrimerCardData on Android." +
+            " Make sure you're providing a valid 'PrimerRawCardData' object"
         onError(exception)
         promise.reject(exception.errorId, exception.description, e)
       }
@@ -95,7 +106,9 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
   fun submit(promise: Promise) {
     if (::rawManager.isInitialized.not()) {
       val exception =
-        ErrorTypeRN.NativeBridgeFailed errorTo "The PrimerHeadlessUniversalCheckoutRawDataManager has not been initialized. Make sure you have called the PrimerHeadlessUniversalCheckoutRawDataManager.configure function first."
+        ErrorTypeRN.NativeBridgeFailed errorTo "The PrimerHeadlessUniversalCheckoutRawDataManager" +
+          " has not been initialized. Make sure you have called the" +
+          " PrimerHeadlessUniversalCheckoutRawDataManager.configure function first."
       promise.reject(exception.errorId, exception.description)
     } else {
       rawManager.submit()
