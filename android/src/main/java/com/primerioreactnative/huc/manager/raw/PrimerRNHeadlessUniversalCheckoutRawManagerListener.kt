@@ -2,17 +2,20 @@ package com.primerioreactnative.huc.manager.raw
 
 import com.primerioreactnative.datamodels.PrimerErrorRN
 import com.primerioreactnative.huc.events.PrimerHeadlessUniversalCheckoutRawDataManagerEvent
-import io.primer.android.components.domain.core.models.card.PrimerHeadlessUniversalCheckoutCardMetadata
-import io.primer.android.components.domain.core.models.metadata.PrimerHeadlessUniversalCheckoutPaymentMethodMetadata
+import io.primer.android.ExperimentalPrimerApi
+import io.primer.android.components.domain.core.models.card.PrimerCardMetadata
+import io.primer.android.components.domain.core.models.metadata.PrimerPaymentMethodMetadata
 import io.primer.android.components.domain.error.PrimerInputValidationError
-import io.primer.android.components.manager.raw.PrimerPaymentMethodRawDataManagerListener
+import io.primer.android.components.manager.raw.PrimerHeadlessUniversalCheckoutRawDataManager
+import io.primer.android.components.manager.raw.PrimerHeadlessUniversalCheckoutRawDataManagerListener
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONArray
 import org.json.JSONObject
 
+@ExperimentalPrimerApi
 internal class PrimerRNHeadlessUniversalCheckoutRawManagerListener :
-  PrimerPaymentMethodRawDataManagerListener {
+  PrimerHeadlessUniversalCheckoutRawDataManagerListener {
 
   var sendEvent: ((eventName: String, paramsJson: JSONObject?) -> Unit)? = null
 
@@ -25,14 +28,7 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManagerListener :
           "errors",
           JSONArray(
             errors.map {
-              JSONObject(
-                Json.encodeToString(
-                  PrimerErrorRN(
-                    it.errorId,
-                    it.description
-                  )
-                )
-              )
+              JSONObject(Json.encodeToString(PrimerErrorRN(it.errorId, it.description)))
             }
           )
         )
@@ -40,11 +36,11 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManagerListener :
     )
   }
 
-  override fun onMetadataChanged(metadata: PrimerHeadlessUniversalCheckoutPaymentMethodMetadata) {
+  override fun onMetadataChanged(metadata: PrimerPaymentMethodMetadata) {
     sendEvent?.invoke(
       PrimerHeadlessUniversalCheckoutRawDataManagerEvent.ON_METADATA_CHANGED.eventName,
       JSONObject().apply {
-        if (metadata is PrimerHeadlessUniversalCheckoutCardMetadata) {
+        if (metadata is PrimerCardMetadata) {
           put("cardNetwork", metadata.cardNetwork.name)
         }
       }
