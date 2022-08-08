@@ -32,7 +32,7 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
     listener.sendEvent = { eventName, paramsJson -> sendEvent(eventName, paramsJson) }
   }
 
-  override fun getName() = "PrimerHeadlessUniversalCheckoutRawDatamanager"
+  override fun getName() = "PrimerHeadlessUniversalCheckoutRawDataManager"
 
   @ReactMethod
   fun initialize(paymentMethodTypeStr: String, promise: Promise) {
@@ -55,7 +55,16 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
         ErrorTypeRN.NativeBridgeFailed errorTo "The PrimerHeadlessUniversalCheckoutRawDataManager has not been initialized. Make sure you have called the PrimerHeadlessUniversalCheckoutRawDataManager.configure function first."
       promise.reject(exception.errorId, exception.description)
     } else {
-     // promise.resolve(rawManager.getRequiredInputElementTypes().map { it.name }.toTypedArray())
+      promise.resolve(
+        prepareData(
+          JSONObject().apply {
+            put(
+              "inputElementTypes",
+              JSONArray(rawManager.getRequiredInputElementTypes().map { it.name })
+            )
+          }
+        )
+      )
     }
   }
 
@@ -71,7 +80,8 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
           json.decodeFromString<PrimerRNHeadlessCheckoutCardInputData>(
             rawDataStr
           )
-        rawManager.setInputDataChanged(inputData)
+        rawManager.setRawData(inputData.toPrimerCardInputData())
+        promise.resolve(null)
       } catch (e: Exception) {
         val exception =
           ErrorTypeRN.NativeBridgeFailed errorTo "Failed to decode PrimerCardData on Android. Make sure you're providing a valid 'PrimerRawCardData' object"
@@ -82,12 +92,14 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
   }
 
   @ReactMethod
-  fun submit(rawDataStr: String, promise: Promise) {
+  fun submit(promise: Promise) {
     if (::rawManager.isInitialized.not()) {
       val exception =
         ErrorTypeRN.NativeBridgeFailed errorTo "The PrimerHeadlessUniversalCheckoutRawDataManager has not been initialized. Make sure you have called the PrimerHeadlessUniversalCheckoutRawDataManager.configure function first."
       promise.reject(exception.errorId, exception.description)
     } else {
+      rawManager.submit()
+      promise.resolve(null)
     }
   }
 
