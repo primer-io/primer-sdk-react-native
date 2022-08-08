@@ -19,6 +19,7 @@ async function configureListeners(): Promise<void> {
             RNPrimerHeadlessUniversalCheckoutRawDataManager.addListener('onValidation', data => {
                 if (primerHeadlessUniversalCheckoutRawDataManagerOptions && primerHeadlessUniversalCheckoutRawDataManagerOptions.onValidation) {
                     let errors: PrimerError[] = [];
+                    debugger
                     for (const errData of (data.errors || [])) {
                         const errorId: string = errData.errorId;
                         const description: string | undefined = errData.description;
