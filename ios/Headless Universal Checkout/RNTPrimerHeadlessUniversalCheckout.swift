@@ -132,11 +132,7 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
             return
         }
 
-<<<<<<< HEAD
-        guard let image = PrimerHeadlessUniversalCheckout.getAsset(for: cardNetwork, assetType: PrimerAsset.ImageType(rawValue: assetTypeStr)!) else {
-=======
         guard let unwrappedAssetType = PrimerAsset.ImageType(rawValue: assetTypeStr), let image = PrimerHeadlessUniversalCheckout.getAsset(for: cardNetwork, assetType: unwrappedAssetType) else {
->>>>>>> 66e7c015507958837a49274845a15378ed3fcfa0
             let err = NativeError(errorId: "missing-asset", errorDescription: "Failed to find \(assetTypeStr) for \(cardNetworkStr)", recoverySuggestion: nil)
             errorCallback([err.rnError])
             return
