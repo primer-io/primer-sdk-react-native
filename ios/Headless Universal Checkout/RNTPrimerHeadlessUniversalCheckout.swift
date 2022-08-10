@@ -95,7 +95,7 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
             if let err = err {
                 errorCallback([err.rnError])
             } else if let paymentMethodTypes = paymentMethodTypes {
-                successCallback([paymentMethodTypes.compactMap({$0.rawValue})])
+                successCallback([paymentMethodTypes])
             }
         }
     }
@@ -106,17 +106,13 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
                                              errorCallback: @escaping RCTResponseSenderBlock,
                                              successCallback: @escaping RCTResponseSenderBlock)
     {
+        guard let unwrappedAssetType = PrimerAsset.ImageType(rawValue: assetTypeStr), let image = PrimerHeadlessUniversalCheckout.getAsset(for: paymentMethodTypeStr, assetType: unwrappedAssetType) else {
+            let err = NativeError(errorId: "missing-asset", errorDescription: "Failed to find \(assetTypeStr) for \(paymentMethodTypeStr)", recoverySuggestion: nil)
+            errorCallback([err.rnError])
+            return
+        }
+        
         do {
-            try validate(assetStr: paymentMethodTypeStr, assetTypeStr: assetTypeStr)
-            let paymentMethodType = PrimerPaymentMethodType(rawValue: paymentMethodTypeStr)
-            
-            guard let image = PrimerHeadlessUniversalCheckout.getAsset(for: paymentMethodType, assetType: PrimerAsset.ImageType(rawValue: assetTypeStr)!) else {
-                let err = NativeError(errorId: "missing-asset", errorDescription: "Failed to find \(assetTypeStr) for \(paymentMethodTypeStr)", recoverySuggestion: nil)
-                errorCallback([err.rnError])
-                return
-            }
-            
-            
             let imageURL = try self.tempStoreImage(image: image, name: paymentMethodTypeStr)
             successCallback([imageURL.absoluteString])
         } catch {
@@ -130,21 +126,19 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
                                        errorCallback: @escaping RCTResponseSenderBlock,
                                        successCallback: @escaping RCTResponseSenderBlock)
     {
+        guard let cardNetwork = CardNetwork(rawValue: cardNetworkStr) else {
+            let err = NativeError(errorId: "invalid-card-network", errorDescription: "Card network for \(cardNetworkStr) does not exist, make sure you don't have any typos.", recoverySuggestion: nil)
+            errorCallback([err.rnError])
+            return
+        }
+        
+        guard let unwrappedAssetType = PrimerAsset.ImageType(rawValue: assetTypeStr), let image = PrimerHeadlessUniversalCheckout.getAsset(for: cardNetwork, assetType: unwrappedAssetType) else {
+            let err = NativeError(errorId: "missing-asset", errorDescription: "Failed to find \(assetTypeStr) for \(cardNetworkStr)", recoverySuggestion: nil)
+            errorCallback([err.rnError])
+            return
+        }
+        
         do {
-            try validate(assetStr: cardNetworkStr, assetTypeStr: assetTypeStr)
-            guard let cardNetwork = CardNetwork(rawValue: cardNetworkStr) else {
-                let err = NativeError(errorId: "invalid-card-network", errorDescription: "Card network for \(cardNetworkStr) does not exist, make sure you don't have any typos.", recoverySuggestion: nil)
-                errorCallback([err.rnError])
-                return
-            }
-            
-            guard let image = PrimerHeadlessUniversalCheckout.getAsset(for: cardNetwork, assetType: PrimerAsset.ImageType(rawValue: assetTypeStr)!) else {
-                let err = NativeError(errorId: "missing-asset", errorDescription: "Failed to find \(assetTypeStr) for \(cardNetworkStr)", recoverySuggestion: nil)
-                errorCallback([err.rnError])
-                return
-            }
-            
-            
             let imageURL = try self.tempStoreImage(image: image, name: cardNetworkStr)
             successCallback([imageURL.absoluteString])
         } catch {
@@ -157,8 +151,7 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
                                   resolver: RCTPromiseResolveBlock,
                                   rejecter: RCTPromiseRejectBlock)
     {
-        let paymentMethodType = PrimerPaymentMethodType(rawValue: paymentMethodTypeStr)
-        PrimerHeadlessUniversalCheckout.current.showPaymentMethod(paymentMethodType)
+        PrimerHeadlessUniversalCheckout.current.showPaymentMethod(paymentMethodTypeStr)
         resolver(nil)
     }
     
@@ -168,36 +161,6 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
     }
     
     // MARK: - HELPERS
-    
-    private func validate(assetStr: String, assetTypeStr: String) throws {
-        var errors: [NativeError] = []
-        
-        if PrimerPaymentMethodType(rawValue: assetStr) != .other(rawValue: assetStr) {
-            // ...
-        } else if CardNetwork(rawValue: assetStr) != nil {
-            // ...
-        } else {
-            let err = NativeError(errorId: "invalid-payment-method-type", errorDescription: "Asset for \(assetStr) does not exist, make sure you don't have any typos.", recoverySuggestion: nil)
-            errors.append(err)
-        }
-        
-        
-        if PrimerAsset.ImageType(rawValue: assetTypeStr) == nil {
-            let err = NativeError(errorId: "mismatch", errorDescription: "You have provided assetType=\(assetTypeStr), which is not valid", recoverySuggestion: "Use one of the following values: \(PrimerAsset.ImageType.allCases.compactMap({ $0.rawValue }))")
-            errors.append(err)
-        }
-        
-        if errors.isEmpty {
-            return
-        } else if errors.count == 1 {
-            throw errors.first!
-        } else {
-            let errorDescription: String = errors.compactMap({ $0.errorDescription }).joined(separator: "/n")
-            let recoverySuggestion = errors.compactMap({ $0.recoverySuggestion }).joined(separator: "/n")
-            let err = NativeError(errorId: "underlying-errors", errorDescription: errorDescription, recoverySuggestion: recoverySuggestion)
-            throw err
-        }
-    }
     
     private func tempStoreImage(image: UIImage, name: String) throws -> URL {
         guard let imageURL = NSURL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("\(name).png") else {

@@ -15,7 +15,6 @@ import io.primer.android.completion.PrimerPaymentCreationDecisionHandler
 import io.primer.android.completion.PrimerResumeDecisionHandler
 import io.primer.android.components.PrimerHeadlessUniversalCheckoutListener
 import io.primer.android.components.domain.core.models.PrimerHeadlessUniversalCheckoutPaymentMethod
-import io.primer.android.data.configuration.models.PrimerPaymentMethodType
 import io.primer.android.domain.PrimerCheckoutData
 import io.primer.android.domain.action.models.PrimerClientSession
 import io.primer.android.domain.error.models.PrimerError
@@ -47,29 +46,29 @@ class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckou
     sendEvent?.invoke(
       PrimerHeadlessUniversalCheckoutEvent.ON_HUC_AVAILABLE_PAYMENT_METHODS_LOADED.eventName,
       JSONObject().apply {
-        put("paymentMethodTypes", JSONArray(paymentMethods.map { it.paymentMethodType.name }))
+        put("paymentMethodTypes", JSONArray(paymentMethods.map { it.paymentMethodType }))
       }
     )
     successCallback?.invoke(
-      Arguments.fromList(paymentMethods.map { it.paymentMethodType.name })
+      Arguments.fromList(paymentMethods.map { it.paymentMethodType })
     )
   }
 
-  override fun onPreparationStarted(paymentMethodType: PrimerPaymentMethodType) {
+  override fun onPreparationStarted(paymentMethodType: String) {
     sendEvent?.invoke(
       PrimerHeadlessUniversalCheckoutEvent.ON_HUC_PREPARE_START.eventName,
       JSONObject(Json.encodeToString(PrimerPaymentMethodDataRN(paymentMethodType)))
     )
   }
 
-  override fun onPaymentMethodShowed(paymentMethodType: PrimerPaymentMethodType) {
+  override fun onPaymentMethodShowed(paymentMethodType: String) {
     sendEvent?.invoke(
       PrimerHeadlessUniversalCheckoutEvent.ON_HUC_PAYMENT_METHOD_SHOW.eventName,
       JSONObject(Json.encodeToString(PrimerPaymentMethodDataRN(paymentMethodType)))
     )
   }
 
-  override fun onTokenizationStarted(paymentMethodType: PrimerPaymentMethodType) {
+  override fun onTokenizationStarted(paymentMethodType: String) {
     sendEvent?.invoke(
       PrimerHeadlessUniversalCheckoutEvent.ON_HUC_TOKENIZE_START.eventName,
       JSONObject(Json.encodeToString(PrimerPaymentMethodDataRN(paymentMethodType)))

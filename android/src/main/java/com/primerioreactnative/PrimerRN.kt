@@ -9,7 +9,6 @@ import com.primerioreactnative.utils.convertJsonToMap
 import com.primerioreactnative.utils.errorTo
 import io.primer.android.Primer
 import io.primer.android.PrimerSessionIntent
-import io.primer.android.data.configuration.models.PrimerPaymentMethodType
 import io.primer.android.data.settings.PrimerSettings
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -92,22 +91,12 @@ class PrimerRN(private val reactContext: ReactApplicationContext, private val js
       promise.reject(exception.errorId, exception.description, e)
       return
     }
-    val paymentMethod: PrimerPaymentMethodType
-    try {
-      paymentMethod = getPrimerPaymentMethod(paymentMethodTypeStr)
-    } catch (e: Exception) {
-      val exception =
-        ErrorTypeRN.NativeBridgeFailed errorTo "Payment method type $paymentMethodTypeStr is not valid."
-      onError(exception)
-      promise.reject(exception.errorId, exception.description, e)
-      return
-    }
 
     try {
       Primer.instance.showPaymentMethod(
         reactApplicationContext.applicationContext,
         clientToken,
-        paymentMethod,
+        paymentMethodTypeStr,
         intent
       )
       promise.resolve(null)
@@ -235,14 +224,6 @@ class PrimerRN(private val reactContext: ReactApplicationContext, private val js
 
   private fun prepareData(data: JSONObject?): WritableMap {
     return data?.let { convertJsonToMap(data) } ?: Arguments.createMap()
-  }
-
-  private fun getPrimerPaymentMethod(paymentMethodTypeStr: String): PrimerPaymentMethodType {
-    if (PrimerPaymentMethodType.PAYMENT_CARD.name == paymentMethodTypeStr) {
-      return PrimerPaymentMethodType.PAYMENT_CARD
-    }
-
-    return PrimerPaymentMethodType.valueOf(paymentMethodTypeStr)
   }
 }
 
