@@ -106,7 +106,7 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
                                              errorCallback: @escaping RCTResponseSenderBlock,
                                              successCallback: @escaping RCTResponseSenderBlock)
     {
-        guard let assetType = PrimerAsset.ImageType(rawValue: assetTypeStr), let image = PrimerHeadlessUniversalCheckout.getAsset(for: paymentMethodTypeStr, assetType: assetType) else {
+        guard let unwrappedAssetType = PrimerAsset.ImageType(rawValue: assetTypeStr), let image = PrimerHeadlessUniversalCheckout.getAsset(for: paymentMethodTypeStr, assetType: unwrappedAssetType) else {
             let err = NativeError(errorId: "missing-asset", errorDescription: "Failed to find \(assetTypeStr) for \(paymentMethodTypeStr)", recoverySuggestion: nil)
             errorCallback([err.rnError])
             return
@@ -132,7 +132,7 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
             return
         }
         
-        guard let image = PrimerHeadlessUniversalCheckout.getAsset(for: cardNetwork, assetType: PrimerAsset.ImageType(rawValue: assetTypeStr)!) else {
+        guard let unwrappedAssetType = PrimerAsset.ImageType(rawValue: assetTypeStr), let image = PrimerHeadlessUniversalCheckout.getAsset(for: cardNetwork, assetType: unwrappedAssetType) else {
             let err = NativeError(errorId: "missing-asset", errorDescription: "Failed to find \(assetTypeStr) for \(cardNetworkStr)", recoverySuggestion: nil)
             errorCallback([err.rnError])
             return
