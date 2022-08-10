@@ -76,7 +76,7 @@ class PrimerHeadlessUniversalCheckoutRawDataManagerClass {
     async getRequiredInputElementTypes(): Promise<string[]> {
         return new Promise(async (resolve, reject) => {
             if (
-                primerHeadlessUniversalCheckoutRawDataManagerOptions && 
+                primerHeadlessUniversalCheckoutRawDataManagerOptions &&
                 primerHeadlessUniversalCheckoutRawDataManagerOptions.paymentMethodType
             ) {
                 try {
@@ -90,7 +90,6 @@ class PrimerHeadlessUniversalCheckoutRawDataManagerClass {
                 reject(err);
             }
         })
-        
     }
 
     setRawData(rawData: PrimerRawData): Promise<void> {

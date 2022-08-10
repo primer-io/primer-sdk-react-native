@@ -280,14 +280,14 @@ export const HUCRawCardDataScreen = (props: any) => {
                             rawCardData.cardNumber = "4242424242424242"
                             await HeadlessUniversalCheckoutRawDataManager.setRawData(rawCardData);
                             await HeadlessUniversalCheckoutRawDataManager.submit();
-                            
+
                         }, 1000);
                     }, 1000);
                 }, 1000);
             }, 1000);
 
-            
-            
+
+
 
             // rawCardData.number = "4242424242424242"
             // rawCardData.expiryMonth = "12"
