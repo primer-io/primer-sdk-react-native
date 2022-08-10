@@ -106,7 +106,7 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
                                              errorCallback: @escaping RCTResponseSenderBlock,
                                              successCallback: @escaping RCTResponseSenderBlock)
     {
-        guard let image = PrimerHeadlessUniversalCheckout.getAsset(for: paymentMethodTypeStr, assetType: PrimerAsset.ImageType(rawValue: assetTypeStr)!) else {
+        guard let assetType = PrimerAsset.ImageType(rawValue: assetTypeStr), let image = PrimerHeadlessUniversalCheckout.getAsset(for: paymentMethodTypeStr, assetType: assetType) else {
             let err = NativeError(errorId: "missing-asset", errorDescription: "Failed to find \(assetTypeStr) for \(paymentMethodTypeStr)", recoverySuggestion: nil)
             errorCallback([err.rnError])
             return
