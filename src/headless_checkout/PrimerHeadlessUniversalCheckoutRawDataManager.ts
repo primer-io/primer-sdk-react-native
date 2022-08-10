@@ -73,8 +73,24 @@ class PrimerHeadlessUniversalCheckoutRawDataManagerClass {
         return RNPrimerHeadlessUniversalCheckoutRawDataManager.initialize(primerHeadlessUniversalCheckoutRawDataManagerOptions.paymentMethodType);
     }
 
-    async getRequiredInputElementTypesForPaymentMethodType(paymentMethodType: string): Promise<string[]> {
-        return RNPrimerHeadlessUniversalCheckoutRawDataManager.listRequiredInputElementTypesForPaymentMethodType(paymentMethodType);
+    async getRequiredInputElementTypes(): Promise<string[]> {
+        return new Promise(async (resolve, reject) => {
+            if (
+                primerHeadlessUniversalCheckoutRawDataManagerOptions && 
+                primerHeadlessUniversalCheckoutRawDataManagerOptions.paymentMethodType
+            ) {
+                try {
+                    const inputElementTypes = await RNPrimerHeadlessUniversalCheckoutRawDataManager.listRequiredInputElementTypesForPaymentMethodType(primerHeadlessUniversalCheckoutRawDataManagerOptions.paymentMethodType);
+                    resolve(inputElementTypes);
+                } catch (err) {
+                    reject(err);
+                }
+            } else {
+                const err = new PrimerError("manager-not-configured", "HeadlessUniversalCheckoutRawDataManager has not been configured", "Call HeadlessUniversalCheckoutRawDataManager.configure before calling this function.");
+                reject(err);
+            }
+        })
+        
     }
 
     setRawData(rawData: PrimerRawData): Promise<void> {

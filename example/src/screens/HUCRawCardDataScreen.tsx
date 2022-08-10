@@ -253,7 +253,7 @@ export const HUCRawCardDataScreen = (props: any) => {
                 }
             }
             await HeadlessUniversalCheckoutRawDataManager.configure(options);
-            const requiredInputElementTypes = await HeadlessUniversalCheckoutRawDataManager.getRequiredInputElementTypesForPaymentMethodType("PAYMENT_CARD");
+            const requiredInputElementTypes = await HeadlessUniversalCheckoutRawDataManager.getRequiredInputElementTypes();
 
             let rawCardData: PrimerRawCardData = {
                 cardNumber: "",
