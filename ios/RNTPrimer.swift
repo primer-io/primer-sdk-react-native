@@ -119,22 +119,15 @@ class RNTPrimer: RCTEventEmitter {
     }
     
     @objc
-    public func showPaymentMethod(_ paymentMethodStr: String, intent: String, clientToken: String, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
+    public func showPaymentMethod(_ paymentMethodTypeStr: String, intent: String, clientToken: String, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
         DispatchQueue.main.async {
             do {
-                let paymentMethodType = PrimerPaymentMethodType(rawValue: paymentMethodStr)
-                
-                guard paymentMethodType != PrimerPaymentMethodType.other(rawValue: paymentMethodStr) else {
-                    let err = NSError(domain: "native-bridge", code: 0, userInfo: [NSLocalizedDescriptionKey: "Payment method type \(paymentMethodStr) is not valid."])
-                    throw err
-                }
-                
                 guard let primerIntent = PrimerSessionIntent(rawValue: intent) else {
                     let err = NSError(domain: "native-bridge", code: 0, userInfo: [NSLocalizedDescriptionKey: "Intent \(intent) is not valid."])
                     throw err
                 }
                 
-                PrimerSDK.Primer.shared.showPaymentMethod(paymentMethodType, withIntent: primerIntent, andClientToken: clientToken) { err in
+                PrimerSDK.Primer.shared.showPaymentMethod(paymentMethodTypeStr, withIntent: primerIntent, andClientToken: clientToken) { err in
                     DispatchQueue.main.async {
                         if let err = err {
                             rejecter(err.rnError["errorId"]!, err.rnError["description"], err)
