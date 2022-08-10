@@ -15,8 +15,6 @@ import com.primerioreactnative.utils.errorTo
 import io.primer.android.ExperimentalPrimerApi
 import io.primer.android.components.PrimerHeadlessUniversalCheckout
 import io.primer.android.components.ui.assets.ImageType
-import io.primer.android.data.configuration.models.PaymentMethodType
-import io.primer.android.data.configuration.models.PrimerPaymentMethodType
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -72,19 +70,11 @@ class PrimerRNHeadlessUniversalCheckout(
 
   @ReactMethod
   fun showPaymentMethod(paymentMethodTypeStr: String, promise: Promise) {
-    val primerPaymentMethodType = PrimerPaymentMethodType.safeValueOf(paymentMethodTypeStr)
-    if (primerPaymentMethodType == PaymentMethodType.UNKNOWN) {
-      val exception =
-        ErrorTypeRN.NativeBridgeFailed errorTo "Payment method type $paymentMethodTypeStr is not valid."
-      onError(exception)
-      promise.reject(exception.errorId, exception.description)
-    } else {
       PrimerHeadlessUniversalCheckout.current.showPaymentMethod(
         reactContext,
-        primerPaymentMethodType
+        paymentMethodTypeStr
       )
       promise.resolve(null)
-    }
   }
 
   @ReactMethod
@@ -101,17 +91,8 @@ class PrimerRNHeadlessUniversalCheckout(
     successCallback: Callback
   ) {
 
-    val primerPaymentMethodType = PrimerPaymentMethodType.safeValueOf(paymentMethodType)
     val type = ImageType.values().find { it.name.equals(assetType, ignoreCase = true) }
     when {
-      primerPaymentMethodType == PaymentMethodType.UNKNOWN -> {
-        errorCallback.invoke(
-          json.encodeToString(
-            ErrorTypeRN.InvalidPaymentMethodType errorTo
-              "Asset for $paymentMethodType does not exist, make sure you don't have any typos."
-          )
-        )
-      }
       type == null -> {
         errorCallback.invoke(
           json.encodeToString(
@@ -121,7 +102,7 @@ class PrimerRNHeadlessUniversalCheckout(
         )
       }
       else -> {
-        PrimerHeadlessUniversalCheckout.getAsset(primerPaymentMethodType, type)?.let { resourceId ->
+        PrimerHeadlessUniversalCheckout.getAsset(paymentMethodType, type)?.let { resourceId ->
           val file = getFile(reactContext, paymentMethodType)
           AssetsManager.saveBitmapToFile(
             file,

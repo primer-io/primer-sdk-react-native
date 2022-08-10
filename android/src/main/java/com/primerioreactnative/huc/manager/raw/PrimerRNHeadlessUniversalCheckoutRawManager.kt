@@ -5,14 +5,13 @@ import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.primerioreactnative.Keys
 import com.primerioreactnative.datamodels.ErrorTypeRN
 import com.primerioreactnative.datamodels.PrimerErrorRN
-import com.primerioreactnative.huc.datamodels.manager.raw.PrimerRNPrimerCardRawData
+import com.primerioreactnative.huc.datamodels.manager.raw.PrimerRNPrimerRawCardData
 import com.primerioreactnative.huc.events.PrimerHeadlessUniversalCheckoutEvent
 import com.primerioreactnative.utils.convertJsonToMap
 import com.primerioreactnative.utils.errorTo
 import io.primer.android.ExperimentalPrimerApi
 import io.primer.android.components.manager.raw.PrimerHeadlessUniversalCheckoutRawDataManager
 import io.primer.android.components.manager.raw.PrimerHeadlessUniversalCheckoutRawDataManagerInterface
-import io.primer.android.data.configuration.models.PrimerPaymentMethodType
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -38,9 +37,7 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
   fun initialize(paymentMethodTypeStr: String, promise: Promise) {
     try {
       rawManager = PrimerHeadlessUniversalCheckoutRawDataManager.newInstance(
-        PrimerPaymentMethodType.safeValueOf(
-          paymentMethodTypeStr
-        )
+        paymentMethodTypeStr
       )
       rawManager.setManagerListener(listener)
       promise.resolve(null)
@@ -87,7 +84,7 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
     } else {
       try {
         val rawData =
-          json.decodeFromString<PrimerRNPrimerCardRawData>(
+          json.decodeFromString<PrimerRNPrimerRawCardData>(
             rawDataStr
           )
         rawManager.setRawData(rawData.toPrimerCardData())
