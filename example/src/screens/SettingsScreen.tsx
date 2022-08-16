@@ -33,8 +33,8 @@ const SettingsScreen = ({ navigation }) => {
     const [environment, setEnvironment] = React.useState<Environment>(Environment.Sandbox);
     const [paymentHandling, setPaymentHandling] = React.useState<PaymentHandling>(PaymentHandling.Auto);
     const [lineItems, setLineItems] = React.useState<IClientSessionLineItem[]>(appPaymentParameters.clientSessionRequestBody.order?.lineItems || []);
-    const [currency, setCurrency] = React.useState<string>("EUR");
-    const [countryCode, setCountryCode] = React.useState<string>("FR");
+    const [currency, setCurrency] = React.useState<string>("GBP");
+    const [countryCode, setCountryCode] = React.useState<string>("GB");
     const [orderId, setOrderId] = React.useState<string | undefined>(appPaymentParameters.clientSessionRequestBody.orderId);
 
     const [merchantName, setMerchantName] = React.useState<string | undefined>(appPaymentParameters.merchantName);
@@ -623,6 +623,21 @@ const SettingsScreen = ({ navigation }) => {
                         style={{ ...styles.buttonText, color: 'white' }}
                     >
                         Headless Universal Checkout (Beta)
+                    </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    style={{ ...styles.button, marginVertical: 5, backgroundColor: 'black' }}
+                    onPress={() => {
+                        updateAppPaymentParameters();
+                        console.log(appPaymentParameters);
+                        navigation.navigate('HUCRawCardData');
+                    }}
+                >
+                    <Text
+                        style={{ ...styles.buttonText, color: 'white' }}
+                    >
+                        HUC Raw Card Data (Beta)
                     </Text>
                 </TouchableOpacity>
             </View>

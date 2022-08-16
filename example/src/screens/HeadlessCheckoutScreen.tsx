@@ -140,20 +140,19 @@ export const HeadlessCheckoutScreen = (props: any) => {
         urlScheme: 'merchant://primer.io'
       },
     },
-
-    onCheckoutComplete: onCheckoutComplete,
-    onTokenizeSuccess: onTokenizeSuccess,
-    onResumeSuccess: onResumeSuccess,
-    onPrepareStart: onPrepareStart,
-    onPaymentMethodShow: onPaymentMethodShow,
-    onTokenizeStart: onTokenizeStart,
     onAvailablePaymentMethodsLoad: onAvailablePaymentMethodsLoad,
+    onPrepareStart: onPrepareStart,
     onBeforeClientSessionUpdate: onBeforeClientSessionUpdate,
     onClientSessionUpdate: onClientSessionUpdate,
+    onPaymentMethodShow: onPaymentMethodShow,
     onBeforePaymentCreate: (checkoutPaymentMethodData, handler) => {
       updateLogs(`\nℹ️ onBeforePaymentCreate`);
       handler.continuePaymentCreation();
     },
+    onTokenizeStart: onTokenizeStart,
+    onCheckoutComplete: onCheckoutComplete,
+    onTokenizeSuccess: onTokenizeSuccess,
+    onResumeSuccess: onResumeSuccess,
     onError: onError
   };
 

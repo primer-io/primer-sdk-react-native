@@ -70,11 +70,11 @@ class PrimerRNHeadlessUniversalCheckout(
 
   @ReactMethod
   fun showPaymentMethod(paymentMethodTypeStr: String, promise: Promise) {
-    PrimerHeadlessUniversalCheckout.current.showPaymentMethod(
-      reactContext,
-      paymentMethodTypeStr
-    )
-    promise.resolve(null)
+      PrimerHeadlessUniversalCheckout.current.showPaymentMethod(
+        reactContext,
+        paymentMethodTypeStr
+      )
+      promise.resolve(null)
   }
 
   @ReactMethod
