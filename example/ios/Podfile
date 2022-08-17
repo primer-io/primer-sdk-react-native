@@ -9,7 +9,7 @@ target 'ReactNativeExample' do
   use_react_native!(:path => config["reactNativePath"])
   
   pod 'primer-io-react-native', :path => '../..'
-  pod 'PrimerSDK' , :git => 'https://github.com/primer-io/primer-sdk-ios.git', :branch => 'prepare-release/2.4.0-HUC-raw-card-data'
+  pod 'PrimerSDK'
   pod 'Primer3DS'
   
   # Enables Flipper.
