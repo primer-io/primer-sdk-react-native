@@ -5,14 +5,13 @@ platform :ios, '10'
 
 target 'ReactNativeExample' do
   config = use_native_modules!
-
+  
   use_react_native!(:path => config["reactNativePath"])
-
+  
   pod 'primer-io-react-native', :path => '../..'
-#  Uncomment line below as long as the release is not live yet
-#  pod 'PrimerSDK' , :git => 'https://github.com/primer-io/primer-sdk-ios.git', :branch => 'prepare-release/2.4.0'
+  pod 'PrimerSDK'
   pod 'Primer3DS'
-
+  
   # Enables Flipper.
   #
   # Note that if you have use_frameworks! enabled, Flipper will not work and
@@ -21,23 +20,23 @@ target 'ReactNativeExample' do
   # post_install do |installer|
   #   flipper_post_install(installer)
   # end
-
+  
   # Enables Primer3DS if it has been added in your podfile.
   #
   # Note that if you have use_frameworks! enabled, Primer3DS will not work without
   # disabling these next few lines.
-   post_install do |installer|
-     installer.pods_project.targets.each do |target|
-       if target.name == "primer-io-react-native" || target.name == "PrimerSDK"
-         target.build_configurations.each do |config|
-           config.build_settings['FRAMEWORK_SEARCH_PATHS'] = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/Primer3DS"
-           config.build_settings['LIBRARY_SEARCH_PATHS'] = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/Primer3DS"
-           config.build_settings['SWIFT_INCLUDE_PATHS'] = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/Primer3DS"
-           config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -Xcc -fmodule-map-file="${PODS_CONFIGURATION_BUILD_DIR}/Primer3DS/Primer3DS.modulemap"'
-           config.build_settings['OTHER_LDFLAGS'] = '$(inherited) -weak_library -l"Primer3DS"'
-         end
-       end
-     end
-   end
-
+  post_install do |installer|
+    installer.pods_project.targets.each do |target|
+      if target.name == "primer-io-react-native" || target.name == "PrimerSDK"
+        target.build_configurations.each do |config|
+          config.build_settings['FRAMEWORK_SEARCH_PATHS'] = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/Primer3DS"
+          config.build_settings['LIBRARY_SEARCH_PATHS'] = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/Primer3DS"
+          config.build_settings['SWIFT_INCLUDE_PATHS'] = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/Primer3DS"
+          config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -Xcc -fmodule-map-file="${PODS_CONFIGURATION_BUILD_DIR}/Primer3DS/Primer3DS.modulemap"'
+          config.build_settings['OTHER_LDFLAGS'] = '$(inherited) -weak_library -l"Primer3DS"'
+        end
+      end
+    end
+  end
+  
 end

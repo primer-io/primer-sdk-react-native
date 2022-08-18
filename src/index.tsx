@@ -22,6 +22,10 @@ export {
     PrimerAddress,
 } from './models/PrimerClientSession';
 export { 
+    PrimerRawData,
+    PrimerRawCardData
+} from './models/PrimerRawData';
+export { 
     PrimerCheckoutData,
     PrimerCheckoutDataPayment,
 } from './models/PrimerCheckoutData';
@@ -32,5 +36,8 @@ export {
     PrimerError
 } from './models/PrimerError';
 export {
-    PrimerHeadlessUniversalCheckout
+    PrimerHeadlessUniversalCheckout as HeadlessUniversalCheckout
 } from './headless_checkout/PrimerHeadlessUniversalCheckout';
+export {
+    PrimerHeadlessUniversalCheckoutRawDataManager as HeadlessUniversalCheckoutRawDataManager
+} from './headless_checkout/PrimerHeadlessUniversalCheckoutRawDataManager';
