@@ -86,6 +86,17 @@ const RNPrimerHeadlessUniversalCheckoutRawDataManager = {
             }
         });
     },
+
+    disposeRawDataManager: (): Promise<void> => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                 await PrimerHeadlessUniversalCheckoutRawDataManager.disposeRawDataManager();
+                 resolve();
+            } catch (e) {
+                 reject(e);
+            }
+         });
+    },
 }
 
 export default RNPrimerHeadlessUniversalCheckoutRawDataManager;

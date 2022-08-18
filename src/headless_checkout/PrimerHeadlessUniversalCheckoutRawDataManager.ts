@@ -99,6 +99,10 @@ class PrimerHeadlessUniversalCheckoutRawDataManagerClass {
     submit(): Promise<void> {
         return RNPrimerHeadlessUniversalCheckoutRawDataManager.submit();
     }
+
+    disposeRawDataManager(): Promise<void> {
+         return RNPrimerHeadlessUniversalCheckoutRawDataManager.disposeRawDataManager();
+    }
 }
 
 export const PrimerHeadlessUniversalCheckoutRawDataManager = new PrimerHeadlessUniversalCheckoutRawDataManagerClass();

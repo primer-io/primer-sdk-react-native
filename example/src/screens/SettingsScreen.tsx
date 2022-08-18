@@ -640,6 +640,20 @@ const SettingsScreen = ({ navigation }) => {
                         HUC Raw Card Data (Beta)
                     </Text>
                 </TouchableOpacity>
+                           <TouchableOpacity
+                                    style={{ ...styles.button, marginVertical: 5, backgroundColor: 'black' }}
+                                    onPress={() => {
+                                        updateAppPaymentParameters();
+                                        console.log(appPaymentParameters);
+                                        navigation.navigate('HUCRawPhoneNumberData');
+                                    }}
+                                >
+                                    <Text
+                                        style={{ ...styles.buttonText, color: 'white' }}
+                                    >
+                                        HUC Raw Phone Number Data (Beta)
+                                    </Text>
+                                </TouchableOpacity>
             </View>
         );
     }
