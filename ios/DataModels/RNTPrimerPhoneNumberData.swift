@@ -1,5 +1,5 @@
 //
-//  RNTPrimerRawPhoneNumberData.swift
+//  RNTPrimerPhoneNumberData.swift
 //  primer-io-react-native
 //
 //  Created by Dario Carlomagno on 18/8/22.
@@ -8,7 +8,7 @@
 import Foundation
 import PrimerSDK
 
-extension PrimerRawPhoneNumberData {
+extension PrimerPhoneNumberData {
 
     convenience init?(phoneNumbeDatarStr: String) {
         do {

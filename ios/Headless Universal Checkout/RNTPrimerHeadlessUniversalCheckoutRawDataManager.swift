@@ -94,7 +94,7 @@ class RNTPrimerHeadlessUniversalCheckoutRawDataManager: RCTEventEmitter {
             return
         }
 
-        if let rawPhoneNumberData = PrimerRawPhoneNumberData(phoneNumbeDatarStr: rawDataStr) {
+        if let rawPhoneNumberData = PrimerPhoneNumberData(phoneNumbeDatarStr: rawDataStr) {
             rawDataManager.rawData = rawPhoneNumberData
             resolver(nil)
             return
