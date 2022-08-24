@@ -1,10 +1,10 @@
-package com.primerioreactnative.huc.datamodels.manager.raw
+package com.primerioreactnative.huc.datamodels.manager.raw.card
 
 import io.primer.android.components.domain.core.models.card.PrimerRawCardData
 import kotlinx.serialization.Serializable
 
 @Serializable
-internal data class PrimerRNPrimerRawCardData(
+internal data class PrimerRNPRawCardData(
   val cardNumber: String? = null,
   val cvv: String? = null,
   val expiryMonth: String? = null,

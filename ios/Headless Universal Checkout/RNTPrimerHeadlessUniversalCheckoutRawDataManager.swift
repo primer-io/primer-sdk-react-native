@@ -88,14 +88,20 @@ class RNTPrimerHeadlessUniversalCheckoutRawDataManager: RCTEventEmitter {
             return
         }
 
-        guard let rawCardData = PrimerCardData(cardDataStr: rawDataStr) else {
-            let err = NSError(domain: "native-bridge", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to decode PrimerCardData on iOS. Make sure you're providing a valid 'PrimerRawCardData' object"])
-            rejecter(err.rnError["errorId"]!, err.rnError["description"], err)
+        if let rawCardData = PrimerCardData(cardDataStr: rawDataStr) {
+            rawDataManager.rawData = rawCardData
+            resolver(nil)
             return
         }
 
-        rawDataManager.rawData = rawCardData
-        resolver(nil)
+        if let rawPhoneNumberData = PrimerPhoneNumberData(phoneNumbeDatarStr: rawDataStr) {
+            rawDataManager.rawData = rawPhoneNumberData
+            resolver(nil)
+            return
+        }
+
+        let err = NSError(domain: "native-bridge", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to decode RawData on iOS. Make sure you're providing a valid 'PrimerRawData' (or any inherited) object"])
+        rejecter(err.rnError["errorId"]!, err.rnError["description"], err)
     }
 
     @objc

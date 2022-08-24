@@ -7,3 +7,7 @@ export interface PrimerRawCardData extends PrimerRawData {
     cvv: string;
     cardholderName?: string;
 }
+
+export interface PrimerRawPhoneNumberData extends PrimerRawData {
+    phoneNumber: string;
+}
