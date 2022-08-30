@@ -319,11 +319,13 @@ extension RNTPrimer: PrimerDelegate {
                   let checkoutAdditionalInfoJson = try JSONSerialization.jsonObject(with: checkoutAdditionalInfo, options: .allowFragments)
                   self.sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onResumePending.stringValue, body: checkoutAdditionalInfoJson)
               } catch {
-                  self.handleRNBridgeError(error, checkoutData: data, stopOnDebug: true)
+                  let checkoutData = PrimerCheckoutData(payment: nil, additionalInfo: additionalInfo)
+                  self.handleRNBridgeError(error, checkoutData: checkoutData, stopOnDebug: true)
               }
           } else {
               let err = NSError(domain: "native-bridge", code: 1, userInfo: [NSLocalizedDescriptionKey: "Callback [onResumePending] should be implemented."])
-              self.handleRNBridgeError(err, checkoutData: data, stopOnDebug: false)
+              let checkoutData = PrimerCheckoutData(payment: nil, additionalInfo: additionalInfo)
+              self.handleRNBridgeError(err, checkoutData: checkoutData, stopOnDebug: false)
           }
       }
     }
