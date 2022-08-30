@@ -17,6 +17,7 @@ enum PrimerHeadlessUniversalCheckoutEvents: Int, CaseIterable {
     case onHUCPaymentMethodShow
     case onTokenizeSuccess
     case onResumeSuccess
+    case onResumePending
     case onBeforePaymentCreate
     case onBeforeClientSessionUpdate
     case onClientSessionUpdate
@@ -35,6 +36,8 @@ enum PrimerHeadlessUniversalCheckoutEvents: Int, CaseIterable {
             return "onTokenizeSuccess"
         case .onResumeSuccess:
             return "onResumeSuccess"
+        case .onResumePending:
+            return "onResumePending"
         case .onBeforePaymentCreate:
             return "onBeforePaymentCreate"
         case .onBeforeClientSessionUpdate:
@@ -394,6 +397,23 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
                 }
             } else {
                 let err = NSError(domain: "native-bridge", code: 1, userInfo: [NSLocalizedDescriptionKey: "Callback [onCheckoutComplete] should be implemented."])
+                self.handleRNBridgeError(err, checkoutData: data, stopOnDebug: false)
+            }
+        }
+    }
+    
+    func primerHeadlessUniversalCheckoutDidEnterResumePendingWithPaymentAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?) {
+        DispatchQueue.main.async {
+            if self.implementedRNCallbacks?.isOnResumePendingImplemented == true {
+                do {
+                    let checkoutAdditionalInfo = try JSONEncoder().encode(additionalInfo)
+                    let checkoutAdditionalInfoJson = try JSONSerialization.jsonObject(with: checkoutAdditionalInfo, options: .allowFragments)
+                    self.sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onResumePending.stringValue, body: checkoutAdditionalInfoJson)
+                } catch {
+                    self.handleRNBridgeError(error, checkoutData: data, stopOnDebug: true)
+                }
+            } else {
+                let err = NSError(domain: "native-bridge", code: 1, userInfo: [NSLocalizedDescriptionKey: "Callback [onResumePending] should be implemented."])
                 self.handleRNBridgeError(err, checkoutData: data, stopOnDebug: false)
             }
         }
