@@ -69,6 +69,12 @@ export const HeadlessCheckoutScreen = (props: any) => {
     props.navigation.navigate('Result', checkoutData);
   };
 
+  const onResumePending = (additionalInfo: PrimerCheckoutAdditionalInfo) => {
+    updateLogs(`\n✅ PrimerCheckoutAdditionalInfo:\n${JSON.stringify(additionalInfo)}`);
+    setIsLoading(false);
+    props.navigation.navigate('Result', additionalInfo);
+  };
+
   const onTokenizeSuccess = async (paymentMethodTokenData: PrimerPaymentMethodTokenData, handler: PrimerTokenizationHandler) => {
     updateLogs(`\n✅ onTokenizeSuccess:\n${JSON.stringify(paymentMethodTokenData, null, 2)}`);
 
@@ -153,6 +159,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
     onCheckoutComplete: onCheckoutComplete,
     onTokenizeSuccess: onTokenizeSuccess,
     onResumeSuccess: onResumeSuccess,
+    onResumePending: onResumePending,
     onError: onError
   };
 

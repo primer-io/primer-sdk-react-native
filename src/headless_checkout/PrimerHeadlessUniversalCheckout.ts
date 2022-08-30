@@ -1,5 +1,6 @@
 import RNPrimerHeadlessUniversalCheckout from './RNPrimerHeadlessUniversalCheckout';
 import type { PrimerCheckoutData } from '../models/PrimerCheckoutData';
+import type { PrimerCheckoutAdditionalInfo } from '../models/PrimerCheckoutAdditionalInfo';
 import type { PrimerCheckoutPaymentMethodData } from '../models/PrimerCheckoutPaymentMethodData';
 import type { PrimerTokenizationHandler, PrimerResumeHandler, PrimerPaymentCreationHandler } from '../models/PrimerInterfaces';
 import type { PrimerHeadlessUniversalCheckoutStartResponse } from './types';
@@ -102,6 +103,7 @@ async function configureListeners(): Promise<void> {
         onClientSessionUpdate: (primerSettings?.onClientSessionUpdate !== undefined),
         onTokenizeSuccess: (primerSettings?.onTokenizeSuccess !== undefined),
         onResumeSuccess: (primerSettings?.onResumeSuccess !== undefined),
+        onResumePending: (primerSettings?.onResumePending !== undefined),
         onDismiss: false,
         onError: (primerSettings?.onError !== undefined),
         onHUCAvailablePaymentMethodsLoaded: (primerSettings?.onAvailablePaymentMethodsLoad !== undefined),
@@ -120,6 +122,21 @@ async function configureListeners(): Promise<void> {
             if (primerSettings && primerSettings.onCheckoutComplete) {
               const checkoutData: PrimerCheckoutData = data;
               primerSettings.onCheckoutComplete(checkoutData);
+            } else {
+              // Ignore!
+            }
+          }
+        );
+      }
+
+      if (implementedRNCallbacks.onResumePending) {
+        RNPrimerHeadlessUniversalCheckout.addListener(
+          'onResumePending',
+          (additionalInfo) => {
+            console.log('onResumePending');
+            if (primerSettings && primerSettings.onResumePending) {
+              const checkoutAdditionalInfo: PrimerCheckoutAdditionalInfo = additionalInfo;
+              primerSettings.onResumePending(checkoutAdditionalInfo);
             } else {
               // Ignore!
             }
