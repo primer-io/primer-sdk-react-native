@@ -19,6 +19,7 @@ enum PrimerEvents: Int, CaseIterable {
     case onDismiss
     case onTokenizeSuccess
     case onResumeSuccess
+    case onResumePending
     case onError
     case detectImplementedRNCallbacks
 
@@ -38,6 +39,8 @@ enum PrimerEvents: Int, CaseIterable {
             return "onTokenizeSuccess"
         case .onResumeSuccess:
             return "onResumeSuccess"
+        case .onResumePending:
+            return "onResumePending"
         case .onError:
             return "onError"
         case .detectImplementedRNCallbacks:
