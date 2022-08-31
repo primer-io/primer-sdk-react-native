@@ -427,7 +427,7 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
                 self.sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onBeforeClientSessionUpdate.stringValue, body: nil)
             }
         } else {
-            // RN Dev hasn't implemented this callback, ignore.
+            // React Native app hasn't implemented this callback, ignore.
         }
     }
 

@@ -133,7 +133,6 @@ async function configureListeners(): Promise<void> {
         RNPrimerHeadlessUniversalCheckout.addListener(
           'onResumePending',
           (additionalInfo) => {
-            console.log('onResumePending');
             if (primerSettings && primerSettings.onResumePending) {
               const checkoutAdditionalInfo: PrimerCheckoutAdditionalInfo = additionalInfo;
               primerSettings.onResumePending(checkoutAdditionalInfo);
