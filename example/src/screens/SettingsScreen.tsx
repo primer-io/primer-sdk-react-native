@@ -30,11 +30,11 @@ export interface AppPaymentParameters {
 // @ts-ignore
 const SettingsScreen = ({ navigation }) => {
     const isDarkMode = useColorScheme() === 'dark';
-    const [environment, setEnvironment] = React.useState<Environment>(Environment.Staging);
+    const [environment, setEnvironment] = React.useState<Environment>(Environment.Sandbox);
     const [paymentHandling, setPaymentHandling] = React.useState<PaymentHandling>(PaymentHandling.Auto);
     const [lineItems, setLineItems] = React.useState<IClientSessionLineItem[]>(appPaymentParameters.clientSessionRequestBody.order?.lineItems || []);
     const [currency, setCurrency] = React.useState<string>("EUR");
-    const [countryCode, setCountryCode] = React.useState<string>("PT");
+    const [countryCode, setCountryCode] = React.useState<string>("DE");
     const [orderId, setOrderId] = React.useState<string | undefined>(appPaymentParameters.clientSessionRequestBody.orderId);
 
     const [merchantName, setMerchantName] = React.useState<string | undefined>(appPaymentParameters.merchantName);
@@ -149,6 +149,7 @@ const SettingsScreen = ({ navigation }) => {
                             <Picker.Item label="SE" value="SE" />
                             <Picker.Item label="SG" value="SG" />
                             <Picker.Item label="PL" value="PL" />
+                            <Picker.Item label="PT" value="PT" />
                         </Picker>
                     </View>
                 </View>
