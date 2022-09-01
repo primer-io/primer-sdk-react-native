@@ -12,7 +12,7 @@ import { appPaymentParameters } from '../models/IClientSessionRequestBody';
 import type { IPayment } from '../models/IPayment';
 import { getPaymentHandlingStringVal } from '../network/Environment';
 import { ActivityIndicator } from 'react-native';
-import { PrimerCheckoutData, PrimerClientSession, PrimerError, PrimerErrorHandler, PrimerHeadlessUniversalCheckout, PrimerPaymentMethodTokenData, PrimerResumeHandler, PrimerSettings, PrimerTokenizationHandler } from '@primer-io/react-native';
+import { PrimerCheckoutData, PrimerClientSession, PrimerError, PrimerErrorHandler, HeadlessUniversalCheckout, PrimerPaymentMethodTokenData, PrimerResumeHandler, PrimerSettings, PrimerTokenizationHandler } from '@primer-io/react-native';
 
 let paymentId: string | null = null;
 let log: string | undefined;
@@ -33,7 +33,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
 
   const getLogo = async (identifier: string) => {
     try {
-      const assetUrl = await PrimerHeadlessUniversalCheckout.getAssetForPaymentMethodType(
+      const assetUrl = await HeadlessUniversalCheckout.getAssetForPaymentMethodType(
         identifier,
         'logo'
       );
@@ -65,8 +65,16 @@ export const HeadlessCheckoutScreen = (props: any) => {
 
   const onCheckoutComplete = (checkoutData: PrimerCheckoutData) => {
     updateLogs(`\n✅ PrimerCheckoutData:\n${JSON.stringify(checkoutData)}`);
+    debugger;
     setIsLoading(false);
     props.navigation.navigate('Result', checkoutData);
+  };
+
+  const onResumePending = (additionalInfo: PrimerCheckoutAdditionalInfo) => {
+    updateLogs(`\n✅ PrimerCheckoutAdditionalInfo:\n${JSON.stringify(additionalInfo)}`);
+    debugger;
+    setIsLoading(false);
+    props.navigation.navigate('Result', additionalInfo);
   };
 
   const onTokenizeSuccess = async (paymentMethodTokenData: PrimerPaymentMethodTokenData, handler: PrimerTokenizationHandler) => {
@@ -153,6 +161,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
     onCheckoutComplete: onCheckoutComplete,
     onTokenizeSuccess: onTokenizeSuccess,
     onResumeSuccess: onResumeSuccess,
+    // onResumePending: onResumePending,
     onError: onError
   };
 
@@ -168,7 +177,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
     createClientSession()
       .then((session) => {
         setIsLoading(false);
-        PrimerHeadlessUniversalCheckout.startWithClientToken(session.clientToken, settings)
+        HeadlessUniversalCheckout.startWithClientToken(session.clientToken, settings)
           .then((paymentMethodTypes) => {
             updateLogs(`\nℹ️ Available payment methods:\n${JSON.stringify(paymentMethodTypes, null, 2)}`);
             setPaymentMethods(paymentMethodTypes);
@@ -189,9 +198,9 @@ export const HeadlessCheckoutScreen = (props: any) => {
     createClientSession()
       .then((session) => {
         setIsLoading(false);
-        PrimerHeadlessUniversalCheckout.startWithClientToken(session.clientToken, settings)
+        HeadlessUniversalCheckout.startWithClientToken(session.clientToken, settings)
           .then((response) => {
-            PrimerHeadlessUniversalCheckout.showPaymentMethod(paymentMethod);
+            HeadlessUniversalCheckout.showPaymentMethod(paymentMethod);
           })
           .catch((err) => {
             updateLogs(`\n🛑 Error:\n${JSON.stringify(err, null, 2)}`);
