@@ -3,8 +3,8 @@ import type { PrimerCheckoutAdditionalInfo } from "./PrimerCheckoutAdditionalInf
 export type PrimerCheckoutData = IPrimerCheckoutData;
 
 interface IPrimerCheckoutData {
-    payment: IPrimerCheckoutDataPayment;
-    additionalInfo: PrimerCheckoutAdditionalInfo
+    payment?: IPrimerCheckoutDataPayment;
+    additionalInfo?: PrimerCheckoutAdditionalInfo
 }
 
 export type PrimerCheckoutDataPayment = IPrimerCheckoutDataPayment;
