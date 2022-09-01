@@ -21,4 +21,6 @@ data class PrimerImplementedRNCallbacks(
   val isOnTokenizeSuccessImplemented: Boolean? = null,
   @SerialName("onResumeSuccess")
   val isOnResumeSuccessImplemented: Boolean? = null,
+  @SerialName("onResumePending")
+  val isOnResumePendingImplemented: Boolean? = null,
 )
