@@ -57,7 +57,7 @@ platform :android do
         set_version_name version_name
         set_version_code version_code
 
-        gradle(task: "clean assembleDebug")
+        gradle(task: "clean assembleDebug", project_dir: 'example/android/')
 
         sdk_version_name_source_branch = ENV['SOURCE_BRANCH']
         pr_number = ENV['PR_NUMBER']
