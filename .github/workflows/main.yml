@@ -15,6 +15,14 @@ jobs:
         with:
           ruby-version: '2.6'
 
+      - name: Install npm
+        run: |
+          npm install
+
+      - name: Install packages
+        run: |
+          yarn
+
       - name: Install bundle
         run: |
           gem install bundler
