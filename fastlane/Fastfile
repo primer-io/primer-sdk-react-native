@@ -5,7 +5,7 @@ default_platform(:android)
 platform :android do
 
     def set_version_name (version_name)
-        path = '../example/android/build.gradle'
+        path = '../example/android/app/build.gradle'
         re = /versionName\s+\"(\S+)\"/
 
         s = File.read(path)
@@ -17,7 +17,7 @@ platform :android do
     end
 
     def set_version_code (version_code)
-        path = '../example/android/build.gradle'
+        path = '../example/android/app/build.gradle'
         re = /versionCode\s+(\d+)/
 
         s = File.read(path)
@@ -29,7 +29,7 @@ platform :android do
     end
 
     def get_sdk_version_name ()
-        path = '../example/android/gradle.properties'
+        path = '../example/android/app/gradle.properties'
         re = /VERSION\_NAME=(\S+)/
 
         s = File.read(path)
@@ -67,7 +67,7 @@ platform :android do
         puts "public_key: " + public_key
 
         appetize(
-            path: "./example/android/build/outputs/apk/debug/example-debug.apk",
+            path: "./example/android/app/build/outputs/apk/debug/example-debug.apk",
             platform: "android",
             api_token: appetize_api_token,
             public_key: public_key,
