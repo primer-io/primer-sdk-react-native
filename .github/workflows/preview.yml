@@ -14,7 +14,7 @@ jobs:
           ruby-version: "2.6"
           bundler-cache: true
 
-      - name: Preview app on Appetize and Upload to browserstack 🚀
+      - name: Preview app on Appetize 🚀
         run: bundle exec fastlane preview
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
