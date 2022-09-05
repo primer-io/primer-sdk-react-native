@@ -14,6 +14,18 @@ jobs:
           ruby-version: "2.6"
           bundler-cache: true
 
+      - uses: actions/setup-ruby@v1
+        with:
+          ruby-version: '2.6'
+
+      - name: Install npm
+        run: |
+          npm install
+
+      - name: Install packages
+        run: |
+          yarn
+
       - name: Preview app on Appetize 🚀
         run: bundle exec fastlane preview
         env:
