@@ -7,6 +7,7 @@ import type { PrimerClientSession } from './models/PrimerClientSession';
 import type { PrimerPaymentMethodTokenData } from './models/PrimerPaymentMethodTokenData';
 import { PrimerError } from './models/PrimerError';
 import type { IPrimer, PrimerErrorHandler, PrimerPaymentCreationHandler, PrimerResumeHandler, PrimerTokenizationHandler } from './models/PrimerInterfaces';
+import type { PrimerCheckoutAdditionalInfo } from './models/PrimerCheckoutAdditionalInfo';
 
 ///////////////////////////////////////////
 // DECISION HANDLERS
