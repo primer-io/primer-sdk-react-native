@@ -87,22 +87,15 @@ export let appPaymentParameters: AppPaymentParameters = {
     clientSessionRequestBody: {
         customerId: `rn-customer-${makeRandomString(8)}`,
         orderId: `rn-order-${makeRandomString(8)}`,
-        currencyCode: 'GBP',
+        currencyCode: 'IDR',
         order: {
-            countryCode: 'GB',
+            countryCode: 'ID',
             lineItems: [
                 {
-                    amount: 1000,
+                    amount: 250000,
                     quantity: 1,
                     itemId: 'shoes-3213',
                     description: 'Fancy Shoes',
-                    discountAmount: 0
-                },
-                {
-                    amount: 1000,
-                    quantity: 1,
-                    itemId: 'hats-3213',
-                    description: 'Cool Hat',
                     discountAmount: 0
                 }
             ]
@@ -118,7 +111,7 @@ export let appPaymentParameters: AppPaymentParameters = {
                 postalCode: 'SW1H 9HP',
                 addressLine1: '24 Old Queen St',
                 addressLine2: undefined,
-                countryCode: 'GB',
+                countryCode: 'ID',
                 city: 'London',
                 state: undefined
             },
@@ -127,7 +120,7 @@ export let appPaymentParameters: AppPaymentParameters = {
                 lastName: 'Smith',
                 postalCode: 'SW1H 9HP',
                 addressLine1: '24 Old Queen St',
-                countryCode: 'GB',
+                countryCode: 'ID',
                 city: 'London',
                 state: undefined
             },
@@ -135,47 +128,6 @@ export let appPaymentParameters: AppPaymentParameters = {
         },
         paymentMethod: {
             vaultOnSuccess: false,
-            options: {
-                GOOGLE_PAY: {
-                    surcharge: {
-                        amount: 50,
-                    },
-                },
-                ADYEN_IDEAL: {
-                    surcharge: {
-                        amount: 50,
-                    },
-                },
-                ADYEN_GIROPAY: {
-                    surcharge: {
-                        amount: 50,
-                    },
-                },
-                ADYEN_SOFORT: {
-                    surcharge: {
-                        amount: 50,
-                    },
-                },
-                APPLE_PAY: {
-                    surcharge: {
-                        amount: 150,
-                    },
-                },
-                PAYMENT_CARD: {
-                    networks: {
-                        VISA: {
-                            surcharge: {
-                                amount: 100,
-                            },
-                        },
-                        MASTERCARD: {
-                            surcharge: {
-                                amount: 200,
-                            },
-                        },
-                    },
-                },
-            },
         }
     },
     merchantName: 'Primer Merchant'
