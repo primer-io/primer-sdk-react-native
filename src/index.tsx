@@ -25,7 +25,11 @@ export {
     PrimerRawData,
     PrimerRawCardData
 } from './models/PrimerRawData';
-export { 
+export {
+    PrimerCheckoutAdditionalInfo,
+    MultibancoCheckoutAdditionalInfo
+} from './models/PrimerCheckoutAdditionalInfo';
+export {
     PrimerCheckoutData,
     PrimerCheckoutDataPayment,
 } from './models/PrimerCheckoutData';

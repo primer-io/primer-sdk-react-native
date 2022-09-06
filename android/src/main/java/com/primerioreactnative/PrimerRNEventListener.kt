@@ -1,6 +1,7 @@
 package com.primerioreactnative
 
 import com.primerioreactnative.datamodels.*
+import com.primerioreactnative.extensions.*
 import com.primerioreactnative.extensions.toPrimerCheckoutDataRN
 import com.primerioreactnative.extensions.toPrimerClientSessionRN
 import com.primerioreactnative.extensions.toPrimerPaymentMethodDataRN
@@ -13,6 +14,8 @@ import io.primer.android.completion.PrimerResumeDecisionHandler
 import io.primer.android.domain.PrimerCheckoutData
 import io.primer.android.domain.action.models.PrimerClientSession
 import io.primer.android.domain.error.models.PrimerError
+import io.primer.android.domain.payments.additionalInfo.MultibancoCheckoutAdditionalInfo
+import io.primer.android.domain.payments.additionalInfo.PrimerCheckoutAdditionalInfo
 import io.primer.android.domain.tokenization.models.PrimerPaymentMethodData
 import io.primer.android.domain.tokenization.models.PrimerPaymentMethodTokenData
 import kotlinx.serialization.encodeToString
@@ -38,7 +41,11 @@ class PrimerRNEventListener : PrimerCheckoutListener {
     if (implementedRNCallbacks?.isOnCheckoutCompleteImplemented == true) {
       sendEvent?.invoke(
         PrimerEvents.ON_CHECKOUT_COMPLETE.eventName,
-        JSONObject(Json.encodeToString(checkoutData.toPrimerCheckoutDataRN()))
+        JSONObject(Json.encodeToString(checkoutData.toPrimerCheckoutDataRN())).apply {
+          val additionalInfoJson = optJSONObject(Keys.ADDITIONAL_INFO)
+          additionalInfoJson?.remove("type")
+          putOpt(Keys.ADDITIONAL_INFO, additionalInfoJson)
+        }
       )
     } else {
       sendError?.invoke(
@@ -135,6 +142,22 @@ class PrimerRNEventListener : PrimerCheckoutListener {
       sendError?.invoke(
         ErrorTypeRN.NativeBridgeFailed
           errorTo "Callback [onResumeSuccess] should be implemented."
+      )
+    }
+  }
+
+  override fun onResumePending(additionalInfo: PrimerCheckoutAdditionalInfo?) {
+    if (implementedRNCallbacks?.isOnResumePendingImplemented == true) {
+      if (additionalInfo is MultibancoCheckoutAdditionalInfo) {
+        sendEvent?.invoke(
+          PrimerEvents.ON_RESUME_PENDING.eventName,
+          JSONObject(Json.encodeToString(additionalInfo.toCheckoutAdditionalInfoRN()))
+        )
+      }
+    } else {
+      sendError?.invoke(
+        ErrorTypeRN.NativeBridgeFailed
+          errorTo "Callback [onResumePending] should be implemented."
       )
     }
   }

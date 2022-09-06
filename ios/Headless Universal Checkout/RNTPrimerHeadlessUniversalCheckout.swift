@@ -17,6 +17,7 @@ enum PrimerHeadlessUniversalCheckoutEvents: Int, CaseIterable {
     case onHUCPaymentMethodShow
     case onTokenizeSuccess
     case onResumeSuccess
+    case onResumePending
     case onBeforePaymentCreate
     case onBeforeClientSessionUpdate
     case onClientSessionUpdate
@@ -35,6 +36,8 @@ enum PrimerHeadlessUniversalCheckoutEvents: Int, CaseIterable {
             return "onTokenizeSuccess"
         case .onResumeSuccess:
             return "onResumeSuccess"
+        case .onResumePending:
+            return "onResumePending"
         case .onBeforePaymentCreate:
             return "onBeforePaymentCreate"
         case .onBeforeClientSessionUpdate:
@@ -398,6 +401,25 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
             }
         }
     }
+    
+    func primerHeadlessUniversalCheckoutDidEnterResumePendingWithPaymentAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?) {
+        DispatchQueue.main.async {
+            if self.implementedRNCallbacks?.isOnResumePendingImplemented == true {
+                do {
+                    let checkoutAdditionalInfo = try JSONEncoder().encode(additionalInfo)
+                    let checkoutAdditionalInfoJson = try JSONSerialization.jsonObject(with: checkoutAdditionalInfo, options: .allowFragments)
+                    self.sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onResumePending.stringValue, body: checkoutAdditionalInfoJson)
+                } catch {
+                    let checkoutData = PrimerCheckoutData(payment: nil, additionalInfo: additionalInfo)
+                    self.handleRNBridgeError(error, checkoutData: checkoutData, stopOnDebug: true)
+                }
+            } else {
+                let err = NSError(domain: "native-bridge", code: 1, userInfo: [NSLocalizedDescriptionKey: "Callback [onResumePending] should be implemented."])
+                let checkoutData = PrimerCheckoutData(payment: nil, additionalInfo: additionalInfo)
+                self.handleRNBridgeError(err, checkoutData: checkoutData, stopOnDebug: false)
+            }
+        }
+    }
 
     func primerHeadlessUniversalCheckoutClientSessionWillUpdate() {
         if self.implementedRNCallbacks?.isOnBeforeClientSessionUpdateImplemented == true {
@@ -405,7 +427,7 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
                 self.sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onBeforeClientSessionUpdate.stringValue, body: nil)
             }
         } else {
-            // RN Dev hasn't implemented this callback, ignore.
+            // React Native app hasn't implemented this callback, ignore.
         }
     }
 
