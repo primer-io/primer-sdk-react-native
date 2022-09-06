@@ -57,7 +57,7 @@ platform :android do
         set_version_name version_name
         set_version_code version_code
 
-        gradle(task: "clean assembleDebug", project_dir: 'example/android/')
+        gradle(task: "clean assembleRelease", project_dir: 'example/android/')
 
         sdk_version_name_source_branch = ENV['SOURCE_BRANCH']
         pr_number = ENV['PR_NUMBER']
@@ -67,7 +67,7 @@ platform :android do
         puts "public_key: " + public_key
 
         appetize(
-            path: "./example/android/app/build/outputs/apk/debug/app-debug.apk",
+            path: "./example/android/app/build/outputs/apk/debug/app-release.apk",
             platform: "android",
             api_token: appetize_api_token,
             public_key: public_key,
