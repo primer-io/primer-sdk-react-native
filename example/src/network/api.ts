@@ -9,12 +9,13 @@ const baseUrl = 'https://us-central1-primerdemo-8741b.cloudfunctions.net/api';
 let staticHeaders = {
     'Content-Type': 'application/json',
     'environment': getEnvironmentStringVal(appPaymentParameters.environment),
+    'X-Api-Key': 'e1c595f6-83fe-4646-9830-85c92b467488'
 }
 
 export const createClientSession = async () => {
     const url = baseUrl + '/client-session';
-    const headers = { 
-        ...staticHeaders, 
+    const headers = {
+        ...staticHeaders,
         'X-Api-Version': getAPIVersionStringVal(APIVersion.v3),
     };
 

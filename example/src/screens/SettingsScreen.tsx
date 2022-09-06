@@ -33,8 +33,8 @@ const SettingsScreen = ({ navigation }) => {
     const [environment, setEnvironment] = React.useState<Environment>(Environment.Sandbox);
     const [paymentHandling, setPaymentHandling] = React.useState<PaymentHandling>(PaymentHandling.Auto);
     const [lineItems, setLineItems] = React.useState<IClientSessionLineItem[]>(appPaymentParameters.clientSessionRequestBody.order?.lineItems || []);
-    const [currency, setCurrency] = React.useState<string>("EUR");
-    const [countryCode, setCountryCode] = React.useState<string>("DE");
+    const [currency, setCurrency] = React.useState<string>("IDR");
+    const [countryCode, setCountryCode] = React.useState<string>("ID");
     const [orderId, setOrderId] = React.useState<string | undefined>(appPaymentParameters.clientSessionRequestBody.orderId);
 
     const [merchantName, setMerchantName] = React.useState<string | undefined>(appPaymentParameters.merchantName);
@@ -119,7 +119,7 @@ const SettingsScreen = ({ navigation }) => {
                         Currency & Country Code
                     </Text>
                     <View
-                        style={{ flexDirection: 'row', marginHorizontal: 20, marginTop: -30, marginBottom: 140 }}
+                        style={{ flexDirection: 'row', marginHorizontal: 20, marginTop: 0, marginBottom: 140 }}
                     >
                         <Picker
                             selectedValue={currency}
@@ -134,6 +134,7 @@ const SettingsScreen = ({ navigation }) => {
                             <Picker.Item label="SEK" value="SEK" />
                             <Picker.Item label="SGD" value="SGD" />
                             <Picker.Item label="PLN" value="PLN" />
+                            <Picker.Item label="IDR" value="IDR" />
                         </Picker>
 
                         <Picker
@@ -150,6 +151,7 @@ const SettingsScreen = ({ navigation }) => {
                             <Picker.Item label="SG" value="SG" />
                             <Picker.Item label="PL" value="PL" />
                             <Picker.Item label="PT" value="PT" />
+                            <Picker.Item label="ID" value="ID" />
                         </Picker>
                     </View>
                 </View>
@@ -626,35 +628,6 @@ const SettingsScreen = ({ navigation }) => {
                         Headless Universal Checkout (Beta)
                     </Text>
                 </TouchableOpacity>
-
-                <TouchableOpacity
-                    style={{ ...styles.button, marginVertical: 5, backgroundColor: 'black' }}
-                    onPress={() => {
-                        updateAppPaymentParameters();
-                        console.log(appPaymentParameters);
-                        navigation.navigate('HUCRawCardData');
-                    }}
-                >
-                    <Text
-                        style={{ ...styles.buttonText, color: 'white' }}
-                    >
-                        HUC Raw Card Data (Beta)
-                    </Text>
-                </TouchableOpacity>
-                           <TouchableOpacity
-                                    style={{ ...styles.button, marginVertical: 5, backgroundColor: 'black' }}
-                                    onPress={() => {
-                                        updateAppPaymentParameters();
-                                        console.log(appPaymentParameters);
-                                        navigation.navigate('HUCRawPhoneNumberData');
-                                    }}
-                                >
-                                    <Text
-                                        style={{ ...styles.buttonText, color: 'white' }}
-                                    >
-                                        HUC Raw Phone Number Data (Beta)
-                                    </Text>
-                                </TouchableOpacity>
             </View>
         );
     }
