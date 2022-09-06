@@ -1,10 +1,11 @@
-import type { 
-  PrimerErrorHandler, 
-  PrimerPaymentCreationHandler, 
-  PrimerResumeHandler, 
-  PrimerTokenizationHandler 
+import type {
+  PrimerErrorHandler,
+  PrimerPaymentCreationHandler,
+  PrimerResumeHandler,
+  PrimerTokenizationHandler
 } from "./PrimerInterfaces";
 import type { PrimerCheckoutData } from "./PrimerCheckoutData";
+import type { PrimerCheckoutAdditionalInfo } from "./PrimerCheckoutAdditionalInfo";
 import type { PrimerCheckoutPaymentMethodData } from "./PrimerCheckoutPaymentMethodData";
 import type { PrimerClientSession } from "./PrimerClientSession";
 import type { PrimerPaymentMethodTokenData } from "./PrimerPaymentMethodTokenData";
@@ -27,9 +28,10 @@ interface IPrimerSettings {
   onCheckoutComplete?: (checkoutData: PrimerCheckoutData) => void;
   onTokenizeSuccess?: (paymentMethodTokenData: PrimerPaymentMethodTokenData, handler: PrimerTokenizationHandler) => void;
   onResumeSuccess?: (resumeToken: string, handler: PrimerResumeHandler) => void;
+  onResumePending?: (additionalInfo: PrimerCheckoutAdditionalInfo) => void;
   // PrimerErrorHandler will be undefined on the HUC flow.
   onError?: (error: PrimerError, checkoutData: PrimerCheckoutData | null, handler: PrimerErrorHandler | undefined) => void;
-  
+
   // Only on main SDK
   onDismiss?: () => void;
 

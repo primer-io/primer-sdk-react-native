@@ -231,4 +231,5 @@ internal object Keys {
   const val ERROR = "error"
   const val RESUME_TOKEN = "resumeToken"
   const val CHECKOUT_DATA = "checkoutData"
+  const val ADDITIONAL_INFO = "additionalInfo"
 }

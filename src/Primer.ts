@@ -7,6 +7,7 @@ import type { PrimerClientSession } from './models/PrimerClientSession';
 import type { PrimerPaymentMethodTokenData } from './models/PrimerPaymentMethodTokenData';
 import { PrimerError } from './models/PrimerError';
 import type { IPrimer, PrimerErrorHandler, PrimerPaymentCreationHandler, PrimerResumeHandler, PrimerTokenizationHandler } from './models/PrimerInterfaces';
+import type { PrimerCheckoutAdditionalInfo } from './models/PrimerCheckoutAdditionalInfo';
 
 ///////////////////////////////////////////
 // DECISION HANDLERS
@@ -114,6 +115,7 @@ async function configureListeners(): Promise<void> {
         onClientSessionUpdate: (primerSettings?.onClientSessionUpdate !== undefined),
         onTokenizeSuccess: (primerSettings?.onTokenizeSuccess !== undefined),
         onResumeSuccess: (primerSettings?.onResumeSuccess !== undefined),
+        onResumePending:  (primerSettings?.onResumePending !== undefined),
         onDismiss: (primerSettings?.onDismiss !== undefined),
         onError: (primerSettings?.onError !== undefined),
       };
@@ -170,6 +172,20 @@ async function configureListeners(): Promise<void> {
             primerSettings.onResumeSuccess(data.resumeToken, resumeHandler);
           }
         });
+      }
+
+      if (implementedRNCallbacks.onResumePending) {
+        RNPrimer.addListener(
+          'onResumePending',
+          (additionalInfo) => {
+            if (primerSettings && primerSettings.onResumePending) {
+              const checkoutAdditionalInfo: PrimerCheckoutAdditionalInfo = additionalInfo;
+              primerSettings.onResumePending(checkoutAdditionalInfo);
+            } else {
+              // Ignore!
+            }
+          }
+        );
       }
 
       if (implementedRNCallbacks.onDismiss) {
