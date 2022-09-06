@@ -67,7 +67,7 @@ platform :android do
         puts "public_key: " + public_key
 
         appetize(
-            path: "./example/android/app/build/outputs/apk/debug/example-debug.apk",
+            path: "./example/android/app/build/outputs/apk/debug/app-debug.apk",
             platform: "android",
             api_token: appetize_api_token,
             public_key: public_key,
