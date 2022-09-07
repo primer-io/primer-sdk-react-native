@@ -1,18 +1,22 @@
 package com.primerioreactnative.datamodels
 
-import io.primer.android.data.settings.*
-import io.primer.android.ui.settings.PrimerUIOptions
+import com.primerioreactnative.extensions.toLocale
+import com.primerioreactnative.extensions.toPrimerDebugOptions
+import com.primerioreactnative.extensions.toPrimerPaymentMethodOptions
+import com.primerioreactnative.extensions.toPrimerUIOptions
+import io.primer.android.data.settings.GooglePayButtonStyle
+import io.primer.android.data.settings.PrimerPaymentHandling
+import io.primer.android.data.settings.PrimerSettings
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import java.util.*
 
 @Serializable
 data class PrimerSettingsRN(
   var paymentHandling: PrimerPaymentHandling = PrimerPaymentHandling.AUTO,
   var localeData: LocaleSettingsRN = LocaleSettingsRN(),
   var paymentMethodOptions: PrimerPaymentMethodOptionsRN = PrimerPaymentMethodOptionsRN(),
-  var uiOptions: PrimerUIOptions = PrimerUIOptions(),
-  var debugOptions: PrimerDebugOptions = PrimerDebugOptions(),
+  var uiOptions: PrimerUIOptionsRN = PrimerUIOptionsRN(),
+  var debugOptions: PrimerDebugOptionsRN = PrimerDebugOptionsRN(),
 )
 
 @Serializable
@@ -21,43 +25,74 @@ data class LocaleSettingsRN(
   val localeCode: String? = null
 )
 
-fun LocaleSettingsRN.toLocale(): Locale {
-  return when {
-    languageCode == null -> Locale.getDefault()
-    localeCode == null -> Locale(languageCode)
-    else -> Locale(languageCode, localeCode)
-  }
-}
-
 @Serializable
 data class PrimerPaymentMethodOptionsRN(
   @SerialName("android")
   val androidSettingsRN: AndroidSettingsRN = AndroidSettingsRN(),
-  var cardPaymentOptions: PrimerCardPaymentOptions = PrimerCardPaymentOptions(),
-  var googlePayOptions: PrimerGooglePayOptions = PrimerGooglePayOptions(),
-  var klarnaOptions: PrimerKlarnaOptions = PrimerKlarnaOptions(),
-  var apayaOptions: PrimerApayaOptions = PrimerApayaOptions(),
-  var goCardlessOptions: PrimerGoCardlessOptions = PrimerGoCardlessOptions()
-)
-
-fun PrimerPaymentMethodOptionsRN.toPrimerPaymentMethodOptions() = PrimerPaymentMethodOptions(
-  androidSettingsRN.redirectScheme,
-  cardPaymentOptions,
-  googlePayOptions,
-  klarnaOptions,
-  apayaOptions,
-  goCardlessOptions
+  var cardPaymentOptions: PrimerCardPaymentOptionsRN = PrimerCardPaymentOptionsRN(),
+  var googlePayOptions: PrimerGooglePayOptionsRN = PrimerGooglePayOptionsRN(),
+  var klarnaOptions: PrimerKlarnaOptionsRN = PrimerKlarnaOptionsRN(),
+  var apayaOptions: PrimerApayaOptionsRN = PrimerApayaOptionsRN(),
+  var goCardlessOptions: PrimerGoCardlessOptionsRN = PrimerGoCardlessOptionsRN()
 )
 
 @Serializable
 data class AndroidSettingsRN(val redirectScheme: String? = null)
 
+@Serializable
+data class PrimerUIOptionsRN(
+  var isInitScreenEnabled: Boolean = true,
+  var isSuccessScreenEnabled: Boolean = true,
+  var isErrorScreenEnabled: Boolean = true,
+)
+
+@Serializable
+data class PrimerDebugOptionsRN(val is3DSSanityCheckEnabled: Boolean = true)
+
+@Serializable
+data class PrimerCardPaymentOptionsRN(
+  var is3DSOnVaultingEnabled: Boolean = true
+)
+
+@Serializable
+data class PrimerGooglePayOptionsRN(
+  var merchantName: String? = null,
+  var allowedCardNetworks: List<String> = listOf(
+    "AMEX",
+    "DISCOVER",
+    "JCB",
+    "MASTERCARD",
+    "VISA"
+  ),
+  var buttonStyle: GooglePayButtonStyle = GooglePayButtonStyle.BLACK,
+)
+
+@Serializable
+data class PrimerKlarnaOptionsRN(
+  var recurringPaymentDescription: String? = null,
+  @Deprecated("This property is deprecated and will be removed in future release.")
+  var webViewTitle: String? = null,
+)
+
+@Serializable
+@Deprecated("This class is deprecated and will be removed in future release.")
+data class PrimerApayaOptionsRN(
+  var webViewTitle: String? = null,
+)
+
+@Serializable
+@Deprecated("This class is deprecated and will be removed in future release.")
+data class PrimerGoCardlessOptionsRN(
+  var businessName: String? = null,
+  var businessAddress: String? = null,
+)
+
 fun PrimerSettingsRN.toPrimerSettings() = PrimerSettings(
   paymentHandling,
   localeData.toLocale(),
   paymentMethodOptions.toPrimerPaymentMethodOptions(),
-  uiOptions,
-  debugOptions
+  uiOptions.toPrimerUIOptions(),
+  debugOptions.toPrimerDebugOptions()
 )
 
 
