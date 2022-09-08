@@ -1,7 +1,7 @@
 package com.primerioreactnative.extensions
 
 import com.primerioreactnative.datamodels.LocaleSettingsRN
-import java.util.*
+import java.util.Locale
 
 internal fun LocaleSettingsRN.toLocale(): Locale {
   return when {

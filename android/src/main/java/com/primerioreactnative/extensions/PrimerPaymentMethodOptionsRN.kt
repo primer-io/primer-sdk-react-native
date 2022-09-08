@@ -25,4 +25,3 @@ fun PrimerApayaOptionsRN.toPrimerApayaOptions() = PrimerApayaOptions(webViewTitl
 
 fun PrimerGoCardlessOptionsRN.toPrimerGoCardlessOptions() =
   PrimerGoCardlessOptions(businessName, businessAddress)
-
