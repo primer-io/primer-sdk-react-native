@@ -12,7 +12,7 @@ interface IMultibancoCheckoutAdditionalInfo extends IPrimerCheckoutAdditionalInf
 
 export type PrimerCheckoutQRCodeInfo = IPrimerCheckoutQRCodeInfo;
 
-interface IPrimerCheckoutQRCodeInfo : IPrimerCheckoutAdditionalInfo {}
+interface IPrimerCheckoutQRCodeInfo extends IPrimerCheckoutAdditionalInfo {}
 
 export type PromptPayCheckoutAdditionalInfo = IPromptPayCheckoutAdditionalInfo;
 
