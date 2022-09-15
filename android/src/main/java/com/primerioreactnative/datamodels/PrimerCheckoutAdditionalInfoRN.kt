@@ -12,7 +12,7 @@ data class MultibancoCheckoutAdditionalInfoRN(
   val entity: String,
 ) : PrimerCheckoutAdditionalInfoRN()
 
-interface PrimerCheckoutQRCodeInfoRN : PrimerCheckoutAdditionalInfoRN
+sealed class PrimerCheckoutQRCodeInfoRN : PrimerCheckoutAdditionalInfoRN()
 
 @Serializable
 data class PromptPayCheckoutAdditionalInfoRN(
