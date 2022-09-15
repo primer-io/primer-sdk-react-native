@@ -7,6 +7,7 @@ import io.primer.android.domain.payments.additionalInfo.PrimerCheckoutAdditional
 internal fun PrimerCheckoutAdditionalInfo.toCheckoutAdditionalInfoRN() = when (this) {
   is MultibancoCheckoutAdditionalInfo ->
     MultibancoCheckoutAdditionalInfoRN(expiresAt, reference, entity)
+  else if PromptPayCheckoutAdditionalInfo ->
+    PromptPayCheckoutAdditionalInfoRN(expiresAt, qrCodeUrl, qrCodeBase64)
   else -> null
 }
-
