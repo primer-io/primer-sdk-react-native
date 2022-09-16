@@ -23,4 +23,6 @@ data class PrimerImplementedRNCallbacks(
   val isOnResumeSuccessImplemented: Boolean? = null,
   @SerialName("onResumePending")
   val isOnResumePendingImplemented: Boolean? = null,
+  @SerialName("onCheckoutReceivedAdditionalInfo")
+  val isOnCheckoutReceivedAdditionalInfoImplemented: Boolean? = null
 )

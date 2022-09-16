@@ -10,5 +10,6 @@ internal enum class PrimerEvents(val eventName: String) {
   ON_TOKENIZE_SUCCESS("onTokenizeSuccess"),
   ON_RESUME_SUCCESS("onResumeSuccess"),
   ON_RESUME_PENDING("onResumePending"),
+  ON_CHECKOUT_RECEIVED_ADDITIONAL_INFO("onCheckoutReceivedAdditionalInfo"),
   ON_ERROR("onError"),
 }

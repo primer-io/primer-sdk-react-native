@@ -18,6 +18,7 @@ enum PrimerHeadlessUniversalCheckoutEvents: Int, CaseIterable {
     case onTokenizeSuccess
     case onResumeSuccess
     case onResumePending
+    case onCheckoutReceivedAdditionalInfo
     case onBeforePaymentCreate
     case onBeforeClientSessionUpdate
     case onClientSessionUpdate
@@ -38,6 +39,8 @@ enum PrimerHeadlessUniversalCheckoutEvents: Int, CaseIterable {
             return "onResumeSuccess"
         case .onResumePending:
             return "onResumePending"
+        case .onCheckoutReceivedAdditionalInfo:
+          return "onCheckoutReceivedAdditionalInfo"
         case .onBeforePaymentCreate:
             return "onBeforePaymentCreate"
         case .onBeforeClientSessionUpdate:
@@ -401,7 +404,7 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
             }
         }
     }
-    
+
     func primerHeadlessUniversalCheckoutDidEnterResumePendingWithPaymentAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?) {
         DispatchQueue.main.async {
             if self.implementedRNCallbacks?.isOnResumePendingImplemented == true {
@@ -415,6 +418,25 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
                 }
             } else {
                 let err = NSError(domain: "native-bridge", code: 1, userInfo: [NSLocalizedDescriptionKey: "Callback [onResumePending] should be implemented."])
+                let checkoutData = PrimerCheckoutData(payment: nil, additionalInfo: additionalInfo)
+                self.handleRNBridgeError(err, checkoutData: checkoutData, stopOnDebug: false)
+            }
+        }
+    }
+
+    func primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?) {
+        DispatchQueue.main.async {
+            if self.implementedRNCallbacks?.isOnCheckoutReceivedAdditionalInfoImplemented == true {
+                do {
+                    let checkoutAdditionalInfo = try JSONEncoder().encode(additionalInfo)
+                    let checkoutAdditionalInfoJson = try JSONSerialization.jsonObject(with: checkoutAdditionalInfo, options: .allowFragments)
+                    self.sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onResumePending.stringValue, body: checkoutAdditionalInfoJson)
+                } catch {
+                    let checkoutData = PrimerCheckoutData(payment: nil, additionalInfo: additionalInfo)
+                    self.handleRNBridgeError(error, checkoutData: checkoutData, stopOnDebug: true)
+                }
+            } else {
+                let err = NSError(domain: "native-bridge", code: 1, userInfo: [NSLocalizedDescriptionKey: "Callback [onCheckoutReceivedAdditionalInfo] should be implemented."])
                 let checkoutData = PrimerCheckoutData(payment: nil, additionalInfo: additionalInfo)
                 self.handleRNBridgeError(err, checkoutData: checkoutData, stopOnDebug: false)
             }

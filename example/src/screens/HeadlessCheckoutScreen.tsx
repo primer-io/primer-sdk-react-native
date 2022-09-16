@@ -77,6 +77,13 @@ export const HeadlessCheckoutScreen = (props: any) => {
     props.navigation.navigate('Result', additionalInfo);
   };
 
+  const onCheckoutReceivedAdditionalInfo = (additionalInfo: PrimerCheckoutAdditionalInfo) => {
+    updateLogs(`\n✅ PrimerCheckoutAdditionalInfo:\n${JSON.stringify(additionalInfo)}`);
+    debugger;
+    setIsLoading(false);
+    props.navigation.navigate('Result', additionalInfo);
+  };
+
   const onTokenizeSuccess = async (paymentMethodTokenData: PrimerPaymentMethodTokenData, handler: PrimerTokenizationHandler) => {
     updateLogs(`\n✅ onTokenizeSuccess:\n${JSON.stringify(paymentMethodTokenData, null, 2)}`);
 

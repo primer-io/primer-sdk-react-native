@@ -162,6 +162,22 @@ class PrimerRNEventListener : PrimerCheckoutListener {
     }
   }
 
+  override fun onCheckoutReceivedAdditionalInfo(additionalInfo: PrimerCheckoutAdditionalInfo?) {
+    if (implementedRNCallbacks?.isOnCheckoutReceivedAdditionalInfoImplemented == true) {
+      if (additionalInfo is PromptPayCheckoutAdditionalInfo) {
+        sendEvent?.invoke(
+          PrimerEvents.ON_CHECKOUT_RECEIVED_ADDITIONAL_INFO.eventName,
+          JSONObject(Json.encodeToString(additionalInfo.toCheckoutAdditionalInfoRN()))
+        )
+      }
+    } else {
+      sendError?.invoke(
+        ErrorTypeRN.NativeBridgeFailed
+          errorTo "Callback [onCheckoutReceivedAdditionalInfo] should be implemented."
+      )
+    }
+  }
+
   override fun onDismissed() {
     if (implementedRNCallbacks?.isOnDismissImplemented == true) {
       sendEvent?.invoke(

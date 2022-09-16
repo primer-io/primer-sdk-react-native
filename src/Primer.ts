@@ -116,6 +116,7 @@ async function configureListeners(): Promise<void> {
         onTokenizeSuccess: (primerSettings?.onTokenizeSuccess !== undefined),
         onResumeSuccess: (primerSettings?.onResumeSuccess !== undefined),
         onResumePending:  (primerSettings?.onResumePending !== undefined),
+        onCheckoutReceivedAdditionalInfo:  (primerSettings?.onCheckoutReceivedAdditionalInfo !== undefined),
         onDismiss: (primerSettings?.onDismiss !== undefined),
         onError: (primerSettings?.onError !== undefined),
       };
@@ -181,6 +182,20 @@ async function configureListeners(): Promise<void> {
             if (primerSettings && primerSettings.onResumePending) {
               const checkoutAdditionalInfo: PrimerCheckoutAdditionalInfo = additionalInfo;
               primerSettings.onResumePending(checkoutAdditionalInfo);
+            } else {
+              // Ignore!
+            }
+          }
+        );
+      }
+
+      if (implementedRNCallbacks.onCheckoutReceivedAdditionalInfo) {
+        RNPrimer.addListener(
+          'onCheckoutReceivedAdditionalInfo',
+          (additionalInfo) => {
+            if (primerSettings && primerSettings.onCheckoutReceivedAdditionalInfo) {
+              const checkoutAdditionalInfo: PrimerCheckoutAdditionalInfo = additionalInfo;
+              primerSettings.onCheckoutReceivedAdditionalInfo(checkoutAdditionalInfo);
             } else {
               // Ignore!
             }
