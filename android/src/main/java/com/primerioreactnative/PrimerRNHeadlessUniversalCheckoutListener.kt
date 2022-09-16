@@ -4,7 +4,7 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.Promise
 import com.primerioreactnative.datamodels.*
-import com.primerioreactnative.extensions.*
+import com.primerioreactnative.extensions.toCheckoutAdditionalInfoRN
 import com.primerioreactnative.extensions.toPrimerCheckoutDataRN
 import com.primerioreactnative.extensions.toPrimerClientSessionRN
 import com.primerioreactnative.extensions.toPrimerPaymentMethodDataRN
@@ -21,6 +21,7 @@ import io.primer.android.domain.action.models.PrimerClientSession
 import io.primer.android.domain.error.models.PrimerError
 import io.primer.android.domain.payments.additionalInfo.MultibancoCheckoutAdditionalInfo
 import io.primer.android.domain.payments.additionalInfo.PrimerCheckoutAdditionalInfo
+import io.primer.android.domain.payments.additionalInfo.PromptPayCheckoutAdditionalInfo
 import io.primer.android.domain.tokenization.models.PrimerPaymentMethodData
 import io.primer.android.domain.tokenization.models.PrimerPaymentMethodTokenData
 import kotlinx.serialization.encodeToString
@@ -203,7 +204,7 @@ class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckou
     }
   }
 
-  override fun onCheckoutReceivedAdditionalInfo(additionalInfo: PrimerCheckoutAdditionalInfo?) {
+  override fun onQRCodeInfoReceived(additionalInfo: PrimerCheckoutAdditionalInfo) {
     if (implementedRNCallbacks?.isOnCheckoutReceivedAdditionalInfoImplemented == true) {
       if (additionalInfo is PromptPayCheckoutAdditionalInfo) {
         sendEvent?.invoke(
@@ -214,7 +215,7 @@ class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckou
     } else {
       sendError?.invoke(
         ErrorTypeRN.NativeBridgeFailed
-          errorTo "Callback [onCheckoutReceivedAdditionalInfo] should be implemented."
+          errorTo "Callback [onQRCodeInfoReceived] should be implemented."
       )
     }
   }
