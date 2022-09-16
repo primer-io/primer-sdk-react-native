@@ -430,7 +430,7 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
                 do {
                     let checkoutAdditionalInfo = try JSONEncoder().encode(additionalInfo)
                     let checkoutAdditionalInfoJson = try JSONSerialization.jsonObject(with: checkoutAdditionalInfo, options: .allowFragments)
-                    self.sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onResumePending.stringValue, body: checkoutAdditionalInfoJson)
+                    self.sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onCheckoutReceivedAdditionalInfo.stringValue, body: checkoutAdditionalInfoJson)
                 } catch {
                     let checkoutData = PrimerCheckoutData(payment: nil, additionalInfo: additionalInfo)
                     self.handleRNBridgeError(error, checkoutData: checkoutData, stopOnDebug: true)
