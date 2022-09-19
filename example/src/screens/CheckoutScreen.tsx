@@ -170,6 +170,7 @@ const CheckoutScreen = (props: any) => {
         onTokenizeSuccess: onTokenizeSuccess,
         onResumeSuccess: onResumeSuccess,
         onResumePending: onResumePending,
+        onCheckoutReceivedAdditionalInfo: onCheckoutReceivedAdditionalInfo,
         onError: onError,
         onDismiss: onDismiss,
     };

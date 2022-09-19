@@ -164,10 +164,10 @@ class PrimerRNEventListener : PrimerCheckoutListener {
   }
 
   override fun onAdditionalInfoReceived(additionalInfo: PrimerCheckoutAdditionalInfo) {
-    if (implementedRNCallbacks?.isOnAdditionalInfoReceived == true) {
+    if (implementedRNCallbacks?.isOnCheckoutReceivedAdditionalInfo == true) {
       if (additionalInfo is PromptPayCheckoutAdditionalInfo) {
         sendEvent?.invoke(
-          PrimerEvents.ON_ADDITIONAL_INFO_RECEIVED.eventName,
+          PrimerEvents.ON_CHECKOUT_RECEIVED_ADDITIONAL_INFO.eventName,
           JSONObject(Json.encodeToString(additionalInfo.toCheckoutAdditionalInfoRN()))
         )
       }

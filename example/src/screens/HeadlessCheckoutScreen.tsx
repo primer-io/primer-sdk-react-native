@@ -13,6 +13,7 @@ import type { IPayment } from '../models/IPayment';
 import { getPaymentHandlingStringVal } from '../network/Environment';
 import { ActivityIndicator } from 'react-native';
 import { PrimerCheckoutData, PrimerClientSession, PrimerError, PrimerErrorHandler, HeadlessUniversalCheckout, PrimerPaymentMethodTokenData, PrimerResumeHandler, PrimerSettings, PrimerTokenizationHandler } from '@primer-io/react-native';
+import type { PrimerCheckoutAdditionalInfo } from 'lib/typescript/src';
 
 let paymentId: string | null = null;
 let log: string | undefined;
@@ -168,7 +169,8 @@ export const HeadlessCheckoutScreen = (props: any) => {
     onCheckoutComplete: onCheckoutComplete,
     onTokenizeSuccess: onTokenizeSuccess,
     onResumeSuccess: onResumeSuccess,
-    // onResumePending: onResumePending,
+    onResumePending: onResumePending,
+    onCheckoutReceivedAdditionalInfo: onCheckoutReceivedAdditionalInfo,
     onError: onError
   };
 
