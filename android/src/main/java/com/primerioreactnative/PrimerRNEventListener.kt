@@ -152,7 +152,9 @@ class PrimerRNEventListener : PrimerCheckoutListener {
       if (additionalInfo is MultibancoCheckoutAdditionalInfo) {
         sendEvent?.invoke(
           PrimerEvents.ON_RESUME_PENDING.eventName,
-          JSONObject(Json.encodeToString(additionalInfo.toCheckoutAdditionalInfoRN()))
+          JSONObject(Json.encodeToString(additionalInfo.toCheckoutAdditionalInfoRN())).apply {
+            remove("type")
+          }
         )
       }
     } else {
@@ -168,7 +170,9 @@ class PrimerRNEventListener : PrimerCheckoutListener {
       if (additionalInfo is PromptPayCheckoutAdditionalInfo) {
         sendEvent?.invoke(
           PrimerEvents.ON_CHECKOUT_RECEIVED_ADDITIONAL_INFO.eventName,
-          JSONObject(Json.encodeToString(additionalInfo.toCheckoutAdditionalInfoRN()))
+          JSONObject(Json.encodeToString(additionalInfo.toCheckoutAdditionalInfoRN())).apply {
+            remove("type")
+          }
         )
       }
     } else {
