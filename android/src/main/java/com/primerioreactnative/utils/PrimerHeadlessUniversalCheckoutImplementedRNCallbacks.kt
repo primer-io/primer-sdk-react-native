@@ -21,6 +21,8 @@ data class PrimerHeadlessUniversalCheckoutImplementedRNCallbacks(
   val isOnResumeSuccessImplemented: Boolean? = null,
   @SerialName("onResumePending")
   val isOnResumePendingImplemented: Boolean? = null,
+  @SerialName("onCheckoutReceivedAdditionalInfo")
+  val isOnCheckoutReceivedAdditionalInfo: Boolean? = null,
   @SerialName("onHUCTokenizeStart")
   val isOnHUCTokenizeStartsImplemented: Boolean? = null,
   @SerialName("onHUCPrepareStart")
@@ -30,4 +32,3 @@ data class PrimerHeadlessUniversalCheckoutImplementedRNCallbacks(
   @SerialName("onHUCPaymentMethodShow")
   val isOnHUCPaymentMethodShowImplemented: Boolean? = null,
 )
-

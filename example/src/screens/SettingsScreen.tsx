@@ -134,6 +134,8 @@ const SettingsScreen = ({ navigation }) => {
                             <Picker.Item label="SEK" value="SEK" />
                             <Picker.Item label="SGD" value="SGD" />
                             <Picker.Item label="PLN" value="PLN" />
+                            <Picker.Item label="THB" value="THB" />
+                            <Picker.Item label="IDR" value="IDR" />
                         </Picker>
 
                         <Picker
@@ -150,6 +152,8 @@ const SettingsScreen = ({ navigation }) => {
                             <Picker.Item label="SG" value="SG" />
                             <Picker.Item label="PL" value="PL" />
                             <Picker.Item label="PT" value="PT" />
+                            <Picker.Item label="TH" value="TH" />
+                            <Picker.Item label="ID" value="ID" />
                         </Picker>
                     </View>
                 </View>

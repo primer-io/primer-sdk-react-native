@@ -18,6 +18,7 @@ internal struct ImplementedRNCallbacks: Decodable {
     internal var isOnTokenizeSuccessImplemented: Bool = false
     internal var isOnResumeSuccessImplemented: Bool = false
     internal var isOnResumePendingImplemented: Bool = false
+    internal var isOnCheckoutReceivedAdditionalInfoImplemented: Bool = false
     internal var isOnHUCTokenizeStartImplemented: Bool = false
     internal var isOnHUCPrepareStartImplemented: Bool = false
     internal var isOnHUCAvailablePaymentMethodsLoadedImplemented: Bool = false
@@ -33,6 +34,7 @@ internal struct ImplementedRNCallbacks: Decodable {
         case isOnTokenizeSuccessImplemented = "onTokenizeSuccess"
         case isOnResumeSuccessImplemented = "onResumeSuccess"
         case isOnResumePendingImplemented = "onResumePending"
+        case isOnCheckoutReceivedAdditionalInfoImplemented = "onCheckoutReceivedAdditionalInfo"
         case isOnHUCTokenizeStartImplemented = "onHUCTokenizeStart"
         case isOnHUCPrepareStartImplemented = "onHUCPrepareStart"
         case isOnHUCAvailablePaymentMethodsLoadedImplemented = "onHUCAvailablePaymentMethodsLoaded"
@@ -51,6 +53,7 @@ internal struct ImplementedRNCallbacks: Decodable {
         self.isOnTokenizeSuccessImplemented = (try? container.decode(Bool?.self, forKey: .isOnTokenizeSuccessImplemented)) ?? false
         self.isOnResumeSuccessImplemented = (try? container.decode(Bool?.self, forKey: .isOnResumeSuccessImplemented)) ?? false
         self.isOnResumePendingImplemented = (try? container.decode(Bool?.self, forKey: .isOnResumePendingImplemented)) ?? false
+        self.isOnCheckoutReceivedAdditionalInfoImplemented = (try? container.decode(Bool?.self, forKey: .isOnCheckoutReceivedAdditionalInfoImplemented)) ?? false
         self.isOnHUCTokenizeStartImplemented = (try? container.decode(Bool?.self, forKey: .isOnHUCTokenizeStartImplemented)) ?? false
         self.isOnHUCPrepareStartImplemented = (try? container.decode(Bool?.self, forKey: .isOnHUCPrepareStartImplemented)) ?? false
         self.isOnHUCAvailablePaymentMethodsLoadedImplemented = (try? container.decode(Bool?.self, forKey: .isOnHUCAvailablePaymentMethodsLoadedImplemented)) ?? false

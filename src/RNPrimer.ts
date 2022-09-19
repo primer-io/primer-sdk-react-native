@@ -15,6 +15,7 @@ type EventType =
   | 'onTokenizeSuccess'
   | 'onResumeSuccess'
   | 'onResumePending'
+  | 'onCheckoutReceivedAdditionalInfo'
   | 'detectImplementedRNCallbacks';
 
 export interface IPrimerError {
@@ -32,6 +33,7 @@ const eventTypes: EventType[] = [
   'onDismiss',
   'onTokenizeSuccess',
   'onResumeSuccess',
+  'onCheckoutReceivedAdditionalInfo',
   'onResumePending',
   'detectImplementedRNCallbacks'
 ];
