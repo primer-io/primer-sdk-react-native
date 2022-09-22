@@ -122,6 +122,11 @@ const CheckoutScreen = (props: any) => {
         debugger;
     }
 
+    const onCheckoutReceivedAdditionalInfo = async (additionalInfo: PrimerCheckoutAdditionalInfo) => {
+        console.log(`onCheckoutReceivedAdditionalInfo:\n${JSON.stringify(additionalInfo)}`);
+        debugger;
+    }
+
     const onError = (error: PrimerError, checkoutData: PrimerCheckoutData | null, handler: PrimerErrorHandler | undefined) => {
         console.log(`onError:\n${JSON.stringify(error)}\n\n${JSON.stringify(checkoutData)}`);
         handler?.showErrorMessage("My RN message");
@@ -165,6 +170,7 @@ const CheckoutScreen = (props: any) => {
         onTokenizeSuccess: onTokenizeSuccess,
         onResumeSuccess: onResumeSuccess,
         onResumePending: onResumePending,
+        onCheckoutReceivedAdditionalInfo: onCheckoutReceivedAdditionalInfo,
         onError: onError,
         onDismiss: onDismiss,
     };

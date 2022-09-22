@@ -9,3 +9,15 @@ interface IMultibancoCheckoutAdditionalInfo extends IPrimerCheckoutAdditionalInf
     entity?: string;
     reference?: string;
 }
+
+export type PrimerCheckoutQRCodeInfo = IPrimerCheckoutQRCodeInfo;
+
+interface IPrimerCheckoutQRCodeInfo extends IPrimerCheckoutAdditionalInfo {}
+
+export type PromptPayCheckoutAdditionalInfo = IPromptPayCheckoutAdditionalInfo;
+
+interface IPromptPayCheckoutAdditionalInfo extends IPrimerCheckoutQRCodeInfo {
+    expiresAt: string;
+    qrCodeUrl?: string;
+    qrCodeBase64?: string;
+}

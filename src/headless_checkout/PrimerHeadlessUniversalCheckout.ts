@@ -104,12 +104,13 @@ async function configureListeners(): Promise<void> {
         onTokenizeSuccess: (primerSettings?.onTokenizeSuccess !== undefined),
         onResumeSuccess: (primerSettings?.onResumeSuccess !== undefined),
         onResumePending: (primerSettings?.onResumePending !== undefined),
+        onCheckoutReceivedAdditionalInfo: (primerSettings?.onCheckoutReceivedAdditionalInfo !== undefined),
         onDismiss: false,
         onError: (primerSettings?.onError !== undefined),
         onHUCAvailablePaymentMethodsLoaded: (primerSettings?.onAvailablePaymentMethodsLoad !== undefined),
         onHUCPrepareStart: (primerSettings?.onPrepareStart !== undefined),
         onHUCTokenizeStart: (primerSettings?.onTokenizeStart !== undefined),
-        onHUCPaymentMethodShow: (primerSettings?.onPaymentMethodShow !== undefined),
+        onHUCPaymentMethodShow: (primerSettings?.onPaymentMethodShow !== undefined)
       };
 
       await RNPrimerHeadlessUniversalCheckout.setImplementedRNCallbacks(implementedRNCallbacks);
@@ -136,6 +137,20 @@ async function configureListeners(): Promise<void> {
             if (primerSettings && primerSettings.onResumePending) {
               const checkoutAdditionalInfo: PrimerCheckoutAdditionalInfo = additionalInfo;
               primerSettings.onResumePending(checkoutAdditionalInfo);
+            } else {
+              // Ignore!
+            }
+          }
+        );
+      }
+
+      if (implementedRNCallbacks.onCheckoutReceivedAdditionalInfo) {
+        RNPrimerHeadlessUniversalCheckout.addListener(
+          'onCheckoutReceivedAdditionalInfo',
+          (additionalInfo) => {
+            if (primerSettings && primerSettings.onCheckoutReceivedAdditionalInfo) {
+              const checkoutAdditionalInfo: PrimerCheckoutAdditionalInfo = additionalInfo;
+              primerSettings.onCheckoutReceivedAdditionalInfo(checkoutAdditionalInfo);
             } else {
               // Ignore!
             }
@@ -198,7 +213,7 @@ async function configureListeners(): Promise<void> {
               } else {
                 primerSettings.onAvailablePaymentMethodsLoad(['not implemented']);
               }
-              
+
             } else {
               // Ignore!
             }

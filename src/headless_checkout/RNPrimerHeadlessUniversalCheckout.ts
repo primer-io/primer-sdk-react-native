@@ -12,6 +12,7 @@ type EventType =
   | 'onTokenizeSuccess'
   | 'onResumeSuccess'
   | 'onResumePending'
+  | 'onCheckoutReceivedAdditionalInfo'
   | 'onBeforePaymentCreate'
   | 'onBeforeClientSessionUpdate'
   | 'onClientSessionUpdate'
@@ -26,6 +27,7 @@ const eventTypes: EventType[] = [
   'onTokenizeSuccess',
   'onResumeSuccess',
   'onResumePending',
+  'onCheckoutReceivedAdditionalInfo',
   'onBeforePaymentCreate',
   'onBeforeClientSessionUpdate',
   'onClientSessionUpdate',
@@ -238,7 +240,7 @@ const RNPrimerHeadlessUniversalCheckout = {
     });
   },
 
-  
+
   disposePrimerHeadlessUniversalCheckout: (): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {

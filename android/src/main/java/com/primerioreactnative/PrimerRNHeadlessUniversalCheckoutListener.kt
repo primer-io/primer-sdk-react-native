@@ -4,7 +4,7 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.Promise
 import com.primerioreactnative.datamodels.*
-import com.primerioreactnative.extensions.*
+import com.primerioreactnative.extensions.toCheckoutAdditionalInfoRN
 import com.primerioreactnative.extensions.toPrimerCheckoutDataRN
 import com.primerioreactnative.extensions.toPrimerClientSessionRN
 import com.primerioreactnative.extensions.toPrimerPaymentMethodDataRN
@@ -21,6 +21,7 @@ import io.primer.android.domain.action.models.PrimerClientSession
 import io.primer.android.domain.error.models.PrimerError
 import io.primer.android.domain.payments.additionalInfo.MultibancoCheckoutAdditionalInfo
 import io.primer.android.domain.payments.additionalInfo.PrimerCheckoutAdditionalInfo
+import io.primer.android.domain.payments.additionalInfo.PromptPayCheckoutAdditionalInfo
 import io.primer.android.domain.tokenization.models.PrimerPaymentMethodData
 import io.primer.android.domain.tokenization.models.PrimerPaymentMethodTokenData
 import kotlinx.serialization.encodeToString
@@ -192,13 +193,33 @@ class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckou
       if (additionalInfo is MultibancoCheckoutAdditionalInfo) {
         sendEvent?.invoke(
           PrimerEvents.ON_RESUME_PENDING.eventName,
-          JSONObject(Json.encodeToString(additionalInfo.toCheckoutAdditionalInfoRN()))
+          JSONObject(Json.encodeToString(additionalInfo.toCheckoutAdditionalInfoRN())).apply {
+            remove("type")
+          }
         )
       }
     } else {
       sendError?.invoke(
         ErrorTypeRN.NativeBridgeFailed
           errorTo "Callback [onResumePending] should be implemented."
+      )
+    }
+  }
+
+  override fun onAdditionalInfoReceived(additionalInfo: PrimerCheckoutAdditionalInfo) {
+    if (implementedRNCallbacks?.isOnCheckoutReceivedAdditionalInfo == true) {
+      if (additionalInfo is PromptPayCheckoutAdditionalInfo) {
+        sendEvent?.invoke(
+          PrimerEvents.ON_CHECKOUT_RECEIVED_ADDITIONAL_INFO.eventName,
+          JSONObject(Json.encodeToString(additionalInfo.toCheckoutAdditionalInfoRN())).apply {
+            remove("type")
+          }
+        )
+      }
+    } else {
+      sendError?.invoke(
+        ErrorTypeRN.NativeBridgeFailed
+          errorTo "Callback [onAdditionalInfoReceived] should be implemented."
       )
     }
   }

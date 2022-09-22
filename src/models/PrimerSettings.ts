@@ -29,6 +29,7 @@ interface IPrimerSettings {
   onTokenizeSuccess?: (paymentMethodTokenData: PrimerPaymentMethodTokenData, handler: PrimerTokenizationHandler) => void;
   onResumeSuccess?: (resumeToken: string, handler: PrimerResumeHandler) => void;
   onResumePending?: (additionalInfo: PrimerCheckoutAdditionalInfo) => void;
+  onCheckoutReceivedAdditionalInfo?: (additionalInfo: PrimerCheckoutAdditionalInfo) => void;
   // PrimerErrorHandler will be undefined on the HUC flow.
   onError?: (error: PrimerError, checkoutData: PrimerCheckoutData | null, handler: PrimerErrorHandler | undefined) => void;
 
