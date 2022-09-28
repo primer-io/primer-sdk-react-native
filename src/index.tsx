@@ -26,6 +26,7 @@ export {
     PrimerRawCardData,
     PrimerRawPhoneNumberData,
     PrimerRawCardRedirectData,
+    PrimerBancontactCardRedirectData
 } from './models/PrimerRawData';
 export {
     PrimerCheckoutAdditionalInfo,

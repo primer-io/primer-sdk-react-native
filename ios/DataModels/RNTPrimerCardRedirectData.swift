@@ -1,7 +1,7 @@
 import Foundation
 import PrimerSDK
 
-extension PrimerCardRedirectData {
+extension PrimerBancontactCardRedirectData {
 
     convenience init?(cardRedirectDataStr: String) {
         do {

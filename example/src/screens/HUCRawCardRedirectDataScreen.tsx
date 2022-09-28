@@ -23,7 +23,8 @@ import {
     PrimerSettings,
     PrimerTokenizationHandler,
     HeadlessUniversalCheckoutRawDataManager,
-    PrimerRawCardRedirectData
+    PrimerRawCardRedirectData,
+    PrimerBancontactCardRedirectData
 } from '@primer-io/react-native';
 import type { PrimerHeadlessUniversalCheckoutRawDataManagerOptions } from 'src/headless_checkout/PrimerHeadlessUniversalCheckoutRawDataManager';
 
@@ -255,7 +256,7 @@ export const HUCRawCardRedirectDataScreen = (props: any) => {
             await HeadlessUniversalCheckoutRawDataManager.configure(options);
             const requiredInputElementTypes = await HeadlessUniversalCheckoutRawDataManager.getRequiredInputElementTypes();
 
-            let rawCardData: PrimerRawCardRedirectData = {
+            let rawCardData: PrimerBancontactCardRedirectData = {
                 cardNumber: "",
                 expiryMonth: "14",
                 expiryYear: "2024",
@@ -284,9 +285,6 @@ export const HUCRawCardRedirectDataScreen = (props: any) => {
                     }, 1000);
                 }, 1000);
             }, 1000);
-
-
-
 
             // rawCardData.number = "4242424242424242"
             // rawCardData.expiryMonth = "12"
