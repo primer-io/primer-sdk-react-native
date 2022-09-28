@@ -5,7 +5,7 @@ extension PrimerCardRedirectData {
 
     convenience init?(cardRedirectDataStr: String) {
         do {
-            guard let data = cardDataStr.data(using: .utf8) else {
+            guard let data = cardRedirectDataStr.data(using: .utf8) else {
                 return nil
             }
 
