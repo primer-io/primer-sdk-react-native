@@ -11,3 +11,10 @@ export interface PrimerRawCardData extends PrimerRawData {
 export interface PrimerRawPhoneNumberData extends PrimerRawData {
     phoneNumber: string;
 }
+
+export interface PrimerRawCardRedirectData extends PrimerRawData {
+    cardNumber: string;
+    expiryMonth: string;
+    expiryYear: string;
+    cardholderName: string;
+}
