@@ -24,7 +24,7 @@ export {
 export {
     PrimerRawData,
     PrimerRawCardData,
-    PrimerRawPhoneNumberData
+    PrimerRawPhoneNumberData,
     PrimerRawCardRedirectData,
 } from './models/PrimerRawData';
 export {

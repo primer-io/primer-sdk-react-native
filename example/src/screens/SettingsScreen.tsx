@@ -30,11 +30,11 @@ export interface AppPaymentParameters {
 // @ts-ignore
 const SettingsScreen = ({ navigation }) => {
     const isDarkMode = useColorScheme() === 'dark';
-    const [environment, setEnvironment] = React.useState<Environment>(Environment.Sandbox);
+    const [environment, setEnvironment] = React.useState<Environment>(Environment.Staging);
     const [paymentHandling, setPaymentHandling] = React.useState<PaymentHandling>(PaymentHandling.Auto);
     const [lineItems, setLineItems] = React.useState<IClientSessionLineItem[]>(appPaymentParameters.clientSessionRequestBody.order?.lineItems || []);
     const [currency, setCurrency] = React.useState<string>("EUR");
-    const [countryCode, setCountryCode] = React.useState<string>("DE");
+    const [countryCode, setCountryCode] = React.useState<string>("NL");
     const [orderId, setOrderId] = React.useState<string | undefined>(appPaymentParameters.clientSessionRequestBody.orderId);
 
     const [merchantName, setMerchantName] = React.useState<string | undefined>(appPaymentParameters.merchantName);
@@ -154,6 +154,7 @@ const SettingsScreen = ({ navigation }) => {
                             <Picker.Item label="PT" value="PT" />
                             <Picker.Item label="TH" value="TH" />
                             <Picker.Item label="ID" value="ID" />
+                            <Picker.Item label="NL" value="NL" />
                         </Picker>
                     </View>
                 </View>
@@ -659,6 +660,20 @@ const SettingsScreen = ({ navigation }) => {
                                         HUC Raw Phone Number Data (Beta)
                                     </Text>
                                 </TouchableOpacity>
+                                <TouchableOpacity
+                                         style={{ ...styles.button, marginVertical: 5, backgroundColor: 'black' }}
+                                         onPress={() => {
+                                             updateAppPaymentParameters();
+                                             console.log(appPaymentParameters);
+                                             navigation.navigate('HUCRawCardRedirectDataScreen');
+                                         }}
+                                     >
+                                         <Text
+                                             style={{ ...styles.buttonText, color: 'white' }}
+                                         >
+                                             HUC Raw Card Redirect Data (Beta)
+                                         </Text>
+                                     </TouchableOpacity>
             </View>
         );
     }
