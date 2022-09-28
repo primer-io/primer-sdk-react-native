@@ -93,6 +93,9 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
           "XENDIT_OVO" -> json.decodeFromString<PrimerRNRawPhoneNumberData>(
             rawDataStr
           ).toPrimerRawPhoneNumberData()
+          "ADYEN_BANCONTACT_CARD" -> json.decodeFromString<PrimerRNPRawBancontactCardData>(
+            rawDataStr
+          ).toPrimerRawBancontactCardData()
           else -> throw IllegalArgumentException("")
         }
         rawManager.setRawData(rawData)
