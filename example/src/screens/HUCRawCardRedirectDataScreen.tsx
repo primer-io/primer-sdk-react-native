@@ -88,12 +88,14 @@ export const HUCRawCardRedirectDataScreen = (props: any) => {
             } else {
                 props.navigation.navigate('Result', payment);
                 setIsLoading(false);
+                handler.handleSuccess();
             }
         } catch (err) {
             updateLogs(`\n🛑 Error:\n${JSON.stringify(err, null, 2)}`);
             console.error(err);
             setIsLoading(false);
             props.navigation.navigate('Result', err);
+            handler.handleFailure("My RN message");
         }
     }
 
@@ -105,7 +107,7 @@ export const HUCRawCardRedirectDataScreen = (props: any) => {
                 const payment: IPayment = await resumePayment(paymentId, resumeToken);
                 props.navigation.navigate('Result', payment);
                 setIsLoading(false);
-
+                handler.handleSuccess();
             } else {
                 const err = new Error("Invalid value for paymentId");
                 throw err;
@@ -117,6 +119,7 @@ export const HUCRawCardRedirectDataScreen = (props: any) => {
             paymentId = null;
             props.navigation.navigate('Result', err);
             setIsLoading(false);
+            handler.handleFailure("My RN message");
         }
     }
 
