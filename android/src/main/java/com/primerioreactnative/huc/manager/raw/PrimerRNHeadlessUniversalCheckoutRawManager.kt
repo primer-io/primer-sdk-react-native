@@ -5,6 +5,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.primerioreactnative.Keys
 import com.primerioreactnative.datamodels.ErrorTypeRN
 import com.primerioreactnative.datamodels.PrimerErrorRN
+import com.primerioreactnative.huc.datamodels.manager.raw.bancontact.PrimerRNRawBancontactCardData
 import com.primerioreactnative.huc.datamodels.manager.raw.card.PrimerRNPRawCardData
 import com.primerioreactnative.huc.datamodels.manager.raw.phoneNumber.PrimerRNRawPhoneNumberData
 import com.primerioreactnative.huc.events.PrimerHeadlessUniversalCheckoutEvent
@@ -90,6 +91,9 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
           "PAYMENT_CARD" -> json.decodeFromString<PrimerRNPRawCardData>(
             rawDataStr
           ).toPrimerCardData()
+          "ADYEN_BANCONTACT_CARD" -> json.decodeFromString<PrimerRNRawBancontactCardData>(
+            rawDataStr
+          ).toPrimerBancontactCardData()
           "XENDIT_OVO" -> json.decodeFromString<PrimerRNRawPhoneNumberData>(
             rawDataStr
           ).toPrimerRawPhoneNumberData()
