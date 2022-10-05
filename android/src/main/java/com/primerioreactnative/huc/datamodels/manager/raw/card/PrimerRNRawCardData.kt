@@ -4,7 +4,7 @@ import io.primer.android.components.domain.core.models.card.PrimerRawCardData
 import kotlinx.serialization.Serializable
 
 @Serializable
-internal data class PrimerRNPRawCardData(
+internal data class PrimerRNRawCardData(
   val cardNumber: String? = null,
   val cvv: String? = null,
   val expiryMonth: String? = null,
