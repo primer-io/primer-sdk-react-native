@@ -100,6 +100,12 @@ class RNTPrimerHeadlessUniversalCheckoutRawDataManager: RCTEventEmitter {
             return
         }
 
+        if let rawCardRedirectData = PrimerBancontactCardRedirectData(cardRedirectDataStr: rawDataStr) {
+            rawDataManager.rawData = rawCardRedirectData
+            resolver(nil)
+            return
+        }
+
         let err = NSError(domain: "native-bridge", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to decode RawData on iOS. Make sure you're providing a valid 'PrimerRawData' (or any inherited) object"])
         rejecter(err.rnError["errorId"]!, err.rnError["description"], err)
     }

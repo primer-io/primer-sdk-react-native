@@ -7,23 +7,26 @@ export {
 export {
     PrimerSessionIntent
 } from './models/PrimerSessionIntent';
-export { 
+export {
     PrimerPaymentCreationHandler,
     PrimerTokenizationHandler,
     PrimerResumeHandler,
     PrimerErrorHandler,
 } from './models/PrimerInterfaces';
 export { PrimerPaymentMethodTokenData } from './models/PrimerPaymentMethodTokenData';
-export { 
+export {
     PrimerClientSession,
     PrimerOrder,
     PrimerLineItem,
     PrimerCustomer,
     PrimerAddress,
 } from './models/PrimerClientSession';
-export { 
+export {
     PrimerRawData,
-    PrimerRawCardData
+    PrimerRawCardData,
+    PrimerRawPhoneNumberData,
+    PrimerRawCardRedirectData,
+    PrimerBancontactCardRedirectData
 } from './models/PrimerRawData';
 export {
     PrimerCheckoutAdditionalInfo,
@@ -33,10 +36,10 @@ export {
     PrimerCheckoutData,
     PrimerCheckoutDataPayment,
 } from './models/PrimerCheckoutData';
-export { 
+export {
     PrimerCheckoutPaymentMethodData
 } from './models/PrimerCheckoutPaymentMethodData';
-export { 
+export {
     PrimerError
 } from './models/PrimerError';
 export {
