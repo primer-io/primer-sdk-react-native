@@ -153,6 +153,11 @@ const CheckoutScreen = (props: any) => {
             },
             klarnaOptions: {
                 recurringPaymentDescription: "Recurring payment description"
+            },
+            applePayOptions: {
+              merchantIdentifier: "merchant.checkout.team",
+              merchantName: appPaymentParameters.merchantName,
+              isCaptureBillingAddressEnabled: true
             }
         },
         uiOptions: {
@@ -174,14 +179,6 @@ const CheckoutScreen = (props: any) => {
         onError: onError,
         onDismiss: onDismiss,
     };
-
-    if (appPaymentParameters.merchantName) {
-        //@ts-ignore
-        settings.paymentMethodOptions.applePayOptions = {
-            merchantIdentifier: 'merchant.checkout.team',
-            merchantName: appPaymentParameters.merchantName
-        };
-    }
 
     const onApplePayButtonTapped = async () => {
         try {

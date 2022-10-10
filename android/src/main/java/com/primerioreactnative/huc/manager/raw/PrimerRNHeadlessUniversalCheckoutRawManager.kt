@@ -5,7 +5,8 @@ import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.primerioreactnative.Keys
 import com.primerioreactnative.datamodels.ErrorTypeRN
 import com.primerioreactnative.datamodels.PrimerErrorRN
-import com.primerioreactnative.huc.datamodels.manager.raw.card.PrimerRNPRawCardData
+import com.primerioreactnative.huc.datamodels.manager.raw.card.PrimerRNRawCardData
+import com.primerioreactnative.huc.datamodels.manager.raw.cardRedirect.PrimerRNRawBancontactCardData
 import com.primerioreactnative.huc.datamodels.manager.raw.phoneNumber.PrimerRNRawPhoneNumberData
 import com.primerioreactnative.huc.events.PrimerHeadlessUniversalCheckoutEvent
 import com.primerioreactnative.utils.convertJsonToMap
@@ -87,12 +88,15 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
     } else {
       try {
         val rawData = when (paymentMethodTypeStr) {
-          "PAYMENT_CARD" -> json.decodeFromString<PrimerRNPRawCardData>(
+          "PAYMENT_CARD" -> json.decodeFromString<PrimerRNRawCardData>(
             rawDataStr
           ).toPrimerCardData()
           "XENDIT_OVO" -> json.decodeFromString<PrimerRNRawPhoneNumberData>(
             rawDataStr
           ).toPrimerRawPhoneNumberData()
+          "ADYEN_BANCONTACT_CARD" -> json.decodeFromString<PrimerRNRawBancontactCardData>(
+            rawDataStr
+          ).toPrimerRawBancontactCardData()
           else -> throw IllegalArgumentException("")
         }
         rawManager.setRawData(rawData)

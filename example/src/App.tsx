@@ -8,6 +8,7 @@ import { HeadlessCheckoutScreen } from './screens/HeadlessCheckoutScreen';
 import NewLineItemScreen from './screens/NewLineItemSreen';
 import { HUCRawCardDataScreen } from './screens/HUCRawCardDataScreen';
 import { HUCRawPhoneNumberDataScreen } from './screens/HUCRawPhoneNumberDataScreen';
+import { HUCRawCardRedirectDataScreen } from './screens/HUCRawCardRedirectDataScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -23,6 +24,7 @@ const App = () => {
           <Stack.Screen name="Result" component={ResultScreen} />
           <Stack.Screen name="HUCRawCardData" component={HUCRawCardDataScreen} />
           <Stack.Screen name="HUCRawPhoneNumberData" component={HUCRawPhoneNumberDataScreen} />
+          <Stack.Screen name="HUCRawCardRedirectDataScreen" component={HUCRawCardRedirectDataScreen} />
         </Stack.Navigator>
       </NavigationContainer>
   );
