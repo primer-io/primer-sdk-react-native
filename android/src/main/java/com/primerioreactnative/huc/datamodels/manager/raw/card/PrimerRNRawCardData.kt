@@ -6,17 +6,17 @@ import kotlinx.serialization.Serializable
 @Serializable
 internal data class PrimerRNRawCardData(
   val cardNumber: String? = null,
-  val cvv: String? = null,
   val expiryMonth: String? = null,
   val expiryYear: String? = null,
+  val cvv: String? = null,
   val cardholderName: String? = null
 ) {
   fun toPrimerCardData() =
     PrimerRawCardData(
       cardNumber.orEmpty(),
-      cvv.orEmpty(),
       expiryMonth.orEmpty(),
       expiryYear.orEmpty(),
+      cvv.orEmpty(),
       cardholderName
     )
 }

@@ -265,7 +265,7 @@ export const HUCRawCardDataScreen = (props: any) => {
             await HeadlessUniversalCheckoutRawDataManager.setRawData(rawCardData);
 
             setTimeout(async () => {
-                rawCardData.expiryMonth = "12"
+                rawCardData.expiryMonth = "1"
                 await HeadlessUniversalCheckoutRawDataManager.setRawData(rawCardData);
 
                 setTimeout(async () => {
