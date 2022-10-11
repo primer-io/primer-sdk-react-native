@@ -125,30 +125,6 @@ class RNTPrimer: RCTEventEmitter {
     }
 
     @objc
-    public func showPaymentMethod(_ paymentMethodTypeStr: String, intent: String, clientToken: String, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
-        DispatchQueue.main.async {
-            do {
-                guard let primerIntent = PrimerSessionIntent(rawValue: intent) else {
-                    let err = NSError(domain: "native-bridge", code: 0, userInfo: [NSLocalizedDescriptionKey: "Intent \(intent) is not valid."])
-                    throw err
-                }
-
-                PrimerSDK.Primer.shared.showPaymentMethod(paymentMethodTypeStr, withIntent: primerIntent, andClientToken: clientToken) { err in
-                    DispatchQueue.main.async {
-                        if let err = err {
-                            rejecter(err.rnError["errorId"]!, err.rnError["description"], err)
-                        } else {
-                            resolver(nil)
-                        }
-                    }
-                }
-            } catch {
-                rejecter(error.rnError["errorId"]!, error.rnError["description"], error)
-            }
-        }
-    }
-
-    @objc
     public func dismiss() {
         Primer.shared.dismiss()
     }
@@ -252,7 +228,7 @@ class RNTPrimer: RCTEventEmitter {
     // MARK: Helpers
 
     private func configure(settingsStr: String? = nil) throws {
-        try PrimerSDK.Primer.shared.configure(settings: PrimerSettings.initialize(with: settingsStr), delegate: self)
+        try PrimerSDK.Primer.shared.configure(settings: PrimerSettings(settingsStr: settingsStr), delegate: self)
     }
 
     private func detectImplemetedCallbacks() {
@@ -267,6 +243,7 @@ class RNTPrimer: RCTEventEmitter {
                     let err = NSError(domain: "native-bridge", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to convert string to data"])
                     throw err
                 }
+                
                 self.implementedRNCallbacks = try JSONDecoder().decode(ImplementedRNCallbacks.self, from: implementedRNCallbacksData)
                 resolver(nil)
             } catch {
@@ -319,11 +296,11 @@ extension RNTPrimer: PrimerDelegate {
 
     func primerDidEnterResumePendingWithPaymentAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?) {
       DispatchQueue.main.async {
-          if self.implementedRNCallbacks?.isOnResumePendingImplemented == true {
+          if self.implementedRNCallbacks?.isOnCheckoutResumeImplemented == true {
               do {
                   let checkoutAdditionalInfo = try JSONEncoder().encode(additionalInfo)
                   let checkoutAdditionalInfoJson = try JSONSerialization.jsonObject(with: checkoutAdditionalInfo, options: .allowFragments)
-                  self.sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onResumePending.stringValue, body: checkoutAdditionalInfoJson)
+                  self.sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onCheckoutPending.stringValue, body: checkoutAdditionalInfoJson)
               } catch {
                   let checkoutData = PrimerCheckoutData(payment: nil, additionalInfo: additionalInfo)
                   self.handleRNBridgeError(error, checkoutData: checkoutData, stopOnDebug: true)
@@ -393,7 +370,7 @@ extension RNTPrimer: PrimerDelegate {
     }
 
     func primerDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
-        if self.implementedRNCallbacks?.isOnTokenizeSuccessImplemented == true {
+        if self.implementedRNCallbacks?.isOnTokenizationSuccessImplemented == true {
             self.primerDidTokenizePaymentMethodDecisionHandler = { (newClientToken, errorMessage) in
                 DispatchQueue.main.async {
                     if let errorMessage = errorMessage {
@@ -423,7 +400,7 @@ extension RNTPrimer: PrimerDelegate {
     }
 
     func primerDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
-        if self.implementedRNCallbacks?.isOnResumeSuccessImplemented == true {
+        if self.implementedRNCallbacks?.isOnCheckoutResumeImplemented == true {
             self.primerDidResumeWithDecisionHandler = { (resumeToken, errorMessage) in
                 DispatchQueue.main.async {
                     if let errorMessage = errorMessage {
