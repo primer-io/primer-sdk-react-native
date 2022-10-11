@@ -1,5 +1,3 @@
-default_platform(:ios)
-
 #----------------------- CONSTANTS -------------------------#
 
 # Appetize
