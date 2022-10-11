@@ -2,7 +2,6 @@ import * as React from 'react';
 import {
     ScrollView,
     Text,
-    TextInput,
     TouchableOpacity,
     useColorScheme,
     View,
@@ -470,7 +469,7 @@ const SettingsScreen = ({ navigation }) => {
                                 }}
                             />
 
-                            <View style={{marginTop: 8}}>
+                            <View style={{ marginTop: 8 }}>
                                 <View style={{ flex: 1, flexDirection: 'row' }}>
                                     <Text style={{ ...styles.heading1, marginBottom: 4 }}>
                                         Address
@@ -627,38 +626,9 @@ const SettingsScreen = ({ navigation }) => {
                     <Text
                         style={{ ...styles.buttonText, color: 'white' }}
                     >
-                        Headless Universal Checkout (Beta)
+                        Headless Universal Checkout
                     </Text>
                 </TouchableOpacity>
-
-                <TouchableOpacity
-                    style={{ ...styles.button, marginVertical: 5, backgroundColor: 'black' }}
-                    onPress={() => {
-                        updateAppPaymentParameters();
-                        console.log(appPaymentParameters);
-                        navigation.navigate('HUCRawCardData');
-                    }}
-                >
-                    <Text
-                        style={{ ...styles.buttonText, color: 'white' }}
-                    >
-                        HUC Raw Card Data (Beta)
-                    </Text>
-                </TouchableOpacity>
-                           <TouchableOpacity
-                                    style={{ ...styles.button, marginVertical: 5, backgroundColor: 'black' }}
-                                    onPress={() => {
-                                        updateAppPaymentParameters();
-                                        console.log(appPaymentParameters);
-                                        navigation.navigate('HUCRawPhoneNumberData');
-                                    }}
-                                >
-                                    <Text
-                                        style={{ ...styles.buttonText, color: 'white' }}
-                                    >
-                                        HUC Raw Phone Number Data (Beta)
-                                    </Text>
-                                </TouchableOpacity>
             </View>
         );
     }
