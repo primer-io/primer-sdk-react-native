@@ -13,7 +13,6 @@ enum PrimerHeadlessUniversalCheckoutRawDataManagerEvents: Int, CaseIterable {
 
     case onMetadataChange = 0
     case onValidation
-    case onNativeError
 
     var stringValue: String {
         switch self {
@@ -21,13 +20,11 @@ enum PrimerHeadlessUniversalCheckoutRawDataManagerEvents: Int, CaseIterable {
             return "onMetadataChange"
         case .onValidation:
             return "onValidation"
-        case .onNativeError:
-            return "onNativeError"
         }
     }
 }
 
-@objc(PrimerHeadlessUniversalCheckoutRawDataManager)
+@objc(RNTPrimerHeadlessUniversalCheckoutRawDataManager)
 class RNTPrimerHeadlessUniversalCheckoutRawDataManager: RCTEventEmitter {
 
     private var rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager!
@@ -118,9 +115,24 @@ class RNTPrimerHeadlessUniversalCheckoutRawDataManager: RCTEventEmitter {
         rawDataManager.submit()
         resolver(nil)
     }
+    
+    @objc
+    public func dispose(
+        _ resolver: RCTPromiseResolveBlock,
+        rejecter: RCTPromiseRejectBlock
+    ) {
+        guard let rawDataManager = rawDataManager else {
+            let err = NSError(domain: "native-bridge", code: 1, userInfo: [NSLocalizedDescriptionKey: "The PrimerHeadlessUniversalCheckoutRawDataManager has not been initialized. Make sure you have called the PrimerHeadlessUniversalCheckoutRawDataManager.configure function first."])
+            rejecter(err.rnError["errorId"]!, err.rnError["description"], err)
+            return
+        }
+
+        rawDataManager.submit()
+        resolver(nil)
+    }
 }
 
-extension RNTPrimerHeadlessUniversalCheckoutRawDataManager: PrimerRawDataManagerDelegate {
+extension RNTPrimerHeadlessUniversalCheckoutRawDataManager: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
 
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, metadataDidChange metadata: [String : Any]?) {
         DispatchQueue.main.async {
