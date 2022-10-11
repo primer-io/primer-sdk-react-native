@@ -24,7 +24,7 @@ const RawCardDataScreen = (props: RawCardDataScreenProps) => {
 
     const [isLoading, setIsLoading] = useState(false);
     const [requiredInputElementTypes, setRequiredInputElementTypes] = useState<string[] | undefined>(undefined);
-    const [cardNumber, setCardNumber] = useState<string>("4242 4242 4242 4242");
+    const [cardNumber, setCardNumber] = useState<string>("4111111111111111");
     const [expiryDate, setExpiryDate] = useState<string>("03/2030");
     const [cvv, setCvv] = useState<string>("123");
     const [cardholderName, setCardholderName] = useState<string | undefined>("John Smith");
