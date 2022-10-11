@@ -25,7 +25,7 @@ const RawCardDataScreen = (props: RawCardDataScreenProps) => {
     const [isLoading, setIsLoading] = useState(false);
     const [requiredInputElementTypes, setRequiredInputElementTypes] = useState<string[] | undefined>(undefined);
     const [cardNumber, setCardNumber] = useState<string>("4242 4242 4242 4242");
-    const [expiryDate, setExpiryDate] = useState<string>("07/2027");
+    const [expiryDate, setExpiryDate] = useState<string>("03/2030");
     const [cvv, setCvv] = useState<string>("123");
     const [cardholderName, setCardholderName] = useState<string | undefined>("John Smith");
 
@@ -115,9 +115,10 @@ const RawCardDataScreen = (props: RawCardDataScreenProps) => {
         try {
             const rawCardData: RawCardData = {
                 cardNumber: cardNumber,
-                expiryMonth: "07",
-                expiryYear: "2027",
-                cvv: "123"
+                expiryMonth: "03",
+                expiryYear: "2030",
+                cvv: "123",
+                cardholderName: cardholderName
             }
             await rawDataManager.setRawData(rawCardData);
             await rawDataManager.submit();
