@@ -6,8 +6,8 @@ import {
 } from 'react-native';
 import { ActivityIndicator } from 'react-native';
 import {
-    PrimerInputElementType,
-    PrimerRawCardData,
+    InputElementType,
+    RawCardData,
     RawDataManager,
 } from '@primer-io/react-native';
 import TextField from '../components/TextField';
@@ -55,7 +55,7 @@ const RawCardDataScreen = (props: RawCardDataScreenProps) => {
                 <View>
                     {
                         requiredInputElementTypes.map(et => {
-                            if (et === PrimerInputElementType.CARD_NUMBER) {
+                            if (et === InputElementType.CARD_NUMBER) {
                                 return (
                                     <TextField
                                         style={{ marginVertical: 8 }}
@@ -67,7 +67,7 @@ const RawCardDataScreen = (props: RawCardDataScreenProps) => {
                                         }}
                                     />
                                 );
-                            } else if (et === PrimerInputElementType.EXPIRY_DATE) {
+                            } else if (et === InputElementType.EXPIRY_DATE) {
                                 return (
                                     <TextField
                                         style={{ marginVertical: 8 }}
@@ -79,7 +79,7 @@ const RawCardDataScreen = (props: RawCardDataScreenProps) => {
                                         }}
                                     />
                                 );
-                            } else if (et === PrimerInputElementType.CVV) {
+                            } else if (et === InputElementType.CVV) {
                                 return (
                                     <TextField
                                         style={{ marginVertical: 8 }}
@@ -91,7 +91,7 @@ const RawCardDataScreen = (props: RawCardDataScreenProps) => {
                                         }}
                                     />
                                 );
-                            } else if (et === PrimerInputElementType.CARDHOLDER_NAME) {
+                            } else if (et === InputElementType.CARDHOLDER_NAME) {
                                 return (
                                     <TextField
                                         style={{ marginVertical: 8 }}
@@ -113,7 +113,7 @@ const RawCardDataScreen = (props: RawCardDataScreenProps) => {
 
     const pay = async () => {
         try {
-            const rawCardData: PrimerRawCardData = {
+            const rawCardData: RawCardData = {
                 cardNumber: cardNumber,
                 expiryMonth: "07",
                 expiryYear: "2027",

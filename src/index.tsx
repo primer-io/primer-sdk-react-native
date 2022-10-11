@@ -5,40 +5,32 @@ export {
     PrimerSettings
 } from './models/PrimerSettings';
 export {
-    PrimerInputElementType
+    PrimerInputElementType as InputElementType
 } from './models/PrimerInputElementType';
 export {
-    PrimerSessionIntent
+    PrimerSessionIntent as SessionIntent
 } from './models/PrimerSessionIntent';
-export {
-    PrimerPaymentCreationHandler,
-    PrimerTokenizationHandler,
-    PrimerResumeHandler,
-    PrimerErrorHandler,
+export { 
+    PrimerPaymentCreationHandler as PaymentCreationHandler,
+    PrimerTokenizationHandler as TokenizationHandler,
+    PrimerResumeHandler as ResumeHandler,
+    PrimerErrorHandler as ErrorHandler,
 } from './models/PrimerHandlers';
 export { PrimerPaymentMethodTokenData } from './models/PrimerPaymentMethodTokenData';
-export {
-    PrimerClientSession,
-    PrimerOrder,
-    PrimerLineItem,
-    PrimerCustomer,
-    PrimerAddress,
+export { 
+    PrimerClientSession as ClientSession,
+    PrimerOrder as Order,
+    PrimerLineItem as LineItem,
+    PrimerCustomer as Customer,
+    PrimerAddress as Address,
 } from './models/PrimerClientSession';
-export {
-    PrimerRawData,
-    PrimerRawCardData,
-    PrimerRawPhoneNumberData,
-    PrimerRawCardRedirectData,
-    PrimerBancontactCardRedirectData,
-    PrimerRawRetailerData
+export { 
+    PrimerRawData as RawData,
+    PrimerRawCardData as RawCardData
 } from './models/PrimerRawData';
 export {
-    PrimerCheckoutAdditionalInfo,
-    MultibancoCheckoutAdditionalInfo,
-    PrimerCheckoutVoucherAdditionalInfo,
-    XenditCheckoutVoucherAdditionalInfo,
-    PrimerCheckoutQRCodeInfo,
-    PromptPayCheckoutAdditionalInfo
+    PrimerCheckoutAdditionalInfo as CheckoutAdditionalInfo,
+    MultibancoCheckoutAdditionalInfo
 } from './models/PrimerCheckoutAdditionalInfo';
 export {
     RetailOutletsRetail
