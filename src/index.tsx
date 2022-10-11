@@ -5,31 +5,31 @@ export {
     PrimerSettings
 } from './models/PrimerSettings';
 export {
-    PrimerInputElementType
+    PrimerInputElementType as InputElementType
 } from './models/PrimerInputElementType';
 export {
-    PrimerSessionIntent
+    PrimerSessionIntent as SessionIntent
 } from './models/PrimerSessionIntent';
 export { 
-    PrimerPaymentCreationHandler,
-    PrimerTokenizationHandler,
-    PrimerResumeHandler,
-    PrimerErrorHandler,
+    PrimerPaymentCreationHandler as PaymentCreationHandler,
+    PrimerTokenizationHandler as TokenizationHandler,
+    PrimerResumeHandler as ResumeHandler,
+    PrimerErrorHandler as ErrorHandler,
 } from './models/PrimerHandlers';
 export { PrimerPaymentMethodTokenData } from './models/PrimerPaymentMethodTokenData';
 export { 
-    PrimerClientSession,
-    PrimerOrder,
-    PrimerLineItem,
-    PrimerCustomer,
-    PrimerAddress,
+    PrimerClientSession as ClientSession,
+    PrimerOrder as Order,
+    PrimerLineItem as LineItem,
+    PrimerCustomer as Customer,
+    PrimerAddress as Address,
 } from './models/PrimerClientSession';
 export { 
-    PrimerRawData,
-    PrimerRawCardData
+    PrimerRawData as RawData,
+    PrimerRawCardData as RawCardData
 } from './models/PrimerRawData';
 export {
-    PrimerCheckoutAdditionalInfo,
+    PrimerCheckoutAdditionalInfo as CheckoutAdditionalInfo,
     MultibancoCheckoutAdditionalInfo
 } from './models/PrimerCheckoutAdditionalInfo';
 export {
