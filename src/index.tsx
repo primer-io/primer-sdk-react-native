@@ -5,6 +5,9 @@ export {
     PrimerSettings
 } from './models/PrimerSettings';
 export {
+    PrimerInputElementType
+} from './models/PrimerInputElementType';
+export {
     PrimerSessionIntent
 } from './models/PrimerSessionIntent';
 export {
@@ -12,7 +15,7 @@ export {
     PrimerTokenizationHandler,
     PrimerResumeHandler,
     PrimerErrorHandler,
-} from './models/PrimerInterfaces';
+} from './models/PrimerHandlers';
 export { PrimerPaymentMethodTokenData } from './models/PrimerPaymentMethodTokenData';
 export {
     PrimerClientSession,
@@ -50,9 +53,25 @@ export {
 export {
     PrimerError
 } from './models/PrimerError';
+export type { 
+    IPrimerAsset as Asset
+} from './models/PrimerAsset';
 export {
     PrimerHeadlessUniversalCheckout as HeadlessUniversalCheckout
-} from './headless_checkout/PrimerHeadlessUniversalCheckout';
-export {
-    PrimerHeadlessUniversalCheckoutRawDataManager as HeadlessUniversalCheckoutRawDataManager
-} from './headless_checkout/PrimerHeadlessUniversalCheckoutRawDataManager';
+} from './HeadlessUniversalCheckout/PrimerHeadlessUniversalCheckout';
+export type { 
+    IPrimerHeadlessUniversalCheckoutPaymentMethod as PaymentMethod
+} from './models/PrimerHeadlessUniversalCheckoutPaymentMethod';
+
+import PrimerHeadlessUniversalCheckoutAssetsManager from './HeadlessUniversalCheckout/Managers/AssetsManager';
+export { 
+    PrimerHeadlessUniversalCheckoutAssetsManager as AssetsManager
+}
+import PrimerHeadlessUniversalCheckoutPaymentMethodNativeUIManager from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/NativeUIManager';
+export { 
+    PrimerHeadlessUniversalCheckoutPaymentMethodNativeUIManager as NativeUIManager
+}
+import PrimerHeadlessUniversalCheckoutRawDataManager from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/RawDataManager';
+export { 
+    PrimerHeadlessUniversalCheckoutRawDataManager as RawDataManager
+}

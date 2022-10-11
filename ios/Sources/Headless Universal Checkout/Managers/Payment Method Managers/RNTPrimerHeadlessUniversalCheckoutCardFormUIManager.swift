@@ -16,9 +16,10 @@ class RNTPrimerHeadlessUniversalCheckoutCardFormUIManager: RCTViewManager {
         return true
     }
     
-    private lazy var cardFormUIManager: PrimerHeadlessUniversalCheckout.CardFormUIManager = {
-        return try! PrimerHeadlessUniversalCheckout.CardFormUIManager()
+    private lazy var cardFormUIManager: PrimerSDK.PrimerHeadlessUniversalCheckout.CardComponentsUIManager = {
+        return PrimerSDK.PrimerHeadlessUniversalCheckout.CardComponentsUIManager()
     }()
+    
     private var successCallback: RCTResponseSenderBlock? {
         didSet {
             
@@ -31,23 +32,13 @@ class RNTPrimerHeadlessUniversalCheckoutCardFormUIManager: RCTViewManager {
         
     override init() {
         super.init()
-        do {
-            self.cardFormUIManager = try PrimerHeadlessUniversalCheckout.CardFormUIManager()
-            self.cardFormUIManager.cardFormUIManagerDelegate = self
-        } catch {
-            
-        }
-        
-        print("⭐ init: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+        self.cardFormUIManager = PrimerSDK.PrimerHeadlessUniversalCheckout.CardComponentsUIManager()
+        self.cardFormUIManager.delegate = self
     }
     
     @objc
     override func constantsToExport() -> [AnyHashable : Any]! {
         return ["message": "Hello from native code"]
-    }
-    
-    func cardFormUIManager(_ cardFormUIManager: PrimerHeadlessUniversalCheckout.CardFormUIManager, isCardFormValid: Bool) {
-        
     }
         
     @objc
@@ -67,7 +58,7 @@ class RNTPrimerHeadlessUniversalCheckoutCardFormUIManager: RCTViewManager {
 
             for tag in tags {
                 if let view = rctUIManager.view(forReactTag: tag) {
-                    if let inputElement = view as? PrimerInputElement {
+                    if let inputElement = view as? PrimerHeadlessUniversalCheckoutInputElement {
                         self.cardFormUIManager.inputElements = [inputElement]
                     }
                 }
@@ -83,7 +74,7 @@ class RNTPrimerHeadlessUniversalCheckoutCardFormUIManager: RCTViewManager {
             }
             
             if let view = rctUIManager.view(forReactTag: tag) {
-                if let inputElement = view as? PrimerInputElement {
+                if let inputElement = view as? PrimerHeadlessUniversalCheckoutInputElement {
                     self.cardFormUIManager.inputElements = [inputElement]
                 }
             }
@@ -98,20 +89,21 @@ class RNTPrimerHeadlessUniversalCheckoutCardFormUIManager: RCTViewManager {
     
 }
 
-extension RNTPrimerHeadlessUniversalCheckoutCardFormUIManager: PrimerInputElementDelegate {
+extension RNTPrimerHeadlessUniversalCheckoutCardFormUIManager: PrimerHeadlessUniversalCheckoutCardComponentsUIManagerDelegate {
     
-    func inputElementDidFocus(_ sender: PrimerInputElement) {
+    func cardFormUIManager(_ cardFormUIManager: PrimerSDK.PrimerHeadlessUniversalCheckout.CardComponentsUIManager, isCardFormValid: Bool) {
         
     }
-    
-    func inputElementDidBlur(_ sender: PrimerInputElement) {
-        
-    }
-    
 }
 
-extension RNTPrimerHeadlessUniversalCheckoutCardFormUIManager: PrimerCardFormDelegate {
+extension RNTPrimerHeadlessUniversalCheckoutCardFormUIManager: PrimerInputElementDelegate {
     
+    func inputElementDidFocus(_ sender: PrimerHeadlessUniversalCheckoutInputElement) {
+        
+    }
     
+    func inputElementDidBlur(_ sender: PrimerHeadlessUniversalCheckoutInputElement) {
+        
+    }
     
 }
