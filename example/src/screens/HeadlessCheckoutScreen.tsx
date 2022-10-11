@@ -198,7 +198,7 @@ export const HeadlessCheckoutScreen = ({ navigation }) => {
         if (paymentMethod.paymentMethodManagerCategories.includes("NATIVE_UI") && paymentMethod.supportedPrimerSessionIntents.includes("CHECKOUT")) {
           const nativeUIManager = new NativeUIManager();
           await nativeUIManager.initialize(paymentMethod.paymentMethodType);
-          await nativeUIManager.showPaymentMethod(SessionIntent.CHECKOUT);
+          await nativeUIManager.showPaymentMethod(PrimerSessionIntent.CHECKOUT);
           return;
         }
       }
