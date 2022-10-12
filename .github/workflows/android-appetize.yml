@@ -1,12 +1,11 @@
-name: Preview
+name: Android Appetize
 
 on: pull_request
 
 jobs:
   android-istribute-to-appetize:
     runs-on: ubuntu-latest
-    name: Upload Android app on Appetize 🚀
-
+    name: "Build and upload app to Appetize 🚀"
     steps:
       - uses: actions/checkout@v2
 
