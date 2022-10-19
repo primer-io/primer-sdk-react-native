@@ -9,12 +9,14 @@ import com.primerioreactnative.huc.datamodels.manager.raw.card.PrimerRNRawCardDa
 import com.primerioreactnative.huc.datamodels.manager.raw.cardRedirect.PrimerRNRawBancontactCardData
 import com.primerioreactnative.huc.datamodels.manager.raw.phoneNumber.PrimerRNRawPhoneNumberData
 import com.primerioreactnative.huc.datamodels.manager.raw.retailOutlets.PrimerRNRawRetailOutletData
+import com.primerioreactnative.huc.datamodels.manager.raw.retailOutlets.toRNRetailOutletsList
 import com.primerioreactnative.huc.events.PrimerHeadlessUniversalCheckoutEvent
 import com.primerioreactnative.utils.convertJsonToMap
 import com.primerioreactnative.utils.errorTo
 import io.primer.android.ExperimentalPrimerApi
 import io.primer.android.components.manager.raw.PrimerHeadlessUniversalCheckoutRawDataManager
 import io.primer.android.components.manager.raw.PrimerHeadlessUniversalCheckoutRawDataManagerInterface
+import io.primer.android.data.payments.configure.retailOutlets.RetailOutletsList
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -144,7 +146,7 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
   }
 
   @ReactMethod
-  fun configure(errorCallback: Callback, successCallback: Callback, promise: Promise) {
+  fun configure(promise: Promise) {
     if (::rawManager.isInitialized.not()) {
       val exception =
         ErrorTypeRN.NativeBridgeFailed errorTo "The PrimerHeadlessUniversalCheckoutRawDataManager" +
@@ -153,10 +155,23 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
       promise.reject(exception.errorId, exception.description)
     } else {
       rawManager.configure { primerInitializationData, error ->
-        if (error == null) successCallback.invoke(primerInitializationData)
-        else errorCallback.invoke(error)
+        if (error == null) {
+          when (primerInitializationData) {
+            is RetailOutletsList -> {
+              promise.resolve(
+                prepareData(
+                  JSONObject(
+                    Json.encodeToString(
+                      primerInitializationData.toRNRetailOutletsList()
+                    )
+                  )
+                )
+              )
+            }
+            else -> promise.resolve(null)
+          }
+        } else promise.reject(error)
       }
-      promise.resolve(null)
     }
   }
 
