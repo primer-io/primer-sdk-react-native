@@ -20,7 +20,8 @@ import {
   PrimerResumeHandler,
   PrimerSettings,
   PrimerTokenizationHandler,
-  HeadlessUniversalCheckoutRawDataManager
+  HeadlessUniversalCheckoutRawDataManager,
+  PrimerCheckoutAdditionalInfo
 } from "@primer-io/react-native";
 import type { PrimerHeadlessUniversalCheckoutRawDataManagerOptions } from "src/headless_checkout/PrimerHeadlessUniversalCheckoutRawDataManager";
 import type { PrimerRawRetailerData } from "src/models/PrimerRawData";
@@ -70,10 +71,18 @@ export const HUCRawRetailDataVoucherScreen = (props: any) => {
   };
 
   const onCheckoutComplete = (checkoutData: PrimerCheckoutData) => {
+    updateLogs(`\n✅ onCheckoutComplete`);
     updateLogs(`\n✅ PrimerCheckoutData:\n${JSON.stringify(checkoutData)}`);
     setIsLoading(false);
     props.navigation.navigate("Result", checkoutData);
   };
+
+  const onResumePending = (additionalInfo: PrimerCheckoutAdditionalInfo) => {
+    updateLogs(`\n✅ onResumePending`);
+    updateLogs(`\n✅ PrimerCheckoutAdditionalInfo:\n${JSON.stringify(additionalInfo)}`);
+    setIsLoading(false);
+    props.navigation.navigate("Result", additionalInfo);
+  }
 
   const onTokenizeSuccess = async (
     paymentMethodTokenData: PrimerPaymentMethodTokenData,
@@ -186,6 +195,7 @@ export const HUCRawRetailDataVoucherScreen = (props: any) => {
       updateLogs(`\nℹ️ onBeforePaymentCreate`);
       handler.continuePaymentCreation();
     },
+    onResumePending: onResumePending,
     onError: onError,
   };
 
@@ -212,7 +222,6 @@ export const HUCRawRetailDataVoucherScreen = (props: any) => {
               2
             )}`
           );
-          setPaymentMethods(paymentMethodTypes);
           startHUCRawDataManager();
         })
         .catch((err) => {
@@ -226,55 +235,6 @@ export const HUCRawRetailDataVoucherScreen = (props: any) => {
     //   .then(() => {})
     //   .catch((err) => {});
   }, []);
-
-  const payWithPaymentMethod = (paymentMethod: string) => {
-    createClientSession().then((session) => {
-      setIsLoading(false);
-      HeadlessUniversalCheckout.startWithClientToken(
-        session.clientToken,
-        settings
-      )
-        .then((response) => {
-          HeadlessUniversalCheckout.showPaymentMethod(paymentMethod);
-        })
-        .catch((err) => {
-          updateLogs(`\n🛑 Error:\n${JSON.stringify(err, null, 2)}`);
-          setError(err);
-        });
-    });
-  };
-
-  const renderPaymentMethods = () => {
-    if (!paymentMethods) {
-      return null;
-    } else {
-      return (
-        <View>
-          {paymentMethods.map((pm) => {
-            return (
-              <TouchableOpacity
-                key={pm}
-                style={{
-                  marginHorizontal: 20,
-                  marginVertical: 4,
-                  height: 50,
-                  backgroundColor: "black",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  borderRadius: 4,
-                }}
-                onPress={() => {
-                  payWithPaymentMethod(pm);
-                }}
-              >
-                <Text style={{ color: "white" }}>{pm}</Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-      );
-    }
-  };
 
   const startHUCRawDataManager = async () => {
     try {
@@ -295,10 +255,6 @@ export const HUCRawRetailDataVoucherScreen = (props: any) => {
       };
       await HeadlessUniversalCheckoutRawDataManager.setRawData(rawRetailerData);
       await HeadlessUniversalCheckoutRawDataManager.submit();
-      setTimeout(async () => {
-      await HeadlessUniversalCheckoutRawDataManager.disposeRawDataManager()
-          setIsLoading(false);
-      }, 3000);
     } catch (err) {
       updateLogs(`\n🛑 Error:\n${JSON.stringify(err, null, 2)}`);
     }
@@ -363,7 +319,6 @@ export const HUCRawRetailDataVoucherScreen = (props: any) => {
 
   return (
     <View style={{ paddingHorizontal: 24, flex: 1 }}>
-      {renderPaymentMethods()}
       <TouchableOpacity
         key={"clear-logs"}
         style={{
