@@ -288,6 +288,7 @@ export const HUCRawRetailDataVoucherScreen = (props: any) => {
         },
       };
       const retailers = await HeadlessUniversalCheckoutRawDataManager.configure(options);
+      updateLogs(`\n📝📝 Retailer List:\n${JSON.stringify(retailers)}`);
 
       let rawRetailerData: PrimerRawRetailerData = {
         id: "CEBUANA",
