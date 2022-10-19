@@ -9,6 +9,7 @@ import NewLineItemScreen from './screens/NewLineItemSreen';
 import { HUCRawCardDataScreen } from './screens/HUCRawCardDataScreen';
 import { HUCRawPhoneNumberDataScreen } from './screens/HUCRawPhoneNumberDataScreen';
 import { HUCRawCardRedirectDataScreen } from './screens/HUCRawCardRedirectDataScreen';
+import { HUCRawRetailDataVoucherScreen } from './screens/HUCRawRetailDataVoucherScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -25,6 +26,7 @@ const App = () => {
           <Stack.Screen name="HUCRawCardData" component={HUCRawCardDataScreen} />
           <Stack.Screen name="HUCRawPhoneNumberData" component={HUCRawPhoneNumberDataScreen} />
           <Stack.Screen name="HUCRawCardRedirectDataScreen" component={HUCRawCardRedirectDataScreen} />
+          <Stack.Screen name="HUCRawRetailDataVoucherScreen" component={HUCRawRetailDataVoucherScreen} />
         </Stack.Navigator>
       </NavigationContainer>
   );

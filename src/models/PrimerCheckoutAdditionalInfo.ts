@@ -21,3 +21,15 @@ interface IPromptPayCheckoutAdditionalInfo extends IPrimerCheckoutQRCodeInfo {
     qrCodeUrl?: string;
     qrCodeBase64?: string;
 }
+
+export type PrimerCheckoutVoucherAdditionalInfo = IPrimerCheckoutVoucherAdditionalInfo;
+
+interface IPrimerCheckoutVoucherAdditionalInfo extends IPrimerCheckoutAdditionalInfo {}
+
+export type XenditCheckoutVoucherAdditionalInfo = IXenditCheckoutVoucherAdditionalInfo;
+
+interface IXenditCheckoutVoucherAdditionalInfo extends IPrimerCheckoutVoucherAdditionalInfo {
+    expiresAt: string;
+    couponCode: string;
+    retailerName: string;
+}

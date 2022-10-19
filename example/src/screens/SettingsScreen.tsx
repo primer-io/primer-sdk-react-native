@@ -33,8 +33,8 @@ const SettingsScreen = ({ navigation }) => {
     const [environment, setEnvironment] = React.useState<Environment>(Environment.Staging);
     const [paymentHandling, setPaymentHandling] = React.useState<PaymentHandling>(PaymentHandling.Auto);
     const [lineItems, setLineItems] = React.useState<IClientSessionLineItem[]>(appPaymentParameters.clientSessionRequestBody.order?.lineItems || []);
-    const [currency, setCurrency] = React.useState<string>("EUR");
-    const [countryCode, setCountryCode] = React.useState<string>("NL");
+    const [currency, setCurrency] = React.useState<string>("PHP");
+    const [countryCode, setCountryCode] = React.useState<string>("PH");
     const [orderId, setOrderId] = React.useState<string | undefined>(appPaymentParameters.clientSessionRequestBody.orderId);
 
     const [merchantName, setMerchantName] = React.useState<string | undefined>(appPaymentParameters.merchantName);
@@ -136,6 +136,7 @@ const SettingsScreen = ({ navigation }) => {
                             <Picker.Item label="PLN" value="PLN" />
                             <Picker.Item label="THB" value="THB" />
                             <Picker.Item label="IDR" value="IDR" />
+                            <Picker.Item label="PHP" value="PHP" />
                         </Picker>
 
                         <Picker
@@ -155,6 +156,7 @@ const SettingsScreen = ({ navigation }) => {
                             <Picker.Item label="TH" value="TH" />
                             <Picker.Item label="ID" value="ID" />
                             <Picker.Item label="NL" value="NL" />
+                            <Picker.Item label="PH" value="PH" />
                         </Picker>
                     </View>
                 </View>
@@ -674,6 +676,21 @@ const SettingsScreen = ({ navigation }) => {
                                              HUC Raw Card Redirect Data (Beta)
                                          </Text>
                                      </TouchableOpacity>
+                                     <TouchableOpacity
+                                         style={{ ...styles.button, marginVertical: 5, backgroundColor: 'black' }}
+                                         onPress={() => {
+                                             updateAppPaymentParameters();
+                                             console.log(appPaymentParameters);
+                                             navigation.navigate('HUCRawRetailDataVoucherScreen');
+                                         }}
+                                     >
+                                         <Text
+                                             style={{ ...styles.buttonText, color: 'white' }}
+                                         >
+                                             HUC Raw Retail Data Voucher Screen (Beta)
+                                         </Text>
+                                     </TouchableOpacity>
+
             </View>
         );
     }

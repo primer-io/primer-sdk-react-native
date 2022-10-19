@@ -20,3 +20,7 @@ export interface PrimerBancontactCardRedirectData extends PrimerRawCardRedirectD
     expiryYear: string;
     cardholderName: string;
 }
+
+export interface PrimerRawRetailerData extends PrimerRawData {
+    id: string;
+}
