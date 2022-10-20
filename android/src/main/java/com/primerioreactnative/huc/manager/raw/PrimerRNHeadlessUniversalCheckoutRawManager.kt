@@ -170,7 +170,7 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
             }
             else -> promise.resolve(null)
           }
-        } else promise.reject(error)
+        } else promise.reject(error.errorId, error.description)
       }
     }
   }
