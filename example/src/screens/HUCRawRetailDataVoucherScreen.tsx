@@ -77,6 +77,13 @@ export const HUCRawRetailDataVoucherScreen = (props: any) => {
     props.navigation.navigate("Result", checkoutData);
   };
 
+  const onResumePending = (additionalInfo: PrimerCheckoutAdditionalInfo) => {
+    updateLogs(`\n✅ onResumePending`);
+    updateLogs(`\n✅ PrimerCheckoutAdditionalInfo:\n${JSON.stringify(additionalInfo)}`);
+    setIsLoading(false);
+    props.navigation.navigate("Result", additionalInfo);
+  }
+
   const onTokenizeSuccess = async (
     paymentMethodTokenData: PrimerPaymentMethodTokenData,
     handler: PrimerTokenizationHandler
@@ -188,6 +195,7 @@ export const HUCRawRetailDataVoucherScreen = (props: any) => {
       updateLogs(`\nℹ️ onBeforePaymentCreate`);
       handler.continuePaymentCreation();
     },
+    onResumePending: onResumePending,
     onError: onError,
   };
 
