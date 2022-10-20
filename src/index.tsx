@@ -26,12 +26,20 @@ export {
     PrimerRawCardData,
     PrimerRawPhoneNumberData,
     PrimerRawCardRedirectData,
-    PrimerBancontactCardRedirectData
+    PrimerBancontactCardRedirectData,
+    PrimerRawRetailerData
 } from './models/PrimerRawData';
 export {
     PrimerCheckoutAdditionalInfo,
-    MultibancoCheckoutAdditionalInfo
+    MultibancoCheckoutAdditionalInfo,
+    PrimerCheckoutVoucherAdditionalInfo,
+    XenditCheckoutVoucherAdditionalInfo,
+    PrimerCheckoutQRCodeInfo,
+    PromptPayCheckoutAdditionalInfo
 } from './models/PrimerCheckoutAdditionalInfo';
+export {
+    RetailOutletsRetail
+} from './models/RetailOutletsRetail';
 export {
     PrimerCheckoutData,
     PrimerCheckoutDataPayment,
