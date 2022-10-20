@@ -20,3 +20,12 @@ data class PromptPayCheckoutAdditionalInfoRN(
   val qrCodeUrl: String?,
   val qrCodeBase64: String?,
 ) : PrimerCheckoutQRCodeInfoRN()
+
+sealed class PrimerCheckoutVoucherInfoRN : PrimerCheckoutAdditionalInfoRN()
+
+@Serializable
+data class XenditCheckoutVoucherAdditionalInfoRN(
+  val expiresAt: String,
+  val couponCode: String,
+  val retailerName: String?,
+) : PrimerCheckoutVoucherInfoRN()
