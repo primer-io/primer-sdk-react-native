@@ -59,6 +59,30 @@ class RNTPrimerHeadlessUniversalCheckoutRawDataManager: RCTEventEmitter {
             rejecter(error.rnError["errorId"]!, error.rnError["description"], error)
         }
     }
+    
+    @objc
+    public func configure(_ resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
+        
+        guard let rawDataManager = rawDataManager else {
+            let err = NSError(domain: "native-bridge", code: 1, userInfo: [NSLocalizedDescriptionKey: "The PrimerHeadlessUniversalCheckoutRawDataManager has not been initialized. Make sure you have called the PrimerHeadlessUniversalCheckoutRawDataManager.initialize function first."])
+            rejecter(err.rnError["errorId"]!, err.rnError["description"], err)
+            return
+        }
+
+        rawDataManager.configure { data, error in
+            do {
+                guard error == nil else {
+                    rejecter(error!.rnError["errorId"]!, error!.rnError["description"], error)
+                    return
+                }
+                let initializationData = try JSONEncoder().encode(data)
+                let initializationDataJson = try JSONSerialization.jsonObject(with: initializationData, options: .allowFragments)
+                resolver(["initializationData": initializationDataJson])
+            } catch {
+                rejecter(error.rnError["errorId"]!, error.rnError["description"], error)
+            }
+        }
+    }
 
     @objc
     public func listRequiredInputElementTypesForPaymentMethodType(
@@ -102,6 +126,12 @@ class RNTPrimerHeadlessUniversalCheckoutRawDataManager: RCTEventEmitter {
 
         if let rawCardRedirectData = PrimerBancontactCardRedirectData(cardRedirectDataStr: rawDataStr) {
             rawDataManager.rawData = rawCardRedirectData
+            resolver(nil)
+            return
+        }
+
+        if let rawRetailerData = PrimerRawRetailerData(primerRawRetailerDataStr: rawDataStr) {
+            rawDataManager.rawData = rawRetailerData
             resolver(nil)
             return
         }

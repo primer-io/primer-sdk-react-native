@@ -2,6 +2,7 @@ import type { PrimerRawData } from "..";
 import RNPrimerHeadlessUniversalCheckoutRawDataManager from "./RNPrimerHeadlessUniversalCheckoutRawDataManager";
 import { primerSettings } from "./PrimerHeadlessUniversalCheckout"
 import { PrimerError } from '../models/PrimerError';
+import type { PrimerInitializationData } from "src/models/PrimerInitializationData";
 
 let primerHeadlessUniversalCheckoutRawDataManagerOptions: PrimerHeadlessUniversalCheckoutRawDataManagerOptions | undefined;
 
@@ -67,10 +68,10 @@ class PrimerHeadlessUniversalCheckoutRawDataManagerClass {
     // API
     ///////////////////////////////////////////
 
-    configure(options: PrimerHeadlessUniversalCheckoutRawDataManagerOptions): Promise<void> {
+    configure(options: PrimerHeadlessUniversalCheckoutRawDataManagerOptions): Promise<PrimerInitializationData | null> {
         primerHeadlessUniversalCheckoutRawDataManagerOptions = options;
         configureListeners();
-        return RNPrimerHeadlessUniversalCheckoutRawDataManager.initialize(primerHeadlessUniversalCheckoutRawDataManagerOptions.paymentMethodType);
+        return RNPrimerHeadlessUniversalCheckoutRawDataManager.configure(primerHeadlessUniversalCheckoutRawDataManagerOptions.paymentMethodType);
     }
 
     async getRequiredInputElementTypes(): Promise<string[]> {

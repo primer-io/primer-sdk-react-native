@@ -1,4 +1,5 @@
 import { NativeEventEmitter, NativeModules } from 'react-native';
+import type { PrimerInitializationData } from 'src/models/PrimerInitializationData';
 
 const { PrimerHeadlessUniversalCheckoutRawDataManager } = NativeModules;
 const eventEmitter = new NativeEventEmitter(PrimerHeadlessUniversalCheckoutRawDataManager);
@@ -39,11 +40,12 @@ const RNPrimerHeadlessUniversalCheckoutRawDataManager = {
     // Native API
     ///////////////////////////////////////////
 
-    initialize: (paymentMethodType: string): Promise<void> => {
+    configure: (paymentMethodType: string): Promise<PrimerInitializationData | null> => {
         return new Promise(async (resolve, reject) => {
             try {
                 await PrimerHeadlessUniversalCheckoutRawDataManager.initialize(paymentMethodType);
-                resolve();
+                const initializationData: PrimerInitializationData = await PrimerHeadlessUniversalCheckoutRawDataManager.configure();
+                resolve(initializationData);
             } catch (e) {
                 reject(e);
             }
