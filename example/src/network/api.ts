@@ -3,20 +3,29 @@ import { getEnvironmentStringVal } from './Environment';
 import { appPaymentParameters, IClientSessionActionsRequestBody, IClientSessionRequestBody } from '../models/IClientSessionRequestBody';
 import type { IPayment } from '../models/IPayment';
 import { APIVersion, getAPIVersionStringVal } from './APIVersion';
+import { customApiKey, customClientToken } from '../screens/SettingsScreen';
 
 const baseUrl = 'https://us-central1-primerdemo-8741b.cloudfunctions.net/api';
 
-let staticHeaders = {
+let staticHeaders: { [key: string]: string } = {
     'Content-Type': 'application/json',
     'environment': getEnvironmentStringVal(appPaymentParameters.environment),
 }
 
 export const createClientSession = async () => {
     const url = baseUrl + '/client-session';
-    const headers = { 
+    const headers: { [key: string]: string } = { 
         ...staticHeaders, 
         'X-Api-Version': getAPIVersionStringVal(APIVersion.v3),
     };
+
+    if (customApiKey) {
+        headers['X-Api-Key'] = customApiKey;
+    }
+
+    if (customClientToken) {
+        return { "clientToken": customClientToken };
+    }
 
     try {
         console.log('\n\n');
@@ -49,7 +58,11 @@ export const createClientSession = async () => {
 
 export const setClientSessionActions = async (body: IClientSessionActionsRequestBody) => {
     const url = baseUrl + '/client-session/actions';
-    const headers = { ...staticHeaders, 'X-Api-Version': '2021-10-19' };
+    const headers: { [key: string]: string } = { ...staticHeaders, 'X-Api-Version': '2021-10-19' };
+
+    if (customApiKey) {
+        headers['X-Api-Key'] = customApiKey;
+    }
 
     try {
         console.log('\n\n');
@@ -83,7 +96,11 @@ export const setClientSessionActions = async (body: IClientSessionActionsRequest
 
 export const createPayment = async (paymentMethodToken: string) => {
     const url = baseUrl + '/payments';
-    const headers = { ...staticHeaders, 'X-Api-Version': '2021-09-27' };
+    const headers: { [key: string]: string } = { ...staticHeaders, 'X-Api-Version': '2021-09-27' };
+
+    if (customApiKey) {
+        headers['X-Api-Key'] = customApiKey;
+    }
 
     const body = { paymentMethodToken: paymentMethodToken };
     try {
@@ -118,7 +135,11 @@ export const createPayment = async (paymentMethodToken: string) => {
 
 export const resumePayment = async (paymentId: string, resumeToken: string) => {
     const url = baseUrl + `/payments/${paymentId}/resume`;
-    const headers = { ...staticHeaders, 'X-Api-Version': '2021-09-27' };
+    const headers: { [key: string]: string } = { ...staticHeaders, 'X-Api-Version': '2021-09-27' };
+
+    if (customApiKey) {
+        headers['X-Api-Key'] = customApiKey;
+    }
 
     const body = { resumeToken: resumeToken };
 

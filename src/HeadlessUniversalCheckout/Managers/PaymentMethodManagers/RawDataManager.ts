@@ -1,3 +1,4 @@
+import type { RawData } from '@primer-io/react-native';
 import { NativeEventEmitter, NativeModules, EmitterSubscription } from 'react-native';
 import { PrimerError } from '../../../models/PrimerError';
 import type { PrimerInputElementType } from '../../../models/PrimerInputElementType';
@@ -86,7 +87,7 @@ class PrimerHeadlessUniversalCheckoutRawDataManager {
         });
     }
 
-    setRawData(rawData: PrimerRawData): Promise<void> {
+    setRawData(rawData: RawData): Promise<void> {
         return new Promise(async (resolve, reject) => {
             if (this.options?.paymentMethodType) {
                 try {
