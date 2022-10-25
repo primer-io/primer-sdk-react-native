@@ -49,8 +49,7 @@ class RNTPrimerHeadlessUniversalCheckoutRawDataManager: RCTEventEmitter {
         self.paymentMethodType = paymentMethodTypeStr
 
         do {
-            self.rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: self.paymentMethodType!)
-            self.rawDataManager.delegate = self
+            self.rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: self.paymentMethodType!, delegate: self)
             resolver(nil)
         } catch {
             rejecter(error.rnError["errorId"]!, error.rnError["description"], error)
