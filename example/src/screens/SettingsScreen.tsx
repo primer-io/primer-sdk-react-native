@@ -26,10 +26,15 @@ export interface AppPaymentParameters {
     merchantName?: string;
 }
 
+export let customApiKey: string | undefined;
+export let customClientToken: string | undefined;
+
 // @ts-ignore
 const SettingsScreen = ({ navigation }) => {
     const isDarkMode = useColorScheme() === 'dark';
-    const [environment, setEnvironment] = React.useState<Environment>(Environment.Staging);
+    const [environment, setEnvironment] = React.useState<Environment>(Environment.Sandbox);
+    const [apiKey, setApiKey] = React.useState<string | undefined>(undefined);
+    const [clientToken, setClientToken] = React.useState<string | undefined>(undefined);
     const [paymentHandling, setPaymentHandling] = React.useState<PaymentHandling>(PaymentHandling.Auto);
     const [lineItems, setLineItems] = React.useState<IClientSessionLineItem[]>(appPaymentParameters.clientSessionRequestBody.order?.lineItems || []);
     const [currency, setCurrency] = React.useState<string>("PHP");
@@ -80,6 +85,25 @@ const SettingsScreen = ({ navigation }) => {
                         const selectedIndex = event.nativeEvent.selectedSegmentIndex;
                         let selectedEnvironment = makeEnvironmentFromIntVal(selectedIndex);
                         setEnvironment(selectedEnvironment);
+                    }}
+                />
+                <TextField
+                    title='API Key'
+                    style={{ marginVertical: 8 }}
+                    value={apiKey}
+                    placeholder={'Set API key'}
+                    onChangeText={(text) => {
+                        setApiKey(text);
+                        customApiKey = text;
+                    }}
+                />
+                <TextField
+                    title='Client token'
+                    style={{ marginVertical: 8 }}
+                    value={clientToken}
+                    placeholder={'Set client token'}
+                    onChangeText={(text) => {
+                        setClientToken(text);
                     }}
                 />
             </View>

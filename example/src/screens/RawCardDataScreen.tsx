@@ -23,28 +23,88 @@ const rawDataManager = new RawDataManager();
 const RawCardDataScreen = (props: RawCardDataScreenProps) => {
 
     const [isLoading, setIsLoading] = useState(false);
+    const [isCardFormValid, setIsCardFormValid] = useState(false);
     const [requiredInputElementTypes, setRequiredInputElementTypes] = useState<string[] | undefined>(undefined);
-    const [cardNumber, setCardNumber] = useState<string>("4111111111111111");
-    const [expiryDate, setExpiryDate] = useState<string>("03/2030");
-    const [cvv, setCvv] = useState<string>("123");
-    const [cardholderName, setCardholderName] = useState<string | undefined>("John Smith");
+    const [cardNumber, setCardNumber] = useState<string>("");
+    const [expiryDate, setExpiryDate] = useState<string>("");
+    const [cvv, setCvv] = useState<string>("");
+    const [cardholderName, setCardholderName] = useState<string | undefined>("");
+    const [metadataLog, setMetadataLog] = useState<string>("");
+    const [validationLog, setValidationLog] = useState<string>("");
 
     useEffect(() => {
         initialize();
     }, []);
 
     const initialize = async () => {
-        await rawDataManager.initialize({ 
+        await rawDataManager.initialize({
             paymentMethodType: "PAYMENT_CARD",
             onMetadataChange: (data => {
-                console.log(`\n\nonMetadataChange: ${JSON.stringify(data)}`);
+                const log = `\nonMetadataChange: ${JSON.stringify(data)}\n`;
+                console.log(log);
+                setMetadataLog(log);
             }),
             onValidation: ((isVallid, errors) => {
-                console.log(`\n\nonValidation:\nisValid: ${isVallid}\nerrors:${JSON.stringify(errors)}`);
+                let log = `\nonValidation:\nisValid: ${isVallid}\n`;
+
+                if (errors) {
+                    log += `errors:${JSON.stringify(errors, null, 2)}\n`;
+                }
+
+                console.log(log);
+                setValidationLog(log);
+                setIsCardFormValid(isVallid);
             })
         })
         const requiredInputElementTypes = await rawDataManager.getRequiredInputElementTypes();
         setRequiredInputElementTypes(requiredInputElementTypes);
+    }
+
+    const setRawData = (
+        tmpCardNumber: string | null,
+        tmpExpiryDate: string | null,
+        tmpCvv: string | null,
+        tmpCardholderName: string | null
+    ) => {
+        let expiryDateComponents = expiryDate.split("/");
+
+        let expiryMonth: string | undefined;
+        let expiryYear: string | undefined;
+
+        if (expiryDateComponents.length === 2) {
+            expiryMonth = expiryDateComponents[0];
+            expiryYear = expiryDateComponents[1];
+        }
+
+        let rawData: RawCardData = {
+            cardNumber: cardNumber || "",
+            expiryMonth: expiryMonth || "",
+            expiryYear: expiryYear || "",
+            cvv: cvv || "",
+            cardholderName: cardholderName
+        }
+
+        if (tmpCardNumber) {
+            rawData.cardNumber = tmpCardNumber;
+        }
+
+        if (tmpExpiryDate) {
+            expiryDateComponents = tmpExpiryDate.split("/");
+            if (expiryDateComponents.length === 2) {
+                rawData.expiryMonth = expiryDateComponents[0];
+                rawData.expiryYear = expiryDateComponents[1];
+            }
+        }
+
+        if (tmpCvv) {
+            rawData.cvv = tmpCvv;
+        }
+
+        if (tmpCardholderName) {
+            rawData.cardholderName = tmpCardholderName;
+        }
+
+        rawDataManager.setRawData(rawData);
     }
 
     const renderInputs = () => {
@@ -58,48 +118,56 @@ const RawCardDataScreen = (props: RawCardDataScreenProps) => {
                             if (et === InputElementType.CARD_NUMBER) {
                                 return (
                                     <TextField
+                                        key={"CARD_NUMBER"}
                                         style={{ marginVertical: 8 }}
                                         title='Card Number'
                                         value={cardNumber}
                                         keyboardType={"numeric"}
                                         onChangeText={(text) => {
                                             setCardNumber(text);
+                                            setRawData(text, null, null, null);
                                         }}
                                     />
                                 );
                             } else if (et === InputElementType.EXPIRY_DATE) {
                                 return (
                                     <TextField
+                                        key={"EXPIRY_DATE"}
                                         style={{ marginVertical: 8 }}
                                         title='Expiry Date'
                                         value={expiryDate}
                                         keyboardType={"numeric"}
                                         onChangeText={(text) => {
                                             setExpiryDate(text);
+                                            setRawData(null, text, null, null);
                                         }}
                                     />
                                 );
                             } else if (et === InputElementType.CVV) {
                                 return (
                                     <TextField
+                                        key={"CVV"}
                                         style={{ marginVertical: 8 }}
                                         title='CVV'
                                         value={cvv}
                                         keyboardType={"numeric"}
                                         onChangeText={(text) => {
                                             setCvv(text);
+                                            setRawData(null, null, text, null);
                                         }}
                                     />
                                 );
                             } else if (et === InputElementType.CARDHOLDER_NAME) {
                                 return (
                                     <TextField
+                                        key={"CARDHOLDER_NAME"}
                                         style={{ marginVertical: 8 }}
                                         title='CVV'
                                         value={cardholderName}
                                         keyboardType={"default"}
                                         onChangeText={(text) => {
                                             setCardholderName(text);
+                                            setRawData(null, null, null, text);
                                         }}
                                     />
                                 );
@@ -113,14 +181,6 @@ const RawCardDataScreen = (props: RawCardDataScreenProps) => {
 
     const pay = async () => {
         try {
-            const rawCardData: RawCardData = {
-                cardNumber: cardNumber,
-                expiryMonth: "03",
-                expiryYear: "2030",
-                cvv: "123",
-                cardholderName: cardholderName
-            }
-            await rawDataManager.setRawData(rawCardData);
             await rawDataManager.submit();
 
         } catch (err) {
@@ -151,9 +211,15 @@ const RawCardDataScreen = (props: RawCardDataScreenProps) => {
     const renderPayButton = () => {
         return (
             <TouchableOpacity
-                style={{ ...styles.button, marginVertical: 16, backgroundColor: 'black' }}
-                onPress={e =>  {
-                    pay();
+                style={{
+                    ...styles.button,
+                    marginVertical: 16,
+                    backgroundColor: isCardFormValid ? 'black' : "lightgray"
+                }}
+                onPress={e => {
+                    if (isCardFormValid) {
+                        pay();
+                    }
                 }}
             >
                 <Text
@@ -165,10 +231,28 @@ const RawCardDataScreen = (props: RawCardDataScreenProps) => {
         );
     };
 
+    const renderEvents = () => {
+        return (
+            <View>
+                <View style={{ backgroundColor: "lightgray" }}>
+                    <Text style={{ height: 50 }}>
+                        {metadataLog}
+                    </Text>
+                </View>
+                <View style={{ backgroundColor: "lightgray", marginTop: 16 }}>
+                    <Text>
+                        {validationLog}
+                    </Text>
+                </View>
+            </View>
+        )
+    }
+
     return (
         <View style={{ paddingHorizontal: 24, flex: 1 }}>
             {renderInputs()}
             {renderPayButton()}
+            {renderEvents()}
             {renderLoadingOverlay()}
         </View>
     );
