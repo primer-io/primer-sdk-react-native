@@ -5,15 +5,11 @@ import io.primer.android.data.settings.*
 
 fun PrimerPaymentMethodOptionsRN.toPrimerPaymentMethodOptions() = PrimerPaymentMethodOptions(
   androidSettingsRN.redirectScheme,
-  cardPaymentOptions.toPrimerCardPaymentOptions(),
   googlePayOptions.toPrimerGooglePayOptions(),
   klarnaOptions.toPrimerKlarnaOptions(),
   apayaOptions.toPrimerApayaOptions(),
   goCardlessOptions.toPrimerGoCardlessOptions()
 )
-
-fun PrimerCardPaymentOptionsRN.toPrimerCardPaymentOptions() =
-  PrimerCardPaymentOptions(is3DSOnVaultingEnabled)
 
 fun PrimerGooglePayOptionsRN.toPrimerGooglePayOptions() =
   PrimerGooglePayOptions(merchantName, allowedCardNetworks, buttonStyle)

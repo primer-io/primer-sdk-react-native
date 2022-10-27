@@ -15,6 +15,7 @@ import com.primerioreactnative.utils.errorTo
 import io.primer.android.ExperimentalPrimerApi
 import io.primer.android.components.PrimerHeadlessUniversalCheckout
 import io.primer.android.components.ui.assets.ImageType
+import io.primer.android.ui.CardNetwork
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -116,6 +117,45 @@ class PrimerRNHeadlessUniversalCheckout(
                 "Failed to find $assetType for $paymentMethodType"
             )
           )
+        }
+      }
+    }
+  }
+
+  @ReactMethod
+  fun getAssetForCardNetwork(
+    cardNetworkStr: String,
+    assetType: String,
+    errorCallback: Callback,
+    successCallback: Callback
+  ) {
+    val cardNetwork = CardNetwork.Type.values().find { it.name.equals(cardNetworkStr, ignoreCase = true) }
+    val type = ImageType.values().find { it.name.equals(assetType, ignoreCase = true) }
+    when {
+      cardNetwork == null -> {
+        errorCallback.invoke(
+          json.encodeToString(
+            ErrorTypeRN.InvalidCardNetwork errorTo
+              "Card network for $cardNetworkStr does not exist, make sure you don't have any typos."
+          )
+        )
+      }
+      type == null -> {
+        errorCallback.invoke(
+          json.encodeToString(
+            ErrorTypeRN.AssetMismatch errorTo
+              "You have provided assetType=$assetType, but variable assetType can be 'LOGO' or 'ICON'."
+          )
+        )
+      }
+      else -> {
+        PrimerHeadlessUniversalCheckout.getAsset(cardNetwork).let { resourceId ->
+          val file = getFile(reactContext, cardNetworkStr)
+          AssetsManager.saveBitmapToFile(
+                file,
+                drawableToBitmap(ContextCompat.getDrawable(reactContext, resourceId)!!),
+          )
+          successCallback.invoke("file://${file.absolutePath}")
         }
       }
     }
