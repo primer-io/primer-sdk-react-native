@@ -86,7 +86,7 @@ const RNPrimerHeadlessUniversalCheckout = {
   ): Promise<string> => {
     return new Promise((resolve, reject) => {
       try {
-        PrimerHeadlessUniversalCheckout.getAssetForPaymentMethodType(
+        PrimerHeadlessUniversalCheckout.getAssetForCardNetwork(
           cardNetwork,
           assetType,
           (err: Error) => {
