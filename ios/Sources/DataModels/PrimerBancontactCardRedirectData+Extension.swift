@@ -33,5 +33,4 @@ extension PrimerBancontactCardRedirectData {
             return nil
         }
     }
-
 }

@@ -34,5 +34,4 @@ extension PrimerRawRetailerData {
             return nil
         }
     }
-
 }

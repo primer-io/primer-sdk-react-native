@@ -26,7 +26,10 @@ export {
 } from './models/PrimerClientSession';
 export { 
     PrimerRawData as RawData,
-    PrimerRawCardData as RawCardData
+    PrimerRawCardData as RawCardData,
+    PrimerBancontactCardRedirectData as BancontactCardRedirectData,
+    PrimerRawPhoneNumberData as RawPhoneNumberData,
+    PrimerRawRetailerData as RawRetailerData
 } from './models/PrimerRawData';
 export {
     PrimerCheckoutAdditionalInfo as CheckoutAdditionalInfo,
@@ -36,11 +39,11 @@ export {
     RetailOutletsRetail
 } from './models/RetailOutletsRetail';
 export {
-    PrimerCheckoutData,
-    PrimerCheckoutDataPayment,
+    PrimerCheckoutData as CheckoutData,
+    PrimerCheckoutDataPayment as CheckoutDataPayment,
 } from './models/PrimerCheckoutData';
 export {
-    PrimerCheckoutPaymentMethodData
+    PrimerCheckoutPaymentMethodData as CheckoutPaymentMethodData
 } from './models/PrimerCheckoutPaymentMethodData';
 export {
     PrimerError
