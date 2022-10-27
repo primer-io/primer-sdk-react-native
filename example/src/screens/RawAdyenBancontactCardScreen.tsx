@@ -7,11 +7,12 @@ import {
 import { ActivityIndicator } from 'react-native';
 import {
     InputElementType,
-    RawCardData,
+    RawBancontactCardRedirectData,
     RawDataManager,
 } from '@primer-io/react-native';
 import TextField from '../components/TextField';
 import { styles } from '../styles';
+import type { PrimerRawCardRedirectData } from 'src/models/PrimerRawData';
 
 export interface RawCardDataScreenProps {
     navigation: any;
@@ -20,14 +21,13 @@ export interface RawCardDataScreenProps {
 
 const rawDataManager = new RawDataManager();
 
-const RawCardDataScreen = (props: RawCardDataScreenProps) => {
+const RawAdyenBancontactCardScreen = (props: RawCardDataScreenProps) => {
 
     const [isLoading, setIsLoading] = useState(false);
     const [isCardFormValid, setIsCardFormValid] = useState(false);
     const [requiredInputElementTypes, setRequiredInputElementTypes] = useState<string[] | undefined>(undefined);
     const [cardNumber, setCardNumber] = useState<string>("");
     const [expiryDate, setExpiryDate] = useState<string>("");
-    const [cvv, setCvv] = useState<string>("");
     const [cardholderName, setCardholderName] = useState<string | undefined>("");
     const [metadataLog, setMetadataLog] = useState<string>("");
     const [validationLog, setValidationLog] = useState<string>("");
@@ -63,7 +63,6 @@ const RawCardDataScreen = (props: RawCardDataScreenProps) => {
     const setRawData = (
         tmpCardNumber: string | null,
         tmpExpiryDate: string | null,
-        tmpCvv: string | null,
         tmpCardholderName: string | null
     ) => {
         let expiryDateComponents = expiryDate.split("/");
@@ -76,12 +75,11 @@ const RawCardDataScreen = (props: RawCardDataScreenProps) => {
             expiryYear = expiryDateComponents[1];
         }
 
-        let rawData: RawCardData = {
+        let rawData: RawBancontactCardRedirectData = {
             cardNumber: cardNumber || "",
             expiryMonth: expiryMonth || "",
             expiryYear: expiryYear || "",
-            cvv: cvv || "",
-            cardholderName: cardholderName
+            cardholderName: cardholderName || ""
         }
 
         if (tmpCardNumber) {
@@ -94,10 +92,6 @@ const RawCardDataScreen = (props: RawCardDataScreenProps) => {
                 rawData.expiryMonth = expiryDateComponents[0];
                 rawData.expiryYear = expiryDateComponents[1];
             }
-        }
-
-        if (tmpCvv) {
-            rawData.cvv = tmpCvv;
         }
 
         if (tmpCardholderName) {
@@ -125,7 +119,7 @@ const RawCardDataScreen = (props: RawCardDataScreenProps) => {
                                         keyboardType={"numeric"}
                                         onChangeText={(text) => {
                                             setCardNumber(text);
-                                            setRawData(text, null, null, null);
+                                            setRawData(text, null, null);
                                         }}
                                     />
                                 );
@@ -139,21 +133,7 @@ const RawCardDataScreen = (props: RawCardDataScreenProps) => {
                                         keyboardType={"numeric"}
                                         onChangeText={(text) => {
                                             setExpiryDate(text);
-                                            setRawData(null, text, null, null);
-                                        }}
-                                    />
-                                );
-                            } else if (et === InputElementType.CVV) {
-                                return (
-                                    <TextField
-                                        key={"CVV"}
-                                        style={{ marginVertical: 8 }}
-                                        title='CVV'
-                                        value={cvv}
-                                        keyboardType={"numeric"}
-                                        onChangeText={(text) => {
-                                            setCvv(text);
-                                            setRawData(null, null, text, null);
+                                            setRawData(null, text, null);
                                         }}
                                     />
                                 );
@@ -162,12 +142,12 @@ const RawCardDataScreen = (props: RawCardDataScreenProps) => {
                                     <TextField
                                         key={"CARDHOLDER_NAME"}
                                         style={{ marginVertical: 8 }}
-                                        title='CVV'
+                                        title='Cardholder Name'
                                         value={cardholderName}
                                         keyboardType={"default"}
                                         onChangeText={(text) => {
                                             setCardholderName(text);
-                                            setRawData(null, null, null, text);
+                                            setRawData(null, null, text)
                                         }}
                                     />
                                 );
@@ -258,4 +238,4 @@ const RawCardDataScreen = (props: RawCardDataScreenProps) => {
     );
 };
 
-export default RawCardDataScreen;
+export default RawAdyenBancontactCardScreen;

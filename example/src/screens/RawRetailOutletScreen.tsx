@@ -7,8 +7,8 @@ import {
 import { ActivityIndicator } from 'react-native';
 import {
     InputElementType,
-    RawCardData,
     RawDataManager,
+    RawRetailerData,
 } from '@primer-io/react-native';
 import TextField from '../components/TextField';
 import { styles } from '../styles';
@@ -20,15 +20,12 @@ export interface RawCardDataScreenProps {
 
 const rawDataManager = new RawDataManager();
 
-const RawCardDataScreen = (props: RawCardDataScreenProps) => {
+const RawRetailOutletScreen = (props: RawCardDataScreenProps) => {
 
     const [isLoading, setIsLoading] = useState(false);
     const [isCardFormValid, setIsCardFormValid] = useState(false);
     const [requiredInputElementTypes, setRequiredInputElementTypes] = useState<string[] | undefined>(undefined);
-    const [cardNumber, setCardNumber] = useState<string>("");
-    const [expiryDate, setExpiryDate] = useState<string>("");
-    const [cvv, setCvv] = useState<string>("");
-    const [cardholderName, setCardholderName] = useState<string | undefined>("");
+    const [retailOutletId, setRetailOutletId] = useState<string>("");
     const [metadataLog, setMetadataLog] = useState<string>("");
     const [validationLog, setValidationLog] = useState<string>("");
 
@@ -60,48 +57,9 @@ const RawCardDataScreen = (props: RawCardDataScreenProps) => {
         setRequiredInputElementTypes(requiredInputElementTypes);
     }
 
-    const setRawData = (
-        tmpCardNumber: string | null,
-        tmpExpiryDate: string | null,
-        tmpCvv: string | null,
-        tmpCardholderName: string | null
-    ) => {
-        let expiryDateComponents = expiryDate.split("/");
-
-        let expiryMonth: string | undefined;
-        let expiryYear: string | undefined;
-
-        if (expiryDateComponents.length === 2) {
-            expiryMonth = expiryDateComponents[0];
-            expiryYear = expiryDateComponents[1];
-        }
-
-        let rawData: RawCardData = {
-            cardNumber: cardNumber || "",
-            expiryMonth: expiryMonth || "",
-            expiryYear: expiryYear || "",
-            cvv: cvv || "",
-            cardholderName: cardholderName
-        }
-
-        if (tmpCardNumber) {
-            rawData.cardNumber = tmpCardNumber;
-        }
-
-        if (tmpExpiryDate) {
-            expiryDateComponents = tmpExpiryDate.split("/");
-            if (expiryDateComponents.length === 2) {
-                rawData.expiryMonth = expiryDateComponents[0];
-                rawData.expiryYear = expiryDateComponents[1];
-            }
-        }
-
-        if (tmpCvv) {
-            rawData.cvv = tmpCvv;
-        }
-
-        if (tmpCardholderName) {
-            rawData.cardholderName = tmpCardholderName;
+    const setRawData = (tmpRetailOutletId: string) => {
+        let rawData: RawRetailerData = {
+            id: tmpRetailOutletId
         }
 
         rawDataManager.setRawData(rawData);
@@ -115,59 +73,17 @@ const RawCardDataScreen = (props: RawCardDataScreenProps) => {
                 <View>
                     {
                         requiredInputElementTypes.map(et => {
-                            if (et === InputElementType.CARD_NUMBER) {
+                            if (et === InputElementType.PHONE_NUMBER) {
                                 return (
                                     <TextField
-                                        key={"CARD_NUMBER"}
+                                        key={"PHONE_NUMBER"}
                                         style={{ marginVertical: 8 }}
-                                        title='Card Number'
-                                        value={cardNumber}
+                                        title='Phone Number'
+                                        value={retailOutletId}
                                         keyboardType={"numeric"}
                                         onChangeText={(text) => {
-                                            setCardNumber(text);
-                                            setRawData(text, null, null, null);
-                                        }}
-                                    />
-                                );
-                            } else if (et === InputElementType.EXPIRY_DATE) {
-                                return (
-                                    <TextField
-                                        key={"EXPIRY_DATE"}
-                                        style={{ marginVertical: 8 }}
-                                        title='Expiry Date'
-                                        value={expiryDate}
-                                        keyboardType={"numeric"}
-                                        onChangeText={(text) => {
-                                            setExpiryDate(text);
-                                            setRawData(null, text, null, null);
-                                        }}
-                                    />
-                                );
-                            } else if (et === InputElementType.CVV) {
-                                return (
-                                    <TextField
-                                        key={"CVV"}
-                                        style={{ marginVertical: 8 }}
-                                        title='CVV'
-                                        value={cvv}
-                                        keyboardType={"numeric"}
-                                        onChangeText={(text) => {
-                                            setCvv(text);
-                                            setRawData(null, null, text, null);
-                                        }}
-                                    />
-                                );
-                            } else if (et === InputElementType.CARDHOLDER_NAME) {
-                                return (
-                                    <TextField
-                                        key={"CARDHOLDER_NAME"}
-                                        style={{ marginVertical: 8 }}
-                                        title='CVV'
-                                        value={cardholderName}
-                                        keyboardType={"default"}
-                                        onChangeText={(text) => {
-                                            setCardholderName(text);
-                                            setRawData(null, null, null, text);
+                                            setRetailOutletId(text);
+                                            setRawData(text);
                                         }}
                                     />
                                 );
@@ -258,4 +174,4 @@ const RawCardDataScreen = (props: RawCardDataScreenProps) => {
     );
 };
 
-export default RawCardDataScreen;
+export default RawRetailOutletScreen;
