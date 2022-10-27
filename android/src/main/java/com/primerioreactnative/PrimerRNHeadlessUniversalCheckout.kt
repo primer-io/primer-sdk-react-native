@@ -1,20 +1,15 @@
 package com.primerioreactnative
 
 import android.util.Log
-import androidx.core.content.ContextCompat
 import com.facebook.react.bridge.*
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.primerioreactnative.datamodels.*
-import com.primerioreactnative.huc.assets.AssetsManager
-import com.primerioreactnative.huc.assets.AssetsManager.drawableToBitmap
-import com.primerioreactnative.huc.assets.AssetsManager.getFile
 import com.primerioreactnative.huc.events.PrimerHeadlessUniversalCheckoutEvent
 import com.primerioreactnative.utils.PrimerHeadlessUniversalCheckoutImplementedRNCallbacks
 import com.primerioreactnative.utils.convertJsonToMap
 import com.primerioreactnative.utils.errorTo
 import io.primer.android.ExperimentalPrimerApi
 import io.primer.android.components.PrimerHeadlessUniversalCheckout
-import io.primer.android.components.ui.assets.ImageType
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -43,10 +38,9 @@ class PrimerRNHeadlessUniversalCheckout(
   fun startWithClientToken(
     clientToken: String,
     settingsStr: String?,
-    errorCallback: Callback,
-    successCallback: Callback
+    promise: Promise
   ) {
-    listener.successCallback = successCallback
+    listener.successCallback = promise
     try {
       val settings =
         if (settingsStr.isNullOrBlank()) PrimerSettingsRN() else json.decodeFromString(
@@ -59,22 +53,11 @@ class PrimerRNHeadlessUniversalCheckout(
         listener
       )
     } catch (e: Exception) {
-      errorCallback.invoke(
-        json.encodeToString(
-          ErrorTypeRN.NativeBridgeFailed errorTo
-            "failed to initialise PrimerHeadlessUniversalCheckout SDK, error: $e",
-        )
+      promise.reject(
+        ErrorTypeRN.NativeBridgeFailed.errorId,
+        "failed to initialise PrimerHeadlessUniversalCheckout SDK, error: $e",
       )
     }
-  }
-
-  @ReactMethod
-  fun showPaymentMethod(paymentMethodTypeStr: String, promise: Promise) {
-      PrimerHeadlessUniversalCheckout.current.showPaymentMethod(
-        reactContext,
-        paymentMethodTypeStr
-      )
-      promise.resolve(null)
   }
 
   @ReactMethod
@@ -83,59 +66,11 @@ class PrimerRNHeadlessUniversalCheckout(
     listener.removeCallbacksAndHandlers()
   }
 
-  @ReactMethod
-  fun getAssetForPaymentMethodType(
-    paymentMethodType: String,
-    assetType: String,
-    errorCallback: Callback,
-    successCallback: Callback
-  ) {
-
-    val type = ImageType.values().find { it.name.equals(assetType, ignoreCase = true) }
-    when {
-      type == null -> {
-        errorCallback.invoke(
-          json.encodeToString(
-            ErrorTypeRN.AssetMismatch errorTo
-              "You have provided assetType=$assetType, but variable assetType can be 'LOGO' or 'ICON'."
-          )
-        )
-      }
-      else -> {
-        PrimerHeadlessUniversalCheckout.getAsset(paymentMethodType, type)?.let { resourceId ->
-          val file = getFile(reactContext, paymentMethodType)
-          AssetsManager.saveBitmapToFile(
-            file,
-            drawableToBitmap(ContextCompat.getDrawable(reactContext, resourceId)!!),
-          )
-          successCallback.invoke("file://${file.absolutePath}")
-        } ?: run {
-          errorCallback.invoke(
-            json.encodeToString(
-              ErrorTypeRN.AssetMissing errorTo
-                "Failed to find $assetType for $paymentMethodType"
-            )
-          )
-        }
-      }
-    }
-  }
-
   // region tokenization handlers
   @ReactMethod
   fun handleTokenizationNewClientToken(newClientToken: String, promise: Promise) {
     listener.handleTokenizationNewClientToken(newClientToken)
     promise.resolve(null)
-  }
-
-  @ReactMethod
-  fun handleTokenizationSuccess(promise: Promise) {
-    listener.handleTokenizationSuccess(promise)
-  }
-
-  @ReactMethod
-  fun handleTokenizationFailure(errorMessage: String?, promise: Promise) {
-    listener.handleTokenizationFailure(errorMessage.orEmpty(), promise)
   }
   // endregion
 
@@ -145,17 +80,15 @@ class PrimerRNHeadlessUniversalCheckout(
     listener.handleResumeNewClientToken(newClientToken)
     promise.resolve(null)
   }
-
-  @ReactMethod
-  fun handleResumeSuccess(promise: Promise) {
-    listener.handleResumeSuccess(promise)
-  }
-
-  @ReactMethod
-  fun handleResumeFailure(errorMessage: String?, promise: Promise) {
-    listener.handleResumeFailure(errorMessage.orEmpty(), promise)
-  }
   // endregion
+
+  // region complete handlers
+  @ReactMethod
+  fun handleCompleteFlow(promise: Promise) {
+    // TODO
+    promise.resolve(null)
+  }
+  // endregion complete handlers
 
   // region payment handlers
   @ReactMethod

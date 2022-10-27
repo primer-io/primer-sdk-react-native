@@ -176,6 +176,7 @@ export const HeadlessCheckoutScreen = ({ navigation }) => {
       try {
         const assetsManager = new AssetsManager();
         const assets: Asset[] = await assetsManager.getPaymentMethodAssets();
+        updateLogs(`\nℹ️ getPaymentMethodAssets: ${JSON.stringify(assets, null, 2)}`);
         setAssets(assets);
         resolve();
       } catch (err) {
@@ -304,7 +305,7 @@ export const HeadlessCheckoutScreen = ({ navigation }) => {
     <View style={{ paddingHorizontal: 24, flex: 1 }}>
       {renderPaymentMethods()}
       {renderLogBox()}
-      {renderLoadingOverlay()} 
+      {renderLoadingOverlay()}
     </View>
   );
 };

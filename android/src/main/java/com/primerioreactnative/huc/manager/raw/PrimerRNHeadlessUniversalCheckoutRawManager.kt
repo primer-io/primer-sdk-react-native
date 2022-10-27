@@ -1,5 +1,6 @@
 package com.primerioreactnative.huc.manager.raw
 
+import androidx.activity.ComponentActivity
 import com.facebook.react.bridge.*
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.primerioreactnative.Keys
@@ -21,7 +22,7 @@ import org.json.JSONObject
 
 @ExperimentalPrimerApi
 internal class PrimerRNHeadlessUniversalCheckoutRawManager(
-  reactContext: ReactApplicationContext,
+  private val reactContext: ReactApplicationContext,
   private val json: Json,
 ) : ReactContextBaseJavaModule(reactContext) {
 
@@ -39,6 +40,7 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
   fun initialize(paymentMethodTypeStr: String, promise: Promise) {
     try {
       rawManager = PrimerHeadlessUniversalCheckoutRawDataManager.newInstance(
+        reactContext.currentActivity as ComponentActivity,
         paymentMethodTypeStr
       )
       this.paymentMethodTypeStr = paymentMethodTypeStr
@@ -122,7 +124,7 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
   }
 
   @ReactMethod
-  fun disposeRawDataManager(promise: Promise) {
+  fun dispose(promise: Promise) {
     if (::rawManager.isInitialized.not()) {
       val exception =
         ErrorTypeRN.NativeBridgeFailed errorTo "The PrimerHeadlessUniversalCheckoutRawDataManager" +

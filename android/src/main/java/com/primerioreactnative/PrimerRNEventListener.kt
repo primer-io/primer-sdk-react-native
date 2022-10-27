@@ -147,7 +147,7 @@ class PrimerRNEventListener : PrimerCheckoutListener {
     }
   }
 
-  override fun onResumePending(additionalInfo: PrimerCheckoutAdditionalInfo?) {
+  override fun onResumePending(additionalInfo: PrimerCheckoutAdditionalInfo) {
     if (implementedRNCallbacks?.isOnResumePendingImplemented == true) {
       if (additionalInfo is MultibancoCheckoutAdditionalInfo) {
         sendEvent?.invoke(

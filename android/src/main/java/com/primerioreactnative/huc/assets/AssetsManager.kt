@@ -7,7 +7,6 @@ import android.graphics.drawable.Drawable
 import com.facebook.react.bridge.ReactApplicationContext
 import java.io.File
 import java.io.FileOutputStream
-import java.util.*
 
 internal object AssetsManager {
 
@@ -42,15 +41,20 @@ internal object AssetsManager {
     }
   }
 
-  fun getFile(context: ReactApplicationContext, path: String): File {
+  fun getFile(context: ReactApplicationContext, path: String, type: ImageColorType): File {
     val directory = File(context.filesDir, path)
     if (!directory.exists()) directory.mkdirs()
     val file = File(
       context.filesDir,
-      ASSETS_DIRECTORY + File.pathSeparator + path.toLowerCase(Locale.ROOT)
+      ASSETS_DIRECTORY + File.pathSeparator + "${path}_${type}".lowercase()
     )
     if (!file.exists()) file.createNewFile()
     return file
   }
+}
 
+internal enum class ImageColorType {
+  COLORED,
+  DARK,
+  LIGHT
 }
