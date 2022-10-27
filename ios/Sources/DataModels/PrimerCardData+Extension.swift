@@ -42,5 +42,4 @@ extension PrimerCardData {
             return nil
         }
     }
-    
 }
