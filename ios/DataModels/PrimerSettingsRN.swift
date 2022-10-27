@@ -41,11 +41,6 @@ extension PrimerSettings {
             klarnaOptions = PrimerKlarnaOptions(recurringPaymentDescription: rnKlarnaRecurringPaymentDescription)
         }
         
-        var cardPaymentOptions: PrimerCardPaymentOptions?
-        if let rnIs3DSOnVaultingEnabled = ((settingsJson["paymentMethodOptions"] as? [String: Any])?["cardPaymentOptions"] as? [String: Any])?["is3DSOnVaultingEnabled"] as? Bool {
-            cardPaymentOptions = PrimerCardPaymentOptions(is3DSOnVaultingEnabled: rnIs3DSOnVaultingEnabled)
-        }
-        
         var uiOptions: PrimerUIOptions?
         if let rnUIOptions = settingsJson["uiOptions"] as? [String: Any] {
             
@@ -71,8 +66,7 @@ extension PrimerSettings {
         let paymentMethodOptions = PrimerPaymentMethodOptions(
             urlScheme: rnUrlScheme,
             applePayOptions: applePayOptions,
-            klarnaOptions: klarnaOptions,
-            cardPaymentOptions: cardPaymentOptions)
+            klarnaOptions: klarnaOptions)
         
         let settings = PrimerSettings(
             paymentHandling: paymentHandling,
