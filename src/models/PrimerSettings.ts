@@ -61,7 +61,12 @@ interface IPrimerPaymentMethodOptions {
   },
   apayaOptions?: IPrimerApayaOptions;
   applePayOptions?: IPrimerApplePayOptions;
+
+  /**
+  * @obsoleted The IPrimerCardPaymentOptions is obsoleted on v.2.14.0
+  */
   cardPaymentOptions?: IPrimerCardPaymentOptions;
+  
   goCardlessOptions?: IPrimerGoCardlessOptions;
   googlePayOptions?: IPrimerGooglePayOptions;
   klarnaOptions?: IPrimerKlarnaOptions;

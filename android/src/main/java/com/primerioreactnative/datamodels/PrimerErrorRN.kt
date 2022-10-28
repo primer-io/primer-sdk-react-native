@@ -14,5 +14,5 @@ enum class ErrorTypeRN(val errorId: String) {
   NativeBridgeFailed("native-bridge"),
   AssetMissing("missing-asset"),
   AssetMismatch("mismatch-asset"),
-  InvalidPaymentMethodType("invalid-payment-method-type")
+  InvalidCardNetwork("invalid-card-network")
 }
