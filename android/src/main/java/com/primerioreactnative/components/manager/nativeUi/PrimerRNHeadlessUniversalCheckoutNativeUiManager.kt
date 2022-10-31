@@ -68,4 +68,3 @@ internal class PrimerRNHeadlessUniversalCheckoutNativeUiManager(
     }
   }
 }
-

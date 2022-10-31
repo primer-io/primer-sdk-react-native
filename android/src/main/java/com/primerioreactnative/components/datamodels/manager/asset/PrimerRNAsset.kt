@@ -39,7 +39,7 @@ data class PrimerCardNetworkAsset(
   val cardNetworkImageURL: String
 )
 
-fun PrimerPaymentMethodAsset.toPrimerRNPaymentMethodLogo(
+internal fun PrimerPaymentMethodAsset.toPrimerRNPaymentMethodLogo(
   reactContext: ReactApplicationContext,
   paymentMethodType: String,
 ) = PrimerRNPaymentMethodAsset(
@@ -97,6 +97,3 @@ private fun getFileUrl(
   )
   return "file://${file.absolutePath}"
 }
-
-
-
