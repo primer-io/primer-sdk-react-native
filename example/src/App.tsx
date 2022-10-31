@@ -26,7 +26,7 @@ const App = () => {
           <Stack.Screen name="RawPhoneNumberData" component={RawPhoneNumberDataScreen} />
           <Stack.Screen name="RawAdyenBancontactCard" component={RawAdyenBancontactCardScreen} />
           <Stack.Screen name="RawRetailOutlet" component={RawRetailOutletScreen} />
-          </Stack.Navigator>
+        </Stack.Navigator>
       </NavigationContainer>
   );
 };
