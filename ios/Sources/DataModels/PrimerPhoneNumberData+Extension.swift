@@ -34,5 +34,4 @@ extension PrimerPhoneNumberData {
             return nil
         }
     }
-
 }

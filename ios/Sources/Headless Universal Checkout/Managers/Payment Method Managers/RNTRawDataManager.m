@@ -10,7 +10,7 @@
 
 @interface RCT_EXTERN_MODULE(RNTPrimerHeadlessUniversalCheckoutRawDataManager, RCTEventEmitter)
 
-RCT_EXTERN_METHOD(initialize:(NSString *)paymentMethodTypeStr resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+RCT_EXTERN_METHOD(configure:(NSString *)paymentMethodTypeStr resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 
 RCT_EXTERN_METHOD(listRequiredInputElementTypesForPaymentMethodType:(NSString *)paymentMethodTypeStr resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 

@@ -1,4 +1,4 @@
-import type { PrimerAsset } from '@primer-io/react-native';
+import type { Asset } from '@primer-io/react-native';
 import { NativeModules } from 'react-native';
 
 const { RNTPrimerHeadlessUniversalCheckoutAssetsManager } = NativeModules;
@@ -14,11 +14,23 @@ class PrimerHeadlessUniversalCheckoutAssetsManager {
     // Native API
     ///////////////////////////////////////////
 
-    async getPaymentMethodAsset(paymentMethodType: string): Promise<PrimerAsset> {
+    async getCardNetworkImageURL(cardNetwork: string): Promise<string> {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const data = await RNTPrimerHeadlessUniversalCheckoutAssetsManager.getCardNetworkImage(cardNetwork);
+                resolve(data.cardNetworkImageURL);
+            } catch (err) {
+                console.error(err);
+                reject(err);
+            }
+        });
+    }
+
+    async getPaymentMethodAsset(paymentMethodType: string): Promise<Asset> {
         return new Promise(async (resolve, reject) => {
             try {
                 const data = await RNTPrimerHeadlessUniversalCheckoutAssetsManager.getPaymentMethodAsset(paymentMethodType);
-                const paymentMethodAsset: PrimerAsset = data.paymentMethodAsset;
+                const paymentMethodAsset: Asset = data.paymentMethodAsset;
                 resolve(paymentMethodAsset);
             } catch (err) {
                 console.error(err);
@@ -27,11 +39,11 @@ class PrimerHeadlessUniversalCheckoutAssetsManager {
         });
     }
 
-    async getPaymentMethodAssets(): Promise<PrimerAsset[]> {
+    async getPaymentMethodAssets(): Promise<Asset[]> {
         return new Promise(async (resolve, reject) => {
             try {
                 const data = await RNTPrimerHeadlessUniversalCheckoutAssetsManager.getPaymentMethodAssets();
-                const paymentMethodAssets: PrimerAsset[] = data.paymentMethodAssets;
+                const paymentMethodAssets: Asset[] = data.paymentMethodAssets;
                 resolve(paymentMethodAssets);
             } catch (err) {
                 console.error(err);

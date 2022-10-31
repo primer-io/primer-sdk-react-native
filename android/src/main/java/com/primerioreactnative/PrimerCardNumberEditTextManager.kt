@@ -1,22 +1,7 @@
 package com.primerioreactnative
 
-import android.content.res.ColorStateList
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.GradientDrawable
-import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.TextView
-import com.facebook.drawee.backends.pipeline.Fresco
-import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.SimpleViewManager
 import com.facebook.react.uimanager.ThemedReactContext
-import com.facebook.react.uimanager.ViewProps
-import com.facebook.react.uimanager.annotations.ReactProp
-import com.facebook.react.views.image.ReactImageView
-import io.primer.android.components.manager.PrimerCardManager
-import io.primer.android.components.manager.PrimerUniversalCheckoutCardManagerInterface
 import io.primer.android.components.ui.widgets.*
 
 val listOfTextInputs = mutableListOf<PrimerEditText>()

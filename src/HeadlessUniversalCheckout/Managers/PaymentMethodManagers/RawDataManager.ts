@@ -1,5 +1,6 @@
+import type { RawData } from '@primer-io/react-native';
 import { NativeEventEmitter, NativeModules, EmitterSubscription } from 'react-native';
-import type { PrimerRawData } from "../../..";
+import type { PrimerInitializationData } from 'src/models/PrimerInitializationData';
 import { PrimerError } from '../../../models/PrimerError';
 import type { PrimerInputElementType } from '../../../models/PrimerInputElementType';
 
@@ -34,14 +35,17 @@ class PrimerHeadlessUniversalCheckoutRawDataManager {
     // API
     ///////////////////////////////////////////
 
-    async initialize(options: RawDataManagerProps): Promise<void> {
+    async configure(options: RawDataManagerProps): Promise<{initializationData: PrimerInitializationData} | void> {
         return new Promise(async (resolve, reject) => {
             try {
                 this.options = options;
                 await this.configureListeners();
-                await RNTPrimerHeadlessUniversalCheckoutRawDataManager.initialize(options.paymentMethodType);
-                resolve();
-
+                const data = await RNTPrimerHeadlessUniversalCheckoutRawDataManager.configure(options.paymentMethodType);
+                if (data) {
+                    resolve(data);
+                } else {
+                    resolve();
+                }
             } catch (err) {
                 reject(err);
             }
@@ -57,7 +61,7 @@ class PrimerHeadlessUniversalCheckoutRawDataManager {
                     }
                 });
             }
-    
+
             if (this.options?.onValidation) {
                 this.addListener("onValidation", (data) => {
                     if (this.options?.onValidation) {
@@ -87,7 +91,7 @@ class PrimerHeadlessUniversalCheckoutRawDataManager {
         });
     }
 
-    setRawData(rawData: PrimerRawData): Promise<void> {
+    setRawData(rawData: RawData): Promise<void> {
         return new Promise(async (resolve, reject) => {
             if (this.options?.paymentMethodType) {
                 try {
@@ -144,7 +148,7 @@ class PrimerHeadlessUniversalCheckoutRawDataManager {
     async addListener(eventType: EventType, listener: (...args: any[]) => any): Promise<EmitterSubscription> {
         return eventEmitter.addListener(eventType, listener);
     }
-    
+
     removeListener(eventType: EventType, listener: (...args: any[]) => any): void {
         return eventEmitter.removeListener(eventType, listener);
     }

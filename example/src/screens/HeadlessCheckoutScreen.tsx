@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 
 import {
+  Alert,
   Image,
-  ScrollView,
-  Text,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native';
 import { createClientSession, createPayment, resumePayment } from '../network/api';
 import { appPaymentParameters } from '../models/IClientSessionRequestBody';
@@ -13,271 +12,367 @@ import type { IPayment } from '../models/IPayment';
 import { getPaymentHandlingStringVal } from '../network/Environment';
 import { ActivityIndicator } from 'react-native';
 import {
-  HeadlessUniversalCheckout,
-  PrimerSettings,
-  SessionIntent,
-  PaymentMethod,
   Asset,
   AssetsManager,
-  NativeUIManager
+  CheckoutAdditionalInfo,
+  CheckoutData,
+  HeadlessUniversalCheckout,
+  NativeUIManager,
+  PaymentMethod,
+  PrimerSettings,
+  SessionIntent
 } from '@primer-io/react-native';
 
-let paymentId: string | null = null;
-let logs: string = "";
+let log: string = "";
+let merchantPaymentId: string | null = null;
+let merchantCheckoutData: CheckoutData | null = null;
+let merchantCheckoutAdditionalInfo: CheckoutAdditionalInfo | null = null;
+let merchantPayment: IPayment | null = null;
+let merchantPrimerError: Error | unknown | null = null;
 
-// @ts-ignore
-export const HeadlessCheckoutScreen = ({ navigation }) => {
+const selectImplemetationType = (paymentMethod: PaymentMethod): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const buttons: any[] = [];
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [clientSession, setClientSession] = useState<any | undefined>(undefined);
-  const [availablePaymentMethods, setAvailablePaymentMethods] = useState<PaymentMethod[] | undefined>(undefined);
-  const [assets, setAssets] = useState<Asset[] | undefined>(undefined);
-  const [tmpLogs, setTmpLogs] = useState<string>("");
+    paymentMethod.paymentMethodManagerCategories.forEach(category => {
+      buttons.push({
+        text: category,
+        style: "default",
+        onPress: () => {
+          resolve(category);
+        }
+      });
+    });
+
+    buttons.push({
+      text: "Cancel",
+      style: "cancel",
+      onPress: () => {
+        const err = new Error("Operation cancelled");
+        reject(err);
+      }
+    });
+
+    Alert.alert(
+      "",
+      "Select implementation to test",
+      buttons,
+      {
+        cancelable: true,
+      }
+    );
+  })
+}
+
+export const HeadlessCheckoutScreen = (props: any) => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [clientSession, setClientSession] = useState<null | any>(null);
+  const [paymentMethods, setPaymentMethods] = useState<undefined | PaymentMethod[]>(undefined);
+  const [paymentMethodsAssets, setPaymentMethodsAssets] = useState<undefined | Asset[]>(undefined);
 
   const updateLogs = (str: string) => {
-    const currentLog = logs || '';
-    logs = currentLog + '\n' + str;
-    console.log(logs);
-    setTmpLogs(logs);
+    console.log(str);
+    const currentLog = log;
+    const combinedLog = currentLog + "\n" + str;
+    log = combinedLog;
+  }
+
+  let settings: PrimerSettings = {
+    paymentHandling: getPaymentHandlingStringVal(appPaymentParameters.paymentHandling),
+    paymentMethodOptions: {
+      iOS: {
+        urlScheme: 'merchant://primer.io'
+      },
+      debugOptions: {
+        is3DSSanityCheckEnabled: false
+      }
+    },
+    headlessUniversalCheckoutCallbacks: {
+      onAvailablePaymentMethodsLoad: (availablePaymentMethods => {
+        updateLogs(`\nℹ️ onAvailablePaymentMethodsLoad\n${JSON.stringify(availablePaymentMethods, null, 2)}\n`);
+        setIsLoading(false);
+      }),
+      onPreparationStart: (paymentMethodType) => {
+        updateLogs(`\nℹ️ onPreparationStart\npaymentMethodType: ${paymentMethodType}\n`);
+      },
+      onPaymentMethodShow: (paymentMethodType) => {
+        updateLogs(`\nℹ️ onPaymentMethodShow\npaymentMethodType: ${paymentMethodType}\n`);
+      },
+      onTokenizationStart: (paymentMethodType) => {
+        updateLogs(`\nℹ️ onTokenizationStart\npaymentMethodType: ${paymentMethodType}\n`);
+      },
+      onBeforeClientSessionUpdate: () => {
+        updateLogs(`\nℹ️ onBeforeClientSessionUpdate\n`);
+      },
+      onClientSessionUpdate: (clientSession) => {
+        updateLogs(`\nℹ️ onClientSessionUpdate\nclientSession: ${JSON.stringify(clientSession, null, 2)}\n`);
+      },
+      onBeforePaymentCreate: (tmpCheckoutData, handler) => {
+        updateLogs(`\nℹ️ onBeforePaymentCreate\ncheckoutData: ${JSON.stringify(tmpCheckoutData, null, 2)}\n`);
+        handler.continuePaymentCreation();
+      },
+      onCheckoutAdditionalInfo: (additionalInfo) => {
+        merchantCheckoutAdditionalInfo = additionalInfo;
+        updateLogs(`\nℹ️ onCheckoutPending\nadditionalInfo: ${JSON.stringify(additionalInfo, null, 2)}\n`);
+        setIsLoading(false);
+      },
+      onCheckoutComplete: (checkoutData) => {
+        merchantCheckoutData = checkoutData;
+        updateLogs(`\n✅ onCheckoutComplete\ncheckoutData: ${JSON.stringify(checkoutData, null, 2)}\n`);
+        setIsLoading(false);
+        navigateToResultScreen();
+      },
+      onCheckoutPending: (checkoutAdditionalInfo) => {
+        merchantCheckoutAdditionalInfo = checkoutAdditionalInfo;
+        updateLogs(`\n✅ onCheckoutPending\nadditionalInfo: ${JSON.stringify(checkoutAdditionalInfo, null, 2)}\n`);
+        setIsLoading(false);
+        navigateToResultScreen();
+      },
+      onTokenizationSuccess: async (paymentMethodTokenData, handler) => {
+        updateLogs(`\nℹ️ onTokenizationSuccess\npaymentMethodTokenData: ${JSON.stringify(paymentMethodTokenData, null, 2)}\n`);
+        setIsLoading(false);
+
+        try {
+          const payment: IPayment = await createPayment(paymentMethodTokenData.token);
+          merchantPayment = payment;
+
+          if (payment.requiredAction && payment.requiredAction.clientToken) {
+            merchantPaymentId = payment.id;
+
+            if (payment.requiredAction.name === "3DS_AUTHENTICATION") {
+              updateLogs("\n⚠️ Make sure you have used a card number that supports 3DS, otherwise the SDK will hang.")
+            }
+
+            handler.continueWithNewClientToken(payment.requiredAction.clientToken);
+
+          } else {
+            setIsLoading(false);
+            handler.complete();
+            navigateToResultScreen();
+          }
+
+        } catch (err) {
+          merchantPrimerError = err;
+          updateLogs(`\n🛑 Error:\n${JSON.stringify(err, null, 2)}`);
+          setIsLoading(false);
+          handler.complete();
+
+          console.error(err);
+          navigateToResultScreen();
+        }
+      },
+      onCheckoutResume: async (resumeToken, handler) => {
+        updateLogs(`\nℹ️ onCheckoutResume\nresumeToken: ${resumeToken}`);
+
+        try {
+          if (merchantPaymentId) {
+            const payment: IPayment = await resumePayment(merchantPaymentId, resumeToken);
+            merchantPayment = payment;
+            handler.complete();
+            updateLogs(`\n✅ Payment resumed\npayment: ${JSON.stringify(payment, null, 2)}`);
+            setIsLoading(false);
+            navigateToResultScreen();
+            merchantPaymentId = null;
+
+          } else {
+            const err = new Error("Invalid value for paymentId");
+            throw err;
+          }
+
+        } catch (err) {
+          console.error(err);
+          handler.complete();
+          updateLogs(`\n🛑 Payment resume\nerror: ${JSON.stringify(err, null, 2)}`);
+          setIsLoading(false);
+
+          merchantPaymentId = null;
+          navigateToResultScreen();
+        }
+      },
+      onError: (err) => {
+        merchantPrimerError = err;
+        updateLogs(`\n🛑 onError\nerror: ${JSON.stringify(err, null, 2)}`);
+        console.error(err);
+        setIsLoading(false);
+        navigateToResultScreen();
+      }
+    }
+  };
+
+  if (appPaymentParameters.merchantName) {
+    //@ts-ignore
+    settings.paymentMethodOptions.applePayOptions = {
+      merchantIdentifier: 'merchant.checkout.team',
+      merchantName: appPaymentParameters.merchantName
+    }
   }
 
   useEffect(() => {
-    createClientSession()
-      .then(session => {
-        setClientSession(session);
-
-        startHeadlessUniversalCheckout(session.clientToken)
-          .then(() => {
-
-          })
-          .catch(err => {
-            console.error(err);
-          });
+    createClientSessionIfNeeded()
+      .then((session) => {
+        setIsLoading(false);
+        startHUC(session.clientToken);
       })
       .catch(err => {
+        setIsLoading(false);
         console.error(err);
-      })
+      });
   }, []);
 
-  const startHeadlessUniversalCheckout = async (clientToken: string): Promise<void> => {
-    const settings: PrimerSettings = {
-      paymentHandling: getPaymentHandlingStringVal(appPaymentParameters.paymentHandling),
-      paymentMethodOptions: {
-        iOS: {
-          urlScheme: 'merchant://primer.io'
-        },
-      },
-      headlessUniversalCheckoutCallbacks: {
-        onAvailablePaymentMethodsLoad: (availablePaymentMethods) => {
-          updateLogs(`\nℹ️ onAvailablePaymentMethodsLoad: ${JSON.stringify(availablePaymentMethods, null, 2)}`);
-        },
-        onBeforeClientSessionUpdate: () => {
-          updateLogs(`\nℹ️ onBeforeClientSessionUpdate`);
-        },
-        onClientSessionUpdate: (clientSession) => {
-          updateLogs(`\nℹ️ onClientSessionUpdate: ${JSON.stringify(clientSession, null, 2)}`);
-        },
-        onBeforePaymentCreate: (checkoutPaymentData, handler) => {
-          updateLogs(`\nℹ️ onBeforePaymentCreate: ${JSON.stringify(checkoutPaymentData, null, 2)}`);
-          handler.continuePaymentCreation();
-        },
-        onTokenizationStart: (paymentMethodType) => {
-          updateLogs(`\nℹ️ onTokenizationStart: ${paymentMethodType}`);
-        },
-        onTokenizationSuccess: async (paymentMethodTokenData, handler) => {
-          updateLogs(`\n✅ onTokenizeSuccess:\n${JSON.stringify(paymentMethodTokenData, null, 2)}`);
-          setClientSession(undefined);
-
-          try {
-            const payment: IPayment = await createPayment(paymentMethodTokenData.token);
-
-            if (payment.requiredAction && payment.requiredAction.clientToken) {
-              paymentId = payment.id;
-
-              if (payment.requiredAction.name === "3DS_AUTHENTICATION") {
-                updateLogs("\n🛑 Make sure you have used a card number that supports 3DS, otherwise the SDK will hang.")
-              }
-
-              paymentId = payment.id;
-              handler.continueWithNewClientToken(payment.requiredAction.clientToken);
-
-            } else {
-              setIsLoading(false);
-              handler.complete();
-            }
-
-          } catch (err) {
-            updateLogs(`\n🛑 Error:\n${JSON.stringify(err, null, 2)}`);
-            console.error(err);
-            setIsLoading(false);
-            handler.complete();
-          }
-        },
-        onCheckoutResume: async (resumeToken, handler) => {
-          updateLogs(`\n✅ onCheckoutResume: ${JSON.stringify(resumeToken)}`);
-          setClientSession(undefined);
-
-          try {
-            if (paymentId) {
-              const payment: IPayment = await resumePayment(paymentId, resumeToken);
-              setIsLoading(false);
-
-            } else {
-              const err = new Error("Invalid value for paymentId");
-              throw err;
-            }
-            paymentId = null;
-            handler.complete();
-
-          } catch (err) {
-            console.error(err);
-            paymentId = null;
-            setIsLoading(false);
-            handler.complete();
-          }
-        },
-        onCheckoutAdditionalInfo: (additionalInfo) => {
-          updateLogs(`\nℹ️ onCheckoutAdditionalInfo: ${JSON.stringify(additionalInfo, null, 2)}`);
-        },
-        onCheckoutPending: (additionalInfo) => {
-          updateLogs(`\nℹ️ onCheckoutPending: ${JSON.stringify(additionalInfo, null, 2)}`);
-        },
-        onCheckoutComplete: (checkoutData) => {
-          updateLogs(`\nℹ️ onCheckoutComplete: ${JSON.stringify(checkoutData, null, 2)}`);
-          setClientSession(undefined);
-        },
-        onError: (error, checkoutData) => {
-          updateLogs(`\n🛑 onError: ${JSON.stringify(error, null, 2)} ${JSON.stringify(checkoutData, null, 2)}`);
-        },
-        onPreparationStart: (paymentMethodType) => {
-          updateLogs(`\nℹ️ onPreparationStart: ${paymentMethodType}`);
-        },
-        onPaymentMethodShow: (paymentMethodType) => {
-          updateLogs(`\nℹ️ onPaymentMethodShow: ${paymentMethodType}`);
-        },
-      }
-    };
-
-    if (appPaymentParameters.merchantName) {
-      //@ts-ignore
-      settings.paymentMethodOptions.applePayOptions = {
-        merchantIdentifier: 'merchant.checkout.team',
-        merchantName: appPaymentParameters.merchantName
-      }
-    }
-
-    const availablePaymentMethods = await HeadlessUniversalCheckout.startWithClientToken(clientToken, settings);
-    setAvailablePaymentMethods(availablePaymentMethods);
-    getPaymentMethodAssets();
-  }
-
-  const getPaymentMethodAssets = (): Promise<void> => {
+  const createClientSessionIfNeeded = (): Promise<any> => {
     return new Promise(async (resolve, reject) => {
       try {
-        const assetsManager = new AssetsManager();
-        const assets: Asset[] = await assetsManager.getPaymentMethodAssets();
-        updateLogs(`\nℹ️ getPaymentMethodAssets: ${JSON.stringify(assets, null, 2)}`);
-        setAssets(assets);
-        resolve();
+        if (clientSession === null) {
+          const newClientSession = await createClientSession();
+          setClientSession(newClientSession);
+          resolve(newClientSession);
+        } else {
+          resolve(clientSession);
+        }
       } catch (err) {
-        console.error(err);
         reject(err);
       }
     });
   }
 
-  const payWithPaymentMethod = async (paymentMethodType: string) => {
+  const navigateToResultScreen = async () => {
     try {
-      if (!clientSession) {
-        const session = await createClientSession();
-        setClientSession(session);
-      }
+      props.navigation.navigate("Result", {
+        merchantCheckoutAdditionalInfo: merchantCheckoutAdditionalInfo,
+        merchantCheckoutData: merchantCheckoutData,
+        merchantPayment: merchantPayment,
+        merchantPrimerError: merchantPrimerError
+      });
 
-      const paymentMethod = availablePaymentMethods?.find(pm => pm.paymentMethodType === paymentMethodType);
-
-      if (paymentMethod) {
-        if (paymentMethod.paymentMethodManagerCategories.includes("NATIVE_UI") && paymentMethod.supportedPrimerSessionIntents.includes("CHECKOUT")) {
-          const nativeUIManager = new NativeUIManager();
-          await nativeUIManager.initialize(paymentMethod.paymentMethodType);
-          await nativeUIManager.showPaymentMethod(SessionIntent.CHECKOUT);
-          return;
-        }
-      }
-
-      const err = new Error("Failed to create manager");
-      throw err
+      setClientSession(null);
+      setIsLoading(true);
+      await createClientSessionIfNeeded();
 
     } catch (err) {
       console.error(err);
     }
-  };
 
-  const renderPaymentMethods = () => {
-    if (!assets) {
-      return null;
-    } else {
-      return (
-        <View style={{flex: 1}}>
-          {
-            assets.map(a => {
-              if (a.paymentMethodType === "PAYMENT_CARD") {
-                return (
-                  <TouchableOpacity
-                    key={a.paymentMethodType}
-                    style={{
-                      marginVertical: 4,
-                      height: 40,
-                      backgroundColor: a.paymentMethodBackgroundColor.colored || a.paymentMethodBackgroundColor.light,
-                      borderRadius: 4,
-                      justifyContent: "center",
-                      alignItems: "center"
-                    }}
-                    onPress={e => {
-                      navigation.navigate('RawCardData', { clientSession: clientSession });
-                    }}
-                  >
-                    <Text>
-                      Pay with card
-                    </Text>
-                  </TouchableOpacity>
-                );
-              } else {
-                return (
-                  <TouchableOpacity
-                    key={a.paymentMethodType}
-                    style={{
-                      marginVertical: 4,
-                      height: 40,
-                      backgroundColor: a.paymentMethodBackgroundColor.colored || a.paymentMethodBackgroundColor.light,
-                      borderRadius: 4,
-                      justifyContent: "center",
-                      alignItems: "center"
-                    }}
-                    onPress={e => {
-                      payWithPaymentMethod(a.paymentMethodType);
-                    }}
-                  >
-                    <Image
-                      style={{ marginVertical: 5, height: 30, width: "100%", resizeMode: "contain" }}
-                      source={{ uri: a.paymentMethodLogo.colored }}
-                    />
-                  </TouchableOpacity>
-                );
-              }
-            })
-          }
-        </View>
-      )
+    setIsLoading(false);
+  }
+
+  const startHUC = async (clientToken: string) => {
+    try {
+      const availablePaymentMethods = await HeadlessUniversalCheckout.startWithClientToken(clientToken, settings);
+      setPaymentMethods(availablePaymentMethods);
+      // updateLogs(`\nℹ️ Available payment methods:\n${JSON.stringify(availablePaymentMethods, null, 2)}`);
+      const assetsManager = new AssetsManager();
+      const assets = await assetsManager.getPaymentMethodAssets();
+      setPaymentMethodsAssets(assets);
+
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  const paymentMethodButtonTapped = async (paymentMethodType: string) => {
+    try {
+      const paymentMethod = paymentMethods?.find(pm => pm.paymentMethodType === paymentMethodType);
+
+      if (!paymentMethod) {
+        return;
+      }
+
+      if (paymentMethod.paymentMethodManagerCategories.length === 1) {
+        pay(paymentMethod, paymentMethod.paymentMethodManagerCategories[0]);
+
+      } else {
+        const selectedImplementationType = await selectImplemetationType(paymentMethod);
+        pay(paymentMethod, selectedImplementationType);
+      }
+    } catch (err) {
+      updateLogs(`\n🛑 paymentMethodButtonTapped\nerror: ${JSON.stringify(err, null, 2)}`);
+      console.error(err);
     }
   };
 
-  const renderLogBox = () => {
+  const pay = async (paymentMethod: PaymentMethod, implementationType: string) => {
+    try {
+      if (implementationType === "NATIVE_UI") {
+        setIsLoading(true);
+        await createClientSessionIfNeeded();
+        const nativeUIManager = new NativeUIManager();
+        await nativeUIManager.configure(paymentMethod.paymentMethodType);
+        await nativeUIManager.showPaymentMethod(SessionIntent.CHECKOUT);
+
+      } else if (implementationType === "RAW_DATA") {
+        await createClientSessionIfNeeded();
+
+        if (paymentMethod.paymentMethodType === "XENDIT_OVO" || paymentMethod.paymentMethodType === "ADYEN_MBWAY") {
+          props.navigation.navigate('RawPhoneNumberData', { paymentMethodType: paymentMethod.paymentMethodType });
+
+        } else if (paymentMethod.paymentMethodType === "XENDIT_RETAIL_OUTLETS") {
+          props.navigation.navigate('RawRetailOutlet', { paymentMethodType: paymentMethod.paymentMethodType });
+
+        } else if (paymentMethod.paymentMethodType === "ADYEN_BANCONTACT_CARD") {
+          props.navigation.navigate('RawAdyenBancontactCard', { paymentMethodType: paymentMethod.paymentMethodType });
+
+        } else if (paymentMethod.paymentMethodType === "PAYMENT_CARD") {
+          props.navigation.navigate('RawCardData', { paymentMethodType: paymentMethod.paymentMethodType });
+        }
+
+      } else {
+        Alert.alert(
+          "Warning!",
+          `${implementationType} is not supported on Headless Universal Checkout yet.`,
+          [
+            {
+              text: "Cancel",
+              style: "cancel",
+              onPress: () => {
+
+              }
+            }
+          ],
+          {
+            cancelable: true,
+          }
+        );
+      }
+
+    } catch (err) {
+      updateLogs(`\n🛑 pay\nerror: ${JSON.stringify(err, null, 2)}`);
+      setIsLoading(false);
+      console.error(err);
+    }
+  }
+
+  const renderPaymentMethodsUI = () => {
+    if (!paymentMethodsAssets) {
+      return null;
+    }
+
     return (
-      <ScrollView style={{flex: 1, backgroundColor: "lightgray", marginBottom: 30}}>
-        <Text>
-          {tmpLogs}
-        </Text>
-      </ScrollView>
+      <View>
+        {paymentMethodsAssets.map((paymentMethodsAsset) => {
+          return (
+            <TouchableOpacity
+              key={paymentMethodsAsset.paymentMethodType}
+              style={{
+                marginHorizontal: 20,
+                marginVertical: 8,
+                height: 50,
+                backgroundColor: paymentMethodsAsset.paymentMethodBackgroundColor.colored || paymentMethodsAsset.paymentMethodBackgroundColor.light,
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderRadius: 4,
+              }}
+              onPress={() => {
+                paymentMethodButtonTapped(paymentMethodsAsset.paymentMethodType);
+              }}
+            >
+              <Image
+                style={{ height: 36, width: '100%', resizeMode: "contain" }}
+                source={{ uri: paymentMethodsAsset.paymentMethodLogo.colored || paymentMethodsAsset.paymentMethodLogo.light }}
+              />
+            </TouchableOpacity>
+          );
+        })}
+      </View>
     );
   }
 
@@ -303,8 +398,7 @@ export const HeadlessCheckoutScreen = ({ navigation }) => {
 
   return (
     <View style={{ paddingHorizontal: 24, flex: 1 }}>
-      {renderPaymentMethods()}
-      {renderLogBox()}
+      {renderPaymentMethodsUI()}
       {renderLoadingOverlay()}
     </View>
   );

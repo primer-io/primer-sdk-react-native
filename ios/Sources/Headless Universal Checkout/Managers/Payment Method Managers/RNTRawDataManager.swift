@@ -39,21 +39,33 @@ class RNTPrimerHeadlessUniversalCheckoutRawDataManager: RCTEventEmitter {
     }
 
     // MARK: - API
-
+    
     @objc
-    public func initialize(
+    public func configure(
         _ paymentMethodTypeStr: String,
-        resolver: RCTPromiseResolveBlock,
-        rejecter: RCTPromiseRejectBlock
+        resolver: @escaping RCTPromiseResolveBlock,
+        rejecter: @escaping RCTPromiseRejectBlock
     ) {
         self.paymentMethodType = paymentMethodTypeStr
 
         do {
-            self.rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: self.paymentMethodType!)
-            self.rawDataManager.delegate = self
-            resolver(nil)
+            self.rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: self.paymentMethodType!, delegate: self)
         } catch {
             rejecter(error.rnError["errorId"]!, error.rnError["description"], error)
+        }
+
+        self.rawDataManager!.configure { data, error in
+            do {
+                guard error == nil else {
+                    rejecter(error!.rnError["errorId"]!, error!.rnError["description"], error)
+                    return
+                }
+                let initializationData = try JSONEncoder().encode(data)
+                let initializationDataJson = try JSONSerialization.jsonObject(with: initializationData, options: .allowFragments)
+                resolver(["initializationData": initializationDataJson])
+            } catch {
+                rejecter(error.rnError["errorId"]!, error.rnError["description"], error)
+            }
         }
     }
 
@@ -64,7 +76,10 @@ class RNTPrimerHeadlessUniversalCheckoutRawDataManager: RCTEventEmitter {
         rejecter: RCTPromiseRejectBlock
     ) {
         guard let rawDataManager = rawDataManager else {
-            let err = NSError(domain: "native-bridge", code: 1, userInfo: [NSLocalizedDescriptionKey: "The PrimerHeadlessUniversalCheckoutRawDataManager has not been initialized. Make sure you have called the PrimerHeadlessUniversalCheckoutRawDataManager.configure function first."])
+            let err = RNTNativeError(
+                errorId: "native-ios",
+                errorDescription: "The RawDataManager has not been initialized",
+                recoverySuggestion: "Make sure you have called initialized the `RawDataManager' first.")
             rejecter(err.rnError["errorId"]!, err.rnError["description"], err)
             return
         }
@@ -80,7 +95,10 @@ class RNTPrimerHeadlessUniversalCheckoutRawDataManager: RCTEventEmitter {
         rejecter: RCTPromiseRejectBlock
     ) {
         guard let rawDataManager = rawDataManager else {
-            let err = NSError(domain: "native-bridge", code: 1, userInfo: [NSLocalizedDescriptionKey: "The PrimerHeadlessUniversalCheckoutRawDataManager has not been initialized. Make sure you have called the PrimerHeadlessUniversalCheckoutRawDataManager.configure function first."])
+            let err = RNTNativeError(
+                errorId: "native-ios",
+                errorDescription: "The RawDataManager has not been initialized",
+                recoverySuggestion: "Make sure you have called initialized the `RawDataManager' first.")
             rejecter(err.rnError["errorId"]!, err.rnError["description"], err)
             return
         }
@@ -97,7 +115,22 @@ class RNTPrimerHeadlessUniversalCheckoutRawDataManager: RCTEventEmitter {
             return
         }
 
-        let err = NSError(domain: "native-bridge", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to decode RawData on iOS. Make sure you're providing a valid 'PrimerRawData' (or any inherited) object"])
+        if let rawCardRedirectData = PrimerBancontactCardRedirectData(cardRedirectDataStr: rawDataStr) {
+            rawDataManager.rawData = rawCardRedirectData
+            resolver(nil)
+            return
+        }
+
+        if let rawRetailerData = PrimerRawRetailerData(primerRawRetailerDataStr: rawDataStr) {
+            rawDataManager.rawData = rawRetailerData
+            resolver(nil)
+            return
+        }
+
+        let err = RNTNativeError(
+            errorId: "native-ios",
+            errorDescription: "Failed to decode RawData on iOS.",
+            recoverySuggestion: "Make sure you're providing a valid 'RawData' (or any inherited) object.")
         rejecter(err.rnError["errorId"]!, err.rnError["description"], err)
     }
 
@@ -107,7 +140,28 @@ class RNTPrimerHeadlessUniversalCheckoutRawDataManager: RCTEventEmitter {
         rejecter: RCTPromiseRejectBlock
     ) {
         guard let rawDataManager = rawDataManager else {
-            let err = NSError(domain: "native-bridge", code: 1, userInfo: [NSLocalizedDescriptionKey: "The PrimerHeadlessUniversalCheckoutRawDataManager has not been initialized. Make sure you have called the PrimerHeadlessUniversalCheckoutRawDataManager.configure function first."])
+            let err = RNTNativeError(
+                errorId: "native-ios",
+                errorDescription: "The RawDataManager has not been initialized",
+                recoverySuggestion: "Make sure you have called initialized the `RawDataManager' first.")
+            rejecter(err.rnError["errorId"]!, err.rnError["description"], err)
+            return
+        }
+
+        rawDataManager.submit()
+        resolver(nil)
+    }
+    
+    @objc
+    public func dispose(
+        _ resolver: RCTPromiseResolveBlock,
+        rejecter: RCTPromiseRejectBlock
+    ) {
+        guard let rawDataManager = rawDataManager else {
+            let err = RNTNativeError(
+                errorId: "native-ios",
+                errorDescription: "The RawDataManager has not been initialized",
+                recoverySuggestion: "Make sure you have called initialized the `RawDataManager' first.")
             rejecter(err.rnError["errorId"]!, err.rnError["description"], err)
             return
         }

@@ -11,7 +11,5 @@ data class PrimerErrorRN(
 
 @Serializable
 enum class ErrorTypeRN(val errorId: String) {
-  NativeBridgeFailed("native-bridge"),
-  AssetMissing("missing-asset"),
-  UninitializedManager("uninitialized-manager")
+  NativeBridgeFailed("native-android"),
 }

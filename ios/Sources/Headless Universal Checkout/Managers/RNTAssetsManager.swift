@@ -20,6 +20,41 @@ class RNTPrimerHeadlessUniversalCheckoutAssetsManager: RCTEventEmitter {
     }
     
     @objc
+<<<<<<< HEAD
+=======
+    func getCardNetworkImage(
+        _ cardNetworkStr: String,
+        resolver: RCTPromiseResolveBlock,
+        rejecter: RCTPromiseRejectBlock
+    ) {
+        do {
+            
+            guard let cardNetwork = CardNetwork(rawValue: cardNetworkStr) else {
+                let err = RNTNativeError(
+                    errorId: "native-ios",
+                    errorDescription: "Failed to find asset of \(cardNetworkStr).",
+                    recoverySuggestion: nil)
+                throw err
+            }
+        
+            guard let cardNetworkImage = try PrimerSDK.PrimerHeadlessUniversalCheckout.AssetsManager.getCardNetworkImage(for: cardNetwork) else {
+                let err = RNTNativeError(
+                    errorId: "native-ios",
+                    errorDescription: "Failed to find asset of \(cardNetworkStr).",
+                    recoverySuggestion: nil)
+                throw err
+            }
+            
+            let localUrl = try cardNetworkImage.store(withName: cardNetwork.rawValue)
+            resolver(["cardNetworkImageURL": localUrl.absoluteString])
+            
+        } catch {
+            rejecter(error.rnError["errorId"]!, error.rnError["description"], error)
+        }
+    }
+    
+    @objc
+>>>>>>> feature/DEVX-409_HUC-Example-app
     func getPaymentMethodAsset(
         _ paymentMethodType: String,
         resolver: RCTPromiseResolveBlock,
@@ -28,7 +63,11 @@ class RNTPrimerHeadlessUniversalCheckoutAssetsManager: RCTEventEmitter {
         do {
             guard let paymentMethodAsset = try PrimerSDK.PrimerHeadlessUniversalCheckout.AssetsManager.getPaymentMethodAsset(for: paymentMethodType) else {
                 let err = RNTNativeError(
+<<<<<<< HEAD
                     errorId: "missing-asset",
+=======
+                    errorId: "native-ios",
+>>>>>>> feature/DEVX-409_HUC-Example-app
                     errorDescription: "Failed to find asset of \(paymentMethodType) for this session",
                     recoverySuggestion: nil)
                 throw err
@@ -38,7 +77,11 @@ class RNTPrimerHeadlessUniversalCheckoutAssetsManager: RCTEventEmitter {
                 resolver(["paymentMethodAsset": rntPaymentMethodAsset])
             } else {
                 let err = RNTNativeError(
+<<<<<<< HEAD
                     errorId: "missing-asset",
+=======
+                    errorId: "native-ios",
+>>>>>>> feature/DEVX-409_HUC-Example-app
                     errorDescription: "Failed to create the RNTPrimerPaymentMethodAsset",
                     recoverySuggestion: nil)
                 throw err
@@ -59,7 +102,14 @@ class RNTPrimerHeadlessUniversalCheckoutAssetsManager: RCTEventEmitter {
             
             let rntPaymentMethodAssets = paymentMethodAssets.compactMap({ try? RNTPrimerPaymentMethodAsset(primerPaymentMethodAsset: $0).toJsonObject() })
             guard !rntPaymentMethodAssets.isEmpty else {
+<<<<<<< HEAD
                 let err = RNTNativeError(errorId: "missing-asset", errorDescription: "Failed to find assets for this session", recoverySuggestion: nil)
+=======
+                let err = RNTNativeError(
+                    errorId: "native-ios",
+                    errorDescription: "Failed to find assets for this session",
+                    recoverySuggestion: nil)
+>>>>>>> feature/DEVX-409_HUC-Example-app
                 throw err
             }
             

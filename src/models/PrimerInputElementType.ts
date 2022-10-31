@@ -6,5 +6,6 @@ export enum PrimerInputElementType {
     OTP = "OTP",
     POSTAL_CODE = "POSTAL_CODE",
     PHONE_NUMBER = "PHONE_NUMBER",
+    RETAILER = "RETAILER",
     UNKNOWN = "UNKNOWN"
 }

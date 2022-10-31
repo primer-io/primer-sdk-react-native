@@ -152,6 +152,11 @@ const CheckoutScreen = (props: any) => {
             },
             klarnaOptions: {
                 recurringPaymentDescription: "Recurring payment description"
+            },
+            applePayOptions: {
+              merchantIdentifier: "merchant.checkout.team",
+              merchantName: appPaymentParameters.merchantName,
+              isCaptureBillingAddressEnabled: true
             }
         },
         uiOptions: {

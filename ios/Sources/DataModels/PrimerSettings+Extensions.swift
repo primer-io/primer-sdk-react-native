@@ -7,14 +7,22 @@ extension PrimerSettings {
             self.init()
         } else {
             guard let settingsData = settingsStr!.data(using: .utf8) else {
+<<<<<<< HEAD
                 let err = RNTNativeError(errorId: "invalid-value", errorDescription: "The value of the settings object is invalid.", recoverySuggestion: "Provide a valid settings object")
+=======
+                let err = RNTNativeError(errorId: "native-ios", errorDescription: "The value of the 'settings' object is invalid.", recoverySuggestion: "Provide a valid 'settings' object")
+>>>>>>> feature/DEVX-409_HUC-Example-app
                 throw err
             }
             
             let settingsJson = try JSONSerialization.jsonObject(with: settingsData)
             
             guard let settingsJson = settingsJson as? [String: Any] else {
+<<<<<<< HEAD
                 let err = RNTNativeError(errorId: "invalid-value", errorDescription: "Settings is not a valid JSON", recoverySuggestion: "Provide a valid settings object")
+=======
+                let err = RNTNativeError(errorId: "native-ios", errorDescription: "The 'settings' object is not a valid JSON", recoverySuggestion: "Provide a valid 'settings' object")
+>>>>>>> feature/DEVX-409_HUC-Example-app
                 throw err
             }
             
@@ -44,11 +52,14 @@ extension PrimerSettings {
                 klarnaOptions = PrimerKlarnaOptions(recurringPaymentDescription: rnKlarnaRecurringPaymentDescription)
             }
             
+<<<<<<< HEAD
             var cardPaymentOptions: PrimerCardPaymentOptions?
             if let rnIs3DSOnVaultingEnabled = ((settingsJson["paymentMethodOptions"] as? [String: Any])?["cardPaymentOptions"] as? [String: Any])?["is3DSOnVaultingEnabled"] as? Bool {
                 cardPaymentOptions = PrimerCardPaymentOptions(is3DSOnVaultingEnabled: rnIs3DSOnVaultingEnabled)
             }
             
+=======
+>>>>>>> feature/DEVX-409_HUC-Example-app
             var uiOptions: PrimerUIOptions?
             if let rnUIOptions = settingsJson["uiOptions"] as? [String: Any] {
                 
@@ -74,8 +85,12 @@ extension PrimerSettings {
             let paymentMethodOptions = PrimerPaymentMethodOptions(
                 urlScheme: rnUrlScheme,
                 applePayOptions: applePayOptions,
+<<<<<<< HEAD
                 klarnaOptions: klarnaOptions,
                 cardPaymentOptions: cardPaymentOptions)
+=======
+                klarnaOptions: klarnaOptions)
+>>>>>>> feature/DEVX-409_HUC-Example-app
             
             self.init(
                 paymentHandling: paymentHandling,

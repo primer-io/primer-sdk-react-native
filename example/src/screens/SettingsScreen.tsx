@@ -26,14 +26,19 @@ export interface AppPaymentParameters {
     merchantName?: string;
 }
 
+export let customApiKey: string | undefined// = "7ecce42b-b641-4c7d-a605-f786f3e201ce";
+export let customClientToken: string | undefined;
+
 // @ts-ignore
 const SettingsScreen = ({ navigation }) => {
     const isDarkMode = useColorScheme() === 'dark';
     const [environment, setEnvironment] = React.useState<Environment>(Environment.Sandbox);
+    const [apiKey, setApiKey] = React.useState<string | undefined>(customApiKey);
+    const [clientToken, setClientToken] = React.useState<string | undefined>(undefined);
     const [paymentHandling, setPaymentHandling] = React.useState<PaymentHandling>(PaymentHandling.Auto);
     const [lineItems, setLineItems] = React.useState<IClientSessionLineItem[]>(appPaymentParameters.clientSessionRequestBody.order?.lineItems || []);
     const [currency, setCurrency] = React.useState<string>("EUR");
-    const [countryCode, setCountryCode] = React.useState<string>("DE");
+    const [countryCode, setCountryCode] = React.useState<string>("PT");
     const [orderId, setOrderId] = React.useState<string | undefined>(appPaymentParameters.clientSessionRequestBody.orderId);
 
     const [merchantName, setMerchantName] = React.useState<string | undefined>(appPaymentParameters.merchantName);
@@ -82,6 +87,25 @@ const SettingsScreen = ({ navigation }) => {
                         setEnvironment(selectedEnvironment);
                     }}
                 />
+                <TextField
+                    title='API Key'
+                    style={{ marginVertical: 8 }}
+                    value={apiKey}
+                    placeholder={'Set API key'}
+                    onChangeText={(text) => {
+                        setApiKey(text);
+                        customApiKey = text;
+                    }}
+                />
+                <TextField
+                    title='Client token'
+                    style={{ marginVertical: 8 }}
+                    value={clientToken}
+                    placeholder={'Set client token'}
+                    onChangeText={(text) => {
+                        setClientToken(text);
+                    }}
+                />
             </View>
         )
     }
@@ -118,7 +142,7 @@ const SettingsScreen = ({ navigation }) => {
                         Currency & Country Code
                     </Text>
                     <View
-                        style={{ flexDirection: 'row', marginHorizontal: 20, marginTop: -30, marginBottom: 140 }}
+                        style={{ flexDirection: 'row', marginHorizontal: 20, marginTop: -10, marginBottom: 140 }}
                     >
                         <Picker
                             selectedValue={currency}
@@ -135,6 +159,7 @@ const SettingsScreen = ({ navigation }) => {
                             <Picker.Item label="PLN" value="PLN" />
                             <Picker.Item label="THB" value="THB" />
                             <Picker.Item label="IDR" value="IDR" />
+                            <Picker.Item label="PHP" value="PHP" />
                         </Picker>
 
                         <Picker
@@ -153,6 +178,8 @@ const SettingsScreen = ({ navigation }) => {
                             <Picker.Item label="PT" value="PT" />
                             <Picker.Item label="TH" value="TH" />
                             <Picker.Item label="ID" value="ID" />
+                            <Picker.Item label="NL" value="NL" />
+                            <Picker.Item label="PH" value="PH" />
                         </Picker>
                     </View>
                 </View>

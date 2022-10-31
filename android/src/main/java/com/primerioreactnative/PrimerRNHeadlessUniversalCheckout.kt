@@ -4,7 +4,7 @@ import android.util.Log
 import com.facebook.react.bridge.*
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.primerioreactnative.datamodels.*
-import com.primerioreactnative.huc.events.PrimerHeadlessUniversalCheckoutEvent
+import com.primerioreactnative.components.events.PrimerHeadlessUniversalCheckoutEvent
 import com.primerioreactnative.utils.PrimerHeadlessUniversalCheckoutImplementedRNCallbacks
 import com.primerioreactnative.utils.convertJsonToMap
 import com.primerioreactnative.utils.errorTo
@@ -50,6 +50,7 @@ class PrimerRNHeadlessUniversalCheckout(
         reactContext,
         clientToken,
         settings.toPrimerSettings(),
+        listener,
         listener
       )
     } catch (e: Exception) {
@@ -85,7 +86,6 @@ class PrimerRNHeadlessUniversalCheckout(
   // region complete handlers
   @ReactMethod
   fun handleCompleteFlow(promise: Promise) {
-    // TODO
     promise.resolve(null)
   }
   // endregion complete handlers

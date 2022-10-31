@@ -183,7 +183,14 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
         DispatchQueue.main.async {
             do {
                 guard let implementedRNCallbacksData = implementedRNCallbacksStr.data(using: .utf8) else {
+<<<<<<< HEAD
                     let err = NSError(domain: "native-bridge", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to convert string to data"])
+=======
+                    let err = RNTNativeError(
+                        errorId: "native-ios",
+                        errorDescription: "Failed to convert string to data",
+                        recoverySuggestion: nil)
+>>>>>>> feature/DEVX-409_HUC-Example-app
                     throw err
                 }
                 self.implementedRNCallbacks = try JSONDecoder().decode(ImplementedRNCallbacks.self, from: implementedRNCallbacksData)
@@ -267,9 +274,15 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
             } else {
                 if self.settings?.paymentHandling == .manual {
                     let err = RNTNativeError(
+<<<<<<< HEAD
                         errorId: "native-bridge",
                         errorDescription: "Callback [\(rnCallbackName)] is not implemented.",
                         recoverySuggestion: "Callback [\(rnCallbackName)] should be implemented.")
+=======
+                        errorId: "native-ios",
+                        errorDescription: "Callback [\(rnCallbackName)] is not implemented.",
+                        recoverySuggestion: "Callback [\(rnCallbackName)] must be implemented.")
+>>>>>>> feature/DEVX-409_HUC-Example-app
                     self.handleRNBridgeError(err, checkoutData: nil, stopOnDebug: false)
                 }
             }
@@ -299,9 +312,15 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
             } else {
                 if self.settings?.paymentHandling == .manual {
                     let err = RNTNativeError(
+<<<<<<< HEAD
                         errorId: "native-bridge",
                         errorDescription: "Callback [\(rnCallbackName)] is not implemented.",
                         recoverySuggestion: "Callback [\(rnCallbackName)] should be implemented.")
+=======
+                        errorId: "native-ios",
+                        errorDescription: "Callback [\(rnCallbackName)] is not implemented.",
+                        recoverySuggestion: "Callback [\(rnCallbackName)] must be implemented.")
+>>>>>>> feature/DEVX-409_HUC-Example-app
                     self.handleRNBridgeError(err, checkoutData: nil, stopOnDebug: false)
                 }
             }
@@ -323,9 +342,15 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
                 }
             } else {
                 let err = RNTNativeError(
+<<<<<<< HEAD
                     errorId: "native-bridge",
                     errorDescription: "Callback [\(rnCallbackName)] is not implemented.",
                     recoverySuggestion: "Callback [\(rnCallbackName)] should be implemented.")
+=======
+                    errorId: "native-ios",
+                    errorDescription: "Callback [\(rnCallbackName)] is not implemented.",
+                    recoverySuggestion: "Callback [\(rnCallbackName)] must be implemented.")
+>>>>>>> feature/DEVX-409_HUC-Example-app
                 
                 let checkoutData = PrimerCheckoutData(payment: nil, additionalInfo: additionalInfo)
                 self.handleRNBridgeError(err, checkoutData: checkoutData, stopOnDebug: false)
@@ -387,9 +412,15 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
                 }
             } else {
                 let err = RNTNativeError(
+<<<<<<< HEAD
                     errorId: "native-bridge",
                     errorDescription: "Callback [\(rnCallbackName)] is not implemented.",
                     recoverySuggestion: "Callback [\(rnCallbackName)] should be implemented.")
+=======
+                    errorId: "native-ios",
+                    errorDescription: "Callback [\(rnCallbackName)] is not implemented.",
+                    recoverySuggestion: "Callback [\(rnCallbackName)] must be implemented.")
+>>>>>>> feature/DEVX-409_HUC-Example-app
                 self.handleRNBridgeError(err, checkoutData: data, stopOnDebug: false)
             }
         }
@@ -405,12 +436,15 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
                     withName: rnCallbackName,
                     body: nil)
                 
+<<<<<<< HEAD
             } else {
                 let err = RNTNativeError(
                     errorId: "native-bridge",
                     errorDescription: "Callback [\(rnCallbackName)] is not implemented.",
                     recoverySuggestion: "[Optional] Consider implementing [\(rnCallbackName)].")
                 self.handleRNBridgeError(err, checkoutData: nil, stopOnDebug: false)
+=======
+>>>>>>> feature/DEVX-409_HUC-Example-app
             }
         }
     }
@@ -431,12 +465,15 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
                     self.handleRNBridgeError(error, checkoutData: nil, stopOnDebug: true)
                 }
                 
+<<<<<<< HEAD
             } else {
                 let err = RNTNativeError(
                     errorId: "native-bridge",
                     errorDescription: "Callback [\(rnCallbackName)] is not implemented.",
                     recoverySuggestion: "[Optional] Consider implementing [\(rnCallbackName)].")
                 self.handleRNBridgeError(err, checkoutData: nil, stopOnDebug: false)
+=======
+>>>>>>> feature/DEVX-409_HUC-Example-app
             }
         }
     }
@@ -470,6 +507,7 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
                 }
                 
             } else {
+<<<<<<< HEAD
                 let err = RNTNativeError(
                     errorId: "native-bridge",
                     errorDescription: "Callback [\(rnCallbackName)] is not implemented.",
@@ -477,6 +515,10 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
                 self.handleRNBridgeError(err, checkoutData: nil, stopOnDebug: false)
                 
                 // RN Dev hasn't implemented this callback,continue the payment flow.
+=======
+                // 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' hasn't
+                // been implemented on the RN side, continue the payment flow.
+>>>>>>> feature/DEVX-409_HUC-Example-app
                 decisionHandler(.continuePaymentCreation())
             }
         }
@@ -495,6 +537,7 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutUID
                 self.sendEvent(
                     withName: rnCallbackName,
                     body: ["paymentMethodType": paymentMethodType])
+<<<<<<< HEAD
                 
             } else {
                 let err = RNTNativeError(
@@ -502,6 +545,8 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutUID
                     errorDescription: "Callback [\(rnCallbackName)] is not implemented.",
                     recoverySuggestion: "[Optional] Consider implementing [\(rnCallbackName)] to get notified when the payment method is getting prepared to be presented.")
                 self.handleRNBridgeError(err, checkoutData: nil, stopOnDebug: false)
+=======
+>>>>>>> feature/DEVX-409_HUC-Example-app
             }
         }
     }
@@ -515,16 +560,20 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutUID
                     withName: rnCallbackName,
                     body: ["paymentMethodType": paymentMethodType])
                 
+<<<<<<< HEAD
             } else {
                 let err = RNTNativeError(
                     errorId: "native-bridge",
                     errorDescription: "Callback [\(rnCallbackName)] is not implemented.",
                     recoverySuggestion: "[Optional] Consider implementing [\(rnCallbackName)] to get notified when the payment method is getting presented.")
                 self.handleRNBridgeError(err, checkoutData: nil, stopOnDebug: false)
+=======
+>>>>>>> feature/DEVX-409_HUC-Example-app
             }
         }
     }
 }
+<<<<<<< HEAD
 
 
 
@@ -735,3 +784,5 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutUID
 //}
 
 
+=======
+>>>>>>> feature/DEVX-409_HUC-Example-app

@@ -10,56 +10,63 @@ export {
 export {
     PrimerSessionIntent as SessionIntent
 } from './models/PrimerSessionIntent';
-export { 
+export {
     PrimerPaymentCreationHandler as PaymentCreationHandler,
     PrimerTokenizationHandler as TokenizationHandler,
     PrimerResumeHandler as ResumeHandler,
     PrimerErrorHandler as ErrorHandler,
 } from './models/PrimerHandlers';
 export { PrimerPaymentMethodTokenData } from './models/PrimerPaymentMethodTokenData';
-export { 
+export {
     PrimerClientSession as ClientSession,
     PrimerOrder as Order,
     PrimerLineItem as LineItem,
     PrimerCustomer as Customer,
     PrimerAddress as Address,
 } from './models/PrimerClientSession';
-export { 
+export {
     PrimerRawData as RawData,
-    PrimerRawCardData as RawCardData
+    PrimerRawCardData as RawCardData,
+    PrimerRawBancontactCardRedirectData as RawBancontactCardRedirectData,
+    PrimerRawPhoneNumberData as RawPhoneNumberData,
+    PrimerRawRetailerData as RawRetailerData
 } from './models/PrimerRawData';
 export {
     PrimerCheckoutAdditionalInfo as CheckoutAdditionalInfo,
     MultibancoCheckoutAdditionalInfo
 } from './models/PrimerCheckoutAdditionalInfo';
 export {
+    RetailOutletsRetail
+} from './models/RetailOutletsRetail';
+export {
     PrimerCheckoutData as CheckoutData,
+    PrimerCheckoutDataPayment as CheckoutDataPayment,
 } from './models/PrimerCheckoutData';
-export { 
+export {
     PrimerCheckoutPaymentMethodData as CheckoutPaymentMethodData
 } from './models/PrimerCheckoutPaymentMethodData';
-export { 
+export {
     PrimerError
 } from './models/PrimerError';
-export type { 
+export type {
     IPrimerAsset as Asset
 } from './models/PrimerAsset';
 export {
     PrimerHeadlessUniversalCheckout as HeadlessUniversalCheckout
 } from './HeadlessUniversalCheckout/PrimerHeadlessUniversalCheckout';
-export type { 
+export type {
     IPrimerHeadlessUniversalCheckoutPaymentMethod as PaymentMethod
 } from './models/PrimerHeadlessUniversalCheckoutPaymentMethod';
 
 import PrimerHeadlessUniversalCheckoutAssetsManager from './HeadlessUniversalCheckout/Managers/AssetsManager';
-export { 
+export {
     PrimerHeadlessUniversalCheckoutAssetsManager as AssetsManager
 }
 import PrimerHeadlessUniversalCheckoutPaymentMethodNativeUIManager from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/NativeUIManager';
-export { 
+export {
     PrimerHeadlessUniversalCheckoutPaymentMethodNativeUIManager as NativeUIManager
 }
 import PrimerHeadlessUniversalCheckoutRawDataManager from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/RawDataManager';
-export { 
+export {
     PrimerHeadlessUniversalCheckoutRawDataManager as RawDataManager
 }
