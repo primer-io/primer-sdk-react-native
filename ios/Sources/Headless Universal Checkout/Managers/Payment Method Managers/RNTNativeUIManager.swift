@@ -21,18 +21,12 @@ class RNTPrimerHeadlessUniversalPaymentMethodNativeUIManager: RCTEventEmitter {
         return true
     }
     
-    deinit {
-        print("DEINIT \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
-    
-    override init() {
-        super.init()
-        print("INIT \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
-    
     @objc
-    func initialize(_ paymentMethod: String, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
-        print("initialize \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    func configure(
+        _ paymentMethod: String,
+        resolver: @escaping RCTPromiseResolveBlock,
+        rejecter: @escaping RCTPromiseRejectBlock
+    ) {
         do {
             self.paymentMethodNativeUIManager = try PrimerSDK.PrimerHeadlessUniversalCheckout.NativeUIManager(paymentMethodType: paymentMethod)
             resolver(nil)

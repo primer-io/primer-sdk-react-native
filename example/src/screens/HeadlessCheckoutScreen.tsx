@@ -293,7 +293,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
         setIsLoading(true);
         await createClientSessionIfNeeded();
         const nativeUIManager = new NativeUIManager();
-        await nativeUIManager.initialize(paymentMethod.paymentMethodType);
+        await nativeUIManager.configure(paymentMethod.paymentMethodType);
         await nativeUIManager.showPaymentMethod(SessionIntent.CHECKOUT);
 
       } else if (implementationType === "RAW_DATA") {
