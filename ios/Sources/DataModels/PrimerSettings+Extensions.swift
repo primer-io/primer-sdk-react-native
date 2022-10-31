@@ -7,14 +7,14 @@ extension PrimerSettings {
             self.init()
         } else {
             guard let settingsData = settingsStr!.data(using: .utf8) else {
-                let err = RNTNativeError(errorId: "invalid-value", errorDescription: "The value of the settings object is invalid.", recoverySuggestion: "Provide a valid settings object")
+                let err = RNTNativeError(errorId: "native-ios", errorDescription: "The value of the 'settings' object is invalid.", recoverySuggestion: "Provide a valid 'settings' object")
                 throw err
             }
             
             let settingsJson = try JSONSerialization.jsonObject(with: settingsData)
             
             guard let settingsJson = settingsJson as? [String: Any] else {
-                let err = RNTNativeError(errorId: "invalid-value", errorDescription: "Settings is not a valid JSON", recoverySuggestion: "Provide a valid settings object")
+                let err = RNTNativeError(errorId: "native-ios", errorDescription: "The 'settings' object is not a valid JSON", recoverySuggestion: "Provide a valid 'settings' object")
                 throw err
             }
             

@@ -28,7 +28,7 @@ class RNTPrimerHeadlessUniversalCheckoutAssetsManager: RCTEventEmitter {
         do {
             guard let paymentMethodAsset = try PrimerSDK.PrimerHeadlessUniversalCheckout.AssetsManager.getPaymentMethodAsset(for: paymentMethodType) else {
                 let err = RNTNativeError(
-                    errorId: "missing-asset",
+                    errorId: "native-ios",
                     errorDescription: "Failed to find asset of \(paymentMethodType) for this session",
                     recoverySuggestion: nil)
                 throw err
@@ -38,7 +38,7 @@ class RNTPrimerHeadlessUniversalCheckoutAssetsManager: RCTEventEmitter {
                 resolver(["paymentMethodAsset": rntPaymentMethodAsset])
             } else {
                 let err = RNTNativeError(
-                    errorId: "missing-asset",
+                    errorId: "native-ios",
                     errorDescription: "Failed to create the RNTPrimerPaymentMethodAsset",
                     recoverySuggestion: nil)
                 throw err
@@ -59,7 +59,10 @@ class RNTPrimerHeadlessUniversalCheckoutAssetsManager: RCTEventEmitter {
             
             let rntPaymentMethodAssets = paymentMethodAssets.compactMap({ try? RNTPrimerPaymentMethodAsset(primerPaymentMethodAsset: $0).toJsonObject() })
             guard !rntPaymentMethodAssets.isEmpty else {
-                let err = RNTNativeError(errorId: "missing-asset", errorDescription: "Failed to find assets for this session", recoverySuggestion: nil)
+                let err = RNTNativeError(
+                    errorId: "native-ios",
+                    errorDescription: "Failed to find assets for this session",
+                    recoverySuggestion: nil)
                 throw err
             }
             
