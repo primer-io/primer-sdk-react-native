@@ -11,12 +11,18 @@ extension UIImage {
     
     func store(withName name: String) throws -> URL {
         guard let imageURL = NSURL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("\(name).png") else {
-            let err = RNTNativeError(errorId: "error", errorDescription: "Failed to create URL for asset", recoverySuggestion: nil)
+            let err = RNTNativeError(
+                errorId: "native-ios",
+                errorDescription: "Failed to create URL for asset",
+                recoverySuggestion: nil)
             throw err
         }
 
         guard let pngData = self.pngData() else {
-            let err = RNTNativeError(errorId: "error", errorDescription: "Failed to get image's PNG data", recoverySuggestion: nil)
+            let err = RNTNativeError(
+                errorId: "native-ios",
+                errorDescription: "Failed to get image's PNG data",
+                recoverySuggestion: nil)
             throw err
         }
 

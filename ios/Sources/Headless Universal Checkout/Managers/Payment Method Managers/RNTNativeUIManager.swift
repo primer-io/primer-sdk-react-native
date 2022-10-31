@@ -45,12 +45,18 @@ class RNTPrimerHeadlessUniversalPaymentMethodNativeUIManager: RCTEventEmitter {
     func showPaymentMethod(_ intent: String, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
         do {
             guard let paymentMethodNativeUIManager = paymentMethodNativeUIManager else {
-                let err = RNTNativeError(errorId: "uninitialized-manager", errorDescription: "The NativeUIManager has not been initialized.", recoverySuggestion: "Initialize the NativeUIManager by calling the initialize function and providing a payment method type.")
+                let err = RNTNativeError(
+                    errorId: "native-ios",
+                    errorDescription: "The NativeUIManager has not been initialized.",
+                    recoverySuggestion: "Initialize the NativeUIManager by calling the initialize function and providing a payment method type.")
                 throw err
             }
             
             guard let intent = PrimerSessionIntent(rawValue: intent) else {
-                let err = RNTNativeError(errorId: "invalid value", errorDescription: "The NativeUIManager has not been initialized.", recoverySuggestion: "Initialize the NativeUIManager by calling the initialize function and providing a payment method type.")
+                let err = RNTNativeError(
+                    errorId: "native-ios",
+                    errorDescription: "Invalid value for 'intent'.",
+                    recoverySuggestion: "'intent' can be 'CHECKOUT' or 'VAULT'.")
                 throw err
             }
             

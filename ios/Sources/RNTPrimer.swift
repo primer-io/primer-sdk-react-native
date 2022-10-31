@@ -240,7 +240,10 @@ class RNTPrimer: RCTEventEmitter {
         DispatchQueue.main.async {
             do {
                 guard let implementedRNCallbacksData = implementedRNCallbacksStr.data(using: .utf8) else {
-                    let err = NSError(domain: "native-bridge", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to convert string to data"])
+                    let err = RNTNativeError(
+                        errorId: "native-ios",
+                        errorDescription: "Failed to convert string to data",
+                        recoverySuggestion: nil)
                     throw err
                 }
                 
@@ -288,7 +291,10 @@ extension RNTPrimer: PrimerDelegate {
                     self.handleRNBridgeError(error, checkoutData: data, stopOnDebug: true)
                 }
             } else {
-                let err = NSError(domain: "native-bridge", code: 1, userInfo: [NSLocalizedDescriptionKey: "Callback [onCheckoutComplete] should be implemented."])
+                let err = RNTNativeError(
+                    errorId: "native-ios",
+                    errorDescription: "Callback [onCheckoutComplete] should be implemented.",
+                    recoverySuggestion: nil)
                 self.handleRNBridgeError(err, checkoutData: data, stopOnDebug: false)
             }
         }
@@ -306,7 +312,10 @@ extension RNTPrimer: PrimerDelegate {
                   self.handleRNBridgeError(error, checkoutData: checkoutData, stopOnDebug: true)
               }
           } else {
-              let err = NSError(domain: "native-bridge", code: 1, userInfo: [NSLocalizedDescriptionKey: "Callback [onResumePending] should be implemented."])
+              let err = RNTNativeError(
+                  errorId: "native-ios",
+                  errorDescription: "Callback [onResumePending] should be implemented.",
+                  recoverySuggestion: nil)
               let checkoutData = PrimerCheckoutData(payment: nil, additionalInfo: additionalInfo)
               self.handleRNBridgeError(err, checkoutData: checkoutData, stopOnDebug: false)
           }
