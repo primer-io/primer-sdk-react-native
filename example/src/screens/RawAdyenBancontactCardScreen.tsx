@@ -13,6 +13,7 @@ import {
 import TextField from '../components/TextField';
 import { styles } from '../styles';
 import type { PrimerRawCardRedirectData } from 'src/models/PrimerRawData';
+import type { RawDataScreenProps } from '../models/RawDataScreenProps';
 
 export interface RawCardDataScreenProps {
     navigation: any;
@@ -21,7 +22,7 @@ export interface RawCardDataScreenProps {
 
 const rawDataManager = new RawDataManager();
 
-const RawAdyenBancontactCardScreen = (props: RawCardDataScreenProps) => {
+const RawAdyenBancontactCardScreen = (props: RawDataScreenProps) => {
 
     const [isLoading, setIsLoading] = useState(false);
     const [isCardFormValid, setIsCardFormValid] = useState(false);

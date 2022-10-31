@@ -12,6 +12,7 @@ import {
 } from '@primer-io/react-native';
 import TextField from '../components/TextField';
 import { styles } from '../styles';
+import type { RawDataScreenProps } from '../models/RawDataScreenProps';
 
 export interface RawCardDataScreenProps {
     navigation: any;
@@ -20,7 +21,7 @@ export interface RawCardDataScreenProps {
 
 const rawDataManager = new RawDataManager();
 
-const RawCardDataScreen = (props: RawCardDataScreenProps) => {
+const RawCardDataScreen = (props: RawDataScreenProps) => {
 
     const [isLoading, setIsLoading] = useState(false);
     const [isCardFormValid, setIsCardFormValid] = useState(false);

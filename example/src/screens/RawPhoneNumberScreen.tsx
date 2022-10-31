@@ -12,15 +12,11 @@ import {
 } from '@primer-io/react-native';
 import TextField from '../components/TextField';
 import { styles } from '../styles';
-
-export interface RawCardDataScreenProps {
-    navigation: any;
-    clientSession: any;
-}
+import type { RawDataScreenProps } from '../models/RawDataScreenProps';
 
 const rawDataManager = new RawDataManager();
 
-const RawPhoneNumberDataScreen = (props: RawCardDataScreenProps) => {
+const RawPhoneNumberDataScreen = (props: RawDataScreenProps) => {
 
     const [isLoading, setIsLoading] = useState(false);
     const [isCardFormValid, setIsCardFormValid] = useState(false);
@@ -35,7 +31,7 @@ const RawPhoneNumberDataScreen = (props: RawCardDataScreenProps) => {
 
     const initialize = async () => {
         await rawDataManager.initialize({
-            paymentMethodType: "ADYEN_MBWAY",
+            paymentMethodType: props.route.params.paymentMethodType,
             onMetadataChange: (data => {
                 const log = `\nonMetadataChange: ${JSON.stringify(data)}\n`;
                 console.log(log);

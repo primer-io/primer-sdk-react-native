@@ -26,19 +26,19 @@ export interface AppPaymentParameters {
     merchantName?: string;
 }
 
-export let customApiKey: string | undefined = "8d1c810a-50d6-4182-8cca-387ce46316cf";
+export let customApiKey: string | undefined// = "7ecce42b-b641-4c7d-a605-f786f3e201ce";
 export let customClientToken: string | undefined;
 
 // @ts-ignore
 const SettingsScreen = ({ navigation }) => {
     const isDarkMode = useColorScheme() === 'dark';
-    const [environment, setEnvironment] = React.useState<Environment>(Environment.Staging);
+    const [environment, setEnvironment] = React.useState<Environment>(Environment.Sandbox);
     const [apiKey, setApiKey] = React.useState<string | undefined>(customApiKey);
     const [clientToken, setClientToken] = React.useState<string | undefined>(undefined);
     const [paymentHandling, setPaymentHandling] = React.useState<PaymentHandling>(PaymentHandling.Auto);
     const [lineItems, setLineItems] = React.useState<IClientSessionLineItem[]>(appPaymentParameters.clientSessionRequestBody.order?.lineItems || []);
     const [currency, setCurrency] = React.useState<string>("EUR");
-    const [countryCode, setCountryCode] = React.useState<string>("NL");
+    const [countryCode, setCountryCode] = React.useState<string>("PT");
     const [orderId, setOrderId] = React.useState<string | undefined>(appPaymentParameters.clientSessionRequestBody.orderId);
 
     const [merchantName, setMerchantName] = React.useState<string | undefined>(appPaymentParameters.merchantName);
