@@ -12,15 +12,11 @@ import {
 } from '@primer-io/react-native';
 import TextField from '../components/TextField';
 import { styles } from '../styles';
-
-export interface RawCardDataScreenProps {
-    navigation: any;
-    clientSession: any;
-}
+import type { RawDataScreenProps } from '../models/RawDataScreenProps';
 
 const rawDataManager = new RawDataManager();
 
-const RawRetailOutletScreen = (props: RawCardDataScreenProps) => {
+const RawRetailOutletScreen = (props: RawDataScreenProps) => {
 
     const [isLoading, setIsLoading] = useState(false);
     const [isCardFormValid, setIsCardFormValid] = useState(false);
@@ -73,14 +69,14 @@ const RawRetailOutletScreen = (props: RawCardDataScreenProps) => {
                 <View>
                     {
                         requiredInputElementTypes.map(et => {
-                            if (et === InputElementType.PHONE_NUMBER) {
+                            if (et === InputElementType.RETAILER) {
                                 return (
                                     <TextField
-                                        key={"PHONE_NUMBER"}
+                                        key={"RETAILER"}
                                         style={{ marginVertical: 8 }}
-                                        title='Phone Number'
+                                        title="Retailer ID"
                                         value={retailOutletId}
-                                        keyboardType={"numeric"}
+                                        keyboardType={"default"}
                                         onChangeText={(text) => {
                                             setRetailOutletId(text);
                                             setRawData(text);
