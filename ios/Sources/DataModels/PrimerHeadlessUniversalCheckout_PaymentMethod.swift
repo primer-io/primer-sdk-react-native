@@ -14,7 +14,7 @@ extension PrimerHeadlessUniversalCheckout.PaymentMethod {
         return [
             "paymentMethodType": paymentMethodType,
             "supportedPrimerSessionIntents": self.supportedPrimerSessionIntents.compactMap({ $0.rawValue }),
-            "paymentMethodManagerCategories": self.paymentMethodManagerCategories.compactMap({ $0.rawValue })
+            "paymentMethodManagerCategories": self.paymentMethodManagerCategories.compactMap({ $0.rawValue }).filter({ $0 != "CARD_COMPONENTS" })
         ]
     }
 }
