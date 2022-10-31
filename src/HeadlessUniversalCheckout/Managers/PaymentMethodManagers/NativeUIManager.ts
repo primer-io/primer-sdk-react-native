@@ -14,9 +14,9 @@ class PrimerHeadlessUniversalCheckoutPaymentMethodNativeUIManager {
     // Native API
     ///////////////////////////////////////////
 
-    async initialize(paymentMethodType: string): Promise<void> {
+    async configure(paymentMethodType: string): Promise<void> {
         try {
-            await RNTPrimerHeadlessUniversalPaymentMethodNativeUIManager.initialize(paymentMethodType);
+            await RNTPrimerHeadlessUniversalPaymentMethodNativeUIManager.configure(paymentMethodType);
         } catch (err) {
             console.error(err);
             throw err;

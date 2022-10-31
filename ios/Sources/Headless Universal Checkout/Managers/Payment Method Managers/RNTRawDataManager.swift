@@ -39,36 +39,22 @@ class RNTPrimerHeadlessUniversalCheckoutRawDataManager: RCTEventEmitter {
     }
 
     // MARK: - API
-
+    
     @objc
-    public func initialize(
+    public func configure(
         _ paymentMethodTypeStr: String,
-        resolver: RCTPromiseResolveBlock,
-        rejecter: RCTPromiseRejectBlock
+        resolver: @escaping RCTPromiseResolveBlock,
+        rejecter: @escaping RCTPromiseRejectBlock
     ) {
         self.paymentMethodType = paymentMethodTypeStr
 
         do {
             self.rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: self.paymentMethodType!, delegate: self)
-            resolver(nil)
         } catch {
             rejecter(error.rnError["errorId"]!, error.rnError["description"], error)
         }
-    }
-    
-    @objc
-    public func configure(_ resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
-        
-        guard let rawDataManager = rawDataManager else {
-            let err = RNTNativeError(
-                errorId: "native-ios",
-                errorDescription: "The RawDataManager has not been initialized",
-                recoverySuggestion: "Make sure you have called initialized the `RawDataManager' first.")
-            rejecter(err.rnError["errorId"]!, err.rnError["description"], err)
-            return
-        }
 
-        rawDataManager.configure { data, error in
+        self.rawDataManager!.configure { data, error in
             do {
                 guard error == nil else {
                     rejecter(error!.rnError["errorId"]!, error!.rnError["description"], error)

@@ -38,7 +38,7 @@ const RawCardDataScreen = (props: RawDataScreenProps) => {
     }, []);
 
     const initialize = async () => {
-        await rawDataManager.initialize({
+        await rawDataManager.configure({
             paymentMethodType: props.route.params.paymentMethodType,
             onMetadataChange: (data => {
                 const log = `\nonMetadataChange: ${JSON.stringify(data)}\n`;
