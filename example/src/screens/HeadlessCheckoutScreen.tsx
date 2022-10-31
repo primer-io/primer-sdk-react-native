@@ -302,7 +302,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
         if (paymentMethod.paymentMethodType === "XENDIT_OVO" || paymentMethod.paymentMethodType === "ADYEN_MBWAY") {
           props.navigation.navigate('RawPhoneNumberData', { paymentMethodType: paymentMethod.paymentMethodType });
 
-        } else if (paymentMethod.paymentMethodType === "XENDIT_RETAIL") {
+        } else if (paymentMethod.paymentMethodType === "XENDIT_RETAIL_OUTLETS") {
           props.navigation.navigate('RawRetailOutlet', { paymentMethodType: paymentMethod.paymentMethodType });
 
         } else if (paymentMethod.paymentMethodType === "ADYEN_BANCONTACT_CARD") {
