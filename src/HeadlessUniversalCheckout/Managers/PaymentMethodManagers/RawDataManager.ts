@@ -1,5 +1,4 @@
 import { NativeEventEmitter, NativeModules, EmitterSubscription } from 'react-native';
-import type { PrimerRawData } from "../../..";
 import { PrimerError } from '../../../models/PrimerError';
 import type { PrimerInputElementType } from '../../../models/PrimerInputElementType';
 
