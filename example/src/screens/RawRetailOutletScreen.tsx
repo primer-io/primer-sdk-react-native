@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
+    FlatList,
     Text,
     TouchableOpacity,
     View
@@ -21,7 +22,8 @@ const RawRetailOutletScreen = (props: RawDataScreenProps) => {
     const [isLoading, setIsLoading] = useState(false);
     const [isCardFormValid, setIsCardFormValid] = useState(false);
     const [requiredInputElementTypes, setRequiredInputElementTypes] = useState<string[] | undefined>(undefined);
-    const [retailOutletId, setRetailOutletId] = useState<string>("");
+    const [retailers, setRetailers] = useState<any[] | undefined>(undefined);
+    const [selectedRetailOutletId, setSelectedRetailOutletId] = useState<string | undefined>(undefined);
     const [metadataLog, setMetadataLog] = useState<string>("");
     const [validationLog, setValidationLog] = useState<string>("");
 
@@ -30,7 +32,7 @@ const RawRetailOutletScreen = (props: RawDataScreenProps) => {
     }, []);
 
     const initialize = async () => {
-        await rawDataManager.configure({
+        const response = await rawDataManager.configure({
             paymentMethodType: props.route.params.paymentMethodType,
             onMetadataChange: (data => {
                 const log = `\nonMetadataChange: ${JSON.stringify(data)}\n`;
@@ -48,7 +50,13 @@ const RawRetailOutletScreen = (props: RawDataScreenProps) => {
                 setValidationLog(log);
                 setIsCardFormValid(isVallid);
             })
-        })
+        });
+
+        if (response?.initializationData) {
+            const retailers: any[] = response.initializationData.result;
+            setRetailers(retailers);
+        }
+        
         const requiredInputElementTypes = await rawDataManager.getRequiredInputElementTypes();
         setRequiredInputElementTypes(requiredInputElementTypes);
     }
@@ -58,35 +66,37 @@ const RawRetailOutletScreen = (props: RawDataScreenProps) => {
             id: tmpRetailOutletId
         }
 
+        setSelectedRetailOutletId(tmpRetailOutletId);
+
         rawDataManager.setRawData(rawData);
     }
 
     const renderInputs = () => {
-        if (!requiredInputElementTypes) {
+        if (!retailers) {
             return null;
         } else {
             return (
-                <View>
-                    {
-                        requiredInputElementTypes.map(et => {
-                            if (et === InputElementType.RETAILER) {
-                                return (
-                                    <TextField
-                                        key={"RETAILER"}
-                                        style={{ marginVertical: 8 }}
-                                        title="Retailer ID"
-                                        value={retailOutletId}
-                                        keyboardType={"default"}
-                                        onChangeText={(text) => {
-                                            setRetailOutletId(text);
-                                            setRawData(text);
-                                        }}
-                                    />
-                                );
-                            }
-                        })
-                    }
-                </View>
+                <FlatList
+                    style={{flex: 1}}
+                    data={retailers}
+                    keyExtractor={(item) => item.id}
+                    renderItem={(data) => {
+                        return (
+                            <TouchableOpacity
+                                style={{marginVertical: 8}}
+                                onPress={() => {
+                                    setRawData(data.item.id);
+                                }}
+                            >
+                                <Text
+                                    style={{...styles.heading3, color: data.item.id === selectedRetailOutletId ? "blue" : "black"}}
+                                >
+                                    {data.item.name}
+                                </Text>
+                            </TouchableOpacity>
+                        )
+                    }}
+                />
             );
         }
     }
