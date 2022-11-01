@@ -627,7 +627,7 @@ const SettingsScreen = ({ navigation }) => {
     const renderActions = () => {
         return (
             <View>
-                <TouchableOpacity
+                {/* <TouchableOpacity
                     style={{ ...styles.button, marginVertical: 5, backgroundColor: 'black' }}
                     onPress={() => {
                         updateAppPaymentParameters();
@@ -640,7 +640,7 @@ const SettingsScreen = ({ navigation }) => {
                     >
                         Primer SDK
                     </Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
 
                 <TouchableOpacity
                     style={{ ...styles.button, marginVertical: 5, backgroundColor: 'black' }}
