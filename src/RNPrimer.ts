@@ -1,5 +1,4 @@
 import { NativeEventEmitter, NativeModules } from 'react-native';
-import type { PrimerSessionIntent } from './models/PrimerSessionIntent';
 import type { PrimerSettings } from './models/PrimerSettings';
 
 const { NativePrimer } = NativeModules;

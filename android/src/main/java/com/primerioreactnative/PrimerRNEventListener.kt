@@ -91,7 +91,12 @@ class PrimerRNEventListener : PrimerCheckoutListener {
     if (implementedRNCallbacks?.isOnClientSessionUpdateImplemented == true) {
       sendEvent?.invoke(
         PrimerEvents.ON_CLIENT_SESSION_UPDATE.eventName,
-        JSONObject(Json.encodeToString(clientSession.toPrimerClientSessionRN()))
+        JSONObject().apply {
+          put(
+            "clientSession",
+            JSONObject(Json.encodeToString(clientSession.toPrimerClientSessionRN()))
+          )
+        }
       )
     } else {
       super.onClientSessionUpdated(clientSession)
