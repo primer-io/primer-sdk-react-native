@@ -1,14 +1,14 @@
 package com.primerioreactnative
 
 import com.facebook.react.bridge.Promise
+import com.primerioreactnative.components.datamodels.core.PrimerRNAvailablePaymentMethods
+import com.primerioreactnative.components.datamodels.core.toPrimerRNHeadlessUniversalCheckoutPaymentMethod
+import com.primerioreactnative.components.events.PrimerHeadlessUniversalCheckoutEvent
 import com.primerioreactnative.datamodels.*
 import com.primerioreactnative.extensions.toCheckoutAdditionalInfoRN
 import com.primerioreactnative.extensions.toPrimerCheckoutDataRN
 import com.primerioreactnative.extensions.toPrimerClientSessionRN
 import com.primerioreactnative.extensions.toPrimerPaymentMethodDataRN
-import com.primerioreactnative.components.datamodels.core.PrimerRNAvailablePaymentMethods
-import com.primerioreactnative.components.datamodels.core.toPrimerRNHeadlessUniversalCheckoutPaymentMethod
-import com.primerioreactnative.components.events.PrimerHeadlessUniversalCheckoutEvent
 import com.primerioreactnative.utils.PrimerHeadlessUniversalCheckoutImplementedRNCallbacks
 import com.primerioreactnative.utils.convertJsonToMap
 import com.primerioreactnative.utils.errorTo
@@ -141,7 +141,12 @@ class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckou
     if (implementedRNCallbacks?.isOnClientSessionUpdateImplemented == true) {
       sendEvent?.invoke(
         PrimerHeadlessUniversalCheckoutEvent.ON_CLIENT_SESSION_UPDATE.eventName,
-        JSONObject(Json.encodeToString(clientSession.toPrimerClientSessionRN()))
+        JSONObject().apply {
+          put(
+            "clientSession",
+            JSONObject(Json.encodeToString(clientSession.toPrimerClientSessionRN()))
+          )
+        }
       )
     } else {
       super.onClientSessionUpdated(clientSession)
