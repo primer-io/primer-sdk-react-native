@@ -1,4 +1,4 @@
-package com.primerioreactnative.huc.datamodels.manager.raw.retailOutlets
+package com.primerioreactnative.components.datamodels.manager.raw.retailOutlets
 
 import io.primer.android.data.payments.configure.retailOutlets.RetailOutletsList
 import kotlinx.serialization.Serializable

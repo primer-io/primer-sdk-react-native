@@ -11,7 +11,6 @@ import RawPhoneNumberDataScreen from './screens/RawPhoneNumberScreen';
 import RawAdyenBancontactCardScreen from './screens/RawAdyenBancontactCardScreen';
 import RawRetailOutletScreen from './screens/RawRetailOutletScreen';
 
-
 const Stack = createNativeStackNavigator();
 
 const App = () => {
@@ -27,7 +26,6 @@ const App = () => {
           <Stack.Screen name="RawPhoneNumberData" component={RawPhoneNumberDataScreen} />
           <Stack.Screen name="RawAdyenBancontactCard" component={RawAdyenBancontactCardScreen} />
           <Stack.Screen name="RawRetailOutlet" component={RawRetailOutletScreen} />
-          
         </Stack.Navigator>
       </NavigationContainer>
   );

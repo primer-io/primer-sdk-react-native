@@ -8,7 +8,6 @@ fun PrimerPaymentMethodOptionsRN.toPrimerPaymentMethodOptions() = PrimerPaymentM
   googlePayOptions.toPrimerGooglePayOptions(),
   klarnaOptions.toPrimerKlarnaOptions(),
   apayaOptions.toPrimerApayaOptions(),
-  goCardlessOptions.toPrimerGoCardlessOptions()
 )
 
 fun PrimerGooglePayOptionsRN.toPrimerGooglePayOptions() =
@@ -18,6 +17,3 @@ fun PrimerKlarnaOptionsRN.toPrimerKlarnaOptions() =
   PrimerKlarnaOptions(recurringPaymentDescription, webViewTitle)
 
 fun PrimerApayaOptionsRN.toPrimerApayaOptions() = PrimerApayaOptions(webViewTitle)
-
-fun PrimerGoCardlessOptionsRN.toPrimerGoCardlessOptions() =
-  PrimerGoCardlessOptions(businessName, businessAddress)

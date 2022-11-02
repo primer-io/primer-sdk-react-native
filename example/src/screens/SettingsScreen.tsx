@@ -142,7 +142,7 @@ const SettingsScreen = ({ navigation }) => {
                         Currency & Country Code
                     </Text>
                     <View
-                        style={{ flexDirection: 'row', marginHorizontal: 20, marginTop: -30, marginBottom: 140 }}
+                        style={{ flexDirection: 'row', marginHorizontal: 20, marginTop: -10, marginBottom: 140 }}
                     >
                         <Picker
                             selectedValue={currency}

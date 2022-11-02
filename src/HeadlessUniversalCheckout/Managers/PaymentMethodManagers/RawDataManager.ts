@@ -46,7 +46,6 @@ class PrimerHeadlessUniversalCheckoutRawDataManager {
                 } else {
                     resolve();
                 }
-
             } catch (err) {
                 reject(err);
             }
@@ -62,7 +61,7 @@ class PrimerHeadlessUniversalCheckoutRawDataManager {
                     }
                 });
             }
-    
+
             if (this.options?.onValidation) {
                 this.addListener("onValidation", (data) => {
                     if (this.options?.onValidation) {
@@ -149,7 +148,7 @@ class PrimerHeadlessUniversalCheckoutRawDataManager {
     async addListener(eventType: EventType, listener: (...args: any[]) => any): Promise<EmitterSubscription> {
         return eventEmitter.addListener(eventType, listener);
     }
-    
+
     removeListener(eventType: EventType, listener: (...args: any[]) => any): void {
         return eventEmitter.removeListener(eventType, listener);
     }

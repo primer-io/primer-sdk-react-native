@@ -33,7 +33,6 @@ data class PrimerPaymentMethodOptionsRN(
   var googlePayOptions: PrimerGooglePayOptionsRN = PrimerGooglePayOptionsRN(),
   var klarnaOptions: PrimerKlarnaOptionsRN = PrimerKlarnaOptionsRN(),
   var apayaOptions: PrimerApayaOptionsRN = PrimerApayaOptionsRN(),
-  var goCardlessOptions: PrimerGoCardlessOptionsRN = PrimerGoCardlessOptionsRN()
 )
 
 @Serializable
@@ -79,13 +78,6 @@ data class PrimerKlarnaOptionsRN(
 @Deprecated("This class is deprecated and will be removed in future release.")
 data class PrimerApayaOptionsRN(
   var webViewTitle: String? = null,
-)
-
-@Serializable
-@Deprecated("This class is deprecated and will be removed in future release.")
-data class PrimerGoCardlessOptionsRN(
-  var businessName: String? = null,
-  var businessAddress: String? = null,
 )
 
 fun PrimerSettingsRN.toPrimerSettings() = PrimerSettings(
