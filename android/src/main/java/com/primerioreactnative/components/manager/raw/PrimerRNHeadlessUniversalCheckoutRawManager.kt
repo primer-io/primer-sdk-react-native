@@ -54,11 +54,15 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
             is RetailOutletsList -> {
               promise.resolve(
                 prepareData(
-                  JSONObject(
-                    Json.encodeToString(
-                      primerInitializationData.toRNRetailOutletsList()
+                  JSONObject().apply {
+                    put(
+                      "initializationData", JSONObject(
+                        Json.encodeToString(
+                          primerInitializationData.toRNRetailOutletsList()
+                        )
+                      )
                     )
-                  )
+                  }
                 )
               )
             }
@@ -75,7 +79,6 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
 
   @ReactMethod
   fun listRequiredInputElementTypesForPaymentMethodType(
-    paymentMethodTypeStr: String,
     promise: Promise
   ) {
     if (::rawManager.isInitialized.not()) {

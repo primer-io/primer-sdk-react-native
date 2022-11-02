@@ -78,7 +78,7 @@ class PrimerHeadlessUniversalCheckoutRawDataManager {
         return new Promise(async (resolve, reject) => {
             if (this.options?.paymentMethodType) {
                 try {
-                    const data = await RNTPrimerHeadlessUniversalCheckoutRawDataManager.listRequiredInputElementTypesForPaymentMethodType(this.options.paymentMethodType);
+                    const data = await RNTPrimerHeadlessUniversalCheckoutRawDataManager.listRequiredInputElementTypesForPaymentMethodType();
                     const inputElementTypes: PrimerInputElementType[] = data.inputElementTypes;
                     resolve(inputElementTypes);
                 } catch (err) {
