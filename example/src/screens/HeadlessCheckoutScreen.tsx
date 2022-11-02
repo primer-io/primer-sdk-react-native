@@ -83,6 +83,9 @@ export const HeadlessCheckoutScreen = (props: any) => {
       iOS: {
         urlScheme: 'merchant://primer.io'
       },
+      debugOptions: {
+        is3DSSanityCheckEnabled: false
+      }
     },
     headlessUniversalCheckoutCallbacks: {
       onAvailablePaymentMethodsLoad: (availablePaymentMethods => {
@@ -175,7 +178,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
             const err = new Error("Invalid value for paymentId");
             throw err;
           }
-          
+
         } catch (err) {
           console.error(err);
           handler.complete();
@@ -240,7 +243,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
         merchantPayment: merchantPayment,
         merchantPrimerError: merchantPrimerError
       });
-      
+
       setClientSession(null);
       setIsLoading(true);
       await createClientSessionIfNeeded();
@@ -248,7 +251,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
     } catch (err) {
       console.error(err);
     }
-    
+
     setIsLoading(false);
   }
 
@@ -307,7 +310,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
 
         } else if (paymentMethod.paymentMethodType === "ADYEN_BANCONTACT_CARD") {
           props.navigation.navigate('RawAdyenBancontactCard', { paymentMethodType: paymentMethod.paymentMethodType });
-          
+
         } else if (paymentMethod.paymentMethodType === "PAYMENT_CARD") {
           props.navigation.navigate('RawCardData', { paymentMethodType: paymentMethod.paymentMethodType });
         }

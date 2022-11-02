@@ -1,4 +1,4 @@
-package com.primerioreactnative.huc.datamodels.manager.raw.phoneNumber
+package com.primerioreactnative.components.datamodels.manager.raw.phoneNumber
 
 import io.primer.android.components.domain.core.models.phoneNumber.PrimerRawPhoneNumberData
 import kotlinx.serialization.Serializable

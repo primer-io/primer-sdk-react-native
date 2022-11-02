@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import {
     Text,
     TouchableOpacity,
-    View
+    View,
+    ScrollView
 } from 'react-native';
 import { ActivityIndicator } from 'react-native';
 import {
@@ -214,7 +215,7 @@ const RawAdyenBancontactCardScreen = (props: RawDataScreenProps) => {
 
     const renderEvents = () => {
         return (
-            <View>
+            <ScrollView>
                 <View style={{ backgroundColor: "lightgray" }}>
                     <Text style={{ height: 50 }}>
                         {metadataLog}
@@ -225,7 +226,7 @@ const RawAdyenBancontactCardScreen = (props: RawDataScreenProps) => {
                         {validationLog}
                     </Text>
                 </View>
-            </View>
+            </ScrollView>
         )
     }
 

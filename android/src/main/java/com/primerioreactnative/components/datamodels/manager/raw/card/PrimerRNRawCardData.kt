@@ -1,4 +1,4 @@
-package com.primerioreactnative.huc.datamodels.manager.raw.card
+package com.primerioreactnative.components.datamodels.manager.raw.card
 
 import io.primer.android.components.domain.core.models.card.PrimerRawCardData
 import kotlinx.serialization.Serializable

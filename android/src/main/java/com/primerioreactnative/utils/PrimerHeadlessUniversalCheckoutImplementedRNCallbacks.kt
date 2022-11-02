@@ -17,18 +17,18 @@ data class PrimerHeadlessUniversalCheckoutImplementedRNCallbacks(
   val isOnErrorImplemented: Boolean? = null,
   @SerialName("onTokenizeSuccess")
   val isOnTokenizeSuccessImplemented: Boolean? = null,
-  @SerialName("onResumeSuccess")
-  val isOnResumeSuccessImplemented: Boolean? = null,
-  @SerialName("onResumePending")
-  val isOnResumePendingImplemented: Boolean? = null,
-  @SerialName("onCheckoutReceivedAdditionalInfo")
-  val isOnCheckoutReceivedAdditionalInfo: Boolean? = null,
-  @SerialName("onHUCTokenizeStart")
-  val isOnHUCTokenizeStartsImplemented: Boolean? = null,
-  @SerialName("onHUCPrepareStart")
-  val isOnHUCPrepareStartImplemented: Boolean? = null,
-  @SerialName("onHUCAvailablePaymentMethodsLoaded")
-  val isOnHUCAvailablePaymentMethodsLoadedImplemented: Boolean? = null,
-  @SerialName("onHUCPaymentMethodShow")
-  val isOnHUCPaymentMethodShowImplemented: Boolean? = null,
+  @SerialName("onCheckoutResume")
+  val isOnCheckoutResumeImplemented: Boolean? = null,
+  @SerialName("onCheckoutPending")
+  val isOnCheckoutPendingImplemented: Boolean? = null,
+  @SerialName("onCheckoutAdditionalInfo")
+  val isOnCheckoutAdditionalInfoImplemented: Boolean? = null,
+  @SerialName("onTokenizationStart")
+  val isOnTokenizationStartImplemented: Boolean? = null,
+  @SerialName("onPreparationStart")
+  val isOnPreparationStartImplemented: Boolean? = null,
+  @SerialName("onAvailablePaymentMethodsLoad")
+  val isOnAvailablePaymentMethodsLoadImplemented: Boolean? = null,
+  @SerialName("onPaymentMethodShow")
+  val isOnPaymentMethodShowImplemented: Boolean? = null,
 )

@@ -8,14 +8,13 @@ import com.primerioreactnative.utils.PrimerImplementedRNCallbacks
 import com.primerioreactnative.utils.convertJsonToMap
 import com.primerioreactnative.utils.errorTo
 import io.primer.android.Primer
-import io.primer.android.PrimerSessionIntent
 import io.primer.android.data.settings.PrimerSettings
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
 
-class PrimerRN(private val reactContext: ReactApplicationContext, private val json: Json) :
+class PrimerRN(reactContext: ReactApplicationContext, private val json: Json) :
   ReactContextBaseJavaModule(reactContext) {
   private var mListener = PrimerRNEventListener()
 
@@ -66,39 +65,6 @@ class PrimerRN(private val reactContext: ReactApplicationContext, private val js
   fun showVaultManagerWithClientToken(clientToken: String, promise: Promise) {
     try {
       Primer.instance.showVaultManager(reactApplicationContext.applicationContext, clientToken)
-      promise.resolve(null)
-    } catch (e: Exception) {
-      val exception = ErrorTypeRN.NativeBridgeFailed errorTo
-        "Primer SDK failed: ${e.message}"
-      onError(exception)
-      promise.reject(exception.errorId, exception.description, e)
-    }
-  }
-
-  @ReactMethod
-  fun showPaymentMethod(
-    paymentMethodTypeStr: String,
-    intentStr: String,
-    clientToken: String,
-    promise: Promise
-  ) {
-    val intent: PrimerSessionIntent
-    try {
-      intent = PrimerSessionIntent.valueOf(intentStr.uppercase())
-    } catch (e: Exception) {
-      val exception = ErrorTypeRN.NativeBridgeFailed errorTo "Intent $intentStr is not valid."
-      onError(exception)
-      promise.reject(exception.errorId, exception.description, e)
-      return
-    }
-
-    try {
-      Primer.instance.showPaymentMethod(
-        reactApplicationContext.applicationContext,
-        clientToken,
-        paymentMethodTypeStr,
-        intent
-      )
       promise.resolve(null)
     } catch (e: Exception) {
       val exception = ErrorTypeRN.NativeBridgeFailed errorTo

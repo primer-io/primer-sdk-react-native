@@ -39,7 +39,7 @@ class RNTPrimerHeadlessUniversalCheckoutRawDataManager: RCTEventEmitter {
     }
 
     // MARK: - API
-    
+
     @objc
     public func configure(
         _ paymentMethodTypeStr: String,
@@ -151,7 +151,7 @@ class RNTPrimerHeadlessUniversalCheckoutRawDataManager: RCTEventEmitter {
         rawDataManager.submit()
         resolver(nil)
     }
-    
+
     @objc
     public func dispose(
         _ resolver: RCTPromiseResolveBlock,
@@ -169,6 +169,7 @@ class RNTPrimerHeadlessUniversalCheckoutRawDataManager: RCTEventEmitter {
         rawDataManager.submit()
         resolver(nil)
     }
+
 }
 
 extension RNTPrimerHeadlessUniversalCheckoutRawDataManager: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {

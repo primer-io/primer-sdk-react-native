@@ -1,12 +1,11 @@
-package com.primerioreactnative.huc.manager.raw
+package com.primerioreactnative.components.manager.raw
 
 import com.primerioreactnative.datamodels.PrimerErrorRN
-import com.primerioreactnative.huc.events.PrimerHeadlessUniversalCheckoutRawDataManagerEvent
+import com.primerioreactnative.components.events.PrimerHeadlessUniversalCheckoutRawDataManagerEvent
 import io.primer.android.ExperimentalPrimerApi
 import io.primer.android.components.domain.core.models.card.PrimerCardMetadata
 import io.primer.android.components.domain.core.models.metadata.PrimerPaymentMethodMetadata
 import io.primer.android.components.domain.error.PrimerInputValidationError
-import io.primer.android.components.manager.raw.PrimerHeadlessUniversalCheckoutRawDataManager
 import io.primer.android.components.manager.raw.PrimerHeadlessUniversalCheckoutRawDataManagerListener
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json

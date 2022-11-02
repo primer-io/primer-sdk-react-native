@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import {
     Text,
     TouchableOpacity,
-    View
+    View,
+    ScrollView
 } from 'react-native';
 import { ActivityIndicator } from 'react-native';
 import {
@@ -163,7 +164,7 @@ const RawCardDataScreen = (props: RawDataScreenProps) => {
                                     <TextField
                                         key={"CARDHOLDER_NAME"}
                                         style={{ marginVertical: 8 }}
-                                        title='CVV'
+                                        title='Cardholder name'
                                         value={cardholderName}
                                         keyboardType={"default"}
                                         onChangeText={(text) => {
@@ -234,7 +235,7 @@ const RawCardDataScreen = (props: RawDataScreenProps) => {
 
     const renderEvents = () => {
         return (
-            <View>
+            <ScrollView>
                 <View style={{ backgroundColor: "lightgray" }}>
                     <Text style={{ height: 50 }}>
                         {metadataLog}
@@ -245,7 +246,7 @@ const RawCardDataScreen = (props: RawDataScreenProps) => {
                         {validationLog}
                     </Text>
                 </View>
-            </View>
+            </ScrollView>
         )
     }
 

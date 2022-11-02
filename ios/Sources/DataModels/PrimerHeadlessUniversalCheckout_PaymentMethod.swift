@@ -9,7 +9,7 @@ import Foundation
 import PrimerSDK
 
 extension PrimerHeadlessUniversalCheckout.PaymentMethod {
-    
+
     func toJsonObject() -> [String: Any] {
         return [
             "paymentMethodType": paymentMethodType,

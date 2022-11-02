@@ -8,7 +8,7 @@
 import UIKit
 
 extension UIImage {
-    
+
     func store(withName name: String) throws -> URL {
         guard let imageURL = NSURL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("\(name).png") else {
             let err = RNTNativeError(

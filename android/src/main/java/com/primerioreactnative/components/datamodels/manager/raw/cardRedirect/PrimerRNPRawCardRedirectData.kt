@@ -1,4 +1,4 @@
-package com.primerioreactnative.huc.datamodels.manager.raw.cardRedirect
+package com.primerioreactnative.components.datamodels.manager.raw.cardRedirect
 
 import io.primer.android.components.domain.core.models.bancontact.PrimerRawBancontactCardData
 import kotlinx.serialization.Serializable
