@@ -59,7 +59,7 @@ class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckou
       )
 
     sendEvent?.invoke(
-      PrimerHeadlessUniversalCheckoutEvent.ON_AVAILABLE_PAYMENT_METHODS_LOADED.eventName,
+      PrimerHeadlessUniversalCheckoutEvent.ON_AVAILABLE_PAYMENT_METHODS_LOAD.eventName,
       availablePaymentMethods
     )
     successCallback?.resolve(

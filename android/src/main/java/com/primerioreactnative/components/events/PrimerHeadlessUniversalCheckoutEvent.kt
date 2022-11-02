@@ -1,7 +1,7 @@
 package com.primerioreactnative.components.events
 
 internal enum class PrimerHeadlessUniversalCheckoutEvent(val eventName: String) {
-  ON_AVAILABLE_PAYMENT_METHODS_LOADED("onAvailablePaymentMethodsLoad"),
+  ON_AVAILABLE_PAYMENT_METHODS_LOAD("onAvailablePaymentMethodsLoad"),
   ON_PREPARE_START("onPreparationStart"),
   ON_PAYMENT_METHOD_SHOW("onPaymentMethodShow"),
   ON_TOKENIZE_START("onTokenizeStart"),
