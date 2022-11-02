@@ -234,6 +234,12 @@ const SettingsScreen = ({ navigation }) => {
                             onPress={() => {
                                 const newLineItemsScreenProps: NewLineItemScreenProps = {
                                     lineItem: item,
+                                    onEditLineItem: (editedLineItem) => {
+                                        const currentLineItems = [...lineItems];
+                                        const index = currentLineItems.indexOf(item, 0);
+                                        currentLineItems[index] = editedLineItem;
+                                        setLineItems(currentLineItems);
+                                    },
                                     onRemoveLineItem: (lineItem) => {
                                         const currentLineItems = [...lineItems];
                                         const index = currentLineItems.indexOf(lineItem, 0);
