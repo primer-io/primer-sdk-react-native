@@ -159,7 +159,9 @@ class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckou
   ) {
     if (implementedRNCallbacks?.isOnTokenizeSuccessImplemented == true) {
       val token = PrimerPaymentInstrumentTokenRN.fromPaymentMethodToken(paymentMethodTokenData)
-      val request = JSONObject(Json.encodeToString(token))
+      val request = JSONObject().apply {
+        put("paymentMethodTokenData", JSONObject(Json.encodeToString(token)))
+      }
       tokenizeSuccessDecisionHandler = { newClientToken, _ ->
         when {
           newClientToken != null -> decisionHandler.continueWithNewClientToken(newClientToken)

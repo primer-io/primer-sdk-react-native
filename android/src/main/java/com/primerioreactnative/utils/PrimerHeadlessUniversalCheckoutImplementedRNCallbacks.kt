@@ -15,7 +15,7 @@ data class PrimerHeadlessUniversalCheckoutImplementedRNCallbacks(
   val isOnBeforePaymentCreateImplemented: Boolean? = null,
   @SerialName("onError")
   val isOnErrorImplemented: Boolean? = null,
-  @SerialName("onTokenizeSuccess")
+  @SerialName("onTokenizationSuccess")
   val isOnTokenizeSuccessImplemented: Boolean? = null,
   @SerialName("onCheckoutResume")
   val isOnCheckoutResumeImplemented: Boolean? = null,
