@@ -159,6 +159,7 @@ const SettingsScreen = ({ navigation }) => {
                             <Picker.Item label="PLN" value="PLN" />
                             <Picker.Item label="THB" value="THB" />
                             <Picker.Item label="IDR" value="IDR" />
+                            <Picker.Item label="AUD" value="AUD" />
                             <Picker.Item label="PHP" value="PHP" />
                         </Picker>
 
@@ -172,12 +173,14 @@ const SettingsScreen = ({ navigation }) => {
                             <Picker.Item label="DE" value="DE" />
                             <Picker.Item label="FR" value="FR" />
                             <Picker.Item label="GB" value="GB" />
+                            <Picker.Item label="US" value="US" />
                             <Picker.Item label="SE" value="SE" />
                             <Picker.Item label="SG" value="SG" />
                             <Picker.Item label="PL" value="PL" />
                             <Picker.Item label="PT" value="PT" />
                             <Picker.Item label="TH" value="TH" />
                             <Picker.Item label="ID" value="ID" />
+                            <Picker.Item label="AU" value="AU" />
                             <Picker.Item label="NL" value="NL" />
                             <Picker.Item label="PH" value="PH" />
                         </Picker>
