@@ -78,7 +78,7 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
   }
 
   @ReactMethod
-  fun listRequiredInputElementTypesForPaymentMethodType(
+  fun listRequiredInputElementTypes(
     promise: Promise
   ) {
     if (::rawManager.isInitialized.not()) {

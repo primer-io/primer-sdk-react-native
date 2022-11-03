@@ -1,4 +1,4 @@
-package io.primer.ReactNativeExample;
+package com.example.primerioreactnative;
 
 import android.app.Application;
 import android.content.Context;
@@ -10,6 +10,8 @@ import com.facebook.react.ReactInstanceManager;
 import com.facebook.soloader.SoLoader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+
+import com.primerioreactnative.BuildConfig;
 import com.primerioreactnative.ReactNativePackage;
 
 public class MainApplication extends Application implements ReactApplication {

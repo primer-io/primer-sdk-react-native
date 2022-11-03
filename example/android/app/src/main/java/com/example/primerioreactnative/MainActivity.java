@@ -1,4 +1,4 @@
-package io.primer.ReactNativeExample;
+package com.example.primerioreactnative;
 
 import com.facebook.react.ReactActivity;
 

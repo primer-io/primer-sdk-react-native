@@ -83,9 +83,9 @@ export const HeadlessCheckoutScreen = (props: any) => {
       iOS: {
         urlScheme: 'merchant://primer.io'
       },
-      debugOptions: {
-        is3DSSanityCheckEnabled: false
-      }
+    },
+    debugOptions: {
+       is3DSSanityCheckEnabled: false
     },
     headlessUniversalCheckoutCallbacks: {
       onAvailablePaymentMethodsLoad: (availablePaymentMethods => {
