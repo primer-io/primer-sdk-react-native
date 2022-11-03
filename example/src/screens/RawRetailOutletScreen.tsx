@@ -53,6 +53,7 @@ const RawRetailOutletScreen = (props: RawDataScreenProps) => {
         });
 
         if (response?.initializationData) {
+            //@ts-ignore
             const retailers: any[] = response.initializationData.result;
             setRetailers(retailers);
         }
