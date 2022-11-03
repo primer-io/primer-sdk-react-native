@@ -35,6 +35,12 @@ target 'ReactNativeExample' do
           config.build_settings['SWIFT_INCLUDE_PATHS'] = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/Primer3DS"
           config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -Xcc -fmodule-map-file="${PODS_CONFIGURATION_BUILD_DIR}/Primer3DS/Primer3DS.modulemap"'
           config.build_settings['OTHER_LDFLAGS'] = '$(inherited) -weak_library -l"Primer3DS"'
+          
+          config.build_settings['FRAMEWORK_SEARCH_PATHS'] = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/PrimerKlarnaSDK"
+          config.build_settings['LIBRARY_SEARCH_PATHS'] = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/PrimerKlarnaSDK"
+          config.build_settings['SWIFT_INCLUDE_PATHS'] = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/PrimerKlarnaSDK"
+          config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -Xcc -fmodule-map-file="${PODS_CONFIGURATION_BUILD_DIR}/PrimerKlarnaSDK/PrimerKlarnaSDK.modulemap"'
+          config.build_settings['OTHER_LDFLAGS'] = '$(inherited) -weak_library -l"PrimerKlarnaSDK"'
         end
       end
     end
