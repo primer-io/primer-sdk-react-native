@@ -171,6 +171,7 @@ const SettingsScreen = ({ navigation }) => {
                             }}
                         >
                             <Picker.Item label="DE" value="DE" />
+                            <Picker.Item label="AT" value="AT" />
                             <Picker.Item label="FR" value="FR" />
                             <Picker.Item label="GB" value="GB" />
                             <Picker.Item label="US" value="US" />
