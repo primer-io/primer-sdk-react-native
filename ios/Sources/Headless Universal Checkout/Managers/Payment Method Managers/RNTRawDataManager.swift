@@ -70,9 +70,8 @@ class RNTPrimerHeadlessUniversalCheckoutRawDataManager: RCTEventEmitter {
     }
 
     @objc
-    public func listRequiredInputElementTypesForPaymentMethodType(
-        _ paymentMethodTypeStr: String,
-        resolver: RCTPromiseResolveBlock,
+    public func listRequiredInputElementTypes(
+        _ resolver: RCTPromiseResolveBlock,
         rejecter: RCTPromiseRejectBlock
     ) {
         guard let rawDataManager = rawDataManager else {
