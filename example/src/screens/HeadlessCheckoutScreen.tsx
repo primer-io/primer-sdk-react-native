@@ -241,7 +241,8 @@ export const HeadlessCheckoutScreen = (props: any) => {
         merchantCheckoutAdditionalInfo: merchantCheckoutAdditionalInfo,
         merchantCheckoutData: merchantCheckoutData,
         merchantPayment: merchantPayment,
-        merchantPrimerError: merchantPrimerError
+        merchantPrimerError: merchantPrimerError,
+        logs: log
       });
 
       setClientSession(null);
