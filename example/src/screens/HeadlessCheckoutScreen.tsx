@@ -298,7 +298,12 @@ export const HeadlessCheckoutScreen = (props: any) => {
         await createClientSessionIfNeeded();
         const nativeUIManager = new NativeUIManager();
         await nativeUIManager.configure(paymentMethod.paymentMethodType);
-        await nativeUIManager.showPaymentMethod(SessionIntent.CHECKOUT);
+
+        if (paymentMethod.paymentMethodType === "KLARNA") {
+          await nativeUIManager.showPaymentMethod(SessionIntent.VAULT);
+        } else {
+          await nativeUIManager.showPaymentMethod(SessionIntent.CHECKOUT);
+        }
 
       } else if (implementationType === "RAW_DATA") {
         await createClientSessionIfNeeded();
