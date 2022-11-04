@@ -26,7 +26,7 @@ export interface AppPaymentParameters {
     merchantName?: string;
 }
 
-export let customApiKey: string | undefined// = "7ecce42b-b641-4c7d-a605-f786f3e201ce";
+export let customApiKey: string | undefined;
 export let customClientToken: string | undefined;
 
 // @ts-ignore
@@ -229,9 +229,8 @@ const SettingsScreen = ({ navigation }) => {
                         </Text>
                     </TouchableOpacity>
                 </View>
-                <FlatList
-                    data={lineItems}
-                    renderItem={({ item, index }) => (
+                {
+                    lineItems.map((item, index) => {
                         <TouchableOpacity
                             key={`${index}`}
                             style={{ flex: 1, flexDirection: 'row', marginVertical: 4 }}
@@ -261,17 +260,15 @@ const SettingsScreen = ({ navigation }) => {
                             <View style={{ flexGrow: 1 }} />
                             <Text>{item.amount}</Text>
                         </TouchableOpacity>
-                    )}
-                    ListFooterComponent={
-                        <View
-                            style={{ flex: 1, flexDirection: 'row', marginVertical: 4 }}
-                        >
-                            <Text style={{ fontWeight: '600' }}>Total</Text>
-                            <View style={{ flexGrow: 1 }} />
-                            <Text style={{ fontWeight: '600' }}>{`${(lineItems || []).map(item => (item.amount * item.quantity)).reduce((prev, next) => prev + next, 0)}`}</Text>
-                        </View>
-                    }
-                />
+                    })
+                }
+                <View
+                    style={{ flex: 1, flexDirection: 'row', marginVertical: 4 }}
+                >
+                    <Text style={{ fontWeight: '600' }}>Total</Text>
+                    <View style={{ flexGrow: 1 }} />
+                    <Text style={{ fontWeight: '600' }}>{`${(lineItems || []).map(item => (item.amount * item.quantity)).reduce((prev, next) => prev + next, 0)}`}</Text>
+                </View>
             </View>
         );
     }
