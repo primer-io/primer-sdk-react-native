@@ -1,12 +1,18 @@
-name: Preview
+name: Android Appetize
 
 on: pull_request
 
 jobs:
-  distribute:
+  android-istribute-to-appetize:
     runs-on: ubuntu-latest
-
+    name: "Build and upload app to Appetize 🚀"
     steps:
+
+      - name: Cancel previous jobs
+        uses: styfle/cancel-workflow-action@0.9.0
+        with:
+          access_token: ${{ github.token }}
+
       - uses: actions/checkout@v2
 
       - uses: ruby/setup-ruby@v1
@@ -26,8 +32,8 @@ jobs:
         run: |
           yarn
 
-      - name: Preview app on Appetize 🚀
-        run: bundle exec fastlane preview
+      - name: Distribute the React Native Android app on Appetize 🚀
+        run: bundle exec fastlane android preview
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           SOURCE_BRANCH: ${{ github.head_ref }}

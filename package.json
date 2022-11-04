@@ -30,7 +30,8 @@
     "example": "yarn --cwd example",
     "pods": "cd example && pod-install --quiet",
     "bootstrap": "yarn example && yarn && yarn pods",
-    "build:ios": "react-native bundle --entry-file='index.js' --bundle-output='./example/ios/main.jsbundle' --dev=false --platform='ios'"
+    "build:ios": "react-native bundle --entry-file='index.js' --bundle-output='./example/ios/main.jsbundle' --dev=false --platform='ios'",
+    "postinstall": "patch-package"
   },
   "keywords": [
     "react-native",
@@ -142,6 +143,7 @@
     ]
   },
   "dependencies": {
+    "patch-package": "^6.5.0",
     "uuid": "^8.3.2"
   }
 }
