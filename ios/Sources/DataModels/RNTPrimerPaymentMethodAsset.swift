@@ -31,9 +31,9 @@ struct RNTPrimerPaymentMethodLogo: Codable {
     let light: String?
     
     init(paymentMethodType: String, primerPaymentMethodLogo: PrimerPaymentMethodLogo) {
-        self.colored = try? primerPaymentMethodLogo.colored?.store(withName: "\(paymentMethodType)-colored").absoluteString
-        self.dark = try? primerPaymentMethodLogo.dark?.store(withName: "\(paymentMethodType)-dark").absoluteString
-        self.light = try? primerPaymentMethodLogo.light?.store(withName: "\(paymentMethodType)-light").absoluteString
+        self.colored = (try? primerPaymentMethodLogo.colored?.store(withName: "\(paymentMethodType)-colored").absoluteString) ?? nil
+        self.dark = (try? primerPaymentMethodLogo.dark?.store(withName: "\(paymentMethodType)-dark").absoluteString) ?? nil
+        self.light = (try? primerPaymentMethodLogo.light?.store(withName: "\(paymentMethodType)-light").absoluteString) ?? nil
     }
 }
 

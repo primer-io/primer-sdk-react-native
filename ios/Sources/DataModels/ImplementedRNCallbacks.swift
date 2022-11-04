@@ -53,23 +53,23 @@ internal struct ImplementedRNCallbacks: Decodable {
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
-        self.isOnAvailablePaymentMethodsLoadImplemented = (try? container.decode(Bool?.self, forKey: .isOnAvailablePaymentMethodsLoadImplemented)) ?? false
-        self.isOnTokenizationStartImplemented = (try? container.decode(Bool?.self, forKey: .isOnTokenizationStartImplemented)) ?? false
-        self.isOnTokenizationSuccessImplemented = (try? container.decode(Bool?.self, forKey: .isOnTokenizationSuccessImplemented)) ?? false
+        self.isOnAvailablePaymentMethodsLoadImplemented = (try? container.decode(Bool.self, forKey: .isOnAvailablePaymentMethodsLoadImplemented)) ?? false
+        self.isOnTokenizationStartImplemented = (try? container.decode(Bool.self, forKey: .isOnTokenizationStartImplemented)) ?? false
+        self.isOnTokenizationSuccessImplemented = (try? container.decode(Bool.self, forKey: .isOnTokenizationSuccessImplemented)) ?? false
      
-        self.isOnCheckoutResumeImplemented = (try? container.decode(Bool?.self, forKey: .isOnCheckoutResumeImplemented)) ?? false
-        self.isOnCheckoutPendingImplemented = (try? container.decode(Bool?.self, forKey: .isOnCheckoutPendingImplemented)) ?? false
-        self.isOnCheckoutAdditionalInfoImplemented = (try? container.decode(Bool?.self, forKey: .isOnCheckoutAdditionalInfoImplemented)) ?? false
+        self.isOnCheckoutResumeImplemented = (try? container.decode(Bool.self, forKey: .isOnCheckoutResumeImplemented)) ?? false
+        self.isOnCheckoutPendingImplemented = (try? container.decode(Bool.self, forKey: .isOnCheckoutPendingImplemented)) ?? false
+        self.isOnCheckoutAdditionalInfoImplemented = (try? container.decode(Bool.self, forKey: .isOnCheckoutAdditionalInfoImplemented)) ?? false
         
-        self.isOnErrorImplemented = (try? container.decode(Bool?.self, forKey: .isOnErrorImplemented)) ?? false
-        self.isOnCheckoutCompleteImplemented = (try? container.decode(Bool?.self, forKey: .isOnCheckoutCompleteImplemented)) ?? false
-        self.isOnBeforeClientSessionUpdateImplemented = (try? container.decode(Bool?.self, forKey: .isOnBeforeClientSessionUpdateImplemented)) ?? false
+        self.isOnErrorImplemented = (try? container.decode(Bool.self, forKey: .isOnErrorImplemented)) ?? false
+        self.isOnCheckoutCompleteImplemented = (try? container.decode(Bool.self, forKey: .isOnCheckoutCompleteImplemented)) ?? false
+        self.isOnBeforeClientSessionUpdateImplemented = (try? container.decode(Bool.self, forKey: .isOnBeforeClientSessionUpdateImplemented)) ?? false
         
-        self.isOnClientSessionUpdateImplemented = (try? container.decode(Bool?.self, forKey: .isOnClientSessionUpdateImplemented)) ?? false
-        self.isOnBeforePaymentCreateImplemented = (try? container.decode(Bool?.self, forKey: .isOnBeforePaymentCreateImplemented)) ?? false
-        self.isOnPreparationStartImplemented = (try? container.decode(Bool?.self, forKey: .isOnPreparationStartImplemented)) ?? false
+        self.isOnClientSessionUpdateImplemented = (try? container.decode(Bool.self, forKey: .isOnClientSessionUpdateImplemented)) ?? false
+        self.isOnBeforePaymentCreateImplemented = (try? container.decode(Bool.self, forKey: .isOnBeforePaymentCreateImplemented)) ?? false
+        self.isOnPreparationStartImplemented = (try? container.decode(Bool.self, forKey: .isOnPreparationStartImplemented)) ?? false
         
-        self.isOnPaymentMethodShowImplemented = (try? container.decode(Bool?.self, forKey: .isOnPaymentMethodShowImplemented)) ?? false
-        self.isOnDismissImplemented = (try? container.decode(Bool?.self, forKey: .isOnDismissImplemented)) ?? false
+        self.isOnPaymentMethodShowImplemented = (try? container.decode(Bool.self, forKey: .isOnPaymentMethodShowImplemented)) ?? false
+        self.isOnDismissImplemented = (try? container.decode(Bool.self, forKey: .isOnDismissImplemented)) ?? false
     }
 }
