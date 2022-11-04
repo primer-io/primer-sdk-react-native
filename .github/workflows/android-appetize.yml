@@ -1,6 +1,6 @@
 name: Android Appetize
 
-on: pull_request
+on: push
 
 jobs:
   android-istribute-to-appetize:
