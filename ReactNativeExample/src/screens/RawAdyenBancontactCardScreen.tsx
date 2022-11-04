@@ -23,7 +23,7 @@ export interface RawCardDataScreenProps {
 
 const rawDataManager = new RawDataManager();
 
-const RawAdyenBancontactCardScreen = (props: RawDataScreenProps) => {
+const RawAdyenBancontactCardScreen = (props: any) => {
 
     const [isLoading, setIsLoading] = useState(false);
     const [isCardFormValid, setIsCardFormValid] = useState(false);
