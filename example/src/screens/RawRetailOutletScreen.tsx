@@ -17,7 +17,7 @@ import type { RawDataScreenProps } from '../models/RawDataScreenProps';
 
 const rawDataManager = new RawDataManager();
 
-const RawRetailOutletScreen = (props: RawDataScreenProps) => {
+const RawRetailOutletScreen = (props: any) => {
 
     const [isLoading, setIsLoading] = useState(false);
     const [isCardFormValid, setIsCardFormValid] = useState(false);

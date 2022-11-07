@@ -1,5 +1,5 @@
 {
-  "name": "@primer-io/react-native-example",
+  "name": "ReactNativeExample",
   "description": "Example app for @primer-io/react-native",
   "version": "0.0.1",
   "private": true,
@@ -7,15 +7,9 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "start": "react-native start",
-    "clean-caches": "watchman watch-del-all && rm -rf $TMPDIR/react-native-packager-cache-* && rm -rf $TMPDIR/metro-bundler-cache-* && npm cache clean --force && yarn cache clean && rm -rf ~/Documents/Derived\\ Data/",
-    "clean-install": "yarn run clean-caches && yarn run clean-node-modules-install && yarn run clean-install-ios && yarn run clean-android",
-    "clean-node-modules": "rm -rf node_modules",
-    "clean-node-modules-install": "yarn run clean-node-modules && yarn",
-    "clean-android": "cd android && ./gradlew clean && cd ..",
-    "clean-run-android": "yarn clean-install && npx react-native run-android",
-    "clean-ios": "cd ios && pod deintegrate && rm -rf Podfile.lock && cd ..",
-    "clean-install-ios": "yarn run clean-ios && cd ios && pod install --repo-update && cd ..",
-    "clean-run-ios": "yarn clean-install && npx react-native run-ios"
+    "test": "jest",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "build:ios": "npx react-native bundle --entry-file='index.js' --bundle-output='./ios/main.jsbundle' --dev=true --platform='ios'"
   },
   "dependencies": {
     "@react-native-masked-view/masked-view": "^0.2.8",
@@ -49,5 +43,16 @@
     "metro-react-native-babel-preset": "0.72.3",
     "react-test-renderer": "18.1.0",
     "typescript": "^4.8.3"
+  },
+  "jest": {
+    "preset": "react-native",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
   }
 }

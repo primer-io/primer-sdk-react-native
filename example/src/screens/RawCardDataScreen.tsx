@@ -22,7 +22,7 @@ export interface RawCardDataScreenProps {
 
 const rawDataManager = new RawDataManager();
 
-const RawCardDataScreen = (props: RawDataScreenProps) => {
+const RawCardDataScreen = (props: any) => {
 
     const [isLoading, setIsLoading] = useState(false);
     const [isCardFormValid, setIsCardFormValid] = useState(false);
@@ -139,7 +139,7 @@ const RawCardDataScreen = (props: RawDataScreenProps) => {
                                         style={{ marginVertical: 8 }}
                                         title='Expiry Date'
                                         value={expiryDate}
-                                        keyboardType={"numeric"}
+                                        keyboardType={"default"}
                                         onChangeText={(text) => {
                                             setExpiryDate(text);
                                             setRawData(null, text, null, null);
