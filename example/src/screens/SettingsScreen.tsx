@@ -231,35 +231,37 @@ const SettingsScreen = ({ navigation }) => {
                 </View>
                 {
                     lineItems.map((item, index) => {
-                        <TouchableOpacity
-                            key={`${index}`}
-                            style={{ flex: 1, flexDirection: 'row', marginVertical: 4 }}
-                            onPress={() => {
-                                const newLineItemsScreenProps: NewLineItemScreenProps = {
-                                    lineItem: item,
-                                    onEditLineItem: (editedLineItem) => {
-                                        const currentLineItems = [...lineItems];
-                                        const index = currentLineItems.indexOf(item, 0);
-                                        currentLineItems[index] = editedLineItem;
-                                        setLineItems(currentLineItems);
-                                    },
-                                    onRemoveLineItem: (lineItem) => {
-                                        const currentLineItems = [...lineItems];
-                                        const index = currentLineItems.indexOf(lineItem, 0);
-                                        if (index > -1) {
-                                            currentLineItems.splice(index, 1);
+                        return (
+                            <TouchableOpacity
+                                key={`${index}`}
+                                style={{ flex: 1, flexDirection: 'row', marginVertical: 4, height: 30 }}
+                                onPress={() => {
+                                    const newLineItemsScreenProps: NewLineItemScreenProps = {
+                                        lineItem: item,
+                                        onEditLineItem: (editedLineItem) => {
+                                            const currentLineItems = [...lineItems];
+                                            const index = currentLineItems.indexOf(item, 0);
+                                            currentLineItems[index] = editedLineItem;
+                                            setLineItems(currentLineItems);
+                                        },
+                                        onRemoveLineItem: (lineItem) => {
+                                            const currentLineItems = [...lineItems];
+                                            const index = currentLineItems.indexOf(lineItem, 0);
+                                            if (index > -1) {
+                                                currentLineItems.splice(index, 1);
+                                            }
+                                            setLineItems(currentLineItems);
                                         }
-                                        setLineItems(currentLineItems);
                                     }
-                                }
-
-                                navigation.navigate('NewLineItem', newLineItemsScreenProps);
-                            }}
-                        >
-                            <Text>{item.description} {`x${item.quantity}`}</Text>
-                            <View style={{ flexGrow: 1 }} />
-                            <Text>{item.amount}</Text>
-                        </TouchableOpacity>
+    
+                                    navigation.navigate('NewLineItem', newLineItemsScreenProps);
+                                }}
+                            >
+                                <Text>{item.description} {`x${item.quantity}`}</Text>
+                                <View style={{ flexGrow: 1 }} />
+                                <Text>{item.amount}</Text>
+                            </TouchableOpacity>
+                        );
                     })
                 }
                 <View
