@@ -23,7 +23,7 @@ export interface RawCardDataScreenProps {
 
 const rawDataManager = new RawDataManager();
 
-const RawAdyenBancontactCardScreen = (props: RawDataScreenProps) => {
+const RawAdyenBancontactCardScreen = (props: any) => {
 
     const [isLoading, setIsLoading] = useState(false);
     const [isCardFormValid, setIsCardFormValid] = useState(false);
@@ -132,7 +132,7 @@ const RawAdyenBancontactCardScreen = (props: RawDataScreenProps) => {
                                         style={{ marginVertical: 8 }}
                                         title='Expiry Date'
                                         value={expiryDate}
-                                        keyboardType={"numeric"}
+                                        keyboardType={"default"}
                                         onChangeText={(text) => {
                                             setExpiryDate(text);
                                             setRawData(null, text, null);
