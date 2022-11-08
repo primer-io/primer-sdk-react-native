@@ -73,7 +73,8 @@ extension PrimerSettings {
             localeData: localeData,
             paymentMethodOptions: paymentMethodOptions,
             uiOptions: uiOptions,
-            debugOptions: debugOptions)
+            debugOptions: debugOptions,
+            isReactNativeIntegration: true)
         
         
         return settings
