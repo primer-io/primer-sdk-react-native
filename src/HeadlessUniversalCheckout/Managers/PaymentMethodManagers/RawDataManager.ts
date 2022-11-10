@@ -11,11 +11,6 @@ type EventType =
     | 'onMetadataChange'
     | 'onValidation';
 
-const eventTypes: EventType[] = [
-    'onMetadataChange',
-    'onValidation'
-];
-
 export interface RawDataManagerProps {
     paymentMethodType: string;
     onMetadataChange?: (metadata: any) => void;
@@ -53,7 +48,7 @@ class PrimerHeadlessUniversalCheckoutRawDataManager {
     }
 
     async configureListeners(): Promise<void> {
-        return new Promise(async (resolve, reject) => {
+        return new Promise(async (resolve, _) => {
             if (this.options?.onMetadataChange) {
                 this.addListener("onMetadataChange", (data) => {
                     if (this.options?.onMetadataChange) {
