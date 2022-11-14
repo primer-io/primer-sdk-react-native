@@ -74,7 +74,7 @@ class RNTPrimer: RCTEventEmitter {
     override init() {
         super.init()
         PrimerSDK.Primer.shared.delegate = self
-        PrimerSDK.Primer.shared.integrationOptions = PrimerIntegrationOptions(reactNativeVersion: "2.14.2")
+        PrimerSDK.Primer.shared.integrationOptions = PrimerIntegrationOptions(reactNativeVersion: "2.14.4")
     }
 
     override func supportedEvents() -> [String]! {
