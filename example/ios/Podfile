@@ -25,7 +25,7 @@ target 'ReactNativeExample' do
                     :app_path => "#{Pod::Config.instance.installation_root}/..")
                     
                     pod 'primer-io-react-native', :path => '../..'
-                    pod 'PrimerSDK', :git => 'https://github.com/primer-io/primer-sdk-ios.git', :branch => 'feature/DEVX-6_rebase-2.14.0'
+                    pod 'PrimerSDK', :git => 'https://github.com/primer-io/primer-sdk-ios.git', :branch => 'feature/DEVX-6_rebase-2.14.3'
                     pod 'Primer3DS'
                     pod 'PrimerKlarnaSDK'
                     
