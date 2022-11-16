@@ -52,7 +52,7 @@ const ResultScreen = (props: any) => {
                 !logs ? null :
                     <View style={{ marginHorizontal: 20, marginVertical: 20, backgroundColor: 'lightgrey' }}>
                         <Text>
-                            {logs}
+                            {JSON.stringify(logs, null, 4)}
                         </Text>
                     </View>
             }

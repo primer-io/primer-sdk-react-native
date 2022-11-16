@@ -38,7 +38,7 @@ const SettingsScreen = ({ navigation }) => {
     const [paymentHandling, setPaymentHandling] = React.useState<PaymentHandling>(PaymentHandling.Auto);
     const [lineItems, setLineItems] = React.useState<IClientSessionLineItem[]>(appPaymentParameters.clientSessionRequestBody.order?.lineItems || []);
     const [currency, setCurrency] = React.useState<string>("EUR");
-    const [countryCode, setCountryCode] = React.useState<string>("PT");
+    const [countryCode, setCountryCode] = React.useState<string>("DE");
     const [orderId, setOrderId] = React.useState<string | undefined>(appPaymentParameters.clientSessionRequestBody.orderId);
 
     const [merchantName, setMerchantName] = React.useState<string | undefined>(appPaymentParameters.merchantName);
@@ -138,54 +138,25 @@ const SettingsScreen = ({ navigation }) => {
                 </Text>
 
                 <View style={{ marginTop: 8, marginBottom: 4 }}>
-                    <Text style={{ ...styles.heading2 }}>
-                        Currency & Country Code
-                    </Text>
-                    <View
-                        style={{ flexDirection: 'row', marginHorizontal: 20, marginTop: -10, marginBottom: 140 }}
-                    >
-                        <Picker
-                            selectedValue={currency}
-                            style={{ height: 50, flex: 1 }}
-                            onValueChange={(itemValue) => {
-                                setCurrency(itemValue);
+                    <TextField
+                            title='Currency'
+                            style={{ marginVertical: 8 }}
+                            value={currency}
+                            placeholder={'Set currency'}
+                            onChangeText={(text) => {
+                                setCurrency(text);
                             }}
-                        >
-                            <Picker.Item label="EUR" value="EUR" />
-                            <Picker.Item label="GBP" value="GBP" />
-                            <Picker.Item label="USD" value="USD" />
-                            <Picker.Item label="SEK" value="SEK" />
-                            <Picker.Item label="SGD" value="SGD" />
-                            <Picker.Item label="PLN" value="PLN" />
-                            <Picker.Item label="THB" value="THB" />
-                            <Picker.Item label="IDR" value="IDR" />
-                            <Picker.Item label="AUD" value="AUD" />
-                            <Picker.Item label="PHP" value="PHP" />
-                        </Picker>
+                        />
 
-                        <Picker
-                            selectedValue={countryCode}
-                            style={{ height: 50, flex: 1 }}
-                            onValueChange={(itemValue) => {
-                                setCountryCode(itemValue);
+                        <TextField
+                            title='Country Code'
+                            style={{ marginVertical: 8 }}
+                            value={countryCode}
+                            placeholder={'Set country code'}
+                            onChangeText={(text) => {
+                                setCountryCode(text);
                             }}
-                        >
-                            <Picker.Item label="DE" value="DE" />
-                            <Picker.Item label="AT" value="AT" />
-                            <Picker.Item label="FR" value="FR" />
-                            <Picker.Item label="GB" value="GB" />
-                            <Picker.Item label="US" value="US" />
-                            <Picker.Item label="SE" value="SE" />
-                            <Picker.Item label="SG" value="SG" />
-                            <Picker.Item label="PL" value="PL" />
-                            <Picker.Item label="PT" value="PT" />
-                            <Picker.Item label="TH" value="TH" />
-                            <Picker.Item label="ID" value="ID" />
-                            <Picker.Item label="AU" value="AU" />
-                            <Picker.Item label="NL" value="NL" />
-                            <Picker.Item label="PH" value="PH" />
-                        </Picker>
-                    </View>
+                        />
                 </View>
 
                 {renderLineItems()}
@@ -253,7 +224,7 @@ const SettingsScreen = ({ navigation }) => {
                                             setLineItems(currentLineItems);
                                         }
                                     }
-    
+
                                     navigation.navigate('NewLineItem', newLineItemsScreenProps);
                                 }}
                             >
@@ -636,7 +607,7 @@ const SettingsScreen = ({ navigation }) => {
     const renderActions = () => {
         return (
             <View>
-                {/* <TouchableOpacity
+                <TouchableOpacity
                     style={{ ...styles.button, marginVertical: 5, backgroundColor: 'black' }}
                     onPress={() => {
                         updateAppPaymentParameters();
@@ -649,7 +620,7 @@ const SettingsScreen = ({ navigation }) => {
                     >
                         Primer SDK
                     </Text>
-                </TouchableOpacity> */}
+                </TouchableOpacity>
 
                 <TouchableOpacity
                     style={{ ...styles.button, marginVertical: 5, backgroundColor: 'black' }}

@@ -24,8 +24,20 @@ import {
 } from '@primer-io/react-native';
 
 let clientToken: string | null = null;
+let paymentId: string | null = null;
+let logs: Log[] = [];
+let merchantCheckoutData: CheckoutData | null = null;
+let merchantCheckoutAdditionalInfo: CheckoutAdditionalInfo | null = null;
+let merchantPayment: IPayment | null = null;
+let merchantPrimerError: Error | unknown | null = null;
+
+interface Log {
+    event: string;
+    value?: any;
+}
 
 const CheckoutScreen = (props: any) => {
+
     const isDarkMode = useColorScheme() === 'dark';
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
     const [loadingMessage, setLoadingMessage] = React.useState<string | undefined>('undefined');
@@ -35,34 +47,48 @@ const CheckoutScreen = (props: any) => {
         backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
     };
 
-    let paymentId: string | null = null;
+    const updateLogs = (log: Log) => {
+        console.log(JSON.stringify(log));
+        logs.push(log);
+    }
 
     const onBeforeClientSessionUpdate = () => {
-        console.log(`onBeforeClientSessionUpdate`);
+        updateLogs({event: "onBeforeClientSessionUpdate"});
         setIsLoading(true);
         setLoadingMessage('onBeforeClientSessionUpdate');
     }
 
     const onClientSessionUpdate = (clientSession: ClientSession) => {
-        console.log(`onClientSessionUpdate\n${JSON.stringify(clientSession)}`);;
+        updateLogs({event: "onClientSessionUpdate", value: clientSession});
         setLoadingMessage('onClientSessionUpdate');
     }
 
     const onBeforePaymentCreate = (checkoutPaymentMethodData: CheckoutPaymentMethodData, handler: PaymentCreationHandler) => {
-        console.log(`onBeforePaymentCreate\n${JSON.stringify(checkoutPaymentMethodData)}`);
+        updateLogs({event: "onBeforePaymentCreate", value: {"checkoutPaymentMethodData": checkoutPaymentMethodData}});
         handler.continuePaymentCreation();
         setLoadingMessage('onBeforePaymentCreate');
     }
 
     const onCheckoutComplete = (checkoutData: CheckoutData) => {
-        console.log(`PrimerCheckoutData:\n${JSON.stringify(checkoutData)}`);
+        updateLogs({event: "onCheckoutComplete", value: {"checkoutData": checkoutData}});
+        merchantCheckoutData = checkoutData;
+
         setLoadingMessage(undefined);
         setIsLoading(false);
-        props.navigation.navigate('Result', checkoutData);
+
+        props.navigation.navigate(
+            'Result', 
+            {
+                merchantCheckoutData: merchantCheckoutData,
+                merchantCheckoutAdditionalInfo: merchantCheckoutAdditionalInfo,
+                merchantPayment: merchantPayment,
+                merchantPrimerError: merchantPrimerError,
+                logs: logs
+            });
     };
 
     const onTokenizeSuccess = async (paymentMethodTokenData: PrimerPaymentMethodTokenData, handler: TokenizationHandler) => {
-        console.log(`onTokenizeSuccess:\n${JSON.stringify(paymentMethodTokenData)}`);
+        updateLogs({event: "onTokenizeSuccess", value: {"paymentMethodTokenData": paymentMethodTokenData}});
 
         try {
             const payment: IPayment = await createPayment(paymentMethodTokenData.token);
@@ -76,30 +102,64 @@ const CheckoutScreen = (props: any) => {
                 paymentId = payment.id;
                 handler.continueWithNewClientToken(payment.requiredAction.clientToken);
             } else {
-                props.navigation.navigate('Result', payment);
+                merchantPayment = payment;
+
                 handler.handleSuccess();
                 setLoadingMessage(undefined);
                 setIsLoading(false);
+
+                props.navigation.navigate(
+                    'Result', 
+                    {
+                        merchantCheckoutData: merchantCheckoutData,
+                        merchantCheckoutAdditionalInfo: merchantCheckoutAdditionalInfo,
+                        merchantPayment: merchantPayment,
+                        merchantPrimerError: merchantPrimerError,
+                        logs: logs
+                    });
             }
         } catch (err) {
+            merchantPrimerError = err;
+
             console.error(err);
             handler.handleFailure("Merchant error");
             setLoadingMessage(undefined);
             setIsLoading(false);
-            props.navigation.navigate('Result', err);
+            
+            props.navigation.navigate(
+                'Result', 
+                {
+                    merchantCheckoutData: merchantCheckoutData,
+                    merchantCheckoutAdditionalInfo: merchantCheckoutAdditionalInfo,
+                    merchantPayment: merchantPayment,
+                    merchantPrimerError: merchantPrimerError,
+                    logs: logs
+                });
         }
     }
 
     const onResumeSuccess = async (resumeToken: string, handler: ResumeHandler) => {
-        console.log(`onResumeSuccess:\n${JSON.stringify(resumeToken)}`);
+        updateLogs({event: "onResumeSuccess", value: {"resumeToken": resumeToken}});
 
         try {
             if (paymentId) {
                 const payment: IPayment = await resumePayment(paymentId, resumeToken);
-                props.navigation.navigate('Result', payment);
+                merchantPayment = payment;
+
                 handler.handleSuccess();
                 setLoadingMessage(undefined);
                 setIsLoading(false);
+
+                props.navigation.navigate(
+                    'Result', 
+                    {
+                        merchantCheckoutData: merchantCheckoutData,
+                        merchantCheckoutAdditionalInfo: merchantCheckoutAdditionalInfo,
+                        merchantPayment: merchantPayment,
+                        merchantPrimerError: merchantPrimerError,
+                        logs: logs
+                    });
+
             } else {
                 const err = new Error("Invalid value for paymentId");
                 throw err;
@@ -107,35 +167,55 @@ const CheckoutScreen = (props: any) => {
             paymentId = null;
 
         } catch (err) {
-            console.error(err);
+            merchantPrimerError = err;
+
             paymentId = null;
             handler.handleFailure("RN app error");
             setLoadingMessage(undefined);
             setIsLoading(false);
-            props.navigation.navigate('Result', err);
+            
+            props.navigation.navigate(
+                'Result', 
+                {
+                    merchantCheckoutData: merchantCheckoutData,
+                    merchantCheckoutAdditionalInfo: merchantCheckoutAdditionalInfo,
+                    merchantPayment: merchantPayment,
+                    merchantPrimerError: merchantPrimerError,
+                    logs: logs
+                });
         }
     }
 
     const onResumePending = async (additionalInfo: CheckoutAdditionalInfo) => {
-        console.log(`onResumePending:\n${JSON.stringify(additionalInfo)}`);
-        debugger;
+        updateLogs({event: "onResumePending", value: {"additionalInfo": additionalInfo}});
     }
 
     const onCheckoutReceivedAdditionalInfo = async (additionalInfo: CheckoutAdditionalInfo) => {
-        console.log(`onCheckoutReceivedAdditionalInfo:\n${JSON.stringify(additionalInfo)}`);
-        debugger;
+        updateLogs({event: "onCheckoutReceivedAdditionalInfo", value: {"additionalInfo": additionalInfo}});
     }
 
     const onError = (error: PrimerError, checkoutData: CheckoutData | null, handler: ErrorHandler | undefined) => {
-        console.log(`onError:\n${JSON.stringify(error)}\n\n${JSON.stringify(checkoutData)}`);
+        merchantPrimerError = error;
+        merchantCheckoutData = checkoutData;
+
+        updateLogs({event: "onError", value: {"error": error, "checkoutData": checkoutData}});
         handler?.showErrorMessage("My RN message");
         setLoadingMessage(undefined);
         setIsLoading(false);
-        props.navigation.navigate('Result', error);
+        
+        props.navigation.navigate(
+            'Result', 
+            {
+                merchantCheckoutData: merchantCheckoutData,
+                merchantCheckoutAdditionalInfo: merchantCheckoutAdditionalInfo,
+                merchantPayment: merchantPayment,
+                merchantPrimerError: merchantPrimerError,
+                logs: logs
+            });
     };
 
     const onDismiss = () => {
-        console.log(`onDismiss`);
+        updateLogs({event: "onDismiss"});
         clientToken = null;
         setLoadingMessage(undefined);
         setIsLoading(false);
@@ -154,9 +234,9 @@ const CheckoutScreen = (props: any) => {
                 recurringPaymentDescription: "Recurring payment description"
             },
             applePayOptions: {
-              merchantIdentifier: "merchant.checkout.team",
-              merchantName: appPaymentParameters.merchantName,
-              isCaptureBillingAddressEnabled: true
+                merchantIdentifier: "merchant.checkout.team",
+                merchantName: appPaymentParameters.merchantName,
+                isCaptureBillingAddressEnabled: true
             }
         },
         uiOptions: {
@@ -231,7 +311,6 @@ const CheckoutScreen = (props: any) => {
         }
     }
 
-    console.log(`RENDER\nisLoading: ${isLoading}`)
     return (
         <View style={backgroundStyle}>
             <View style={{ flex: 1 }} />
