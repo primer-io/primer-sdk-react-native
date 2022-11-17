@@ -238,12 +238,17 @@ const RawCardDataScreen = (props: any) => {
         return (
             <ScrollView>
                 <View style={{ backgroundColor: "lightgray" }}>
-                    <Text style={{ height: 50 }}>
+                    <Text
+                        style={{ height: 50 }}
+                        testID="headless-metadata-event"
+                    >
                         {metadataLog}
                     </Text>
                 </View>
                 <View style={{ backgroundColor: "lightgray", marginTop: 16 }}>
-                    <Text>
+                    <Text
+                        testID="headless-validation-event"
+                    >
                         {validationLog}
                     </Text>
                 </View>
