@@ -79,7 +79,7 @@ interface IPrimerApayaOptions {
 interface IPrimerApplePayOptions {
   merchantIdentifier: string;
   merchantName: string;
-  isCaptureBillingAddressEnabled: boolean;
+  isCaptureBillingAddressEnabled?: boolean;
 }
 
 interface IPrimerCardPaymentOptions {
