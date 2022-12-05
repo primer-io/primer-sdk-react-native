@@ -26,7 +26,7 @@ jobs:
 
       - name: Install npm
         run: |
-          npm install
+          npm config set legacy-peer-deps true install
 
       - name: Install packages
         run: |
