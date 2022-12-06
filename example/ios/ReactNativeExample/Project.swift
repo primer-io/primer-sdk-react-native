@@ -44,9 +44,6 @@ let project = Project(
             product: .app,
             bundleId: "io.primer.ios.ReactNativeExample",
             infoPlist: "Info.plist",
-            sources: ["Sources/**"],
-            resources: ["Resources/**"],
-            entitlements: "ExampleApp.entitlements",
             settings: AppSettings.settings
         ),
         Target(
@@ -55,7 +52,6 @@ let project = Project(
             product: .unitTests,
             bundleId: "io.primer.ios.ReactNativeExampleTests",
             infoPlist: .default,
-            sources: ["Tests/Unit Tests/**"],
             dependencies: [
                 .target(name: BaseSettings.appName)
             ],
