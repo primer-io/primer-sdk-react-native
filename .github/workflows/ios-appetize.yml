@@ -67,7 +67,6 @@ jobs:
           MATCH_KEYCHAIN_NAME: ${{ secrets.MATCH_KEYCHAIN_NAME }}
           MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
           APPETIZE_API_TOKEN: ${{ secrets.APPETIZE_API_TOKEN }}
-          GIT_URL: git@github.com:primer-io/ios_sdk_match_repo.git
           SOURCE_BRANCH: ${{ github.head_ref }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
 
