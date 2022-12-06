@@ -47,7 +47,7 @@ jobs:
           yarn
 
       - name: Create the Xcode project and workspace
-        run: sh ./Internal/Debug\ App/tuist-generate.sh is_ci
+        run: sh ./example/ios/ReactNativeExample/tuist-generate.sh is_ci
 
       - name: Distribute the React Native iOS app on Appetize 🚀
         run: |
