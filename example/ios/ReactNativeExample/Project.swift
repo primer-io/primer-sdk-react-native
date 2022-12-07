@@ -15,7 +15,7 @@ enum AppSettings {
     static let settingsDictionary = SettingsDictionary()
         .merging(BaseSettings.settingsDictionary)
         .merging(["CODE_SIGN_IDENTITY": .string("Apple Development: DX Primer (8B5K7AGMS8)")])
-        .manualCodeSigning(provisioningProfileSpecifier: "match Development io.primer.ReactNativeExample")
+        .manualCodeSigning(provisioningProfileSpecifier: "match Development com.primerapi.PrimerSDKExample")
 
     static let settingsConfigurations: [Configuration] = [.debug(name: "Debug", settings: settingsDictionary),
                                                           .release(name: "Release", settings: settingsDictionary)]
@@ -42,7 +42,7 @@ let project = Project(
             name: BaseSettings.appName,
             platform: .iOS,
             product: .app,
-            bundleId: "io.primer.ReactNativeExample",
+            bundleId: "com.primerapi.PrimerSDKExample",
             infoPlist: "Info.plist",
             settings: AppSettings.settings
         ),
@@ -50,7 +50,7 @@ let project = Project(
             name: "Debug App Tests",
             platform: .iOS,
             product: .unitTests,
-            bundleId: "io.primer.ReactNativeExampleTests",
+            bundleId: "com.primerapi.PrimerSDKExampleTests",
             infoPlist: .default,
             dependencies: [
                 .target(name: BaseSettings.appName)
