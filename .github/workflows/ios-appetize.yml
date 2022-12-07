@@ -8,7 +8,6 @@ jobs:
     timeout-minutes: 15
     name: "Build and upload app to Appetize 🚀"
     steps:
-
       - name: Cancel previous jobs
         uses: styfle/cancel-workflow-action@0.9.0
         with:
@@ -61,7 +60,7 @@ jobs:
           bundle exec fastlane ios appetize_build_and_upload
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-          MATCH_GIT_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
+          MATCH_GIT_PRIVATE_KEY: ~/.ssh/id_rsa_github_actions
           FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
           FASTLANE_SESSION: ${{ secrets.FASTLANE_SESSION }}
           MATCH_KEYCHAIN_NAME: ${{ secrets.MATCH_KEYCHAIN_NAME }}
