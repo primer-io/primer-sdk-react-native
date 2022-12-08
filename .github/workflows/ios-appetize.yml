@@ -113,7 +113,7 @@ jobs:
         run: sh ./example/ios/ReactNativeExample/tuist-generate.sh is_ci
       - name: Upload to Browserstack 🚀
         run: |
-          bundle exec fastlane qa_release
+          bundle exec fastlane ios qa_release
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           MATCH_GIT_PRIVATE_KEY: ${{ secrets.SSH_KEY }}

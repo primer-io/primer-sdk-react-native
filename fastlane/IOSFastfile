@@ -53,12 +53,6 @@ platform :ios do
 
     common_pre_build_action
 
-    cocoapods(
-      clean_install: true,
-      use_bundle_exec: true,
-      podfile: "Internal/Debug App/Podfile"
-    )
-
     # Build for browserstack
     build_app(
       scheme: app_scheme,
@@ -72,14 +66,6 @@ platform :ios do
     # Upload to Browserstack
     upload_to_browserstack_and_save_id(
       file_path: ENV["IPA_OUTPUT_PATH"]
-    )
-
-    # Upload to Firebase
-    firebase_app_distribution(
-      service_credentials_file: "firebase_credentials.json",
-      app: "1:1024117832450:ios:d8c2e74c66341d8cf3201b",
-      groups: ENV["FIREBASE_COMMA_SEPARATED_TEST_GROUPS"],
-      release_notes: "QA release: #{sdk_version_name_source_branch} PR number: #{pr_number}"
     )
 
   end
