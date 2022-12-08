@@ -13,7 +13,7 @@ app_xcode_proj = "example/ios/ReactNativeExample.xcodeproj"
 app_scheme = "ReactNativeExample"
 
 # Packages
-app_output_path = "/var/tmp/Primer.io_ReactNativeExample.xcarchive/Products/Applications/ReactNativeExample.app"
+app_output_path = "/var/tmp/Primer.io_ReactNativeExample.xcarchive/Products/Applications/PrimerSDKExample.app"
 app_output_archive_path = "/var/tmp/Primer.io_ReactNativeExample.xcarchive"
 
 # Utils
