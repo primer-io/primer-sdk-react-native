@@ -53,12 +53,6 @@ platform :ios do
 
     common_pre_build_action
 
-    cocoapods(
-        clean_install: true,
-        use_bundle_exec: true,
-        podfile: "example/ios/Podfile"
-      )
-
     # Build for browserstack
     build_app(
       scheme: app_scheme,
