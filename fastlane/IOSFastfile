@@ -104,7 +104,8 @@ platform :ios do
       # Build speed optimisation
       skip_package_ipa: true,
       skip_package_pkg: true,
-      skip_package_dependencies_resolution: true
+      skip_package_dependencies_resolution: true,
+      silent: true
     )
 
     # Appetize needs the .app to be zipped
