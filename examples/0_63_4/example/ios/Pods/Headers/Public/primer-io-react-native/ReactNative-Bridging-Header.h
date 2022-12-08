@@ -1,0 +1,1 @@
+../../../../../../ios/ReactNative-Bridging-Header.h
