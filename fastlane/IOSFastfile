@@ -56,7 +56,7 @@ platform :ios do
     cocoapods(
         clean_install: true,
         use_bundle_exec: true,
-        podfile: "example/ios/ReactNativeExample/Podfile"
+        podfile: "example/ios/Podfile"
       )
 
     # Build for browserstack
