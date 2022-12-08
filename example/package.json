@@ -15,7 +15,9 @@
     "clean-run-android": "yarn clean-install && npx react-native run-android",
     "clean-ios": "cd ios && pod deintegrate && rm -rf Podfile.lock && cd ..",
     "clean-install-ios": "yarn run clean-ios && cd ios && pod install --repo-update && cd ..",
-    "clean-run-ios": "yarn clean-install && npx react-native run-ios"
+    "clean-run-ios": "yarn clean-install && npx react-native run-ios",
+    "build:ios:dev": "react-native bundle --entry-file='index.tsx' --bundle-output='./ios/main.jsbundle' --dev=true --platform='ios'",
+    "build:ios:release": "react-native bundle --entry-file='index.tsx' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios'"
   },
   "dependencies": {
     "@react-native-masked-view/masked-view": "^0.2.6",
