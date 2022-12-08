@@ -64,6 +64,7 @@ jobs:
           name: PrimerSDK_Debug_Build
           path: /var/tmp/PrimerSDK_Debug_Build.zip
           if-no-files-found: error
+
   build-and-upload-to-browserstack:
     runs-on: macos-latest
     timeout-minutes: 30
@@ -80,7 +81,7 @@ jobs:
       - name: Select Xcode Version
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: latest-stable
+          xcode-version: '13.2.1'
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
         with:
