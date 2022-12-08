@@ -5,7 +5,7 @@ on: pull_request
 jobs:
   build-and-upload-to-appetize:
     runs-on: macos-latest
-    timeout-minutes: 15
+    timeout-minutes: 45
     name: "Build and upload app to Appetize 🚀"
     steps:
       - name: Cancel previous jobs
