@@ -43,7 +43,9 @@ const ResultScreen = (props: any) => {
             style={backgroundStyle}>
 
             <View style={{ marginHorizontal: 20, marginVertical: 20, backgroundColor: 'lightgrey' }}>
-                <Text>
+                <Text
+                    testID="checkout-data"
+                >
                     {JSON.stringify(paramsWithoutLogs, null, 4)}
                 </Text>
             </View>
@@ -51,8 +53,10 @@ const ResultScreen = (props: any) => {
             {
                 !logs ? null :
                     <View style={{ marginHorizontal: 20, marginVertical: 20, backgroundColor: 'lightgrey' }}>
-                        <Text>
-                            {logs}
+                        <Text
+                            testID="checkout-events"
+                        >
+                            {JSON.stringify(logs, null, 4)}
                         </Text>
                     </View>
             }

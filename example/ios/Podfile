@@ -25,7 +25,7 @@ target 'ReactNativeExample' do
                     :app_path => "#{Pod::Config.instance.installation_root}/..")
                     
                     pod 'primer-io-react-native', :path => '../..'
-                    pod 'PrimerSDK', :git => 'https://github.com/primer-io/primer-sdk-ios.git', :branch => 'feature/DEVX-6_rebase-2.14.0'
+                    pod 'PrimerSDK', :git => 'https://github.com/primer-io/primer-sdk-ios.git', :branch => 'feature/DEVX-6_rebase-2.14.3'
                     pod 'Primer3DS'
                     pod 'PrimerKlarnaSDK'
                     
@@ -44,17 +44,11 @@ target 'ReactNativeExample' do
                         
                         if target.name == "primer-io-react-native" || target.name == "PrimerSDK"
                           target.build_configurations.each do |config|
-                            config.build_settings['FRAMEWORK_SEARCH_PATHS'] = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/Primer3DS"
-                            config.build_settings['LIBRARY_SEARCH_PATHS'] = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/Primer3DS"
-                            config.build_settings['SWIFT_INCLUDE_PATHS'] = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/Primer3DS"
-                            config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -Xcc -fmodule-map-file="${PODS_CONFIGURATION_BUILD_DIR}/Primer3DS/Primer3DS.modulemap"'
-                            config.build_settings['OTHER_LDFLAGS'] = '$(inherited) -weak_library -l"Primer3DS"'
-                            
-                            config.build_settings['FRAMEWORK_SEARCH_PATHS'] = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/PrimerKlarnaSDK"
-                            config.build_settings['LIBRARY_SEARCH_PATHS'] = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/PrimerKlarnaSDK"
-                            config.build_settings['SWIFT_INCLUDE_PATHS'] = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/PrimerKlarnaSDK"
-                            config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -Xcc -fmodule-map-file="${PODS_CONFIGURATION_BUILD_DIR}/PrimerKlarnaSDK/PrimerKlarnaSDK.modulemap"'
-                            config.build_settings['OTHER_LDFLAGS'] = '$(inherited) -weak_library -l"PrimerKlarnaSDK"'
+                            config.build_settings['FRAMEWORK_SEARCH_PATHS'] = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/PrimerKlarnaSDK ${PODS_CONFIGURATION_BUILD_DIR}/Primer3DS"
+                            config.build_settings['LIBRARY_SEARCH_PATHS'] = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/PrimerKlarnaSDK ${PODS_CONFIGURATION_BUILD_DIR}/Primer3DS"
+                            config.build_settings['SWIFT_INCLUDE_PATHS'] = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/PrimerKlarnaSDK ${PODS_CONFIGURATION_BUILD_DIR}/Primer3DS"
+                            config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -Xcc -fmodule-map-file="${PODS_CONFIGURATION_BUILD_DIR}/PrimerKlarnaSDK/PrimerKlarnaSDK.modulemap" -Xcc -fmodule-map-file="${PODS_CONFIGURATION_BUILD_DIR}/Primer3DS/Primer3DS.modulemap"'
+                            config.build_settings['OTHER_LDFLAGS'] = '$(inherited) -weak_library -l"PrimerKlarnaSDK" -l"Primer3DS"'
                           end
                         end
                       end

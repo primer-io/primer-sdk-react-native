@@ -369,6 +369,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
               onPress={() => {
                 paymentMethodButtonTapped(paymentMethodsAsset.paymentMethodType);
               }}
+              testID={`button-${paymentMethodsAsset.paymentMethodType.toLowerCase().replace("_", "-")}`}
             >
               <Image
                 style={{ height: 36, width: '100%', resizeMode: "contain" }}
