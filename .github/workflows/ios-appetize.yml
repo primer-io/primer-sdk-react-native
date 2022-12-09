@@ -47,7 +47,7 @@ jobs:
 
       - name: Create main.jsbundle
         run: |
-           npm run build:ios:dev
+          npm run build:ios:dev
       - name: Distribute the React Native iOS app on Appetize 🚀
         run: |
           bundle exec fastlane ios appetize_build_and_upload
@@ -168,7 +168,7 @@ jobs:
 
       - name: npm Install
         run: npm install
- ̰
+
       - name: Run Appium Test
         env:
           BROWSERSTACK_USERNAME: ${{secrets.BROWSERSTACK_USERNAME}}
