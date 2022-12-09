@@ -1,0 +1,6 @@
+module primer_io_react_native {
+  umbrella header "primer-io-react-native-umbrella.h"
+
+  export *
+  module * { export * }
+}

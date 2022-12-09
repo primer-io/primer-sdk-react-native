@@ -1,0 +1,6 @@
+module Pods_RNDemoApp_RNDemoAppTests {
+  umbrella header "Pods-RNDemoApp-RNDemoAppTests-umbrella.h"
+
+  export *
+  module * { export * }
+}

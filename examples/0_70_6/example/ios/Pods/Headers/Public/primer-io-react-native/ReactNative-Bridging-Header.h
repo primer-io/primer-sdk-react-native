@@ -1,0 +1,1 @@
+../../../../../node_modules/@primer-io/react-native/ios/ReactNative-Bridging-Header.h
