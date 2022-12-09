@@ -91,6 +91,7 @@ jobs:
       - uses: webfactory/ssh-agent@v0.4.1
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
+      - uses: ruby/setup-ruby@v1
         with:
           ruby-version: "2.6"
           bundler-cache: true
@@ -144,7 +145,6 @@ jobs:
       - uses: webfactory/ssh-agent@v0.4.1
         with:
           ssh-private-key: ${{ secrets.SSH_KEY_MOBILE_APPIUM }}
-      - uses: ruby/setup-ruby@v1
       - name: Clone and launch Browserstack tests via Appium 🧪
         run: >
           git clone -b develop git@github.com:primer-io/primer-mobile-appium.git .
