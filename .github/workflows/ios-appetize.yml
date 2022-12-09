@@ -148,11 +148,20 @@ jobs:
       - name: Clone and launch Browserstack tests via Appium 🧪
         run: >
           git clone -b develop git@github.com:primer-io/primer-mobile-appium.git .
+
       - name: Retrieve Browserstack ID
         uses: actions/download-artifact@v3
         with:
           name: browserstack_id
           path: /var/tmp
+      - name: Setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 18.3.0
+
+      - name: npm Install
+        run: npm install
+
       - name: Run Appium Test
         env:
           BROWSERSTACK_USERNAME: ${{secrets.BROWSERSTACK_USERNAME}}
