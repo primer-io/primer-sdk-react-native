@@ -62,7 +62,7 @@ platform :android do
         sdk_version_name_source_branch = ENV['SOURCE_BRANCH']
         pr_number = ENV['PR_NUMBER']
 
-        uri = URI('https://livedemostore.primer.io/appetize/android/' + version_name)
+        uri = URI('https://livedemostore.primer.io/appetize/rn-android/' + version_name)
         public_key = Net::HTTP.get(uri) # => String
         puts "public_key: " + public_key
 
