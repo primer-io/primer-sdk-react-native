@@ -45,7 +45,6 @@ jobs:
             ${{ runner.os }}-node-
 
       - name: Install npm
-        if: steps.npm-cache.outputs.cache-hit != 'true'
         run: |
           npm config set legacy-peer-deps true install
 
@@ -63,7 +62,6 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: Install packages
-        if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: |
           yarn
       - name: Install Tuist.io
