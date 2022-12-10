@@ -35,6 +35,7 @@ jobs:
           bundler-cache: true
 
       - name: Get npm cache directory
+        id: npm-cache-dir
         run: echo "dir=$(npm config get cache)" >> ${GITHUB_OUTPUT}
 
       - name: Cache npm dependencies
