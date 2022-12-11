@@ -58,7 +58,7 @@ jobs:
 
       - name: Install packages
         run: |
-          yarn --prefer-offline
+          yarn
 
       - name: Install Tuist.io
         run: |
