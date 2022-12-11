@@ -58,6 +58,7 @@ jobs:
 
       - name: Install packages
         run: |
+          yarn config set install.prefer-offline true
           yarn
 
       - name: Install Tuist.io
