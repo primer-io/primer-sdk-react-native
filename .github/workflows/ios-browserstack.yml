@@ -55,17 +55,19 @@ jobs:
         uses: actions/setup-node@v3
         with:
           cache: 'yarn'
-      - uses: actions/checkout@v2
-      - uses: actions/cache@v2
+      - name: Cache pods
+        uses: actions/cache@v2
         with:
-          path: Pods
+          path: |
+            ios/Pods
+            ~/Library/Caches/CocoaPods
+            ~/.cocoapods
           key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
           restore-keys: |
             ${{ runner.os }}-pods-
 
       - name: Install packages
         run: |
-          yarn config set install.prefer-offline true
           yarn
 
       - name: Install Tuist.io
