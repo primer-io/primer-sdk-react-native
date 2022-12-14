@@ -65,6 +65,7 @@ data class PrimerGooglePayOptionsRN(
     "VISA"
   ),
   var buttonStyle: GooglePayButtonStyle = GooglePayButtonStyle.BLACK,
+  var captureBillingAddress: Boolean = false
 )
 
 @Serializable
