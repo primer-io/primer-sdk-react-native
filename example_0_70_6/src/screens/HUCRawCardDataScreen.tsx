@@ -33,7 +33,9 @@ let log: string | undefined;
 export const HUCRawCardDataScreen = (props: any) => {
     const [isLoading, setIsLoading] = useState(true);
     const [paymentMethods, setPaymentMethods] = useState<undefined | string[]>(undefined);
+    //@ts-ignore
     const [paymentResponse, setPaymentResponse] = useState<null | string>(null);
+    //@ts-ignore
     const [localImageUrl, setLocalImageUrl] = useState<null | string>(null);
     const [clearLogs, setClearLogs] = useState<boolean>(false);
     const [error, setError] = useState<null | any>(null);
@@ -96,6 +98,7 @@ export const HUCRawCardDataScreen = (props: any) => {
         }
     }
 
+    //@ts-ignore
     const onResumeSuccess = async (resumeToken: string, handler: PrimerResumeHandler) => {
         updateLogs(`\n✅ onResumeSuccess:\n${JSON.stringify(resumeToken)}`);
 
@@ -130,6 +133,7 @@ export const HUCRawCardDataScreen = (props: any) => {
         updateLogs(`\nℹ️ onBeforeClientSessionUpdate`);
     };
 
+    //@ts-ignore
     const onClientSessionUpdate = (clientSession: PrimerClientSession) => {
         updateLogs(`\nℹ️ onClientSessionUpdate`);
     }
@@ -151,6 +155,7 @@ export const HUCRawCardDataScreen = (props: any) => {
         onAvailablePaymentMethodsLoad: onAvailablePaymentMethodsLoad,
         onBeforeClientSessionUpdate: onBeforeClientSessionUpdate,
         onClientSessionUpdate: onClientSessionUpdate,
+        //@ts-ignore
         onBeforePaymentCreate: (checkoutPaymentMethodData, handler) => {
             updateLogs(`\nℹ️ onBeforePaymentCreate`);
             handler.continuePaymentCreation();
@@ -194,6 +199,7 @@ export const HUCRawCardDataScreen = (props: any) => {
             .then((session) => {
                 setIsLoading(false);
                 HeadlessUniversalCheckout.startWithClientToken(session.clientToken, settings)
+                    //@ts-ignore
                     .then((response) => {
                         HeadlessUniversalCheckout.showPaymentMethod(paymentMethod);
                     })
@@ -253,6 +259,7 @@ export const HUCRawCardDataScreen = (props: any) => {
                 }
             }
             await HeadlessUniversalCheckoutRawDataManager.configure(options);
+            //@ts-ignore
             const requiredInputElementTypes = await HeadlessUniversalCheckoutRawDataManager.getRequiredInputElementTypes();
 
             let rawCardData: PrimerRawCardData = {

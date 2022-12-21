@@ -18,7 +18,7 @@ import {
 import { View, Text, useColorScheme, TouchableOpacity } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { styles } from '../styles';
-import { appPaymentParameters, IClientSessionRequestBody } from '../models/IClientSessionRequestBody';
+import { appPaymentParameters } from '../models/IClientSessionRequestBody';
 import type { IClientSession } from '../models/IClientSession';
 import type { IPayment } from '../models/IPayment';
 import { getPaymentHandlingStringVal } from '../network/Environment';
@@ -29,7 +29,9 @@ let clientToken: string | null = null;
 const CheckoutScreen = (props: any) => {
     const isDarkMode = useColorScheme() === 'dark';
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
+    //@ts-ignore
     const [loadingMessage, setLoadingMessage] = React.useState<string | undefined>('undefined');
+    //@ts-ignore
     const [error, setError] = React.useState<Error | null>(null);
 
     const backgroundStyle = {
@@ -156,7 +158,7 @@ const CheckoutScreen = (props: any) => {
             },
             applePayOptions: {
               merchantIdentifier: "merchant.checkout.team",
-              merchantName: appPaymentParameters.merchantName,
+              merchantName: appPaymentParameters.merchantName || "merchant-name",
               isCaptureBillingAddressEnabled: true
             }
         },

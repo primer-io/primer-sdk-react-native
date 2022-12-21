@@ -1,6 +1,6 @@
 
 import * as React from 'react';
-import { View, Text, useColorScheme, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import TextField from '../components/TextField';
 import { makeRandomString } from '../helpers/helpers';
 import type { IClientSessionLineItem } from '../models/IClientSessionRequestBody';

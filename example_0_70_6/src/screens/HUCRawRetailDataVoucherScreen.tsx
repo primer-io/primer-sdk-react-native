@@ -31,10 +31,13 @@ let log: string | undefined;
 
 export const HUCRawRetailDataVoucherScreen = (props: any) => {
   const [isLoading, setIsLoading] = useState(true);
+  //@ts-ignore
   const [paymentMethods, setPaymentMethods] = useState<undefined | string[]>(
     undefined
   );
+  //@ts-ignore
   const [paymentResponse, setPaymentResponse] = useState<null | string>(null);
+  //@ts-ignore
   const [localImageUrl, setLocalImageUrl] = useState<null | string>(null);
   const [clearLogs, setClearLogs] = useState<boolean>(false);
   const [error, setError] = useState<null | any>(null);
@@ -125,6 +128,7 @@ export const HUCRawRetailDataVoucherScreen = (props: any) => {
 
   const onResumeSuccess = async (
     resumeToken: string,
+    //@ts-ignore
     handler: PrimerResumeHandler
   ) => {
     updateLogs(`\n✅ onResumeSuccess:\n${JSON.stringify(resumeToken)}`);
@@ -168,6 +172,7 @@ export const HUCRawRetailDataVoucherScreen = (props: any) => {
     updateLogs(`\nℹ️ onBeforeClientSessionUpdate`);
   };
 
+  //@ts-ignore
   const onClientSessionUpdate = (clientSession: PrimerClientSession) => {
     updateLogs(`\nℹ️ onClientSessionUpdate`);
   };
@@ -191,6 +196,7 @@ export const HUCRawRetailDataVoucherScreen = (props: any) => {
     onAvailablePaymentMethodsLoad: onAvailablePaymentMethodsLoad,
     onBeforeClientSessionUpdate: onBeforeClientSessionUpdate,
     onClientSessionUpdate: onClientSessionUpdate,
+    //@ts-ignore
     onBeforePaymentCreate: (checkoutPaymentMethodData, handler) => {
       updateLogs(`\nℹ️ onBeforePaymentCreate`);
       handler.continuePaymentCreation();
@@ -240,6 +246,7 @@ export const HUCRawRetailDataVoucherScreen = (props: any) => {
     try {
       const options: PrimerHeadlessUniversalCheckoutRawDataManagerOptions = {
         paymentMethodType: "XENDIT_RETAIL_OUTLETS",
+        //@ts-ignore
         onMetadataChange: (data) => {},
         onValidation: (isValid, errors) => {
           if (!isValid && errors && errors.length > 0) {

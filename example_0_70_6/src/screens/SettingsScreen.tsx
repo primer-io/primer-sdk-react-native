@@ -2,7 +2,6 @@ import * as React from 'react';
 import {
     ScrollView,
     Text,
-    TextInput,
     TouchableOpacity,
     useColorScheme,
     View,
@@ -34,7 +33,9 @@ export let customClientToken: string | undefined;
 const SettingsScreen = ({ navigation }) => {
     const isDarkMode = useColorScheme() === 'dark';
     const [environment, setEnvironment] = React.useState<Environment>(Environment.Staging);
+    //@ts-ignore
     const [apiKey, setApiKey] = React.useState<string | undefined>(customApiKey);
+    //@ts-ignore
     const [clientToken, setClientToken] = React.useState<string | undefined>(undefined);
     const [paymentHandling, setPaymentHandling] = React.useState<PaymentHandling>(PaymentHandling.Auto);
     const [lineItems, setLineItems] = React.useState<IClientSessionLineItem[]>(appPaymentParameters.clientSessionRequestBody.order?.lineItems || []);

@@ -23,7 +23,6 @@ import {
     PrimerSettings,
     PrimerTokenizationHandler,
     HeadlessUniversalCheckoutRawDataManager,
-    PrimerRawCardRedirectData,
     PrimerBancontactCardRedirectData
 } from '@primer-io/react-native';
 import type { PrimerHeadlessUniversalCheckoutRawDataManagerOptions } from 'src/headless_checkout/PrimerHeadlessUniversalCheckoutRawDataManager';
@@ -34,7 +33,9 @@ let log: string | undefined;
 export const HUCRawCardRedirectDataScreen = (props: any) => {
     const [isLoading, setIsLoading] = useState(true);
     const [paymentMethods, setPaymentMethods] = useState<undefined | string[]>(undefined);
+    //@ts-ignore
     const [paymentResponse, setPaymentResponse] = useState<null | string>(null);
+    //@ts-ignore
     const [localImageUrl, setLocalImageUrl] = useState<null | string>(null);
     const [clearLogs, setClearLogs] = useState<boolean>(false);
     const [error, setError] = useState<null | any>(null);
@@ -134,6 +135,7 @@ export const HUCRawCardRedirectDataScreen = (props: any) => {
         updateLogs(`\nℹ️ onBeforeClientSessionUpdate`);
     };
 
+    //@ts-ignore
     const onClientSessionUpdate = (clientSession: PrimerClientSession) => {
         updateLogs(`\nℹ️ onClientSessionUpdate`);
     }
@@ -155,6 +157,7 @@ export const HUCRawCardRedirectDataScreen = (props: any) => {
         onAvailablePaymentMethodsLoad: onAvailablePaymentMethodsLoad,
         onBeforeClientSessionUpdate: onBeforeClientSessionUpdate,
         onClientSessionUpdate: onClientSessionUpdate,
+        //@ts-ignore
         onBeforePaymentCreate: (checkoutPaymentMethodData, handler) => {
             updateLogs(`\nℹ️ onBeforePaymentCreate`);
             handler.continuePaymentCreation();
@@ -198,6 +201,7 @@ export const HUCRawCardRedirectDataScreen = (props: any) => {
             .then((session) => {
                 setIsLoading(false);
                 HeadlessUniversalCheckout.startWithClientToken(session.clientToken, settings)
+                    //@ts-ignore
                     .then((response) => {
                         HeadlessUniversalCheckout.showPaymentMethod(paymentMethod);
                     })
@@ -257,6 +261,7 @@ export const HUCRawCardRedirectDataScreen = (props: any) => {
                 }
             }
             await HeadlessUniversalCheckoutRawDataManager.configure(options);
+            //@ts-ignore
             const requiredInputElementTypes = await HeadlessUniversalCheckoutRawDataManager.getRequiredInputElementTypes();
 
             let rawCardData: PrimerBancontactCardRedirectData = {

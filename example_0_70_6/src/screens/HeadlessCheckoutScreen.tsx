@@ -12,8 +12,7 @@ import { appPaymentParameters } from '../models/IClientSessionRequestBody';
 import type { IPayment } from '../models/IPayment';
 import { getPaymentHandlingStringVal } from '../network/Environment';
 import { ActivityIndicator } from 'react-native';
-import { PrimerCheckoutData, PrimerClientSession, PrimerError, PrimerErrorHandler, HeadlessUniversalCheckout, PrimerPaymentMethodTokenData, PrimerResumeHandler, PrimerSettings, PrimerTokenizationHandler } from '@primer-io/react-native';
-import type { PrimerCheckoutAdditionalInfo } from 'lib/typescript/src';
+import { PrimerCheckoutData, PrimerClientSession, PrimerError, PrimerErrorHandler, HeadlessUniversalCheckout, PrimerPaymentMethodTokenData, PrimerResumeHandler, PrimerSettings, PrimerTokenizationHandler, PrimerCheckoutAdditionalInfo } from '@primer-io/react-native';
 
 let paymentId: string | null = null;
 let log: string | undefined;
@@ -21,6 +20,7 @@ let log: string | undefined;
 export const HeadlessCheckoutScreen = (props: any) => {
   const [isLoading, setIsLoading] = useState(true);
   const [paymentMethods, setPaymentMethods] = useState<undefined | string[]>(undefined);
+  //@ts-ignore
   const [paymentResponse, setPaymentResponse] = useState<null | string>(null);
   const [localImageUrl, setLocalImageUrl] = useState<null | string>(null);
   const [clearLogs, setClearLogs] = useState<boolean>(false);
@@ -32,6 +32,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
     log = combinedLog;
   }
 
+  //@ts-ignore
   const getLogo = async (identifier: string) => {
     try {
       const assetUrl = await HeadlessUniversalCheckout.getAssetForPaymentMethodType(
@@ -111,6 +112,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
     }
   }
 
+  //@ts-ignore
   const onResumeSuccess = async (resumeToken: string, handler: PrimerResumeHandler) => {
     updateLogs(`\n✅ onResumeSuccess:\n${JSON.stringify(resumeToken)}`);
 
@@ -145,6 +147,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
     updateLogs(`\nℹ️ onBeforeClientSessionUpdate`);
   };
 
+  //@ts-ignore
   const onClientSessionUpdate = (clientSession: PrimerClientSession) => {
     updateLogs(`\nℹ️ onClientSessionUpdate`);
   }
@@ -161,6 +164,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
     onBeforeClientSessionUpdate: onBeforeClientSessionUpdate,
     onClientSessionUpdate: onClientSessionUpdate,
     onPaymentMethodShow: onPaymentMethodShow,
+    //@ts-ignore
     onBeforePaymentCreate: (checkoutPaymentMethodData, handler) => {
       updateLogs(`\nℹ️ onBeforePaymentCreate`);
       handler.continuePaymentCreation();
@@ -208,6 +212,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
       .then((session) => {
         setIsLoading(false);
         HeadlessUniversalCheckout.startWithClientToken(session.clientToken, settings)
+          //@ts-ignore
           .then((response) => {
             HeadlessUniversalCheckout.showPaymentMethod(paymentMethod);
           })

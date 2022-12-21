@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { getEnvironmentStringVal } from './Environment';
-import { appPaymentParameters, IClientSessionActionsRequestBody, IClientSessionRequestBody } from '../models/IClientSessionRequestBody';
+import { appPaymentParameters, IClientSessionActionsRequestBody } from '../models/IClientSessionRequestBody';
 import type { IPayment } from '../models/IPayment';
 import { APIVersion, getAPIVersionStringVal } from './APIVersion';
 
