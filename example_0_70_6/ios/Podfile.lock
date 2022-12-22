@@ -14,16 +14,16 @@ PODS:
   - KlarnaMobileSDK (2.2.2):
     - KlarnaMobileSDK/full (= 2.2.2)
   - KlarnaMobileSDK/full (2.2.2)
-  - primer-io-react-native (2.15.1):
-    - PrimerSDK (= 2.15.1)
+  - primer-io-react-native (2.20.0-rc.2):
+    - PrimerSDK (= 2.20.0-rc.2)
     - React-Core
-  - Primer3DS (1.0.2)
+  - Primer3DS (1.0.3)
   - PrimerIPay88SDK (0.1.2)
   - PrimerKlarnaSDK (1.0.3):
     - KlarnaMobileSDK (= 2.2.2)
-  - PrimerSDK (2.15.1):
-    - PrimerSDK/Core (= 2.15.1)
-  - PrimerSDK/Core (2.15.1)
+  - PrimerSDK (2.20.0-rc.2):
+    - PrimerSDK/Core (= 2.20.0-rc.2)
+  - PrimerSDK/Core (2.20.0-rc.2)
   - RCT-Folly (2021.07.22.00):
     - boost
     - DoubleConversion
@@ -326,7 +326,7 @@ DEPENDENCIES:
   - Primer3DS
   - PrimerIPay88SDK
   - PrimerKlarnaSDK
-  - PrimerSDK (from `https://github.com/primer-io/primer-sdk-ios.git`, branch `release/2.16.0`)
+  - PrimerSDK (from `https://github.com/primer-io/primer-sdk-ios.git`, tag `2.20.0-rc.2`)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
   - RCTTypeSafety (from `../node_modules/react-native/Libraries/TypeSafety`)
@@ -383,8 +383,8 @@ EXTERNAL SOURCES:
   primer-io-react-native:
     :path: "../.."
   PrimerSDK:
-    :branch: release/2.16.0
     :git: https://github.com/primer-io/primer-sdk-ios.git
+    :tag: 2.20.0-rc.2
   RCT-Folly:
     :podspec: "../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTRequired:
@@ -452,8 +452,8 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   PrimerSDK:
-    :commit: 3e2582cb08c6084f18f7ba813a4235653e5dc00a
     :git: https://github.com/primer-io/primer-sdk-ios.git
+    :tag: 2.20.0-rc.2
 
 SPEC CHECKSUMS:
   boost: a7c83b31436843459a1961bfd74b96033dc77234
@@ -463,11 +463,11 @@ SPEC CHECKSUMS:
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
   KlarnaMobileSDK: 23b44390d06c6e3a90b5325bea6c10bf97ac6044
-  primer-io-react-native: ec8cf5e558ab748459d634eb82c80d77f1013b12
-  Primer3DS: 318b3b760ba389aa10417fba23ceec04286e8172
+  primer-io-react-native: e1ebfb1569f001410cdcf12ad24fc8bb0393bafa
+  Primer3DS: 895ab3a53731c87dfba26f30b70f59fcd590f94f
   PrimerIPay88SDK: 4fe240e69c62bdb0aa56a81a9596538554fb435f
   PrimerKlarnaSDK: a58cb321e0144cd473a250cfdcf5955c96b846c1
-  PrimerSDK: 46d98b1dbf47a7bb4a58f98c6936799ee33d01da
+  PrimerSDK: 78f23fe2db91a1d3de87409401a3620315df4416
   RCT-Folly: 0080d0a6ebf2577475bda044aa59e2ca1f909cda
   RCTRequired: e1866f61af7049eb3d8e08e8b133abd38bc1ca7a
   RCTTypeSafety: 27c2ac1b00609a432ced1ae701247593f07f901e
@@ -501,6 +501,6 @@ SPEC CHECKSUMS:
   RNScreens: 34cc502acf1b916c582c60003dc3089fa01dc66d
   Yoga: 99caf8d5ab45e9d637ee6e0174ec16fbbb01bcfc
 
-PODFILE CHECKSUM: d05e99d3ef21ccc3cc4b0e608f645c14e7c8db32
+PODFILE CHECKSUM: 3a1567f9a6cce8ff8dbc4ab06ab2812e691d1025
 
 COCOAPODS: 1.11.3
