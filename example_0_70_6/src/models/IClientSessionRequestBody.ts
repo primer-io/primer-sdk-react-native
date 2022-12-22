@@ -92,12 +92,19 @@ export let appPaymentParameters: AppPaymentParameters = {
             countryCode: 'GB',
             lineItems: [
                 {
-                    amount: 100,
+                    amount: 10100,
                     quantity: 1,
                     itemId: 'shoes-3213',
                     description: 'Fancy Shoes',
                     discountAmount: 0
                 },
+                // {
+                //     amount: 1000,
+                //     quantity: 1,
+                //     itemId: 'hats-3213',
+                //     description: 'Cool Hat',
+                //     discountAmount: 0
+                // }
             ]
         },
         customer: {

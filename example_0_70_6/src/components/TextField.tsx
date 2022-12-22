@@ -20,7 +20,6 @@ export interface TextFieldProps {
 
 const TextField = (props: TextFieldProps) => {
     return (
-        //@ts-ignore
         <View style={{...props.style}}>
             {
                 props.title === undefined ? null :

@@ -1,6 +1,6 @@
 
 import * as React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, useColorScheme, TouchableOpacity } from 'react-native';
 import TextField from '../components/TextField';
 import { makeRandomString } from '../helpers/helpers';
 import type { IClientSessionLineItem } from '../models/IClientSessionRequestBody';
@@ -9,11 +9,13 @@ import { styles } from '../styles';
 export interface NewLineItemScreenProps {
     lineItem?: IClientSessionLineItem;
     onAddLineItem?: (lineItem: IClientSessionLineItem) => void;
+    onEditLineItem?: (lineItem: IClientSessionLineItem) => void;
     onRemoveLineItem?: (lineItem: IClientSessionLineItem) => void;
 }
 
 const NewLineItemScreen = (props: any) => {
     const newLineItemScreenProps: NewLineItemScreenProps | undefined = props.route.params;
+    const [isEditing, setIsEditing] = React.useState<boolean>(newLineItemScreenProps?.lineItem === undefined ? false : true);
     const [name, setName] = React.useState<string | undefined>(newLineItemScreenProps?.lineItem === undefined ? undefined : newLineItemScreenProps.lineItem.description);
     const [quantity, setQuantity] = React.useState<number | undefined>(newLineItemScreenProps?.lineItem === undefined ? undefined : newLineItemScreenProps.lineItem.quantity);
     const [unitPrice, setUnitPrice] = React.useState<number | undefined>(newLineItemScreenProps?.lineItem === undefined ? undefined : newLineItemScreenProps.lineItem.amount);
@@ -63,26 +65,45 @@ const NewLineItemScreen = (props: any) => {
             <TouchableOpacity
                 style={{ ...styles.button, marginTop: 5, marginBottom: 10, backgroundColor: 'black' }}
                 onPress={() => {
-                    if (name && quantity && unitPrice) {
-                        const newLineItem: IClientSessionLineItem = {
-                            itemId: `item-id-${makeRandomString(8)}`,
-                            description: name,
-                            quantity: quantity,
-                            amount: unitPrice
+                    if (isEditing && newLineItemScreenProps?.lineItem) {
+                        if (name && quantity && unitPrice) {
+                            const newLineItem: IClientSessionLineItem = {
+                                itemId: `item-id-${makeRandomString(8)}`,
+                                description: name,
+                                quantity: quantity,
+                                amount: unitPrice
+                            }
+    
+                            if (newLineItemScreenProps?.onEditLineItem) {
+                                newLineItemScreenProps.onEditLineItem(newLineItem);
+                            }
+    
+                            props.navigation.goBack();
                         }
-
-                        if (newLineItemScreenProps?.onAddLineItem) {
-                            newLineItemScreenProps.onAddLineItem(newLineItem);
+                    } else {
+                        if (name && quantity && unitPrice) {
+                            const newLineItem: IClientSessionLineItem = {
+                                itemId: `item-id-${makeRandomString(8)}`,
+                                description: name,
+                                quantity: quantity,
+                                amount: unitPrice
+                            }
+    
+                            if (newLineItemScreenProps?.onAddLineItem) {
+                                newLineItemScreenProps.onAddLineItem(newLineItem);
+                            }
+    
+                            props.navigation.goBack();
                         }
-
-                        props.navigation.goBack();
                     }
                 }}
             >
                 <Text
                     style={{ ...styles.buttonText, color: 'white' }}
                 >
-                    Add Line Item
+                    {
+                        isEditing ? "Edit Line Item" : "Add Line Item" 
+                    }
                 </Text>
             </TouchableOpacity>
 
