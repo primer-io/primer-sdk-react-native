@@ -14,7 +14,7 @@ PODS:
   - KlarnaMobileSDK (2.2.2):
     - KlarnaMobileSDK/full (= 2.2.2)
   - KlarnaMobileSDK/full (2.2.2)
-  - primer-io-react-native (2.20.0-rc.2):
+  - primer-io-react-native (2.16.0):
     - PrimerSDK (= 2.20.0-rc.2)
     - React-Core
   - Primer3DS (1.0.3)
@@ -463,7 +463,7 @@ SPEC CHECKSUMS:
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
   KlarnaMobileSDK: 23b44390d06c6e3a90b5325bea6c10bf97ac6044
-  primer-io-react-native: e1ebfb1569f001410cdcf12ad24fc8bb0393bafa
+  primer-io-react-native: 21adf53714dd0bda11fd9685060e8c32bf344512
   Primer3DS: 895ab3a53731c87dfba26f30b70f59fcd590f94f
   PrimerIPay88SDK: 4fe240e69c62bdb0aa56a81a9596538554fb435f
   PrimerKlarnaSDK: a58cb321e0144cd473a250cfdcf5955c96b846c1
@@ -501,6 +501,6 @@ SPEC CHECKSUMS:
   RNScreens: 34cc502acf1b916c582c60003dc3089fa01dc66d
   Yoga: 99caf8d5ab45e9d637ee6e0174ec16fbbb01bcfc
 
-PODFILE CHECKSUM: 3a1567f9a6cce8ff8dbc4ab06ab2812e691d1025
+PODFILE CHECKSUM: 335fd5601007219eb1e64a3fc08eb48c6d964f40
 
 COCOAPODS: 1.11.3
