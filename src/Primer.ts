@@ -282,7 +282,7 @@ export const Primer: IPrimer = {
     });
   },
 
-  dispose(): void {
+  cleanUp(): void {
     RNPrimer.removeAllListeners();
     RNPrimer.dismiss();
   },
