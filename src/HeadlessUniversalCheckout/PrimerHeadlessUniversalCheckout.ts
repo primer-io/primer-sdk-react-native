@@ -324,8 +324,8 @@ class PrimerHeadlessUniversalCheckoutClass {
     });
   }
 
-  disposePrimerHeadlessUniversalCheckout(): Promise<void> {
-    return RNPrimerHeadlessUniversalCheckout.disposePrimerHeadlessUniversalCheckout();
+  cleanUp(): Promise<void> {
+    return RNPrimerHeadlessUniversalCheckout.cleanUp();
   }
 }
 
