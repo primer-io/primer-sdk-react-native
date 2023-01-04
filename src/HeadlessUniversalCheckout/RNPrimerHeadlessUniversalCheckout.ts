@@ -153,7 +153,7 @@ const RNPrimerHeadlessUniversalCheckout = {
   disposePrimerHeadlessUniversalCheckout: (): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {
-        await PrimerHeadlessUniversalCheckout.disposePrimerHeadlessUniversalCheckout();
+        await PrimerHeadlessUniversalCheckout.cleanUp();
         resolve();
       } catch (err) {
         reject(err);

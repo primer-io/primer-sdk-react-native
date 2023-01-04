@@ -15,7 +15,7 @@ RCT_EXTERN_METHOD(startWithClientToken:(NSString *)clientToken
                   resolver:(RCTPromiseResolveBlock)resolver
                   rejecter: (RCTPromiseRejectBlock)rejecter)
 
-RCT_EXTERN_METHOD(disposePrimerHeadlessUniversalCheckout)
+RCT_EXTERN_METHOD(cleanUp:(RCTPromiseResolveBlock)resolver rejecter:(RCTPromiseRejectBlock)rejecter)
 
 // MARK: - DECISION HANDLERS
 

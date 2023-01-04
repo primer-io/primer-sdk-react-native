@@ -117,8 +117,11 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
     }
 
     @objc
-    public func disposePrimerHeadlessUniversalCheckout() {
-
+    public func cleanUp(_ resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
+        DispatchQueue.main.async {
+            PrimerHeadlessUniversalCheckout.current.cleanUp()
+            resolver(nil)
+        }
     }
 
     // MARK: - DECISION HANDLERS
@@ -447,8 +450,6 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
                 }
 
                 do {
-                    print("data: \(data)")
-                    print("try data.toJsonObject(): \(try data.toJsonObject())")
                     let checkoutPaymentmethodJson = try data.toJsonObject()
                     self.sendEvent(
                         withName: rnCallbackName,
