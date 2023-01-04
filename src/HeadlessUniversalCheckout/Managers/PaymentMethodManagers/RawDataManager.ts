@@ -29,13 +29,13 @@ class PrimerHeadlessUniversalCheckoutRawDataManager {
     ///////////////////////////////////////////
     // Init
     ///////////////////////////////////////////
-    constructor() {}
+    constructor() { }
 
     ///////////////////////////////////////////
     // API
     ///////////////////////////////////////////
 
-    async configure(options: RawDataManagerProps): Promise<{initializationData: PrimerInitializationData} | void> {
+    async configure(options: RawDataManagerProps): Promise<{ initializationData: PrimerInitializationData } | void> {
         return new Promise(async (resolve, reject) => {
             try {
                 this.options = options;
@@ -53,6 +53,7 @@ class PrimerHeadlessUniversalCheckoutRawDataManager {
     }
 
     async configureListeners(): Promise<void> {
+        //@ts-ignore
         return new Promise(async (resolve, reject) => {
             if (this.options?.onMetadataChange) {
                 this.addListener("onMetadataChange", (data) => {
@@ -151,6 +152,14 @@ class PrimerHeadlessUniversalCheckoutRawDataManager {
 
     removeListener(eventType: EventType, listener: (...args: any[]) => any): void {
         return eventEmitter.removeListener(eventType, listener);
+    }
+
+    removeAllListenersForEvent(eventType: EventType) {
+        eventEmitter.removeAllListeners(eventType);
+    }
+
+    removeAllListeners() {
+        eventTypes.forEach((eventType) => this.removeAllListenersForEvent(eventType));
     }
 }
 
