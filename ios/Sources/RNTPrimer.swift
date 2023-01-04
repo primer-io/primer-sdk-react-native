@@ -455,7 +455,7 @@ extension RNTPrimer: PrimerDelegate {
             }
 
             // Send the error message to the RN bridge.
-            self.handleRNBridgeError(error, checkoutData: nil, stopOnDebug: false)
+            self.handleRNBridgeError(error, checkoutData: data, stopOnDebug: false)
 
         } else {
             // RN dev hasn't opted in on listening SDK dismiss.
