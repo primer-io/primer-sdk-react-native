@@ -152,21 +152,11 @@ class RNTPrimerHeadlessUniversalCheckoutRawDataManager: RCTEventEmitter {
     }
 
     @objc
-    public func dispose(
+    public func cleanUp(
         _ resolver: RCTPromiseResolveBlock,
         rejecter: RCTPromiseRejectBlock
     ) {
-        guard let rawDataManager = rawDataManager else {
-            let err = RNTNativeError(
-                errorId: "native-ios",
-                errorDescription: "The RawDataManager has not been initialized",
-                recoverySuggestion: "Make sure you have called initialized the `RawDataManager' first.")
-            rejecter(err.rnError["errorId"]!, err.rnError["description"], err)
-            return
-        }
 
-        rawDataManager.submit()
-        resolver(nil)
     }
 
 }

@@ -26,7 +26,7 @@ RCT_EXTERN_METHOD(showVaultManagerWithClientToken:(NSString *)clientToken
 
 RCT_EXTERN_METHOD(dismiss)
 
-RCT_EXTERN_METHOD(dispose)
+RCT_EXTERN_METHOD(cleanUp)
 
 // MARK: - HELPERS
 

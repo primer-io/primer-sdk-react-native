@@ -131,7 +131,7 @@ class RNTPrimer: RCTEventEmitter {
     }
 
     @objc
-    public func dispose() {
+    public func cleanUp() {
         Primer.shared.dismiss()
     }
 

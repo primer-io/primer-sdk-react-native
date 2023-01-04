@@ -124,11 +124,11 @@ class PrimerHeadlessUniversalCheckoutRawDataManager {
         });
     }
 
-    dispose(): Promise<void> {
+    cleanUp(): Promise<void> {
         return new Promise(async (resolve, reject) => {
             if (this.options?.paymentMethodType) {
                 try {
-                    await RNTPrimerHeadlessUniversalCheckoutRawDataManager.dispose();
+                    await RNTPrimerHeadlessUniversalCheckoutRawDataManager.cleanUp();
                     resolve();
                 } catch (err) {
                     reject(err);

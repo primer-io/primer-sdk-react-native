@@ -5,5 +5,5 @@ export interface IPrimer {
   showUniversalCheckout(clientToken: string): Promise<void>;
   showVaultManager(clientToken: string): Promise<void>;
   dismiss(): void;
-  dispose(): void;
+  cleanUp(): void;
 }

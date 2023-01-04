@@ -105,10 +105,10 @@ const RNPrimer = {
     });
   },
 
-  dispose: (): Promise<void> => {
+  cleanUp: (): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {
-        await NativePrimer.dispose();
+        await NativePrimer.cleanUp();
         resolve();
       } catch (err) {
         reject(err);
