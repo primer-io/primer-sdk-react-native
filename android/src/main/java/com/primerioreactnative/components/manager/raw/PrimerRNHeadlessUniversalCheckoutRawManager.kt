@@ -148,7 +148,7 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
   }
 
   @ReactMethod
-  fun dispose(promise: Promise) {
+  fun cleanUp(promise: Promise) {
     if (::rawManager.isInitialized.not()) {
       val exception =
         ErrorTypeRN.NativeBridgeFailed errorTo UNINITIALIZED_ERROR

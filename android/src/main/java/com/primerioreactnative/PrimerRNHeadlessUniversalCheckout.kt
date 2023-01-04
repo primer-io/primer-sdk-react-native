@@ -62,9 +62,10 @@ class PrimerRNHeadlessUniversalCheckout(
   }
 
   @ReactMethod
-  fun disposePrimerHeadlessUniversalCheckout() {
+  fun cleanUp(promise: Promise) {
     PrimerHeadlessUniversalCheckout.current.cleanup()
     listener.removeCallbacksAndHandlers()
+    promise.resolve(null)
   }
 
   // region tokenization handlers

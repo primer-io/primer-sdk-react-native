@@ -82,7 +82,7 @@ class PrimerRN(reactContext: ReactApplicationContext, private val json: Json) :
   }
 
   @ReactMethod
-  fun dispose(promise: Promise) {
+  fun cleanUp(promise: Promise) {
     Primer.instance.dismiss(true)
     promise.resolve(null)
   }
