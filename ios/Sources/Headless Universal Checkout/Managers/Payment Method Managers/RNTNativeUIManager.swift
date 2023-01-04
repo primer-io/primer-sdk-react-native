@@ -36,7 +36,7 @@ class RNTPrimerHeadlessUniversalPaymentMethodNativeUIManager: RCTEventEmitter {
     }
 
     @objc
-    func showPaymentMethod(_ intent: String, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
+    func showPaymentMethod(_ intentStr: String, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
         do {
             guard let paymentMethodNativeUIManager = paymentMethodNativeUIManager else {
                 let err = RNTNativeError(
@@ -46,7 +46,7 @@ class RNTPrimerHeadlessUniversalPaymentMethodNativeUIManager: RCTEventEmitter {
                 throw err
             }
 
-            guard let intent = PrimerSessionIntent(rawValue: intent) else {
+            guard let intent = PrimerSessionIntent(rawValue: intentStr) else {
                 let err = RNTNativeError(
                     errorId: "native-ios",
                     errorDescription: "Invalid value for 'intent'.",
