@@ -30,7 +30,6 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
 
-@OptIn(ExperimentalPrimerApi::class)
 class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckoutListener,
   PrimerHeadlessUniversalCheckoutUiListener {
   private var paymentCreationDecisionHandler: ((errorMessage: String?) -> Unit)? = null

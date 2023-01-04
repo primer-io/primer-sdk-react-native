@@ -23,6 +23,7 @@ class PrimerRN(reactContext: ReactApplicationContext, private val json: Json) :
     mListener.sendError = { paramsJson -> onError(paramsJson) }
     mListener.sendErrorWithCheckoutData =
       { paramsJson, checkoutData -> onError(paramsJson, checkoutData) }
+    mListener.onDismissedEvent = { Primer.instance.dismiss(true) }
   }
 
   override fun getName(): String = "NativePrimer"
@@ -76,7 +77,13 @@ class PrimerRN(reactContext: ReactApplicationContext, private val json: Json) :
 
   @ReactMethod
   fun dismiss(promise: Promise) {
-    Primer.instance.dismiss()
+    Primer.instance.dismiss(true)
+    promise.resolve(null)
+  }
+
+  @ReactMethod
+  fun dispose(promise: Promise) {
+    Primer.instance.dismiss(true)
     promise.resolve(null)
   }
 
