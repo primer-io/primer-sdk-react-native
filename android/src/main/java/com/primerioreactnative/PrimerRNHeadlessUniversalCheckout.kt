@@ -122,6 +122,12 @@ class PrimerRNHeadlessUniversalCheckout(
     }
   }
 
+  @ReactMethod
+  fun addListener(eventName: String?) = Unit
+
+  @ReactMethod
+  fun removeListeners(count: Int?) = Unit
+
   private fun onError(exception: PrimerErrorRN, checkoutDataRN: PrimerCheckoutDataRN? = null) {
     val params = Arguments.createMap()
     val errorJson = JSONObject(Json.encodeToString(exception))

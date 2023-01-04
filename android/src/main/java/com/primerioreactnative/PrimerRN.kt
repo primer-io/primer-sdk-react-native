@@ -165,6 +165,12 @@ class PrimerRN(reactContext: ReactApplicationContext, private val json: Json) :
     }
   }
 
+  @ReactMethod
+  fun addListener(eventName: String?) = Unit
+
+  @ReactMethod
+  fun removeListeners(count: Int?) = Unit
+
   private fun startSdk(settings: PrimerSettings) {
     Primer.instance.configure(settings, mListener)
   }

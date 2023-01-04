@@ -24,6 +24,7 @@ import kotlinx.serialization.json.Json
 import org.json.JSONArray
 import org.json.JSONObject
 
+
 @ExperimentalPrimerApi
 internal class PrimerRNHeadlessUniversalCheckoutRawManager(
   reactContext: ReactApplicationContext,
@@ -157,6 +158,12 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
       promise.resolve(null)
     }
   }
+
+  @ReactMethod
+  fun addListener(eventName: String?) = Unit
+
+  @ReactMethod
+  fun removeListeners(count: Int?) = Unit
 
   private fun sendEvent(name: String, params: WritableMap) {
     reactApplicationContext.getJSModule(
