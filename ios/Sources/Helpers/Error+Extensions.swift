@@ -14,6 +14,10 @@ internal extension Error {
             "description": localizedDescription
         ]
         
+        if let key = (self as NSError).userInfo["key"] as? String {
+            json["key"] = key
+        }
+        
         if let recoverySuggestion = (self as NSError).localizedRecoverySuggestion {
             json["recoverySuggestion"] = recoverySuggestion
         }
