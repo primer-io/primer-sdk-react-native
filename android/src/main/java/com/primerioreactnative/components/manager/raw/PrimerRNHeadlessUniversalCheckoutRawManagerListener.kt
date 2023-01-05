@@ -1,7 +1,7 @@
 package com.primerioreactnative.components.manager.raw
 
-import com.primerioreactnative.datamodels.PrimerErrorRN
 import com.primerioreactnative.components.events.PrimerHeadlessUniversalCheckoutRawDataManagerEvent
+import com.primerioreactnative.datamodels.PrimerInputValidationErrorRN
 import io.primer.android.ExperimentalPrimerApi
 import io.primer.android.components.domain.core.models.card.PrimerCardMetadata
 import io.primer.android.components.domain.core.models.metadata.PrimerPaymentMethodMetadata
@@ -27,7 +27,7 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManagerListener :
           "errors",
           JSONArray(
             errors.map {
-              JSONObject(Json.encodeToString(PrimerErrorRN(it.errorId, it.description)))
+              JSONObject(Json.encodeToString(PrimerInputValidationErrorRN(it.errorId, it.description, it.inputElementType.name)))
             }
           )
         )

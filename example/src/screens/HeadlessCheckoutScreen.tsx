@@ -257,6 +257,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
 
   const startHUC = async (clientToken: string) => {
     try {
+      setPaymentMethods([])
       const availablePaymentMethods = await HeadlessUniversalCheckout.startWithClientToken(clientToken, settings);
       setPaymentMethods(availablePaymentMethods);
       // updateLogs(`\nℹ️ Available payment methods:\n${JSON.stringify(availablePaymentMethods, null, 2)}`);

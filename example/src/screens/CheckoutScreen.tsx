@@ -77,7 +77,7 @@ const CheckoutScreen = (props: any) => {
         setIsLoading(false);
 
         props.navigation.navigate(
-            'Result', 
+            'Result',
             {
                 merchantCheckoutData: merchantCheckoutData,
                 merchantCheckoutAdditionalInfo: merchantCheckoutAdditionalInfo,
@@ -109,7 +109,7 @@ const CheckoutScreen = (props: any) => {
                 setIsLoading(false);
 
                 props.navigation.navigate(
-                    'Result', 
+                    'Result',
                     {
                         merchantCheckoutData: merchantCheckoutData,
                         merchantCheckoutAdditionalInfo: merchantCheckoutAdditionalInfo,
@@ -125,9 +125,9 @@ const CheckoutScreen = (props: any) => {
             handler.handleFailure("Merchant error");
             setLoadingMessage(undefined);
             setIsLoading(false);
-            
+
             props.navigation.navigate(
-                'Result', 
+                'Result',
                 {
                     merchantCheckoutData: merchantCheckoutData,
                     merchantCheckoutAdditionalInfo: merchantCheckoutAdditionalInfo,
@@ -151,7 +151,7 @@ const CheckoutScreen = (props: any) => {
                 setIsLoading(false);
 
                 props.navigation.navigate(
-                    'Result', 
+                    'Result',
                     {
                         merchantCheckoutData: merchantCheckoutData,
                         merchantCheckoutAdditionalInfo: merchantCheckoutAdditionalInfo,
@@ -173,9 +173,9 @@ const CheckoutScreen = (props: any) => {
             handler.handleFailure("RN app error");
             setLoadingMessage(undefined);
             setIsLoading(false);
-            
+
             props.navigation.navigate(
-                'Result', 
+                'Result',
                 {
                     merchantCheckoutData: merchantCheckoutData,
                     merchantCheckoutAdditionalInfo: merchantCheckoutAdditionalInfo,
@@ -202,9 +202,9 @@ const CheckoutScreen = (props: any) => {
         handler?.showErrorMessage("My RN message");
         setLoadingMessage(undefined);
         setIsLoading(false);
-        
+
         props.navigation.navigate(
-            'Result', 
+            'Result',
             {
                 merchantCheckoutData: merchantCheckoutData,
                 merchantCheckoutAdditionalInfo: merchantCheckoutAdditionalInfo,
