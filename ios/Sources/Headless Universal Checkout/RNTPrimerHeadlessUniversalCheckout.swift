@@ -371,7 +371,7 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
     func primerHeadlessUniversalCheckoutDidFail(withError err: Error, checkoutData: PrimerCheckoutData?) {
         if self.implementedRNCallbacks?.isOnErrorImplemented == true {
             // Send the error message to the RN bridge.
-            self.handleRNBridgeError(err, checkoutData: nil, stopOnDebug: false)
+            self.handleRNBridgeError(err, checkoutData: checkoutData, stopOnDebug: false)
 
         } else {
             // RN dev hasn't opted in on listening SDK errors.
