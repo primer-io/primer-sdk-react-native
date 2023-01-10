@@ -213,6 +213,7 @@ class PrimerRNEventListener : PrimerCheckoutListener {
         PrimerErrorRN(
           error.errorId,
           error.description,
+          error.diagnosticsId,
           error.recoverySuggestion
         ), checkoutData?.toPrimerCheckoutDataRN()
       )
@@ -226,7 +227,14 @@ class PrimerRNEventListener : PrimerCheckoutListener {
       primerErrorDecisionHandler = { errorMessage: String? ->
         errorHandler?.showErrorMessage(errorMessage)
       }
-      sendError?.invoke(PrimerErrorRN(error.errorId, error.description, error.recoverySuggestion))
+      sendError?.invoke(
+        PrimerErrorRN(
+          error.errorId,
+          error.description,
+          error.diagnosticsId,
+          error.recoverySuggestion
+        )
+      )
     } else {
       super.onFailed(error, errorHandler)
     }

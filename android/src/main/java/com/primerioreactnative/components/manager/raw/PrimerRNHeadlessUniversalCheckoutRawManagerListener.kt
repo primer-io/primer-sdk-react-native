@@ -27,7 +27,16 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManagerListener :
           "errors",
           JSONArray(
             errors.map {
-              JSONObject(Json.encodeToString(PrimerInputValidationErrorRN(it.errorId, it.description, it.inputElementType.name)))
+              JSONObject(
+                Json.encodeToString(
+                  PrimerInputValidationErrorRN(
+                    it.errorId,
+                    it.description,
+                    it.inputElementType.name,
+                    it.diagnosticsId
+                  )
+                )
+              )
             }
           )
         )

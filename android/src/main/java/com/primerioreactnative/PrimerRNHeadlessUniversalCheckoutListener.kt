@@ -12,7 +12,6 @@ import com.primerioreactnative.extensions.toPrimerPaymentMethodDataRN
 import com.primerioreactnative.utils.PrimerHeadlessUniversalCheckoutImplementedRNCallbacks
 import com.primerioreactnative.utils.convertJsonToMap
 import com.primerioreactnative.utils.errorTo
-import io.primer.android.ExperimentalPrimerApi
 import io.primer.android.completion.PrimerHeadlessUniversalCheckoutResumeDecisionHandler
 import io.primer.android.completion.PrimerPaymentCreationDecisionHandler
 import io.primer.android.components.PrimerHeadlessUniversalCheckoutListener
@@ -246,6 +245,7 @@ class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckou
         PrimerErrorRN(
           error.errorId,
           error.description,
+          error.diagnosticsId,
           error.recoverySuggestion
         ), checkoutData?.toPrimerCheckoutDataRN()
       )
@@ -256,7 +256,14 @@ class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckou
 
   override fun onFailed(error: PrimerError) {
     if (implementedRNCallbacks?.isOnErrorImplemented == true) {
-      sendError?.invoke(PrimerErrorRN(error.errorId, error.description, error.recoverySuggestion))
+      sendError?.invoke(
+        PrimerErrorRN(
+          error.errorId,
+          error.description,
+          error.diagnosticsId,
+          error.recoverySuggestion
+        )
+      )
     } else {
       super.onFailed(error)
     }

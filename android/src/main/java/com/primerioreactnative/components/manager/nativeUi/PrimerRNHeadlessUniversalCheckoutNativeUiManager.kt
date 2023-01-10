@@ -47,6 +47,7 @@ internal class PrimerRNHeadlessUniversalCheckoutNativeUiManager(
       val exception = PrimerErrorRN(
         ErrorTypeRN.NativeBridgeFailed.errorId,
         "The NativeUIManager has not been initialized.",
+        null,
         "Initialize the NativeUIManager by calling the configure function" +
           " and providing a payment method type."
       )
@@ -57,6 +58,7 @@ internal class PrimerRNHeadlessUniversalCheckoutNativeUiManager(
       val exception = PrimerErrorRN(
         ErrorTypeRN.NativeBridgeFailed.errorId,
         "Invalid value for 'intent'.",
+        null,
         "'intent' can be 'CHECKOUT' or 'VAULT'."
       )
       promise.reject(exception.errorId, exception.description)
