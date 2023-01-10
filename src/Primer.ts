@@ -226,7 +226,8 @@ async function configureListeners(): Promise<void> {
             const errorId: string = data.error.errorId;
             const description: string | undefined = data.error.description;
             const recoverySuggestion: string | undefined = data.error.recoverySuggestion;
-            const primerError = new PrimerError(errorId, description || 'Unknown error', recoverySuggestion);
+            const diagnosticsId: string | undefined = data.error.diagnosticsId;
+            const primerError = new PrimerError(errorId, description || 'Unknown error', recoverySuggestion, diagnosticsId);
             primerSettings.primerCallbacks.onError(primerError, data.checkoutData || null, errorHandler);
           }
         });

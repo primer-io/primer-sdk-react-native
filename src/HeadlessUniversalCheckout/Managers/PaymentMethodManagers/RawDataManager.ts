@@ -86,7 +86,7 @@ class PrimerHeadlessUniversalCheckoutRawDataManager {
                     reject(err);
                 }
             } else {
-                const err = new PrimerError("manager-not-configured", "HeadlessUniversalCheckoutRawDataManager has not been configured", "Call HeadlessUniversalCheckoutRawDataManager.configure before calling this function.");
+                const err = new PrimerError("manager-not-configured", "HeadlessUniversalCheckoutRawDataManager has not been configured", "Call HeadlessUniversalCheckoutRawDataManager.configure before calling this function.", undefined);
                 reject(err);
             }
         });
@@ -102,7 +102,7 @@ class PrimerHeadlessUniversalCheckoutRawDataManager {
                     reject(err);
                 }
             } else {
-                const err = new PrimerError("manager-not-configured", "HeadlessUniversalCheckoutRawDataManager has not been configured", "Call HeadlessUniversalCheckoutRawDataManager.configure before calling this function.");
+                const err = new PrimerError("manager-not-configured", "HeadlessUniversalCheckoutRawDataManager has not been configured", "Call HeadlessUniversalCheckoutRawDataManager.configure before calling this function.", undefined);
                 reject(err);
             }
         });
@@ -118,7 +118,7 @@ class PrimerHeadlessUniversalCheckoutRawDataManager {
                     reject(err);
                 }
             } else {
-                const err = new PrimerError("manager-not-configured", "HeadlessUniversalCheckoutRawDataManager has not been configured", "Call HeadlessUniversalCheckoutRawDataManager.configure before calling this function.");
+                const err = new PrimerError("manager-not-configured", "HeadlessUniversalCheckoutRawDataManager has not been configured", "Call HeadlessUniversalCheckoutRawDataManager.configure before calling this function.", undefined);
                 reject(err);
             }
         });
@@ -134,7 +134,7 @@ class PrimerHeadlessUniversalCheckoutRawDataManager {
                     reject(err);
                 }
             } else {
-                const err = new PrimerError("manager-not-configured", "HeadlessUniversalCheckoutRawDataManager has not been configured", "Call HeadlessUniversalCheckoutRawDataManager.configure before calling this function.");
+                const err = new PrimerError("manager-not-configured", "HeadlessUniversalCheckoutRawDataManager has not been configured", "Call HeadlessUniversalCheckoutRawDataManager.configure before calling this function.", undefined);
                 reject(err);
             }
         });
