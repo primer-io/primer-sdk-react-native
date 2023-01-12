@@ -8,7 +8,7 @@ import {
 import { ActivityIndicator } from 'react-native';
 import {
     InputElementType,
-    RawCardData,
+    CardData,
     RawDataManager,
 } from '@primer-io/react-native';
 import TextField from '../components/TextField';
@@ -69,20 +69,9 @@ const RawCardDataScreen = (props: any) => {
         tmpCvv: string | null,
         tmpCardholderName: string | null
     ) => {
-        let expiryDateComponents = expiryDate.split("/");
-
-        let expiryMonth: string | undefined;
-        let expiryYear: string | undefined;
-
-        if (expiryDateComponents.length === 2) {
-            expiryMonth = expiryDateComponents[0];
-            expiryYear = expiryDateComponents[1];
-        }
-
-        let rawData: RawCardData = {
+        let rawData: CardData = {
             cardNumber: cardNumber || "",
-            expiryMonth: expiryMonth || "",
-            expiryYear: expiryYear || "",
+            expiryDate: expiryDate || "",
             cvv: cvv || "",
             cardholderName: cardholderName
         }
@@ -92,11 +81,7 @@ const RawCardDataScreen = (props: any) => {
         }
 
         if (tmpExpiryDate) {
-            expiryDateComponents = tmpExpiryDate.split("/");
-            if (expiryDateComponents.length === 2) {
-                rawData.expiryMonth = expiryDateComponents[0];
-                rawData.expiryYear = expiryDateComponents[1];
-            }
+            rawData.expiryDate = tmpExpiryDate;
         }
 
         if (tmpCvv) {

@@ -8,12 +8,11 @@ import {
 import { ActivityIndicator } from 'react-native';
 import {
     InputElementType,
-    RawBancontactCardRedirectData,
     RawDataManager,
+    BancontactCardRedirectData
 } from '@primer-io/react-native';
 import TextField from '../components/TextField';
 import { styles } from '../styles';
-import type { PrimerRawCardRedirectData } from 'src/models/PrimerRawData';
 import type { RawDataScreenProps } from '../models/RawDataScreenProps';
 
 export interface RawCardDataScreenProps {
@@ -67,20 +66,9 @@ const RawAdyenBancontactCardScreen = (props: any) => {
         tmpExpiryDate: string | null,
         tmpCardholderName: string | null
     ) => {
-        let expiryDateComponents = expiryDate.split("/");
-
-        let expiryMonth: string | undefined;
-        let expiryYear: string | undefined;
-
-        if (expiryDateComponents.length === 2) {
-            expiryMonth = expiryDateComponents[0];
-            expiryYear = expiryDateComponents[1];
-        }
-
-        let rawData: RawBancontactCardRedirectData = {
+        let rawData: BancontactCardRedirectData = {
             cardNumber: cardNumber || "",
-            expiryMonth: expiryMonth || "",
-            expiryYear: expiryYear || "",
+            expiryDate: expiryDate || "",
             cardholderName: cardholderName || ""
         }
 
@@ -89,11 +77,7 @@ const RawAdyenBancontactCardScreen = (props: any) => {
         }
 
         if (tmpExpiryDate) {
-            expiryDateComponents = tmpExpiryDate.split("/");
-            if (expiryDateComponents.length === 2) {
-                rawData.expiryMonth = expiryDateComponents[0];
-                rawData.expiryYear = expiryDateComponents[1];
-            }
+            rawData.expiryDate = tmpExpiryDate;
         }
 
         if (tmpCardholderName) {
