@@ -8,13 +8,11 @@ import {
 import { ActivityIndicator } from 'react-native';
 import {
     InputElementType,
-    RawBancontactCardRedirectData,
+    BancontactCardRedirectData,
     RawDataManager,
 } from '@primer-io/react-native';
 import TextField from '../components/TextField';
 import { styles } from '../styles';
-import type { PrimerRawCardRedirectData } from 'src/models/PrimerRawData';
-import type { RawDataScreenProps } from '../models/RawDataScreenProps';
 
 export interface RawCardDataScreenProps {
     navigation: any;
@@ -25,6 +23,7 @@ const rawDataManager = new RawDataManager();
 
 const RawAdyenBancontactCardScreen = (props: any) => {
 
+    //@ts-ignore
     const [isLoading, setIsLoading] = useState(false);
     const [isCardFormValid, setIsCardFormValid] = useState(false);
     const [requiredInputElementTypes, setRequiredInputElementTypes] = useState<string[] | undefined>(undefined);
@@ -41,11 +40,13 @@ const RawAdyenBancontactCardScreen = (props: any) => {
     const initialize = async () => {
         await rawDataManager.configure({
             paymentMethodType: props.route.params.paymentMethodType,
+            //@ts-ignore
             onMetadataChange: (data => {
                 const log = `\nonMetadataChange: ${JSON.stringify(data)}\n`;
                 console.log(log);
                 setMetadataLog(log);
             }),
+            //@ts-ignore
             onValidation: ((isVallid, errors) => {
                 let log = `\nonValidation:\nisValid: ${isVallid}\n`;
 
@@ -67,20 +68,9 @@ const RawAdyenBancontactCardScreen = (props: any) => {
         tmpExpiryDate: string | null,
         tmpCardholderName: string | null
     ) => {
-        let expiryDateComponents = expiryDate.split("/");
-
-        let expiryMonth: string | undefined;
-        let expiryYear: string | undefined;
-
-        if (expiryDateComponents.length === 2) {
-            expiryMonth = expiryDateComponents[0];
-            expiryYear = expiryDateComponents[1];
-        }
-
-        let rawData: RawBancontactCardRedirectData = {
+        let rawData: BancontactCardRedirectData = {
             cardNumber: cardNumber || "",
-            expiryMonth: expiryMonth || "",
-            expiryYear: expiryYear || "",
+            expiryDate: expiryDate || "",
             cardholderName: cardholderName || ""
         }
 
@@ -89,11 +79,7 @@ const RawAdyenBancontactCardScreen = (props: any) => {
         }
 
         if (tmpExpiryDate) {
-            expiryDateComponents = tmpExpiryDate.split("/");
-            if (expiryDateComponents.length === 2) {
-                rawData.expiryMonth = expiryDateComponents[0];
-                rawData.expiryYear = expiryDateComponents[1];
-            }
+            rawData.expiryDate = tmpExpiryDate;
         }
 
         if (tmpCardholderName) {
@@ -153,6 +139,8 @@ const RawAdyenBancontactCardScreen = (props: any) => {
                                         }}
                                     />
                                 );
+                            } else {
+                                return null;
                             }
                         })
                     }
@@ -198,7 +186,7 @@ const RawAdyenBancontactCardScreen = (props: any) => {
                     marginVertical: 16,
                     backgroundColor: isCardFormValid ? 'black' : "lightgray"
                 }}
-                onPress={e => {
+                onPress={() => {
                     if (isCardFormValid) {
                         pay();
                     }

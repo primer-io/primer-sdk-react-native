@@ -8,12 +8,11 @@ import {
 import { ActivityIndicator } from 'react-native';
 import {
     InputElementType,
-    RawCardData,
+    CardData,
     RawDataManager,
 } from '@primer-io/react-native';
 import TextField from '../components/TextField';
 import { styles } from '../styles';
-import type { RawDataScreenProps } from '../models/RawDataScreenProps';
 
 export interface RawCardDataScreenProps {
     navigation: any;
@@ -24,6 +23,7 @@ const rawDataManager = new RawDataManager();
 
 const RawCardDataScreen = (props: any) => {
 
+    //@ts-ignore
     const [isLoading, setIsLoading] = useState(false);
     const [isCardFormValid, setIsCardFormValid] = useState(false);
     const [requiredInputElementTypes, setRequiredInputElementTypes] = useState<string[] | undefined>(undefined);
@@ -41,11 +41,13 @@ const RawCardDataScreen = (props: any) => {
     const initialize = async () => {
         await rawDataManager.configure({
             paymentMethodType: props.route.params.paymentMethodType,
+            //@ts-ignore
             onMetadataChange: (data => {
                 const log = `\nonMetadataChange: ${JSON.stringify(data)}\n`;
                 console.log(log);
                 setMetadataLog(log);
             }),
+            //@ts-ignore
             onValidation: ((isVallid, errors) => {
                 let log = `\nonValidation:\nisValid: ${isVallid}\n`;
 
@@ -58,7 +60,7 @@ const RawCardDataScreen = (props: any) => {
                 setIsCardFormValid(isVallid);
             })
         });
-        
+
         const requiredInputElementTypes = await rawDataManager.getRequiredInputElementTypes();
         setRequiredInputElementTypes(requiredInputElementTypes);
     }
@@ -69,20 +71,9 @@ const RawCardDataScreen = (props: any) => {
         tmpCvv: string | null,
         tmpCardholderName: string | null
     ) => {
-        let expiryDateComponents = expiryDate.split("/");
-
-        let expiryMonth: string | undefined;
-        let expiryYear: string | undefined;
-
-        if (expiryDateComponents.length === 2) {
-            expiryMonth = expiryDateComponents[0];
-            expiryYear = expiryDateComponents[1];
-        }
-
-        let rawData: RawCardData = {
+        let rawData: CardData = {
             cardNumber: cardNumber || "",
-            expiryMonth: expiryMonth || "",
-            expiryYear: expiryYear || "",
+            expiryDate: expiryDate || "",
             cvv: cvv || "",
             cardholderName: cardholderName
         }
@@ -92,11 +83,7 @@ const RawCardDataScreen = (props: any) => {
         }
 
         if (tmpExpiryDate) {
-            expiryDateComponents = tmpExpiryDate.split("/");
-            if (expiryDateComponents.length === 2) {
-                rawData.expiryMonth = expiryDateComponents[0];
-                rawData.expiryYear = expiryDateComponents[1];
-            }
+            rawData.expiryDate = tmpExpiryDate;
         }
 
         if (tmpCvv) {
@@ -174,6 +161,8 @@ const RawCardDataScreen = (props: any) => {
                                         }}
                                     />
                                 );
+                            } else {
+                                return null;
                             }
                         })
                     }
@@ -219,7 +208,7 @@ const RawCardDataScreen = (props: any) => {
                     marginVertical: 16,
                     backgroundColor: isCardFormValid ? 'black' : "lightgray"
                 }}
-                onPress={e => {
+                onPress={() => {
                     if (isCardFormValid) {
                         pay();
                     }

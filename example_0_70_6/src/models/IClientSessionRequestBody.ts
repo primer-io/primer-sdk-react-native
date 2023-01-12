@@ -92,7 +92,7 @@ export let appPaymentParameters: AppPaymentParameters = {
             countryCode: 'GB',
             lineItems: [
                 {
-                    amount: 10100,
+                    amount: 15100,
                     quantity: 1,
                     itemId: 'shoes-3213',
                     description: 'Fancy Shoes',

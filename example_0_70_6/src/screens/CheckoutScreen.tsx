@@ -39,8 +39,11 @@ interface Log {
 const CheckoutScreen = (props: any) => {
 
     const isDarkMode = useColorScheme() === 'dark';
+    //@ts-ignore
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
+    //@ts-ignore
     const [loadingMessage, setLoadingMessage] = React.useState<string | undefined>('undefined');
+    //@ts-ignore
     const [error, setError] = React.useState<Error | null>(null);
 
     const backgroundStyle = {
@@ -235,7 +238,7 @@ const CheckoutScreen = (props: any) => {
             },
             applePayOptions: {
                 merchantIdentifier: "merchant.checkout.team",
-                merchantName: appPaymentParameters.merchantName,
+                merchantName: appPaymentParameters.merchantName || "Merchant name",
                 isCaptureBillingAddressEnabled: true
             }
         },
