@@ -4,10 +4,10 @@ import com.facebook.react.bridge.*
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.primerioreactnative.Keys
 import com.primerioreactnative.components.datamodels.core.PrimerRawPaymentMethodType
-import com.primerioreactnative.components.datamodels.manager.raw.card.PrimerRNRawCardData
-import com.primerioreactnative.components.datamodels.manager.raw.cardRedirect.PrimerRNRawBancontactCardData
-import com.primerioreactnative.components.datamodels.manager.raw.phoneNumber.PrimerRNRawPhoneNumberData
-import com.primerioreactnative.components.datamodels.manager.raw.retailOutlets.PrimerRNRawRetailOutletData
+import com.primerioreactnative.components.datamodels.manager.raw.card.PrimerRNCardData
+import com.primerioreactnative.components.datamodels.manager.raw.cardRedirect.PrimerRNBancontactCardData
+import com.primerioreactnative.components.datamodels.manager.raw.phoneNumber.PrimerRNPhoneNumberData
+import com.primerioreactnative.components.datamodels.manager.raw.retailOutlets.PrimerRNRetailOutletData
 import com.primerioreactnative.components.datamodels.manager.raw.retailOutlets.toRNRetailOutletsList
 import com.primerioreactnative.components.events.PrimerHeadlessUniversalCheckoutEvent
 import com.primerioreactnative.datamodels.ErrorTypeRN
@@ -109,19 +109,19 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
     } else {
       try {
         val rawData = when (PrimerRawPaymentMethodType.valueOf(paymentMethodTypeStr.toString())) {
-          PrimerRawPaymentMethodType.PAYMENT_CARD -> json.decodeFromString<PrimerRNRawCardData>(
+          PrimerRawPaymentMethodType.PAYMENT_CARD -> json.decodeFromString<PrimerRNCardData>(
             rawDataStr
           ).toPrimerCardData()
           PrimerRawPaymentMethodType.XENDIT_OVO,
           PrimerRawPaymentMethodType.ADYEN_MBWAY ->
-            json.decodeFromString<PrimerRNRawPhoneNumberData>(rawDataStr)
-              .toPrimerRawPhoneNumberData()
+            json.decodeFromString<PrimerRNPhoneNumberData>(rawDataStr)
+              .toPrimerPhoneNumberData()
           PrimerRawPaymentMethodType.ADYEN_BANCONTACT_CARD ->
-            json.decodeFromString<PrimerRNRawBancontactCardData>(rawDataStr)
-              .toPrimerRawBancontactCardData()
+            json.decodeFromString<PrimerRNBancontactCardData>(rawDataStr)
+              .toPrimerBancontactCardData()
           PrimerRawPaymentMethodType.XENDIT_RETAIL_OUTLETS ->
-            json.decodeFromString<PrimerRNRawRetailOutletData>(rawDataStr)
-              .toPrimerRawRetailOutletData()
+            json.decodeFromString<PrimerRNRetailOutletData>(rawDataStr)
+              .toPrimerRetailOutletData()
         }
         rawManager.setRawData(rawData)
         promise.resolve(null)
