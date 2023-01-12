@@ -26,10 +26,10 @@ export {
 } from './models/PrimerClientSession';
 export {
     PrimerRawData as RawData,
-    PrimerRawCardData as RawCardData,
-    PrimerRawBancontactCardRedirectData as RawBancontactCardRedirectData,
-    PrimerRawPhoneNumberData as RawPhoneNumberData,
-    PrimerRawRetailerData as RawRetailerData
+    PrimerCardData as CardData,
+    PrimerBancontactCardRedirectData as BancontactCardRedirectData,
+    PrimerPhoneNumberData as PhoneNumberData,
+    PrimerRetailerData as RetailerData
 } from './models/PrimerRawData';
 export {
     PrimerCheckoutAdditionalInfo as CheckoutAdditionalInfo,
