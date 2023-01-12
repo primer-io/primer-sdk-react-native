@@ -2,8 +2,7 @@ export interface PrimerRawData {}
 
 export interface PrimerCardData extends PrimerRawData {
     cardNumber: string;
-    expiryMonth: string;
-    expiryYear: string;
+    expiryDate: string;
     cvv: string;
     cardholderName?: string;
 }
@@ -12,12 +11,9 @@ export interface PrimerPhoneNumberData extends PrimerRawData {
     phoneNumber: string;
 }
 
-export interface PrimerCardRedirectData extends PrimerRawData {}
-
-export interface PrimerBancontactCardRedirectData extends PrimerCardRedirectData {
+export interface PrimerBancontactCardData extends PrimerRawData {
     cardNumber: string;
-    expiryMonth: string;
-    expiryYear: string;
+    expiryDate: string;
     cardholderName: string;
 }
 

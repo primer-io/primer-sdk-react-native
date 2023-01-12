@@ -16,14 +16,12 @@ extension PrimerBancontactCardData {
             }
 
             if let cardNumber = dict["cardNumber"],
-               let expiryMonth = dict["expiryMonth"],
-               let expiryYear = dict["expiryYear"],
+               let expiryDate = dict["expiryDate"],
                let cardholderName = dict["cardholderName"]
             {
                 self.init(
                     cardNumber: cardNumber,
-                    expiryMonth: expiryMonth,
-                    expiryYear: expiryYear,
+                    expiryDate: expiryDate,
                     cardholderName: cardholderName)
             } else {
                 return nil
