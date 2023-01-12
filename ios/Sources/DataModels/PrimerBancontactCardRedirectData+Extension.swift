@@ -1,11 +1,11 @@
 import Foundation
 import PrimerSDK
 
-extension PrimerBancontactCardRedirectData {
+extension PrimerBancontactCardData {
 
-    convenience init?(cardRedirectDataStr: String) {
+    convenience init?(bankcontactCardDataStr: String) {
         do {
-            guard let data = cardRedirectDataStr.data(using: .utf8) else {
+            guard let data = bankcontactCardDataStr.data(using: .utf8) else {
                 return nil
             }
 

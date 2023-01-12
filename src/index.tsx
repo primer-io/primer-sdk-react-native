@@ -27,7 +27,7 @@ export {
 export {
     PrimerRawData as RawData,
     PrimerCardData as CardData,
-    PrimerBancontactCardRedirectData as BancontactCardRedirectData,
+    PrimerBancontactCardData as BancontactCardData,
     PrimerPhoneNumberData as PhoneNumberData,
     PrimerRetailerData as RetailerData
 } from './models/PrimerRawData';

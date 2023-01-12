@@ -114,13 +114,13 @@ class RNTPrimerHeadlessUniversalCheckoutRawDataManager: RCTEventEmitter {
             return
         }
 
-        if let rawCardRedirectData = PrimerBancontactCardRedirectData(cardRedirectDataStr: rawDataStr) {
+        if let rawCardRedirectData = PrimerBancontactCardData(bankcontactCardDataStr: rawDataStr) {
             rawDataManager.rawData = rawCardRedirectData
             resolver(nil)
             return
         }
 
-        if let rawRetailerData = PrimerRawRetailerData(primerRawRetailerDataStr: rawDataStr) {
+        if let rawRetailerData = PrimerRetailerData(primerRetailerDataStr: rawDataStr) {
             rawDataManager.rawData = rawRetailerData
             resolver(nil)
             return

@@ -8,11 +8,11 @@
 import Foundation
 import PrimerSDK
 
-extension PrimerRawRetailerData {
+extension PrimerRetailerData {
 
-    convenience init?(primerRawRetailerDataStr: String) {
+    convenience init?(primerRetailerDataStr: String) {
         do {
-            guard let data = primerRawRetailerDataStr.data(using: .utf8) else {
+            guard let data = primerRetailerDataStr.data(using: .utf8) else {
                 return nil
             }
 
