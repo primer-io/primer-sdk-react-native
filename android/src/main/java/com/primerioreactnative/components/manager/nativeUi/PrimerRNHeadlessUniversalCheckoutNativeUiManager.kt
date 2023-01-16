@@ -9,15 +9,15 @@ import com.primerioreactnative.datamodels.PrimerErrorRN
 import com.primerioreactnative.utils.errorTo
 import io.primer.android.ExperimentalPrimerApi
 import io.primer.android.PrimerSessionIntent
-import io.primer.android.components.manager.native.PrimerNativeUiPaymentMethodManager
-import io.primer.android.components.manager.native.PrimerNativeUiPaymentMethodManagerInterface
+import io.primer.android.components.manager.native.PrimerHeadlessUniversalCheckoutNativeUiManager
+import io.primer.android.components.manager.native.PrimerHeadlessUniversalCheckoutNativeUiManagerInterface
 
 @ExperimentalPrimerApi
 internal class PrimerRNHeadlessUniversalCheckoutNativeUiManager(
   private val reactContext: ReactApplicationContext,
 ) : ReactContextBaseJavaModule(reactContext) {
 
-  private lateinit var nativeUiManager: PrimerNativeUiPaymentMethodManagerInterface
+  private lateinit var nativeUiManager: PrimerHeadlessUniversalCheckoutNativeUiManagerInterface
   private var paymentMethodTypeStr: String? = null
 
   override fun getName() = "RNTPrimerHeadlessUniversalPaymentMethodNativeUIManager"
@@ -25,7 +25,7 @@ internal class PrimerRNHeadlessUniversalCheckoutNativeUiManager(
   @ReactMethod
   fun configure(paymentMethodTypeStr: String, promise: Promise) {
     try {
-      nativeUiManager = PrimerNativeUiPaymentMethodManager.newInstance(
+      nativeUiManager = PrimerHeadlessUniversalCheckoutNativeUiManager.newInstance(
         paymentMethodTypeStr
       )
       this.paymentMethodTypeStr = paymentMethodTypeStr

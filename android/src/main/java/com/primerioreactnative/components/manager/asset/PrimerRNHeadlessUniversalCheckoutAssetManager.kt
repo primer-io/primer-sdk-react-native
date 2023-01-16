@@ -15,7 +15,7 @@ import com.primerioreactnative.datamodels.ErrorTypeRN
 import com.primerioreactnative.utils.convertJsonToMap
 import com.primerioreactnative.utils.errorTo
 import io.primer.android.ExperimentalPrimerApi
-import io.primer.android.components.ui.assets.PrimerAssetsManager
+import io.primer.android.components.ui.assets.PrimerHeadlessUniversalCheckoutAssetsManager
 import io.primer.android.ui.CardNetwork
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -42,7 +42,7 @@ internal class PrimerRNHeadlessUniversalCheckoutAssetManager(
         promise.reject(exception.errorId, exception.description)
       }
       else -> try {
-        PrimerAssetsManager.getCardNetworkImage(cardNetwork).let { resourceId ->
+        PrimerHeadlessUniversalCheckoutAssetsManager.getCardNetworkImage(cardNetwork).let { resourceId ->
           val file = getFileForCardNetworkAsset(reactContext, cardNetworkStr)
           AssetsManager.saveBitmapToFile(
             file,
@@ -68,7 +68,7 @@ internal class PrimerRNHeadlessUniversalCheckoutAssetManager(
   fun getPaymentMethodAsset(paymentMethodTypeStr: String, promise: Promise) {
     try {
       val paymentMethodAsset =
-        PrimerAssetsManager.getPaymentMethodAsset(reactContext, paymentMethodTypeStr)
+        PrimerHeadlessUniversalCheckoutAssetsManager.getPaymentMethodAsset(reactContext, paymentMethodTypeStr)
       promise.resolve(
         convertJsonToMap(
           JSONObject().apply {
@@ -94,7 +94,7 @@ internal class PrimerRNHeadlessUniversalCheckoutAssetManager(
   @ReactMethod
   fun getPaymentMethodAssets(promise: Promise) {
     val paymentMethodAssets =
-      PrimerAssetsManager.getPaymentMethodAssets(reactContext)
+      PrimerHeadlessUniversalCheckoutAssetsManager.getPaymentMethodAssets(reactContext)
     if (paymentMethodAssets.isEmpty()) {
       val exception =
         ErrorTypeRN.NativeBridgeFailed errorTo "Failed to find assets for this session"
