@@ -13,4 +13,7 @@ data class PrimerErrorRN(
 @Serializable
 enum class ErrorTypeRN(val errorId: String) {
   NativeBridgeFailed("native-android"),
+  UnitializedSdkSession("uninitialized-sdk-session"),
+  UnsupportedPaymentMethod("unsupported-payment-method-type"),
+  UnsupportedPaymentIntent("unsupported-session-intent")
 }

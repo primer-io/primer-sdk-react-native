@@ -15,6 +15,8 @@ import com.primerioreactnative.datamodels.PrimerErrorRN
 import com.primerioreactnative.utils.convertJsonToMap
 import com.primerioreactnative.utils.errorTo
 import io.primer.android.ExperimentalPrimerApi
+import io.primer.android.components.SdkUninitializedException
+import io.primer.android.components.domain.exception.UnsupportedPaymentMethodManagerException
 import io.primer.android.components.manager.raw.PrimerHeadlessUniversalCheckoutRawDataManager
 import io.primer.android.components.manager.raw.PrimerHeadlessUniversalCheckoutRawDataManagerInterface
 import io.primer.android.data.payments.configure.retailOutlets.RetailOutletsList
@@ -71,6 +73,10 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
           }
         } else promise.reject(error.errorId, error.description)
       }
+    } catch (e: SdkUninitializedException) {
+      promise.reject(ErrorTypeRN.UnitializedSdkSession.errorId, e.message, e)
+    } catch (e: UnsupportedPaymentMethodManagerException) {
+      promise.reject(ErrorTypeRN.UnsupportedPaymentMethod.errorId, e.message, e)
     } catch (e: Exception) {
       val exception =
         ErrorTypeRN.NativeBridgeFailed errorTo e.message.orEmpty()

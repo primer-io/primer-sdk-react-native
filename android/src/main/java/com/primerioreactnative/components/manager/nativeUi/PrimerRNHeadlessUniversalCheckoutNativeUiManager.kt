@@ -9,8 +9,11 @@ import com.primerioreactnative.datamodels.PrimerErrorRN
 import com.primerioreactnative.utils.errorTo
 import io.primer.android.ExperimentalPrimerApi
 import io.primer.android.PrimerSessionIntent
+import io.primer.android.components.SdkUninitializedException
+import io.primer.android.components.domain.exception.UnsupportedPaymentMethodManagerException
 import io.primer.android.components.manager.native.PrimerHeadlessUniversalCheckoutNativeUiManager
 import io.primer.android.components.manager.native.PrimerHeadlessUniversalCheckoutNativeUiManagerInterface
+import io.primer.android.domain.exception.UnsupportedPaymentIntentException
 
 @ExperimentalPrimerApi
 internal class PrimerRNHeadlessUniversalCheckoutNativeUiManager(
@@ -30,6 +33,10 @@ internal class PrimerRNHeadlessUniversalCheckoutNativeUiManager(
       )
       this.paymentMethodTypeStr = paymentMethodTypeStr
       promise.resolve(null)
+    } catch (e: SdkUninitializedException) {
+      promise.reject(ErrorTypeRN.UnitializedSdkSession.errorId, e.message, e)
+    } catch (e: UnsupportedPaymentMethodManagerException) {
+      promise.reject(ErrorTypeRN.UnsupportedPaymentMethod.errorId, e.message, e)
     } catch (e: Exception) {
       val exception =
         ErrorTypeRN.NativeBridgeFailed errorTo e.message.orEmpty()
@@ -63,10 +70,18 @@ internal class PrimerRNHeadlessUniversalCheckoutNativeUiManager(
       )
       promise.reject(exception.errorId, exception.description)
     } else {
-      nativeUiManager.showPaymentMethod(
-        reactContext,
-        PrimerSessionIntent.valueOf(intentStr.uppercase())
-      )
+      try {
+        nativeUiManager.showPaymentMethod(
+          reactContext,
+          PrimerSessionIntent.valueOf(intentStr.uppercase())
+        )
+      } catch (e: UnsupportedPaymentIntentException) {
+        promise.reject(ErrorTypeRN.UnsupportedPaymentIntent.errorId, e.message, e)
+      } catch (e: Exception) {
+        val exception =
+          ErrorTypeRN.NativeBridgeFailed errorTo e.message.orEmpty()
+        promise.reject(exception.errorId, exception.description, e)
+      }
     }
   }
 }
