@@ -174,7 +174,7 @@ class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckou
     }
   }
 
-  override fun onResumeSuccess(
+  override fun onCheckoutResume(
     resumeToken: String,
     decisionHandler: PrimerHeadlessUniversalCheckoutResumeDecisionHandler
   ) {
@@ -217,7 +217,7 @@ class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckou
     }
   }
 
-  override fun onAdditionalInfoReceived(additionalInfo: PrimerCheckoutAdditionalInfo) {
+  override fun onCheckoutAdditionalInfoReceived(additionalInfo: PrimerCheckoutAdditionalInfo) {
     if (implementedRNCallbacks?.isOnCheckoutAdditionalInfoImplemented == true) {
       if (additionalInfo is PromptPayCheckoutAdditionalInfo) {
         sendEvent?.invoke(
