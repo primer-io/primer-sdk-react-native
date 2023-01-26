@@ -27,7 +27,7 @@ target 'example_0_70_6' do
   )
   
   pod 'primer-io-react-native', :path => '../..'
-  pod 'PrimerSDK', :git => 'https://github.com/primer-io/primer-sdk-ios.git', :branch => 'release/2.16.0'
+#  pod 'PrimerSDK', :git => 'https://github.com/primer-io/primer-sdk-ios.git', :branch => 'release/2.16.0'
   pod 'Primer3DS'
   pod 'PrimerIPay88SDK'
   pod 'PrimerKlarnaSDK'
