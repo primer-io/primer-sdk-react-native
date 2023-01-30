@@ -112,74 +112,74 @@ async function configureListeners(): Promise<void> {
       let implementedRNCallbacks: PrimerImplementedRNCallbacks = {
         onAvailablePaymentMethodsLoad: false,
         onTokenizationStart: false,
-        onTokenizationSuccess: (primerSettings?.primerCallbacks?.onTokenizeSuccess !== undefined) || false,
+        onTokenizationSuccess: (primerSettings?.onTokenizeSuccess !== undefined) || false,
     
-        onCheckoutResume: (primerSettings?.primerCallbacks?.onResumeSuccess !== undefined) || false,
-        onCheckoutPending: (primerSettings?.primerCallbacks?.onResumePending !== undefined) || false,
-        onCheckoutAdditionalInfo: (primerSettings?.primerCallbacks?.onCheckoutReceivedAdditionalInfo !== undefined) || false,
+        onCheckoutResume: (primerSettings?.onResumeSuccess !== undefined) || false,
+        onCheckoutPending: (primerSettings?.onResumePending !== undefined) || false,
+        onCheckoutAdditionalInfo: (primerSettings?.onCheckoutReceivedAdditionalInfo !== undefined) || false,
     
-        onError: (primerSettings?.primerCallbacks?.onError !== undefined) || false,
-        onCheckoutComplete: (primerSettings?.primerCallbacks?.onCheckoutComplete !== undefined) || false,
-        onBeforeClientSessionUpdate: (primerSettings?.primerCallbacks?.onBeforeClientSessionUpdate !== undefined) || false,
+        onError: (primerSettings?.onError !== undefined) || false,
+        onCheckoutComplete: (primerSettings?.onCheckoutComplete !== undefined) || false,
+        onBeforeClientSessionUpdate: (primerSettings?.onBeforeClientSessionUpdate !== undefined) || false,
     
-        onClientSessionUpdate: (primerSettings?.primerCallbacks?.onClientSessionUpdate !== undefined) || false,
-        onBeforePaymentCreate: (primerSettings?.primerCallbacks?.onBeforePaymentCreate !== undefined) || false,
+        onClientSessionUpdate: (primerSettings?.onClientSessionUpdate !== undefined) || false,
+        onBeforePaymentCreate: (primerSettings?.onBeforePaymentCreate !== undefined) || false,
         onPreparationStart: false,
     
         onPaymentMethodShow: false,
-        onDismiss: (primerSettings?.primerCallbacks?.onDismiss !== undefined) || false
+        onDismiss: (primerSettings?.onDismiss !== undefined) || false
       };
 
       await RNPrimer.setImplementedRNCallbacks(implementedRNCallbacks);
 
       if (implementedRNCallbacks.onCheckoutComplete) {
         RNPrimer.addListener('onCheckoutComplete', data => {
-          if (primerSettings && primerSettings.primerCallbacks?.onCheckoutComplete) {
+          if (primerSettings && primerSettings.onCheckoutComplete) {
             const checkoutData: PrimerCheckoutData = data;
-            primerSettings.primerCallbacks.onCheckoutComplete(checkoutData);
+            primerSettings.onCheckoutComplete(checkoutData);
           }
         });
       }
 
       if (implementedRNCallbacks.onBeforePaymentCreate) {
         RNPrimer.addListener('onBeforePaymentCreate', data => {
-          if (primerSettings && primerSettings.primerCallbacks?.onBeforePaymentCreate) {
+          if (primerSettings && primerSettings.onBeforePaymentCreate) {
             const checkoutPaymentMethodData: PrimerCheckoutPaymentMethodData = data;
-            primerSettings.primerCallbacks.onBeforePaymentCreate(checkoutPaymentMethodData, paymentCreationHandler);
+            primerSettings.onBeforePaymentCreate(checkoutPaymentMethodData, paymentCreationHandler);
           }
         });
       }
 
       if (implementedRNCallbacks.onBeforeClientSessionUpdate) {
         RNPrimer.addListener('onBeforeClientSessionUpdate', _ => {
-          if (primerSettings && primerSettings.primerCallbacks?.onBeforeClientSessionUpdate) {
-            primerSettings.primerCallbacks.onBeforeClientSessionUpdate();
+          if (primerSettings && primerSettings.onBeforeClientSessionUpdate) {
+            primerSettings.onBeforeClientSessionUpdate();
           }
         });
       }
 
       if (implementedRNCallbacks.onClientSessionUpdate) {
         RNPrimer.addListener('onClientSessionUpdate', data => {
-          if (primerSettings && primerSettings.primerCallbacks?.onClientSessionUpdate) {
+          if (primerSettings && primerSettings.onClientSessionUpdate) {
             const clientSession: PrimerClientSession = data;
-            primerSettings.primerCallbacks.onClientSessionUpdate(clientSession);
+            primerSettings.onClientSessionUpdate(clientSession);
           }
         });
       }
 
       if (implementedRNCallbacks.onTokenizationSuccess) {
         RNPrimer.addListener('onTokenizeSuccess', data => {
-          if (primerSettings && primerSettings.primerCallbacks?.onTokenizeSuccess) {
+          if (primerSettings && primerSettings.onTokenizeSuccess) {
             const paymentMethodTokenData: PrimerPaymentMethodTokenData = data;
-            primerSettings.primerCallbacks.onTokenizeSuccess(paymentMethodTokenData, tokenizationHandler);
+            primerSettings.onTokenizeSuccess(paymentMethodTokenData, tokenizationHandler);
           }
         });
       }
 
       if (implementedRNCallbacks.onCheckoutResume) {
         RNPrimer.addListener('onResumeSuccess', data => {
-          if (primerSettings && primerSettings.primerCallbacks?.onResumeSuccess && data.resumeToken) {
-            primerSettings.primerCallbacks.onResumeSuccess(data.resumeToken, resumeHandler);
+          if (primerSettings && primerSettings.onResumeSuccess && data.resumeToken) {
+            primerSettings.onResumeSuccess(data.resumeToken, resumeHandler);
           }
         });
       }
@@ -188,9 +188,9 @@ async function configureListeners(): Promise<void> {
         RNPrimer.addListener(
           'onResumePending',
           (additionalInfo) => {
-            if (primerSettings && primerSettings.primerCallbacks?.onResumePending) {
+            if (primerSettings && primerSettings.onResumePending) {
               const checkoutAdditionalInfo: PrimerCheckoutAdditionalInfo = additionalInfo;
-              primerSettings.primerCallbacks.onResumePending(checkoutAdditionalInfo);
+              primerSettings.onResumePending(checkoutAdditionalInfo);
             } else {
               // Ignore!
             }
@@ -202,9 +202,9 @@ async function configureListeners(): Promise<void> {
         RNPrimer.addListener(
           'onCheckoutReceivedAdditionalInfo',
           (additionalInfo) => {
-            if (primerSettings && primerSettings.primerCallbacks?.onCheckoutReceivedAdditionalInfo) {
+            if (primerSettings && primerSettings.onCheckoutReceivedAdditionalInfo) {
               const checkoutAdditionalInfo: PrimerCheckoutAdditionalInfo = additionalInfo;
-              primerSettings.primerCallbacks.onCheckoutReceivedAdditionalInfo(checkoutAdditionalInfo);
+              primerSettings.onCheckoutReceivedAdditionalInfo(checkoutAdditionalInfo);
             } else {
               // Ignore!
             }
@@ -214,21 +214,21 @@ async function configureListeners(): Promise<void> {
 
       if (implementedRNCallbacks.onDismiss) {
         RNPrimer.addListener('onDismiss', _ => {
-          if (primerSettings && primerSettings.primerCallbacks?.onDismiss) {
-            primerSettings.primerCallbacks.onDismiss();
+          if (primerSettings && primerSettings.onDismiss) {
+            primerSettings.onDismiss();
           }
         });
       }
 
       if (implementedRNCallbacks.onError) {
         RNPrimer.addListener('onError', data => {
-          if (data && data.error && data.error.errorId && primerSettings && primerSettings.primerCallbacks?.onError) {
+          if (data && data.error && data.error.errorId && primerSettings && primerSettings.onError) {
             const errorId: string = data.error.errorId;
             const description: string | undefined = data.error.description;
             const recoverySuggestion: string | undefined = data.error.recoverySuggestion;
             const diagnosticsId: string | undefined = data.error.diagnosticsId;
             const primerError = new PrimerError(errorId, description || 'Unknown error', recoverySuggestion, diagnosticsId);
-            primerSettings.primerCallbacks.onError(primerError, data.checkoutData || null, errorHandler);
+            primerSettings.onError(primerError, data.checkoutData || null, errorHandler);
           }
         });
       }
