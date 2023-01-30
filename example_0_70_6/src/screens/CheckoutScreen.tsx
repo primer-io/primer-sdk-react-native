@@ -56,31 +56,31 @@ const CheckoutScreen = (props: any) => {
     }
 
     const onBeforeClientSessionUpdate = () => {
-        updateLogs({event: "onBeforeClientSessionUpdate"});
+        updateLogs({ event: "onBeforeClientSessionUpdate" });
         setIsLoading(true);
         setLoadingMessage('onBeforeClientSessionUpdate');
     }
 
     const onClientSessionUpdate = (clientSession: ClientSession) => {
-        updateLogs({event: "onClientSessionUpdate", value: clientSession});
+        updateLogs({ event: "onClientSessionUpdate", value: clientSession });
         setLoadingMessage('onClientSessionUpdate');
     }
 
     const onBeforePaymentCreate = (checkoutPaymentMethodData: CheckoutPaymentMethodData, handler: PaymentCreationHandler) => {
-        updateLogs({event: "onBeforePaymentCreate", value: {"checkoutPaymentMethodData": checkoutPaymentMethodData}});
+        updateLogs({ event: "onBeforePaymentCreate", value: { "checkoutPaymentMethodData": checkoutPaymentMethodData } });
         handler.continuePaymentCreation();
         setLoadingMessage('onBeforePaymentCreate');
     }
 
     const onCheckoutComplete = (checkoutData: CheckoutData) => {
-        updateLogs({event: "onCheckoutComplete", value: {"checkoutData": checkoutData}});
+        updateLogs({ event: "onCheckoutComplete", value: { "checkoutData": checkoutData } });
         merchantCheckoutData = checkoutData;
 
         setLoadingMessage(undefined);
         setIsLoading(false);
 
         props.navigation.navigate(
-            'Result', 
+            'Result',
             {
                 merchantCheckoutData: merchantCheckoutData,
                 merchantCheckoutAdditionalInfo: merchantCheckoutAdditionalInfo,
@@ -91,7 +91,7 @@ const CheckoutScreen = (props: any) => {
     };
 
     const onTokenizeSuccess = async (paymentMethodTokenData: PrimerPaymentMethodTokenData, handler: TokenizationHandler) => {
-        updateLogs({event: "onTokenizeSuccess", value: {"paymentMethodTokenData": paymentMethodTokenData}});
+        updateLogs({ event: "onTokenizeSuccess", value: { "paymentMethodTokenData": paymentMethodTokenData } });
 
         try {
             const payment: IPayment = await createPayment(paymentMethodTokenData.token);
@@ -112,7 +112,7 @@ const CheckoutScreen = (props: any) => {
                 setIsLoading(false);
 
                 props.navigation.navigate(
-                    'Result', 
+                    'Result',
                     {
                         merchantCheckoutData: merchantCheckoutData,
                         merchantCheckoutAdditionalInfo: merchantCheckoutAdditionalInfo,
@@ -128,9 +128,9 @@ const CheckoutScreen = (props: any) => {
             handler.handleFailure("Merchant error");
             setLoadingMessage(undefined);
             setIsLoading(false);
-            
+
             props.navigation.navigate(
-                'Result', 
+                'Result',
                 {
                     merchantCheckoutData: merchantCheckoutData,
                     merchantCheckoutAdditionalInfo: merchantCheckoutAdditionalInfo,
@@ -142,7 +142,7 @@ const CheckoutScreen = (props: any) => {
     }
 
     const onResumeSuccess = async (resumeToken: string, handler: ResumeHandler) => {
-        updateLogs({event: "onResumeSuccess", value: {"resumeToken": resumeToken}});
+        updateLogs({ event: "onResumeSuccess", value: { "resumeToken": resumeToken } });
 
         try {
             if (paymentId) {
@@ -154,7 +154,7 @@ const CheckoutScreen = (props: any) => {
                 setIsLoading(false);
 
                 props.navigation.navigate(
-                    'Result', 
+                    'Result',
                     {
                         merchantCheckoutData: merchantCheckoutData,
                         merchantCheckoutAdditionalInfo: merchantCheckoutAdditionalInfo,
@@ -176,9 +176,9 @@ const CheckoutScreen = (props: any) => {
             handler.handleFailure("RN app error");
             setLoadingMessage(undefined);
             setIsLoading(false);
-            
+
             props.navigation.navigate(
-                'Result', 
+                'Result',
                 {
                     merchantCheckoutData: merchantCheckoutData,
                     merchantCheckoutAdditionalInfo: merchantCheckoutAdditionalInfo,
@@ -190,24 +190,24 @@ const CheckoutScreen = (props: any) => {
     }
 
     const onResumePending = async (additionalInfo: CheckoutAdditionalInfo) => {
-        updateLogs({event: "onResumePending", value: {"additionalInfo": additionalInfo}});
+        updateLogs({ event: "onResumePending", value: { "additionalInfo": additionalInfo } });
     }
 
     const onCheckoutReceivedAdditionalInfo = async (additionalInfo: CheckoutAdditionalInfo) => {
-        updateLogs({event: "onCheckoutReceivedAdditionalInfo", value: {"additionalInfo": additionalInfo}});
+        updateLogs({ event: "onCheckoutReceivedAdditionalInfo", value: { "additionalInfo": additionalInfo } });
     }
 
     const onError = (error: PrimerError, checkoutData: CheckoutData | null, handler: ErrorHandler | undefined) => {
         merchantPrimerError = error;
         merchantCheckoutData = checkoutData;
 
-        updateLogs({event: "onError", value: {"error": error, "checkoutData": checkoutData}});
+        updateLogs({ event: "onError", value: { "error": error, "checkoutData": checkoutData } });
         handler?.showErrorMessage("My RN message");
         setLoadingMessage(undefined);
         setIsLoading(false);
-        
+
         props.navigation.navigate(
-            'Result', 
+            'Result',
             {
                 merchantCheckoutData: merchantCheckoutData,
                 merchantCheckoutAdditionalInfo: merchantCheckoutAdditionalInfo,
@@ -218,7 +218,7 @@ const CheckoutScreen = (props: any) => {
     };
 
     const onDismiss = () => {
-        updateLogs({event: "onDismiss"});
+        updateLogs({ event: "onDismiss" });
         clientToken = null;
         setLoadingMessage(undefined);
         setIsLoading(false);
@@ -250,18 +250,16 @@ const CheckoutScreen = (props: any) => {
         debugOptions: {
             is3DSSanityCheckEnabled: true
         },
-        primerCallbacks: {
-            onBeforeClientSessionUpdate: onBeforeClientSessionUpdate,
-            onClientSessionUpdate: onClientSessionUpdate,
-            onBeforePaymentCreate: onBeforePaymentCreate,
-            onCheckoutComplete: onCheckoutComplete,
-            onTokenizeSuccess: onTokenizeSuccess,
-            onResumeSuccess: onResumeSuccess,
-            onResumePending: onResumePending,
-            onCheckoutReceivedAdditionalInfo: onCheckoutReceivedAdditionalInfo,
-            onError: onError,
-            onDismiss: onDismiss,
-        }
+        onBeforeClientSessionUpdate: onBeforeClientSessionUpdate,
+        onClientSessionUpdate: onClientSessionUpdate,
+        onBeforePaymentCreate: onBeforePaymentCreate,
+        onCheckoutComplete: onCheckoutComplete,
+        onTokenizeSuccess: onTokenizeSuccess,
+        onResumeSuccess: onResumeSuccess,
+        onResumePending: onResumePending,
+        onCheckoutReceivedAdditionalInfo: onCheckoutReceivedAdditionalInfo,
+        onError: onError,
+        onDismiss: onDismiss,
     };
 
     if (appPaymentParameters.merchantName) {
