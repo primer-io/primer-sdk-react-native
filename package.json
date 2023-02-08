@@ -14,7 +14,7 @@
     "ios",
     "cpp",
     "primer-io-react-native.podspec",
-    "!lib/typescript/example",
+    "!lib/typescript/example_0_70_6",
     "!android/build",
     "!ios/build",
     "!**/__tests__",
@@ -27,10 +27,11 @@
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
     "prepare": "bob build",
     "release": "release-it",
-    "example": "yarn --cwd example",
-    "pods": "cd example && pod-install --quiet",
+    "example": "yarn --cwd example_0_70_6",
+    "pods": "cd example_0_70_6 && pod-install --quiet",
     "bootstrap": "yarn example && yarn && yarn pods",
-    "build:ios": "react-native bundle --entry-file='index.js' --bundle-output='./example/ios/main.jsbundle' --dev=false --platform='ios'"
+    "build:ios:dev": "react-native bundle --entry-file='index.js' --bundle-output='./example_0_70_6/ios/main.jsbundle' --dev=true --platform='ios'",
+    "build:ios:release": "react-native bundle --entry-file='index.js' --bundle-output='./example_0_70_6/ios/main.jsbundle' --dev=false --platform='ios'"
   },
   "keywords": [
     "react-native",
@@ -76,7 +77,7 @@
   "jest": {
     "preset": "react-native",
     "modulePathIgnorePatterns": [
-      "<rootDir>/example/node_modules",
+      "<rootDir>/example_0_70_6/node_modules",
       "<rootDir>/lib/"
     ]
   },

@@ -53,12 +53,12 @@ const RawRetailOutletScreen = (props: any) => {
             })
         });
 
-        if (response?.initializationData) {
+        if (response && response.initializationData) {
             //@ts-ignore
             const retailers: any[] = response.initializationData.result;
             setRetailers(retailers);
         }
-        
+
         const requiredInputElementTypes = await rawDataManager.getRequiredInputElementTypes();
         setRequiredInputElementTypes(requiredInputElementTypes);
     }
@@ -159,7 +159,7 @@ const RawRetailOutletScreen = (props: any) => {
         return (
             <View>
                 <View style={{ backgroundColor: "lightgray" }}>
-                    <Text 
+                    <Text
                         style={{ height: 50 }}
                         testID="headless-metadata-event"
                     >

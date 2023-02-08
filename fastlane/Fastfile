@@ -1,78 +1,15 @@
-require 'net/http'
+import "AndroidFastFile"
+import "IOSFastFile"
 
-default_platform(:android)
+platform :ios do
+
+end
 
 platform :android do
 
-    def set_version_name (version_name)
-        path = '../example/android/app/build.gradle'
-        re = /versionName\s+\"(\S+)\"/
-
-        s = File.read(path)
-        s[re, 1] = version_name
-
-        f = File.new(path, 'w')
-        f.write(s)
-        f.close
-    end
-
-    def set_version_code (version_code)
-        path = '../example/android/app/build.gradle'
-        re = /versionCode\s+(\d+)/
-
-        s = File.read(path)
-        s[re, 1] = version_code.to_s
-
-        f = File.new(path, 'w')
-        f.write(s)
-        f.close
-    end
-
-    def get_sdk_version_name ()
-        path = '../example/android/app/gradle.properties'
-        re = /VERSION\_NAME=(\S+)/
-
-        s = File.read(path)
-        return s[re, 1]
-    end
-
-    lane :preview do
-        pr_number = ENV["PR_NUMBER"]
-        if(!pr_number) then
-            puts "NO PR NUMBER"
-            next
-        end
-
-        appetize_api_token = ENV['APPETIZE_API_TOKEN']
-
-        puts "PR_NUMBER: " + pr_number
-        version_name = "preview-" + pr_number
-
-        time = Time.new
-        str_time = time.strftime("%Y-%m-%d %H:%M:%S")
-
-        # Set timestamp as version_code to differentiate builds in firebase
-        version_code = time.to_i
-
-        set_version_name version_name
-        set_version_code version_code
-
-        gradle(task: "clean assembleRelease", project_dir: 'example/android/')
-
-        sdk_version_name_source_branch = ENV['SOURCE_BRANCH']
-        pr_number = ENV['PR_NUMBER']
-
-        uri = URI('https://livedemostore.primer.io/appetize/android/' + version_name)
-        public_key = Net::HTTP.get(uri) # => String
-        puts "public_key: " + public_key
-
-        appetize(
-            path: "./example/android/app/build/outputs/apk/release/app-release.apk",
-            platform: "android",
-            api_token: appetize_api_token,
-            public_key: public_key,
-            note: version_name
-        )
-    end
+  desc 'Upload the React Native Android build to Appetize'
+  lane :upload_build_to_appetize do
+    preview
+  end
 
 end
