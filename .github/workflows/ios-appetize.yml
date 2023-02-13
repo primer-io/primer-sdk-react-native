@@ -97,13 +97,13 @@ jobs:
         id: find_comment
         with:
           issue-number: ${{ github.event.pull_request.number }}
-          body-includes: Appetize link
+          body-includes: Appetize iOS link
 
       - uses: peter-evans/create-or-update-comment@v2
         if: ${{ success() }}
         with:
           body: |
-            Appetize link: ${{ env.APPETIZE_APP_URL }}
+            Appetize iOS link: ${{ env.APPETIZE_APP_URL }}
           edit-mode: replace
           comment-id: ${{ steps.find_comment.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}

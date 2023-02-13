@@ -56,13 +56,13 @@ jobs:
         id: find_comment
         with:
           issue-number: ${{ github.event.pull_request.number }}
-          body-includes: Appetize link
+          body-includes: Appetize Android link
 
       - uses: peter-evans/create-or-update-comment@v2
         if: ${{ success() }}
         with:
           body: |
-            Appetize link: ${{ env.APPETIZE_APP_URL }}
+            Appetize Android link: ${{ env.APPETIZE_APP_URL }}
           edit-mode: replace
           comment-id: ${{ steps.find_comment.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
@@ -143,7 +143,7 @@ jobs:
       - name: Create Slack Report
         if: ${{ (success() ||  failure()) && github.event.pull_request.base.ref == 'master'  }}
         run: |
-          node report-script/slack-report-script.js createSlackReport 'RN Android'
+          node report-scripts/slack-report-script.js createSlackReport 'RN Android'
 
       - name: Post summary message to a Slack channel
         if: ${{ (success() ||  failure()) && github.event.pull_request.base.ref == 'master' }}
@@ -158,7 +158,7 @@ jobs:
       - name: Create Slack Failed Summary Report
         if: ${{ failure() && github.event.pull_request.base.ref == 'master' }}
         run: |
-          node report-script/slack-failed-report-script.js createSlackFailedSummaryReport ${{ steps.slack.outputs.thread_ts }}
+          node report-scripts/slack-failed-report-script.js createSlackFailedSummaryReport ${{ steps.slack.outputs.thread_ts }}
         env:
           BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
           BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
@@ -176,5 +176,5 @@ jobs:
       - name: Create and post Github summary
         if: ${{ success() || failure() }}
         run: |
-          node report-script/github-tests-summary-script.js createGithubSummaryReport
+          node report-scripts/github-tests-summary-script.js createGithubSummaryReport
 
