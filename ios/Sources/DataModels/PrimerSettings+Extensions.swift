@@ -35,8 +35,10 @@ extension PrimerSettings {
             var applePayOptions: PrimerApplePayOptions?
             if let rnApplePayOptions = ((settingsJson["paymentMethodOptions"] as? [String: Any])?["applePayOptions"] as? [String: Any]),
                let rnApplePayMerchantIdentifier = rnApplePayOptions["merchantIdentifier"] as? String,
-               let rnApplePayMerchantName = rnApplePayOptions["merchantName"] as? String {
-                applePayOptions = PrimerApplePayOptions(merchantIdentifier: rnApplePayMerchantIdentifier, merchantName: rnApplePayMerchantName)
+               let rnApplePayMerchantName = rnApplePayOptions["merchantName"] as? String,
+               let rnApplePayIsCaptureBillingAddressEnabled = rnApplePayOptions["isCaptureBillingAddressEnabled"] as? String
+               {
+                applePayOptions = PrimerApplePayOptions(merchantIdentifier: rnApplePayMerchantIdentifier, merchantName: rnApplePayMerchantName, isCaptureBillingAdressEnabled: rnApplePayIsCaptureBillingAddressEnabled)
             }
 
             var klarnaOptions: PrimerKlarnaOptions?
