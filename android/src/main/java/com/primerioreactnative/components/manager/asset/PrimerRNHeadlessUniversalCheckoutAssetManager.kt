@@ -9,6 +9,7 @@ import com.primerioreactnative.components.assets.AssetsManager
 import com.primerioreactnative.components.assets.AssetsManager.drawableToBitmap
 import com.primerioreactnative.components.assets.CardNetworkImageFileProvider.getFileForCardNetworkAsset
 import com.primerioreactnative.components.datamodels.manager.asset.PrimerCardNetworkAsset
+import com.primerioreactnative.components.datamodels.manager.asset.PrimerRNPaymentMethodAssetWrapper
 import com.primerioreactnative.components.datamodels.manager.asset.PrimerRNPaymentMethodAssets
 import com.primerioreactnative.components.datamodels.manager.asset.toPrimerRNPaymentMethodLogo
 import com.primerioreactnative.datamodels.ErrorTypeRN
@@ -78,17 +79,16 @@ internal class PrimerRNHeadlessUniversalCheckoutAssetManager(
         )
       promise.resolve(
         convertJsonToMap(
-          JSONObject().apply {
-            put(
-              "paymentMethodAsset",
-              Json.encodeToString(
+          JSONObject(
+            Json.encodeToString(
+              PrimerRNPaymentMethodAssetWrapper(
                 paymentMethodAsset.toPrimerRNPaymentMethodLogo(
                   reactContext,
                   paymentMethodTypeStr
                 )
               )
             )
-          }
+          )
         )
       )
     } catch (e: SdkUninitializedException) {

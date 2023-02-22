@@ -14,6 +14,11 @@ data class PrimerRNPaymentMethodAssets(
 )
 
 @Serializable
+data class PrimerRNPaymentMethodAssetWrapper(
+  val paymentMethodAsset: PrimerRNPaymentMethodAsset
+)
+
+@Serializable
 data class PrimerRNPaymentMethodAsset(
   val paymentMethodType: String,
   val paymentMethodLogo: PrimerRNPaymentMethodLogo,
