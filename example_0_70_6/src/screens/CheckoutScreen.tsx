@@ -240,6 +240,9 @@ const CheckoutScreen = (props: any) => {
                 merchantIdentifier: "merchant.checkout.team",
                 merchantName: appPaymentParameters.merchantName || "Merchant name",
                 isCaptureBillingAddressEnabled: true
+            },
+            googlePayOptions: {
+             isCaptureBillingAddressEnabled: true
             }
         },
         uiOptions: {

@@ -107,6 +107,7 @@ interface IPrimerGoCardlessOptions {
 interface IPrimerGooglePayOptions {
   merchantName?: string;
   allowedCardNetworks?: string[];
+  isCaptureBillingAddressEnabled?: boolean;
 }
 
 interface IPrimerKlarnaOptions {
