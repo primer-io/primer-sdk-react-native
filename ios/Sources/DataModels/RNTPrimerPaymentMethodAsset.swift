@@ -11,11 +11,13 @@ import PrimerSDK
 struct RNTPrimerPaymentMethodAsset: Codable {
     
     let paymentMethodType: String
+    let paymentMethodName: String
     let paymentMethodLogo: RNTPrimerPaymentMethodLogo
     let paymentMethodBackgroundColor: RNTPrimerPaymentMethodBackgroundColor
     
     init(primerPaymentMethodAsset: PrimerPaymentMethodAsset) {
         self.paymentMethodType = primerPaymentMethodAsset.paymentMethodType
+        self.paymentMethodName = primerPaymentMethodAsset.paymentMethodName
         self.paymentMethodLogo = RNTPrimerPaymentMethodLogo(
             paymentMethodType: primerPaymentMethodAsset.paymentMethodType,
             primerPaymentMethodLogo: primerPaymentMethodAsset.paymentMethodLogo)

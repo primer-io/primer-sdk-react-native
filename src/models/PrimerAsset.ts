@@ -1,5 +1,6 @@
 export interface IPrimerAsset {
     paymentMethodType: string;
+    paymentMethodName: string;
     paymentMethodLogo: {
         colored?: string;
         dark?: string;
