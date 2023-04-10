@@ -11,8 +11,8 @@ import io.primer.android.ExperimentalPrimerApi
 import io.primer.android.PrimerSessionIntent
 import io.primer.android.components.SdkUninitializedException
 import io.primer.android.components.domain.exception.UnsupportedPaymentMethodManagerException
-import io.primer.android.components.manager.native.PrimerHeadlessUniversalCheckoutNativeUiManager
-import io.primer.android.components.manager.native.PrimerHeadlessUniversalCheckoutNativeUiManagerInterface
+import io.primer.android.components.manager.nativeUi.PrimerHeadlessUniversalCheckoutNativeUiManager
+import io.primer.android.components.manager.nativeUi.PrimerHeadlessUniversalCheckoutNativeUiManagerInterface
 import io.primer.android.domain.exception.UnsupportedPaymentIntentException
 
 @ExperimentalPrimerApi
