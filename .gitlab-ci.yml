@@ -1,10 +1,51 @@
-image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/node:16.19.0-bullseye-slim
+stages:
+  - safety-checks
+  - check-ios-published
+  - build
+
+
+check-android-published:
+  stage: safety-checks
+  script: 
+    - |
+      echo "Extracting Android Version from build.gradle..."
+      ANDROID_VERSION=`cat ./android/build.gradle  | grep -Po "implementation 'io.primer:android:\K[^']*"`
+      echo "Android Version: $ANDROID_VERSION"
+
+      echo "Checking that Android version $ANDROID_VERSION is available on maven..."
+      ANDROID_VERSION_STATUS_CODE=`curl -o /dev/null -s -w "%{http_code}\n" "https://central.sonatype.com/artifact/io.primer/android/${ANDROID_VERSION}"`
+      echo $ANDROID_VERSION_STATUS_CODE
+
+      if [ $ANDROID_VERSION_STATUS_CODE -ne "200" ]; then
+          echo "Cannot find Android SDK Version $ANDROID_VERSION. Exiting."
+          exit 1
+      fi
+
+check-ios-published:
+  stage: safety-checks
+  script:
+    - |
+      echo "Extracting iOS Version from podspec..."
+      IOS_VERSION=`cat primer-io-react-native.podspec  | grep -Po "\"PrimerSDK\", \"\K[^\"]*"`
+      echo "iOS Version: $IOS_VERSION"
+
+      echo "Checking that iOS version $IOS_VERSION is available on the master Cocoapods Specs..."
+      IOS_COCOAPODS_STATUS_CODE=`curl --silent --output /dev/stderr --write-out "%{http_code}" "https://raw.githubusercontent.com/CocoaPods/Specs/master/Specs/e/0/5/PrimerSDK/${IOS_VERSION}/PrimerSDK.podspec.json"`
+
+      if [ $IOS_COCOAPODS_STATUS_CODE -ne "200" ]; then
+          echo "Couldn't find Version $IOS_VERSION of PrimerSDK on Cocoapods. Exiting."
+          exit 1
+      fi
 
 build:
   stage: build
+  image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/node:16.19.0-bullseye-slim
   script:
     - rm -rf ./example
     - rm -rf ./example_0_70_6
     - npm set registry https://registry.npmjs.org/
     - npm set //registry.npmjs.org/:_authToken $NPM_TOKEN
     - yarn install
+  needs:
+    - check-android-published
+    - check-ios-published
