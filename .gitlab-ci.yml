@@ -1,6 +1,10 @@
-image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/node:16.19.0-slim
+image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/node:16.19.0-bullseye-slim
 
 build:
   stage: build
   script:
+    - rm -rf ./example
+    - rm -rf ./example_0_70_6
+    - npm set registry https://registry.npmjs.org/
+    - npm set //registry.npmjs.org/:_authToken $NPM_TOKEN
     - yarn install
