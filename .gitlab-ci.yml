@@ -35,7 +35,7 @@ check-ios-published:
       apk add curl grep
       echo -e "\e[33mExtracting iOS Version from podspec..."
       IOS_VERSION=`cat primer-io-react-native.podspec  | grep -Po "\"PrimerSDK\", \"\K[^\"]*"`
-      echo "\e[33miOS Version: $IOS_VERSION"
+      echo -e "\e[33miOS Version: $IOS_VERSION"
 
       echo -e "\e[33mChecking that iOS version $IOS_VERSION is available on the master Cocoapods Specs..."
       IOS_COCOAPODS_STATUS_CODE=`curl --silent --output /dev/stderr --write-out "%{http_code}" "https://raw.githubusercontent.com/CocoaPods/Specs/master/Specs/e/0/5/PrimerSDK/${IOS_VERSION}/PrimerSDK.podspec.json"`
@@ -58,9 +58,9 @@ build:
   needs:
     - check-android-published
     - check-ios-published
-  # artifacts:
-  #   paths:
-  #     - primer-sdk-android/build/outputs/aar/
+  artifacts:
+    paths:
+      - lib
 
 # release:
 #   stage: release
