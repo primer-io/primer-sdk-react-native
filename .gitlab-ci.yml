@@ -6,6 +6,7 @@ stages:
 
 check-android-published:
   stage: safety-checks
+  image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/curlimages/curl:latest
   script: 
     - |
       echo "Extracting Android Version from build.gradle..."
@@ -23,6 +24,7 @@ check-android-published:
 
 check-ios-published:
   stage: safety-checks
+  image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/curlimages/curl:latest
   script:
     - |
       echo "Extracting iOS Version from podspec..."
