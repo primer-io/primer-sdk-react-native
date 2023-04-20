@@ -1,0 +1,6 @@
+image: node:lts
+
+build:
+  stage: build
+  script:
+    - yarn install
