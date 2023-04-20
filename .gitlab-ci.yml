@@ -7,10 +7,10 @@ stages:
 
 check-android-published:
   stage: safety-checks
-  image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/curlimages/curl:latest
+  image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/alpine:latest
   script: 
     - |
-      apk add --no-cache --upgrade grep
+      apk add curl grep
       echo "\e[33mExtracting Android Version from build.gradle..."
       ANDROID_VERSION=`cat ./android/build.gradle  | grep -Po "implementation 'io.primer:android:\K[^']*"`
       echo "\e[33mAndroid Version: $ANDROID_VERSION"
@@ -26,10 +26,10 @@ check-android-published:
 
 check-ios-published:
   stage: safety-checks
-  image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/curlimages/curl:latest
+  image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/alpine:latest
   script:
     - |
-      apk add --no-cache --upgrade grep
+      apk add curl grep
       echo "\e[33mExtracting iOS Version from podspec..."
       IOS_VERSION=`cat primer-io-react-native.podspec  | grep -Po "\"PrimerSDK\", \"\K[^\"]*"`
       echo "\e[33miOS Version: $IOS_VERSION"
