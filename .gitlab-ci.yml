@@ -2,6 +2,7 @@ stages:
   - safety-checks
   - check-ios-published
   - build
+  - release
 
 
 check-android-published:
@@ -9,16 +10,17 @@ check-android-published:
   image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/curlimages/curl:latest
   script: 
     - |
-      echo "Extracting Android Version from build.gradle..."
+      apk add --no-cache --upgrade grep
+      echo "\e[33mExtracting Android Version from build.gradle..."
       ANDROID_VERSION=`cat ./android/build.gradle  | grep -Po "implementation 'io.primer:android:\K[^']*"`
-      echo "Android Version: $ANDROID_VERSION"
+      echo "\e[33mAndroid Version: $ANDROID_VERSION"
 
-      echo "Checking that Android version $ANDROID_VERSION is available on maven..."
+      echo "\e[33mChecking that Android version $ANDROID_VERSION is available on maven..."
       ANDROID_VERSION_STATUS_CODE=`curl -o /dev/null -s -w "%{http_code}\n" "https://central.sonatype.com/artifact/io.primer/android/${ANDROID_VERSION}"`
       echo $ANDROID_VERSION_STATUS_CODE
 
       if [ $ANDROID_VERSION_STATUS_CODE -ne "200" ]; then
-          echo "Cannot find Android SDK Version $ANDROID_VERSION. Exiting."
+          echo "\e[31mCannot find Android SDK Version $ANDROID_VERSION. Exiting."
           exit 1
       fi
 
@@ -27,15 +29,16 @@ check-ios-published:
   image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/curlimages/curl:latest
   script:
     - |
-      echo "Extracting iOS Version from podspec..."
+      apk add --no-cache --upgrade grep
+      echo "\e[33mExtracting iOS Version from podspec..."
       IOS_VERSION=`cat primer-io-react-native.podspec  | grep -Po "\"PrimerSDK\", \"\K[^\"]*"`
-      echo "iOS Version: $IOS_VERSION"
+      echo "\e[33miOS Version: $IOS_VERSION"
 
-      echo "Checking that iOS version $IOS_VERSION is available on the master Cocoapods Specs..."
+      echo "\e[33mChecking that iOS version $IOS_VERSION is available on the master Cocoapods Specs..."
       IOS_COCOAPODS_STATUS_CODE=`curl --silent --output /dev/stderr --write-out "%{http_code}" "https://raw.githubusercontent.com/CocoaPods/Specs/master/Specs/e/0/5/PrimerSDK/${IOS_VERSION}/PrimerSDK.podspec.json"`
 
       if [ $IOS_COCOAPODS_STATUS_CODE -ne "200" ]; then
-          echo "Couldn't find Version $IOS_VERSION of PrimerSDK on Cocoapods. Exiting."
+          echo "\e[31mCouldn't find Version $IOS_VERSION of PrimerSDK on Cocoapods. Exiting."
           exit 1
       fi
 
@@ -51,3 +54,13 @@ build:
   needs:
     - check-android-published
     - check-ios-published
+  # artifacts:
+  #   paths:
+  #     - primer-sdk-android/build/outputs/aar/
+
+# release:
+#   stage: release
+#   image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/node:16.19.0-bullseye-slim
+#   script:
+#     - npm
+#   when: manual
