@@ -1,3 +1,5 @@
+# TODO: trigger only on release tag
+
 stages:
   - safety-checks
   - check-ios-published
@@ -7,6 +9,32 @@ stages:
 variables:
   NODE_VERSION: "16.19.0"
 
+#TODO: pending moving following block to https://gitlab.com/primer-io/internal-efficiency/gitlab-cicd-templates/-/blob/b6a569c5ce4473a9e06c8448ce10b1be2b732379/templates/utils.yml
+# # Prepare
+
+# export CIRCLE_TAG="v${tag}"
+# export CIRCLE_BUILD_NUM=0
+# export CIRCLE_SHA1=`git rev-parse HEAD`
+
+
+# if [[ $CIRCLE_TAG =~ ^v[0-9]+\.[0-9]+\.[0-9]+-alpha\.[0-9]+$ ]]; then
+#   RELEASE_TYPE='alpha'
+# elif [[ $CIRCLE_TAG =~ ^v[0-9]+\.[0-9]+\.[0-9]+-beta\.[0-9]+$ ]]; then
+#   RELEASE_TYPE='beta'
+# elif [[ $CIRCLE_TAG =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+#   RELEASE_TYPE='latest'
+# else
+#   exit
+# fi
+
+
+# MAJOR_VERSION=`echo ${CIRCLE_TAG} | cut -d . -f 1 | cut -c 2-`
+
+# if [[ $MAJOR_VERSION = "2" ]]; then
+#   DIST_TAG="${RELEASE_TYPE}"
+# else
+#   DIST_TAG="v${MAJOR_VERSION}-${RELEASE_TYPE}"
+# fi
 
 check-android-published:
   stage: safety-checks
@@ -67,4 +95,5 @@ build:
 #   image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/node:$NODE_VERSION-bullseye-slim
 #   script:
 #     - npm
+#   environment: production
 #   when: manual
