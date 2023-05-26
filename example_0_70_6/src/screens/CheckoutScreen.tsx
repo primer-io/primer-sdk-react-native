@@ -259,7 +259,7 @@ const CheckoutScreen = (props: any) => {
             isErrorScreenEnabled: true
         },
         debugOptions: {
-            is3DSSanityCheckEnabled: true
+            is3DSSanityCheckEnabled: false
         },
         onBeforeClientSessionUpdate: onBeforeClientSessionUpdate,
         onClientSessionUpdate: onClientSessionUpdate,
