@@ -71,11 +71,17 @@ extension PrimerSettings {
             if let rnIs3DSSanityCheckEnabled = (settingsJson["debugOptions"] as? [String: Any])?["is3DSSanityCheckEnabled"] as? Bool {
                 debugOptions = PrimerDebugOptions(is3DSSanityCheckEnabled: rnIs3DSSanityCheckEnabled)
             }
+            
+            var threeDsOptions: PrimerThreeDsOptions?
+            if let rnThreeDsAppRequestorUrlStr = (((settingsJson["paymentMethodOptions"] as? [String: Any])?["threeDsOptions"] as? [String: Any])?["iOS"] as? [String: Any])?["threeDsAppRequestorUrl"] as? String {
+                threeDsOptions = PrimerThreeDsOptions(threeDsAppRequestorUrl: rnThreeDsAppRequestorUrlStr)
+            }
 
             let paymentMethodOptions = PrimerPaymentMethodOptions(
                 urlScheme: rnUrlScheme,
                 applePayOptions: applePayOptions,
-                klarnaOptions: klarnaOptions)
+                klarnaOptions: klarnaOptions,
+                threeDsOptions: threeDsOptions)
 
             self.init(
                 paymentHandling: paymentHandling,
