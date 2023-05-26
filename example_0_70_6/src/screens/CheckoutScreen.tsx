@@ -243,6 +243,14 @@ const CheckoutScreen = (props: any) => {
             },
             googlePayOptions: {
              isCaptureBillingAddressEnabled: true
+            },
+            threeDsOptions: {
+                iOS: {
+                    threeDsAppRequestorUrl: "https://primer.io"
+                },
+                android: {
+                    threeDsAppRequestorUrl: "https://primer.io"
+                }
             }
         },
         uiOptions: {
