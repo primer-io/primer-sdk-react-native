@@ -33,6 +33,7 @@ data class PrimerPaymentMethodOptionsRN(
   var googlePayOptions: PrimerGooglePayOptionsRN = PrimerGooglePayOptionsRN(),
   var klarnaOptions: PrimerKlarnaOptionsRN = PrimerKlarnaOptionsRN(),
   var apayaOptions: PrimerApayaOptionsRN = PrimerApayaOptionsRN(),
+  var threeDsOptions: PrimerThreeDsOptionsRN = PrimerThreeDsOptionsRN()
 )
 
 @Serializable
@@ -51,6 +52,17 @@ data class PrimerDebugOptionsRN(val is3DSSanityCheckEnabled: Boolean = true)
 @Serializable
 data class PrimerCardPaymentOptionsRN(
   var is3DSOnVaultingEnabled: Boolean = true
+)
+
+@Serializable
+data class PrimerThreeDsOptionsRN(
+  @SerialName("android")
+  val threeDsOptionsAndroid: PrimerThreeDsAndroidOptionsRN? = null
+)
+
+@Serializable
+data class PrimerThreeDsAndroidOptionsRN(
+  val threeDsAppRequestorUrl: String? = null
 )
 
 @Serializable

@@ -83,6 +83,7 @@ interface IPrimerPaymentMethodOptions {
   goCardlessOptions?: IPrimerGoCardlessOptions;
   googlePayOptions?: IPrimerGooglePayOptions;
   klarnaOptions?: IPrimerKlarnaOptions;
+  threeDsOptions?: IPrimerThreeDsOptions;
 }
 
 interface IPrimerApayaOptions {
@@ -128,4 +129,15 @@ interface IPrimerUIOptions {
 
 interface IPrimerDebugOptions {
   is3DSSanityCheckEnabled?: boolean;
+}
+
+//----------------------------------------
+
+interface IPrimerThreeDsOptions {
+  iOS?: {
+    threeDsAppRequestorUrl?: string;
+  };
+  android?: {
+    threeDsAppRequestorUrl?: string;
+  };
 }
