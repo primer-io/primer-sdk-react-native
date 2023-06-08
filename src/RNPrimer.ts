@@ -94,6 +94,17 @@ const RNPrimer = {
     });
   },
 
+  showPaymentMethod: (paymentMethod: string, intent: string, clientToken: string): Promise<void> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        await NativePrimer.showPaymentMethod(paymentMethod, intent, clientToken);
+        resolve();
+      } catch (err) {
+        reject(err);
+      }
+    });
+  },
+
   dismiss: (): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {

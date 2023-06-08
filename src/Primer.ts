@@ -283,6 +283,18 @@ export const Primer: IPrimer = {
     });
   },
 
+  async showPaymentMethod(paymentMethod: string, intent: string, clientToken: string): Promise<void> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        await configureListeners();
+        await RNPrimer.showPaymentMethod(paymentMethod, intent, clientToken);
+        resolve();
+      } catch (err) {
+        reject(err);
+      }
+    });
+  },
+
   cleanUp(): void {
     RNPrimer.removeAllListeners();
     RNPrimer.dismiss();
