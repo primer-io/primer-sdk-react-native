@@ -323,6 +323,27 @@ const CheckoutScreen = (props: any) => {
         }
     }
 
+    const onApplePayButtonTapped = async () => {
+        try {
+            setIsLoading(true);
+            const clientSession: IClientSession = await createClientSession();
+            clientToken = clientSession.clientToken;
+            await Primer.configure(settings);
+            await Primer.showPaymentMethod("APPLE_PAY", "CHECKOUT", clientToken)
+
+        } catch (err) {
+            setIsLoading(false);
+
+            if (err instanceof Error) {
+                setError(err);
+            } else if (typeof err === "string") {
+                setError(new Error(err));
+            } else {
+                setError(new Error('Unknown error'));
+            }
+        }
+    }
+
     return (
         <View style={backgroundStyle}>
             <View style={{ flex: 1 }} />
@@ -344,6 +365,16 @@ const CheckoutScreen = (props: any) => {
                     style={{ ...styles.buttonText, color: 'white' }}
                 >
                     Universal Checkout
+                </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+                style={{ ...styles.button, marginHorizontal: 20, marginBottom: 20, marginTop: 5, backgroundColor: 'black' }}
+                onPress={onApplePayButtonTapped}
+            >
+                <Text
+                    style={{ ...styles.buttonText, color: 'white' }}
+                >
+                    Apple Pay
                 </Text>
             </TouchableOpacity>
         </View>
