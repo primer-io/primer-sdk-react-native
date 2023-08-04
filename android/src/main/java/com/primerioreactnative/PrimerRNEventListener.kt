@@ -37,6 +37,7 @@ class PrimerRNEventListener : PrimerCheckoutListener {
   var sendError: ((error: PrimerErrorRN) -> Unit)? = null
   var sendErrorWithCheckoutData: ((error: PrimerErrorRN, checkoutData: PrimerCheckoutDataRN?) -> Unit)? =
     null
+  var onDismissedEvent: (() -> Unit)? = null
 
   override fun onCheckoutCompleted(checkoutData: PrimerCheckoutData) {
     if (implementedRNCallbacks?.isOnCheckoutCompleteImplemented == true) {
@@ -91,7 +92,12 @@ class PrimerRNEventListener : PrimerCheckoutListener {
     if (implementedRNCallbacks?.isOnClientSessionUpdateImplemented == true) {
       sendEvent?.invoke(
         PrimerEvents.ON_CLIENT_SESSION_UPDATE.eventName,
-        JSONObject(Json.encodeToString(clientSession.toPrimerClientSessionRN()))
+        JSONObject().apply {
+          put(
+            "clientSession",
+            JSONObject(Json.encodeToString(clientSession.toPrimerClientSessionRN()))
+          )
+        }
       )
     } else {
       super.onClientSessionUpdated(clientSession)
@@ -125,7 +131,7 @@ class PrimerRNEventListener : PrimerCheckoutListener {
     resumeToken: String,
     decisionHandler: PrimerResumeDecisionHandler
   ) {
-    if (implementedRNCallbacks?.isOnResumeSuccessImplemented == true) {
+    if (implementedRNCallbacks?.isOnCheckoutResumeImplemented == true) {
       resumeSuccessDecisionHandler = { newClientToken, err ->
         when {
           err != null -> decisionHandler.handleFailure(err.ifBlank { null })
@@ -134,10 +140,9 @@ class PrimerRNEventListener : PrimerCheckoutListener {
         }
       }
 
-      val resumeToken = mapOf(Keys.RESUME_TOKEN to resumeToken)
       sendEvent?.invoke(
         PrimerEvents.ON_RESUME_SUCCESS.eventName,
-        JSONObject(Json.encodeToString(resumeToken))
+        JSONObject(Json.encodeToString(mapOf(Keys.RESUME_TOKEN to resumeToken)))
       )
     } else {
       sendError?.invoke(
@@ -147,8 +152,8 @@ class PrimerRNEventListener : PrimerCheckoutListener {
     }
   }
 
-  override fun onResumePending(additionalInfo: PrimerCheckoutAdditionalInfo?) {
-    if (implementedRNCallbacks?.isOnResumePendingImplemented == true) {
+  override fun onResumePending(additionalInfo: PrimerCheckoutAdditionalInfo) {
+    if (implementedRNCallbacks?.isOnCheckoutPendingImplemented == true) {
       if (additionalInfo is MultibancoCheckoutAdditionalInfo) {
         sendEvent?.invoke(
           PrimerEvents.ON_RESUME_PENDING.eventName,
@@ -166,7 +171,7 @@ class PrimerRNEventListener : PrimerCheckoutListener {
   }
 
   override fun onAdditionalInfoReceived(additionalInfo: PrimerCheckoutAdditionalInfo) {
-    if (implementedRNCallbacks?.isOnCheckoutReceivedAdditionalInfo == true) {
+    if (implementedRNCallbacks?.isOnCheckoutAdditionalInfoImplemented == true) {
       if (additionalInfo is PromptPayCheckoutAdditionalInfo) {
         sendEvent?.invoke(
           PrimerEvents.ON_CHECKOUT_RECEIVED_ADDITIONAL_INFO.eventName,
@@ -190,6 +195,8 @@ class PrimerRNEventListener : PrimerCheckoutListener {
         null
       )
     }
+
+    onDismissedEvent?.invoke()
     removeCallbacksAndHandlers()
   }
 
@@ -206,6 +213,7 @@ class PrimerRNEventListener : PrimerCheckoutListener {
         PrimerErrorRN(
           error.errorId,
           error.description,
+          error.diagnosticsId,
           error.recoverySuggestion
         ), checkoutData?.toPrimerCheckoutDataRN()
       )
@@ -219,7 +227,14 @@ class PrimerRNEventListener : PrimerCheckoutListener {
       primerErrorDecisionHandler = { errorMessage: String? ->
         errorHandler?.showErrorMessage(errorMessage)
       }
-      sendError?.invoke(PrimerErrorRN(error.errorId, error.description, error.recoverySuggestion))
+      sendError?.invoke(
+        PrimerErrorRN(
+          error.errorId,
+          error.description,
+          error.diagnosticsId,
+          error.recoverySuggestion
+        )
+      )
     } else {
       super.onFailed(error, errorHandler)
     }

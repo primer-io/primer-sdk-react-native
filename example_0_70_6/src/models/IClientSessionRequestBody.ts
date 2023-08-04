@@ -92,12 +92,19 @@ export let appPaymentParameters: AppPaymentParameters = {
             countryCode: 'GB',
             lineItems: [
                 {
-                    amount: 100,
+                    amount: 15100,
                     quantity: 1,
                     itemId: 'shoes-3213',
                     description: 'Fancy Shoes',
                     discountAmount: 0
                 },
+                // {
+                //     amount: 1000,
+                //     quantity: 1,
+                //     itemId: 'hats-3213',
+                //     description: 'Cool Hat',
+                //     discountAmount: 0
+                // }
             ]
         },
         customer: {
@@ -128,47 +135,6 @@ export let appPaymentParameters: AppPaymentParameters = {
         },
         paymentMethod: {
             vaultOnSuccess: false,
-            options: {
-                GOOGLE_PAY: {
-                    surcharge: {
-                        amount: 50,
-                    },
-                },
-                ADYEN_IDEAL: {
-                    surcharge: {
-                        amount: 50,
-                    },
-                },
-                ADYEN_GIROPAY: {
-                    surcharge: {
-                        amount: 50,
-                    },
-                },
-                ADYEN_SOFORT: {
-                    surcharge: {
-                        amount: 50,
-                    },
-                },
-                APPLE_PAY: {
-                    surcharge: {
-                        amount: 150,
-                    },
-                },
-                PAYMENT_CARD: {
-                    networks: {
-                        VISA: {
-                            surcharge: {
-                                amount: 100,
-                            },
-                        },
-                        MASTERCARD: {
-                            surcharge: {
-                                amount: 200,
-                            },
-                        },
-                    },
-                },
-            },
         }
     },
     merchantName: 'Primer Merchant'

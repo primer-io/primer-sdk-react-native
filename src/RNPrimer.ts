@@ -1,5 +1,4 @@
 import { NativeEventEmitter, NativeModules } from 'react-native';
-import type { PrimerSessionIntent } from './models/PrimerSessionIntent';
 import type { PrimerSettings } from './models/PrimerSettings';
 
 const { NativePrimer } = NativeModules;
@@ -95,14 +94,10 @@ const RNPrimer = {
     });
   },
 
-  showPaymentMethod: (
-    paymentMethodType: string,
-    intent: PrimerSessionIntent,
-    clientToken: string
-  ): Promise<void> => {
+  showPaymentMethod: (paymentMethod: string, intent: string, clientToken: string): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {
-        await NativePrimer.showPaymentMethod(paymentMethodType, intent, clientToken);
+        await NativePrimer.showPaymentMethod(paymentMethod, intent, clientToken);
         resolve();
       } catch (err) {
         reject(err);
@@ -121,10 +116,10 @@ const RNPrimer = {
     });
   },
 
-  dispose: (): Promise<void> => {
+  cleanUp: (): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {
-        await NativePrimer.dispose();
+        await NativePrimer.cleanUp();
         resolve();
       } catch (err) {
         reject(err);

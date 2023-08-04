@@ -15,7 +15,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
 
-class PrimerRN(private val reactContext: ReactApplicationContext, private val json: Json) :
+class PrimerRN(reactContext: ReactApplicationContext, private val json: Json) :
   ReactContextBaseJavaModule(reactContext) {
   private var mListener = PrimerRNEventListener()
 
@@ -24,6 +24,7 @@ class PrimerRN(private val reactContext: ReactApplicationContext, private val js
     mListener.sendError = { paramsJson -> onError(paramsJson) }
     mListener.sendErrorWithCheckoutData =
       { paramsJson, checkoutData -> onError(paramsJson, checkoutData) }
+    mListener.onDismissedEvent = { Primer.instance.dismiss(true) }
   }
 
   override fun getName(): String = "NativePrimer"
@@ -110,7 +111,13 @@ class PrimerRN(private val reactContext: ReactApplicationContext, private val js
 
   @ReactMethod
   fun dismiss(promise: Promise) {
-    Primer.instance.dismiss()
+    Primer.instance.dismiss(true)
+    promise.resolve(null)
+  }
+
+  @ReactMethod
+  fun cleanUp(promise: Promise) {
+    Primer.instance.dismiss(true)
     promise.resolve(null)
   }
 
@@ -191,6 +198,12 @@ class PrimerRN(private val reactContext: ReactApplicationContext, private val js
       promise.reject(exception.errorId, exception.description, e)
     }
   }
+
+  @ReactMethod
+  fun addListener(eventName: String?) = Unit
+
+  @ReactMethod
+  fun removeListeners(count: Int?) = Unit
 
   private fun startSdk(settings: PrimerSettings) {
     Primer.instance.configure(settings, mListener)

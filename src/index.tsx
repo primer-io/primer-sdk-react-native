@@ -5,54 +5,68 @@ export {
     PrimerSettings
 } from './models/PrimerSettings';
 export {
-    PrimerSessionIntent
+    PrimerInputElementType as InputElementType
+} from './models/PrimerInputElementType';
+export {
+    PrimerSessionIntent as SessionIntent
 } from './models/PrimerSessionIntent';
 export {
-    PrimerPaymentCreationHandler,
-    PrimerTokenizationHandler,
-    PrimerResumeHandler,
-    PrimerErrorHandler,
-} from './models/PrimerInterfaces';
+    PrimerPaymentCreationHandler as PaymentCreationHandler,
+    PrimerTokenizationHandler as TokenizationHandler,
+    PrimerResumeHandler as ResumeHandler,
+    PrimerErrorHandler as ErrorHandler,
+} from './models/PrimerHandlers';
 export { PrimerPaymentMethodTokenData } from './models/PrimerPaymentMethodTokenData';
 export {
-    PrimerClientSession,
-    PrimerOrder,
-    PrimerLineItem,
-    PrimerCustomer,
-    PrimerAddress,
+    PrimerClientSession as ClientSession,
+    PrimerOrder as Order,
+    PrimerLineItem as LineItem,
+    PrimerCustomer as Customer,
+    PrimerAddress as Address,
 } from './models/PrimerClientSession';
 export {
-    PrimerRawData,
-    PrimerRawCardData,
-    PrimerRawPhoneNumberData,
-    PrimerRawCardRedirectData,
-    PrimerBancontactCardRedirectData,
-    PrimerRawRetailerData
+    PrimerRawData as RawData,
+    PrimerCardData as CardData,
+    PrimerBancontactCardData as BancontactCardData,
+    PrimerPhoneNumberData as PhoneNumberData,
+    PrimerRetailerData as RetailerData
 } from './models/PrimerRawData';
 export {
-    PrimerCheckoutAdditionalInfo,
-    MultibancoCheckoutAdditionalInfo,
-    PrimerCheckoutVoucherAdditionalInfo,
-    XenditCheckoutVoucherAdditionalInfo,
-    PrimerCheckoutQRCodeInfo,
-    PromptPayCheckoutAdditionalInfo
+    PrimerCheckoutAdditionalInfo as CheckoutAdditionalInfo,
+    MultibancoCheckoutAdditionalInfo
 } from './models/PrimerCheckoutAdditionalInfo';
 export {
     RetailOutletsRetail
 } from './models/RetailOutletsRetail';
 export {
-    PrimerCheckoutData,
-    PrimerCheckoutDataPayment,
+    PrimerCheckoutData as CheckoutData,
+    PrimerCheckoutDataPayment as CheckoutDataPayment,
 } from './models/PrimerCheckoutData';
 export {
-    PrimerCheckoutPaymentMethodData
+    PrimerCheckoutPaymentMethodData as CheckoutPaymentMethodData
 } from './models/PrimerCheckoutPaymentMethodData';
 export {
     PrimerError
 } from './models/PrimerError';
+export type {
+    IPrimerAsset as Asset
+} from './models/PrimerAsset';
 export {
     PrimerHeadlessUniversalCheckout as HeadlessUniversalCheckout
-} from './headless_checkout/PrimerHeadlessUniversalCheckout';
+} from './HeadlessUniversalCheckout/PrimerHeadlessUniversalCheckout';
+export type {
+    IPrimerHeadlessUniversalCheckoutPaymentMethod as PaymentMethod
+} from './models/PrimerHeadlessUniversalCheckoutPaymentMethod';
+
+import PrimerHeadlessUniversalCheckoutAssetsManager from './HeadlessUniversalCheckout/Managers/AssetsManager';
 export {
-    PrimerHeadlessUniversalCheckoutRawDataManager as HeadlessUniversalCheckoutRawDataManager
-} from './headless_checkout/PrimerHeadlessUniversalCheckoutRawDataManager';
+    PrimerHeadlessUniversalCheckoutAssetsManager as AssetsManager
+}
+import PrimerHeadlessUniversalCheckoutPaymentMethodNativeUIManager from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/NativeUIManager';
+export {
+    PrimerHeadlessUniversalCheckoutPaymentMethodNativeUIManager as NativeUIManager
+}
+import PrimerHeadlessUniversalCheckoutRawDataManager from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/RawDataManager';
+export {
+    PrimerHeadlessUniversalCheckoutRawDataManager as RawDataManager
+}

@@ -8,7 +8,7 @@ fun PrimerPaymentMethodOptionsRN.toPrimerPaymentMethodOptions() = PrimerPaymentM
   googlePayOptions.toPrimerGooglePayOptions(),
   klarnaOptions.toPrimerKlarnaOptions(),
   apayaOptions.toPrimerApayaOptions(),
-  goCardlessOptions.toPrimerGoCardlessOptions()
+  threeDsOptions.toPrimerThreeDsOptions()
 )
 
 fun PrimerGooglePayOptionsRN.toPrimerGooglePayOptions() =
@@ -19,5 +19,5 @@ fun PrimerKlarnaOptionsRN.toPrimerKlarnaOptions() =
 
 fun PrimerApayaOptionsRN.toPrimerApayaOptions() = PrimerApayaOptions(webViewTitle)
 
-fun PrimerGoCardlessOptionsRN.toPrimerGoCardlessOptions() =
-  PrimerGoCardlessOptions(businessName, businessAddress)
+fun PrimerThreeDsOptionsRN.toPrimerThreeDsOptions() =
+  PrimerThreeDsOptions(threeDsOptionsAndroid?.threeDsAppRequestorUrl)

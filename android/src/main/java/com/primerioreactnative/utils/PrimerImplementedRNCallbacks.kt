@@ -17,12 +17,12 @@ data class PrimerImplementedRNCallbacks(
   val isOnErrorImplemented: Boolean? = null,
   @SerialName("onDismiss")
   val isOnDismissImplemented: Boolean? = null,
-  @SerialName("onTokenizeSuccess")
+  @SerialName("onTokenizationSuccess")
   val isOnTokenizeSuccessImplemented: Boolean? = null,
-  @SerialName("onResumeSuccess")
-  val isOnResumeSuccessImplemented: Boolean? = null,
-  @SerialName("onResumePending")
-  val isOnResumePendingImplemented: Boolean? = null,
-  @SerialName("onCheckoutReceivedAdditionalInfo")
-  val isOnCheckoutReceivedAdditionalInfo: Boolean? = null
+  @SerialName("onCheckoutResume")
+  val isOnCheckoutResumeImplemented: Boolean? = null,
+  @SerialName("onCheckoutPending")
+  val isOnCheckoutPendingImplemented: Boolean? = null,
+  @SerialName("onCheckoutAdditionalInfo")
+  val isOnCheckoutAdditionalInfoImplemented: Boolean? = null,
 )

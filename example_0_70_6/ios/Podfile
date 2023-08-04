@@ -27,9 +27,9 @@ target 'example_0_70_6' do
   )
   
   pod 'primer-io-react-native', :path => '../..'
-#  pod 'PrimerSDK', :git => 'https://github.com/primer-io/primer-sdk-ios.git', :branch => 'release/2.16.0'
-  pod 'Primer3DS'
-  pod 'PrimerIPay88SDK'
+#   pod 'PrimerSDK', :git => 'https://github.com/primer-io/primer-sdk-ios.git', :branch => 'release/2.17.0-rc.5'
+  pod 'Primer3DS', '~> 1.2.0'
+  pod 'PrimerIPay88MYSDK'
   pod 'PrimerKlarnaSDK'
 
   target 'example_0_70_6Tests' do
@@ -46,17 +46,32 @@ target 'example_0_70_6' do
     )
     __apply_Xcode_12_5_M1_post_install_workaround(installer)
     
+    fix_code_signing(installer)
+    
     installer.pods_project.targets.each do |target|
       if target.name == "primer-io-react-native" || target.name == "PrimerSDK"
         target.build_configurations.each do |config|
-          config.build_settings['FRAMEWORK_SEARCH_PATHS'] = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/PrimerIPay88SDK"
-          config.build_settings['SWIFT_INCLUDE_PATHS'] = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/PrimerIPay88SDK"
-          config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -Xcc -fmodule-map-file="${PODS_CONFIGURATION_BUILD_DIR}/PrimerIPay88SDK/PrimerIPay88SDK.modulemap"'
-          config.build_settings['LIBRARY_SEARCH_PATHS'] = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/PrimerIPay88SDK"
-          config.build_settings['OTHER_LDFLAGS'] = '$(inherited) -weak_library -l"PrimerIPay88SDK"'
+          config.build_settings['SWIFT_INCLUDE_PATHS'] = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/Primer3DS ${PODS_CONFIGURATION_BUILD_DIR}/PrimerKlarnaSDK ${PODS_CONFIGURATION_BUILD_DIR}/PrimerIPay88MYSDK"
+          config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -Xcc -fmodule-map-file="${PODS_CONFIGURATION_BUILD_DIR}/Primer3DS/Primer3DS.modulemap" -Xcc  -fmodule-map-file="${PODS_CONFIGURATION_BUILD_DIR}/PrimerKlarnaSDK/PrimerKlarnaSDK.modulemap" -Xcc  -fmodule-map-file="${PODS_CONFIGURATION_BUILD_DIR}/PrimerIPay88MYSDK/PrimerIPay88MYSDK.modulemap"'
+
+          config.build_settings['OTHER_LDFLAGS'] = '$(inherited) -weak_library -l"Primer3DS" -l"PrimerKlarnaSDK" -l"PrimerIPay88MYSDK"'
         end
       end
     end
   end
 
+end
+
+def fix_code_signing(installer)
+  installer.generated_projects.each do |project|
+    project.targets.each do |target|
+      if target.respond_to?(:product_type) and target.product_type == "com.apple.product-type.bundle"
+      puts "Fixing code signing for #{target.name}..."
+      
+      target.build_configurations.each do |config|
+        config.build_settings["DEVELOPMENT_TEAM"] = "N8UN9TR5DY"
+      end
+    end
+    end
+  end
 end

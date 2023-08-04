@@ -11,11 +11,9 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 import { styles } from '../styles';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
-import { Picker } from "@react-native-picker/picker";
 import { Environment, makeEnvironmentFromIntVal, makePaymentHandlingFromIntVal, PaymentHandling } from '../network/Environment';
 import { appPaymentParameters, IClientSessionAddress, IClientSessionCustomer, IClientSessionLineItem, IClientSessionOrder, IClientSessionPaymentMethod, IClientSessionPaymentMethodOptions, IClientSessionRequestBody } from '../models/IClientSessionRequestBody';
 import { Switch } from 'react-native';
-import { FlatList } from 'react-native';
 import TextField from '../components/TextField';
 import type { NewLineItemScreenProps } from './NewLineItemSreen';
 
@@ -26,21 +24,19 @@ export interface AppPaymentParameters {
     merchantName?: string;
 }
 
-export let customApiKey: string | undefined = "6a0a86e2-6e25-4fab-ab3b-06c36eb08149";
+export let customApiKey: string | undefined = "71347d48-c050-49c2-ac51-202525c4c0ec";
 export let customClientToken: string | undefined;
 
 // @ts-ignore
 const SettingsScreen = ({ navigation }) => {
     const isDarkMode = useColorScheme() === 'dark';
     const [environment, setEnvironment] = React.useState<Environment>(Environment.Staging);
-    //@ts-ignore
     const [apiKey, setApiKey] = React.useState<string | undefined>(customApiKey);
-    //@ts-ignore
     const [clientToken, setClientToken] = React.useState<string | undefined>(undefined);
     const [paymentHandling, setPaymentHandling] = React.useState<PaymentHandling>(PaymentHandling.Auto);
     const [lineItems, setLineItems] = React.useState<IClientSessionLineItem[]>(appPaymentParameters.clientSessionRequestBody.order?.lineItems || []);
-    const [currency, setCurrency] = React.useState<string>("MYR");
-    const [countryCode, setCountryCode] = React.useState<string>("MY");
+    const [currency, setCurrency] = React.useState<string>("EUR");
+    const [countryCode, setCountryCode] = React.useState<string>("DE");
     const [orderId, setOrderId] = React.useState<string | undefined>(appPaymentParameters.clientSessionRequestBody.orderId);
 
     const [merchantName, setMerchantName] = React.useState<string | undefined>(appPaymentParameters.merchantName);
@@ -89,6 +85,25 @@ const SettingsScreen = ({ navigation }) => {
                         setEnvironment(selectedEnvironment);
                     }}
                 />
+                <TextField
+                    title='API Key'
+                    style={{ marginVertical: 8 }}
+                    value={apiKey}
+                    placeholder={'Set API key'}
+                    onChangeText={(text) => {
+                        setApiKey(text);
+                        customApiKey = text;
+                    }}
+                />
+                <TextField
+                    title='Client token'
+                    style={{ marginVertical: 8 }}
+                    value={clientToken}
+                    placeholder={'Set client token'}
+                    onChangeText={(text) => {
+                        setClientToken(text);
+                    }}
+                />
             </View>
         )
     }
@@ -121,52 +136,25 @@ const SettingsScreen = ({ navigation }) => {
                 </Text>
 
                 <View style={{ marginTop: 8, marginBottom: 4 }}>
-                    <Text style={{ ...styles.heading2 }}>
-                        Currency & Country Code
-                    </Text>
-                    <View
-                        style={{ flexDirection: 'row', marginHorizontal: 20, marginTop: -30, marginBottom: 140 }}
-                    >
-                        <Picker
-                            selectedValue={currency}
-                            style={{ height: 50, flex: 1 }}
-                            onValueChange={(itemValue) => {
-                                setCurrency(itemValue);
+                    <TextField
+                            title='Currency'
+                            style={{ marginVertical: 8 }}
+                            value={currency}
+                            placeholder={'Set currency'}
+                            onChangeText={(text) => {
+                                setCurrency(text);
                             }}
-                        >
-                            <Picker.Item label="EUR" value="EUR" />
-                            <Picker.Item label="GBP" value="GBP" />
-                            <Picker.Item label="USD" value="USD" />
-                            <Picker.Item label="SEK" value="SEK" />
-                            <Picker.Item label="SGD" value="SGD" />
-                            <Picker.Item label="PLN" value="PLN" />
-                            <Picker.Item label="THB" value="THB" />
-                            <Picker.Item label="IDR" value="IDR" />
-                            <Picker.Item label="PHP" value="PHP" />
-                            <Picker.Item label="MYR" value="MYR" />
-                        </Picker>
+                        />
 
-                        <Picker
-                            selectedValue={countryCode}
-                            style={{ height: 50, flex: 1 }}
-                            onValueChange={(itemValue) => {
-                                setCountryCode(itemValue);
+                        <TextField
+                            title='Country Code'
+                            style={{ marginVertical: 8 }}
+                            value={countryCode}
+                            placeholder={'Set country code'}
+                            onChangeText={(text) => {
+                                setCountryCode(text);
                             }}
-                        >
-                            <Picker.Item label="DE" value="DE" />
-                            <Picker.Item label="FR" value="FR" />
-                            <Picker.Item label="GB" value="GB" />
-                            <Picker.Item label="SE" value="SE" />
-                            <Picker.Item label="SG" value="SG" />
-                            <Picker.Item label="PL" value="PL" />
-                            <Picker.Item label="PT" value="PT" />
-                            <Picker.Item label="TH" value="TH" />
-                            <Picker.Item label="ID" value="ID" />
-                            <Picker.Item label="NL" value="NL" />
-                            <Picker.Item label="PH" value="PH" />
-                            <Picker.Item label="MY" value="MY" />
-                        </Picker>
-                    </View>
+                        />
                 </View>
 
                 {renderLineItems()}
@@ -210,43 +198,48 @@ const SettingsScreen = ({ navigation }) => {
                         </Text>
                     </TouchableOpacity>
                 </View>
-                <FlatList
-                    data={lineItems}
-                    renderItem={({ item, index }) => (
-                        <TouchableOpacity
-                            key={`${index}`}
-                            style={{ flex: 1, flexDirection: 'row', marginVertical: 4 }}
-                            onPress={() => {
-                                const newLineItemsScreenProps: NewLineItemScreenProps = {
-                                    lineItem: item,
-                                    onRemoveLineItem: (lineItem) => {
-                                        const currentLineItems = [...lineItems];
-                                        const index = currentLineItems.indexOf(lineItem, 0);
-                                        if (index > -1) {
-                                            currentLineItems.splice(index, 1);
+                {
+                    lineItems.map((item, index) => {
+                        return (
+                            <TouchableOpacity
+                                key={`${index}`}
+                                style={{ flex: 1, flexDirection: 'row', marginVertical: 4, height: 30 }}
+                                onPress={() => {
+                                    const newLineItemsScreenProps: NewLineItemScreenProps = {
+                                        lineItem: item,
+                                        onEditLineItem: (editedLineItem) => {
+                                            const currentLineItems = [...lineItems];
+                                            const index = currentLineItems.indexOf(item, 0);
+                                            currentLineItems[index] = editedLineItem;
+                                            setLineItems(currentLineItems);
+                                        },
+                                        onRemoveLineItem: (lineItem) => {
+                                            const currentLineItems = [...lineItems];
+                                            const index = currentLineItems.indexOf(lineItem, 0);
+                                            if (index > -1) {
+                                                currentLineItems.splice(index, 1);
+                                            }
+                                            setLineItems(currentLineItems);
                                         }
-                                        setLineItems(currentLineItems);
                                     }
-                                }
 
-                                navigation.navigate('NewLineItem', newLineItemsScreenProps);
-                            }}
-                        >
-                            <Text>{item.description} {`x${item.quantity}`}</Text>
-                            <View style={{ flexGrow: 1 }} />
-                            <Text>{item.amount}</Text>
-                        </TouchableOpacity>
-                    )}
-                    ListFooterComponent={
-                        <View
-                            style={{ flex: 1, flexDirection: 'row', marginVertical: 4 }}
-                        >
-                            <Text style={{ fontWeight: '600' }}>Total</Text>
-                            <View style={{ flexGrow: 1 }} />
-                            <Text style={{ fontWeight: '600' }}>{`${(lineItems || []).map(item => (item.amount * item.quantity)).reduce((prev, next) => prev + next, 0)}`}</Text>
-                        </View>
-                    }
-                />
+                                    navigation.navigate('NewLineItem', newLineItemsScreenProps);
+                                }}
+                            >
+                                <Text>{item.description} {`x${item.quantity}`}</Text>
+                                <View style={{ flexGrow: 1 }} />
+                                <Text>{item.amount}</Text>
+                            </TouchableOpacity>
+                        );
+                    })
+                }
+                <View
+                    style={{ flex: 1, flexDirection: 'row', marginVertical: 4 }}
+                >
+                    <Text style={{ fontWeight: '600' }}>Total</Text>
+                    <View style={{ flexGrow: 1 }} />
+                    <Text style={{ fontWeight: '600' }}>{`${(lineItems || []).map(item => (item.amount * item.quantity)).reduce((prev, next) => prev + next, 0)}`}</Text>
+                </View>
             </View>
         );
     }
@@ -481,7 +474,7 @@ const SettingsScreen = ({ navigation }) => {
                                 }}
                             />
 
-                            <View style={{marginTop: 8}}>
+                            <View style={{ marginTop: 8 }}>
                                 <View style={{ flex: 1, flexDirection: 'row' }}>
                                     <Text style={{ ...styles.heading1, marginBottom: 4 }}>
                                         Address
@@ -638,67 +631,9 @@ const SettingsScreen = ({ navigation }) => {
                     <Text
                         style={{ ...styles.buttonText, color: 'white' }}
                     >
-                        Headless Universal Checkout (Beta)
+                        Headless Universal Checkout
                     </Text>
                 </TouchableOpacity>
-
-                <TouchableOpacity
-                    style={{ ...styles.button, marginVertical: 5, backgroundColor: 'black' }}
-                    onPress={() => {
-                        updateAppPaymentParameters();
-                        console.log(appPaymentParameters);
-                        navigation.navigate('HUCRawCardData');
-                    }}
-                >
-                    <Text
-                        style={{ ...styles.buttonText, color: 'white' }}
-                    >
-                        HUC Raw Card Data (Beta)
-                    </Text>
-                </TouchableOpacity>
-                           <TouchableOpacity
-                                    style={{ ...styles.button, marginVertical: 5, backgroundColor: 'black' }}
-                                    onPress={() => {
-                                        updateAppPaymentParameters();
-                                        console.log(appPaymentParameters);
-                                        navigation.navigate('HUCRawPhoneNumberData');
-                                    }}
-                                >
-                                    <Text
-                                        style={{ ...styles.buttonText, color: 'white' }}
-                                    >
-                                        HUC Raw Phone Number Data (Beta)
-                                    </Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                         style={{ ...styles.button, marginVertical: 5, backgroundColor: 'black' }}
-                                         onPress={() => {
-                                             updateAppPaymentParameters();
-                                             console.log(appPaymentParameters);
-                                             navigation.navigate('HUCRawCardRedirectDataScreen');
-                                         }}
-                                     >
-                                         <Text
-                                             style={{ ...styles.buttonText, color: 'white' }}
-                                         >
-                                             HUC Raw Card Redirect Data (Beta)
-                                         </Text>
-                                     </TouchableOpacity>
-                                     <TouchableOpacity
-                                         style={{ ...styles.button, marginVertical: 5, backgroundColor: 'black' }}
-                                         onPress={() => {
-                                             updateAppPaymentParameters();
-                                             console.log(appPaymentParameters);
-                                             navigation.navigate('HUCRawRetailDataVoucherScreen');
-                                         }}
-                                     >
-                                         <Text
-                                             style={{ ...styles.buttonText, color: 'white' }}
-                                         >
-                                             HUC Raw Retail Data Voucher Screen (Beta)
-                                         </Text>
-                                     </TouchableOpacity>
-
             </View>
         );
     }

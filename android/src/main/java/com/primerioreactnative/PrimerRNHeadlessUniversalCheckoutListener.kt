@@ -1,20 +1,21 @@
 package com.primerioreactnative
 
-import com.facebook.react.bridge.Arguments
-import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.Promise
+import com.primerioreactnative.components.datamodels.core.PrimerRNAvailablePaymentMethods
+import com.primerioreactnative.components.datamodels.core.toPrimerRNHeadlessUniversalCheckoutPaymentMethod
+import com.primerioreactnative.components.events.PrimerHeadlessUniversalCheckoutEvent
 import com.primerioreactnative.datamodels.*
 import com.primerioreactnative.extensions.toCheckoutAdditionalInfoRN
 import com.primerioreactnative.extensions.toPrimerCheckoutDataRN
 import com.primerioreactnative.extensions.toPrimerClientSessionRN
 import com.primerioreactnative.extensions.toPrimerPaymentMethodDataRN
-import com.primerioreactnative.huc.events.PrimerHeadlessUniversalCheckoutEvent
 import com.primerioreactnative.utils.PrimerHeadlessUniversalCheckoutImplementedRNCallbacks
+import com.primerioreactnative.utils.convertJsonToMap
 import com.primerioreactnative.utils.errorTo
-import io.primer.android.ExperimentalPrimerApi
+import io.primer.android.completion.PrimerHeadlessUniversalCheckoutResumeDecisionHandler
 import io.primer.android.completion.PrimerPaymentCreationDecisionHandler
-import io.primer.android.completion.PrimerResumeDecisionHandler
 import io.primer.android.components.PrimerHeadlessUniversalCheckoutListener
+import io.primer.android.components.PrimerHeadlessUniversalCheckoutUiListener
 import io.primer.android.components.domain.core.models.PrimerHeadlessUniversalCheckoutPaymentMethod
 import io.primer.android.domain.PrimerCheckoutData
 import io.primer.android.domain.action.models.PrimerClientSession
@@ -26,11 +27,10 @@ import io.primer.android.domain.tokenization.models.PrimerPaymentMethodData
 import io.primer.android.domain.tokenization.models.PrimerPaymentMethodTokenData
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import org.json.JSONArray
 import org.json.JSONObject
 
-@OptIn(ExperimentalPrimerApi::class)
-class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckoutListener {
+class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckoutListener,
+  PrimerHeadlessUniversalCheckoutUiListener {
   private var paymentCreationDecisionHandler: ((errorMessage: String?) -> Unit)? = null
   private var tokenizeSuccessDecisionHandler: ((resumeToken: String?, errorMessage: String?) -> Unit)? =
     null
@@ -44,37 +44,44 @@ class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckou
   var sendErrorWithCheckoutData: ((error: PrimerErrorRN, checkoutData: PrimerCheckoutDataRN?) -> Unit)? =
     null
 
-  var successCallback: Callback? = null
+  var successCallback: Promise? = null
 
   override fun onAvailablePaymentMethodsLoaded(paymentMethods: List<PrimerHeadlessUniversalCheckoutPaymentMethod>) {
+    val availablePaymentMethods =
+      JSONObject(
+        Json.encodeToString(
+          PrimerRNAvailablePaymentMethods(
+            paymentMethods.map { it.toPrimerRNHeadlessUniversalCheckoutPaymentMethod() }
+          )
+        )
+      )
+
     sendEvent?.invoke(
-      PrimerHeadlessUniversalCheckoutEvent.ON_HUC_AVAILABLE_PAYMENT_METHODS_LOADED.eventName,
-      JSONObject().apply {
-        put("paymentMethodTypes", JSONArray(paymentMethods.map { it.paymentMethodType }))
-      }
+      PrimerHeadlessUniversalCheckoutEvent.ON_AVAILABLE_PAYMENT_METHODS_LOAD.eventName,
+      availablePaymentMethods
     )
-    successCallback?.invoke(
-      Arguments.fromList(paymentMethods.map { it.paymentMethodType })
+    successCallback?.resolve(
+      convertJsonToMap(availablePaymentMethods)
     )
   }
 
   override fun onPreparationStarted(paymentMethodType: String) {
     sendEvent?.invoke(
-      PrimerHeadlessUniversalCheckoutEvent.ON_HUC_PREPARE_START.eventName,
+      PrimerHeadlessUniversalCheckoutEvent.ON_PREPARE_START.eventName,
       JSONObject(Json.encodeToString(PrimerPaymentMethodDataRN(paymentMethodType)))
     )
   }
 
   override fun onPaymentMethodShowed(paymentMethodType: String) {
     sendEvent?.invoke(
-      PrimerHeadlessUniversalCheckoutEvent.ON_HUC_PAYMENT_METHOD_SHOW.eventName,
+      PrimerHeadlessUniversalCheckoutEvent.ON_PAYMENT_METHOD_SHOW.eventName,
       JSONObject(Json.encodeToString(PrimerPaymentMethodDataRN(paymentMethodType)))
     )
   }
 
   override fun onTokenizationStarted(paymentMethodType: String) {
     sendEvent?.invoke(
-      PrimerHeadlessUniversalCheckoutEvent.ON_HUC_TOKENIZE_START.eventName,
+      PrimerHeadlessUniversalCheckoutEvent.ON_TOKENIZE_START.eventName,
       JSONObject(Json.encodeToString(PrimerPaymentMethodDataRN(paymentMethodType)))
     )
   }
@@ -132,7 +139,12 @@ class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckou
     if (implementedRNCallbacks?.isOnClientSessionUpdateImplemented == true) {
       sendEvent?.invoke(
         PrimerHeadlessUniversalCheckoutEvent.ON_CLIENT_SESSION_UPDATE.eventName,
-        JSONObject(Json.encodeToString(clientSession.toPrimerClientSessionRN()))
+        JSONObject().apply {
+          put(
+            "clientSession",
+            JSONObject(Json.encodeToString(clientSession.toPrimerClientSessionRN()))
+          )
+        }
       )
     } else {
       super.onClientSessionUpdated(clientSession)
@@ -141,16 +153,16 @@ class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckou
 
   override fun onTokenizeSuccess(
     paymentMethodTokenData: PrimerPaymentMethodTokenData,
-    decisionHandler: PrimerResumeDecisionHandler
+    decisionHandler: PrimerHeadlessUniversalCheckoutResumeDecisionHandler
   ) {
     if (implementedRNCallbacks?.isOnTokenizeSuccessImplemented == true) {
       val token = PrimerPaymentInstrumentTokenRN.fromPaymentMethodToken(paymentMethodTokenData)
-      val request = JSONObject(Json.encodeToString(token))
-      tokenizeSuccessDecisionHandler = { newClientToken, err ->
+      val request = JSONObject().apply {
+        put("paymentMethodTokenData", JSONObject(Json.encodeToString(token)))
+      }
+      tokenizeSuccessDecisionHandler = { newClientToken, _ ->
         when {
-          err != null -> decisionHandler.handleFailure(err.ifBlank { null })
           newClientToken != null -> decisionHandler.continueWithNewClientToken(newClientToken)
-          else -> decisionHandler.handleSuccess()
         }
       }
       sendEvent?.invoke(PrimerHeadlessUniversalCheckoutEvent.ON_TOKENIZE_SUCCESS.eventName, request)
@@ -162,37 +174,35 @@ class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckou
     }
   }
 
-  override fun onResumeSuccess(
+  override fun onCheckoutResume(
     resumeToken: String,
-    decisionHandler: PrimerResumeDecisionHandler
+    decisionHandler: PrimerHeadlessUniversalCheckoutResumeDecisionHandler
   ) {
-    if (implementedRNCallbacks?.isOnResumeSuccessImplemented == true) {
-      resumeSuccessDecisionHandler = { newClientToken, err ->
+    if (implementedRNCallbacks?.isOnCheckoutResumeImplemented == true) {
+      resumeSuccessDecisionHandler = { newClientToken, _ ->
         when {
-          err != null -> decisionHandler.handleFailure(err.ifBlank { null })
           newClientToken != null -> decisionHandler.continueWithNewClientToken(newClientToken)
-          else -> decisionHandler.handleSuccess()
         }
       }
 
       val resumeToken = mapOf(Keys.RESUME_TOKEN to resumeToken)
       sendEvent?.invoke(
-        PrimerHeadlessUniversalCheckoutEvent.ON_RESUME_SUCCESS.eventName,
+        PrimerHeadlessUniversalCheckoutEvent.ON_CHECKOUT_SUCCESS.eventName,
         JSONObject(Json.encodeToString(resumeToken))
       )
     } else {
       sendError?.invoke(
         ErrorTypeRN.NativeBridgeFailed
-          errorTo "Callback [onResumeSuccess] should be implemented."
+          errorTo "Callback ${PrimerHeadlessUniversalCheckoutEvent.ON_CHECKOUT_SUCCESS.eventName} should be implemented."
       )
     }
   }
 
-  override fun onResumePending(additionalInfo: PrimerCheckoutAdditionalInfo?) {
-    if (implementedRNCallbacks?.isOnResumePendingImplemented == true) {
+  override fun onResumePending(additionalInfo: PrimerCheckoutAdditionalInfo) {
+    if (implementedRNCallbacks?.isOnCheckoutPendingImplemented == true) {
       if (additionalInfo is MultibancoCheckoutAdditionalInfo) {
         sendEvent?.invoke(
-          PrimerEvents.ON_RESUME_PENDING.eventName,
+          PrimerHeadlessUniversalCheckoutEvent.ON_CHECKOUT_PENDING.eventName,
           JSONObject(Json.encodeToString(additionalInfo.toCheckoutAdditionalInfoRN())).apply {
             remove("type")
           }
@@ -201,16 +211,17 @@ class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckou
     } else {
       sendError?.invoke(
         ErrorTypeRN.NativeBridgeFailed
-          errorTo "Callback [onResumePending] should be implemented."
+          errorTo "Callback [${PrimerHeadlessUniversalCheckoutEvent.ON_CHECKOUT_PENDING.eventName}] " +
+          "should be implemented."
       )
     }
   }
 
-  override fun onAdditionalInfoReceived(additionalInfo: PrimerCheckoutAdditionalInfo) {
-    if (implementedRNCallbacks?.isOnCheckoutReceivedAdditionalInfo == true) {
+  override fun onCheckoutAdditionalInfoReceived(additionalInfo: PrimerCheckoutAdditionalInfo) {
+    if (implementedRNCallbacks?.isOnCheckoutAdditionalInfoImplemented == true) {
       if (additionalInfo is PromptPayCheckoutAdditionalInfo) {
         sendEvent?.invoke(
-          PrimerEvents.ON_CHECKOUT_RECEIVED_ADDITIONAL_INFO.eventName,
+          PrimerHeadlessUniversalCheckoutEvent.ON_CHECKOUT_ADDITIONAL_INFO.eventName,
           JSONObject(Json.encodeToString(additionalInfo.toCheckoutAdditionalInfoRN())).apply {
             remove("type")
           }
@@ -219,7 +230,8 @@ class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckou
     } else {
       sendError?.invoke(
         ErrorTypeRN.NativeBridgeFailed
-          errorTo "Callback [onAdditionalInfoReceived] should be implemented."
+          errorTo "Callback [${PrimerHeadlessUniversalCheckoutEvent.ON_CHECKOUT_ADDITIONAL_INFO.eventName}]" +
+          " should be implemented."
       )
     }
   }
@@ -233,6 +245,7 @@ class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckou
         PrimerErrorRN(
           error.errorId,
           error.description,
+          error.diagnosticsId,
           error.recoverySuggestion
         ), checkoutData?.toPrimerCheckoutDataRN()
       )
@@ -243,7 +256,14 @@ class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckou
 
   override fun onFailed(error: PrimerError) {
     if (implementedRNCallbacks?.isOnErrorImplemented == true) {
-      sendError?.invoke(PrimerErrorRN(error.errorId, error.description, error.recoverySuggestion))
+      sendError?.invoke(
+        PrimerErrorRN(
+          error.errorId,
+          error.description,
+          error.diagnosticsId,
+          error.recoverySuggestion
+        )
+      )
     } else {
       super.onFailed(error)
     }
@@ -254,40 +274,12 @@ class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckou
     tokenizeSuccessDecisionHandler?.invoke(newClientToken, null)
     tokenizeSuccessDecisionHandler = null
   }
-
-  fun handleTokenizationSuccess(promise: Promise) {
-    val error =
-      ErrorTypeRN.NativeBridgeFailed errorTo "PrimerTokenizationHandler's " +
-        "handleSuccess function is not available on HUC."
-    promise.reject(error.errorId, error.description)
-  }
-
-  fun handleTokenizationFailure(errorMessage: String, promise: Promise) {
-    val error =
-      ErrorTypeRN.NativeBridgeFailed errorTo "PrimerTokenizationHandler's " +
-        "handleFailure function is not available on HUC."
-    promise.reject(error.errorId, error.description)
-  }
   // endregion
 
   // region resume handlers
   fun handleResumeNewClientToken(newClientToken: String) {
     resumeSuccessDecisionHandler?.invoke(newClientToken, null)
     resumeSuccessDecisionHandler = null
-  }
-
-  fun handleResumeSuccess(promise: Promise) {
-    val error =
-      ErrorTypeRN.NativeBridgeFailed errorTo "PrimerResumeHandler's " +
-        "handleSuccess function is not available on HUC."
-    promise.reject(error.errorId, error.description)
-  }
-
-  fun handleResumeFailure(errorMessage: String, promise: Promise) {
-    val error =
-      ErrorTypeRN.NativeBridgeFailed errorTo "PrimerResumeHandler's " +
-        "handleFailure function is not available on HUC."
-    promise.reject(error.errorId, error.description)
   }
   // endregion
 

@@ -1,9 +1,4 @@
-import type {
-  PrimerErrorHandler,
-  PrimerPaymentCreationHandler,
-  PrimerResumeHandler,
-  PrimerTokenizationHandler
-} from "./PrimerInterfaces";
+
 import type { PrimerCheckoutData } from "./PrimerCheckoutData";
 import type { PrimerCheckoutAdditionalInfo } from "./PrimerCheckoutAdditionalInfo";
 import type { PrimerCheckoutPaymentMethodData } from "./PrimerCheckoutPaymentMethodData";
@@ -11,6 +6,13 @@ import type { PrimerClientSession } from "./PrimerClientSession";
 import type { PrimerPaymentMethodTokenData } from "./PrimerPaymentMethodTokenData";
 import type { PrimerError } from "./PrimerError";
 import type { IPrimerTheme } from "./PrimerTheme";
+import type {
+  PrimerPaymentCreationHandler,
+  PrimerTokenizationHandler,
+  PrimerResumeHandler,
+  PrimerErrorHandler,
+  PrimerHeadlessUniversalCheckoutResumeHandler
+} from "./PrimerHandlers";
 
 export type PrimerSettings = IPrimerSettings;
 
@@ -21,7 +23,7 @@ interface IPrimerSettings {
   uiOptions?: IPrimerUIOptions;
   debugOptions?: IPrimerDebugOptions;
 
-  // Common
+  // Dropin UI
   onBeforeClientSessionUpdate?: () => void;
   onClientSessionUpdate?: (clientSession: PrimerClientSession) => void;
   onBeforePaymentCreate?: (checkoutPaymentMethodData: PrimerCheckoutPaymentMethodData, handler: PrimerPaymentCreationHandler) => void;
@@ -30,17 +32,28 @@ interface IPrimerSettings {
   onResumeSuccess?: (resumeToken: string, handler: PrimerResumeHandler) => void;
   onResumePending?: (additionalInfo: PrimerCheckoutAdditionalInfo) => void;
   onCheckoutReceivedAdditionalInfo?: (additionalInfo: PrimerCheckoutAdditionalInfo) => void;
-  // PrimerErrorHandler will be undefined on the HUC flow.
   onError?: (error: PrimerError, checkoutData: PrimerCheckoutData | null, handler: PrimerErrorHandler | undefined) => void;
-
-  // Only on main SDK
   onDismiss?: () => void;
 
-  // Only on HUC
-  onPrepareStart?: (paymentMethod: string) => void;
-  onTokenizeStart?: (paymentMethod: string) => void;
-  onPaymentMethodShow?: (paymentMethod: string) => void;
-  onAvailablePaymentMethodsLoad?: (paymentMethods: string[]) => void;
+  headlessUniversalCheckoutCallbacks?: {
+    onAvailablePaymentMethodsLoad?: (availablePaymentMethods: any[]) => void;
+    onTokenizationStart?: (paymentMethodType: string) => void;
+    onTokenizationSuccess?: (paymentMethodTokenData: PrimerPaymentMethodTokenData, handler: PrimerHeadlessUniversalCheckoutResumeHandler) => void;
+
+    onCheckoutResume?: (resumeToken: string, handler: PrimerHeadlessUniversalCheckoutResumeHandler) => void;
+    onCheckoutPending?: (additionalInfo: PrimerCheckoutAdditionalInfo) => void;
+    onCheckoutAdditionalInfo?: (additionalInfo: PrimerCheckoutAdditionalInfo) => void;
+
+    onError?: (error: PrimerError, checkoutData: PrimerCheckoutData | null) => void;
+    onCheckoutComplete?: (checkoutData: PrimerCheckoutData) => void;
+    onBeforeClientSessionUpdate?: () => void;
+
+    onClientSessionUpdate?: (clientSession: PrimerClientSession) => void;
+    onBeforePaymentCreate?: (checkoutPaymentMethodData: PrimerCheckoutPaymentMethodData, handler: PrimerPaymentCreationHandler) => void;
+    onPreparationStart?: (paymentMethodType: string) => void;
+
+    onPaymentMethodShow?: (paymentMethodType: string) => void;
+  }
 }
 
 //----------------------------------------
@@ -66,10 +79,11 @@ interface IPrimerPaymentMethodOptions {
   * @obsoleted The IPrimerCardPaymentOptions is obsoleted on v.2.14.0
   */
   cardPaymentOptions?: IPrimerCardPaymentOptions;
-  
+
   goCardlessOptions?: IPrimerGoCardlessOptions;
   googlePayOptions?: IPrimerGooglePayOptions;
   klarnaOptions?: IPrimerKlarnaOptions;
+  threeDsOptions?: IPrimerThreeDsOptions;
 }
 
 interface IPrimerApayaOptions {
@@ -94,6 +108,7 @@ interface IPrimerGoCardlessOptions {
 interface IPrimerGooglePayOptions {
   merchantName?: string;
   allowedCardNetworks?: string[];
+  isCaptureBillingAddressEnabled?: boolean;
 }
 
 interface IPrimerKlarnaOptions {
@@ -114,4 +129,15 @@ interface IPrimerUIOptions {
 
 interface IPrimerDebugOptions {
   is3DSSanityCheckEnabled?: boolean;
+}
+
+//----------------------------------------
+
+interface IPrimerThreeDsOptions {
+  iOS?: {
+    threeDsAppRequestorUrl?: string;
+  };
+  android?: {
+    threeDsAppRequestorUrl?: string;
+  };
 }

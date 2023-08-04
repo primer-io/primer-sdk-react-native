@@ -33,7 +33,7 @@ data class PrimerPaymentMethodOptionsRN(
   var googlePayOptions: PrimerGooglePayOptionsRN = PrimerGooglePayOptionsRN(),
   var klarnaOptions: PrimerKlarnaOptionsRN = PrimerKlarnaOptionsRN(),
   var apayaOptions: PrimerApayaOptionsRN = PrimerApayaOptionsRN(),
-  var goCardlessOptions: PrimerGoCardlessOptionsRN = PrimerGoCardlessOptionsRN()
+  var threeDsOptions: PrimerThreeDsOptionsRN = PrimerThreeDsOptionsRN()
 )
 
 @Serializable
@@ -55,6 +55,17 @@ data class PrimerCardPaymentOptionsRN(
 )
 
 @Serializable
+data class PrimerThreeDsOptionsRN(
+  @SerialName("android")
+  val threeDsOptionsAndroid: PrimerThreeDsAndroidOptionsRN? = null
+)
+
+@Serializable
+data class PrimerThreeDsAndroidOptionsRN(
+  val threeDsAppRequestorUrl: String? = null
+)
+
+@Serializable
 data class PrimerGooglePayOptionsRN(
   var merchantName: String? = null,
   var allowedCardNetworks: List<String> = listOf(
@@ -65,7 +76,7 @@ data class PrimerGooglePayOptionsRN(
     "VISA"
   ),
   var buttonStyle: GooglePayButtonStyle = GooglePayButtonStyle.BLACK,
-  var captureBillingAddress: Boolean = false
+  @SerialName("isCaptureBillingAddressEnabled") var captureBillingAddress: Boolean = false
 )
 
 @Serializable
@@ -79,13 +90,6 @@ data class PrimerKlarnaOptionsRN(
 @Deprecated("This class is deprecated and will be removed in future release.")
 data class PrimerApayaOptionsRN(
   var webViewTitle: String? = null,
-)
-
-@Serializable
-@Deprecated("This class is deprecated and will be removed in future release.")
-data class PrimerGoCardlessOptionsRN(
-  var businessName: String? = null,
-  var businessAddress: String? = null,
 )
 
 fun PrimerSettingsRN.toPrimerSettings() = PrimerSettings(
