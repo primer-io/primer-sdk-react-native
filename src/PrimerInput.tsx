@@ -22,6 +22,7 @@ export const PrimerCardNumberEditText: React.FC<PrimerCardNumberEditTextProps> =
   }, []);
 
   const rawComponent = (
+    //@ts-ignore
     <PrimerCardNumberEditTextRaw ref={ref.current} {...props} />
   );
 
@@ -45,6 +46,7 @@ export const PrimerCardholderNameEditText: React.FC<PrimerCardholderNameEditText
     PrimerRN.addInput(tag);
     return () => PrimerRN.removeInput(tag);
   }, []);
+  //@ts-ignore
   return <PrimerCardholderNameEditTextRaw ref={ref.current} {...props} />;
 };
 
@@ -58,6 +60,7 @@ type PrimerExpiryEditTextProps = ViewProps;
 export const PrimerExpiryEditText: React.FC<PrimerExpiryEditTextProps> = (
   props
 ) => {
+  //@ts-ignore
   return <PrimerExpiryEditTextRaw {...props} />;
 };
 
@@ -69,5 +72,6 @@ export const PrimerCvvEditTextRaw = requireNativeComponent<{}>(
 type PrimerCvvEditTextProps = ViewProps;
 
 export const PrimerCvvEditText: React.FC<PrimerCvvEditTextProps> = (props) => {
+  //@ts-ignore
   return <PrimerCvvEditTextRaw {...props} />;
 };

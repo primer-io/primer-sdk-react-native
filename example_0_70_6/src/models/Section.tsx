@@ -7,6 +7,7 @@ import { styles } from "../styles";
 
 export const Section: React.FC<{
     title: string;
+    //@ts-ignore
 }> = ({ children, title }) => {
     const isDarkMode = useColorScheme() === 'dark';
     return (

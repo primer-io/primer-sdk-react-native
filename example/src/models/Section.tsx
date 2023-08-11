@@ -7,7 +7,9 @@ import { styles } from "../styles";
 
 export const Section: React.FC<{
     title: string;
-}> = ({ children, title }) => {
+}> = ({ 
+    //@ts-ignore
+    children, title }) => {
     const isDarkMode = useColorScheme() === 'dark';
     return (
         <View style={styles.sectionContainer}>
