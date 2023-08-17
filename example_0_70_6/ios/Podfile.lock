@@ -14,16 +14,16 @@ PODS:
   - KlarnaMobileSDK (2.2.2):
     - KlarnaMobileSDK/full (= 2.2.2)
   - KlarnaMobileSDK/full (2.2.2)
-  - primer-io-react-native (2.20.0-RC.1):
-    - PrimerSDK (= 2.17.0-rc.1)
+  - primer-io-react-native (2.17.1):
+    - PrimerSDK (= 2.17.1)
     - React-Core
-  - Primer3DS (1.0.3)
-  - PrimerIPay88SDK (0.1.3)
+  - Primer3DS (2.0.0)
+  - PrimerIPay88MYSDK (0.1.5)
   - PrimerKlarnaSDK (1.0.4):
     - KlarnaMobileSDK (= 2.2.2)
-  - PrimerSDK (2.17.0-rc.1):
-    - PrimerSDK/Core (= 2.17.0-rc.1)
-  - PrimerSDK/Core (2.17.0-rc.1)
+  - PrimerSDK (2.17.1):
+    - PrimerSDK/Core (= 2.17.1)
+  - PrimerSDK/Core (2.17.1)
   - RCT-Folly (2021.07.22.00):
     - boost
     - DoubleConversion
@@ -323,8 +323,8 @@ DEPENDENCIES:
   - FBReactNativeSpec (from `../node_modules/react-native/React/FBReactNativeSpec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - primer-io-react-native (from `../..`)
-  - Primer3DS
-  - PrimerIPay88SDK
+  - Primer3DS (~> 2.0.0)
+  - PrimerIPay88MYSDK
   - PrimerKlarnaSDK
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
@@ -365,7 +365,7 @@ SPEC REPOS:
     - fmt
     - KlarnaMobileSDK
     - Primer3DS
-    - PrimerIPay88SDK
+    - PrimerIPay88MYSDK
     - PrimerKlarnaSDK
     - PrimerSDK
 
@@ -455,11 +455,11 @@ SPEC CHECKSUMS:
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
   KlarnaMobileSDK: 23b44390d06c6e3a90b5325bea6c10bf97ac6044
-  primer-io-react-native: ff80a37b3c5d45a228972098a9ca3517278f93b9
-  Primer3DS: 895ab3a53731c87dfba26f30b70f59fcd590f94f
-  PrimerIPay88SDK: 397deb847c703d5af19fb553fd06b54cc1cd53bc
+  primer-io-react-native: bb0d2f62b335f63dad235f36b2ee7037b4300428
+  Primer3DS: 109e46ed31726039b9fb0ee6e1a0948fda345b24
+  PrimerIPay88MYSDK: 8b4790c4bc741c20ad3674cc7e4da0781ad17ddd
   PrimerKlarnaSDK: de4b8b8fda075e3e4ebbd4ab80bd141c76a30d85
-  PrimerSDK: a4f7bb31ca036fb3d9acb7b3411aec945677772f
+  PrimerSDK: a0a5cf7db0b199810acee2afb97ba71a9a51d129
   RCT-Folly: 0080d0a6ebf2577475bda044aa59e2ca1f909cda
   RCTRequired: e1866f61af7049eb3d8e08e8b133abd38bc1ca7a
   RCTTypeSafety: 27c2ac1b00609a432ced1ae701247593f07f901e
@@ -493,6 +493,6 @@ SPEC CHECKSUMS:
   RNScreens: 34cc502acf1b916c582c60003dc3089fa01dc66d
   Yoga: 99caf8d5ab45e9d637ee6e0174ec16fbbb01bcfc
 
-PODFILE CHECKSUM: 38360a596b16a72f7f1e661a4874df8021816f66
+PODFILE CHECKSUM: 5eb0ca7b554b8ca0e6b328d7b55ba0ffa13620e9
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.12.1
