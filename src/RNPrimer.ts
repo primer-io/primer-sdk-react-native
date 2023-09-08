@@ -1,4 +1,4 @@
-import { NativeEventEmitter, NativeModules } from 'react-native';
+import { NativeEventEmitter, NativeModules, EmitterSubscription} from 'react-native';
 import type { PrimerSettings } from './models/PrimerSettings';
 
 const { NativePrimer } = NativeModules;
@@ -46,8 +46,8 @@ const RNPrimer = {
     eventEmitter.addListener(eventType, listener);
   },
 
-  removeListener: (eventType: EventType, listener: (...args: any[]) => any) => {
-    eventEmitter.removeListener(eventType, listener);
+  removeListener(subscription: EmitterSubscription): void {
+    return subscription.remove();
   },
 
   removeAllListenersForEvent(eventType: EventType) {

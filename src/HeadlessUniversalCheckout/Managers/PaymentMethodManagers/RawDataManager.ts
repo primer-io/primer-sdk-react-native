@@ -150,8 +150,8 @@ class PrimerHeadlessUniversalCheckoutRawDataManager {
         return eventEmitter.addListener(eventType, listener);
     }
 
-    removeListener(eventType: EventType, listener: (...args: any[]) => any): void {
-        return eventEmitter.removeListener(eventType, listener);
+    removeListener(subscription: EmitterSubscription): void {
+        return subscription.remove();
     }
 
     removeAllListenersForEvent(eventType: EventType) {
