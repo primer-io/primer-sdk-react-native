@@ -1,5 +1,5 @@
 apply plugin: "com.android.application"
-
+apply plugin: "com.facebook.react"
 
 import com.android.build.OutputFile
 
@@ -264,7 +264,7 @@ dependencies {
   implementation project(':primerioreactnative')
 
   implementation "io.primer:3ds-android:1.2.0"
-  implementation "io.primer:ipay88-android:1.0.0"
+  implementation "io.primer:ipay88-my-android:1.0.0"
   implementation "io.primer:klarna-android:1.0.1"
 
   //noinspection GradleDynamicVersion
