@@ -3,7 +3,7 @@ name: Preview
 on: pull_request
 
 jobs:
-  distribute:
+  distribute-android:
     runs-on: ubuntu-latest
 
     steps:

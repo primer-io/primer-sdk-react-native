@@ -3,7 +3,7 @@ name: Preview
 on: pull_request
 
 jobs:
-  distribute:
+  distribute-ios:
     runs-on: ubuntu-latest
 
     steps:
