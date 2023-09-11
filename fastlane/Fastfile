@@ -48,7 +48,7 @@ platform :android do
         return s[re, 1]
     end
     
-    lane :≈ do
+    lane :preview do
         appetize_api_token = ENV['APPETIZE_API_TOKEN']
         
         puts "PR_NUMBER: " + pr_number
