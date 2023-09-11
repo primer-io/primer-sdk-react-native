@@ -52,7 +52,7 @@ const RNPrimerHeadlessUniversalCheckout = {
     eventEmitter.addListener(eventType, listener);
   },
 
-  emoveListener(subscription: EmitterSubscription): void {
+  removeListener(subscription: EmitterSubscription): void {
     return subscription.remove();
   },
 
