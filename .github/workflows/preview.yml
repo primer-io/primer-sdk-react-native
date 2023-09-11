@@ -28,7 +28,7 @@ jobs:
 
       - name: Install packages
         run: |
-          yarn
+          yarn --check-files
 
       - name: Preview app on Appetize 🚀
         run: bundle exec fastlane preview
