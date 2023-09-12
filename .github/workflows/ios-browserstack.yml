@@ -12,27 +12,44 @@ jobs:
         uses: styfle/cancel-workflow-action@0.11.0
         with:
           access_token: ${{ github.token }}
+
       - name: Git - Checkout
         uses: actions/checkout@v3
         with:
           ref: ${{ github.ref }}
+
       - name: Select Xcode Version
         uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: latest-stable
+
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
         with:
           key: ${{ secrets.SSH_KEY }}
           name: id_rsa_github_actions
           known_hosts: unnecessary
+      
       - uses: webfactory/ssh-agent@v0.7.0
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
+      
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: "2.6"
           bundler-cache: true
+
+      - uses: actions/setup-ruby@v1
+        with:
+          ruby-version: '2.6'
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Add slack message builder
+        run: |
+          yarn add slack-message-builder
 
       - name: Get npm cache directory
         id: npm-cache-dir
@@ -46,8 +63,8 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
-
-      - name: Install npm
+             
+      - name: Set legacy-peer-deps for npm config
         run: |
           npm config set legacy-peer-deps true install
 
@@ -55,8 +72,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           cache: 'yarn'
-
-      - run: npm install --save slack-message-builder
 
       - name: Cache pods
         uses: actions/cache@v3

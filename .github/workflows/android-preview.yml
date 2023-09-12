@@ -24,11 +24,17 @@ jobs:
         with:
           ruby-version: '2.6'
 
-      - name: Install npm
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+    
+      - name: Set legacy-peer-deps for npm config
         run: |
           npm config set legacy-peer-deps true install
 
-      - run: npm install --save slack-message-builder
+      - name: Add slack message builder
+        run: |
+          yarn add slack-message-builder
 
       - name: Install packages
         run: |
@@ -122,11 +128,13 @@ jobs:
         with:
           ruby-version: '2.6'
 
-      - name: Install npm
-        run: |
-          npm config set legacy-peer-deps true install
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
 
-      - run: npm install --save slack-message-builder
+      - name: Add slack message builder
+        run: |
+          yarn add slack-message-builder
 
       - name: Install packages
         run: |
