@@ -80,7 +80,7 @@ jobs:
           npm run build:ios:dev
       - name: Distribute the React Native iOS app on Appetize 🚀
         run: |
-          bundle exec fastlane ios appetize_build_and_upload
+          bundle exec fastlane ios upload_build_to_appetize
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           MATCH_GIT_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
