@@ -125,6 +125,7 @@ platform :ios do
         uri = URI('https://livedemostore.common.primer.io/appetize/ios_rn/preview_' + "#{pr_number}_#{github_run_id}_#{github_run_number}")
         public_key = Net::HTTP.get(uri)
         puts "public_key: " + public_key
+        sdk_version_name_source_branch = ENV['SOURCE_BRANCH']
         
         # Upload to Appetize
         appetize(
@@ -134,10 +135,6 @@ platform :ios do
             public_key: public_key,
             note: sdk_version_name_source_branch
         )
-        
-        save_simulator_app(app_path: zip_path)
-        update_deployment_url(lane_context[SharedValues::APPETIZE_APP_URL])
-        
     end
     
     desc 'Common build pre-action'
