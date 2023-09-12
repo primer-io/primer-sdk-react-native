@@ -11,11 +11,9 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 import { styles } from '../styles';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
-import { Picker } from "@react-native-picker/picker";
 import { Environment, makeEnvironmentFromIntVal, makePaymentHandlingFromIntVal, PaymentHandling } from '../network/Environment';
 import { appPaymentParameters, IClientSessionAddress, IClientSessionCustomer, IClientSessionLineItem, IClientSessionOrder, IClientSessionPaymentMethod, IClientSessionPaymentMethodOptions, IClientSessionRequestBody } from '../models/IClientSessionRequestBody';
 import { Switch } from 'react-native';
-import { FlatList } from 'react-native';
 import TextField from '../components/TextField';
 import type { NewLineItemScreenProps } from './NewLineItemSreen';
 
@@ -26,13 +24,13 @@ export interface AppPaymentParameters {
     merchantName?: string;
 }
 
-export let customApiKey: string | undefined;
+export let customApiKey: string | undefined = "71347d48-c050-49c2-ac51-202525c4c0ec";
 export let customClientToken: string | undefined;
 
 // @ts-ignore
 const SettingsScreen = ({ navigation }) => {
     const isDarkMode = useColorScheme() === 'dark';
-    const [environment, setEnvironment] = React.useState<Environment>(Environment.Sandbox);
+    const [environment, setEnvironment] = React.useState<Environment>(Environment.Staging);
     const [apiKey, setApiKey] = React.useState<string | undefined>(customApiKey);
     const [clientToken, setClientToken] = React.useState<string | undefined>(undefined);
     const [paymentHandling, setPaymentHandling] = React.useState<PaymentHandling>(PaymentHandling.Auto);

@@ -35,8 +35,14 @@ extension PrimerSettings {
             var applePayOptions: PrimerApplePayOptions?
             if let rnApplePayOptions = ((settingsJson["paymentMethodOptions"] as? [String: Any])?["applePayOptions"] as? [String: Any]),
                let rnApplePayMerchantIdentifier = rnApplePayOptions["merchantIdentifier"] as? String,
-               let rnApplePayMerchantName = rnApplePayOptions["merchantName"] as? String {
-                applePayOptions = PrimerApplePayOptions(merchantIdentifier: rnApplePayMerchantIdentifier, merchantName: rnApplePayMerchantName)
+               let rnApplePayMerchantName = rnApplePayOptions["merchantName"] as? String
+            {
+                let rnApplePayIsCaptureBillingAddressEnabled = (rnApplePayOptions["isCaptureBillingAddressEnabled"] as? Bool) ?? false
+                
+                applePayOptions = PrimerApplePayOptions(
+                    merchantIdentifier: rnApplePayMerchantIdentifier,
+                    merchantName: rnApplePayMerchantName,
+                    isCaptureBillingAddressEnabled: rnApplePayIsCaptureBillingAddressEnabled )
             }
 
             var klarnaOptions: PrimerKlarnaOptions?
@@ -65,11 +71,17 @@ extension PrimerSettings {
             if let rnIs3DSSanityCheckEnabled = (settingsJson["debugOptions"] as? [String: Any])?["is3DSSanityCheckEnabled"] as? Bool {
                 debugOptions = PrimerDebugOptions(is3DSSanityCheckEnabled: rnIs3DSSanityCheckEnabled)
             }
+            
+            var threeDsOptions: PrimerThreeDsOptions?
+            if let rnThreeDsAppRequestorUrlStr = (((settingsJson["paymentMethodOptions"] as? [String: Any])?["threeDsOptions"] as? [String: Any])?["iOS"] as? [String: Any])?["threeDsAppRequestorUrl"] as? String {
+                threeDsOptions = PrimerThreeDsOptions(threeDsAppRequestorUrl: rnThreeDsAppRequestorUrlStr)
+            }
 
             let paymentMethodOptions = PrimerPaymentMethodOptions(
                 urlScheme: rnUrlScheme,
                 applePayOptions: applePayOptions,
-                klarnaOptions: klarnaOptions)
+                klarnaOptions: klarnaOptions,
+                threeDsOptions: threeDsOptions)
 
             self.init(
                 paymentHandling: paymentHandling,

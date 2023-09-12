@@ -9,8 +9,9 @@ import com.primerioreactnative.components.assets.AssetsManager
 import com.primerioreactnative.components.assets.AssetsManager.drawableToBitmap
 import com.primerioreactnative.components.assets.CardNetworkImageFileProvider.getFileForCardNetworkAsset
 import com.primerioreactnative.components.datamodels.manager.asset.PrimerCardNetworkAsset
+import com.primerioreactnative.components.datamodels.manager.asset.PrimerRNPaymentMethodAssetWrapper
 import com.primerioreactnative.components.datamodels.manager.asset.PrimerRNPaymentMethodAssets
-import com.primerioreactnative.components.datamodels.manager.asset.toPrimerRNPaymentMethodLogo
+import com.primerioreactnative.components.datamodels.manager.asset.toPrimerRNPaymentMethodAsset
 import com.primerioreactnative.datamodels.ErrorTypeRN
 import com.primerioreactnative.utils.convertJsonToMap
 import com.primerioreactnative.utils.errorTo
@@ -78,17 +79,16 @@ internal class PrimerRNHeadlessUniversalCheckoutAssetManager(
         )
       promise.resolve(
         convertJsonToMap(
-          JSONObject().apply {
-            put(
-              "paymentMethodAsset",
-              Json.encodeToString(
-                paymentMethodAsset.toPrimerRNPaymentMethodLogo(
+          JSONObject(
+            Json.encodeToString(
+              PrimerRNPaymentMethodAssetWrapper(
+                paymentMethodAsset.toPrimerRNPaymentMethodAsset(
                   reactContext,
                   paymentMethodTypeStr
                 )
               )
             )
-          }
+          )
         )
       )
     } catch (e: SdkUninitializedException) {
@@ -115,7 +115,7 @@ internal class PrimerRNHeadlessUniversalCheckoutAssetManager(
           JSONObject(
             Json.encodeToString(
               PrimerRNPaymentMethodAssets(paymentMethodAssets.map {
-                it.toPrimerRNPaymentMethodLogo(
+                it.toPrimerRNPaymentMethodAsset(
                   reactContext,
                   it.paymentMethodType
                 )

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { getEnvironmentStringVal } from './Environment';
-import { appPaymentParameters, IClientSessionActionsRequestBody, IClientSessionRequestBody } from '../models/IClientSessionRequestBody';
+import { appPaymentParameters, IClientSessionActionsRequestBody } from '../models/IClientSessionRequestBody';
 import type { IPayment } from '../models/IPayment';
 import { APIVersion, getAPIVersionStringVal } from './APIVersion';
 import { customApiKey, customClientToken } from '../screens/SettingsScreen';
@@ -9,13 +9,15 @@ const baseUrl = 'https://us-central1-primerdemo-8741b.cloudfunctions.net/api';
 
 let staticHeaders: { [key: string]: string } = {
     'Content-Type': 'application/json',
+    //@ts-ignore
     'environment': getEnvironmentStringVal(appPaymentParameters.environment),
 }
 
 export const createClientSession = async () => {
     const url = baseUrl + '/client-session';
     const headers: { [key: string]: string } = { 
-        ...staticHeaders, 
+        ...staticHeaders,
+        //@ts-ignore
         'X-Api-Version': getAPIVersionStringVal(APIVersion.v3),
     };
 

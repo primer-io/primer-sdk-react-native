@@ -188,7 +188,8 @@ export const HeadlessCheckoutScreen = (props: any) => {
           navigateToResultScreen();
         }
       },
-      onError: (err) => {
+      onError: (err, checkoutData) => {
+        merchantCheckoutData = checkoutData;
         merchantPrimerError = err;
         updateLogs(`\n🛑 onError\nerror: ${JSON.stringify(err, null, 2)}`);
         console.error(err);
@@ -257,7 +258,6 @@ export const HeadlessCheckoutScreen = (props: any) => {
 
   const startHUC = async (clientToken: string) => {
     try {
-      setPaymentMethods([])
       const availablePaymentMethods = await HeadlessUniversalCheckout.startWithClientToken(clientToken, settings);
       setPaymentMethods(availablePaymentMethods);
       // updateLogs(`\nℹ️ Available payment methods:\n${JSON.stringify(availablePaymentMethods, null, 2)}`);

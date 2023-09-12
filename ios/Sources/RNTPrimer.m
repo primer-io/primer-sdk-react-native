@@ -24,6 +24,12 @@ RCT_EXTERN_METHOD(showVaultManagerWithClientToken:(NSString *)clientToken
                   resolver:(RCTPromiseResolveBlock)resolver
                   rejecter:(RCTPromiseRejectBlock)rejecter)
 
+RCT_EXTERN_METHOD(showPaymentMethod:(NSString *)paymentMethod
+                  intent:(NSString *)intent
+                  clientToken:(NSString *)clientToken
+                  resolver:(RCTPromiseResolveBlock)resolver
+                  rejecter:(RCTPromiseRejectBlock)rejecter)
+
 RCT_EXTERN_METHOD(dismiss)
 
 RCT_EXTERN_METHOD(cleanUp)

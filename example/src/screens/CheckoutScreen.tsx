@@ -39,8 +39,11 @@ interface Log {
 const CheckoutScreen = (props: any) => {
 
     const isDarkMode = useColorScheme() === 'dark';
+    //@ts-ignore
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
+    //@ts-ignore
     const [loadingMessage, setLoadingMessage] = React.useState<string | undefined>('undefined');
+    //@ts-ignore
     const [error, setError] = React.useState<Error | null>(null);
 
     const backgroundStyle = {
@@ -53,24 +56,24 @@ const CheckoutScreen = (props: any) => {
     }
 
     const onBeforeClientSessionUpdate = () => {
-        updateLogs({event: "onBeforeClientSessionUpdate"});
+        updateLogs({ event: "onBeforeClientSessionUpdate" });
         setIsLoading(true);
         setLoadingMessage('onBeforeClientSessionUpdate');
     }
 
     const onClientSessionUpdate = (clientSession: ClientSession) => {
-        updateLogs({event: "onClientSessionUpdate", value: clientSession});
+        updateLogs({ event: "onClientSessionUpdate", value: clientSession });
         setLoadingMessage('onClientSessionUpdate');
     }
 
     const onBeforePaymentCreate = (checkoutPaymentMethodData: CheckoutPaymentMethodData, handler: PaymentCreationHandler) => {
-        updateLogs({event: "onBeforePaymentCreate", value: {"checkoutPaymentMethodData": checkoutPaymentMethodData}});
+        updateLogs({ event: "onBeforePaymentCreate", value: { "checkoutPaymentMethodData": checkoutPaymentMethodData } });
         handler.continuePaymentCreation();
         setLoadingMessage('onBeforePaymentCreate');
     }
 
     const onCheckoutComplete = (checkoutData: CheckoutData) => {
-        updateLogs({event: "onCheckoutComplete", value: {"checkoutData": checkoutData}});
+        updateLogs({ event: "onCheckoutComplete", value: { "checkoutData": checkoutData } });
         merchantCheckoutData = checkoutData;
 
         setLoadingMessage(undefined);
@@ -88,7 +91,7 @@ const CheckoutScreen = (props: any) => {
     };
 
     const onTokenizeSuccess = async (paymentMethodTokenData: PrimerPaymentMethodTokenData, handler: TokenizationHandler) => {
-        updateLogs({event: "onTokenizeSuccess", value: {"paymentMethodTokenData": paymentMethodTokenData}});
+        updateLogs({ event: "onTokenizeSuccess", value: { "paymentMethodTokenData": paymentMethodTokenData } });
 
         try {
             const payment: IPayment = await createPayment(paymentMethodTokenData.token);
@@ -139,7 +142,7 @@ const CheckoutScreen = (props: any) => {
     }
 
     const onResumeSuccess = async (resumeToken: string, handler: ResumeHandler) => {
-        updateLogs({event: "onResumeSuccess", value: {"resumeToken": resumeToken}});
+        updateLogs({ event: "onResumeSuccess", value: { "resumeToken": resumeToken } });
 
         try {
             if (paymentId) {
@@ -187,18 +190,18 @@ const CheckoutScreen = (props: any) => {
     }
 
     const onResumePending = async (additionalInfo: CheckoutAdditionalInfo) => {
-        updateLogs({event: "onResumePending", value: {"additionalInfo": additionalInfo}});
+        updateLogs({ event: "onResumePending", value: { "additionalInfo": additionalInfo } });
     }
 
     const onCheckoutReceivedAdditionalInfo = async (additionalInfo: CheckoutAdditionalInfo) => {
-        updateLogs({event: "onCheckoutReceivedAdditionalInfo", value: {"additionalInfo": additionalInfo}});
+        updateLogs({ event: "onCheckoutReceivedAdditionalInfo", value: { "additionalInfo": additionalInfo } });
     }
 
     const onError = (error: PrimerError, checkoutData: CheckoutData | null, handler: ErrorHandler | undefined) => {
         merchantPrimerError = error;
         merchantCheckoutData = checkoutData;
 
-        updateLogs({event: "onError", value: {"error": error, "checkoutData": checkoutData}});
+        updateLogs({ event: "onError", value: { "error": error, "checkoutData": checkoutData } });
         handler?.showErrorMessage("My RN message");
         setLoadingMessage(undefined);
         setIsLoading(false);
@@ -215,7 +218,7 @@ const CheckoutScreen = (props: any) => {
     };
 
     const onDismiss = () => {
-        updateLogs({event: "onDismiss"});
+        updateLogs({ event: "onDismiss" });
         clientToken = null;
         setLoadingMessage(undefined);
         setIsLoading(false);
@@ -235,8 +238,19 @@ const CheckoutScreen = (props: any) => {
             },
             applePayOptions: {
                 merchantIdentifier: "merchant.checkout.team",
-                merchantName: appPaymentParameters.merchantName,
+                merchantName: appPaymentParameters.merchantName || "Merchant name",
                 isCaptureBillingAddressEnabled: true
+            },
+            googlePayOptions: {
+             isCaptureBillingAddressEnabled: true
+            },
+            threeDsOptions: {
+                iOS: {
+                    threeDsAppRequestorUrl: "https://primer.io"
+                },
+                android: {
+                    threeDsAppRequestorUrl: "https://primer.io"
+                }
             }
         },
         uiOptions: {
@@ -245,7 +259,7 @@ const CheckoutScreen = (props: any) => {
             isErrorScreenEnabled: true
         },
         debugOptions: {
-            is3DSSanityCheckEnabled: true
+            is3DSSanityCheckEnabled: false
         },
         primerCallbacks: {
             onBeforeClientSessionUpdate: onBeforeClientSessionUpdate,
@@ -311,6 +325,48 @@ const CheckoutScreen = (props: any) => {
         }
     }
 
+    const onApplePayButtonTapped = async () => {
+        try {
+            setIsLoading(true);
+            const clientSession: IClientSession = await createClientSession();
+            clientToken = clientSession.clientToken;
+            await Primer.configure(settings);
+            await Primer.showPaymentMethod("APPLE_PAY", "CHECKOUT", clientToken)
+
+        } catch (err) {
+            setIsLoading(false);
+
+            if (err instanceof Error) {
+                setError(err);
+            } else if (typeof err === "string") {
+                setError(new Error(err));
+            } else {
+                setError(new Error('Unknown error'));
+            }
+        }
+    }
+
+    const onGooglePayButtonTapped = async () => {
+          try {
+              setIsLoading(true);
+              const clientSession: IClientSession = await createClientSession();
+              clientToken = clientSession.clientToken;
+              await Primer.configure(settings);
+              await Primer.showPaymentMethod("GOOGLE_PAY", "CHECKOUT", clientToken)
+
+          } catch (err) {
+              setIsLoading(false);
+
+              if (err instanceof Error) {
+                  setError(err);
+              } else if (typeof err === "string") {
+                  setError(new Error(err));
+              } else {
+                  setError(new Error('Unknown error'));
+              }
+          }
+      }
+
     return (
         <View style={backgroundStyle}>
             <View style={{ flex: 1 }} />
@@ -332,6 +388,27 @@ const CheckoutScreen = (props: any) => {
                     style={{ ...styles.buttonText, color: 'white' }}
                 >
                     Universal Checkout
+                </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+                style={{ ...styles.button, marginHorizontal: 20, marginVertical: 5, backgroundColor: 'black' }}
+                onPress={onApplePayButtonTapped}
+            >
+                <Text
+                    style={{ ...styles.buttonText, color: 'white' }}
+                >
+                    Apple Pay
+                </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+                style={{ ...styles.button, marginHorizontal: 20,  marginVertical: 5, backgroundColor: 'black' }}
+                onPress={onGooglePayButtonTapped}
+            >
+                <Text
+                    style={{ ...styles.buttonText, color: 'white' }}
+                >
+                    Google Pay
                 </Text>
             </TouchableOpacity>
         </View>

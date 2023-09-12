@@ -9,16 +9,16 @@ import { ActivityIndicator } from 'react-native';
 import {
     InputElementType,
     RawDataManager,
-    RawPhoneNumberData,
+    PhoneNumberData,
 } from '@primer-io/react-native';
 import TextField from '../components/TextField';
 import { styles } from '../styles';
-import type { RawDataScreenProps } from '../models/RawDataScreenProps';
 
 const rawDataManager = new RawDataManager();
 
 const RawPhoneNumberDataScreen = (props: any) => {
 
+    //@ts-ignore
     const [isLoading, setIsLoading] = useState(false);
     const [isCardFormValid, setIsCardFormValid] = useState(false);
     const [requiredInputElementTypes, setRequiredInputElementTypes] = useState<string[] | undefined>(undefined);
@@ -33,11 +33,13 @@ const RawPhoneNumberDataScreen = (props: any) => {
     const initialize = async () => {
         await rawDataManager.configure({
             paymentMethodType: props.route.params.paymentMethodType,
+            //@ts-ignore
             onMetadataChange: (data => {
                 const log = `\nonMetadataChange: ${JSON.stringify(data)}\n`;
                 console.log(log);
                 setMetadataLog(log);
             }),
+            //@ts-ignore
             onValidation: ((isVallid, errors) => {
                 let log = `\nonValidation:\nisValid: ${isVallid}\n`;
 
@@ -55,7 +57,7 @@ const RawPhoneNumberDataScreen = (props: any) => {
     }
 
     const setRawData = (tmpPhoneNumber: string) => {
-        let rawData: RawPhoneNumberData = {
+        let rawData: PhoneNumberData = {
             phoneNumber: tmpPhoneNumber
         }
 
@@ -84,6 +86,8 @@ const RawPhoneNumberDataScreen = (props: any) => {
                                         }}
                                     />
                                 );
+                            } else {
+                                return null;
                             }
                         })
                     }
@@ -129,7 +133,7 @@ const RawPhoneNumberDataScreen = (props: any) => {
                     marginVertical: 16,
                     backgroundColor: isCardFormValid ? 'black' : "lightgray"
                 }}
-                onPress={e => {
+                onPress={() => {
                     if (isCardFormValid) {
                         pay();
                     }

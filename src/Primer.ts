@@ -112,22 +112,22 @@ async function configureListeners(): Promise<void> {
       let implementedRNCallbacks: PrimerImplementedRNCallbacks = {
         onAvailablePaymentMethodsLoad: false,
         onTokenizationStart: false,
-        onTokenizationSuccess: (primerSettings?.primerCallbacks?.onTokenizeSuccess !== undefined) || false,
+        onTokenizationSuccess: (primerSettings?.onTokenizeSuccess !== undefined) || false,
     
-        onCheckoutResume: (primerSettings?.primerCallbacks?.onResumeSuccess !== undefined) || false,
-        onCheckoutPending: (primerSettings?.primerCallbacks?.onResumePending !== undefined) || false,
-        onCheckoutAdditionalInfo: (primerSettings?.primerCallbacks?.onCheckoutReceivedAdditionalInfo !== undefined) || false,
+        onCheckoutResume: (primerSettings?.onResumeSuccess !== undefined) || false,
+        onCheckoutPending: (primerSettings?.onResumePending !== undefined) || false,
+        onCheckoutAdditionalInfo: (primerSettings?.onCheckoutReceivedAdditionalInfo !== undefined) || false,
     
-        onError: (primerSettings?.primerCallbacks?.onError !== undefined) || false,
-        onCheckoutComplete: (primerSettings?.primerCallbacks?.onCheckoutComplete !== undefined) || false,
-        onBeforeClientSessionUpdate: (primerSettings?.primerCallbacks?.onBeforeClientSessionUpdate !== undefined) || false,
+        onError: (primerSettings?.onError !== undefined) || false,
+        onCheckoutComplete: (primerSettings?.onCheckoutComplete !== undefined) || false,
+        onBeforeClientSessionUpdate: (primerSettings?.onBeforeClientSessionUpdate !== undefined) || false,
     
-        onClientSessionUpdate: (primerSettings?.primerCallbacks?.onClientSessionUpdate !== undefined) || false,
-        onBeforePaymentCreate: (primerSettings?.primerCallbacks?.onBeforePaymentCreate !== undefined) || false,
+        onClientSessionUpdate: (primerSettings?.onClientSessionUpdate !== undefined) || false,
+        onBeforePaymentCreate: (primerSettings?.onBeforePaymentCreate !== undefined) || false,
         onPreparationStart: false,
     
         onPaymentMethodShow: false,
-        onDismiss: (primerSettings?.primerCallbacks?.onDismiss !== undefined) || false
+        onDismiss: (primerSettings?.onDismiss !== undefined) || false
       };
 
       await RNPrimer.setImplementedRNCallbacks(implementedRNCallbacks);
@@ -228,7 +228,7 @@ async function configureListeners(): Promise<void> {
             const recoverySuggestion: string | undefined = data.error.recoverySuggestion;
             const diagnosticsId: string | undefined = data.error.diagnosticsId;
             const primerError = new PrimerError(errorId, description || 'Unknown error', recoverySuggestion, diagnosticsId);
-            primerSettings.primerCallbacks.onError(primerError, data.checkoutData || null, errorHandler);
+            primerSettings.onError(primerError, data.checkoutData || null, errorHandler);
           }
         });
       }
@@ -276,6 +276,18 @@ export const Primer: IPrimer = {
       try {
         await configureListeners();
         await RNPrimer.showVaultManager(clientToken);
+        resolve();
+      } catch (err) {
+        reject(err);
+      }
+    });
+  },
+
+  async showPaymentMethod(paymentMethod: string, intent: string, clientToken: string): Promise<void> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        await configureListeners();
+        await RNPrimer.showPaymentMethod(paymentMethod, intent, clientToken);
         resolve();
       } catch (err) {
         reject(err);

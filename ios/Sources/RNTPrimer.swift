@@ -124,6 +124,29 @@ class RNTPrimer: RCTEventEmitter {
             }
         }
     }
+    
+    @objc
+    public func showPaymentMethod(_ paymentMethod: String, intent: String, clientToken: String, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
+        DispatchQueue.main.async {
+            guard let primerIntent = PrimerSessionIntent(rawValue: intent.uppercased()) else {
+                let err = PrimerError.invalidValue(
+                    key: "intent",
+                    value: intent,
+                    userInfo: nil,
+                    diagnosticsId: UUID().uuidString)
+                rejecter(err.rnError["errorId"]!, err.rnError["description"], err)
+                return
+            }
+            
+            PrimerSDK.Primer.shared.showPaymentMethod(paymentMethod, intent: primerIntent, clientToken: clientToken) { err in
+                if let err = err {
+                    rejecter(err.rnError["errorId"]!, err.rnError["description"], err)
+                } else {
+                    resolver(nil)
+                }
+            }
+        }
+    }
 
     @objc
     public func dismiss() {

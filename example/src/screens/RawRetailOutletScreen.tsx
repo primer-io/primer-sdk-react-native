@@ -7,20 +7,19 @@ import {
 } from 'react-native';
 import { ActivityIndicator } from 'react-native';
 import {
-    InputElementType,
     RawDataManager,
-    RawRetailerData,
+    RetailerData,
 } from '@primer-io/react-native';
-import TextField from '../components/TextField';
 import { styles } from '../styles';
-import type { RawDataScreenProps } from '../models/RawDataScreenProps';
 
 const rawDataManager = new RawDataManager();
 
 const RawRetailOutletScreen = (props: any) => {
 
+    //@ts-ignore
     const [isLoading, setIsLoading] = useState(false);
     const [isCardFormValid, setIsCardFormValid] = useState(false);
+    //@ts-ignore
     const [requiredInputElementTypes, setRequiredInputElementTypes] = useState<string[] | undefined>(undefined);
     const [retailers, setRetailers] = useState<any[] | undefined>(undefined);
     const [selectedRetailOutletId, setSelectedRetailOutletId] = useState<string | undefined>(undefined);
@@ -34,11 +33,13 @@ const RawRetailOutletScreen = (props: any) => {
     const initialize = async () => {
         const response = await rawDataManager.configure({
             paymentMethodType: props.route.params.paymentMethodType,
+            //@ts-ignore
             onMetadataChange: (data => {
                 const log = `\nonMetadataChange: ${JSON.stringify(data)}\n`;
                 console.log(log);
                 setMetadataLog(log);
             }),
+            //@ts-ignore
             onValidation: ((isVallid, errors) => {
                 let log = `\nonValidation:\nisValid: ${isVallid}\n`;
 
@@ -63,7 +64,7 @@ const RawRetailOutletScreen = (props: any) => {
     }
 
     const setRawData = (tmpRetailOutletId: string) => {
-        let rawData: RawRetailerData = {
+        let rawData: RetailerData = {
             id: tmpRetailOutletId
         }
 
@@ -139,7 +140,7 @@ const RawRetailOutletScreen = (props: any) => {
                     marginVertical: 16,
                     backgroundColor: isCardFormValid ? 'black' : "lightgray"
                 }}
-                onPress={e => {
+                onPress={() => {
                     if (isCardFormValid) {
                         pay();
                     }

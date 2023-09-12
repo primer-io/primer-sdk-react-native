@@ -1,6 +1,6 @@
 
 import * as React from 'react';
-import { View, Text, useColorScheme, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import TextField from '../components/TextField';
 import { makeRandomString } from '../helpers/helpers';
 import type { IClientSessionLineItem } from '../models/IClientSessionRequestBody';
@@ -15,6 +15,7 @@ export interface NewLineItemScreenProps {
 
 const NewLineItemScreen = (props: any) => {
     const newLineItemScreenProps: NewLineItemScreenProps | undefined = props.route.params;
+    //@ts-ignore
     const [isEditing, setIsEditing] = React.useState<boolean>(newLineItemScreenProps?.lineItem === undefined ? false : true);
     const [name, setName] = React.useState<string | undefined>(newLineItemScreenProps?.lineItem === undefined ? undefined : newLineItemScreenProps.lineItem.description);
     const [quantity, setQuantity] = React.useState<number | undefined>(newLineItemScreenProps?.lineItem === undefined ? undefined : newLineItemScreenProps.lineItem.quantity);

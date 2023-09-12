@@ -8,12 +8,11 @@ import {
 import { ActivityIndicator } from 'react-native';
 import {
     InputElementType,
+    BancontactCardRedirectData,
     RawDataManager,
-    BancontactCardRedirectData
 } from '@primer-io/react-native';
 import TextField from '../components/TextField';
 import { styles } from '../styles';
-import type { RawDataScreenProps } from '../models/RawDataScreenProps';
 
 export interface RawCardDataScreenProps {
     navigation: any;
@@ -24,6 +23,7 @@ const rawDataManager = new RawDataManager();
 
 const RawAdyenBancontactCardScreen = (props: any) => {
 
+    //@ts-ignore
     const [isLoading, setIsLoading] = useState(false);
     const [isCardFormValid, setIsCardFormValid] = useState(false);
     const [requiredInputElementTypes, setRequiredInputElementTypes] = useState<string[] | undefined>(undefined);
@@ -40,11 +40,13 @@ const RawAdyenBancontactCardScreen = (props: any) => {
     const initialize = async () => {
         await rawDataManager.configure({
             paymentMethodType: props.route.params.paymentMethodType,
+            //@ts-ignore
             onMetadataChange: (data => {
                 const log = `\nonMetadataChange: ${JSON.stringify(data)}\n`;
                 console.log(log);
                 setMetadataLog(log);
             }),
+            //@ts-ignore
             onValidation: ((isVallid, errors) => {
                 let log = `\nonValidation:\nisValid: ${isVallid}\n`;
 
@@ -137,6 +139,8 @@ const RawAdyenBancontactCardScreen = (props: any) => {
                                         }}
                                     />
                                 );
+                            } else {
+                                return null;
                             }
                         })
                     }
@@ -182,7 +186,7 @@ const RawAdyenBancontactCardScreen = (props: any) => {
                     marginVertical: 16,
                     backgroundColor: isCardFormValid ? 'black' : "lightgray"
                 }}
-                onPress={e => {
+                onPress={() => {
                     if (isCardFormValid) {
                         pay();
                     }

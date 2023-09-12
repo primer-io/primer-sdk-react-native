@@ -1,5 +1,6 @@
-import { NativeEventEmitter, NativeModules } from 'react-native';
+import { NativeEventEmitter, NativeModules, EmitterSubscription} from 'react-native';
 import type { PrimerSettings } from './models/PrimerSettings';
+import { EventSubscription } from 'react-native';
 
 const { NativePrimer } = NativeModules;
 const eventEmitter = new NativeEventEmitter(NativePrimer);
@@ -42,12 +43,12 @@ const RNPrimer = {
   // Event Emitter
   ///////////////////////////////////////////
 
-  addListener: (eventType: EventType, listener: (...args: any[]) => any) => {
-    eventEmitter.addListener(eventType, listener);
+  addListener(eventType: EventType, listener: (...args: any[]) => any): EventSubscription {
+    return eventEmitter.addListener(eventType, listener);
   },
 
-  removeListener: (eventType: EventType, listener: (...args: any[]) => any) => {
-    eventEmitter.removeListener(eventType, listener);
+  removeListener(subscription: EmitterSubscription) {
+    subscription.remove();
   },
 
   removeAllListenersForEvent(eventType: EventType) {
@@ -87,6 +88,17 @@ const RNPrimer = {
     return new Promise(async (resolve, reject) => {
       try {
         await NativePrimer.showVaultManagerWithClientToken(clientToken);
+        resolve();
+      } catch (err) {
+        reject(err);
+      }
+    });
+  },
+
+  showPaymentMethod: (paymentMethod: string, intent: string, clientToken: string): Promise<void> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        await NativePrimer.showPaymentMethod(paymentMethod, intent, clientToken);
         resolve();
       } catch (err) {
         reject(err);

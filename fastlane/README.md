@@ -15,63 +15,23 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 ## Android
 
-### android preview
+### android ≈
 
 ```sh
-[bundle exec] fastlane android preview
+[bundle exec] fastlane android ≈
 ```
 
 
-
-### android upload_build_to_appetize
-
-```sh
-[bundle exec] fastlane android upload_build_to_appetize
-```
-
-Upload the React Native Android build to Appetize
 
 ----
 
 
 ## iOS
 
-### ios tests
+### ios preview
 
 ```sh
-[bundle exec] fastlane ios tests
-```
-
-
-
-### ios ui_tests
-
-```sh
-[bundle exec] fastlane ios ui_tests
-```
-
-
-
-### ios danger_check
-
-```sh
-[bundle exec] fastlane ios danger_check
-```
-
-
-
-### ios qa_release
-
-```sh
-[bundle exec] fastlane ios qa_release
-```
-
-
-
-### ios appetize_build_and_upload
-
-```sh
-[bundle exec] fastlane ios appetize_build_and_upload
+[bundle exec] fastlane ios preview
 ```
 
 This action builds the app and uplads it to Appetize

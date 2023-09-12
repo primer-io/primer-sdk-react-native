@@ -14,8 +14,14 @@ data class PrimerRNPaymentMethodAssets(
 )
 
 @Serializable
+data class PrimerRNPaymentMethodAssetWrapper(
+  val paymentMethodAsset: PrimerRNPaymentMethodAsset
+)
+
+@Serializable
 data class PrimerRNPaymentMethodAsset(
   val paymentMethodType: String,
+  val paymentMethodName: String,
   val paymentMethodLogo: PrimerRNPaymentMethodLogo,
   val paymentMethodBackgroundColor: PrimerRNPaymentMethodBackgroundColor
 )
@@ -39,11 +45,12 @@ data class PrimerCardNetworkAsset(
   val cardNetworkImageURL: String
 )
 
-internal fun PrimerPaymentMethodAsset.toPrimerRNPaymentMethodLogo(
+internal fun PrimerPaymentMethodAsset.toPrimerRNPaymentMethodAsset(
   reactContext: ReactApplicationContext,
   paymentMethodType: String,
 ) = PrimerRNPaymentMethodAsset(
   paymentMethodType,
+  paymentMethodName,
   PrimerRNPaymentMethodLogo(
     paymentMethodLogo.colored?.let {
       getFileUrl(
