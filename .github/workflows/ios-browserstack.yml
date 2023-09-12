@@ -95,7 +95,7 @@ jobs:
 
       - name: Create main.jsbundle
         run: |
-          npm run build:ios:release
+          yarn --cwd example build:ios  
 
       - name: Build and upload to Browserstack 🚀
         run: |

@@ -28,9 +28,7 @@
     "release": "release-it",
     "example": "yarn --cwd example",
     "pods": "cd example && pod-install --quiet",
-    "bootstrap": "yarn example && yarn && yarn pods",
-    "build:ios:dev": "react-native bundle --entry-file='index.js' --bundle-output='./example/ios/main.jsbundle' --dev=true --platform='ios'",
-    "build:ios:release": "react-native bundle --entry-file='index.js' --bundle-output='./example/ios/main.jsbundle' --dev=false --platform='ios'"
+    "bootstrap": "yarn example && yarn && yarn pods"
   },
   "keywords": [
     "react-native",

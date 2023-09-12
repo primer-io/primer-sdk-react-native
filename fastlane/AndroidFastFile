@@ -36,7 +36,7 @@ platform :android do
         return s[re, 1]
     end
 
-    lane :preview do
+    lane :appetize_build_and_upload do
         pr_number = ENV["PR_NUMBER"]
         if(!pr_number) then
             puts "NO PR NUMBER"

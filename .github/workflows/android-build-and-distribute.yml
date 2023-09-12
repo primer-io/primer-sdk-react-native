@@ -41,7 +41,7 @@ jobs:
           yarn
 
       - name: Distribute the React Native Android app on Appetize and upload to BrowserStack 🚀
-        run: bundle exec fastlane android upload_build_to_appetize_android
+        run: bundle exec fastlane android appetize_build_and_upload
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           SOURCE_BRANCH: ${{ github.head_ref }}
