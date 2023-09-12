@@ -1,5 +1,6 @@
-import { NativeEventEmitter, NativeModules } from 'react-native';
+import { NativeEventEmitter, NativeModules, EmitterSubscription } from 'react-native';
 import type { PrimerSettings } from '../models/PrimerSettings';
+import { EventSubscription } from 'react-native';
 
 const { PrimerHeadlessUniversalCheckout } = NativeModules;
 
@@ -48,14 +49,13 @@ const RNPrimerHeadlessUniversalCheckout = {
   ///////////////////////////////////////////
   // Event Emitter
   ///////////////////////////////////////////
-  addListener: (eventType: EventType, listener: (...args: any[]) => any) => {
-    eventEmitter.addListener(eventType, listener);
+  addListener(eventType: EventType, listener: (...args: any[]) => any): EventSubscription {
+    return eventEmitter.addListener(eventType, listener);
   },
 
-  removeListener: (eventType: EventType, listener: (...args: any[]) => any) => {
-    eventEmitter.removeListener(eventType, listener);
+  removeListener(subscription: EmitterSubscription): void {
+    return subscription.remove();
   },
-
   removeAllListenersForEvent(eventType: EventType) {
     eventEmitter.removeAllListeners(eventType);
   },

@@ -210,9 +210,15 @@ GEM
 
 PLATFORMS
   arm64-darwin-21
+  arm64-darwin-22
+  x86_64-darwin-19
+  x86_64-linux
 
 DEPENDENCIES
   fastlane
+
+RUBY VERSION
+   ruby 2.6.10p210
 
 BUNDLED WITH
    2.3.7
