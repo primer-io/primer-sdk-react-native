@@ -10,8 +10,8 @@ github_run_id = ENV["GITHUB_RUN_ID"]
 github_run_number = ENV["GITHUB_RUN_NUMBER"]
 
 # Xcode
-app_workspace = "example_0_70_6/ios/example_0_70_6.xcworkspace"
-app_xcode_proj = "example_0_70_6/ios/example_0_70_6.xcodeproj"
+app_workspace = "example/ios/example_0_70_6.xcworkspace"
+app_xcode_proj = "example/ios/example_0_70_6.xcodeproj"
 app_scheme = "example_0_70_6"
 
 # Packages

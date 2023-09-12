@@ -80,7 +80,7 @@ jobs:
             curl -Ls https://install.tuist.io | bash
           fi
       - name: Create the Xcode project and workspace
-        run: sh ./example_0_70_6/ios/example_0_70_6/tuist-generate.sh is_ci
+        run: sh ./example/ios/example_0_70_6/tuist-generate.sh is_ci
 
       - name: Create main.jsbundle
         run: |
