@@ -1,7 +1,7 @@
 platform :ios do
   import "IOSFastFile"
   desc 'Upload the React Native Android build to Appetize'
-  lane :upload_build_to_appetize do
+  lane :upload_build_to_appetize_ios do
     appetize_build_and_upload
   end
 end
@@ -9,7 +9,7 @@ end
 platform :android do
   import "AndroidFastFile"
   desc 'Upload the React Native Android build to Appetize'
-  lane :upload_build_to_appetize do
+  lane :upload_build_to_appetize_android do
     preview
   end
 end
