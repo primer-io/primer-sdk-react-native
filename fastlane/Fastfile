@@ -14,6 +14,9 @@ app_scheme = "example_0_70_6"
 app_output_path = "/var/tmp/Primer.io_ReactNativeExample.xcarchive/Products/Applications/example_0_70_6.app"
 app_output_archive_path = "/var/tmp/Primer.io_ReactNativeExample.xcarchive"
 
+# Appetize
+appetize_api_token = ENV['APPETIZE_API_TOKEN']
+
 platform :android do
     
     def set_version_name (version_name)
