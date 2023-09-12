@@ -30,7 +30,7 @@ jobs:
     
       - name: Set legacy-peer-deps for npm config
         run: |
-          npm config set legacy-peer-deps true install
+          npm config set legacy-peer-deps true
 
       - name: Add slack message builder
         run: |
