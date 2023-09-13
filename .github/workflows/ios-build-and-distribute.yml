@@ -126,6 +126,7 @@ jobs:
         if: ${{ success() && github.event.pull_request.base.ref == 'master'  }}
         run: |
           node report-scripts/appetize-success-report-script.js createAppetizeSummaryReport ${{ github.head_ref || github.ref_name }} 'RN iOS'
+
       - name: Slack Success Notification
         if: ${{ success() && github.event.pull_request.base.ref == 'master' }}
         uses: slackapi/slack-github-action@v1.23.0
@@ -133,7 +134,7 @@ jobs:
           channel-id: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
           payload-file-path: '/var/tmp/appetize-success-link-summary.json'
         env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
       - name: Create Slack Failure Summary Report
         if: ${{ failure() && github.event.pull_request.base.ref == 'master' }}
@@ -146,7 +147,7 @@ jobs:
           channel-id: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
           payload-file-path: '/var/tmp/appetize-failure-link-summary.json'
         env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
       - name: Save Simulator app
         uses: actions/upload-artifact@v3

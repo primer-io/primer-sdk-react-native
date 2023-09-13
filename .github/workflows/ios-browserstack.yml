@@ -168,7 +168,7 @@ jobs:
           channel-id: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
           payload-file-path: '/var/tmp/slack-minimal_summary.json'
         env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
       - name: Create Slack Failed Summary Report
         if: ${{ failure() && github.event.pull_request.base.ref == 'master' }}
@@ -186,7 +186,7 @@ jobs:
           channel-id: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
           payload-file-path: '/var/tmp/slack_failed_summary.json'
         env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
       - name: Create and post Github summary
         if: ${{ success() || failure() }}
