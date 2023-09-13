@@ -57,7 +57,7 @@ jobs:
         id: npm-cache
         with:
           path: ${{ steps.npm-cache-dir.outputs.dir }}
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('*/package-lock.json', '*/*/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
@@ -72,7 +72,7 @@ jobs:
             ios/Pods
             ~/Library/Caches/CocoaPods
             ~/.cocoapods
-          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          key: ${{ runner.os }}-pods-${{ hashFiles('*/Podfile.lock', '*/*/Podfile.lock') }}
           restore-keys: |
             ${{ runner.os }}-pods-
       - name: Install packages

@@ -61,7 +61,7 @@ jobs:
         id: npm-cache
         with:
           path: ${{ steps.npm-cache-dir.outputs.dir }}
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('*/package-lock.json', '*/*/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
              
@@ -76,7 +76,7 @@ jobs:
             ios/Pods
             ~/Library/Caches/CocoaPods
             ~/.cocoapods
-          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          key: ${{ runner.os }}-pods-${{ hashFiles('*/Podfile.lock', '*/*/Podfile.lock') }}
           restore-keys: |
             ${{ runner.os }}-pods-
 
@@ -90,6 +90,7 @@ jobs:
           then
             curl -Ls https://install.tuist.io | bash
           fi
+      
       - name: Create the Xcode project and workspace
         run: sh ./example/ios/example_0_70_6/tuist-generate.sh is_ci
 
@@ -112,6 +113,7 @@ jobs:
           BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
           SOURCE_BRANCH: ${{ github.head_ref }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+
       - name: Save Browserstack ID
         uses: actions/upload-artifact@v3
         id: save_browserstack_id_step
@@ -157,6 +159,7 @@ jobs:
         if: ${{ (success() ||  failure()) && github.event.pull_request.base.ref == 'master'  }}
         run: |
           node report-script/slack-report-script.js createSlackReport 'RN iOS'
+          
       - name: Post summary message to a Slack channel
         if: ${{ (success() ||  failure()) && github.event.pull_request.base.ref == 'master' }}
         id: slack
