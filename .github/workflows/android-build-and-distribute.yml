@@ -1,4 +1,4 @@
-name: Android Appetize
+name: Android
 
 on: pull_request
 
@@ -102,7 +102,7 @@ jobs:
 
   android-test-via-browserstack:
     runs-on: ubuntu-latest
-    name: "Browserstack test"
+    name: "Test on BrowserStack"
     needs: android-distribute-to-appetize
     steps:
       - name: Clone and launch Browserstack tests via Appium 🧪
@@ -147,21 +147,6 @@ jobs:
         run: |
           export BROWSERSTACK_APP_ID=$(cat /var/tmp/browserstack_id.txt)
           npx wdio config/wdio.rn.android.bs.conf.js
-
-      - name: Create Slack Report
-        if: ${{ (success() ||  failure()) && github.event.pull_request.base.ref == 'master'  }}
-        run: |
-          node report-scripts/slack-report-script.js createSlackReport 'RN Android'
-
-      - name: Post summary message to a Slack channel
-        if: ${{ (success() ||  failure()) && github.event.pull_request.base.ref == 'master' }}
-        id: slack
-        uses: slackapi/slack-github-action@v1.23.0
-        with:
-          channel-id: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
-          payload-file-path: '/var/tmp/slack-minimal_summary.json'
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
       - name: Create Slack Failed Summary Report
         if: ${{ failure() && github.event.pull_request.base.ref == 'master' }}
