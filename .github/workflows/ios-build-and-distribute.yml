@@ -45,6 +45,7 @@ jobs:
         with:
           node-version: 18
           cache: 'yarn'
+
       - name: Add slack message builder
         run: |
           yarn add slack-message-builder
@@ -76,17 +77,10 @@ jobs:
           key: ${{ runner.os }}-pods-${{ hashFiles('*/Podfile.lock', '*/*/Podfile.lock') }}
           restore-keys: |
             ${{ runner.os }}-pods-
+
       - name: Install packages
         run: |
           yarn
-      - name: Install Tuist.io
-        run: |
-          if [ ! -d ".tuist-bin" ]
-          then
-            curl -Ls https://install.tuist.io | bash
-          fi
-      - name: Create the Xcode project and workspace
-        run: sh ./example/ios/example_0_70_6/tuist-generate.sh is_ci
 
       - name: Create main.jsbundle
         run: |
@@ -141,6 +135,7 @@ jobs:
         if: ${{ failure() && github.event.pull_request.base.ref == 'master' }}
         run: |
           node report-scripts/appetize-failure-report-script.js createAppetizeSummaryReport ${{ github.head_ref || github.ref_name }} 'RN iOS'
+          
       - name: Slack Notification
         if: ${{ failure() && github.event.pull_request.base.ref == 'master' }}
         uses: slackapi/slack-github-action@v1.23.0
