@@ -160,6 +160,7 @@ jobs:
 
 
   test-via-browserstack:
+    if: false # Re-enable when we have tests set up
     runs-on: ubuntu-latest
     needs: build-and-upload-to-appetize
     name: Browserstack test

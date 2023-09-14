@@ -101,6 +101,7 @@ jobs:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
   android-test-via-browserstack:
+    if: false # Re-enable when we have tests set up
     runs-on: ubuntu-latest
     name: "Test on BrowserStack"
     needs: android-distribute-to-appetize
