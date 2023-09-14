@@ -14,7 +14,6 @@
     "ios",
     "cpp",
     "primer-io-react-native.podspec",
-    "!lib/typescript/example",
     "!android/build",
     "!ios/build",
     "!**/__tests__",
@@ -29,8 +28,7 @@
     "release": "release-it",
     "example": "yarn --cwd example",
     "pods": "cd example && pod-install --quiet",
-    "bootstrap": "yarn example && yarn && yarn pods",
-    "build:ios": "react-native bundle --entry-file='index.js' --bundle-output='./example/ios/main.jsbundle' --dev=false --platform='ios'"
+    "bootstrap": "yarn example && yarn && yarn pods"
   },
   "keywords": [
     "react-native",

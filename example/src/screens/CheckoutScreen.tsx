@@ -261,16 +261,18 @@ const CheckoutScreen = (props: any) => {
         debugOptions: {
             is3DSSanityCheckEnabled: false
         },
-        onBeforeClientSessionUpdate: onBeforeClientSessionUpdate,
-        onClientSessionUpdate: onClientSessionUpdate,
-        onBeforePaymentCreate: onBeforePaymentCreate,
-        onCheckoutComplete: onCheckoutComplete,
-        onTokenizeSuccess: onTokenizeSuccess,
-        onResumeSuccess: onResumeSuccess,
-        onResumePending: onResumePending,
-        onCheckoutReceivedAdditionalInfo: onCheckoutReceivedAdditionalInfo,
-        onError: onError,
-        onDismiss: onDismiss,
+        primerCallbacks: {
+            onBeforeClientSessionUpdate: onBeforeClientSessionUpdate,
+            onClientSessionUpdate: onClientSessionUpdate,
+            onBeforePaymentCreate: onBeforePaymentCreate,
+            onCheckoutComplete: onCheckoutComplete,
+            onTokenizeSuccess: onTokenizeSuccess,
+            onResumeSuccess: onResumeSuccess,
+            onResumePending: onResumePending,
+            onCheckoutReceivedAdditionalInfo: onCheckoutReceivedAdditionalInfo,
+            onError: onError,
+            onDismiss: onDismiss,
+        }
     };
 
     if (appPaymentParameters.merchantName) {

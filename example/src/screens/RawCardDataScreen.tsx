@@ -60,7 +60,6 @@ const RawCardDataScreen = (props: any) => {
                 setIsCardFormValid(isVallid);
             })
         });
-
         const requiredInputElementTypes = await rawDataManager.getRequiredInputElementTypes();
         setRequiredInputElementTypes(requiredInputElementTypes);
     }

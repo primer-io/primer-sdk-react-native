@@ -25,10 +25,11 @@
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
+  id fallbackURLProvider = ^ { return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"]; };
 #if DEBUG
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackURLProvider:fallbackURLProvider];
 #else
-  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+  return fallbackURLProvider()
 #endif
 }
 
