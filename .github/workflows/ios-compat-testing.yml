@@ -1,0 +1,127 @@
+---
+name: iOS Compatibility
+on: pull_request
+jobs:
+  ios-test-rn-version-compatibility:
+    name: Test react-native version compatibility
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        version: ["0.70.8", "0.72.3"]
+    steps:
+      - name: Cancel previous jobs
+        uses: styfle/cancel-workflow-action@0.11.0
+        with:
+          access_token: ${{ github.token }}
+     
+      - name: Git Checkout
+        uses: actions/checkout@v3
+      
+      - name: Select Xcode Version
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+      
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_KEY }}
+          name: id_rsa_github_actions
+          known_hosts: unnecessary
+      
+      - uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+      
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "2.6"
+          bundler-cache: true
+      
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'yarn'
+
+      - name: Add slack message builder
+        run: |
+          yarn add slack-message-builder
+
+      - name: Get npm cache directory
+        id: npm-cache-dir
+        run: echo "dir=$(npm config get cache)" >> ${GITHUB_OUTPUT}
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v3
+        id: npm-cache
+        with:
+          path: ${{ steps.npm-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-node-${{ hashFiles('*/package-lock.json', '*/*/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Set legacy-peer-deps for npm config
+        run: |
+          npm config set legacy-peer-deps true
+    
+      - name: Create test app
+        run: |
+          npx react-native init testapp --version ${{matrix.version}}
+
+      - name: Install Primer SDK
+        run: |
+          yarn --cwd testapp add @primer-io/react-native
+      
+      - name: CocoaPods Install
+        run: |
+          cd testapp/ios ; npx pod-install ; cd ..
+
+      - name: Move Testing Template Files
+        run: |
+          cp -r ../compat-testing/* ./
+
+      - name: Install Appium Packages
+        run: |
+          yarn add --dev \
+          appium appium-xcuitest-driver \
+          appium-uiautomator2-driver \
+          mocha-tags \
+          @wdio/appium-service \
+          @wdio/browserstack-service \
+          @wdio/cli \
+          @wdio/local-runner \
+          @wdio/mocha-framework \
+          @wdio/spec-reporter \
+          wdio-json-reporter \
+          @babel/cli \
+          @babel/preset-env \
+          @babel/register \
+          typescript \
+          ts-node
+      
+      - name: Run iOS bundler and build
+        run: |
+          npx react-native run-ios
+
+      - name: Start Appium Server
+        run: |
+          nohup npx appium & 
+      
+      - name: Run Compatibility Tests
+        run: |
+          npx wdio test-config/wdio.ios.conf.js
+    
+      - name: Create Slack Report
+        if: ${{ (success() ||  failure()) && github.event.pull_request.base.ref == 'master'  }}
+        run: |
+          node report-scripts/test-report-script.js createSlackReport iOS
+      
+      - name: Post summary message to a Slack channel
+        if: ${{ (success() ||  failure()) && github.event.pull_request.base.ref == 'master' }}
+        id: slack
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          channel-id: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
+          payload-file-path: '/var/tmp/slack-minimal_summary.json'
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}

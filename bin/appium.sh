@@ -1,6 +1,3 @@
-# crutch for ruby (need to fix version to >=2.6)
-rvm use 2.7.5
-
 # Create the test app
 npx react-native init testapp --version 0.70.8
 
