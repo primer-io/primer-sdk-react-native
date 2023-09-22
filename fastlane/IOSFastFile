@@ -13,6 +13,7 @@ github_run_number = ENV["GITHUB_RUN_NUMBER"]
 app_workspace = "example/ios/example_0_70_6.xcworkspace"
 app_xcode_proj = "example/ios/example_0_70_6.xcodeproj"
 app_scheme = "example_0_70_6"
+podfile_path = "example/ios/Podfile"
 
 # Packages
 app_output_path = "/var/tmp/Primer.io_ReactNativeExample.xcarchive/Products/Applications/example_0_70_6.app"
@@ -54,6 +55,12 @@ platform :ios do
   lane :qa_release do
 
     common_pre_build_action
+
+    cocoapods(
+      clean_install: true,
+      use_bundle_exec: true,
+      podfile: podfile_path
+    )
 
     # Build for browserstack
     build_app(
