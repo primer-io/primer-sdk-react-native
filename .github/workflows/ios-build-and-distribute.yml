@@ -251,6 +251,14 @@ jobs:
           BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
           SOURCE_BRANCH: ${{ github.head_ref }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+      
+      - name: Save build log 
+        uses: actions/upload-artifact@v3
+        id: fastlane_build_log
+        if: ${{ failure() }}
+        with: 
+          name: fastlane_build.log
+          path: /Users/runner/Library/Logs/gym/example_0_70_6-example_0_70_6.log
 
       - name: Save Browserstack ID
         uses: actions/upload-artifact@v3
