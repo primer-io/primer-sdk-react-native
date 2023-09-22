@@ -1,2 +1,5 @@
-json_key_file("") # Path to the json secret file - Follow https://docs.fastlane.tools/actions/supply/#setup to get one
-package_name("com.primerapi.example.rn")
+#json_key_file("") # Path to the json secret file - Follow https://docs.fastlane.tools/actions/supply/#setup to get one
+#package_name("com.primerapi.example.rn")
+app_identifier("com.primerapi.example.rn") # The bundle identifier of your app
+apple_id("security@primerapi.com") # Your Apple email address
+team_id "N8UN9TR5DY" # Developer Portal Team ID
