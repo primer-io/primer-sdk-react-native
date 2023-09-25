@@ -510,7 +510,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.primerapi.example.rn;
 				PRODUCT_NAME = example_0_70_6;
-				PROVISIONING_PROFILE_SPECIFIER = "match Development com.primerapi.PrimerSDKExample";
+				PROVISIONING_PROFILE_SPECIFIER = "match Development com.primerapi.example.rn";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -541,7 +541,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.primerapi.example.rn;
 				PRODUCT_NAME = example_0_70_6;
-				PROVISIONING_PROFILE_SPECIFIER = "match Development com.primerapi.PrimerSDKExample";
+				PROVISIONING_PROFILE_SPECIFIER = "match Development com.primerapi.example.rn";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
