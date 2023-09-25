@@ -409,9 +409,10 @@ jobs:
 
       - name: Move Testing Template Files
         run: |
-          cp -r ../compat-testing/* ./
+          cp -r compat-testing/* testapp/
 
       - name: Install Appium Packages
+        working-directory: ./testapp
         run: |
           yarn add --dev \
           appium appium-xcuitest-driver \
@@ -431,14 +432,17 @@ jobs:
           ts-node
       
       - name: Run iOS bundler and build
+        working-directory: ./testapp
         run: |
           npx react-native run-ios
 
       - name: Start Appium Server
+        working-directory: ./testapp
         run: |
           nohup npx appium & 
       
       - name: Run Compatibility Tests
+        working-directory: ./testapp
         env:
           BROWSERSTACK_USERNAME: ${{secrets.BROWSERSTACK_USERNAME}}
           BROWSERSTACK_ACCESS_KEY: ${{secrets.BROWSERSTACK_ACCESS_KEY}}
