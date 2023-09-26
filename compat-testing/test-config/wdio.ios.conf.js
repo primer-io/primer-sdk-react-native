@@ -16,7 +16,7 @@ config.specs = [
 config.capabilities = [
   {
     platformName: "IOS",
-    "appium:platformVersion": "16.4",
+    "appium:platformVersion": "16.2",
     "appium:deviceName": "iPhone 14",
     "appium:automationName": "XCUITest",
     "appium:app": "/var/tmp/testapp.xcarchive/Products/Applications/testapp.app"
