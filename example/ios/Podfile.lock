@@ -14,16 +14,16 @@ PODS:
   - KlarnaMobileSDK (2.2.2):
     - KlarnaMobileSDK/full (= 2.2.2)
   - KlarnaMobileSDK/full (2.2.2)
-  - primer-io-react-native (2.17.2):
-    - PrimerSDK (= 2.17.1)
+  - primer-io-react-native (2.17.3):
+    - PrimerSDK (= 2.17.4)
     - React-Core
   - Primer3DS (2.0.0)
   - PrimerIPay88MYSDK (0.1.5)
   - PrimerKlarnaSDK (1.0.4):
     - KlarnaMobileSDK (= 2.2.2)
-  - PrimerSDK (2.17.1):
-    - PrimerSDK/Core (= 2.17.1)
-  - PrimerSDK/Core (2.17.1)
+  - PrimerSDK (2.17.4):
+    - PrimerSDK/Core (= 2.17.4)
+  - PrimerSDK/Core (2.17.4)
   - RCT-Folly (2021.07.22.00):
     - boost
     - DoubleConversion
@@ -572,11 +572,11 @@ SPEC CHECKSUMS:
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
   KlarnaMobileSDK: 23b44390d06c6e3a90b5325bea6c10bf97ac6044
-  primer-io-react-native: 40a6520ca6d421ade80757e5b7950c0fdcb4f527
+  primer-io-react-native: 2092586928c4cea0eb18de38e67cd1c55f2ddd0c
   Primer3DS: 109e46ed31726039b9fb0ee6e1a0948fda345b24
   PrimerIPay88MYSDK: 8b4790c4bc741c20ad3674cc7e4da0781ad17ddd
   PrimerKlarnaSDK: de4b8b8fda075e3e4ebbd4ab80bd141c76a30d85
-  PrimerSDK: a0a5cf7db0b199810acee2afb97ba71a9a51d129
+  PrimerSDK: f1f0615ae0a917ae90f09716538f4a9e14c2ee28
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
   RCTRequired: a2faf4bad4e438ca37b2040cb8f7799baa065c18
   RCTTypeSafety: cb09f3e4747b6d18331a15eb05271de7441ca0b3
@@ -617,6 +617,6 @@ SPEC CHECKSUMS:
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   Yoga: 8796b55dba14d7004f980b54bcc9833ee45b28ce
 
-PODFILE CHECKSUM: 63faa5f0b9a04529eaa5fa50631f43ef5873de1b
+PODFILE CHECKSUM: 35b15b603beeb1002911fd390ec9f11ebd3d438f
 
 COCOAPODS: 1.11.3
