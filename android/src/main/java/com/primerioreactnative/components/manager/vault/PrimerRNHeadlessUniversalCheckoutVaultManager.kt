@@ -1,6 +1,9 @@
 package com.primerioreactnative.components.manager.vault
 
 import com.facebook.react.bridge.*
+import com.primerioreactnative.datamodels.ErrorTypeRN
+import com.primerioreactnative.datamodels.PrimerErrorRN
+import com.primerioreactnative.components.datamodels.manager.vault.*
 import io.primer.android.components.manager.vault.PrimerHeadlessUniversalCheckoutVaultManager
 import io.primer.android.components.manager.vault.PrimerHeadlessUniversalCheckoutVaultManagerInterface
 import kotlinx.serialization.decodeFromString
@@ -54,7 +57,11 @@ class PrimerRNHeadlessUniversalCheckoutVaultManager(
       nativeVaultManager.deleteVaultedPaymentMethod(vaultedPaymentMethodId).onSuccess {
         promise.resolve(null)
       }.onFailure { throwable ->
-        promise.reject(throwable)
+        promise.reject(
+          ErrorTypeRN.VaultManagerDeleteFailed.errorId,
+          throwable.message,
+          throwable
+        )
       }
     }
   }
@@ -64,13 +71,31 @@ class PrimerRNHeadlessUniversalCheckoutVaultManager(
     vaultedPaymentMethodId: String,
     additionalDataStr: String
   ) {
-    //TODO map the aditional data string to object using JSON
+    val additionalData: PrimerRNVaultedPaymentMethodAdditonalData =
+      json.decodeFromString(additionalDataStr)
 
     vaultScope.launch {
-      nativeVaultManager.validate(vaultedPaymentMethodId, additionalData).onSuccess { errors ->
-        promise.resolve(errors)
+      nativeVaultManager.validate(
+        vaultedPaymentMethodId,
+        additionalData.toPrimerVaultedCardAdditionalData()
+      ).onSuccess { errors ->
+        promise.resolve(
+          convertJsonToMap(
+            JSONObject(
+              Json.encodeToString(
+                PrimerRNValidationErrors(errors.map {
+                  it.toPrimerRNValidationError()
+                })
+              )
+            )
+          )
+        )
       }.onFailure { throwable ->
-        promise.reject(throwable)
+        promise.reject(
+          ErrorTypeRN.InvalidVaultedPaymentMethodId.errorId,
+          throwable.message,
+          throwable
+        )
       }
     }
   }
@@ -84,7 +109,11 @@ class PrimerRNHeadlessUniversalCheckoutVaultManager(
       nativeVaultManager.startPaymentFlow(vaultedPaymentMethodId).onSuccess {
         promise.resolve(null)
       }.onFailure { throwable ->
-        promise.reject(throwable)
+        promise.reject(
+          ErrorTypeRN.InvalidVaultedPaymentMethodId.errorId,
+          throwable.message,
+          throwable
+        )
       }
     }
   }
@@ -95,13 +124,21 @@ class PrimerRNHeadlessUniversalCheckoutVaultManager(
     additionalDataStr: String,
     promise: Promise
   ) {
-    //TODO map the aditional data string to object using JSON
+    val additionalData: PrimerRNVaultedPaymentMethodAdditonalData =
+      json.decodeFromString(additionalDataStr)
 
     vaultScope.launch {
-      nativeVaultManager.startPaymentFlow(vaultedPaymentMethodId, additionalData).onSuccess {
+      nativeVaultManager.startPaymentFlow(
+        vaultedPaymentMethodId,
+        additionalData.toPrimerVaultedCardAdditionalData()
+      ).onSuccess {
         promise.resolve(null)
       }.onFailure { throwable ->
-        promise.reject(throwable)
+        promise.reject(
+          ErrorTypeRN.InvalidVaultedPaymentMethodId.errorId,
+          throwable.message,
+          throwable
+        )
       }
     }
   }

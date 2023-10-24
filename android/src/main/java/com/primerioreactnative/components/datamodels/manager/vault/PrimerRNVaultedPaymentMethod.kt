@@ -19,7 +19,7 @@ data class PrimerRNVaultedPaymentMethod(
 
 @Serializable
 data class PrimerRNVaultedPaymentMethods(
-  val paymentMethodAssets: List<PrimerRNVaultedPaymentMethod>
+  val paymentMethods: List<PrimerRNVaultedPaymentMethod>
 )
 
 internal fun PrimerVaultedPaymentMethod.toPrimerRNVaultedPaymentMethod() =
