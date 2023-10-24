@@ -19,7 +19,8 @@ class ReactNativePackage : ReactPackage {
       PrimerRNHeadlessUniversalCheckout(reactContext, json),
       PrimerRNHeadlessUniversalCheckoutRawManager(reactContext, json),
       PrimerRNHeadlessUniversalCheckoutNativeUiManager(reactContext),
-      PrimerRNHeadlessUniversalCheckoutAssetManager(reactContext)
+      PrimerRNHeadlessUniversalCheckoutAssetManager(reactContext),
+      PrimerRNHeadlessUniversalCheckoutVaultManager(reactContext, json)
     )
   }
 
