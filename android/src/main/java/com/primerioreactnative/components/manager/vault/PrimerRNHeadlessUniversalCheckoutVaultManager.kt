@@ -2,31 +2,30 @@ package com.primerioreactnative.components.manager.vault
 
 import com.facebook.react.bridge.*
 import com.primerioreactnative.datamodels.ErrorTypeRN
-import com.primerioreactnative.datamodels.PrimerErrorRN
 import com.primerioreactnative.components.datamodels.manager.vault.*
+import com.primerioreactnative.utils.convertJsonToMap
+import com.primerioreactnative.utils.errorTo
 import io.primer.android.components.manager.vault.PrimerHeadlessUniversalCheckoutVaultManager
 import io.primer.android.components.manager.vault.PrimerHeadlessUniversalCheckoutVaultManagerInterface
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
 
 class PrimerRNHeadlessUniversalCheckoutVaultManager(
-  private val reactContext: ReactApplicationContext,
+  reactContext: ReactApplicationContext,
   private val json: Json,
 ) : ReactContextBaseJavaModule(reactContext) {
 
   private val vaultScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
-  private lateinit var nativeVaultManager: PrimerHeadlessUniversalCheckoutVaultManagerInterface
+  private var nativeVaultManager: PrimerHeadlessUniversalCheckoutVaultManagerInterface =
+    PrimerHeadlessUniversalCheckoutVaultManager.newInstance()
 
-  init {
-    //TODO find way to handle exceptions that might be thrown by this
-    nativeVaultManager = PrimerHeadlessUniversalCheckoutVaultManager.newInstance()
-  }
-
-  override fun getName(promise: Promise): String {
-    return "PrimerHeadlessUniversalCheckout"
-  }
+  override fun getName() = "PrimerHeadlessUniversalCheckout"
 
   @ReactMethod
   fun fetchVaultedPaymentMethods(promise: Promise) {
@@ -69,9 +68,10 @@ class PrimerRNHeadlessUniversalCheckoutVaultManager(
   @ReactMethod
   fun validate(
     vaultedPaymentMethodId: String,
-    additionalDataStr: String
+    additionalDataStr: String,
+    promise: Promise
   ) {
-    val additionalData: PrimerRNVaultedPaymentMethodAdditonalData =
+    val additionalData: PrimerRNVaultedPaymentMethodAdditionalData =
       json.decodeFromString(additionalDataStr)
 
     vaultScope.launch {
@@ -84,7 +84,7 @@ class PrimerRNHeadlessUniversalCheckoutVaultManager(
             JSONObject(
               Json.encodeToString(
                 PrimerRNValidationErrors(errors.map {
-                  it.toPrimerRNValidationError()
+                  PrimerRNValidationError(it.a, it.b, it.c)
                 })
               )
             )
@@ -124,7 +124,7 @@ class PrimerRNHeadlessUniversalCheckoutVaultManager(
     additionalDataStr: String,
     promise: Promise
   ) {
-    val additionalData: PrimerRNVaultedPaymentMethodAdditonalData =
+    val additionalData: PrimerRNVaultedPaymentMethodAdditionalData =
       json.decodeFromString(additionalDataStr)
 
     vaultScope.launch {

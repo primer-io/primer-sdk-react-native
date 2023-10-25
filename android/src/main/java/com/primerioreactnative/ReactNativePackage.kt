@@ -7,6 +7,7 @@ import com.facebook.react.uimanager.ViewManager
 import com.primerioreactnative.components.manager.asset.PrimerRNHeadlessUniversalCheckoutAssetManager
 import com.primerioreactnative.components.manager.nativeUi.PrimerRNHeadlessUniversalCheckoutNativeUiManager
 import com.primerioreactnative.components.manager.raw.PrimerRNHeadlessUniversalCheckoutRawManager
+import com.primerioreactnative.components.manager.vault.PrimerRNHeadlessUniversalCheckoutVaultManager
 import kotlinx.serialization.json.Json
 
 class ReactNativePackage : ReactPackage {

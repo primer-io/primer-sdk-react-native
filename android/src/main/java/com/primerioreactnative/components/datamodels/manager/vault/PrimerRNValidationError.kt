@@ -1,7 +1,7 @@
 package com.primerioreactnative.components.datamodels.manager.vault
 
 import kotlinx.serialization.Serializable
-import io.primer.android.components.domain.error.PrimerValidationError
+import io.primer.android.components.domain.error.*
 
 @Serializable
 data class PrimerRNValidationError(
@@ -15,9 +15,10 @@ data class PrimerRNValidationErrors(
   val validationErrors: List<PrimerRNValidationError>
 )
 
-internal fun PrimerValidationError.toPrimerRNValidationError() =
+//TODO resolve this madness
+internal fun PrimerInputValidationError.toPrimerRNValidationError() =
   PrimerRNValidationError(
-    it.errorId,
-    it.description,
-    it.diagnosticId
+    errorId,
+    description,
+    diagnosticsId
   )

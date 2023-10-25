@@ -1,11 +1,11 @@
 package com.primerioreactnative.components.datamodels.manager.vault
 
-import com.primerioreactnative.datamodels.PaymentInstrumentData
-import com.primerioreactnative.datamodels.ThreeDSAuthenticationData
+import com.primerioreactnative.datamodels.PrimerPaymentInstrumentTokenRN.PaymentInstrumentData
+import com.primerioreactnative.datamodels.PrimerPaymentInstrumentTokenRN.ThreeDSAuthenticationData
 import com.primerioreactnative.extensions.toPaymentInstrumentDataRN
 import com.primerioreactnative.extensions.toThreeDsAuthenticationDataRN
+import io.primer.android.domain.tokenization.models.PrimerVaultedPaymentMethod
 import kotlinx.serialization.Serializable
-import io.primer.android.data.tokenization.models.*
 
 @Serializable
 data class PrimerRNVaultedPaymentMethod(
@@ -13,7 +13,7 @@ data class PrimerRNVaultedPaymentMethod(
   val analyticsId: String,
   val paymentInstrumentType: String,
   val paymentMethodType: String,
-  val paymentInstrumentData: PaymentInstrumentData,
+  val paymentInstrumentData: PaymentInstrumentData?,
   val threeDSecureAuthentication: ThreeDSAuthenticationData? = null
 )
 
@@ -22,13 +22,14 @@ data class PrimerRNVaultedPaymentMethods(
   val paymentMethods: List<PrimerRNVaultedPaymentMethod>
 )
 
+//TODO resolve additional data
 internal fun PrimerVaultedPaymentMethod.toPrimerRNVaultedPaymentMethod() =
   PrimerRNVaultedPaymentMethod(
-    it.id,
-    it.analyticsId,
-    it.paymentInstrumentType,
-    it.paymentMethodType,
-    it.paymentInstrumentData?.toPaymentInstrumentDataRN(),
-    it.threeDSecureAuthentication?.toThreeDsAuthenticationDataRN()
+    id,
+    analyticsId,
+    paymentInstrumentType,
+    paymentMethodType,
+    paymentInstrumentData.toPaymentInstrumentDataRN(),
+    null
   )
 

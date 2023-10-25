@@ -1,13 +1,13 @@
 package com.primerioreactnative.extensions
 
-import com.primerioreactnative.datamodels.ThreeDsAuthenticationData
-import io.primer.android.data.tokenization.models.*
+import com.primerioreactnative.datamodels.PrimerPaymentInstrumentTokenRN
+import io.primer.android.domain.tokenization.models.PrimerPaymentMethodTokenData.AuthenticationDetails
 
 internal fun AuthenticationDetails.toThreeDsAuthenticationDataRN() =
-  ThreeDsAuthenticationData(
-    it.responseCode.name,
-    it.reasonCode,
-    it.reasonText,
-    it.protocolVersion,
-    it.challengeIssued
+  PrimerPaymentInstrumentTokenRN.ThreeDSAuthenticationData(
+    responseCode.name,
+    reasonCode,
+    reasonText,
+    protocolVersion,
+    challengeIssued
   )
