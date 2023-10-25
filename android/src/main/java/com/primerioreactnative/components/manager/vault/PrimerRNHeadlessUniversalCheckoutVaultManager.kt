@@ -25,7 +25,7 @@ class PrimerRNHeadlessUniversalCheckoutVaultManager(
   private var nativeVaultManager: PrimerHeadlessUniversalCheckoutVaultManagerInterface =
     PrimerHeadlessUniversalCheckoutVaultManager.newInstance()
 
-  override fun getName() = "PrimerHeadlessUniversalCheckout"
+  override fun getName() = "RNPrimerHeadlessUniversalCheckoutVaultManager"
 
   @ReactMethod
   fun fetchVaultedPaymentMethods(promise: Promise) {
