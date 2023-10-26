@@ -15,7 +15,6 @@ data class PrimerRNValidationErrors(
   val validationErrors: List<PrimerRNValidationError>
 )
 
-//TODO resolve this madness
 internal fun PrimerValidationError.toPrimerRNValidationError() =
   PrimerRNValidationError(
     errorId,

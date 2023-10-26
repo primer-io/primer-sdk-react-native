@@ -22,7 +22,6 @@ data class PrimerRNVaultedPaymentMethods(
   val paymentMethods: List<PrimerRNVaultedPaymentMethod>
 )
 
-//TODO resolve additional data
 internal fun PrimerVaultedPaymentMethod.toPrimerRNVaultedPaymentMethod() =
   PrimerRNVaultedPaymentMethod(
     id,
