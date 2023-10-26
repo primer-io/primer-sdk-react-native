@@ -30,6 +30,6 @@ internal fun PrimerVaultedPaymentMethod.toPrimerRNVaultedPaymentMethod() =
     paymentInstrumentType,
     paymentMethodType,
     paymentInstrumentData.toPaymentInstrumentDataRN(),
-    null
+    threeDSecureAuthentication.toThreeDsAuthenticationDataRN()
   )
 

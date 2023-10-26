@@ -21,11 +21,23 @@ class PrimerRNHeadlessUniversalCheckoutVaultManager(
   private val json: Json,
 ) : ReactContextBaseJavaModule(reactContext) {
 
-  private val vaultScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
-  private var nativeVaultManager: PrimerHeadlessUniversalCheckoutVaultManagerInterface =
-    PrimerHeadlessUniversalCheckoutVaultManager.newInstance()
+  private val vaultScope = CoroutineScope(SupervisorJob())
+  private lateinit var nativeVaultManager: PrimerHeadlessUniversalCheckoutVaultManagerInterface
 
   override fun getName() = "RNPrimerHeadlessUniversalCheckoutVaultManager"
+
+  @ReactMethod
+  fun configure(promise: Promise) {
+    try {
+      nativeVaultManager = PrimerHeadlessUniversalCheckoutVaultManager.newInstance()
+      promise.resolve(null)
+    } catch (e: Exception) {
+      val exception =
+        ErrorTypeRN.NativeBridgeFailed errorTo (e.message
+          ?: "An error occurs while initialising the vault manager.")
+      promise.reject(exception.errorId, exception.description)
+    }
+  }
 
   @ReactMethod
   fun fetchVaultedPaymentMethods(promise: Promise) {
@@ -44,7 +56,8 @@ class PrimerRNHeadlessUniversalCheckoutVaultManager(
         )
       }.onFailure { throwable ->
         val exception =
-          ErrorTypeRN.NativeBridgeFailed errorTo "An error occurs while fetching vaulted payment methods."
+          ErrorTypeRN.NativeBridgeFailed errorTo (throwable.message
+            ?: "An error occurs while fetching vaulted payment methods.")
         promise.reject(exception.errorId, exception.description)
       }
     }
@@ -83,9 +96,7 @@ class PrimerRNHeadlessUniversalCheckoutVaultManager(
           convertJsonToMap(
             JSONObject(
               Json.encodeToString(
-                PrimerRNValidationErrors(errors.map {
-                  PrimerRNValidationError(it.a, it.b, it.c)
-                })
+                PrimerRNValidationErrors(listOf())
               )
             )
           )

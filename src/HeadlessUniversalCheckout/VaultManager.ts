@@ -16,6 +16,18 @@ class PrimerHeadlessUniversalCheckoutVaultManager {
     // Native API
     ///////////////////////////////////////////
 
+    async configure(): Promise<void> {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    await RNPrimerHeadlessUniversalCheckoutVaultManager.configure();
+                    resolve();
+                } catch (err) {
+                    console.error(err);
+                    reject(err);
+                }
+            });
+        }
+
     async fetchVaultedPaymentMethods(): Promise<PrimerVaultedPaymentMethod[]> {
         return new Promise(async (resolve, reject) => {
             try {
