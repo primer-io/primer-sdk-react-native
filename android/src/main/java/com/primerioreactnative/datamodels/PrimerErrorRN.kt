@@ -15,5 +15,7 @@ enum class ErrorTypeRN(val errorId: String) {
   NativeBridgeFailed("native-android"),
   UnitializedSdkSession("uninitialized-sdk-session"),
   UnsupportedPaymentMethod("unsupported-payment-method-type"),
-  UnsupportedPaymentIntent("unsupported-session-intent")
+  UnsupportedPaymentIntent("unsupported-session-intent"),
+  VaultManagerDeleteFailed("vaulted-manager-delete-failed"),
+  InvalidVaultedPaymentMethodId("invalid-vaulted-payment-method-id")
 }
