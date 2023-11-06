@@ -95,7 +95,7 @@ interface IPrimerApplePayOptions {
   merchantName: string;
   isCaptureBillingAddressEnabled?: boolean;
   showApplePayForUnsupportedDevice?: boolean;
-  checkProvidedNetworks: boolean;
+  checkProvidedNetworks?: boolean;
 }
 
 interface IPrimerCardPaymentOptions {
