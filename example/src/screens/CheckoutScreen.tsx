@@ -239,7 +239,9 @@ const CheckoutScreen = (props: any) => {
             applePayOptions: {
                 merchantIdentifier: "merchant.checkout.team",
                 merchantName: appPaymentParameters.merchantName || "Merchant name",
-                isCaptureBillingAddressEnabled: true
+                isCaptureBillingAddressEnabled: true,
+                showApplePayForUnsupportedDevice: true,
+                checkProvidedNetworks: false
             },
             googlePayOptions: {
              isCaptureBillingAddressEnabled: true
