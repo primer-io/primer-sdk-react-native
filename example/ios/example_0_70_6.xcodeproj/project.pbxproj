@@ -492,6 +492,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = example_0_70_6/example_0_70_6.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development: MOHAMMED TARIK ALADIN TALEB (P3K69N82DT)";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = N8UN9TR5DY;
 				ENABLE_BITCODE = NO;
@@ -508,6 +510,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.primerapi.example.rn;
 				PRODUCT_NAME = example_0_70_6;
+				PROVISIONING_PROFILE_SPECIFIER = "match Development com.primerapi.example.rn";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -521,6 +524,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = example_0_70_6/example_0_70_6.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development: MOHAMMED TARIK ALADIN TALEB (P3K69N82DT)";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = N8UN9TR5DY;
 				INFOPLIST_FILE = example_0_70_6/Info.plist;
@@ -536,6 +541,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.primerapi.example.rn;
 				PRODUCT_NAME = example_0_70_6;
+				PROVISIONING_PROFILE_SPECIFIER = "match Development com.primerapi.example.rn";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
