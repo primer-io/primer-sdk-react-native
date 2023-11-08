@@ -1,7 +1,7 @@
 import { NativeModules } from 'react-native';
-import { PrimerValidationError } from 'src/models/PrimerValidationError';
-import { PrimerVaultedPaymentMethod } from 'src/models/PrimerVaultedPaymentMethod';
-import { PrimerVaultedPaymentMethodAdditionalData } from 'src/models/PrimerVaultedPaymentMethodAdditionalData';
+import { ValidationError } from '@primer-io/react-native';
+import { VaultedPaymentMethod } from '@primer-io/react-native';
+import { VaultedPaymentMethodAdditionalData } from '@primer-io/react-native';
 
 const { RNPrimerHeadlessUniversalCheckoutVaultManager } = NativeModules;
 
@@ -17,21 +17,21 @@ class PrimerHeadlessUniversalCheckoutVaultManager {
     ///////////////////////////////////////////
 
     async configure(): Promise<void> {
-            return new Promise(async (resolve, reject) => {
-                try {
-                    await RNPrimerHeadlessUniversalCheckoutVaultManager.configure();
-                    resolve();
-                } catch (err) {
-                    console.error(err);
-                    reject(err);
-                }
-            });
-        }
-
-    async fetchVaultedPaymentMethods(): Promise<PrimerVaultedPaymentMethod[]> {
         return new Promise(async (resolve, reject) => {
             try {
-                const paymentMethods: PrimerVaultedPaymentMethod[] =
+                await RNPrimerHeadlessUniversalCheckoutVaultManager.configure();
+                resolve();
+            } catch (err) {
+                console.error(err);
+                reject(err);
+            }
+        });
+    }
+
+    async fetchVaultedPaymentMethods(): Promise<VaultedPaymentMethod[]> {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const paymentMethods: VaultedPaymentMethod[] =
                     await RNPrimerHeadlessUniversalCheckoutVaultManager.fetchVaultedPaymentMethods();
                 resolve(paymentMethods);
             } catch (err) {
@@ -50,20 +50,20 @@ class PrimerHeadlessUniversalCheckoutVaultManager {
                 console.error(err);
                 reject(err);
             }
-        })
+        });
     }
 
-    async validate(vaultedPaymentMethodId: String, additionalData: PrimerVaultedPaymentMethodAdditionalData): Promise<PrimerValidationError[]> {
+    async validate(vaultedPaymentMethodId: String, additionalData: VaultedPaymentMethodAdditionalData): Promise<ValidationError[]> {
         return new Promise(async (resolve, reject) => {
             try {
-                const errors: PrimerValidationError[] =
+                const errors: ValidationError[] =
                     await RNPrimerHeadlessUniversalCheckoutVaultManager.validate(vaultedPaymentMethodId, JSON.stringify(additionalData));
                 resolve(errors);
             } catch (err) {
                 console.error(err);
                 reject(err);
             }
-        })
+        });
     }
 
     async startPaymentFlow(vaultedPaymentMethodId: String): Promise<void> {
@@ -75,10 +75,10 @@ class PrimerHeadlessUniversalCheckoutVaultManager {
                 console.error(err);
                 reject(err);
             }
-        })
+        });
     }
 
-    async startPaymentFlowWithAdditionalData(vaultedPaymentMethodId: String, additionalData: PrimerVaultedPaymentMethodAdditionalData): Promise<void> {
+    async startPaymentFlowWithAdditionalData(vaultedPaymentMethodId: String, additionalData: VaultedPaymentMethodAdditionalData): Promise<void> {
         return new Promise(async (resolve, reject) => {
             try {
                 await RNPrimerHeadlessUniversalCheckoutVaultManager.startPaymentFlow(vaultedPaymentMethodId, JSON.stringify(additionalData));
@@ -87,6 +87,8 @@ class PrimerHeadlessUniversalCheckoutVaultManager {
                 console.error(err);
                 reject(err);
             }
-        })
+        });
     }
 }
+
+export default PrimerHeadlessUniversalCheckoutVaultManager;

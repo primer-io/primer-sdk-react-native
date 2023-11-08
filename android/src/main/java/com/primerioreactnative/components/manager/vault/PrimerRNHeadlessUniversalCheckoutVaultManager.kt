@@ -1,14 +1,21 @@
 package com.primerioreactnative.components.manager.vault
 
-import com.facebook.react.bridge.*
+import com.facebook.react.bridge.Promise
+import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.ReactContextBaseJavaModule
+import com.facebook.react.bridge.ReactMethod
+import com.primerioreactnative.components.datamodels.manager.vault.PrimerRNValidationErrors
+import com.primerioreactnative.components.datamodels.manager.vault.PrimerRNVaultedPaymentMethodAdditionalData
+import com.primerioreactnative.components.datamodels.manager.vault.PrimerRNVaultedPaymentMethods
+import com.primerioreactnative.components.datamodels.manager.vault.toPrimerRNValidationError
+import com.primerioreactnative.components.datamodels.manager.vault.toPrimerRNVaultedPaymentMethod
+import com.primerioreactnative.components.datamodels.manager.vault.toPrimerVaultedCardAdditionalData
 import com.primerioreactnative.datamodels.ErrorTypeRN
-import com.primerioreactnative.components.datamodels.manager.vault.*
 import com.primerioreactnative.utils.convertJsonToMap
 import com.primerioreactnative.utils.errorTo
 import io.primer.android.components.manager.vault.PrimerHeadlessUniversalCheckoutVaultManager
 import io.primer.android.components.manager.vault.PrimerHeadlessUniversalCheckoutVaultManagerInterface
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
@@ -96,7 +103,9 @@ class PrimerRNHeadlessUniversalCheckoutVaultManager(
           convertJsonToMap(
             JSONObject(
               Json.encodeToString(
-                PrimerRNValidationErrors(listOf())
+                PrimerRNValidationErrors(errors.map {
+                  it.toPrimerRNValidationError()
+                })
               )
             )
           )

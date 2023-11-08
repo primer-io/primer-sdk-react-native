@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import {
   Alert,
+  Text,
   Image,
   TouchableOpacity,
   View,
+  FlatList,
 } from 'react-native';
+import { styles } from '../styles';
 import { createClientSession, createPayment, resumePayment } from '../network/api';
 import { appPaymentParameters } from '../models/IClientSessionRequestBody';
 import type { IPayment } from '../models/IPayment';
@@ -16,8 +19,10 @@ import {
   CheckoutAdditionalInfo,
   CheckoutData,
   HeadlessUniversalCheckout,
+  VaultManager,
   NativeUIManager,
   PaymentMethod,
+  VaultedPaymentMethod,
   PrimerSettings,
   SessionIntent
 } from '@primer-io/react-native';
@@ -67,6 +72,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
   const [isLoading, setIsLoading] = useState(true);
   const [clientSession, setClientSession] = useState<null | any>(null);
   const [paymentMethods, setPaymentMethods] = useState<undefined | PaymentMethod[]>(undefined);
+  const [vaultedPaymentMethods, setVaultedPaymentMethods] = useState<undefined | VaultedPaymentMethod[]>(undefined);
   const [paymentMethodsAssets, setPaymentMethodsAssets] = useState<undefined | Asset[]>(undefined);
 
   const updateLogs = (str: string) => {
@@ -84,7 +90,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
       },
     },
     debugOptions: {
-       is3DSSanityCheckEnabled: false
+      is3DSSanityCheckEnabled: false
     },
     headlessUniversalCheckoutCallbacks: {
       onAvailablePaymentMethodsLoad: (availablePaymentMethods => {
@@ -270,6 +276,18 @@ export const HeadlessCheckoutScreen = (props: any) => {
     }
   }
 
+  const startVaultManager = async () => {
+    try {
+      const vaultManager = new VaultManager()
+      await vaultManager.configure();
+      const availablePaymentMethods = await vaultManager.fetchVaultedPaymentMethods();
+      updateLogs(`\n Returned Payment Methods: ${JSON.stringify(availablePaymentMethods, null, 2)}`);
+      setVaultedPaymentMethods(availablePaymentMethods);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   const paymentMethodButtonTapped = async (paymentMethodType: string) => {
     try {
       const paymentMethod = paymentMethods?.find(pm => pm.paymentMethodType === paymentMethodType);
@@ -347,6 +365,59 @@ export const HeadlessCheckoutScreen = (props: any) => {
     }
   }
 
+  const renderVaultManagerButton = () => {
+    return (
+      <TouchableOpacity
+        style={{
+          ...styles.button, marginHorizontal: 20, marginVertical: 8, backgroundColor: 'black'
+        }}
+        onPress={() => {
+          startVaultManager();
+        }}
+      >
+        <Text
+          style={{ ...styles.buttonText, color: 'white' }}
+        >
+          Vault Manager
+        </Text>
+      </TouchableOpacity>
+    );
+  }
+
+  const renderVaultedPaymentMethods = () => {
+    updateLogs(`\n Displayed Vaulted Payment Methods: ${JSON.stringify(vaultedPaymentMethods, null, 2)}`);
+    if (!vaultedPaymentMethods) {
+      return null;
+    }
+    
+    if (!vaultedPaymentMethods.length) {
+      return (
+        <Text
+          style={{
+            textAlign: 'center',
+            marginHorizontal: 20,
+            paddingTop: 1,
+            paddingBottom: 10,
+            paddingHorizontal: 10,
+            fontSize: 18,
+            height: 44,
+            color: 'red'
+          }}>No vaulted payment methods!</Text>
+      );
+    } else {
+      return (
+        <FlatList
+          data={vaultedPaymentMethods}
+          renderItem={({ item }) => <Text style={{
+            padding: 10,
+            fontSize: 18,
+            height: 44,
+          }}>{item.paymentInstrumentData.first6Digits.concat()}</Text>}
+        />
+      );
+    }
+  }
+
   const renderPaymentMethodsUI = () => {
     if (!paymentMethodsAssets) {
       return null;
@@ -405,6 +476,8 @@ export const HeadlessCheckoutScreen = (props: any) => {
 
   return (
     <View style={{ paddingHorizontal: 24, flex: 1 }}>
+      {renderVaultManagerButton()}
+      {renderVaultedPaymentMethods()}
       {renderPaymentMethodsUI()}
       {renderLoadingOverlay()}
     </View>

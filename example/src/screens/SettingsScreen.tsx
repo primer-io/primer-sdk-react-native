@@ -24,13 +24,13 @@ export interface AppPaymentParameters {
     merchantName?: string;
 }
 
-export let customApiKey: string | undefined = "71347d48-c050-49c2-ac51-202525c4c0ec";
+export let customApiKey: string | undefined = "2b8537b2-478c-4315-88fb-f1954500b5fa";
 export let customClientToken: string | undefined;
 
 // @ts-ignore
 const SettingsScreen = ({ navigation }) => {
     const isDarkMode = useColorScheme() === 'dark';
-    const [environment, setEnvironment] = React.useState<Environment>(Environment.Staging);
+    const [environment, setEnvironment] = React.useState<Environment>(Environment.Sandbox);
     const [apiKey, setApiKey] = React.useState<string | undefined>(customApiKey);
     const [clientToken, setClientToken] = React.useState<string | undefined>(undefined);
     const [paymentHandling, setPaymentHandling] = React.useState<PaymentHandling>(PaymentHandling.Auto);

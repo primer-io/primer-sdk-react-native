@@ -70,3 +70,20 @@ import PrimerHeadlessUniversalCheckoutRawDataManager from './HeadlessUniversalCh
 export {
     PrimerHeadlessUniversalCheckoutRawDataManager as RawDataManager
 }
+
+export {
+    PrimerVaultedPaymentMethod as VaultedPaymentMethod
+} from './models/PrimerVaultedPaymentMethod'
+
+export {
+    PrimerVaultedPaymentMethodAdditionalData as VaultedPaymentMethodAdditionalData
+} from './models/PrimerVaultedPaymentMethodAdditionalData'
+
+export {
+    PrimerValidationError as ValidationError
+} from './models/PrimerValidationError'
+
+import PrimerHeadlessUniversalCheckoutVaultManager from './HeadlessUniversalCheckout/Managers/VaultManager'
+export {
+    PrimerHeadlessUniversalCheckoutVaultManager as VaultManager
+}
