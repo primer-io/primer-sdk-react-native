@@ -31,8 +31,9 @@ class PrimerHeadlessUniversalCheckoutVaultManager {
     async fetchVaultedPaymentMethods(): Promise<VaultedPaymentMethod[]> {
         return new Promise(async (resolve, reject) => {
             try {
-                const paymentMethods: VaultedPaymentMethod[] =
+                const data =
                     await RNPrimerHeadlessUniversalCheckoutVaultManager.fetchVaultedPaymentMethods();
+                const paymentMethods: VaultedPaymentMethod[] = data.paymentMethods;
                 resolve(paymentMethods);
             } catch (err) {
                 console.error(err);
@@ -56,8 +57,9 @@ class PrimerHeadlessUniversalCheckoutVaultManager {
     async validate(vaultedPaymentMethodId: String, additionalData: VaultedPaymentMethodAdditionalData): Promise<ValidationError[]> {
         return new Promise(async (resolve, reject) => {
             try {
-                const errors: ValidationError[] =
+                const data =
                     await RNPrimerHeadlessUniversalCheckoutVaultManager.validate(vaultedPaymentMethodId, JSON.stringify(additionalData));
+                const errors: ValidationError[] = data.validationErrors;
                 resolve(errors);
             } catch (err) {
                 console.error(err);
@@ -81,7 +83,7 @@ class PrimerHeadlessUniversalCheckoutVaultManager {
     async startPaymentFlowWithAdditionalData(vaultedPaymentMethodId: String, additionalData: VaultedPaymentMethodAdditionalData): Promise<void> {
         return new Promise(async (resolve, reject) => {
             try {
-                await RNPrimerHeadlessUniversalCheckoutVaultManager.startPaymentFlow(vaultedPaymentMethodId, JSON.stringify(additionalData));
+                await RNPrimerHeadlessUniversalCheckoutVaultManager.startPaymentFlowWithAdditionalData(vaultedPaymentMethodId, JSON.stringify(additionalData));
                 resolve();
             } catch (err) {
                 console.error(err);

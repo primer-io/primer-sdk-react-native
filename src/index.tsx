@@ -72,15 +72,15 @@ export {
 }
 
 export {
-    PrimerVaultedPaymentMethod as VaultedPaymentMethod
+    IPrimerVaultedPaymentMethod as VaultedPaymentMethod
 } from './models/PrimerVaultedPaymentMethod'
 
 export {
-    PrimerVaultedPaymentMethodAdditionalData as VaultedPaymentMethodAdditionalData
+    IPrimerVaultedPaymentMethodAdditonalData as VaultedPaymentMethodAdditionalData
 } from './models/PrimerVaultedPaymentMethodAdditionalData'
 
 export {
-    PrimerValidationError as ValidationError
+    IPrimerValidationError as ValidationError
 } from './models/PrimerValidationError'
 
 import PrimerHeadlessUniversalCheckoutVaultManager from './HeadlessUniversalCheckout/Managers/VaultManager'

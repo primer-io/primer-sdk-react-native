@@ -139,7 +139,7 @@ class PrimerRNHeadlessUniversalCheckoutVaultManager(
   }
 
   @ReactMethod
-  fun startPaymentFlow(
+  fun startPaymentFlowWithAdditionalData(
     vaultedPaymentMethodId: String,
     additionalDataStr: String,
     promise: Promise
