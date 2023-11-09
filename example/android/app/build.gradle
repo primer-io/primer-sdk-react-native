@@ -386,6 +386,7 @@ dependencies {
   implementation "io.primer:3ds-android:1.2.0"
   implementation "io.primer:ipay88-my-android:1.0.0"
   implementation "io.primer:klarna-android:1.0.1"
+  implementation "io.primer:nol-pay-android:1.0.1"
 
   //noinspection GradleDynamicVersion
   implementation "com.facebook.react:react-native:+"  // From node_modules
