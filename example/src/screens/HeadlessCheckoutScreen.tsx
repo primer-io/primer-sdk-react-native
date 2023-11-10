@@ -4,6 +4,7 @@ import {
   Text,
   TextInput,
   Image,
+  FlatList,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -442,38 +443,23 @@ export const HeadlessCheckoutScreen = (props: any) => {
       );
     } else {
       return (
-        <View>
-          {vaultedPaymentMethods.map((method) => {
-            return (
-              <TouchableOpacity
-                key={method.paymentMethodType}
-                style={{
-                  marginHorizontal: 20,
-                  marginVertical: 8,
-                  height: 50,
-                  backgroundColor: 'white',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  borderRadius: 4,
-                }}
-                onPress={() => {
-                  setSelectedVaultedPaymentMethod(method);
-                }}
-              >
-                <Text style={{
-                  padding: 10,
-                  fontSize: 18,
-                  height: 44,
-                  color: 'black',
-                }}>{method.paymentInstrumentData.first6Digits + '****'}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
+        <FlatList
+          data={vaultedPaymentMethods}
+          renderItem={({ item }) => <Text style={{
+            marginHorizontal: 20,
+            paddingTop: 1,
+            paddingBottom: 10,
+            paddingHorizontal: 10,
+            fontSize: 18,
+            height: 44,
+            color:'black',
+          }} onPress={() => setSelectedVaultedPaymentMethod(item)}>{item.paymentInstrumentData.first6Digits + '****'}
+          </Text>}
+        />
       );
     }
   }
+
 
   const renderVaultAdditionalData = () => {
     if (!selectedVaultedPaymentMethod) {
