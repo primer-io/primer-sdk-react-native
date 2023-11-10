@@ -6,7 +6,6 @@ import {
   Image,
   TouchableOpacity,
   View,
-  FlatList,
 } from 'react-native';
 import { styles } from '../styles';
 import { createClientSession, createPayment, resumePayment } from '../network/api';
@@ -25,8 +24,9 @@ import {
   PaymentMethod,
   VaultedPaymentMethod,
   VaultedPaymentMethodAdditionalData,
+  ValidationError,
   PrimerSettings,
-  SessionIntent
+  SessionIntent,
 } from '@primer-io/react-native';
 
 let log: string = "";
@@ -116,10 +116,6 @@ export const HeadlessCheckoutScreen = (props: any) => {
       },
       onClientSessionUpdate: (clientSession) => {
         updateLogs(`\nℹ️ onClientSessionUpdate\nclientSession: ${JSON.stringify(clientSession, null, 2)}\n`);
-      },
-      onBeforePaymentCreate: (tmpCheckoutData, handler) => {
-        updateLogs(`\nℹ️ onBeforePaymentCreate\ncheckoutData: ${JSON.stringify(tmpCheckoutData, null, 2)}\n`);
-        handler.continuePaymentCreation();
       },
       onCheckoutAdditionalInfo: (additionalInfo) => {
         merchantCheckoutAdditionalInfo = additionalInfo;
@@ -373,21 +369,28 @@ export const HeadlessCheckoutScreen = (props: any) => {
   const payVaulted = async (vaultedPaymentMethod: VaultedPaymentMethod, additionalData: String) => {
     try {
       setIsLoading(true);
-      const data: VaultedPaymentMethodAdditionalData = {cvv: additionalData};
-      await vaultManager.startPaymentFlowWithAdditionalData(vaultedPaymentMethod.id, data);
-      setIsLoading(false);
-      Alert.alert(
-        "Success!",
-        `${vaultedPaymentMethod.paymentMethodType} payment has been processed successfully.`,
-        [
-          {
-            text: "Okay",
-            style: "default",
-            onPress: () => { }
-          }
-        ],
-        { cancelable: true, }
-      );
+      const data: VaultedPaymentMethodAdditionalData = { cvv: additionalData };
+      const validationErrors: ValidationError[] = await vaultManager.validate(vaultedPaymentMethod.id, data);
+
+      if (validationErrors.length == 0) {
+        await vaultManager.startPaymentFlow(vaultedPaymentMethod.id, data);
+        setIsLoading(false);
+        Alert.alert(
+          "Success!",
+          `${vaultedPaymentMethod.paymentMethodType} payment has been processed successfully.`,
+          [
+            {
+              text: "Okay",
+              style: "default",
+              onPress: () => { }
+            }
+          ],
+          { cancelable: true, }
+        );
+      } else {
+        setIsLoading(false);
+        console.error(validationErrors[0]);
+      }
     } catch (err) {
       logPaymentError(err);
     }
