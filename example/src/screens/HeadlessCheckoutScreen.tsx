@@ -1,14 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import {
   Alert,
-  Text,
-  TextInput,
   Image,
-  FlatList,
   TouchableOpacity,
   View,
 } from 'react-native';
-import { styles } from '../styles';
 import { createClientSession, createPayment, resumePayment } from '../network/api';
 import { appPaymentParameters } from '../models/IClientSessionRequestBody';
 import type { IPayment } from '../models/IPayment';
@@ -20,14 +16,10 @@ import {
   CheckoutAdditionalInfo,
   CheckoutData,
   HeadlessUniversalCheckout,
-  VaultManager,
   NativeUIManager,
   PaymentMethod,
-  VaultedPaymentMethod,
-  VaultedPaymentMethodAdditionalData,
-  ValidationError,
   PrimerSettings,
-  SessionIntent,
+  SessionIntent
 } from '@primer-io/react-native';
 
 let log: string = "";
@@ -71,14 +63,10 @@ const selectImplemetationType = (paymentMethod: PaymentMethod): Promise<string> 
   })
 }
 
-const vaultManager = new VaultManager()
-
 export const HeadlessCheckoutScreen = (props: any) => {
   const [isLoading, setIsLoading] = useState(true);
   const [clientSession, setClientSession] = useState<null | any>(null);
   const [paymentMethods, setPaymentMethods] = useState<undefined | PaymentMethod[]>(undefined);
-  const [vaultedPaymentMethods, setVaultedPaymentMethods] = useState<undefined | VaultedPaymentMethod[]>(undefined);
-  const [selectedVaultedPaymentMethod, setSelectedVaultedPaymentMethod] = useState<undefined | VaultedPaymentMethod>(undefined);
   const [paymentMethodsAssets, setPaymentMethodsAssets] = useState<undefined | Asset[]>(undefined);
 
   const updateLogs = (str: string) => {
@@ -96,7 +84,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
       },
     },
     debugOptions: {
-      is3DSSanityCheckEnabled: false
+       is3DSSanityCheckEnabled: false
     },
     headlessUniversalCheckoutCallbacks: {
       onAvailablePaymentMethodsLoad: (availablePaymentMethods => {
@@ -117,6 +105,10 @@ export const HeadlessCheckoutScreen = (props: any) => {
       },
       onClientSessionUpdate: (clientSession) => {
         updateLogs(`\nℹ️ onClientSessionUpdate\nclientSession: ${JSON.stringify(clientSession, null, 2)}\n`);
+      },
+      onBeforePaymentCreate: (tmpCheckoutData, handler) => {
+        updateLogs(`\nℹ️ onBeforePaymentCreate\ncheckoutData: ${JSON.stringify(tmpCheckoutData, null, 2)}\n`);
+        handler.continuePaymentCreation();
       },
       onCheckoutAdditionalInfo: (additionalInfo) => {
         merchantCheckoutAdditionalInfo = additionalInfo;
@@ -278,20 +270,6 @@ export const HeadlessCheckoutScreen = (props: any) => {
     }
   }
 
-  const startVaultManager = async () => {
-    try {
-      setIsLoading(true);
-      await vaultManager.configure();
-      const availablePaymentMethods = await vaultManager.fetchVaultedPaymentMethods();
-      updateLogs(`\n Returned Payment Methods: ${JSON.stringify(availablePaymentMethods, null, 2)}`);
-      setVaultedPaymentMethods(availablePaymentMethods);
-      setIsLoading(false);
-    } catch (err) {
-      console.error(err);
-      setIsLoading(false);
-    }
-  }
-
   const paymentMethodButtonTapped = async (paymentMethodType: string) => {
     try {
       const paymentMethod = paymentMethods?.find(pm => pm.paymentMethodType === paymentMethodType);
@@ -363,124 +341,10 @@ export const HeadlessCheckoutScreen = (props: any) => {
       }
 
     } catch (err) {
-      logPaymentError(err);
+      updateLogs(`\n🛑 pay\nerror: ${JSON.stringify(err, null, 2)}`);
+      setIsLoading(false);
+      console.error(err);
     }
-  }
-
-  const payVaulted = async (vaultedPaymentMethod: VaultedPaymentMethod, additionalData: String) => {
-    try {
-      setIsLoading(true);
-      const data: VaultedPaymentMethodAdditionalData = { cvv: additionalData };
-      const validationErrors: ValidationError[] = await vaultManager.validate(vaultedPaymentMethod.id, data);
-
-      if (validationErrors.length == 0) {
-        await vaultManager.startPaymentFlow(vaultedPaymentMethod.id, data);
-        setIsLoading(false);
-        Alert.alert(
-          "Success!",
-          `${vaultedPaymentMethod.paymentMethodType} payment has been processed successfully.`,
-          [
-            {
-              text: "Okay",
-              style: "default",
-              onPress: () => { }
-            }
-          ],
-          { cancelable: true, }
-        );
-      } else {
-        setIsLoading(false);
-        console.error(validationErrors[0]);
-      }
-    } catch (err) {
-      logPaymentError(err);
-    }
-  }
-
-  const logPaymentError = async (err: any) => {
-    updateLogs(`\n🛑 pay\nerror: ${JSON.stringify(err, null, 2)}`);
-    setIsLoading(false);
-    console.error(err);
-  }
-
-  const renderVaultManagerButton = () => {
-    return (
-      <TouchableOpacity
-        style={{
-          ...styles.button, marginHorizontal: 20, marginVertical: 8, backgroundColor: 'black'
-        }}
-        onPress={() => {
-          startVaultManager();
-        }}
-      >
-        <Text
-          style={{ ...styles.buttonText, color: 'white' }}
-        >
-          Vault Manager
-        </Text>
-      </TouchableOpacity>
-    );
-  }
-
-  const renderVaultedPaymentMethods = () => {
-    if (!vaultedPaymentMethods) {
-      return null;
-    }
-
-    if (vaultedPaymentMethods.length == 0) {
-      return (
-        <Text
-          style={{
-            textAlign: 'center',
-            marginHorizontal: 20,
-            paddingTop: 1,
-            paddingBottom: 10,
-            paddingHorizontal: 10,
-            fontSize: 18,
-            height: 44,
-            color: 'red'
-          }}>No vaulted payment methods!</Text>
-      );
-    } else {
-      return (
-        <FlatList
-          data={vaultedPaymentMethods}
-          renderItem={({ item }) => <Text style={{
-            marginHorizontal: 20,
-            paddingTop: 1,
-            paddingBottom: 10,
-            paddingHorizontal: 10,
-            fontSize: 18,
-            height: 44,
-            color:'black',
-          }} onPress={() => setSelectedVaultedPaymentMethod(item)}>{item.paymentInstrumentData.first6Digits + '****'}
-          </Text>}
-        />
-      );
-    }
-  }
-
-
-  const renderVaultAdditionalData = () => {
-    if (!selectedVaultedPaymentMethod) {
-      return null;
-    }
-
-    return (
-      <View>
-        <TextInput style={{
-          borderColor: "gray",
-          marginHorizontal: 20,
-          marginVertical: 8,
-          borderWidth: 1,
-          borderRadius: 10,
-          padding: 10,
-        }}
-          placeholder='CVV'
-          keyboardType='numeric'
-          onSubmitEditing={(value) => payVaulted(selectedVaultedPaymentMethod, value.nativeEvent.text)} />
-      </View>
-    );
   }
 
   const renderPaymentMethodsUI = () => {
@@ -541,9 +405,6 @@ export const HeadlessCheckoutScreen = (props: any) => {
 
   return (
     <View style={{ paddingHorizontal: 24, flex: 1 }}>
-      {renderVaultManagerButton()}
-      {renderVaultedPaymentMethods()}
-      {renderVaultAdditionalData()}
       {renderPaymentMethodsUI()}
       {renderLoadingOverlay()}
     </View>
