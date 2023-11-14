@@ -2,6 +2,8 @@ import { NativeModules } from 'react-native';
 import { ValidationError } from '@primer-io/react-native';
 import { VaultedPaymentMethod } from '@primer-io/react-native';
 import { VaultedPaymentMethodAdditionalData } from '@primer-io/react-native';
+import { PrimerVaultedPaymentMethodResult } from 'src/models/PrimerVaultedPaymentMethodResult';
+import { PrimerValidationErrorResult } from 'src/models/PrimerValidationErrorResult';
 
 const { RNPrimerHeadlessUniversalCheckoutVaultManager } = NativeModules;
 
@@ -31,7 +33,7 @@ class PrimerHeadlessUniversalCheckoutVaultManager {
     async fetchVaultedPaymentMethods(): Promise<VaultedPaymentMethod[]> {
         return new Promise(async (resolve, reject) => {
             try {
-                const data =
+                const data: PrimerVaultedPaymentMethodResult =
                     await RNPrimerHeadlessUniversalCheckoutVaultManager.fetchVaultedPaymentMethods();
                 const paymentMethods: VaultedPaymentMethod[] = data.paymentMethods;
                 resolve(paymentMethods);
@@ -57,7 +59,7 @@ class PrimerHeadlessUniversalCheckoutVaultManager {
     async validate(vaultedPaymentMethodId: String, additionalData: VaultedPaymentMethodAdditionalData): Promise<ValidationError[]> {
         return new Promise(async (resolve, reject) => {
             try {
-                const data =
+                const data: PrimerValidationErrorResult =
                     await RNPrimerHeadlessUniversalCheckoutVaultManager.validate(vaultedPaymentMethodId, JSON.stringify(additionalData));
                 const errors: ValidationError[] = data.validationErrors;
                 resolve(errors);
