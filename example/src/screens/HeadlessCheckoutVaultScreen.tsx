@@ -113,7 +113,7 @@ export const HeadlessCheckoutVaultScreen = (props: any) => {
       const validationErrors: ValidationError[] = await vaultManager.validate(vaultedPaymentMethod.id, data);
 
       if (validationErrors.length == 0) {
-        await vaultManager.startPaymentFlow(vaultedPaymentMethod.id, data);
+        await vaultManager.startPaymentFlowWithAdditionalData(vaultedPaymentMethod.id, data);
         setIsLoading(false);
         Alert.alert(
           "Success!",
@@ -180,7 +180,6 @@ export const HeadlessCheckoutVaultScreen = (props: any) => {
       );
     }
   }
-
 
   const renderVaultAdditionalData = () => {
     if (!selectedVaultedPaymentMethod) {
