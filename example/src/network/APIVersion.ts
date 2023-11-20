@@ -13,7 +13,7 @@ export function getAPIVersionStringVal(apiVersion: APIVersion): string | undefin
         case APIVersion.v2:
             return "2021-09-27"
         case APIVersion.v3:
-            return "2021-10-19"
+            return "2.2"
         case APIVersion.v4:
             return "2021-12-01"
         case APIVersion.v5:

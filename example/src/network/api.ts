@@ -60,7 +60,7 @@ export const createClientSession = async () => {
 
 export const setClientSessionActions = async (body: IClientSessionActionsRequestBody) => {
     const url = baseUrl + '/client-session/actions';
-    const headers: { [key: string]: string } = { ...staticHeaders, 'X-Api-Version': '2021-10-19' };
+    const headers: { [key: string]: string } = { ...staticHeaders, 'X-Api-Version': '2.2' };
 
     if (customApiKey) {
         headers['X-Api-Key'] = customApiKey;
