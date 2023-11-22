@@ -1,60 +1,41 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Alert,
+  Button,
+  FlatList,
   Text,
   TextInput,
-  FlatList,
   View,
 } from 'react-native';
-import { createClientSession } from '../network/api';
+import { createClientSession, createPayment, resumePayment } from '../network/api';
 import { appPaymentParameters } from '../models/IClientSessionRequestBody';
-import { ActivityIndicator } from 'react-native';
+import type { IPayment } from '../models/IPayment';
 import { getPaymentHandlingStringVal } from '../network/Environment';
+import { ActivityIndicator } from 'react-native';
 import {
+  CheckoutAdditionalInfo,
+  CheckoutData,
   VaultManager,
   VaultedPaymentMethod,
   HeadlessUniversalCheckout,
-  PrimerSettings,
   VaultedPaymentMethodAdditionalData,
+  PrimerSettings,
   ValidationError
 } from '@primer-io/react-native';
 
 let log: string = "";
-
-const vaultManager = new VaultManager()
+let merchantPaymentId: string | null = null;
+let merchantCheckoutData: CheckoutData | null = null;
+let merchantCheckoutAdditionalInfo: CheckoutAdditionalInfo | null = null;
+let merchantPayment: IPayment | null = null;
+let merchantPrimerError: Error | unknown | null = null;
 
 export const HeadlessCheckoutVaultScreen = (props: any) => {
   const [isLoading, setIsLoading] = useState(true);
   const [clientSession, setClientSession] = useState<null | any>(null);
+
+  const [cvv, setCvv] = useState('');
   const [vaultedPaymentMethods, setVaultedPaymentMethods] = useState<undefined | VaultedPaymentMethod[]>(undefined);
   const [selectedVaultedPaymentMethod, setSelectedVaultedPaymentMethod] = useState<undefined | VaultedPaymentMethod>(undefined);
-
-  let settings: PrimerSettings = {
-    paymentHandling: getPaymentHandlingStringVal(appPaymentParameters.paymentHandling),
-    paymentMethodOptions: {
-      iOS: {
-        urlScheme: 'merchant://primer.io'
-      },
-      cardPaymentOptions: {
-        is3DSOnVaultingEnabled: false
-      },
-    },
-    headlessUniversalCheckoutCallbacks: {
-      onAvailablePaymentMethodsLoad: (availablePaymentMethods => {
-        updateLogs(`\nℹ️ onAvailablePaymentMethodsLoad\n${JSON.stringify(availablePaymentMethods, null, 2)}\n`);
-        setIsLoading(false);
-      }),
-      onCheckoutComplete: (checkoutData) => {
-        updateLogs(`\n✅ onCheckoutComplete\ncheckoutData: ${JSON.stringify(checkoutData, null, 2)}\n`);
-        setIsLoading(false);
-      },
-      onError: (err, checkoutData) => {
-        updateLogs(`\n🛑 onError\nerror: ${JSON.stringify(err, null, 2)}`);
-        console.error(err);
-        setIsLoading(false);
-      }
-    }
-  };
 
   const updateLogs = (str: string) => {
     console.log(str);
@@ -63,11 +44,128 @@ export const HeadlessCheckoutVaultScreen = (props: any) => {
     log = combinedLog;
   }
 
+  let vaultManager = new VaultManager();
+
+  let settings: PrimerSettings = {
+    paymentHandling: getPaymentHandlingStringVal(appPaymentParameters.paymentHandling),
+    paymentMethodOptions: {
+      iOS: {
+        urlScheme: 'merchant://primer.io'
+      },
+      android: {
+        redirectScheme: 'primer'
+      },
+    },
+    debugOptions: {
+      is3DSSanityCheckEnabled: false
+    },
+    headlessUniversalCheckoutCallbacks: {
+      onAvailablePaymentMethodsLoad: (availablePaymentMethods => {
+        updateLogs(`\nℹ️ onAvailablePaymentMethodsLoad\n${JSON.stringify(availablePaymentMethods, null, 2)}\n`);
+        setIsLoading(false);
+      }),
+      onPreparationStart: (paymentMethodType) => {
+        updateLogs(`\nℹ️ onPreparationStart\npaymentMethodType: ${paymentMethodType}\n`);
+      },
+      onPaymentMethodShow: (paymentMethodType) => {
+        updateLogs(`\nℹ️ onPaymentMethodShow\npaymentMethodType: ${paymentMethodType}\n`);
+      },
+      onTokenizationStart: (paymentMethodType) => {
+        updateLogs(`\nℹ️ onTokenizationStart\npaymentMethodType: ${paymentMethodType}\n`);
+      },
+      onBeforeClientSessionUpdate: () => {
+        updateLogs(`\nℹ️ onBeforeClientSessionUpdate\n`);
+      },
+      onClientSessionUpdate: (clientSession) => {
+        updateLogs(`\nℹ️ onClientSessionUpdate\nclientSession: ${JSON.stringify(clientSession, null, 2)}\n`);
+      },
+      onCheckoutAdditionalInfo: (additionalInfo) => {
+        merchantCheckoutAdditionalInfo = additionalInfo;
+        updateLogs(`\nℹ️ onCheckoutPending\nadditionalInfo: ${JSON.stringify(additionalInfo, null, 2)}\n`);
+        setIsLoading(false);
+      },
+      onCheckoutPending: (checkoutAdditionalInfo) => {
+        merchantCheckoutAdditionalInfo = checkoutAdditionalInfo;
+        updateLogs(`\n✅ onCheckoutPending\nadditionalInfo: ${JSON.stringify(checkoutAdditionalInfo, null, 2)}\n`);
+        setIsLoading(false);
+        navigateToResultScreen();
+      },
+      onTokenizationSuccess: async (paymentMethodTokenData, handler) => {
+        updateLogs(`\nℹ️ onTokenizationSuccess\npaymentMethodTokenData: ${JSON.stringify(paymentMethodTokenData, null, 2)}\n`);
+        setIsLoading(false);
+
+        try {
+          const payment: IPayment = await createPayment(paymentMethodTokenData.token);
+          merchantPayment = payment;
+
+          if (payment.requiredAction && payment.requiredAction.clientToken) {
+            merchantPaymentId = payment.id;
+
+            if (payment.requiredAction.name === "3DS_AUTHENTICATION") {
+              updateLogs("\n⚠️ Make sure you have used a card number that supports 3DS, otherwise the SDK will hang.")
+            }
+
+            handler.continueWithNewClientToken(payment.requiredAction.clientToken);
+
+          } else {
+            setIsLoading(false);
+            handler.complete();
+            navigateToResultScreen();
+          }
+
+        } catch (err) {
+          merchantPrimerError = err;
+          updateLogs(`\n🛑 Error:\n${JSON.stringify(err, null, 2)}`);
+          setIsLoading(false);
+          handler.complete();
+
+          console.error(err);
+          navigateToResultScreen();
+        }
+      },
+      onCheckoutResume: async (resumeToken, handler) => {
+        updateLogs(`\nℹ️ onCheckoutResume\nresumeToken: ${resumeToken}`);
+
+        try {
+          if (merchantPaymentId) {
+            const payment: IPayment = await resumePayment(merchantPaymentId, resumeToken);
+            merchantPayment = payment;
+            handler.complete();
+            updateLogs(`\n✅ Payment resumed\npayment: ${JSON.stringify(payment, null, 2)}`);
+            setIsLoading(false);
+            navigateToResultScreen();
+            merchantPaymentId = null;
+
+          } else {
+            const err = new Error("Invalid value for paymentId");
+            throw err;
+          }
+
+        } catch (err) {
+          console.error(err);
+          handler.complete();
+          updateLogs(`\n🛑 Payment resume\nerror: ${JSON.stringify(err, null, 2)}`);
+          setIsLoading(false);
+
+          merchantPaymentId = null;
+          navigateToResultScreen();
+        }
+      },
+      onError: (err, checkoutData) => {
+        merchantCheckoutData = checkoutData;
+        merchantPrimerError = err;
+        updateLogs(`\n🛑 onError\nerror: ${JSON.stringify(err, null, 2)}`);
+        console.error(err);
+        setIsLoading(false);
+        navigateToResultScreen();
+      }
+    }
+  };
+
   useEffect(() => {
     createClientSessionIfNeeded()
       .then((session) => {
-        setIsLoading(false);
-        startVaultManager(session.clientToken);
+        fetchVaultedPaymentMethods(session.clientToken);
       })
       .catch(err => {
         setIsLoading(false);
@@ -91,14 +189,14 @@ export const HeadlessCheckoutVaultScreen = (props: any) => {
     });
   }
 
-  const startVaultManager = async (clientToken: string) => {
+  const fetchVaultedPaymentMethods = async (clientToken: string) => {
     try {
-      setIsLoading(true);
-      await HeadlessUniversalCheckout.startWithClientToken(clientToken, settings);
-      await vaultManager.configure();
-      const availablePaymentMethods = await vaultManager.fetchVaultedPaymentMethods();
-      updateLogs(`\n Returned Payment Methods: ${JSON.stringify(availablePaymentMethods, null, 2)}`);
-      setVaultedPaymentMethods(availablePaymentMethods);
+      const result = await HeadlessUniversalCheckout.startWithClientToken(clientToken, settings);
+      if (result) {
+        await vaultManager.configure();
+        const availablePaymentMethods = await vaultManager.fetchVaultedPaymentMethods();
+        setVaultedPaymentMethods(availablePaymentMethods);
+      }
       setIsLoading(false);
     } catch (err) {
       console.error(err);
@@ -106,42 +204,46 @@ export const HeadlessCheckoutVaultScreen = (props: any) => {
     }
   }
 
-  const payVaulted = async (vaultedPaymentMethod: VaultedPaymentMethod, additionalData: String) => {
+  const startVaultedPaymentFlow = async () => {
     try {
       setIsLoading(true);
-      const data: VaultedPaymentMethodAdditionalData = { cvv: additionalData };
-      const validationErrors: ValidationError[] = await vaultManager.validate(vaultedPaymentMethod.id, data);
-
-      if (validationErrors.length == 0) {
-        await vaultManager.startPaymentFlowWithAdditionalData(vaultedPaymentMethod.id, data);
-        setIsLoading(false);
-        Alert.alert(
-          "Success!",
-          `${vaultedPaymentMethod.paymentMethodType} payment has been processed successfully.`,
-          [
-            {
-              text: "Okay",
-              style: "default",
-              onPress: () => { }
-            }
-          ],
-          { cancelable: true, }
-        );
+      if (!cvv) {
+        await vaultManager.startPaymentFlow(selectedVaultedPaymentMethod.id);
       } else {
-        setIsLoading(false);
-        console.error(validationErrors[0]);
+        const data: VaultedPaymentMethodAdditionalData = { cvv: cvv };
+        const validationErrors: ValidationError[] = await vaultManager.validate(selectedVaultedPaymentMethod.id, data);
+        if (validationErrors.length == 0) {
+          await vaultManager.startPaymentFlowWithAdditionalData(selectedVaultedPaymentMethod.id, data);
+        } else {
+          console.error(validationErrors[0]);
+        }
       }
     } catch (err) {
-      logPaymentError(err);
+      console.error(err);
+      setIsLoading(false);
     }
   }
 
-  const logPaymentError = async (err: any) => {
-    updateLogs(`\n🛑 pay\nerror: ${JSON.stringify(err, null, 2)}`);
-    setIsLoading(false);
-    console.error(err);
-  }
+  const navigateToResultScreen = async () => {
+    try {
+      props.navigation.navigate("Result", {
+        merchantCheckoutAdditionalInfo: merchantCheckoutAdditionalInfo,
+        merchantCheckoutData: merchantCheckoutData,
+        merchantPayment: merchantPayment,
+        merchantPrimerError: merchantPrimerError,
+        logs: log
+      });
 
+      setClientSession(null);
+      setIsLoading(true);
+      await createClientSessionIfNeeded();
+
+    } catch (err) {
+      console.error(err);
+    }
+
+    setIsLoading(false);
+  }
 
   const renderVaultedPaymentMethods = () => {
     if (!vaultedPaymentMethods) {
@@ -174,7 +276,9 @@ export const HeadlessCheckoutVaultScreen = (props: any) => {
             fontSize: 18,
             height: 40,
             color: 'black'
-          }} onPress={() => setSelectedVaultedPaymentMethod(item)}>{item.paymentInstrumentData.first6Digits + '****'}
+          }} onPress={() => setSelectedVaultedPaymentMethod(item)}
+          >
+            {'••••' + item.paymentInstrumentData.last4Digits}
           </Text>}
         />
       );
@@ -182,10 +286,6 @@ export const HeadlessCheckoutVaultScreen = (props: any) => {
   }
 
   const renderVaultAdditionalData = () => {
-    if (!selectedVaultedPaymentMethod) {
-      return null;
-    }
-
     return (
       <View>
         <TextInput style={{
@@ -198,7 +298,14 @@ export const HeadlessCheckoutVaultScreen = (props: any) => {
         }}
           placeholder='CVV'
           keyboardType='numeric'
-          onSubmitEditing={(value) => payVaulted(selectedVaultedPaymentMethod, value.nativeEvent.text)} />
+          onChangeText={cvv => setCvv(cvv)}
+        />
+        <Button
+          color='black'
+          title='Submit'
+          disabled={!selectedVaultedPaymentMethod}
+          onPress={() => startVaultedPaymentFlow()}
+        />
       </View>
     );
   }
