@@ -58,7 +58,7 @@ export interface IClientSession_Action {
 
 export interface IClientSessionPaymentMethod {
     vaultOnSuccess?: boolean;
-    paymentType?: string
+    paymentType?: string;
     options?: IClientSessionPaymentMethodOptions;
 }
 
