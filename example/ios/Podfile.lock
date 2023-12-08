@@ -14,16 +14,16 @@ PODS:
   - KlarnaMobileSDK (2.2.2):
     - KlarnaMobileSDK/full (= 2.2.2)
   - KlarnaMobileSDK/full (2.2.2)
-  - primer-io-react-native (2.17.3):
-    - PrimerSDK (= 2.17.4)
+  - primer-io-react-native (2.18.0):
+    - PrimerSDK (= 2.18.0)
     - React-Core
   - Primer3DS (2.0.1)
   - PrimerIPay88MYSDK (0.1.6)
   - PrimerKlarnaSDK (1.0.4):
     - KlarnaMobileSDK (= 2.2.2)
-  - PrimerSDK (2.17.4):
-    - PrimerSDK/Core (= 2.17.4)
-  - PrimerSDK/Core (2.17.4)
+  - PrimerSDK (2.18.0):
+    - PrimerSDK/Core (= 2.18.0)
+  - PrimerSDK/Core (2.18.0)
   - RCT-Folly (2021.07.22.00):
     - boost
     - DoubleConversion
@@ -421,7 +421,7 @@ DEPENDENCIES:
   - FBReactNativeSpec (from `../node_modules/react-native/React/FBReactNativeSpec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - primer-io-react-native (from `../..`)
-  - Primer3DS (~> 2.0.0)
+  - Primer3DS
   - PrimerIPay88MYSDK
   - PrimerKlarnaSDK
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
@@ -572,11 +572,11 @@ SPEC CHECKSUMS:
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
   KlarnaMobileSDK: 23b44390d06c6e3a90b5325bea6c10bf97ac6044
-  primer-io-react-native: 2092586928c4cea0eb18de38e67cd1c55f2ddd0c
+  primer-io-react-native: 04c641229d68810efbdd96f72338953d08ac7723
   Primer3DS: 16a0c0d48d83dcfe9fc5c213338bf5d48eeeb1de
   PrimerIPay88MYSDK: a3097799a9ced2db623b2d8a3fbc226be7051f20
   PrimerKlarnaSDK: de4b8b8fda075e3e4ebbd4ab80bd141c76a30d85
-  PrimerSDK: f1f0615ae0a917ae90f09716538f4a9e14c2ee28
+  PrimerSDK: 83dc58cfd5cd5de47edcfd05ebf82739d9d3bd1b
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
   RCTRequired: a2faf4bad4e438ca37b2040cb8f7799baa065c18
   RCTTypeSafety: cb09f3e4747b6d18331a15eb05271de7441ca0b3
@@ -617,6 +617,6 @@ SPEC CHECKSUMS:
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   Yoga: 8796b55dba14d7004f980b54bcc9833ee45b28ce
 
-PODFILE CHECKSUM: 35b15b603beeb1002911fd390ec9f11ebd3d438f
+PODFILE CHECKSUM: feffe552fa92693f1917102e2bdb7a5aa6410f53
 
-COCOAPODS: 1.13.0
+COCOAPODS: 1.14.3
