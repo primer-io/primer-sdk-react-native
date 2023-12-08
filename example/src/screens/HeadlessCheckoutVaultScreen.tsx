@@ -213,7 +213,7 @@ export const HeadlessCheckoutVaultScreen = (props: any) => {
         const data: VaultedPaymentMethodAdditionalData = { cvv: cvv };
         const validationErrors: ValidationError[] = await vaultManager.validate(selectedVaultedPaymentMethod.id, data);
         if (validationErrors.length == 0) {
-          await vaultManager.startPaymentFlowWithAdditionalData(selectedVaultedPaymentMethod.id, data);
+          await vaultManager.startPaymentFlow(selectedVaultedPaymentMethod.id, data);
         } else {
           console.error(validationErrors[0]);
         }

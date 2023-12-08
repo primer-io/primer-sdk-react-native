@@ -70,22 +70,14 @@ class PrimerHeadlessUniversalCheckoutVaultManager {
         });
     }
 
-    async startPaymentFlow(vaultedPaymentMethodId: String): Promise<void> {
+    async startPaymentFlow(vaultedPaymentMethodId: String, additionalData?: VaultedPaymentMethodAdditionalData): Promise<void> {
         return new Promise(async (resolve, reject) => {
             try {
-                await RNPrimerHeadlessUniversalCheckoutVaultManager.startPaymentFlow(vaultedPaymentMethodId);
-                resolve();
-            } catch (err) {
-                console.error(err);
-                reject(err);
-            }
-        });
-    }
-
-    async startPaymentFlowWithAdditionalData(vaultedPaymentMethodId: String, additionalData: VaultedPaymentMethodAdditionalData): Promise<void> {
-        return new Promise(async (resolve, reject) => {
-            try {
-                await RNPrimerHeadlessUniversalCheckoutVaultManager.startPaymentFlowWithAdditionalData(vaultedPaymentMethodId, JSON.stringify(additionalData));
+                if(additionalData) {
+                    await RNPrimerHeadlessUniversalCheckoutVaultManager.startPaymentFlowWithAdditionalData(vaultedPaymentMethodId, JSON.stringify(additionalData));
+                } else {
+                    await RNPrimerHeadlessUniversalCheckoutVaultManager.startPaymentFlow(vaultedPaymentMethodId);
+                }
                 resolve();
             } catch (err) {
                 console.error(err);
