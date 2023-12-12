@@ -7,6 +7,7 @@ import com.facebook.react.uimanager.ViewManager
 import com.primerioreactnative.components.manager.asset.PrimerRNHeadlessUniversalCheckoutAssetManager
 import com.primerioreactnative.components.manager.nativeUi.PrimerRNHeadlessUniversalCheckoutNativeUiManager
 import com.primerioreactnative.components.manager.raw.PrimerRNHeadlessUniversalCheckoutRawManager
+import com.primerioreactnative.components.manager.redirect.PrimerRNHeadlessUniversalCheckoutComponentWithRedirectManager
 import kotlinx.serialization.json.Json
 
 class ReactNativePackage : ReactPackage {
@@ -19,7 +20,8 @@ class ReactNativePackage : ReactPackage {
       PrimerRNHeadlessUniversalCheckout(reactContext, json),
       PrimerRNHeadlessUniversalCheckoutRawManager(reactContext, json),
       PrimerRNHeadlessUniversalCheckoutNativeUiManager(reactContext),
-      PrimerRNHeadlessUniversalCheckoutAssetManager(reactContext)
+      PrimerRNHeadlessUniversalCheckoutAssetManager(reactContext),
+      PrimerRNHeadlessUniversalCheckoutComponentWithRedirectManager(reactContext)
     )
   }
 
