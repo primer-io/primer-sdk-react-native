@@ -1,20 +1,9 @@
 import React, {useEffect, useState} from 'react';
-import {
-  Text,
-  TouchableOpacity,
-  View,
-  ScrollView,
-  NativeEventEmitter,
-  NativeModules,
-  FlatList,
-} from 'react-native';
+import {Text, TouchableOpacity, View, FlatList} from 'react-native';
 import {ActivityIndicator} from 'react-native';
 import {RedirectManager} from '@primer-io/react-native';
 
 const redirectManager = new RedirectManager();
-const eventEmitter = new NativeEventEmitter(
-  NativeModules.RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManager,
-);
 
 interface IBank {
   id: string;
@@ -31,23 +20,6 @@ const HeadlessCheckoutWithRedirect = (props: any) => {
     initialize();
   }, []);
 
-  useEffect(() => {
-    let eventListener = eventEmitter.addListener('onRetrieved', setBanks);
-    let validListener = eventEmitter.addListener('onInvalid', event => {
-      console.log(event);
-    });
-
-    let errorListener = eventEmitter.addListener('onError', event => {
-      console.log(event);
-    });
-
-    // Removes the listener once unmounted
-    return () => {
-      eventListener.remove();
-      validListener.remove();
-    };
-  }, []);
-
   const initialize = async () => {
     await redirectManager.configure({
       paymentMethodType: props.route.params.paymentMethodType,
@@ -60,6 +32,7 @@ const HeadlessCheckoutWithRedirect = (props: any) => {
       onRetrieved: data => {
         const log = `\nonRetrieved: ${JSON.stringify(data)}\n`;
         console.log(log);
+        setBanks(data);
       },
       //@ts-ignore
       onInvalid: data => {
@@ -118,7 +91,7 @@ const HeadlessCheckoutWithRedirect = (props: any) => {
   const renderBanks = () => {
     return (
       <FlatList
-        data={banks.banks}
+        data={banks}
         renderItem={({item}) => <Bank item={item} />}
         keyExtractor={item => item.id}
       />
