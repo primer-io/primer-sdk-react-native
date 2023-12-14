@@ -295,9 +295,9 @@ PODS:
   - React-jsinspector (0.72.3)
   - React-logger (0.72.3):
     - glog
-  - react-native-safe-area-context (4.7.2):
+  - react-native-safe-area-context (4.8.1):
     - React-Core
-  - react-native-segmented-control (2.4.2):
+  - react-native-segmented-control (2.4.3):
     - React-Core
   - React-NativeModulesApple (0.72.3):
     - React-callinvoker
@@ -406,11 +406,11 @@ PODS:
     - React-perflogger (= 0.72.3)
   - RNCMaskedView (0.2.9):
     - React-Core
-  - RNCPicker (2.5.0):
+  - RNCPicker (2.6.1):
     - React-Core
-  - RNScreens (3.25.0):
+  - RNScreens (3.29.0):
+    - RCT-Folly (= 2021.07.22.00)
     - React-Core
-    - React-RCTImage
   - SocketRocket (0.6.1)
   - Yoga (1.14.0)
 
@@ -420,7 +420,7 @@ DEPENDENCIES:
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../node_modules/react-native/React/FBReactNativeSpec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
-  - primer-io-react-native (from `../..`)
+  - primer-io-react-native (from `../../sdk`)
   - Primer3DS
   - PrimerIPay88MYSDK
   - PrimerKlarnaSDK
@@ -486,7 +486,7 @@ EXTERNAL SOURCES:
   glog:
     :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
   primer-io-react-native:
-    :path: "../.."
+    :path: "../../sdk"
   RCT-Folly:
     :podspec: "../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTRequired:
@@ -592,8 +592,8 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 2c15ba1bace70177492368d5180b564f165870fd
   React-jsinspector: b511447170f561157547bc0bef3f169663860be7
   React-logger: c5b527272d5f22eaa09bb3c3a690fee8f237ae95
-  react-native-safe-area-context: 7aa8e6d9d0f3100a820efb1a98af68aa747f9284
-  react-native-segmented-control: 2221962f5073e2e809aa3691e8e410fc10b60578
+  react-native-safe-area-context: cd1169d797a2ef722a00bfc5af10748d5b6c94f9
+  react-native-segmented-control: d88b35fcd06c0c8e1f1f7ed1eb066c2b02570fdd
   React-NativeModulesApple: bfbb84f3e6a1b919791b57303524de557ba45fef
   React-perflogger: 6bd153e776e6beed54c56b0847e1220a3ff92ba5
   React-RCTActionSheet: c0b62af44e610e69d9a2049a682f5dba4e9dff17
@@ -612,11 +612,11 @@ SPEC CHECKSUMS:
   React-utils: bcb57da67eec2711f8b353f6e3d33bd8e4b2efa3
   ReactCommon: d7d63a5b3c3ff29304a58fc8eb3b4f1b077cd789
   RNCMaskedView: 949696f25ec596bfc697fc88e6f95cf0c79669b6
-  RNCPicker: 32ca102146bc7d34a8b93a998d9938d9f9ec7898
-  RNScreens: 85d3880b52d34db7b8eeebe2f1a0e807c05e69fa
+  RNCPicker: b18aaf30df596e9b1738e7c1f9ee55402a229dca
+  RNScreens: 3c5b9f4a9dcde752466854b6109b79c0e205dad3
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   Yoga: 8796b55dba14d7004f980b54bcc9833ee45b28ce
 
-PODFILE CHECKSUM: feffe552fa92693f1917102e2bdb7a5aa6410f53
+PODFILE CHECKSUM: 73870261e98d8ed4bc79a7995f2ff1edc466043f
 
 COCOAPODS: 1.14.3

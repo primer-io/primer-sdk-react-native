@@ -1,7 +1,11 @@
 {
     "name": "@primer-io/react-native-monorepo",
     "private": true,
-    "workspaces": [
-        "packages/*"
-    ]
+    "workspaces": {
+        "packages": ["packages/*"],
+        "nohoist": ["**/react", "**/react-native*"]
+    },
+    "scripts": {
+        "bootstrap": "echo 'Coming soon! ✨'"
+    }
 }

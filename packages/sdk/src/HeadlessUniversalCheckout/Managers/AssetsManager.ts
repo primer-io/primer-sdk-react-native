@@ -1,4 +1,4 @@
-import type { Asset } from '@primer-io/react-native';
+import { IPrimerAsset as Asset } from '../../models/PrimerAsset';
 import { NativeModules } from 'react-native';
 
 const { RNTPrimerHeadlessUniversalCheckoutAssetsManager } = NativeModules;

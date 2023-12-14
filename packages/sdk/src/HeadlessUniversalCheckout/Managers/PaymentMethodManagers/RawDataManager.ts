@@ -1,4 +1,4 @@
-import type { RawData } from '@primer-io/react-native';
+import { type PrimerRawData as RawData } from '../../../models/PrimerRawData';
 import { NativeEventEmitter, NativeModules, EmitterSubscription } from 'react-native';
 import type { PrimerInitializationData } from 'src/models/PrimerInitializationData';
 import { PrimerError } from '../../../models/PrimerError';

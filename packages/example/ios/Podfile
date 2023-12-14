@@ -44,7 +44,7 @@ target 'example_0_70_6' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
   
-  pod 'primer-io-react-native', :path => '../..'
+  pod 'primer-io-react-native', :path => '../../sdk'
   pod 'Primer3DS'
   pod 'PrimerIPay88MYSDK'
   pod 'PrimerKlarnaSDK'
