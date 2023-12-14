@@ -13,13 +13,14 @@ const eventEmitter = new NativeEventEmitter(
   RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManager
 );
 
-type EventType = 'onRetrieved' | 'onRetrieving' | 'onInvalid' | 'onError';
+type EventType = 'onRetrieved' | 'onRetrieving' | 'onInvalid' | 'onValid' | 'onError';
 
 const eventTypes: EventType[] = [
   'onRetrieved',
   'onRetrieving',
   'onInvalid',
   'onError',
+  'onValid'
 ];
 
 export interface RedirectManagerProps {
@@ -28,6 +29,7 @@ export interface RedirectManagerProps {
   onRetrieving?: () => void;
   onError?: (errors: PrimerError[] | undefined) => void;
   onInvalid?: (isValid: any) => void;
+  onValid?: () => void;
 }
 
 class PrimerHeadlessUniversalCheckoutComponentWithRedirectManager {
@@ -36,7 +38,7 @@ class PrimerHeadlessUniversalCheckoutComponentWithRedirectManager {
   ///////////////////////////////////////////
   // Init
   ///////////////////////////////////////////
-  constructor() {}
+  constructor() { }
 
   ///////////////////////////////////////////
   // API
@@ -143,6 +145,14 @@ class PrimerHeadlessUniversalCheckoutComponentWithRedirectManager {
         this.addListener('onError', (data) => {
           if (this.options?.onError) {
             this.options.onError(data.errors);
+          }
+        });
+      }
+
+      if (this.options?.onValid) {
+        this.addListener('onValid', () => {
+          if (this.options?.onValid) {
+            this.options.onValid();
           }
         });
       }

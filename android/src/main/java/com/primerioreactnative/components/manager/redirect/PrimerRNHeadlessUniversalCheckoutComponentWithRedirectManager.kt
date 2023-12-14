@@ -11,8 +11,10 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.modules.core.DeviceEventManagerModule
+import com.primerioreactnative.components.events.PrimerHeadlessUniversalCheckoutRedirectManagerEvent
 import com.primerioreactnative.components.manager.raw.PrimerRNHeadlessUniversalCheckoutRawManager
 import com.primerioreactnative.datamodels.ErrorTypeRN
+import com.primerioreactnative.datamodels.PrimerInputValidationErrorRN
 import com.primerioreactnative.utils.convertJsonToMap
 import com.primerioreactnative.utils.errorTo
 import io.primer.android.components.SdkUninitializedException
@@ -76,7 +78,6 @@ class PrimerRNHeadlessUniversalCheckoutComponentWithRedirectManager(
 
   }
 
-  // TODO: maybe rename this function to match JS conventions
   @ReactMethod
   fun onBankSelected(bankId: String, promise: Promise) {
     banksComponent?.updateCollectedData(BanksCollectableData.BankId(bankId))
@@ -84,7 +85,6 @@ class PrimerRNHeadlessUniversalCheckoutComponentWithRedirectManager(
 
   }
 
-  // TODO: maybe rename this function to match JS conventions
   @ReactMethod
   fun onBankFilterChange(filter: String, promise: Promise) {
     banksComponent?.updateCollectedData(BanksCollectableData.Filter(filter))
@@ -96,29 +96,14 @@ class PrimerRNHeadlessUniversalCheckoutComponentWithRedirectManager(
     banksComponent?.componentError?.collectLatest { error ->
       Log.e("error",error.toString())
     }
-//    } catch (e: SdkUninitializedException) {
-//      // TODO: use sendEvent here
-////      promise.reject(ErrorTypeRN.UnitializedSdkSession.errorId, e.message, e)
-//    } catch (e: UnsupportedPaymentMethodManagerException) {
-//      // TODO: use sendEvent here
-////      promise.reject(ErrorTypeRN.UnsupportedPaymentMethod.errorId, e.message, e)
-//    } catch (e: Exception) {
-//      // TODO: use sendEvent here
-//      val exception =
-//        ErrorTypeRN.NativeBridgeFailed errorTo e.message.orEmpty()
-////      promise.reject(exception.errorId, exception.description, e)
-//    }
   }
 
-
   private suspend fun configureBanksListener() {
-    Log.e("error","configureBanksListener")
-
     banksComponent?.componentStep?.collectLatest { banksStep ->
         when (banksStep) {
           is BanksStep.Loading -> {
-            Log.e("error","onRetrieving")
-            sendEvent("onRetrieving",
+            sendEvent(
+              PrimerHeadlessUniversalCheckoutRedirectManagerEvent.ON_RETRIEVING.eventName,
               JSONObject().apply {
                 put(
                   "retrieving", "true"
@@ -127,9 +112,8 @@ class PrimerRNHeadlessUniversalCheckoutComponentWithRedirectManager(
             )
           }
           is BanksStep.BanksRetrieved -> {
-            Log.e("error","BanksRetrieved")
-
-            sendEvent("onRetrieved",
+            sendEvent(
+              PrimerHeadlessUniversalCheckoutRedirectManagerEvent.ON_RETRIEVED.eventName,
               JSONObject().apply {
                 put(
                   "banks", JSONArray(
@@ -141,58 +125,50 @@ class PrimerRNHeadlessUniversalCheckoutComponentWithRedirectManager(
           }
         }
       }
-//    } catch (e: SdkUninitializedException) {
-//      // TODO: use sendEvent here
-////      promise.reject(ErrorTypeRN.UnitializedSdkSession.errorId, e.message, e)
-//    } catch (e: UnsupportedPaymentMethodManagerException) {
-//      // TODO: use sendEvent here
-////      promise.reject(ErrorTypeRN.UnsupportedPaymentMethod.errorId, e.message, e)
-//    } catch (e: Exception) {
-//      // TODO: use sendEvent here
-//      val exception =
-//        ErrorTypeRN.NativeBridgeFailed errorTo e.message.orEmpty()
-////      promise.reject(exception.errorId, exception.description, e)
-//    }
   }
 
   private suspend fun configureValidationListener() {
-    Log.e("error","configureValidationListener")
-
     banksComponent?.componentValidationStatus?.collectLatest { validationStatus ->
       when (validationStatus) {
         is PrimerValidationStatus.Validating -> {
-          // no-op
-          sendEvent("onValidating",
+          sendEvent(PrimerHeadlessUniversalCheckoutRedirectManagerEvent.ON_VALIDATING.eventName,
             JSONObject().apply {
               put(
                 "validating", "true"
-              )
+              )xe
             }
           )
         }
         is PrimerValidationStatus.Invalid -> {
-          Log.e("error",validationStatus.toString())
-
-          sendEvent("onInvalid",
+          sendEvent(PrimerHeadlessUniversalCheckoutRedirectManagerEvent.ON_IN_VALID.eventName,
             JSONObject().apply {
               put(
-                "validating", "false"
-              );
-              put(
-                "errors", JSONArray(
-                  "InValid"
+                "errors",
+                JSONArray(
+                  validationStatus.validationErrors.map {
+                    JSONObject().apply {
+                      put(
+                        "errorId", it.errorId)
+                        put(
+                        "description", it.description)
+                    put(
+                      "diagnosticsId",it.diagnosticsId)
+
+                    }
+                  }
                 )
               )
             }
           )
         }
         is PrimerValidationStatus.Valid -> {
-          Log.e("error",validationStatus.toString())
-
           when (validationStatus.collectableData) {
               is BanksCollectableData.BankId -> {
                 banksComponent?.submit()
-                Log.e("error","ran bank")
+                sendEvent(PrimerHeadlessUniversalCheckoutRedirectManagerEvent.ON_VALID.eventName,
+                  JSONObject().apply {
+                  }
+                )
               }
               is BanksCollectableData.Filter -> {
                 // no-op
@@ -200,13 +176,18 @@ class PrimerRNHeadlessUniversalCheckoutComponentWithRedirectManager(
           }
         }
         is PrimerValidationStatus.Error -> {
-          Log.e("error",validationStatus.toString())
-
-          sendEvent("onError",
+          sendEvent(PrimerHeadlessUniversalCheckoutRedirectManagerEvent.ON_ERROR.eventName,
             JSONObject().apply {
               put(
                 "errors", JSONArray(
-                  "Something is wrong"
+                  JSONObject().apply {
+                    put(
+                      "errorId",    validationStatus.error.errorId)
+                    put(
+                      "description", validationStatus.error.description)
+                    put(
+                      "diagnosticsId",validationStatus.error.diagnosticsId)
+                  }
                 )
               )
             }
