@@ -1,5 +1,5 @@
 import { type PrimerRawData as RawData } from '../../../models/PrimerRawData';
-import { NativeEventEmitter, NativeModules, EmitterSubscription } from 'react-native';
+import { NativeEventEmitter, NativeModules, EmitterSubscription, EventSubscription } from 'react-native';
 import type { PrimerInitializationData } from 'src/models/PrimerInitializationData';
 import { PrimerError } from '../../../models/PrimerError';
 import type { PrimerInputElementType } from '../../../models/PrimerInputElementType';
@@ -25,6 +25,8 @@ export interface RawDataManagerProps {
 class PrimerHeadlessUniversalCheckoutRawDataManager {
 
     options?: RawDataManagerProps
+
+    subscriptions: EventSubscription[] = []
 
     ///////////////////////////////////////////
     // Init
@@ -54,25 +56,23 @@ class PrimerHeadlessUniversalCheckoutRawDataManager {
 
     async configureListeners(): Promise<void> {
         //@ts-ignore
-        return new Promise(async (resolve, reject) => {
-            if (this.options?.onMetadataChange) {
-                this.addListener("onMetadataChange", (data) => {
-                    if (this.options?.onMetadataChange) {
-                        this.options.onMetadataChange(data);
-                    }
-                });
-            }
+        if (this.options?.onMetadataChange) {
+            const sub = await this.addListener("onMetadataChange", (data) => {
+                if (this.options?.onMetadataChange) {
+                    this.options.onMetadataChange(data);
+                }
+            });
+            this.subscriptions.push(sub);
+        }
 
-            if (this.options?.onValidation) {
-                this.addListener("onValidation", (data) => {
-                    if (this.options?.onValidation) {
-                        this.options.onValidation(data.isValid, data.errors);
-                    }
-                });
-            }
-
-            resolve();
-        });
+        if (this.options?.onValidation) {
+            const sub = await this.addListener("onValidation", (data) => {
+                if (this.options?.onValidation) {
+                    this.options.onValidation(data.isValid, data.errors);
+                }
+            });
+            this.subscriptions.push(sub);
+        }
     }
 
     async getRequiredInputElementTypes(): Promise<PrimerInputElementType[]> {

@@ -3,7 +3,7 @@
     "private": true,
     "workspaces": {
         "packages": ["packages/*"],
-        "nohoist": ["**/react", "**/react-native*"]
+        "nohoist": ["**/react*"]
     },
     "scripts": {
         "bootstrap": "echo 'Coming soon! ✨'"
