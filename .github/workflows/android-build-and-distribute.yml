@@ -30,7 +30,7 @@ jobs:
 
       - name: Install packages
         run: |
-          yarn workspace packages install
+          yarn --cwd packages/example install
 
       - name: Distribute the React Native Android app on Appetize and upload to BrowserStack 🚀
         run: bundle exec fastlane android appetize_build_and_upload
