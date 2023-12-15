@@ -1,0 +1,103 @@
+require 'net/http'
+
+default_platform(:android)
+
+platform :android do
+
+    def set_version_name (version_name)
+        path = '../packages/example/android/app/build.gradle'
+        re = /versionName\s+\"(\S+)\"/
+
+        s = File.read(path)
+        s[re, 1] = version_name
+
+        f = File.new(path, 'w')
+        f.write(s)
+        f.close
+    end
+
+    def set_version_code (version_code)
+        path = '../packages/example/android/app/build.gradle'
+        re = /versionCode\s+(\d+)/
+
+        s = File.read(path)
+        s[re, 1] = version_code.to_s
+
+        f = File.new(path, 'w')
+        f.write(s)
+        f.close
+    end
+
+    def get_sdk_version_name ()
+        path = '../packages/example/android/app/gradle.properties'
+        re = /VERSION\_NAME=(\S+)/
+
+        s = File.read(path)
+        return s[re, 1]
+    end
+
+    lane :appetize_build_and_upload do
+        pr_number = ENV["PR_NUMBER"]
+        if(!pr_number) then
+            puts "NO PR NUMBER"
+            next
+        end
+
+        appetize_api_token = ENV['APPETIZE_API_TOKEN']
+
+        puts "PR_NUMBER: " + pr_number
+        version_name = "preview-" + pr_number
+
+        time = Time.new
+        str_time = time.strftime("%Y-%m-%d %H:%M:%S")
+
+        # Set timestamp as version_code to differentiate builds in firebase
+        version_code = time.to_i
+
+        set_version_name version_name
+        set_version_code version_code
+
+        gradle(task: "clean assembleRelease", project_dir: 'packages/example/android/')
+
+        sdk_version_name_source_branch = ENV['SOURCE_BRANCH']
+        pr_number = ENV['PR_NUMBER']
+
+        uri = URI('https://livedemostore.common.primer.io/appetize/android/' + version_name)
+        public_key = Net::HTTP.get(uri) # => String
+        puts "public_key: " + public_key
+
+        appetize(
+            path: "./packages/example/android/app/build/outputs/apk/release/app-release.apk",
+            platform: "android",
+            api_token: appetize_api_token,
+            public_key: public_key,
+            note: version_name,
+            timeout: 300
+        )
+       update_deployment_url(lane_context[SharedValues::APPETIZE_APP_URL])
+
+       upload_to_browserstack_app_automate(
+         browserstack_username: ENV["BROWSERSTACK_USERNAME"],
+         browserstack_access_key: ENV["BROWSERSTACK_ACCESS_KEY"]
+       )
+
+       save_browserstack_id(browserstack_id: ENV['BROWSERSTACK_APP_ID'])
+    end
+
+
+    desc 'Store the Browserstack ID into a file'
+    private_lane :save_browserstack_id do |options|
+
+      browserstack_id_to_save = options[:browserstack_id]
+      browserstack_id_file = "/var/tmp/browserstack_id.txt"
+
+      UI.message("Saving #{browserstack_id_to_save} into #{browserstack_id_file}")
+
+      File.open(browserstack_id_file, 'w') { |file| file.write(options[:browserstack_id]) }
+
+    end
+
+    def update_deployment_url(pub_url)
+       sh("echo APPETIZE_APP_URL=#{pub_url} >> $GITHUB_ENV")
+    end
+end

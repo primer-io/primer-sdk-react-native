@@ -301,6 +301,8 @@ PLATFORMS
 DEPENDENCIES
   cocoapods
   fastlane
+  fastlane-plugin-browserstack
+  fastlane-plugin-firebase_app_distribution
 
 RUBY VERSION
    ruby 2.7.5p203

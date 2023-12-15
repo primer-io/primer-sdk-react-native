@@ -1,0 +1,232 @@
+#----------------------- CONSTANTS -------------------------#
+
+ENV["FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT"] = "120"
+
+# Appetize
+appetize_api_token = ENV['APPETIZE_API_TOKEN']
+
+# Github
+github_run_id = ENV["GITHUB_RUN_ID"]
+github_run_number = ENV["GITHUB_RUN_NUMBER"]
+
+# Xcode
+app_workspace = "packages/example/ios/example_0_70_6.xcworkspace"
+app_xcode_proj = "packages/example/ios/example_0_70_6.xcodeproj"
+app_scheme = "example_0_70_6"
+
+# Packages
+app_output_path = "/var/tmp/Primer.io_ReactNativeExample.xcarchive/Products/Applications/example_0_70_6.app"
+app_output_archive_path = "/var/tmp/Primer.io_ReactNativeExample.xcarchive"
+
+# Utils
+sdk_version_name_source_branch = ENV['SOURCE_BRANCH']
+pr_number = ENV['PR_NUMBER']
+
+#--------------------- END CONSTANTS -----------------------#
+
+#----------------------- FASTLANE -------------------------#
+
+platform :ios do
+
+###################### PUBLIC LANES #######################
+
+  lane :tests do
+    run_tests(workspace: app_workspace)
+  end
+
+  lane :ui_tests do
+    run_tests(workspace: app_workspace,
+              devices: ["iPhone SE", "iPhone 8"])
+  end
+
+  lane :danger_check do
+
+    danger(
+      danger_id: "check_on_all_prs",
+      dangerfile: "Dangerfile",
+      github_api_token: ENV["GITHUB_TOKEN"],
+      verbose: true,
+      remove_previous_comments: true
+    )
+
+  end
+
+  lane :qa_release do
+
+    common_pre_build_action
+
+    # Build for browserstack
+    build_app(
+      scheme: app_scheme,
+      workspace: app_workspace,
+      configuration: "Debug",
+      destination: "generic/platform=iOS Simulator",
+      xcargs: "EXCLUDED_ARCHS[sdk=iphonesimulator*]=arm64",
+      include_bitcode: false,
+      export_method: "development",
+      skip_package_dependencies_resolution: true,
+    )
+
+    # Upload to Browserstack
+    upload_to_browserstack_and_save_id(
+      file_path: ENV["IPA_OUTPUT_PATH"]
+    )
+
+  end
+
+  desc 'This action builds the app and uplads it to Appetize'
+  lane :appetize_build_and_upload do
+
+    common_pre_build_action
+
+    # Build for appetize
+
+    build_app(
+      scheme: app_scheme,
+      sdk: "iphonesimulator", # Appetize needs a simulator app
+      workspace: app_workspace,
+      configuration: "Debug",
+      destination: "generic/platform=iOS Simulator",
+      xcargs: "EXCLUDED_ARCHS[sdk=iphonesimulator*]=arm64",
+      include_bitcode: false,
+      export_method: "development",
+      archive_path: app_output_archive_path,
+      # Build speed optimisation
+      skip_package_ipa: true,
+      skip_package_pkg: true,
+      skip_package_dependencies_resolution: true,
+      silent: true
+    )
+
+    # Appetize needs the .app to be zipped
+
+    zip_path = "./PrimerSDK_Debug_Build.zip"
+
+    zip(
+      path: app_output_path,
+      output_path: zip_path,
+      symlinks: true
+    )
+
+    # Find public key of appetize
+    uri = URI('https://livedemostore.common.primer.io/appetize/ios_rn/preview_' + "#{pr_number}_#{github_run_id}_#{github_run_number}")
+    public_key = Net::HTTP.get(uri)
+    puts "public_key: " + public_key
+
+    # Upload to Appetize
+    appetize(
+      path: zip_path,
+      platform: "ios",
+      api_token: appetize_api_token,
+      public_key: public_key,
+      note: sdk_version_name_source_branch
+    )
+
+    save_simulator_app(app_path: zip_path)
+    update_deployment_url(lane_context[SharedValues::APPETIZE_APP_URL])
+
+  end
+
+  ######################### PRIVATE LANES #########################
+
+  desc 'Common build pre-action'
+  private_lane :common_pre_build_action do
+
+    set_version_and_build_number
+
+    setup_signing(
+      match_type: "development"
+    )
+
+  end
+
+  desc 'This action uploads the .ipa to Browserstack and save its ID into a file'
+  private_lane :upload_to_browserstack_and_save_id do |options|
+
+    upload_to_browserstack_app_automate(
+      browserstack_username: ENV["BROWSERSTACK_USERNAME"],
+      browserstack_access_key: ENV["BROWSERSTACK_ACCESS_KEY"],
+      file_path: options[:file_path]
+    )
+
+    save_browserstack_id(browserstack_id: ENV['BROWSERSTACK_APP_ID'])
+
+  end
+
+  desc 'This action creates a temporary keychain and installs certificates and provisioning profiles'
+  private_lane :setup_signing do |options|
+
+    create_keychain(
+      name: ENV["MATCH_KEYCHAIN_NAME"],
+      password: ENV["MATCH_KEYCHAIN_PASSWORD"],
+      default_keychain: true,
+      unlock: true,
+      timeout: 3600,
+      lock_when_sleeps: true
+    )
+
+    match(
+      type: options[:match_type],
+      readonly: true,
+      keychain_name: ENV["MATCH_KEYCHAIN_NAME"],
+      keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"],
+    )
+
+  end
+
+  desc 'This action sets the version and build number'
+  private_lane :set_version_and_build_number do
+
+    # We don't really need the version number
+    # at this moment.
+    # The Build number is the unique identifier of the package
+    # matching the Github Workflow run ID and number
+
+    # Set version number
+    # increment_version_number(
+    #   version_number: sdk_version_name_source_branch,
+    #   xcodeproj: app_xcode_proj
+    # )
+
+    # Set build number
+    increment_build_number(
+      build_number: "#{github_run_id}.#{github_run_number}",
+      xcodeproj: app_xcode_proj
+    )
+
+  end
+
+  desc 'Store the Browserstack ID into a file'
+  private_lane :save_browserstack_id do |options|
+
+    browserstack_id_to_save = options[:browserstack_id]
+    browserstack_id_file = "/var/tmp/browserstack_id.txt"
+
+    UI.message("Saving #{browserstack_id_to_save} into #{browserstack_id_file}")
+
+    File.open(browserstack_id_file, 'w') { |file| file.write(options[:browserstack_id]) }
+
+  end
+
+  desc 'Store the Appetize generated .app file'
+  private_lane :save_simulator_app do |options|
+
+    app_path = options[:app_path]
+
+    UI.message("Storing the simulator app: #{app_path}")
+
+    copy_artifacts(
+      target_path: "/var/tmp/",
+      artifacts: [app_path]
+    )
+
+  end
+
+  ################## END PRIVATE LANES ######################
+
+    def update_deployment_url(pub_url)
+       sh("echo APPETIZE_APP_URL=#{pub_url} >> $GITHUB_ENV")
+    end
+end
+
+#--------------------- END FASTLANE ------------------------#
