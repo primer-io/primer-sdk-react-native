@@ -44,7 +44,7 @@ jobs:
 
       - name: Add slack message builder
         run: |
-          yarn add slack-message-builder
+          yarn add --ignore-workspace-root-check slack-message-builder
 
       - name: Get npm cache directory
         id: npm-cache-dir
