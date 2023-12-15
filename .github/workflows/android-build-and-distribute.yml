@@ -23,18 +23,14 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-    
+
       - name: Set legacy-peer-deps for npm config
         run: |
           npm config set legacy-peer-deps true
 
-      - name: Add slack message builder
-        run: |
-          yarn add --ignore-workspace-root-check slack-message-builder 
-
       - name: Install packages
         run: |
-          yarn
+          yarn install
 
       - name: Distribute the React Native Android app on Appetize and upload to BrowserStack 🚀
         run: bundle exec fastlane android appetize_build_and_upload
@@ -156,4 +152,3 @@ jobs:
         if: ${{ success() || failure() }}
         run: |
           node report-scripts/github-tests-summary-script.js createGithubSummaryReport
-
