@@ -30,7 +30,7 @@ jobs:
 
       - name: Install packages
         run: |
-          yarn --cwd packages/example install
+          yarn install
 
       - name: Distribute the React Native Android app on Appetize and upload to BrowserStack 🚀
         run: bundle exec fastlane android appetize_build_and_upload
@@ -152,4 +152,3 @@ jobs:
         if: ${{ success() || failure() }}
         run: |
           node report-scripts/github-tests-summary-script.js createGithubSummaryReport
-
