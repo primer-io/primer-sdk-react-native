@@ -7,7 +7,6 @@ fun PrimerPaymentMethodOptionsRN.toPrimerPaymentMethodOptions() = PrimerPaymentM
   androidSettingsRN.redirectScheme,
   googlePayOptions.toPrimerGooglePayOptions(),
   klarnaOptions.toPrimerKlarnaOptions(),
-  apayaOptions.toPrimerApayaOptions(),
   threeDsOptions.toPrimerThreeDsOptions()
 )
 
@@ -16,8 +15,6 @@ fun PrimerGooglePayOptionsRN.toPrimerGooglePayOptions() =
 
 fun PrimerKlarnaOptionsRN.toPrimerKlarnaOptions() =
   PrimerKlarnaOptions(recurringPaymentDescription, webViewTitle)
-
-fun PrimerApayaOptionsRN.toPrimerApayaOptions() = PrimerApayaOptions(webViewTitle)
 
 fun PrimerThreeDsOptionsRN.toPrimerThreeDsOptions() =
   PrimerThreeDsOptions(threeDsOptionsAndroid?.threeDsAppRequestorUrl)
