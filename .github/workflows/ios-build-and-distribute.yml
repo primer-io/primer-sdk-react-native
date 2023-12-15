@@ -72,11 +72,11 @@ jobs:
 
       - name: Install packages
         run: |
-          yarn
+          yarn --cwd packages/example install
 
       - name: Create main.jsbundle
         run: |
-          yarn --cwd example build:ios
+          yarn --cwd packages/example build:ios
 
       - name: Distribute the React Native iOS app on Appetize 🚀
         run: |
