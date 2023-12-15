@@ -29,7 +29,7 @@ platform :android do
     end
 
     def get_sdk_version_name ()
-        path = 'packages/example/android/app/gradle.properties'
+        path = '../packages/example/android/app/gradle.properties'
         re = /VERSION\_NAME=(\S+)/
 
         s = File.read(path)
