@@ -8,7 +8,7 @@
 import Foundation
 
 extension Encodable {
-    
+
     func toJsonObject() throws -> Any {
         let data = try JSONEncoder().encode(self)
         let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
@@ -26,5 +26,5 @@ extension Decodable {
             throw NSError(domain: "String could not be converted to UTF-8 data.", code: 0, userInfo: [NSLocalizedDescriptionKey: "String could not be converted to UTF-8 data."])
         }
         return try JSONDecoder().decode(Self.self, from: data)
-    } 
+    }
 }
