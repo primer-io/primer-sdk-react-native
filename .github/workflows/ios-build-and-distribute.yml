@@ -59,20 +59,24 @@ jobs:
         run: |
           npm config set legacy-peer-deps true
 
-      - name: Cache pods
-        uses: actions/cache@v3
-        with:
-          path: |
-            ios/Pods
-            ~/Library/Caches/CocoaPods
-            ~/.cocoapods
-          key: ${{ runner.os }}-pods-${{ hashFiles('*/Podfile.lock', '*/*/Podfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pods-
+      # - name: Cache pods
+      #   uses: actions/cache@v3
+      #   with:
+      #     path: |
+      #       ios/Pods
+      #       ~/Library/Caches/CocoaPods
+      #       ~/.cocoapods
+      #     key: ${{ runner.os }}-pods-${{ hashFiles('*/Podfile.lock', '*/*/Podfile.lock') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-pods-
+
+      - name: pod install 
+        run: |
+          pod install --project-directory=packages/example/ios
 
       - name: Install packages
         run: |
-          yarn --cwd packages/example install
+          yarn install
 
       - name: Create main.jsbundle
         run: |
