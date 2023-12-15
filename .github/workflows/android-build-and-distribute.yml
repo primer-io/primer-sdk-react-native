@@ -23,14 +23,14 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-    
+
       - name: Set legacy-peer-deps for npm config
         run: |
           npm config set legacy-peer-deps true
 
       - name: Add slack message builder
         run: |
-          yarn add slack-message-builder
+          yarn workspace packages/example add slack-message-builder
 
       - name: Install packages
         run: |
