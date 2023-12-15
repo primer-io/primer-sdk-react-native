@@ -116,7 +116,7 @@ jobs:
 
       - name: Add slack message builder
         run: |
-          yarn add slack-message-builder
+          yarn add --ignore-workspace-root-check slack-message-builder
 
       - name: Install packages
         run: |
