@@ -4,4 +4,4 @@ include ':app'
 includeBuild('../../../node_modules/@react-native/gradle-plugin')
 
 include ':primerioreactnative'
-project(':primerioreactnative').projectDir = new File(rootProject.projectDir, '../../android')
+project(':primerioreactnative').projectDir = new File(rootProject.projectDir, '../../sdk/android')
