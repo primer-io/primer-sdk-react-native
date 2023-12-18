@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Text,
   TouchableOpacity,
@@ -8,8 +8,8 @@ import {
   FlatList,
   Image,
 } from 'react-native';
-import {ActivityIndicator} from 'react-native';
-import {RedirectManager} from '@primer-io/react-native';
+import { ActivityIndicator } from 'react-native';
+import { RedirectManager } from '@primer-io/react-native';
 import TextField from '../components/TextField';
 
 const redirectManager = new RedirectManager();
@@ -18,6 +18,7 @@ interface IBank {
   id: string;
   name: string;
   iconUrl: string;
+  iconUrlStr: string
 }
 
 const HeadlessCheckoutWithRedirect = (props: any) => {
@@ -25,7 +26,6 @@ const HeadlessCheckoutWithRedirect = (props: any) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isValidating, setIsValidating] = useState<string | null>('');
   const [banks, setBanks] = useState<any>([]);
-  const [filterBanks, setFilterBanks] = useState<any>([]);
   const [search, setSearch] = useState<any>('');
 
   useEffect(() => {
@@ -110,7 +110,7 @@ const HeadlessCheckoutWithRedirect = (props: any) => {
     }
   };
 
-  const Bank = ({item}: {item: IBank}) => (
+  const Bank = ({ item }: { item: IBank }) => (
     <TouchableOpacity
       disabled={!!isValidating}
       onPress={() => {
@@ -125,13 +125,13 @@ const HeadlessCheckoutWithRedirect = (props: any) => {
         borderColor: '#f5f5f5',
         opacity: isValidating && isValidating !== item.id ? 0.8 : 1,
       }}>
-      <Image source={{uri: item.iconUrl}} style={{width: 30, height: 30}} />
+      <Image source={{ uri: item.iconUrl ?? item.iconUrlStr }} style={{ width: 30, height: 30 }} />
 
-      <Text style={{paddingLeft: 10}}>{item.name}</Text>
+      <Text style={{ paddingLeft: 10 }}>{item.name}</Text>
 
       {item.id === isValidating && (
         <ActivityIndicator
-          style={{position: 'absolute', right: 10}}
+          style={{ position: 'absolute', right: 10 }}
           size="small"
         />
       )}
@@ -141,28 +141,20 @@ const HeadlessCheckoutWithRedirect = (props: any) => {
   const renderBanks = () => {
     return (
       <FlatList
-        data={!search || search === '' ? banks : filterBanks}
-        renderItem={({item}) => <Bank item={item} />}
+        data={banks}
+        renderItem={({ item }) => <Bank item={item} />}
         keyExtractor={item => item.id}
       />
     );
   };
 
-  const searchBanks = (value: string) => {
-    let text = value.toLowerCase();
+  const searchBanks = async (value: string) => {
     setSearch(value);
 
-    if (Array.isArray(banks)) {
-      let filteredName = banks.filter((item: IBank) => {
-        return (
-          item.name.toLowerCase().match(text) ||
-          item.name.toLowerCase().includes(text)
-        );
-      });
-
-      if (Array.isArray(filteredName)) {
-        setFilterBanks(filteredName);
-      }
+    try {
+      await redirectManager.onBankFilterChange(value);
+    } catch (err) {
+      console.error(err);
     }
   };
 
