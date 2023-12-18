@@ -13,14 +13,15 @@ const eventEmitter = new NativeEventEmitter(
   RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManager
 );
 
-type EventType = 'onRetrieved' | 'onRetrieving' | 'onInvalid' | 'onValid' | 'onError';
+type EventType = 'onRetrieved' | 'onRetrieving' | 'onInvalid' | 'onValid' | 'onError' | 'onValidating';
 
 const eventTypes: EventType[] = [
   'onRetrieved',
   'onRetrieving',
   'onInvalid',
   'onError',
-  'onValid'
+  'onValid',
+  'onValidating'
 ];
 
 export interface RedirectManagerProps {
@@ -30,6 +31,7 @@ export interface RedirectManagerProps {
   onError?: (errors: PrimerError[] | undefined) => void;
   onInvalid?: (isValid: any) => void;
   onValid?: () => void;
+  onValidating?: () => void;
 }
 
 class PrimerHeadlessUniversalCheckoutComponentWithRedirectManager {
@@ -90,17 +92,13 @@ class PrimerHeadlessUniversalCheckoutComponentWithRedirectManager {
   }
 
   async onBankFilterChange(
-    bankId: string
+    filter: string
   ): Promise<{ initializationData: PrimerInitializationData } | void> {
-    console.log(
-      bankId,
-      RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManager
-    );
     return new Promise(async (resolve, reject) => {
       try {
         const data =
           await RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManager.onBankFilterChange(
-            bankId
+            filter
           );
 
         if (data) {
@@ -153,6 +151,14 @@ class PrimerHeadlessUniversalCheckoutComponentWithRedirectManager {
         this.addListener('onValid', () => {
           if (this.options?.onValid) {
             this.options.onValid();
+          }
+        });
+      }
+
+      if (this.options?.onValidating) {
+        this.addListener('onValidating', () => {
+          if (this.options?.onValidating) {
+            this.options.onValidating();
           }
         });
       }

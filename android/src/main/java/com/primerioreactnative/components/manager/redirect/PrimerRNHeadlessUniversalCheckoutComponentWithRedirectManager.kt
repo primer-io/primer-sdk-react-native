@@ -88,7 +88,6 @@ class PrimerRNHeadlessUniversalCheckoutComponentWithRedirectManager(
   @ReactMethod
   fun onBankFilterChange(filter: String, promise: Promise) {
     banksComponent?.updateCollectedData(BanksCollectableData.Filter(filter))
-    // TODO : maybe remove promise if unnecessary
     promise.resolve(null)
   }
 
