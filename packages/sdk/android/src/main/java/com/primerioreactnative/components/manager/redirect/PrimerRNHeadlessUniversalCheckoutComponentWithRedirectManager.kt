@@ -11,10 +11,12 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.modules.core.DeviceEventManagerModule
+import com.primerioreactnative.PrimerRNViewModelStoreOwner
 import com.primerioreactnative.components.events.PrimerHeadlessUniversalCheckoutRedirectManagerEvent
 import com.primerioreactnative.components.manager.raw.PrimerRNHeadlessUniversalCheckoutRawManager
 import com.primerioreactnative.datamodels.ErrorTypeRN
 import com.primerioreactnative.datamodels.PrimerInputValidationErrorRN
+import com.primerioreactnative.extensions.toPrimerIssuingBankRN
 import com.primerioreactnative.utils.convertJsonToMap
 import com.primerioreactnative.utils.errorTo
 import io.primer.android.components.SdkUninitializedException
@@ -46,11 +48,13 @@ class PrimerRNHeadlessUniversalCheckoutComponentWithRedirectManager(
   fun configure(paymentMethodType: String, promise: Promise) {
 
     val viewModelStoreOwner = reactContext.currentActivity as? ViewModelStoreOwner ?: run {
-      promise.reject("ViewModelStoreOwner", "Expected activity class that implement ViewModelStoreOwner")
-      return
+      PrimerRNViewModelStoreOwner()
     }
 
-    banksComponent = PrimerHeadlessUniversalCheckoutComponentWithRedirectManager(viewModelStoreOwner).provide<BanksComponent>(paymentMethodType=paymentMethodType)
+    banksComponent =
+      PrimerHeadlessUniversalCheckoutComponentWithRedirectManager(viewModelStoreOwner).provide<BanksComponent>(
+        paymentMethodType = paymentMethodType
+      )
 
     val lifecycleOwner = reactContext.currentActivity as? LifecycleOwner ?: run {
       promise.reject("LifecycleOwner", "Expected activity class that implement LifecycleOwner")
@@ -93,37 +97,48 @@ class PrimerRNHeadlessUniversalCheckoutComponentWithRedirectManager(
 
   private suspend fun configureErrorListener() {
     banksComponent?.componentError?.collectLatest { error ->
-      Log.e("error",error.toString())
+
+      sendEvent(
+        PrimerHeadlessUniversalCheckoutRedirectManagerEvent.ON_ERROR.eventName,
+        JSONObject().apply {
+          put(
+            "errors", JSONArray(
+              Json.encodeToString(error)
+            )
+          )
+        }
+      )
     }
   }
 
   private suspend fun configureBanksListener() {
     banksComponent?.componentStep?.collectLatest { banksStep ->
-        when (banksStep) {
-          is BanksStep.Loading -> {
-            sendEvent(
-              PrimerHeadlessUniversalCheckoutRedirectManagerEvent.ON_RETRIEVING.eventName,
-              JSONObject().apply {
-                put(
-                  "retrieving", "true"
+      when (banksStep) {
+        is BanksStep.Loading -> {
+          sendEvent(
+            PrimerHeadlessUniversalCheckoutRedirectManagerEvent.ON_RETRIEVING.eventName,
+            JSONObject().apply {
+              put(
+                "retrieving", "true"
+              )
+            }
+          )
+        }
+
+        is BanksStep.BanksRetrieved -> {
+          sendEvent(
+            PrimerHeadlessUniversalCheckoutRedirectManagerEvent.ON_RETRIEVED.eventName,
+            JSONObject().apply {
+              put(
+                "banks", JSONArray(
+                  Json.encodeToString(banksStep.banks.map { it.toPrimerIssuingBankRN() })
                 )
-              }
-            )
-          }
-          is BanksStep.BanksRetrieved -> {
-            sendEvent(
-              PrimerHeadlessUniversalCheckoutRedirectManagerEvent.ON_RETRIEVED.eventName,
-              JSONObject().apply {
-                put(
-                  "banks", JSONArray(
-                  Json.encodeToString(banksStep.banks)
-                )
-                )
-              }
-            )
-          }
+              )
+            }
+          )
         }
       }
+    }
   }
 
   private suspend fun configureValidationListener() {
@@ -134,10 +149,11 @@ class PrimerRNHeadlessUniversalCheckoutComponentWithRedirectManager(
             JSONObject().apply {
               put(
                 "validating", "true"
-              )xe
+              )
             }
           )
         }
+
         is PrimerValidationStatus.Invalid -> {
           sendEvent(PrimerHeadlessUniversalCheckoutRedirectManagerEvent.ON_IN_VALID.eventName,
             JSONObject().apply {
@@ -147,11 +163,14 @@ class PrimerRNHeadlessUniversalCheckoutComponentWithRedirectManager(
                   validationStatus.validationErrors.map {
                     JSONObject().apply {
                       put(
-                        "errorId", it.errorId)
-                        put(
-                        "description", it.description)
-                    put(
-                      "diagnosticsId",it.diagnosticsId)
+                        "errorId", it.errorId
+                      )
+                      put(
+                        "description", it.description
+                      )
+                      put(
+                        "diagnosticsId", it.diagnosticsId
+                      )
 
                     }
                   }
@@ -160,20 +179,23 @@ class PrimerRNHeadlessUniversalCheckoutComponentWithRedirectManager(
             }
           )
         }
+
         is PrimerValidationStatus.Valid -> {
           when (validationStatus.collectableData) {
-              is BanksCollectableData.BankId -> {
-                banksComponent?.submit()
-                sendEvent(PrimerHeadlessUniversalCheckoutRedirectManagerEvent.ON_VALID.eventName,
-                  JSONObject().apply {
-                  }
-                )
-              }
-              is BanksCollectableData.Filter -> {
-                // no-op
-              }
+            is BanksCollectableData.BankId -> {
+              banksComponent?.submit()
+              sendEvent(PrimerHeadlessUniversalCheckoutRedirectManagerEvent.ON_VALID.eventName,
+                JSONObject().apply {
+                }
+              )
+            }
+
+            is BanksCollectableData.Filter -> {
+              // no-op
+            }
           }
         }
+
         is PrimerValidationStatus.Error -> {
           sendEvent(PrimerHeadlessUniversalCheckoutRedirectManagerEvent.ON_ERROR.eventName,
             JSONObject().apply {
@@ -181,11 +203,14 @@ class PrimerRNHeadlessUniversalCheckoutComponentWithRedirectManager(
                 "errors", JSONArray(
                   JSONObject().apply {
                     put(
-                      "errorId",    validationStatus.error.errorId)
+                      "errorId", validationStatus.error.errorId
+                    )
                     put(
-                      "description", validationStatus.error.description)
+                      "description", validationStatus.error.description
+                    )
                     put(
-                      "diagnosticsId",validationStatus.error.diagnosticsId)
+                      "diagnosticsId", validationStatus.error.diagnosticsId
+                    )
                   }
                 )
               )
@@ -219,6 +244,7 @@ class PrimerRNHeadlessUniversalCheckoutComponentWithRedirectManager(
     job?.cancel()
     job = null
     banksComponent = null
+//    viewModelStoreOwner.viewModelStore.clear()
     promise.resolve(null)
   }
 }

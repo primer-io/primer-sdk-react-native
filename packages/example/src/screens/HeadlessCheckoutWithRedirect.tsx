@@ -112,6 +112,7 @@ const HeadlessCheckoutWithRedirect = (props: any) => {
 
   const Bank = ({ item }: { item: IBank }) => (
     <TouchableOpacity
+      key={item.id}
       disabled={!!isValidating}
       onPress={() => {
         pay(item.id);
@@ -139,13 +140,20 @@ const HeadlessCheckoutWithRedirect = (props: any) => {
   );
 
   const renderBanks = () => {
-    return (
-      <FlatList
-        data={banks}
-        renderItem={({ item }) => <Bank item={item} />}
-        keyExtractor={item => item.id}
-      />
-    );
+    // return (
+    //   <FlatList
+    //     data={banks}
+    //     renderItem={({ item }) => <Bank item={item} />}
+    //     keyExtractor={item => item.id}
+    //   />
+    // );
+
+    if (banks.length != 0) {
+      return banks.map((bank: IBank) => {
+
+        return <Bank item={bank} />
+      })
+    }
   };
 
   const searchBanks = async (value: string) => {
