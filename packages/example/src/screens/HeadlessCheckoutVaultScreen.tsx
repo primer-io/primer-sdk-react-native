@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
   Button,
   FlatList,
+  ScrollView,
   Text,
   TextInput,
   View,
@@ -266,9 +267,8 @@ export const HeadlessCheckoutVaultScreen = (props: any) => {
       );
     } else {
       return (
-        <FlatList
-          data={vaultedPaymentMethods}
-          renderItem={({ item }) => <Text style={{
+        vaultedPaymentMethods.map((item) => {
+          return <Text style={{
             marginHorizontal: 20,
             paddingTop: 1,
             paddingBottom: 10,
@@ -279,8 +279,8 @@ export const HeadlessCheckoutVaultScreen = (props: any) => {
           }} onPress={() => setSelectedVaultedPaymentMethod(item)}
           >
             {'••••' + item.paymentInstrumentData.last4Digits}
-          </Text>}
-        />
+          </Text>
+        })
       );
     }
   }
@@ -331,10 +331,10 @@ export const HeadlessCheckoutVaultScreen = (props: any) => {
   };
 
   return (
-    <View style={{ paddingHorizontal: 24, flex: 1 }}>
+    <ScrollView style={{ paddingHorizontal: 24, flex: 1 }}>
       {renderVaultedPaymentMethods()}
       {renderVaultAdditionalData()}
       {renderLoadingOverlay()}
-    </View>
+    </ScrollView>
   );
 };
