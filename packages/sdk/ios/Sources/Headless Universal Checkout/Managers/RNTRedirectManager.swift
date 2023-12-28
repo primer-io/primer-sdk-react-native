@@ -180,7 +180,6 @@ enum RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManagerEvents: Int, 
   
 extension RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManager: PrimerHeadlessErrorableDelegate {
   func didReceiveError(error: PrimerSDK.PrimerError) {
-    print("didReceiveError", error)
 
     self.sendEvent(
       withName: RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManagerEvents.onError.stringValue,
