@@ -58,6 +58,7 @@ export interface IClientSession_Action {
 
 export interface IClientSessionPaymentMethod {
     vaultOnSuccess?: boolean;
+    paymentType?: string;
     options?: IClientSessionPaymentMethodOptions;
 }
 
@@ -135,6 +136,7 @@ export let appPaymentParameters: AppPaymentParameters = {
         },
         paymentMethod: {
             vaultOnSuccess: false,
+            paymentType: 'ECOMMERCE',
         }
     },
     merchantName: 'Primer Merchant'

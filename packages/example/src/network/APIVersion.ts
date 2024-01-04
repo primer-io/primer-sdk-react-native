@@ -3,7 +3,8 @@ export enum APIVersion {
     v2,
     v3,
     v4,
-    v5
+    v5,
+    v6
 }
 
 export function getAPIVersionStringVal(apiVersion: APIVersion): string | undefined {
@@ -13,10 +14,12 @@ export function getAPIVersionStringVal(apiVersion: APIVersion): string | undefin
         case APIVersion.v2:
             return "2021-09-27"
         case APIVersion.v3:
-            return "2021-10-19"
+            return "2.2"
         case APIVersion.v4:
             return "2021-12-01"
         case APIVersion.v5:
             return "2021-12-10"
+        case APIVersion.v6:
+            return "2.2"
     }
 }
