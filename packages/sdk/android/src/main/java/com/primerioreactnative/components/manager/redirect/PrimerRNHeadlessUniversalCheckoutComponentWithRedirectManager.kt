@@ -15,7 +15,11 @@ import com.primerioreactnative.PrimerRNViewModelStoreOwner
 import com.primerioreactnative.components.events.PrimerHeadlessUniversalCheckoutRedirectManagerEvent
 import com.primerioreactnative.components.manager.raw.PrimerRNHeadlessUniversalCheckoutRawManager
 import com.primerioreactnative.datamodels.ErrorTypeRN
+import com.primerioreactnative.datamodels.PrimerErrorRN
 import com.primerioreactnative.datamodels.PrimerInputValidationErrorRN
+import com.primerioreactnative.datamodels.PrimerValidationErrorRN
+import com.primerioreactnative.datamodels.redirect.toBankIdRN
+import com.primerioreactnative.datamodels.redirect.toFilterRN
 import com.primerioreactnative.extensions.toPrimerIssuingBankRN
 import com.primerioreactnative.utils.convertJsonToMap
 import com.primerioreactnative.utils.errorTo
@@ -26,8 +30,11 @@ import io.primer.android.components.manager.banks.composable.BanksStep
 import io.primer.android.components.manager.componentWithRedirect.PrimerHeadlessUniversalCheckoutComponentWithRedirectManager
 import io.primer.android.components.manager.componentWithRedirect.component.BanksComponent
 import io.primer.android.components.manager.core.composable.PrimerValidationStatus
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
@@ -43,56 +50,83 @@ class PrimerRNHeadlessUniversalCheckoutComponentWithRedirectManager(
 
   private var job: Job? = null
   private var banksComponent: BanksComponent? = null
+  private var viewModelStoreOwner: ViewModelStoreOwner? = null
 
   @ReactMethod
   fun configure(paymentMethodType: String, promise: Promise) {
 
-    val viewModelStoreOwner = reactContext.currentActivity as? ViewModelStoreOwner ?: run {
+    val currentViewModelStoreOwner = reactContext.currentActivity as? ViewModelStoreOwner ?: run {
       PrimerRNViewModelStoreOwner()
     }
 
+    viewModelStoreOwner = currentViewModelStoreOwner
     banksComponent =
-      PrimerHeadlessUniversalCheckoutComponentWithRedirectManager(viewModelStoreOwner).provide<BanksComponent>(
+      PrimerHeadlessUniversalCheckoutComponentWithRedirectManager(currentViewModelStoreOwner).provide<BanksComponent>(
         paymentMethodType = paymentMethodType
       )
 
-    val lifecycleOwner = reactContext.currentActivity as? LifecycleOwner ?: run {
-      promise.reject("LifecycleOwner", "Expected activity class that implement LifecycleOwner")
-      return
-    }
+    val lifecycleScope = (reactContext.currentActivity as? LifecycleOwner)?.lifecycleScope ?: CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
-    job = lifecycleOwner.lifecycleScope.launch {
-      banksComponent?.start()
-      coroutineScope {
-        launch {
-          configureBanksListener()
-        }
-
-        launch {
-          configureValidationListener()
-        }
-
-        launch {
-          configureErrorListener()
-        }
-        promise.resolve(null)
+    job = lifecycleScope.launch {
+      if (banksComponent == null) {
+        val exception =
+          ErrorTypeRN.NativeBridgeFailed errorTo UNINITIALIZED_ERROR
+        promise.reject(exception.errorId, exception.description)
       }
+      else {
+        banksComponent?.start()
+        coroutineScope {
+          launch {
+            configureBanksListener()
+          }
 
+          launch {
+            configureValidationListener()
+          }
+
+          launch {
+            configureErrorListener()
+          }
+          promise.resolve(null)
+        }
+      }
     }
+  }
 
+  @ReactMethod
+  fun submit(promise: Promise) {
+    if (banksComponent == null) {
+      val exception =
+        ErrorTypeRN.NativeBridgeFailed errorTo UNINITIALIZED_ERROR
+      promise.reject(exception.errorId, exception.description)
+    } else {
+      banksComponent?.submit()
+      promise.resolve(null)
+    }
   }
 
   @ReactMethod
   fun onBankSelected(bankId: String, promise: Promise) {
-    banksComponent?.updateCollectedData(BanksCollectableData.BankId(bankId))
-    promise.resolve(null)
-
+    if (banksComponent == null) {
+      val exception =
+        ErrorTypeRN.NativeBridgeFailed errorTo UNINITIALIZED_ERROR
+      promise.reject(exception.errorId, exception.description)
+    } else {
+      banksComponent?.updateCollectedData(BanksCollectableData.BankId(bankId))
+      promise.resolve(null)
+    }
   }
 
   @ReactMethod
   fun onBankFilterChange(filter: String, promise: Promise) {
-    banksComponent?.updateCollectedData(BanksCollectableData.Filter(filter))
-    promise.resolve(null)
+    if (banksComponent == null) {
+      val exception =
+        ErrorTypeRN.NativeBridgeFailed errorTo UNINITIALIZED_ERROR
+      promise.reject(exception.errorId, exception.description)
+    } else {
+      banksComponent?.updateCollectedData(BanksCollectableData.Filter(filter))
+      promise.resolve(null)
+    }
   }
 
   private suspend fun configureErrorListener() {
@@ -145,10 +179,16 @@ class PrimerRNHeadlessUniversalCheckoutComponentWithRedirectManager(
     banksComponent?.componentValidationStatus?.collectLatest { validationStatus ->
       when (validationStatus) {
         is PrimerValidationStatus.Validating -> {
+          val collectableData = validationStatus.collectableData
+
           sendEvent(PrimerHeadlessUniversalCheckoutRedirectManagerEvent.ON_VALIDATING.eventName,
             JSONObject().apply {
               put(
-                "validating", "true"
+                "data", when (collectableData) {
+                  is BanksCollectableData.BankId -> JSONObject(Json.encodeToString(collectableData.toBankIdRN()))
+                  is BanksCollectableData.Filter -> JSONObject(Json.encodeToString(collectableData.toFilterRN()))
+                  else -> null
+                }
               )
             }
           )
@@ -160,19 +200,13 @@ class PrimerRNHeadlessUniversalCheckoutComponentWithRedirectManager(
               put(
                 "errors",
                 JSONArray(
-                  validationStatus.validationErrors.map {
-                    JSONObject().apply {
-                      put(
-                        "errorId", it.errorId
-                      )
-                      put(
-                        "description", it.description
-                      )
-                      put(
-                        "diagnosticsId", it.diagnosticsId
-                      )
-
-                    }
+                    validationStatus.validationErrors.map {
+                      JSONObject(Json.encodeToString(
+                      PrimerValidationErrorRN(
+                        it.errorId,
+                        it.description,
+                        it.diagnosticsId,
+                      )))
                   }
                 )
               )
@@ -181,19 +215,19 @@ class PrimerRNHeadlessUniversalCheckoutComponentWithRedirectManager(
         }
 
         is PrimerValidationStatus.Valid -> {
-          when (validationStatus.collectableData) {
-            is BanksCollectableData.BankId -> {
-              banksComponent?.submit()
-              sendEvent(PrimerHeadlessUniversalCheckoutRedirectManagerEvent.ON_VALID.eventName,
-                JSONObject().apply {
+          val collectableData = validationStatus.collectableData
+
+          sendEvent(PrimerHeadlessUniversalCheckoutRedirectManagerEvent.ON_VALID.eventName,
+            JSONObject().apply {
+              put(
+                "data", when (collectableData) {
+                  is BanksCollectableData.BankId -> JSONObject(Json.encodeToString(collectableData.toBankIdRN()))
+                  is BanksCollectableData.Filter -> JSONObject(Json.encodeToString(collectableData.toFilterRN()))
+                  else -> null
                 }
               )
             }
-
-            is BanksCollectableData.Filter -> {
-              // no-op
-            }
-          }
+          )
         }
 
         is PrimerValidationStatus.Error -> {
@@ -201,17 +235,11 @@ class PrimerRNHeadlessUniversalCheckoutComponentWithRedirectManager(
             JSONObject().apply {
               put(
                 "errors", JSONArray(
-                  JSONObject().apply {
-                    put(
-                      "errorId", validationStatus.error.errorId
-                    )
-                    put(
-                      "description", validationStatus.error.description
-                    )
-                    put(
-                      "diagnosticsId", validationStatus.error.diagnosticsId
-                    )
-                  }
+                  JSONObject(Json.encodeToString(PrimerErrorRN(
+                    validationStatus.error.errorId,
+                    validationStatus.error.description,
+                    validationStatus.error.diagnosticsId,
+                  )))
                 )
               )
             }
@@ -226,7 +254,6 @@ class PrimerRNHeadlessUniversalCheckoutComponentWithRedirectManager(
 
   @ReactMethod
   fun removeListeners(count: Int?) = Unit
-
 
   private fun prepareData(data: JSONObject?): WritableMap {
     return data?.let { convertJsonToMap(data) } ?: Arguments.createMap()
@@ -244,7 +271,15 @@ class PrimerRNHeadlessUniversalCheckoutComponentWithRedirectManager(
     job?.cancel()
     job = null
     banksComponent = null
-//    viewModelStoreOwner.viewModelStore.clear()
+    viewModelStoreOwner?.viewModelStore?.clear()
     promise.resolve(null)
+  }
+
+  private companion object {
+    const val UNINITIALIZED_ERROR =
+      """
+        The RedirectManager has not been initialized.
+        Make sure you have initialized the `RedirectManager' first.
+      """
   }
 }

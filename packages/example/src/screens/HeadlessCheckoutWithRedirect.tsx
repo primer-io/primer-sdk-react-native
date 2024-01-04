@@ -58,7 +58,10 @@ const HeadlessCheckoutWithRedirect = (props: any) => {
         console.log(log);
         setIsLoading(false);
         setIsValidating(null);
-        handleGoBack();
+        if (data?.id) {
+          onSubmit()
+        }
+        // handleGoBack();
       },
       //@ts-ignore
       onInvalid: data => {
@@ -75,6 +78,14 @@ const HeadlessCheckoutWithRedirect = (props: any) => {
         setIsValidating(null);
       },
     });
+  };
+
+  const onSubmit = async () => {
+    try {
+      await redirectManager.submit();
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const pay = async (id: string) => {
@@ -113,6 +124,9 @@ const HeadlessCheckoutWithRedirect = (props: any) => {
   const Bank = ({ item }: { item: IBank }) => (
     <TouchableOpacity
       key={item.id}
+      testID={`button-${item.name
+        .toLowerCase()
+        .replace(' ', '-')}`}
       disabled={!!isValidating}
       onPress={() => {
         pay(item.id);
@@ -151,7 +165,7 @@ const HeadlessCheckoutWithRedirect = (props: any) => {
     if (banks.length != 0) {
       return banks.map((bank: IBank) => {
 
-        return <Bank item={bank} />
+        return <Bank key={bank.id} item={bank} />
       })
     }
   };

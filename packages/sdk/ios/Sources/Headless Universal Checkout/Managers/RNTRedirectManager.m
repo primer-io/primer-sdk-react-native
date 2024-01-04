@@ -16,6 +16,8 @@ RCT_EXTERN_METHOD(onBankFilterChange:(NSString *)filterText resolver:(RCTPromise
 
 RCT_EXTERN_METHOD(onBankSelected:(NSString *)bankId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 
+RCT_EXTERN_METHOD(submit:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+
 RCT_EXTERN_METHOD(cleanUp:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 
 @end

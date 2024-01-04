@@ -103,6 +103,15 @@ enum RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManagerEvents: Int, 
     ) {
       
     }
+
+    @objc
+    public func submit(
+      _ resolver: RCTPromiseResolveBlock,
+      rejecter: RCTPromiseRejectBlock
+    ) {
+      // banksComponent!.start()
+      resolver(nil)
+    }
     
     @objc
     public func onBankFilterChange(
@@ -125,8 +134,6 @@ enum RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManagerEvents: Int, 
     }
   }
 
-
-  
   extension RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManager: PrimerHeadlessSteppableDelegate {
     func didReceiveStep(step: PrimerSDK.PrimerHeadlessStep) {
       guard let step = step as? BanksStep else { return }
@@ -136,7 +143,6 @@ enum RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManagerEvents: Int, 
           self.sendEvent(
                        withName: RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManagerEvents.onRetrieving.stringValue,
                        body: ["retrieving": true])
-        
         break
       // Display list of banks
       case .banksRetrieved(banks: let banks):
@@ -176,7 +182,6 @@ enum RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManagerEvents: Int, 
       }
     }
   }
-  
   
 extension RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManager: PrimerHeadlessErrorableDelegate {
   func didReceiveError(error: PrimerSDK.PrimerError) {

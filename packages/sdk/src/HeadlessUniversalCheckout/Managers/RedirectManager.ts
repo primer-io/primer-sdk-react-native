@@ -70,6 +70,23 @@ class PrimerHeadlessUniversalCheckoutComponentWithRedirectManager {
     });
   }
 
+  async submit(): Promise<{ initializationData: PrimerInitializationData } | void> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const data =
+          await RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManager.submit();
+
+        if (data) {
+          resolve(data);
+        } else {
+          resolve();
+        }
+      } catch (err) {
+        reject(err);
+      }
+    });
+  }
+
   async onBankSelected(
     bankId: string
   ): Promise<{ initializationData: PrimerInitializationData } | void> {
@@ -148,9 +165,9 @@ class PrimerHeadlessUniversalCheckoutComponentWithRedirectManager {
       }
 
       if (this.options?.onValid) {
-        this.addListener('onValid', () => {
+        this.addListener('onValid', ({ data }) => {
           if (this.options?.onValid) {
-            this.options.onValid();
+            this.options.onValid(data);
           }
         });
       }

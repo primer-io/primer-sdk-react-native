@@ -17,3 +17,10 @@ enum class ErrorTypeRN(val errorId: String) {
   UnsupportedPaymentMethod("unsupported-payment-method-type"),
   UnsupportedPaymentIntent("unsupported-session-intent")
 }
+
+@Serializable
+data class PrimerValidationErrorRN(
+  val errorId: String? = null,
+  val description: String? = null,
+  val diagnosticsId: String? = null,
+)
