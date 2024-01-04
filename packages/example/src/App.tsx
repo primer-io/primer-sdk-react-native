@@ -10,7 +10,7 @@ import RawCardDataScreen from './screens/RawCardDataScreen';
 import RawPhoneNumberDataScreen from './screens/RawPhoneNumberScreen';
 import RawAdyenBancontactCardScreen from './screens/RawAdyenBancontactCardScreen';
 import RawRetailOutletScreen from './screens/RawRetailOutletScreen';
-import { HeadlessCheckoutVaultScreen } from './screens/HeadlessCheckoutVaultScreen';
+import HeadlessCheckoutVaultScreen from './screens/HeadlessCheckoutVaultScreen';
 
 const Stack = createNativeStackNavigator();
 
