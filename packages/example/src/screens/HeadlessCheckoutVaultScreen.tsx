@@ -30,7 +30,7 @@ let merchantCheckoutAdditionalInfo: CheckoutAdditionalInfo | null = null;
 let merchantPayment: IPayment | null = null;
 let merchantPrimerError: Error | unknown | null = null;
 
-export const HeadlessCheckoutVaultScreen = (props: any) => {
+export default HeadlessCheckoutVaultScreen = (props: any) => {
   const [isLoading, setIsLoading] = useState(true);
   const [clientSession, setClientSession] = useState<null | any>(null);
 
