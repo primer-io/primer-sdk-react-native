@@ -3,10 +3,10 @@ import { IPrimerPaymentInstrumentData, IPrimerThreeDSAuthenticationData } from "
 export type PrimerVaultedPaymentMethod = IPrimerVaultedPaymentMethod;
 
 export interface IPrimerVaultedPaymentMethod {
-    id: String;
-    analyticsId: String;
-    paymentInstrumentType: String;
-    paymentMethodType: String;
+    id: string;
+    analyticsId: string;
+    paymentInstrumentType: string;
+    paymentMethodType: string;
     paymentInstrumentData?: IPrimerPaymentInstrumentData;
     threeDSecureAuthentication?: IPrimerThreeDSAuthenticationData;
 }

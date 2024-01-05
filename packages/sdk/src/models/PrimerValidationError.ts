@@ -1,7 +1,7 @@
 export type PrimerValidationError = IPrimerValidationError;
 
 export interface IPrimerValidationError {
-    errorId: String;
-    description: String;
-    diagnosticsId: String;
+    errorId: string;
+    description: string;
+    diagnosticsId: string;
 }
