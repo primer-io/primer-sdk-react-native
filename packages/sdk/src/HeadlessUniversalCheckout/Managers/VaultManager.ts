@@ -44,7 +44,7 @@ class PrimerHeadlessUniversalCheckoutVaultManager {
         });
     }
 
-    async deleteVaultedPaymentMethod(vaultedPaymentMethodId: String): Promise<void> {
+    async deleteVaultedPaymentMethod(vaultedPaymentMethodId: string): Promise<void> {
         return new Promise(async (resolve, reject) => {
             try {
                 await RNPrimerHeadlessUniversalCheckoutVaultManager.deleteVaultedPaymentMethod(vaultedPaymentMethodId);
@@ -56,7 +56,7 @@ class PrimerHeadlessUniversalCheckoutVaultManager {
         });
     }
 
-    async validate(vaultedPaymentMethodId: String, additionalData: VaultedPaymentMethodAdditionalData): Promise<ValidationError[]> {
+    async validate(vaultedPaymentMethodId: string, additionalData: VaultedPaymentMethodAdditionalData): Promise<ValidationError[]> {
         return new Promise(async (resolve, reject) => {
             try {
                 const data: PrimerValidationErrorResult =
@@ -70,7 +70,7 @@ class PrimerHeadlessUniversalCheckoutVaultManager {
         });
     }
 
-    async startPaymentFlow(vaultedPaymentMethodId: String, additionalData?: VaultedPaymentMethodAdditionalData): Promise<void> {
+    async startPaymentFlow(vaultedPaymentMethodId: string, additionalData?: VaultedPaymentMethodAdditionalData): Promise<void> {
         return new Promise(async (resolve, reject) => {
             try {
                 if(additionalData) {
