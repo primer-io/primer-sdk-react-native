@@ -1,7 +1,7 @@
 import { NativeModules } from 'react-native';
-import { ValidationError } from '@primer-io/react-native';
-import { VaultedPaymentMethod } from '@primer-io/react-native';
-import { VaultedPaymentMethodAdditionalData } from '@primer-io/react-native';
+import { PrimerValidationError as ValidationError } from 'src/models/PrimerValidationError';
+import { PrimerVaultedPaymentMethod as VaultedPaymentMethod } from 'src/models/PrimerVaultedPaymentMethod';
+import { PrimerVaultedPaymentMethodAdditionalData as VaultedPaymentMethodAdditionalData } from 'src/models/PrimerVaultedPaymentMethodAdditionalData';
 import { PrimerVaultedPaymentMethodResult } from 'src/models/PrimerVaultedPaymentMethodResult';
 import { PrimerValidationErrorResult } from 'src/models/PrimerValidationErrorResult';
 

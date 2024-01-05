@@ -1,6 +1,6 @@
 {
   "name": "@primer-io/react-native",
-  "version": "2.18.1",
+  "version": "2.19.0",
   "description": "Primer SDK for RN",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -22,6 +22,7 @@
     "test": "jest",
     "typescript": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
+    "build": "bob build",
     "prepare": "bob build",
     "release": "release-it",
     "example": "yarn --cwd example",
