@@ -29,58 +29,51 @@ const HeadlessCheckoutWithRedirect = (props: any) => {
   const [search, setSearch] = useState<any>('');
 
   useEffect(() => {
-    initialize();
+    (async () => {
+      await redirectManager.configure({
+        paymentMethodType: props.route.params.paymentMethodType,
+        //@ts-ignore
+        onRetrieving: data => {
+          const log = `\nonRetrieved: ${JSON.stringify(data)}\n`;
+          console.log(log);
+          setIsLoading(true);
+        },
+        //@ts-ignore
+        onRetrieved: data => {
+          const log = `\nonRetrieved: ${JSON.stringify(data)}\n`;
+          console.log(log);
+          setBanks(data);
+          setIsLoading(false);
+        },
+        //@ts-ignore
+        onValid: data => {
+          const log = `\nonValid: ${JSON.stringify(data)}\n`;
+          console.log(log);
+          setIsLoading(false);
+          setIsValidating(null);
+          if (data?.id) {
+            submit()
+          }
+        },
+        //@ts-ignore
+        onInvalid: data => {
+          const log = `\nonInvalid: ${JSON.stringify(data)}\n`;
+          console.log(log);
+          setIsLoading(false);
+          setIsValidating(null);
+        },
+        //@ts-ignore
+        onError: data => {
+          const log = `\nonError: ${JSON.stringify(data)}\n`;
+          console.log(log);
+          setIsLoading(false);
+          setIsValidating(null);
+        },
+      });
+    })()
   }, []);
 
-  const handleGoBack = () => {
-    props.navigation.goBack();
-  };
-
-  const initialize = async () => {
-    await redirectManager.configure({
-      paymentMethodType: props.route.params.paymentMethodType,
-      //@ts-ignore
-      onRetrieving: data => {
-        const log = `\nonRetrieved: ${JSON.stringify(data)}\n`;
-        console.log(log);
-        setIsLoading(true);
-      },
-      //@ts-ignore
-      onRetrieved: data => {
-        const log = `\nonRetrieved: ${JSON.stringify(data)}\n`;
-        console.log(log);
-        setBanks(data);
-        setIsLoading(false);
-      },
-      //@ts-ignore
-      onValid: data => {
-        const log = `\nonValid: ${JSON.stringify(data)}\n`;
-        console.log(log);
-        setIsLoading(false);
-        setIsValidating(null);
-        if (data?.id) {
-          onSubmit()
-        }
-        // handleGoBack();
-      },
-      //@ts-ignore
-      onInvalid: data => {
-        const log = `\nonInvalid: ${JSON.stringify(data)}\n`;
-        console.log(log);
-        setIsLoading(false);
-        setIsValidating(null);
-      },
-      //@ts-ignore
-      onError: data => {
-        const log = `\nonError: ${JSON.stringify(data)}\n`;
-        console.log(log);
-        setIsLoading(false);
-        setIsValidating(null);
-      },
-    });
-  };
-
-  const onSubmit = async () => {
+  const submit = async () => {
     try {
       await redirectManager.submit();
     } catch (err) {
@@ -88,39 +81,94 @@ const HeadlessCheckoutWithRedirect = (props: any) => {
     }
   };
 
-  const pay = async (id: string) => {
-    try {
-      setIsValidating(id);
-      await redirectManager.onBankSelected(id);
-    } catch (err) {
-      setIsValidating(null);
-      console.error(err);
-    }
-  };
+  return (
+    <View
+      style={{
+        paddingHorizontal: 5,
+        flex: 1,
+        backgroundColor: 'white',
+      }}>
+      <Search
+        search={search}
+        onSearch={async (value: string) => {
+          setSearch(value);
 
-  const renderLoadingOverlay = () => {
-    if (!isLoading) {
-      return null;
-    } else {
-      return (
-        <View
-          style={{
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            top: 0,
-            bottom: 0,
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'rgba(200, 200, 200, 0.5)',
-            zIndex: 1000,
-          }}>
-          <ActivityIndicator size="small" />
-        </View>
-      );
-    }
-  };
+          try {
+            await redirectManager.onBankFilterChange(value);
+          } catch (err) {
+            console.error(err);
+          }
+        }}
+      />
+      <Banks
+        banks={banks}
+        isValidating={isValidating}
+        onPay={async (id: string) => {
+          try {
+            setIsValidating(id);
+            await redirectManager.onBankSelected(id);
+          } catch (err) {
+            setIsValidating(null);
+            console.error(err);
+          }
+        }}
+      />
+      <Loader isLoading={isLoading} />
+    </View>
+  );
+};
 
+
+const Search = ({ search, onSearch }: any) => {
+  return (
+    <TextField
+      title="Choose your bank"
+      textInputStyle={{
+        backgroundColor: '#f5f5f5',
+        borderColor: '#f5f5f5',
+        paddingHorizontal: 10,
+      }}
+      style={{
+        padding: 5,
+        marginVertical: 10,
+        borderRadius: 5,
+        marginHorizontal: 5,
+      }}
+      placeholder="Search Banks"
+      value={search}
+      onChangeText={(value) => {
+        onSearch(value);
+      }}
+    />
+  );
+}
+
+
+const Loader = ({ isLoading }: any) => {
+  if (!isLoading) {
+    return null;
+  } else {
+    return (
+      <View
+        style={{
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          top: 0,
+          bottom: 0,
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: 'rgba(200, 200, 200, 0.5)',
+          zIndex: 1000,
+        }}>
+        <ActivityIndicator size="small" />
+      </View>
+    );
+  }
+}
+
+
+const Banks = ({ banks, isValidating, onPay }: any) => {
   const Bank = ({ item }: { item: IBank }) => (
     <TouchableOpacity
       key={item.id}
@@ -129,7 +177,7 @@ const HeadlessCheckoutWithRedirect = (props: any) => {
         .replace(' ', '-')}`}
       disabled={!!isValidating}
       onPress={() => {
-        pay(item.id);
+        onPay(item.id);
       }}
       style={{
         flexDirection: 'row',
@@ -153,69 +201,13 @@ const HeadlessCheckoutWithRedirect = (props: any) => {
     </TouchableOpacity>
   );
 
-  const renderBanks = () => {
-    // return (
-    //   <FlatList
-    //     data={banks}
-    //     renderItem={({ item }) => <Bank item={item} />}
-    //     keyExtractor={item => item.id}
-    //   />
-    // );
+  if (banks.length != 0) {
+    return banks.map((bank: IBank) => {
+      return <Bank key={bank.id} item={bank} />
+    })
+  }
 
-    if (banks.length != 0) {
-      return banks.map((bank: IBank) => {
-
-        return <Bank key={bank.id} item={bank} />
-      })
-    }
-  };
-
-  const searchBanks = async (value: string) => {
-    setSearch(value);
-
-    try {
-      await redirectManager.onBankFilterChange(value);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const renderSearch = () => {
-    return (
-      <TextField
-        title="Choose your bank"
-        textInputStyle={{
-          backgroundColor: '#f5f5f5',
-          borderColor: '#f5f5f5',
-          paddingHorizontal: 10,
-        }}
-        style={{
-          padding: 5,
-          marginVertical: 10,
-          borderRadius: 5,
-          marginHorizontal: 5,
-        }}
-        placeholder="Search Banks"
-        value={search}
-        onChangeText={text => {
-          searchBanks(text);
-        }}
-      />
-    );
-  };
-
-  return (
-    <View
-      style={{
-        paddingHorizontal: 5,
-        flex: 1,
-        backgroundColor: 'white',
-      }}>
-      {renderSearch()}
-      {renderBanks()}
-      {renderLoadingOverlay()}
-    </View>
-  );
-};
+  return null
+}
 
 export default HeadlessCheckoutWithRedirect;

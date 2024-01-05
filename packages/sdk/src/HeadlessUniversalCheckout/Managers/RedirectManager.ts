@@ -130,58 +130,53 @@ class PrimerHeadlessUniversalCheckoutComponentWithRedirectManager {
   }
 
   async configureListeners(): Promise<void> {
-    //@ts-ignore
-    return new Promise(async (resolve, reject) => {
-      if (this.options?.onRetrieved) {
-        this.addListener('onRetrieved', ({ banks }) => {
-          if (this.options?.onRetrieved) {
-            this.options.onRetrieved(banks);
-          }
-        });
-      }
+    if (this.options?.onRetrieved) {
+      this.addListener('onRetrieved', ({ banks }) => {
+        if (this.options?.onRetrieved) {
+          this.options.onRetrieved(banks);
+        }
+      });
+    }
 
-      if (this.options?.onRetrieving) {
-        this.addListener('onRetrieving', () => {
-          if (this.options?.onRetrieving) {
-            this.options.onRetrieving();
-          }
-        });
-      }
+    if (this.options?.onRetrieving) {
+      this.addListener('onRetrieving', () => {
+        if (this.options?.onRetrieving) {
+          this.options.onRetrieving();
+        }
+      });
+    }
 
-      if (this.options?.onInvalid) {
-        this.addListener('onInvalid', (data) => {
-          if (this.options?.onInvalid) {
-            this.options.onInvalid(data);
-          }
-        });
-      }
+    if (this.options?.onInvalid) {
+      this.addListener('onInvalid', (data) => {
+        if (this.options?.onInvalid) {
+          this.options.onInvalid(data);
+        }
+      });
+    }
 
-      if (this.options?.onError) {
-        this.addListener('onError', (data) => {
-          if (this.options?.onError) {
-            this.options.onError(data.errors);
-          }
-        });
-      }
+    if (this.options?.onError) {
+      this.addListener('onError', (data) => {
+        if (this.options?.onError) {
+          this.options.onError(data.errors);
+        }
+      });
+    }
 
-      if (this.options?.onValid) {
-        this.addListener('onValid', ({ data }) => {
-          if (this.options?.onValid) {
-            this.options.onValid(data);
-          }
-        });
-      }
+    if (this.options?.onValid) {
+      this.addListener('onValid', ({ data }) => {
+        if (this.options?.onValid) {
+          this.options.onValid(data);
+        }
+      });
+    }
 
-      if (this.options?.onValidating) {
-        this.addListener('onValidating', () => {
-          if (this.options?.onValidating) {
-            this.options.onValidating();
-          }
-        });
-      }
-
-      resolve();
-    });
+    if (this.options?.onValidating) {
+      this.addListener('onValidating', () => {
+        if (this.options?.onValidating) {
+          this.options.onValidating();
+        }
+      });
+    }
   }
 
   ///////////////////////////////////////////
