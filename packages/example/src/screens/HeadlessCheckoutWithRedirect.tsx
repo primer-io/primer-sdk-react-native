@@ -2,10 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
   Text,
   TouchableOpacity,
-  NativeEventEmitter,
-  NativeModules,
   View,
-  FlatList,
   Image,
 } from 'react-native';
 import { ActivityIndicator } from 'react-native';
@@ -144,32 +141,49 @@ const Search = ({ search, onSearch }: any) => {
 }
 
 
-const Loader = ({ isLoading }: any) => {
-  if (!isLoading) {
-    return null;
-  } else {
-    return (
-      <View
-        style={{
-          position: 'absolute',
-          left: 0,
-          right: 0,
-          top: 0,
-          bottom: 0,
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: 'rgba(200, 200, 200, 0.5)',
-          zIndex: 1000,
-        }}>
-        <ActivityIndicator size="small" />
-      </View>
-    );
-  }
+const Loader = ({ isLoading }: {
+  isLoading: boolean
+}) => {
+  if (!isLoading) return null;
+
+  return (
+    <View
+      style={{
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'rgba(200, 200, 200, 0.5)',
+        zIndex: 1000,
+      }}>
+      <ActivityIndicator size="small" />
+    </View>
+  );
 }
 
 
-const Banks = ({ banks, isValidating, onPay }: any) => {
-  const Bank = ({ item }: { item: IBank }) => (
+
+const Banks = ({ banks, isValidating, onPay }: {
+  banks: IBank[];
+  isValidating: string | null;
+  onPay: (id: string) => void;
+}) => {
+  if (!banks.length) return null;
+
+  return banks.map((bank: IBank) =>
+    <Bank key={bank.id} item={bank} isValidating={isValidating} onPay={onPay} />
+  )
+}
+
+const Bank = ({ item, isValidating, onPay }: {
+  item: IBank;
+  isValidating: string | null;
+  onPay: (id: string) => void;
+}) => {
+  return (
     <TouchableOpacity
       key={item.id}
       testID={`button-${item.name
@@ -200,14 +214,6 @@ const Banks = ({ banks, isValidating, onPay }: any) => {
       )}
     </TouchableOpacity>
   );
-
-  if (banks.length != 0) {
-    return banks.map((bank: IBank) => {
-      return <Bank key={bank.id} item={bank} />
-    })
-  }
-
-  return null
 }
 
 export default HeadlessCheckoutWithRedirect;
