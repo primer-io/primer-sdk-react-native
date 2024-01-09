@@ -76,6 +76,7 @@ const SettingsScreen = ({ navigation }) => {
                     Environment
                 </Text>
                 <SegmentedControl
+                    testID="Enviroment"
                     style={{ marginTop: 6 }}
                     values={['Dev', 'Sandbox', 'Staging', 'Production']}
                     selectedIndex={environment}
@@ -87,6 +88,7 @@ const SettingsScreen = ({ navigation }) => {
                 />
                 <TextField
                     title='API Key'
+                    testID="ApiKey"
                     style={{ marginVertical: 8 }}
                     value={apiKey}
                     placeholder={'Set API key'}
@@ -137,24 +139,25 @@ const SettingsScreen = ({ navigation }) => {
 
                 <View style={{ marginTop: 8, marginBottom: 4 }}>
                     <TextField
-                            title='Currency'
-                            style={{ marginVertical: 8 }}
-                            value={currency}
-                            placeholder={'Set currency'}
-                            onChangeText={(text) => {
-                                setCurrency(text);
-                            }}
-                        />
+                        title='Currency'
+                        style={{ marginVertical: 8 }}
+                        value={currency}
+                        placeholder={'Set currency'}
+                        onChangeText={(text) => {
+                            setCurrency(text);
+                        }}
+                    />
 
-                        <TextField
-                            title='Country Code'
-                            style={{ marginVertical: 8 }}
-                            value={countryCode}
-                            placeholder={'Set country code'}
-                            onChangeText={(text) => {
-                                setCountryCode(text);
-                            }}
-                        />
+                    <TextField
+                        title='Country Code'
+                        testID="CountryCode"
+                        style={{ marginVertical: 8 }}
+                        value={countryCode}
+                        placeholder={'Set country code'}
+                        onChangeText={(text) => {
+                            setCountryCode(text);
+                        }}
+                    />
                 </View>
 
                 {renderLineItems()}
@@ -606,6 +609,7 @@ const SettingsScreen = ({ navigation }) => {
         return (
             <View>
                 <TouchableOpacity
+                    testID='PrimerSDK'
                     style={{ ...styles.button, marginVertical: 5, backgroundColor: 'black' }}
                     onPress={() => {
                         updateAppPaymentParameters();
@@ -621,6 +625,7 @@ const SettingsScreen = ({ navigation }) => {
                 </TouchableOpacity>
 
                 <TouchableOpacity
+                    testID='HeadlessUniversalCheckout'
                     style={{ ...styles.button, marginVertical: 5, backgroundColor: 'black' }}
                     onPress={() => {
                         updateAppPaymentParameters();
