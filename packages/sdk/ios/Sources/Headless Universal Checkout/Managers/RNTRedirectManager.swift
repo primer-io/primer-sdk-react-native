@@ -51,7 +51,7 @@ enum RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManagerEvents: Int, 
       super.init()
     }
     
-    override func supportedEvents() -> [String]! {
+      override func supportedEvents() -> [String] {
       return RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManagerEvents.allCases.compactMap({ $0.stringValue })
     }
     
@@ -80,9 +80,16 @@ enum RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManagerEvents: Int, 
           self.banksComponent = banksComponent
 
         } else {
-          banksComponent = try! redirectManager.provideBanksComponent(paymentMethodType: paymentMethodTypeStr) as! any BanksComponent
-       
-          banksComponent?.start()
+            guard let banksComponent: any BanksComponent = try? redirectManager.provideBanksComponent(paymentMethodType: paymentMethodTypeStr) as? any BanksComponent else {
+              let err = RNTNativeError(
+                                  errorId: "native-ios",
+                                  errorDescription: "Failed to find asset of \(paymentMethodTypeStr) for this session",
+                                  recoverySuggestion: nil)
+                              throw err
+            }
+
+            banksComponent.start()
+            self.banksComponent = banksComponent
         }
         
         banksComponent?.stepDelegate = self
@@ -101,7 +108,8 @@ enum RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManagerEvents: Int, 
       _ resolver: RCTPromiseResolveBlock,
       rejecter: RCTPromiseRejectBlock
     ) {
-      
+        self.banksComponent = nil
+        resolver(nil)
     }
 
     @objc
@@ -109,7 +117,7 @@ enum RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManagerEvents: Int, 
       _ resolver: RCTPromiseResolveBlock,
       rejecter: RCTPromiseRejectBlock
     ) {
-      // banksComponent!.start()
+      banksComponent?.submit()
       resolver(nil)
     }
     
@@ -119,7 +127,7 @@ enum RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManagerEvents: Int, 
       resolver: RCTPromiseResolveBlock,
       rejecter: RCTPromiseRejectBlock
     ) {
-      banksComponent!.updateCollectedData(collectableData: BanksCollectableData.bankFilterText(text: filterText))
+      banksComponent?.updateCollectedData(collectableData: BanksCollectableData.bankFilterText(text: filterText))
       resolver(nil)
     }
     
@@ -156,38 +164,50 @@ enum RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManagerEvents: Int, 
       }
     }
   }
-  
-  extension RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManager: PrimerHeadlessValidatableDelegate {
+extension RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManager: PrimerHeadlessValidatableDelegate {
     func didUpdate(validationStatus: PrimerSDK.PrimerValidationStatus, for data: PrimerSDK.PrimerCollectableData?) {
-      switch validationStatus {
-      case .valid:
-        self.sendEvent(
-          withName: RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManagerEvents.onValid.stringValue,
-                     body: ["validating": false])
-        break
-      case .validating:
-        self.sendEvent(
-                     withName: RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManagerEvents.onValidating.stringValue,
-                     body: ["validating": true])
-        break
-      case .invalid(errors: let errors):
-        self.sendEvent(
-                  withName: RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManagerEvents.onInvalid.stringValue,
-                  body: ["errors": errors])
+        guard let data = data as? BanksCollectableData else { return }
         
-      case .error(error: let error):
-        self.sendEvent(
-                     withName: RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManagerEvents.onError.stringValue,
-                     body: ["errors": [error]])
-      }
+        let eventName: String
+        switch validationStatus {
+        case .valid:
+            eventName = RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManagerEvents.onValid.stringValue
+        case .validating:
+            eventName = RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManagerEvents.onValidating.stringValue
+        case .invalid(let errors):
+            let jsonErrors = try? errors.toJsonObject()
+                       self.sendEvent(
+                           withName: RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManagerEvents.onInvalid.stringValue,
+                           body: ["errors": jsonErrors])
+            return
+        case .error(let error):
+            let nsError = NSError(domain: error.errorId, code: -1, userInfo: error.errorUserInfo)
+            self.sendEvent(
+                withName: RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManagerEvents.onError.stringValue,
+                body: ["errors": error])
+            return
+        }
+        
+        switch data {
+        case .bankId(let bankId):
+            sendEventData(eventName, body: ["id": "\(bankId)"])
+        case .bankFilterText(let text):
+            sendEventData(eventName, body: ["text": "\(text)"])
+        }
     }
-  }
-  
-extension RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManager: PrimerHeadlessErrorableDelegate {
-  func didReceiveError(error: PrimerSDK.PrimerError) {
+    
+    private func sendEventData<T: Encodable>(_ eventName: String, body: T) {
+        let jsonBody = try? body.toJsonObject()
+        self.sendEvent(withName: eventName, body: ["data": jsonBody])
+    }
+}
 
-    self.sendEvent(
-      withName: RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManagerEvents.onError.stringValue,
-                 body: ["errors": [error]])
-  }
+extension RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManager: PrimerHeadlessErrorableDelegate {
+    func didReceiveError(error: PrimerSDK.PrimerError) {
+        let error = NSError(domain: error.errorId, code: -1, userInfo: error.errorUserInfo)
+        
+        self.sendEvent(
+            withName: RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManagerEvents.onError.stringValue,
+            body: ["errors": error])
+    }
 }
