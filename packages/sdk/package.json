@@ -9,6 +9,7 @@
   "source": "src/index",
   "files": [
     "src",
+    "lib",
     "android",
     "ios",
     "primer-io-react-native.podspec",
