@@ -6,17 +6,11 @@ import {
   Image,
 } from 'react-native';
 import { ActivityIndicator } from 'react-native';
-import { RedirectManager } from '@primer-io/react-native';
+import { ComponentWithRedirectManager, BanksComponent, IssuingBank } from '@primer-io/react-native';
 import TextField from '../components/TextField';
 
-const redirectManager = new RedirectManager();
-
-interface IBank {
-  id: string;
-  name: string;
-  iconUrl: string;
-  iconUrlStr: string
-}
+const componentWithRedirectManager = new ComponentWithRedirectManager();
+let banksComponent: BanksComponent;
 
 const HeadlessCheckoutWithRedirect = (props: any) => {
   //@ts-ignore
@@ -27,7 +21,7 @@ const HeadlessCheckoutWithRedirect = (props: any) => {
 
   useEffect(() => {
     (async () => {
-      await redirectManager.configure({
+      banksComponent = await componentWithRedirectManager.provide({
         paymentMethodType: props.route.params.paymentMethodType,
         //@ts-ignore
         onRetrieving: data => {
@@ -39,7 +33,7 @@ const HeadlessCheckoutWithRedirect = (props: any) => {
         onRetrieved: data => {
           const log = `\nonRetrieved: ${JSON.stringify(data)}\n`;
           console.log(log);
-          setBanks(data);
+          setBanks(data as IssuingBank[]);
           setIsLoading(false);
         },
         //@ts-ignore
@@ -48,7 +42,7 @@ const HeadlessCheckoutWithRedirect = (props: any) => {
           console.log(log);
           setIsLoading(false);
           setIsValidating(null);
-          if (data?.id) {
+          if (data?.data?.id) {
             submit()
           }
         },
@@ -67,12 +61,13 @@ const HeadlessCheckoutWithRedirect = (props: any) => {
           setIsValidating(null);
         },
       });
+      banksComponent?.start();
     })()
   }, []);
 
   const submit = async () => {
     try {
-      await redirectManager.submit();
+      await banksComponent.submit();
     } catch (err) {
       console.error(err);
     }
@@ -91,7 +86,7 @@ const HeadlessCheckoutWithRedirect = (props: any) => {
           setSearch(value);
 
           try {
-            await redirectManager.onBankFilterChange(value);
+            await banksComponent.onBankFilterChange(value);
           } catch (err) {
             console.error(err);
           }
@@ -103,7 +98,7 @@ const HeadlessCheckoutWithRedirect = (props: any) => {
         onPay={async (id: string) => {
           try {
             setIsValidating(id);
-            await redirectManager.onBankSelected(id);
+            await banksComponent.onBankSelected(id);
           } catch (err) {
             setIsValidating(null);
             console.error(err);
@@ -114,7 +109,6 @@ const HeadlessCheckoutWithRedirect = (props: any) => {
     </View>
   );
 };
-
 
 const Search = ({ search, onSearch }: any) => {
   return (
@@ -140,7 +134,6 @@ const Search = ({ search, onSearch }: any) => {
   );
 }
 
-
 const Loader = ({ isLoading }: {
   isLoading: boolean
 }) => {
@@ -164,22 +157,20 @@ const Loader = ({ isLoading }: {
   );
 }
 
-
-
 const Banks = ({ banks, isValidating, onPay }: {
-  banks: IBank[];
+  banks: IssuingBank[];
   isValidating: string | null;
   onPay: (id: string) => void;
 }) => {
   if (!banks.length) return null;
 
-  return banks.map((bank: IBank) =>
+  return banks.map((bank: IssuingBank) =>
     <Bank key={bank.id} item={bank} isValidating={isValidating} onPay={onPay} />
   )
 }
 
 const Bank = ({ item, isValidating, onPay }: {
-  item: IBank;
+  item: IssuingBank;
   isValidating: string | null;
   onPay: (id: string) => void;
 }) => {

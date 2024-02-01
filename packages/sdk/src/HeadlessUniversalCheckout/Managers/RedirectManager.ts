@@ -1,16 +1,15 @@
-import type { PrimerError } from '@primer-io/react-native';
+import type { PrimerError, IssuingBank } from '@primer-io/react-native';
 import {
   NativeEventEmitter,
   NativeModules,
   EmitterSubscription,
 } from 'react-native';
-import { PrimerInitializationData } from 'src/models/PrimerInitializationData';
 
-const { RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManager } =
+const { RNTPrimerHeadlessUniversalCheckoutBanksComponent } =
   NativeModules;
 
 const eventEmitter = new NativeEventEmitter(
-  RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManager
+  RNTPrimerHeadlessUniversalCheckoutBanksComponent
 );
 
 type EventType = 'onRetrieved' | 'onRetrieving' | 'onInvalid' | 'onValid' | 'onError' | 'onValidating';
@@ -26,17 +25,25 @@ const eventTypes: EventType[] = [
 
 export interface RedirectManagerProps {
   paymentMethodType: string;
-  onRetrieved?: (metadata: any) => void;
+  onRetrieved?: (metadata: IssuingBank | any) => void;
   onRetrieving?: () => void;
   onError?: (errors: PrimerError[] | undefined) => void;
-  onInvalid?: (isValid: any) => void;
-  onValid?: () => void;
-  onValidating?: () => void;
+  onInvalid?: (data: any) => void;
+  onValid?: (data: any) => void;
+  onValidating?: (data: any) => void;
+}
+
+interface BanksComponent {
+  start(): Promise<void>;
+
+  onBankSelected(bankId: string): Promise<void>;
+
+  onBankFilterChange(filter: string): Promise<void>;
+
+  submit(): Promise<void>;
 }
 
 class PrimerHeadlessUniversalCheckoutComponentWithRedirectManager {
-  options?: RedirectManagerProps;
-
   ///////////////////////////////////////////
   // Init
   ///////////////////////////////////////////
@@ -46,135 +53,65 @@ class PrimerHeadlessUniversalCheckoutComponentWithRedirectManager {
   // API
   ///////////////////////////////////////////
 
-  async configure(
-    options: RedirectManagerProps
-  ): Promise<{ initializationData: PrimerInitializationData } | void> {
-    return new Promise(async (resolve, reject) => {
-      try {
-        this.options = options;
-        await this.configureListeners();
+  async provide(props: RedirectManagerProps): Promise<BanksComponent | any> {
+    await this.configureListeners(props);
 
-        const data =
-          await RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManager.configure(
-            options.paymentMethodType
-          );
-
-        if (data) {
-          resolve(data);
-        } else {
-          resolve();
-        }
-      } catch (err) {
-        reject(err);
+    if (props.paymentMethodType == "ADYEN_IDEAL") {
+      const banksComponent: BanksComponent = {
+        start: async () => {
+          RNTPrimerHeadlessUniversalCheckoutBanksComponent.start();
+        },
+        submit: async () => {
+          RNTPrimerHeadlessUniversalCheckoutBanksComponent.submit();
+        },
+        onBankFilterChange: async (filter: String) => {
+          RNTPrimerHeadlessUniversalCheckoutBanksComponent.onBankFilterChange(filter);
+        },
+        onBankSelected: async (bankId: String) => {
+          RNTPrimerHeadlessUniversalCheckoutBanksComponent.onBankSelected(bankId);
+        },
       }
-    });
+      await RNTPrimerHeadlessUniversalCheckoutBanksComponent.configure(props.paymentMethodType);
+      return banksComponent;
+    } else {
+      return null;
+    }
   }
 
-  async submit(): Promise<{ initializationData: PrimerInitializationData } | void> {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const data =
-          await RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManager.submit();
-
-        if (data) {
-          resolve(data);
-        } else {
-          resolve();
-        }
-      } catch (err) {
-        reject(err);
-      }
-    });
-  }
-
-  async onBankSelected(
-    bankId: string
-  ): Promise<{ initializationData: PrimerInitializationData } | void> {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const data =
-          await RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManager.onBankSelected(
-            bankId
-          );
-
-        if (data) {
-          resolve(data);
-        } else {
-          resolve();
-        }
-      } catch (err) {
-        reject(err);
-      }
-    });
-  }
-
-  async onBankFilterChange(
-    filter: string
-  ): Promise<{ initializationData: PrimerInitializationData } | void> {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const data =
-          await RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManager.onBankFilterChange(
-            filter
-          );
-
-        if (data) {
-          resolve(data);
-        } else {
-          resolve();
-        }
-      } catch (err) {
-        reject(err);
-      }
-    });
-  }
-
-  async configureListeners(): Promise<void> {
-    if (this.options?.onRetrieved) {
+  private async configureListeners(props: RedirectManagerProps): Promise<void> {
+    if (props?.onRetrieved) {
       this.addListener('onRetrieved', ({ banks }) => {
-        if (this.options?.onRetrieved) {
-          this.options.onRetrieved(banks);
-        }
+        props.onRetrieved?.(banks);
       });
     }
 
-    if (this.options?.onRetrieving) {
+    if (props?.onRetrieving) {
       this.addListener('onRetrieving', () => {
-        if (this.options?.onRetrieving) {
-          this.options.onRetrieving();
-        }
+        props.onRetrieving?.();
       });
     }
 
-    if (this.options?.onInvalid) {
+    if (props?.onInvalid) {
       this.addListener('onInvalid', (data) => {
-        if (this.options?.onInvalid) {
-          this.options.onInvalid(data);
-        }
+        props.onInvalid?.(data);
       });
     }
 
-    if (this.options?.onError) {
+    if (props?.onError) {
       this.addListener('onError', (data) => {
-        if (this.options?.onError) {
-          this.options.onError(data.errors);
-        }
+        props.onError?.(data);
       });
     }
 
-    if (this.options?.onValid) {
-      this.addListener('onValid', ({ data }) => {
-        if (this.options?.onValid) {
-          this.options.onValid(data);
-        }
+    if (props?.onValid) {
+      this.addListener('onValid', (data) => {
+        props.onValid?.(data);
       });
     }
 
-    if (this.options?.onValidating) {
-      this.addListener('onValidating', () => {
-        if (this.options?.onValidating) {
-          this.options.onValidating();
-        }
+    if (props?.onValidating) {
+      this.addListener('onValidating', (data) => {
+        props.onValidating?.(data);
       });
     }
   }

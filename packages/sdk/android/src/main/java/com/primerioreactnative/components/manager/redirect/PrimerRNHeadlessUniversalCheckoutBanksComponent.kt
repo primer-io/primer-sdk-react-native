@@ -43,10 +43,10 @@ import org.json.JSONArray
 import org.json.JSONObject
 import kotlinx.coroutines.coroutineScope
 
-class PrimerRNHeadlessUniversalCheckoutComponentWithRedirectManager(
+class PrimerRNHeadlessUniversalCheckoutBanksComponent(
   private val reactContext: ReactApplicationContext,
 ) : ReactContextBaseJavaModule(reactContext) {
-  override fun getName() = "RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManager"
+  override fun getName() = "RNTPrimerHeadlessUniversalCheckoutBanksComponent"
 
   private var job: Job? = null
   private var banksComponent: BanksComponent? = null
@@ -74,7 +74,6 @@ class PrimerRNHeadlessUniversalCheckoutComponentWithRedirectManager(
         promise.reject(exception.errorId, exception.description)
       }
       else {
-        banksComponent?.start()
         coroutineScope {
           launch {
             configureBanksListener()
@@ -90,6 +89,18 @@ class PrimerRNHeadlessUniversalCheckoutComponentWithRedirectManager(
           promise.resolve(null)
         }
       }
+    }
+  }
+
+  @ReactMethod
+  fun start(promise: Promise) {
+    if (banksComponent == null) {
+      val exception =
+        ErrorTypeRN.NativeBridgeFailed errorTo UNINITIALIZED_ERROR
+      promise.reject(exception.errorId, exception.description)
+    } else {
+      banksComponent?.start()
+      promise.resolve(null)
     }
   }
 
@@ -131,7 +142,6 @@ class PrimerRNHeadlessUniversalCheckoutComponentWithRedirectManager(
 
   private suspend fun configureErrorListener() {
     banksComponent?.componentError?.collectLatest { error ->
-
       sendEvent(
         PrimerHeadlessUniversalCheckoutRedirectManagerEvent.ON_ERROR.eventName,
         JSONObject().apply {
@@ -179,17 +189,9 @@ class PrimerRNHeadlessUniversalCheckoutComponentWithRedirectManager(
     banksComponent?.componentValidationStatus?.collectLatest { validationStatus ->
       when (validationStatus) {
         is PrimerValidationStatus.Validating -> {
-          val collectableData = validationStatus.collectableData
-
           sendEvent(PrimerHeadlessUniversalCheckoutRedirectManagerEvent.ON_VALIDATING.eventName,
             JSONObject().apply {
-              put(
-                "data", when (collectableData) {
-                  is BanksCollectableData.BankId -> JSONObject(Json.encodeToString(collectableData.toBankIdRN()))
-                  is BanksCollectableData.Filter -> JSONObject(Json.encodeToString(collectableData.toFilterRN()))
-                  else -> null
-                }
-              )
+              putData(validationStatus.collectableData as BanksCollectableData)
             }
           )
         }
@@ -197,6 +199,7 @@ class PrimerRNHeadlessUniversalCheckoutComponentWithRedirectManager(
         is PrimerValidationStatus.Invalid -> {
           sendEvent(PrimerHeadlessUniversalCheckoutRedirectManagerEvent.ON_IN_VALID.eventName,
             JSONObject().apply {
+              putData(validationStatus.collectableData as BanksCollectableData)
               put(
                 "errors",
                 JSONArray(
@@ -215,17 +218,9 @@ class PrimerRNHeadlessUniversalCheckoutComponentWithRedirectManager(
         }
 
         is PrimerValidationStatus.Valid -> {
-          val collectableData = validationStatus.collectableData
-
           sendEvent(PrimerHeadlessUniversalCheckoutRedirectManagerEvent.ON_VALID.eventName,
             JSONObject().apply {
-              put(
-                "data", when (collectableData) {
-                  is BanksCollectableData.BankId -> JSONObject(Json.encodeToString(collectableData.toBankIdRN()))
-                  is BanksCollectableData.Filter -> JSONObject(Json.encodeToString(collectableData.toFilterRN()))
-                  else -> null
-                }
-              )
+              putData(validationStatus.collectableData as BanksCollectableData)
             }
           )
         }
@@ -233,6 +228,7 @@ class PrimerRNHeadlessUniversalCheckoutComponentWithRedirectManager(
         is PrimerValidationStatus.Error -> {
           sendEvent(PrimerHeadlessUniversalCheckoutRedirectManagerEvent.ON_ERROR.eventName,
             JSONObject().apply {
+              putData(validationStatus.collectableData as BanksCollectableData)
               put(
                 "errors", JSONArray(
                   JSONObject(Json.encodeToString(PrimerErrorRN(
@@ -247,6 +243,16 @@ class PrimerRNHeadlessUniversalCheckoutComponentWithRedirectManager(
         }
       }
     }
+  }
+
+  private fun JSONObject.putData(collectableData: BanksCollectableData) {
+    put(
+        "data", when (collectableData) {
+          is BanksCollectableData.BankId -> JSONObject(Json.encodeToString(collectableData.toBankIdRN()))
+          is BanksCollectableData.Filter -> JSONObject(Json.encodeToString(collectableData.toFilterRN()))
+          else -> null
+        }
+      )
   }
 
   @ReactMethod
@@ -278,8 +284,8 @@ class PrimerRNHeadlessUniversalCheckoutComponentWithRedirectManager(
   private companion object {
     const val UNINITIALIZED_ERROR =
       """
-        The RedirectManager has not been initialized.
-        Make sure you have initialized the `RedirectManager' first.
+        The BanksComponent has not been initialized.
+        Make sure you have initialized the `BanksComponent' first.
       """
   }
 }
