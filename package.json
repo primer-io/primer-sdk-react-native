@@ -6,7 +6,7 @@
         "nohoist": ["**/react*"]
     },
     "scripts": {
-        "bootstrap": "echo 'Coming soon! ✨'",
+        "bootstrap": "yarn install",
         "pods": "cd packages/example/ios && pod-install --quiet"
     }
 }
