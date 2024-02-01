@@ -1,9 +1,12 @@
-import type { PrimerError, IssuingBank } from '@primer-io/react-native';
 import {
   NativeEventEmitter,
   NativeModules,
   EmitterSubscription,
 } from 'react-native';
+import { BankId, BankListFilter } from 'src/models/ComponentWithRedirectModels';
+import { IssuingBank } from 'src/models/IssuingBank';
+import { PrimerComponentDataValidationError, PrimerInvalidComponentData, PrimerValidComponentData, PrimerValidatingComponentData } from 'src/models/PrimerComponentDataValidation';
+import { PrimerError } from 'src/models/PrimerError';
 
 const { RNTPrimerHeadlessUniversalCheckoutBanksComponent } =
   NativeModules;
@@ -12,25 +15,27 @@ const eventEmitter = new NativeEventEmitter(
   RNTPrimerHeadlessUniversalCheckoutBanksComponent
 );
 
-type EventType = 'onRetrieved' | 'onRetrieving' | 'onInvalid' | 'onValid' | 'onError' | 'onValidating';
+type EventType = 'onRetrieved' | 'onRetrieving' | 'onError' | 'onInvalid' | 'onValid' | 'onValidating' | 'onValidationError';
 
 const eventTypes: EventType[] = [
   'onRetrieved',
   'onRetrieving',
-  'onInvalid',
   'onError',
+  'onInvalid',
   'onValid',
-  'onValidating'
+  'onValidating',
+  'onValidationError'
 ];
 
 export interface RedirectManagerProps {
   paymentMethodType: string;
-  onRetrieved?: (metadata: IssuingBank | any) => void;
+  onRetrieved?: (metadata: IssuingBank[]) => void;
   onRetrieving?: () => void;
-  onError?: (errors: PrimerError[] | undefined) => void;
-  onInvalid?: (data: any) => void;
-  onValid?: (data: any) => void;
-  onValidating?: (data: any) => void;
+  onError?: (error: PrimerError) => void;
+  onInvalid?: (data: PrimerInvalidComponentData<BankId | BankListFilter>) => void;
+  onValid?: (data: PrimerValidComponentData<BankId | BankListFilter>) => void;
+  onValidating?: (data: PrimerValidatingComponentData<BankId | BankListFilter>) => void;
+  onValidationError?: (data: PrimerComponentDataValidationError<BankId | BankListFilter>) => void;
 }
 
 interface BanksComponent {
@@ -68,7 +73,7 @@ class PrimerHeadlessUniversalCheckoutComponentWithRedirectManager {
           RNTPrimerHeadlessUniversalCheckoutBanksComponent.onBankFilterChange(filter);
         },
         onBankSelected: async (bankId: String) => {
-          RNTPrimerHeadlessUniversalCheckoutBanksComponent.onBankSelected(bankId);
+          RNTPrimerHeadlessUniversalCheckoutBanksComponent.onBankSelected("x");
         },
       }
       await RNTPrimerHeadlessUniversalCheckoutBanksComponent.configure(props.paymentMethodType);
@@ -112,6 +117,12 @@ class PrimerHeadlessUniversalCheckoutComponentWithRedirectManager {
     if (props?.onValidating) {
       this.addListener('onValidating', (data) => {
         props.onValidating?.(data);
+      });
+    }
+
+    if (props?.onValidationError) {
+      this.addListener('onValidationError', (data) => {
+        props.onValidationError?.(data);
       });
     }
   }

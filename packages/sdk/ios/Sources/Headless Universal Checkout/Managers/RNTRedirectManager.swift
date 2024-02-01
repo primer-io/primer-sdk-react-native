@@ -176,9 +176,9 @@ extension RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManager: Primer
             eventName = RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManagerEvents.onValidating.stringValue
         case .invalid(let errors):
             let jsonErrors = try? errors.toJsonObject()
-                       self.sendEvent(
-                           withName: RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManagerEvents.onInvalid.stringValue,
-                           body: ["errors": jsonErrors])
+            self.sendEvent(
+                withName: RNTPrimerHeadlessUniversalCheckoutComponentWithRedirectManagerEvents.onInvalid.stringValue,
+                body: ["errors": jsonErrors])
             return
         case .error(let error):
             let nsError = NSError(domain: error.errorId, code: -1, userInfo: error.errorUserInfo)

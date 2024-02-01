@@ -6,7 +6,19 @@ import {
   Image,
 } from 'react-native';
 import { ActivityIndicator } from 'react-native';
-import { ComponentWithRedirectManager, BanksComponent, IssuingBank } from '@primer-io/react-native';
+import { 
+  ComponentWithRedirectManager, 
+  BanksComponent, 
+  IssuingBank, 
+  BankId, 
+  BankListFilter, 
+  PrimerError, 
+  PrimerInvalidComponentData, 
+  PrimerValidComponentData, 
+  PrimerValidatingComponentData, 
+  PrimerComponentDataValidationError, 
+  RedirectManagerProps 
+} from '@primer-io/react-native';
 import TextField from '../components/TextField';
 
 const componentWithRedirectManager = new ComponentWithRedirectManager();
@@ -21,23 +33,30 @@ const HeadlessCheckoutWithRedirect = (props: any) => {
 
   useEffect(() => {
     (async () => {
-      banksComponent = await componentWithRedirectManager.provide({
+      const redirectManagerProps: RedirectManagerProps = {
         paymentMethodType: props.route.params.paymentMethodType,
-        //@ts-ignore
-        onRetrieving: data => {
-          const log = `\nonRetrieved: ${JSON.stringify(data)}\n`;
-          console.log(log);
-          setIsLoading(true);
-        },
-        //@ts-ignore
-        onRetrieved: data => {
+        onRetrieved: (data: IssuingBank[]) => {
           const log = `\nonRetrieved: ${JSON.stringify(data)}\n`;
           console.log(log);
           setBanks(data as IssuingBank[]);
           setIsLoading(false);
         },
-        //@ts-ignore
-        onValid: data => {
+        onRetrieving: () => {
+          const log = `\nonRetrieving\n`;
+          console.log(log);
+          setIsLoading(true);
+        },
+        onError: (error: PrimerError) => {
+          const log = `\nonError: ${JSON.stringify(error)}\n`;
+          console.log(log);
+        },
+        onInvalid: (data: PrimerInvalidComponentData<BankId | BankListFilter>) => {
+          const log = `\nonInvalid: ${JSON.stringify(data)}\n`;
+          console.log(log);
+          setIsLoading(false);
+          setIsValidating(null);
+        },
+        onValid: (data: PrimerValidComponentData<BankId | BankListFilter>) => {
           const log = `\nonValid: ${JSON.stringify(data)}\n`;
           console.log(log);
           setIsLoading(false);
@@ -46,21 +65,19 @@ const HeadlessCheckoutWithRedirect = (props: any) => {
             submit()
           }
         },
-        //@ts-ignore
-        onInvalid: data => {
-          const log = `\nonInvalid: ${JSON.stringify(data)}\n`;
+        onValidating: (data: PrimerValidatingComponentData<BankId | BankListFilter>) => {
+          const log = `\onValidating: ${JSON.stringify(data)}\n`;
+          console.log(log);
+        },
+        onValidationError: (data: PrimerComponentDataValidationError<BankId | BankListFilter>) => {
+          const log = `\nonValidationError: ${JSON.stringify(data)}\n`;
           console.log(log);
           setIsLoading(false);
           setIsValidating(null);
         },
-        //@ts-ignore
-        onError: data => {
-          const log = `\nonError: ${JSON.stringify(data)}\n`;
-          console.log(log);
-          setIsLoading(false);
-          setIsValidating(null);
-        },
-      });
+      };
+
+      banksComponent = await componentWithRedirectManager.provide(redirectManagerProps);
       banksComponent?.start();
     })()
   }, []);
@@ -164,9 +181,9 @@ const Banks = ({ banks, isValidating, onPay }: {
 }) => {
   if (!banks.length) return null;
 
-  return banks.map((bank: IssuingBank) =>
+  return <>{banks.map((bank: IssuingBank) =>
     <Bank key={bank.id} item={bank} isValidating={isValidating} onPay={onPay} />
-  )
+  )}</>
 }
 
 const Bank = ({ item, isValidating, onPay }: {

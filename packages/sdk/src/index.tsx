@@ -46,7 +46,13 @@ import PrimerHeadlessUniversalCheckoutRawDataManager from './HeadlessUniversalCh
 export { PrimerHeadlessUniversalCheckoutRawDataManager as RawDataManager };
 import PrimerHeadlessUniversalCheckoutComponentWithRedirectManager from './HeadlessUniversalCheckout/Managers/RedirectManager';
 import BanksComponent from './HeadlessUniversalCheckout/Managers/RedirectManager';
-export { PrimerHeadlessUniversalCheckoutComponentWithRedirectManager as ComponentWithRedirectManager };
 export { BanksComponent as BanksComponent };
+export { PrimerHeadlessUniversalCheckoutComponentWithRedirectManager as ComponentWithRedirectManager };
+import RedirectManagerProps from './HeadlessUniversalCheckout/Managers/RedirectManager';
+export { RedirectManagerProps };
 import { IssuingBank } from './models/IssuingBank';
-export { IssuingBank as IssuingBank };
+export { IssuingBank };
+import { BankId, BankListFilter } from './models/ComponentWithRedirectModels';
+export { BankId, BankListFilter };
+import { PrimerValidComponentData, PrimerValidatingComponentData, PrimerInvalidComponentData, PrimerComponentDataValidationError } from './models/PrimerComponentDataValidation';
+export { PrimerValidComponentData, PrimerValidatingComponentData, PrimerInvalidComponentData, PrimerComponentDataValidationError };

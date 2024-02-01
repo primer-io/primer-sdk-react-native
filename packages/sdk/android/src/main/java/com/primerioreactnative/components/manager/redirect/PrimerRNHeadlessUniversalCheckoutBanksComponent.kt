@@ -226,7 +226,7 @@ class PrimerRNHeadlessUniversalCheckoutBanksComponent(
         }
 
         is PrimerValidationStatus.Error -> {
-          sendEvent(PrimerHeadlessUniversalCheckoutRedirectManagerEvent.ON_ERROR.eventName,
+          sendEvent(PrimerHeadlessUniversalCheckoutRedirectManagerEvent.ON_VALIDATION_ERROR.eventName,
             JSONObject().apply {
               putData(validationStatus.collectableData as BanksCollectableData)
               put(
