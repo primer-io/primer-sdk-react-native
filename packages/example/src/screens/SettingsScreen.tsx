@@ -30,7 +30,7 @@ export let customClientToken: string | undefined;
 // @ts-ignore
 const SettingsScreen = ({ navigation }) => {
     const isDarkMode = useColorScheme() === 'dark';
-    const [environment, setEnvironment] = React.useState<Environment>(Environment.Staging);
+    const [environment, setEnvironment] = React.useState<Environment>(Environment.Sandbox);
     const [apiKey, setApiKey] = React.useState<string | undefined>(customApiKey);
     const [clientToken, setClientToken] = React.useState<string | undefined>(undefined);
     const [paymentHandling, setPaymentHandling] = React.useState<PaymentHandling>(PaymentHandling.Auto);
@@ -150,7 +150,6 @@ const SettingsScreen = ({ navigation }) => {
 
                     <TextField
                         title='Country Code'
-                        testID="CountryCode"
                         style={{ marginVertical: 8 }}
                         value={countryCode}
                         placeholder={'Set country code'}
@@ -637,6 +636,21 @@ const SettingsScreen = ({ navigation }) => {
                         style={{ ...styles.buttonText, color: 'white' }}
                     >
                         Headless Universal Checkout
+                    </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    style={{ ...styles.button, marginVertical: 5, backgroundColor: 'black' }}
+                    onPress={() => {
+                        updateAppPaymentParameters();
+                        console.log(appPaymentParameters);
+                        navigation.navigate('HUCVault');
+                    }}
+                >
+                    <Text
+                        style={{ ...styles.buttonText, color: 'white' }}
+                    >
+                        Headless Universal Checkout Vault
                     </Text>
                 </TouchableOpacity>
             </View>

@@ -43,7 +43,25 @@ export { PrimerHeadlessUniversalCheckoutAssetsManager as AssetsManager };
 import PrimerHeadlessUniversalCheckoutPaymentMethodNativeUIManager from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/NativeUIManager';
 export { PrimerHeadlessUniversalCheckoutPaymentMethodNativeUIManager as NativeUIManager };
 import PrimerHeadlessUniversalCheckoutRawDataManager from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/RawDataManager';
-export { PrimerHeadlessUniversalCheckoutRawDataManager as RawDataManager };
+export {
+    PrimerHeadlessUniversalCheckoutRawDataManager as RawDataManager
+}
+export {
+    IPrimerVaultedPaymentMethod as VaultedPaymentMethod
+} from './models/PrimerVaultedPaymentMethod'
+
+export {
+    IPrimerVaultedPaymentMethodAdditonalData as VaultedPaymentMethodAdditionalData
+} from './models/PrimerVaultedPaymentMethodAdditionalData'
+
+export {
+    IPrimerValidationError as ValidationError
+} from './models/PrimerValidationError'
+
+import PrimerHeadlessUniversalCheckoutVaultManager from './HeadlessUniversalCheckout/Managers/VaultManager'
+export {
+    PrimerHeadlessUniversalCheckoutVaultManager as VaultManager
+}
 import PrimerHeadlessUniversalCheckoutComponentWithRedirectManager from './HeadlessUniversalCheckout/Managers/RedirectManager';
 import BanksComponent from './HeadlessUniversalCheckout/Managers/RedirectManager';
 export { BanksComponent as BanksComponent };

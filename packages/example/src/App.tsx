@@ -10,6 +10,7 @@ import RawCardDataScreen from './screens/RawCardDataScreen';
 import RawPhoneNumberDataScreen from './screens/RawPhoneNumberScreen';
 import RawAdyenBancontactCardScreen from './screens/RawAdyenBancontactCardScreen';
 import RawRetailOutletScreen from './screens/RawRetailOutletScreen';
+import HeadlessCheckoutVaultScreen from './screens/HeadlessCheckoutVaultScreen';
 import HeadlessCheckoutWithRedirect from './screens/HeadlessCheckoutWithRedirect';
 
 const Stack = createNativeStackNavigator();
@@ -22,6 +23,7 @@ const App = () => {
           <Stack.Screen name="NewLineItem" component={NewLineItemScreen} />
           <Stack.Screen name="Checkout" component={CheckoutScreen} />
           <Stack.Screen name="HUC" component={HeadlessCheckoutScreen} />
+          <Stack.Screen name="HUCVault" component={HeadlessCheckoutVaultScreen} />
           <Stack.Screen name="Result" component={ResultScreen} />
           <Stack.Screen name="RawCardData" component={RawCardDataScreen} />
           <Stack.Screen name="RawPhoneNumberData" component={RawPhoneNumberDataScreen} />

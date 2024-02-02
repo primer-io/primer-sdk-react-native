@@ -14,13 +14,13 @@ let staticHeaders: { [key: string]: string } = {
 }
 
 export const createClientSession = async () => {
-  const url = baseUrl + '/client-session';
-  const headers: { [key: string]: string } = {
-    ...staticHeaders,
-    //@ts-ignore
-    'X-Api-Version': getAPIVersionStringVal(APIVersion.v3),
-    'Legacy-Workflows': 'false',
-  };
+    const url = baseUrl + '/client-session';
+    const headers: { [key: string]: string } = {
+        ...staticHeaders,
+        //@ts-ignore
+        'X-Api-Version': getAPIVersionStringVal(APIVersion.v6),
+        'Legacy-Workflows': 'false',
+    };
 
   if (customApiKey) {
     headers['X-Api-Key'] = customApiKey;
@@ -60,8 +60,8 @@ export const createClientSession = async () => {
 }
 
 export const setClientSessionActions = async (body: IClientSessionActionsRequestBody) => {
-  const url = baseUrl + '/client-session/actions';
-  const headers: { [key: string]: string } = { ...staticHeaders, 'X-Api-Version': '2021-10-19' };
+    const url = baseUrl + '/client-session/actions';
+    const headers: { [key: string]: string } = { ...staticHeaders, 'X-Api-Version': '2.2' };
 
   if (customApiKey) {
     headers['X-Api-Key'] = customApiKey;
