@@ -73,7 +73,7 @@ class PrimerHeadlessUniversalCheckoutComponentWithRedirectManager {
           RNTPrimerHeadlessUniversalCheckoutBanksComponent.onBankFilterChange(filter);
         },
         onBankSelected: async (bankId: String) => {
-          RNTPrimerHeadlessUniversalCheckoutBanksComponent.onBankSelected("x");
+          RNTPrimerHeadlessUniversalCheckoutBanksComponent.onBankSelected(bankId);
         },
       }
       await RNTPrimerHeadlessUniversalCheckoutBanksComponent.configure(props.paymentMethodType);
