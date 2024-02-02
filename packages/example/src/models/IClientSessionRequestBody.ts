@@ -136,7 +136,7 @@ export let appPaymentParameters: AppPaymentParameters = {
         },
         paymentMethod: {
             vaultOnSuccess: false,
-            paymentType: 'ECOMMERCE',
+            paymentType: 'FIRST_PAYMENT',
         }
     },
     merchantName: 'Primer Merchant'
