@@ -22,7 +22,7 @@ class ReactNativePackage : ReactPackage {
       PrimerRNHeadlessUniversalCheckoutRawManager(reactContext, json),
       PrimerRNHeadlessUniversalCheckoutNativeUiManager(reactContext),
       PrimerRNHeadlessUniversalCheckoutAssetManager(reactContext),
-      PrimerRNHeadlessUniversalCheckoutVaultManager(reactContext, json)
+      PrimerRNHeadlessUniversalCheckoutVaultManager(reactContext, json),
       //region Component with redirect components
       PrimerRNHeadlessUniversalCheckoutBanksComponent(reactContext)
       //endregion
