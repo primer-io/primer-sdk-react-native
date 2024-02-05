@@ -61,7 +61,8 @@ const HeadlessCheckoutWithRedirect = (props: any) => {
           console.log(log);
           setIsLoading(false);
           setIsValidating(null);
-          if (data?.data?.id) {
+          const innerData = data?.data
+          if (isBankId(innerData)) {
             submit()
           }
         },
@@ -222,6 +223,10 @@ const Bank = ({ item, isValidating, onPay }: {
       )}
     </TouchableOpacity>
   );
+}
+
+function isBankId(data: BankId | BankListFilter): data is BankId {
+  return (data as BankId).id !== undefined;
 }
 
 export default HeadlessCheckoutWithRedirect;
