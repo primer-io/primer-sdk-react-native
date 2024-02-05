@@ -12,8 +12,13 @@ import RawAdyenBancontactCardScreen from './screens/RawAdyenBancontactCardScreen
 import RawRetailOutletScreen from './screens/RawRetailOutletScreen';
 import HeadlessCheckoutVaultScreen from './screens/HeadlessCheckoutVaultScreen';
 import HeadlessCheckoutWithRedirect from './screens/HeadlessCheckoutWithRedirect';
+import { LogBox } from 'react-native';
 
 const Stack = createNativeStackNavigator();
+
+LogBox.ignoreLogs([
+  'Non-serializable values were found in the navigation state',
+]);
 
 const App = () => {
   return (
