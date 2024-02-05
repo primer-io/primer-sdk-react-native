@@ -38,7 +38,7 @@ export interface RedirectManagerProps {
   onValidationError?: (data: PrimerComponentDataValidationError<BankId | BankListFilter>) => void;
 }
 
-interface BanksComponent {
+export interface BanksComponent {
   start(): Promise<void>;
 
   onBankSelected(bankId: string): Promise<void>;
@@ -48,7 +48,7 @@ interface BanksComponent {
   submit(): Promise<void>;
 }
 
-class PrimerHeadlessUniversalCheckoutComponentWithRedirectManager {
+export class PrimerHeadlessUniversalCheckoutComponentWithRedirectManager {
   ///////////////////////////////////////////
   // Init
   ///////////////////////////////////////////
@@ -152,5 +152,3 @@ class PrimerHeadlessUniversalCheckoutComponentWithRedirectManager {
     );
   }
 }
-
-export default PrimerHeadlessUniversalCheckoutComponentWithRedirectManager;

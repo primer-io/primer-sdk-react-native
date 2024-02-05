@@ -44,30 +44,26 @@ import PrimerHeadlessUniversalCheckoutPaymentMethodNativeUIManager from './Headl
 export { PrimerHeadlessUniversalCheckoutPaymentMethodNativeUIManager as NativeUIManager };
 import PrimerHeadlessUniversalCheckoutRawDataManager from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/RawDataManager';
 export {
-    PrimerHeadlessUniversalCheckoutRawDataManager as RawDataManager
+  PrimerHeadlessUniversalCheckoutRawDataManager as RawDataManager
 }
 export {
-    IPrimerVaultedPaymentMethod as VaultedPaymentMethod
+  IPrimerVaultedPaymentMethod as VaultedPaymentMethod
 } from './models/PrimerVaultedPaymentMethod'
 
 export {
-    IPrimerVaultedPaymentMethodAdditonalData as VaultedPaymentMethodAdditionalData
+  IPrimerVaultedPaymentMethodAdditonalData as VaultedPaymentMethodAdditionalData
 } from './models/PrimerVaultedPaymentMethodAdditionalData'
 
 export {
-    IPrimerValidationError as ValidationError
+  IPrimerValidationError as ValidationError
 } from './models/PrimerValidationError'
 
 import PrimerHeadlessUniversalCheckoutVaultManager from './HeadlessUniversalCheckout/Managers/VaultManager'
 export {
-    PrimerHeadlessUniversalCheckoutVaultManager as VaultManager
+  PrimerHeadlessUniversalCheckoutVaultManager as VaultManager
 }
-import PrimerHeadlessUniversalCheckoutComponentWithRedirectManager from './HeadlessUniversalCheckout/Managers/RedirectManager';
-import BanksComponent from './HeadlessUniversalCheckout/Managers/RedirectManager';
-export { BanksComponent as BanksComponent };
-export { PrimerHeadlessUniversalCheckoutComponentWithRedirectManager as ComponentWithRedirectManager };
-import RedirectManagerProps from './HeadlessUniversalCheckout/Managers/RedirectManager';
-export { RedirectManagerProps };
+import { PrimerHeadlessUniversalCheckoutComponentWithRedirectManager, BanksComponent, RedirectManagerProps } from './HeadlessUniversalCheckout/Managers/RedirectManager';
+export { PrimerHeadlessUniversalCheckoutComponentWithRedirectManager as ComponentWithRedirectManager, BanksComponent, RedirectManagerProps };
 import { IssuingBank } from './models/IssuingBank';
 export { IssuingBank };
 import { BankId, BankListFilter } from './models/ComponentWithRedirectModels';
