@@ -3,7 +3,7 @@ import {
   NativeModules,
   EmitterSubscription,
 } from 'react-native';
-import { BankId, BankListFilter } from 'src/models/ComponentWithRedirectModels';
+import { BankId, BankListFilter, NamedComponentStep } from 'src/models/ComponentWithRedirectModels';
 import { IssuingBank } from 'src/models/IssuingBank';
 import { PrimerComponentDataValidationError, PrimerInvalidComponentData, PrimerValidComponentData, PrimerValidatingComponentData } from 'src/models/PrimerComponentDataValidation';
 import { PrimerError } from 'src/models/PrimerError';
@@ -15,11 +15,10 @@ const eventEmitter = new NativeEventEmitter(
   RNTPrimerHeadlessUniversalCheckoutBanksComponent
 );
 
-type EventType = 'onRetrieved' | 'onRetrieving' | 'onError' | 'onInvalid' | 'onValid' | 'onValidating' | 'onValidationError';
+type EventType = 'onStep' | 'onError' | 'onInvalid' | 'onValid' | 'onValidating' | 'onValidationError';
 
 const eventTypes: EventType[] = [
-  'onRetrieved',
-  'onRetrieving',
+  'onStep',
   'onError',
   'onInvalid',
   'onValid',
@@ -29,8 +28,7 @@ const eventTypes: EventType[] = [
 
 export interface RedirectManagerProps {
   paymentMethodType: string;
-  onRetrieved?: (metadata: IssuingBank[]) => void;
-  onRetrieving?: () => void;
+  onStep?: (metadata: IssuingBank[] | NamedComponentStep) => void;
   onError?: (error: PrimerError) => void;
   onInvalid?: (data: PrimerInvalidComponentData<BankId | BankListFilter>) => void;
   onValid?: (data: PrimerValidComponentData<BankId | BankListFilter>) => void;
@@ -84,15 +82,9 @@ export class PrimerHeadlessUniversalCheckoutComponentWithRedirectManager {
   }
 
   private async configureListeners(props: RedirectManagerProps): Promise<void> {
-    if (props?.onRetrieved) {
-      this.addListener('onRetrieved', ({ banks }) => {
-        props.onRetrieved?.(banks);
-      });
-    }
-
-    if (props?.onRetrieving) {
-      this.addListener('onRetrieving', () => {
-        props.onRetrieving?.();
+    if (props?.onStep) {
+      this.addListener('onStep', (data) => {
+        props.onStep?.(data);
       });
     }
 

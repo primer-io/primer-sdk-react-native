@@ -66,7 +66,7 @@ import { PrimerHeadlessUniversalCheckoutComponentWithRedirectManager, BanksCompo
 export { PrimerHeadlessUniversalCheckoutComponentWithRedirectManager as ComponentWithRedirectManager, BanksComponent, RedirectManagerProps };
 import { IssuingBank } from './models/IssuingBank';
 export { IssuingBank };
-import { BankId, BankListFilter } from './models/ComponentWithRedirectModels';
-export { BankId, BankListFilter };
+import { BankId, BankListFilter, NamedComponentStep } from './models/ComponentWithRedirectModels';
+export { BankId, BankListFilter, NamedComponentStep };
 import { PrimerValidComponentData, PrimerValidatingComponentData, PrimerInvalidComponentData, PrimerComponentDataValidationError } from './models/PrimerComponentDataValidation';
 export { PrimerValidComponentData, PrimerValidatingComponentData, PrimerInvalidComponentData, PrimerComponentDataValidationError };

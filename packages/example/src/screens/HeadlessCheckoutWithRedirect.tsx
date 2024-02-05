@@ -17,7 +17,8 @@ import {
   PrimerValidComponentData, 
   PrimerValidatingComponentData, 
   PrimerComponentDataValidationError, 
-  RedirectManagerProps 
+  RedirectManagerProps,
+  NamedComponentStep
 } from '@primer-io/react-native';
 import TextField from '../components/TextField';
 
@@ -27,24 +28,24 @@ let banksComponent: BanksComponent;
 const HeadlessCheckoutWithRedirect = (props: any) => {
   //@ts-ignore
   const [isLoading, setIsLoading] = useState(false);
-  const [isValidating, setIsValidating] = useState<string | null>('');
-  const [banks, setBanks] = useState<any>([]);
-  const [search, setSearch] = useState<any>('');
+  const [isValidating, setIsValidating] = useState<string | null>("");
+  const [banks, setBanks] = useState<IssuingBank[]>([]);
+  const [search, setSearch] = useState<string>("");
 
   useEffect(() => {
     (async () => {
       const redirectManagerProps: RedirectManagerProps = {
         paymentMethodType: props.route.params.paymentMethodType,
-        onRetrieved: (data: IssuingBank[]) => {
-          const log = `\nonRetrieved: ${JSON.stringify(data)}\n`;
+        onStep: (data: IssuingBank[] | NamedComponentStep) => {
+          const log = `\nonStep: ${JSON.stringify(data)}\n`;
           console.log(log);
-          setBanks(data as IssuingBank[]);
-          setIsLoading(false);
-        },
-        onRetrieving: () => {
-          const log = `\nonRetrieving\n`;
-          console.log(log);
-          setIsLoading(true);
+          if (isIssuingBankList(data)) {
+            setBanks(data);
+            setIsLoading(false);
+          } else if (isLoadingStep(data)) {
+            console.log("Loading...")
+            setIsLoading(true)
+          }
         },
         onError: (error: PrimerError) => {
           const log = `\nonError: ${JSON.stringify(error)}\n`;
@@ -61,8 +62,7 @@ const HeadlessCheckoutWithRedirect = (props: any) => {
           console.log(log);
           setIsLoading(false);
           setIsValidating(null);
-          const innerData = data?.data
-          if (isBankId(innerData)) {
+          if (isBankId(data?.data)) {
             submit()
           }
         },
@@ -225,8 +225,16 @@ const Bank = ({ item, isValidating, onPay }: {
   );
 }
 
-function isBankId(data: BankId | BankListFilter): data is BankId {
+function isBankId(data?: BankId | BankListFilter): data is BankId {
   return (data as BankId).id !== undefined;
+}
+
+function isIssuingBankList(data?: IssuingBank[] | any): data is IssuingBank[] {
+  return (data as IssuingBank[]).length !== undefined;
+}
+
+function isLoadingStep(data?: IssuingBank[] | NamedComponentStep): data is NamedComponentStep {
+  return (data as NamedComponentStep).name === "loading"
 }
 
 export default HeadlessCheckoutWithRedirect;

@@ -9,6 +9,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.WritableMap
+import com.facebook.react.bridge.WritableArray
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.primerioreactnative.PrimerRNViewModelStoreOwner
 import com.primerioreactnative.components.events.PrimerHeadlessUniversalCheckoutRedirectManagerEvent
@@ -16,9 +17,11 @@ import com.primerioreactnative.datamodels.ErrorTypeRN
 import com.primerioreactnative.datamodels.PrimerValidationErrorRN
 import com.primerioreactnative.datamodels.redirect.toBankIdRN
 import com.primerioreactnative.datamodels.redirect.toFilterRN
+import com.primerioreactnative.datamodels.NamedComponentStep
 import com.primerioreactnative.extensions.toPrimerErrorRN
 import com.primerioreactnative.extensions.toPrimerIssuingBankRN
 import com.primerioreactnative.utils.convertJsonToMap
+import com.primerioreactnative.utils.convertJsonToArray
 import com.primerioreactnative.utils.errorTo
 import io.primer.android.components.manager.banks.composable.BanksCollectableData
 import io.primer.android.components.manager.banks.composable.BanksStep
@@ -145,21 +148,16 @@ class PrimerRNHeadlessUniversalCheckoutBanksComponent(
       when (banksStep) {
         is BanksStep.Loading -> {
           sendEvent(
-              PrimerHeadlessUniversalCheckoutRedirectManagerEvent.ON_RETRIEVING.eventName,
-              JSONObject().apply { put("retrieving", "true") }
+            PrimerHeadlessUniversalCheckoutRedirectManagerEvent.ON_STEP.eventName,
+            JSONObject(Json.encodeToString(NamedComponentStep("loading")))
           )
         }
         is BanksStep.BanksRetrieved -> {
           sendEvent(
-              PrimerHeadlessUniversalCheckoutRedirectManagerEvent.ON_RETRIEVED.eventName,
-              JSONObject().apply {
-                put(
-                    "banks",
-                    JSONArray(
-                        Json.encodeToString(banksStep.banks.map { it.toPrimerIssuingBankRN() })
-                    )
-                )
-              }
+            PrimerHeadlessUniversalCheckoutRedirectManagerEvent.ON_STEP.eventName,
+            JSONArray(
+              Json.encodeToString(banksStep.banks.map { it.toPrimerIssuingBankRN() })
+            )
           )
         }
       }
@@ -244,15 +242,22 @@ class PrimerRNHeadlessUniversalCheckoutBanksComponent(
 
   @ReactMethod fun removeListeners(count: Int?) = Unit
 
-  private fun prepareData(data: JSONObject?): WritableMap {
-    return data?.let { convertJsonToMap(data) } ?: Arguments.createMap()
-  }
+  private fun JSONObject?.toWritableMap(): WritableMap =
+    this?.let { convertJsonToMap(this) } ?: Arguments.createMap()
+
+  private fun JSONArray?.toWritableArray(): WritableArray =
+    this?.let { convertJsonToArray(this) } ?: Arguments.createArray()
 
   private fun sendEvent(name: String, data: JSONObject?) {
-    val params = prepareData(data)
     reactApplicationContext
         .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
-        .emit(name, params)
+        .emit(name, data.toWritableMap())
+  }
+
+  private fun sendEvent(name: String, data: JSONArray?) {
+    reactApplicationContext
+        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+        .emit(name, data.toWritableArray())
   }
 
   @ReactMethod
