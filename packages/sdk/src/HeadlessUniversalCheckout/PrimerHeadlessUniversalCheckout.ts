@@ -266,10 +266,11 @@ async function configureListeners(): Promise<void> {
             if (primerSettings?.headlessUniversalCheckoutCallbacks?.onError) {
               if (data && data.error && data.error.errorId && primerSettings) {
                 const errorId: string = data.error.errorId;
+                const errorCode: string | undefined = data.error.errorCode;
                 const description: string | undefined = data.error.description;
                 const recoverySuggestion: string | undefined = data.error.recoverySuggestion;
                 const diagnosticsId: string | undefined = data.error.diagnosticsId;
-                const primerError = new PrimerError(errorId, description || 'Unknown error', recoverySuggestion, diagnosticsId);
+                const primerError = new PrimerError(errorId, errorCode, description || 'Unknown error', recoverySuggestion, diagnosticsId);
 
                 const checkoutData: PrimerCheckoutData = data.checkoutData;
                 primerSettings.headlessUniversalCheckoutCallbacks.onError(primerError, checkoutData);
@@ -316,7 +317,7 @@ class PrimerHeadlessUniversalCheckoutClass {
           const availablePaymentMethods: IPrimerHeadlessUniversalCheckoutPaymentMethod[] = res["availablePaymentMethods"];
           resolve(availablePaymentMethods);
         } else {
-          const err = new PrimerError("primer-rn-sdk", "Failed to find availablePaymentMethods", "Create another client session", undefined);
+          const err = new PrimerError("primer-rn-sdk", undefined, "Failed to find availablePaymentMethods", "Create another client session", undefined);
           reject(err);
         }
       } catch (err) {
