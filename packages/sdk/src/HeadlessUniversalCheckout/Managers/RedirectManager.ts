@@ -26,7 +26,7 @@ const eventTypes: EventType[] = [
   'onValidationError'
 ];
 
-export interface RedirectManagerProps {
+export interface ComponentWithRedirectManagerProps {
   paymentMethodType: string;
   onStep?: (metadata: IssuingBank[] | NamedComponentStep) => void;
   onError?: (error: PrimerError) => void;
@@ -56,7 +56,7 @@ export class PrimerHeadlessUniversalCheckoutComponentWithRedirectManager {
   // API
   ///////////////////////////////////////////
 
-  async provide(props: RedirectManagerProps): Promise<BanksComponent | any> {
+  async provide(props: ComponentWithRedirectManagerProps): Promise<BanksComponent | any> {
     await this.configureListeners(props);
 
     if (props.paymentMethodType == "ADYEN_IDEAL") {
@@ -81,7 +81,7 @@ export class PrimerHeadlessUniversalCheckoutComponentWithRedirectManager {
     }
   }
 
-  private async configureListeners(props: RedirectManagerProps): Promise<void> {
+  private async configureListeners(props: ComponentWithRedirectManagerProps): Promise<void> {
     if (props?.onStep) {
       this.addListener('onStep', (data) => {
         props.onStep?.(data);

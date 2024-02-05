@@ -62,8 +62,8 @@ import PrimerHeadlessUniversalCheckoutVaultManager from './HeadlessUniversalChec
 export {
   PrimerHeadlessUniversalCheckoutVaultManager as VaultManager
 }
-import { PrimerHeadlessUniversalCheckoutComponentWithRedirectManager, BanksComponent, RedirectManagerProps } from './HeadlessUniversalCheckout/Managers/RedirectManager';
-export { PrimerHeadlessUniversalCheckoutComponentWithRedirectManager as ComponentWithRedirectManager, BanksComponent, RedirectManagerProps };
+import { PrimerHeadlessUniversalCheckoutComponentWithRedirectManager, BanksComponent, ComponentWithRedirectManagerProps } from './HeadlessUniversalCheckout/Managers/RedirectManager';
+export { PrimerHeadlessUniversalCheckoutComponentWithRedirectManager as ComponentWithRedirectManager, BanksComponent, ComponentWithRedirectManagerProps };
 import { IssuingBank } from './models/IssuingBank';
 export { IssuingBank };
 import { BankId, BankListFilter, NamedComponentStep } from './models/ComponentWithRedirectModels';

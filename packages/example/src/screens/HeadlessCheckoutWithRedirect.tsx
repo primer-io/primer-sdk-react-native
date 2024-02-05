@@ -17,7 +17,7 @@ import {
   PrimerValidComponentData, 
   PrimerValidatingComponentData, 
   PrimerComponentDataValidationError, 
-  RedirectManagerProps,
+  ComponentWithRedirectManagerProps,
   NamedComponentStep
 } from '@primer-io/react-native';
 import TextField from '../components/TextField';
@@ -34,7 +34,7 @@ const HeadlessCheckoutWithRedirect = (props: any) => {
 
   useEffect(() => {
     (async () => {
-      const redirectManagerProps: RedirectManagerProps = {
+      const componentWithRedirectManagerProps: ComponentWithRedirectManagerProps = {
         paymentMethodType: props.route.params.paymentMethodType,
         onStep: (data: IssuingBank[] | NamedComponentStep) => {
           const log = `\nonStep: ${JSON.stringify(data)}\n`;
@@ -78,7 +78,7 @@ const HeadlessCheckoutWithRedirect = (props: any) => {
         },
       };
 
-      banksComponent = await componentWithRedirectManager.provide(redirectManagerProps);
+      banksComponent = await componentWithRedirectManager.provide(componentWithRedirectManagerProps);
       banksComponent?.start();
     })()
   }, []);
