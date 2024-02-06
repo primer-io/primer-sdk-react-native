@@ -1,10 +1,10 @@
 import { PrimerError } from "./PrimerError";
+import { PrimerValidationError } from "./PrimerValidationError";
 
 export type PrimerValidatingComponentData<T> = IPrimerValidatingComponentData<T>;
 export type PrimerValidComponentData<T> = IPrimerValidComponentData<T>;
 export type PrimerInvalidComponentData<T> = IPrimerInvalidComponentData<T>;
 export type PrimerComponentDataValidationError<T> = IPrimerComponentDataValidationError<T>;
-export type PrimerValidationError = IPrimerValidationError;
 
 /**
  * Indicates that data is currently in the process of being validated.
@@ -56,11 +56,4 @@ interface IPrimerComponentDataValidationError<T> {
      * The PrimerError that ocurred during the validation attempt.
      */
     error: PrimerError;
-}
-
-interface IPrimerValidationError {
-    errorId?: string | null;
-    description?: string | null;
-    inputElementType?: string | null;
-    diagnosticsId?: string | null;
 }
