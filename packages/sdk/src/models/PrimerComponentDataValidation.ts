@@ -7,7 +7,7 @@ export type PrimerInvalidComponentData<T> = IPrimerInvalidComponentData<T>;
 export type PrimerComponentDataValidationError<T> = IPrimerComponentDataValidationError<T>;
 
 /**
- * Indicates that data is currently in the process of being validated.
+ * Interface that indicates that data is currently in the process of being validated.
  */
 interface IPrimerValidatingComponentData<T> {
     /**
@@ -17,7 +17,7 @@ interface IPrimerValidatingComponentData<T> {
 }
 
 /**
- * Indicates that the data has successfully been validated.
+ * Interface that indicates that the data has been successfully validated.
  */
 interface IPrimerValidComponentData<T> {
     /**
@@ -43,7 +43,7 @@ interface IPrimerInvalidComponentData<T> {
 }
 
 /**
- * Represents the status when an error occurred during the validation process.
+ * Interface that represents an error that occurred during the validation process.
  */
 interface IPrimerComponentDataValidationError<T> {
     /**
