@@ -4,6 +4,7 @@ import com.primerioreactnative.datamodels.klarna.KlarnaPaymentCategoryRN
 import com.primerioreactnative.datamodels.NamedValidatedData
 import kotlinx.serialization.Serializable
 
+@Serializable
 internal sealed interface KlarnaPaymentCollectableDataRN {
     @Serializable
     data class PaymentOptionsRN(
@@ -11,6 +12,6 @@ internal sealed interface KlarnaPaymentCollectableDataRN {
         val paymentCategory: KlarnaPaymentCategoryRN
     ) : KlarnaPaymentCollectableDataRN
 
-    @@Serializable
+    @Serializable
     object FinalizePaymentRN : KlarnaPaymentCollectableDataRN, NamedValidatedData("finalizePayment")
 }

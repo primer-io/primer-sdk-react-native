@@ -2,6 +2,7 @@ package com.primerioreactnative.datamodels.klarna
 
 import kotlinx.serialization.Serializable
 
+@Serializable
 internal sealed interface KlarnaPaymentStepRN {
     @Serializable
     data class PaymentSessionCreatedRN(
