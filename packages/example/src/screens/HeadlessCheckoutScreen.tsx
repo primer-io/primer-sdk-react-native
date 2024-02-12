@@ -300,7 +300,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
         await nativeUIManager.configure(paymentMethod.paymentMethodType);
 
         if (paymentMethod.paymentMethodType === "KLARNA") {
-          await nativeUIManager.showPaymentMethod(SessionIntent.VAULT);
+          props.navigation.navigate('Klarna', { paymentMethodType: paymentMethod.paymentMethodType });
         } else {
           await nativeUIManager.showPaymentMethod(SessionIntent.CHECKOUT);
         }
