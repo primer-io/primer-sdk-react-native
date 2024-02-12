@@ -143,7 +143,8 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaPaymentComponent(
                 }
 
                 is KlarnaPaymentStep.PaymentViewLoaded -> {
-                    // TODO TWS-94
+                    PrimerKlarnaPaymentViewManager.updatePrimerKlarnaPaymentView(klarnaStep.paymentView)
+                    
                     sendEvent(
                         name = PrimerHeadlessUniversalCheckoutComponentEvent.ON_STEP.eventName,
                         data = JSONObject(
@@ -260,12 +261,13 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaPaymentComponent(
         Log.i("GAE", "$paymentCategory; $readableMap")
         val KlarnaPaymentCategoryRN = json.decodeFromString<KlarnaPaymentCategoryRN>(Json.encodeToString(paymentCategory.toHashMap() as Map<String, String>))
         
-        if (klarnaPaymentComponent == null) {
+        val activity = getCurrentActivity()
+        if (klarnaPaymentComponent == null || activity == null) {
             val exception = ErrorTypeRN.NativeBridgeFailed errorTo UNINITIALIZED_ERROR
             promise.reject(exception.errorId, exception.description)
         } else {
             klarnaPaymentComponent?.updateCollectedData(KlarnaPaymentCollectableData.PaymentOptions(
-                context = reactContext,
+                context = activity,
                 returnIntentUrl = requireNotNull(returnIntentUrl),
                 paymentCategory = KlarnaPaymentCategoryRN.toKlarnaPaymentCategory()
             ))

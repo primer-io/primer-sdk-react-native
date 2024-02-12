@@ -8,6 +8,8 @@ import com.primerioreactnative.components.manager.asset.PrimerRNHeadlessUniversa
 import com.primerioreactnative.components.manager.nativeUi.PrimerRNHeadlessUniversalCheckoutNativeUiManager
 import com.primerioreactnative.components.manager.raw.PrimerRNHeadlessUniversalCheckoutRawManager
 import com.primerioreactnative.components.manager.vault.PrimerRNHeadlessUniversalCheckoutVaultManager
+import com.primerioreactnative.components.manager.klarna.PrimerRNHeadlessUniversalCheckoutKlarnaPaymentComponent
+import com.primerioreactnative.components.manager.klarna.PrimerKlarnaPaymentViewManager
 import kotlinx.serialization.json.Json
 
 class ReactNativePackage : ReactPackage {
@@ -21,7 +23,8 @@ class ReactNativePackage : ReactPackage {
       PrimerRNHeadlessUniversalCheckoutRawManager(reactContext, json),
       PrimerRNHeadlessUniversalCheckoutNativeUiManager(reactContext),
       PrimerRNHeadlessUniversalCheckoutAssetManager(reactContext),
-      PrimerRNHeadlessUniversalCheckoutVaultManager(reactContext, json)
+      PrimerRNHeadlessUniversalCheckoutVaultManager(reactContext, json),
+      PrimerRNHeadlessUniversalCheckoutKlarnaPaymentComponent(reactContext)
     )
   }
 
@@ -31,6 +34,7 @@ class ReactNativePackage : ReactPackage {
       PrimerCardholderNameEditTextManager(),
       PrimerExpiryEditTextManager(),
       PrimerCvvEditTextManager(),
+      PrimerKlarnaPaymentViewManager()
     )
   }
 }

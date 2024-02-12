@@ -4,8 +4,7 @@ import {
     TouchableOpacity,
     View,
     StyleSheet,
-    Button,
-    requireNativeComponent,
+    Button
 } from 'react-native';
 import {
     KlarnaManager,
@@ -23,13 +22,10 @@ import {
     PaymentSessionCreated,
     PaymentSessionFinalized
 } from '@primer-io/react-native';
+import { PrimerKlarnaPaymentView } from '../components/PrimerKlarnaPaymentView';
 
 const klarnaManager = new KlarnaManager();
 let klarnaPaymentComponent: KlarnaPaymentComponent;
-
-const PrimerKlarnaPaymentView = requireNativeComponent<{}>(
-    'PrimerKlarnaPaymentView'
-);
 
 const HeadlessCheckoutKlarnaScreen = (props: any) => {
     const [isAuthorizationVisible, setAuthorizationVisible] = useState<boolean>(false)
@@ -55,17 +51,10 @@ const HeadlessCheckoutKlarnaScreen = (props: any) => {
                 onInvalid: (data: PrimerInvalidComponentData<KlarnaPaymentOptions | KlarnaPaymentFinalization>) => {
                     const log = `\nonInvalid: ${JSON.stringify(data)}\n`;
                     console.log(log);
-                    //   setIsLoading(false);
-                    //   setIsValidating(null);
                 },
                 onValid: (data: PrimerValidComponentData<KlarnaPaymentOptions | KlarnaPaymentFinalization>) => {
                     const log = `\nonValid: ${JSON.stringify(data)}\n`;
                     console.log(log);
-                    //   setIsLoading(false);
-                    //   setIsValidating(null);
-                    //   if (isBankId(data?.data)) {
-                    //     submit()
-                    //   }
                 },
                 onValidating: (data: PrimerValidatingComponentData<KlarnaPaymentOptions | KlarnaPaymentFinalization>) => {
                     const log = `\onValidating: ${JSON.stringify(data)}\n`;
@@ -74,8 +63,6 @@ const HeadlessCheckoutKlarnaScreen = (props: any) => {
                 onValidationError: (data: PrimerComponentDataValidationError<KlarnaPaymentOptions | KlarnaPaymentFinalization>) => {
                     const log = `\nonValidationError: ${JSON.stringify(data)}\n`;
                     console.log(log);
-                    //   setIsLoading(false);
-                    //   setIsValidating(null);
                 },
             };
             klarnaPaymentComponent = await klarnaManager.provide(klarnaManagerProps);
@@ -90,7 +77,7 @@ const HeadlessCheckoutKlarnaScreen = (props: any) => {
             ) as KlarnaPaymentCategory
             await klarnaPaymentComponent.onSetPaymentOptions(
                 {
-                    returnIntentUrl: "TODO://TODO", // TODO TWS-94
+                    returnIntentUrl: "app://deeplink.return.activity", // TODO TWS-94
                     paymentCategory: klarnaPaymentCategory
                 }
             );
@@ -120,7 +107,10 @@ const HeadlessCheckoutKlarnaScreen = (props: any) => {
             <PaymentCategories
                 selectedPaymentCategoryIdentifier={selectedPaymentCategoryIdentifier}
                 paymentCategories={paymentCategories}
-                onPress={(identifier) => { setSelectedPaymentCategoryIdentifier(identifier) }}
+                onPress={(identifier) => { 
+                    setAuthorizationVisible(false); 
+                    setSelectedPaymentCategoryIdentifier(identifier); 
+                }}
             />
 
             <View style={styles.button}>
