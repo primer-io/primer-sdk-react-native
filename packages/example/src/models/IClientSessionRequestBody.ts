@@ -44,6 +44,7 @@ export interface IClientSessionLineItem {
     itemId: string;
     description: string;
     discountAmount?: number;
+    productType?: String;
 }
 
 export interface IClientSessionActionsRequestBody {
@@ -88,16 +89,17 @@ export let appPaymentParameters: AppPaymentParameters = {
     clientSessionRequestBody: {
         customerId: `rn-customer-${makeRandomString(8)}`,
         orderId: `rn-order-${makeRandomString(8)}`,
-        currencyCode: 'GBP',
+        currencyCode: 'EUR',
         order: {
-            countryCode: 'GB',
+            countryCode: 'DE',
             lineItems: [
                 {
                     amount: 15100,
                     quantity: 1,
                     itemId: 'shoes-3213',
                     description: 'Fancy Shoes',
-                    discountAmount: 0
+                    discountAmount: 0,
+                    productType: "DIGITAL"
                 },
                 // {
                 //     amount: 1000,
@@ -116,20 +118,20 @@ export let appPaymentParameters: AppPaymentParameters = {
             billingAddress: {
                 firstName: 'John',
                 lastName: 'Smith',
-                postalCode: 'SW1H 9HP',
-                addressLine1: '24 Old Queen St',
+                postalCode: '10178',
+                addressLine1: 'Neue Schönhauser Str. 2',
                 addressLine2: undefined,
-                countryCode: 'GB',
-                city: 'London',
+                countryCode: 'DE',
+                city: 'Berlin',
                 state: undefined
             },
             shippingAddress: {
                 firstName: 'John',
                 lastName: 'Smith',
-                postalCode: 'SW1H 9HP',
-                addressLine1: '24 Old Queen St',
-                countryCode: 'GB',
-                city: 'London',
+                postalCode: '10178',
+                addressLine1: 'Neue Schönhauser Str. 2',
+                countryCode: 'DE',
+                city: 'Berlin',
                 state: undefined
             },
             nationalDocumentId: '78731798237'
