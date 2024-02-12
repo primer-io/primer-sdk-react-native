@@ -19,6 +19,7 @@ export const createClientSession = async () => {
         ...staticHeaders,
         //@ts-ignore
         'X-Api-Version': getAPIVersionStringVal(APIVersion.v6),
+        'Legacy-Workflows': 'false',
     };
 
     if (customApiKey) {
