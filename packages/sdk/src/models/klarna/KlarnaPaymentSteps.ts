@@ -4,6 +4,7 @@ export type PaymentSessionCreated = IPaymentSessionCreated;
 export type PaymentSessionAuthorized = IPaymentSessionAuthorized;
 
 export type PaymentSessionFinalized = { "name": "paymentSessionFinalized" };
+export type PaymentViewLoaded = { "name": "PaymentViewLoaded" };
 
 interface IPaymentSessionCreated {
     paymentCategories: KlarnaPaymentCategory[];
@@ -12,5 +13,3 @@ interface IPaymentSessionCreated {
 interface IPaymentSessionAuthorized {
     isFinalized: boolean;
 }
-
-// TODO TWS-94: need new step for PaymentViewLoaded

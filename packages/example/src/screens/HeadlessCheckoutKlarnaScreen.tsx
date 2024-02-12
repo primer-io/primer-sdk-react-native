@@ -20,7 +20,8 @@ import {
     KlarnaPaymentCategory,
     PaymentSessionAuthorized,
     PaymentSessionCreated,
-    PaymentSessionFinalized
+    PaymentSessionFinalized,
+    PaymentViewLoaded
 } from '@primer-io/react-native';
 import { PrimerKlarnaPaymentView } from '../components/PrimerKlarnaPaymentView';
 
@@ -35,12 +36,12 @@ const HeadlessCheckoutKlarnaScreen = (props: any) => {
     useEffect(() => {
         (async () => {
             const klarnaManagerProps: KlarnaManagerProps = {
-                onStep: (data: PaymentSessionCreated | PaymentSessionAuthorized | PaymentSessionFinalized) => {
+                onStep: (data: PaymentSessionCreated | PaymentSessionAuthorized | PaymentSessionFinalized | PaymentViewLoaded) => {
                     const log = `\nonStep: ${JSON.stringify(data)}\n`;
                     console.log(log);
                     if (isPaymentSessionCreated(data)) {
                         setPaymentCategories(data.paymentCategories)
-                    } else if (data?.name == "paymentViewLoaded") {
+                    } else if (isPaymentViewLoaded(data)) {
                         setAuthorizationVisible(true)
                     }
                 },
@@ -130,8 +131,12 @@ const HeadlessCheckoutKlarnaScreen = (props: any) => {
     );
 };
 
-function isPaymentSessionCreated(data?: PaymentSessionCreated | PaymentSessionAuthorized | PaymentSessionFinalized): data is PaymentSessionCreated {
+function isPaymentSessionCreated(data?: PaymentSessionCreated | PaymentSessionAuthorized | PaymentSessionFinalized | PaymentViewLoaded): data is PaymentSessionCreated {
     return (data as PaymentSessionCreated).paymentCategories !== undefined;
+}
+
+function isPaymentViewLoaded(data?: PaymentSessionCreated | PaymentSessionAuthorized | PaymentSessionFinalized | PaymentViewLoaded): data is PaymentViewLoaded {
+    return (data as PaymentViewLoaded).name == "paymentViewLoaded";
 }
 
 const PaymentCategories = ({ paymentCategories, selectedPaymentCategoryIdentifier, onPress }: {
