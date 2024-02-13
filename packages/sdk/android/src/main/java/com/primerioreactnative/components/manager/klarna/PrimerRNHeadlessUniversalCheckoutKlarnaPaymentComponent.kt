@@ -258,11 +258,14 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaPaymentComponent(
         val returnIntentUrl = readableMap.getString("returnIntentUrl")
         val paymentCategory = readableMap.getMap("paymentCategory") as ReadableMap
         val json = Json { ignoreUnknownKeys = true }
-        Log.i("GAE", "$paymentCategory; $readableMap")
         val KlarnaPaymentCategoryRN = json.decodeFromString<KlarnaPaymentCategoryRN>(Json.encodeToString(paymentCategory.toHashMap() as Map<String, String>))
         
         val activity = getCurrentActivity()
-        if (klarnaPaymentComponent == null || activity == null) {
+        
+        if (activity == null) {
+            val exception = ErrorTypeRN.NativeBridgeFailed errorTo MISSING_ACTIVITY_ERROR
+            promise.reject(exception.errorId, exception.description)
+        } else if (klarnaPaymentComponent == null) {
             val exception = ErrorTypeRN.NativeBridgeFailed errorTo UNINITIALIZED_ERROR
             promise.reject(exception.errorId, exception.description)
         } else {
@@ -317,7 +320,11 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaPaymentComponent(
         const val UNINITIALIZED_ERROR =
             """
             The KlarnaPaymentComponent has not been initialized.
-            Make sure you have initialized the `KlarnaPaymentComponent' first.
+            Make sure you have initialized the `KlarnaPaymentComponent` first.
+            """
+        const val MISSING_ACTIVITY_ERROR =
+            """
+            Could not retrieve running activity from context.
             """
     }
 }
