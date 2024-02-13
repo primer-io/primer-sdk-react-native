@@ -3,7 +3,6 @@ import {
     NativeModules,
     EmitterSubscription,
 } from 'react-native';
-import { NamedComponentStep } from 'src/models/NamedComponentStep';
 import { PrimerComponentDataValidationError, PrimerInvalidComponentData, PrimerValidComponentData, PrimerValidatingComponentData } from 'src/models/PrimerComponentDataValidation';
 import { PrimerError } from 'src/models/PrimerError';
 import { KlarnaPaymentFinalization, KlarnaPaymentOptions } from 'src/models/klarna/KlarnaPaymentCollectableData';
@@ -35,36 +34,30 @@ export interface KlarnaManagerProps {
     onValidationError?: (data: PrimerComponentDataValidationError<KlarnaPaymentOptions | KlarnaPaymentFinalization>) => void;
 }
 
-// TODO TWS-94: update JDoc
 export interface KlarnaPaymentComponent {
     /**
-     * Starts the component, causing step emissions. 
-     * First, with a {@link NamedComponentStep} instance  where 
-     * {@link NamedComponentStep.name} has a value of 'loading', followed 
-     * by another emission that contains the list of banks in the form of an 
-     * {@link IssuingBank} array.
+     * Starts the component, causing the {@link PaymentSessionCreated} step
+     * to be emitted.
      */
     start(): Promise<void>;
 
     /**
-     * Selects the bank with the given {@link bankId}, triggering the
-     * validation flow.
-     * @param bankId The id of the selected bank.
+     * Sets the options to use when initializing the Klarna payment view, 
+     * triggering the validation flow.
+     * @param paymentOptions The options to use when initializing the Klarna 
+     * payment view.
      */
     onSetPaymentOptions(paymentOptions: KlarnaPaymentOptions): Promise<void>;
 
     /**
-     * Filters down the bank list with the given {@link filter}, triggering
-     * the validation flow and a new step emission that contains the filtered
-     * list of banks in the form of an {@link IssuingBank} array.
-     * @param filter The text to filter the bank list by.
+     * Finalizes the payment.
      */
     onFinalizePayment(): Promise<void>;
 
     /**
-     * Submits the component, triggering tokenization and a redirect to the 
-     * bank's page for finalizing the payment. This function should only be 
-     * called after selecting a bank via {@link onBankSelected}.
+     * Submits the component, initiating the payment authorization process. 
+     * This function should only be called after setting the payment options 
+     * {@link onSetPaymentOptions}.
      */
     submit(): Promise<void>;
 }
