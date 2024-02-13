@@ -53,6 +53,7 @@ internal class PrimerRNHeadlessUniversalCheckoutNativeUiManager(
     if (::nativeUiManager.isInitialized.not()) {
       val exception = PrimerErrorRN(
         ErrorTypeRN.NativeBridgeFailed.errorId,
+        null,
         "The NativeUIManager has not been initialized.",
         null,
         "Initialize the NativeUIManager by calling the configure function" +
@@ -64,6 +65,7 @@ internal class PrimerRNHeadlessUniversalCheckoutNativeUiManager(
     ) {
       val exception = PrimerErrorRN(
         ErrorTypeRN.NativeBridgeFailed.errorId,
+        null,
         "Invalid value for 'intent'.",
         null,
         "'intent' can be 'CHECKOUT' or 'VAULT'."

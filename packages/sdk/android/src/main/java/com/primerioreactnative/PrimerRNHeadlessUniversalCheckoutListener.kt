@@ -244,6 +244,7 @@ class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckou
       sendErrorWithCheckoutData?.invoke(
         PrimerErrorRN(
           error.errorId,
+          error.errorCode,
           error.description,
           error.diagnosticsId,
           error.recoverySuggestion
@@ -259,6 +260,7 @@ class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckou
       sendError?.invoke(
         PrimerErrorRN(
           error.errorId,
+          error.errorCode,
           error.description,
           error.diagnosticsId,
           error.recoverySuggestion

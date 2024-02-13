@@ -212,6 +212,7 @@ class PrimerRNEventListener : PrimerCheckoutListener {
       sendErrorWithCheckoutData?.invoke(
         PrimerErrorRN(
           error.errorId,
+          error.errorCode,
           error.description,
           error.diagnosticsId,
           error.recoverySuggestion
@@ -230,6 +231,7 @@ class PrimerRNEventListener : PrimerCheckoutListener {
       sendError?.invoke(
         PrimerErrorRN(
           error.errorId,
+          error.errorCode,
           error.description,
           error.diagnosticsId,
           error.recoverySuggestion
