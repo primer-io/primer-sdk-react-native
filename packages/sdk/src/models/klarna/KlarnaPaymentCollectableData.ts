@@ -10,9 +10,9 @@ export type KlarnaPaymentFinalization = { "name": "finalizePayment" }
  */
 interface IKlarnaPaymentOptions {
     /**
-     * Url used by third-party apps to build the intent for returning to the app. // TODO TWS-94: this might not work on iOS
+     * Url used by third-party Android apps to build the intent for returning to the app.
      */
-    returnIntentUrl: string
+    returnIntentUrl?: string
     /**
      * Payment category required for session creation.
      */

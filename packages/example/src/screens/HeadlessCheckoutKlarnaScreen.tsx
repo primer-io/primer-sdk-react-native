@@ -1,10 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Text,
     TouchableOpacity,
     View,
     StyleSheet,
-    Button
+    Button,
+    Platform
 } from 'react-native';
 import {
     KlarnaManager,
@@ -85,9 +86,10 @@ const HeadlessCheckoutKlarnaScreen = (props: any) => {
             const klarnaPaymentCategory = paymentCategories.find(
                 (paymentCategory) => paymentCategory.identifier === selectedPaymentCategoryIdentifier
             ) as KlarnaPaymentCategory
+
             await klarnaPaymentComponent.onSetPaymentOptions(
                 {
-                    returnIntentUrl: "app://deeplink.return.activity", // TODO TWS-94
+                    returnIntentUrl: "app://deeplink.return.activity.rn",
                     paymentCategory: klarnaPaymentCategory
                 }
             );
