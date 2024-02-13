@@ -44,6 +44,7 @@ import com.primerioreactnative.extensions.toPrimerErrorRN
 import io.primer.android.components.manager.core.composable.PrimerValidationStatus
 import com.primerioreactnative.datamodels.PrimerValidationErrorRN
 import com.primerioreactnative.datamodels.klarna.KlarnaPaymentCollectableDataRN
+import com.primerioreactnative.datamodels.PrimerErrorRN
 import io.primer.android.components.presentation.paymentMethods.nativeUi.klarna.models.KlarnaPaymentStep
 import io.primer.android.components.domain.payments.paymentMethods.nativeUi.klarna.models.KlarnaPaymentCategory
 import io.primer.android.components.manager.klarna.PrimerHeadlessUniversalCheckoutKlarnaManager
@@ -61,13 +62,25 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaPaymentComponent(
     private var klarnaPaymentComponent: KlarnaPaymentComponent? = null
 
     @ReactMethod
-    fun configure(promise: Promise) {
+    fun configure(intent: String, promise: Promise) {
+        val primerSessionIntent = PrimerSessionIntent.values().firstOrNull { intent.equals(it.name, true) }
+        if (primerSessionIntent == null) {
+            val exception = PrimerErrorRN(
+                errorId = ErrorTypeRN.NativeBridgeFailed.errorId,
+                description = "Invalid value for 'intent'.",
+                diagnosticsId = null,
+                recoverySuggestion = "'intent' can be 'CHECKOUT' or 'VAULT'."
+            )
+            promise.reject(exception.errorId, exception.description)
+            return
+        }
+
         val currentViewModelStoreOwner =
             reactContext.currentActivity as? ViewModelStoreOwner
                 ?: run { PrimerRNViewModelStoreOwner() }
 
         viewModelStoreOwner = currentViewModelStoreOwner
-        klarnaPaymentComponent = PrimerHeadlessUniversalCheckoutKlarnaManager(currentViewModelStoreOwner, PrimerSessionIntent.CHECKOUT) // TODO TWS-94: don't hardcode this
+        klarnaPaymentComponent = PrimerHeadlessUniversalCheckoutKlarnaManager(currentViewModelStoreOwner, primerSessionIntent)
             .provideKlarnaPaymentComponent()
 
         val lifecycleScope =
@@ -261,7 +274,7 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaPaymentComponent(
         val KlarnaPaymentCategoryRN = json.decodeFromString<KlarnaPaymentCategoryRN>(Json.encodeToString(paymentCategory.toHashMap() as Map<String, String>))
         
         val activity = getCurrentActivity()
-        
+
         if (activity == null) {
             val exception = ErrorTypeRN.NativeBridgeFailed errorTo MISSING_ACTIVITY_ERROR
             promise.reject(exception.errorId, exception.description)
