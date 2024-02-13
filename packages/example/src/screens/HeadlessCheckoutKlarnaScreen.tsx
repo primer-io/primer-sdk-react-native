@@ -39,10 +39,17 @@ const HeadlessCheckoutKlarnaScreen = (props: any) => {
                 onStep: (data: PaymentSessionCreated | PaymentSessionAuthorized | PaymentSessionFinalized | PaymentViewLoaded) => {
                     const log = `\nonStep: ${JSON.stringify(data)}\n`;
                     console.log(log);
-                    if (isPaymentSessionCreated(data)) {
+                    if (isPaymentSessionCreatedStep(data)) {
                         setPaymentCategories(data.paymentCategories)
-                    } else if (isPaymentViewLoaded(data)) {
+                    } else if (isPaymentViewLoadedStep(data)) {
                         setAuthorizationVisible(true)
+                    } else if (isPaymentAuthorizationStep(data)) {
+                        if (data.isFinalized) {
+                            console.log("Payment finalization is not required");
+                        } else {
+                            console.log("Finalizing payment");
+                            onFinalizePayment();
+                        }
                     }
                 },
                 onError: (error: PrimerError) => {
@@ -87,6 +94,10 @@ const HeadlessCheckoutKlarnaScreen = (props: any) => {
         }
     };
 
+    const onFinalizePayment = async () => {
+        await klarnaPaymentComponent.onFinalizePayment();
+    };
+
     const onSubmit = async () => {
         try {
             await klarnaPaymentComponent.submit();
@@ -108,9 +119,9 @@ const HeadlessCheckoutKlarnaScreen = (props: any) => {
             <PaymentCategories
                 selectedPaymentCategoryIdentifier={selectedPaymentCategoryIdentifier}
                 paymentCategories={paymentCategories}
-                onPress={(identifier) => { 
-                    setAuthorizationVisible(false); 
-                    setSelectedPaymentCategoryIdentifier(identifier); 
+                onPress={(identifier) => {
+                    setAuthorizationVisible(false);
+                    setSelectedPaymentCategoryIdentifier(identifier);
                 }}
             />
 
@@ -122,7 +133,7 @@ const HeadlessCheckoutKlarnaScreen = (props: any) => {
                 />
             </View>
 
-            {isAuthorizationVisible && <PrimerKlarnaPaymentView style={{ flex: 1 }}/>}
+            {isAuthorizationVisible && <PrimerKlarnaPaymentView style={{ flex: 1 }} />}
 
             <View style={styles.button}>
                 {isAuthorizationVisible && <Button onPress={() => onSubmit()} title="Continue" />}
@@ -131,12 +142,19 @@ const HeadlessCheckoutKlarnaScreen = (props: any) => {
     );
 };
 
-function isPaymentSessionCreated(data?: PaymentSessionCreated | PaymentSessionAuthorized | PaymentSessionFinalized | PaymentViewLoaded): data is PaymentSessionCreated {
+function isPaymentSessionCreatedStep(data?: PaymentSessionCreated | PaymentSessionAuthorized | PaymentSessionFinalized | PaymentViewLoaded): data is PaymentSessionCreated {
+    console.log("Checking if isPaymentSessionCreatedStep");
     return (data as PaymentSessionCreated).paymentCategories !== undefined;
 }
 
-function isPaymentViewLoaded(data?: PaymentSessionCreated | PaymentSessionAuthorized | PaymentSessionFinalized | PaymentViewLoaded): data is PaymentViewLoaded {
+function isPaymentViewLoadedStep(data?: PaymentSessionCreated | PaymentSessionAuthorized | PaymentSessionFinalized | PaymentViewLoaded): data is PaymentViewLoaded {
+    console.log("Checking if isPaymentViewLoadedStep");
     return (data as PaymentViewLoaded).name == "paymentViewLoaded";
+}
+
+function isPaymentAuthorizationStep(data?: PaymentSessionCreated | PaymentSessionAuthorized | PaymentSessionFinalized | PaymentViewLoaded): data is PaymentSessionAuthorized {
+    console.log("Checking if isPaymentAuthorizationStep");
+    return (data as PaymentSessionAuthorized).isFinalized !== undefined;
 }
 
 const PaymentCategories = ({ paymentCategories, selectedPaymentCategoryIdentifier, onPress }: {
