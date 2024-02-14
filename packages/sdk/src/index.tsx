@@ -99,3 +99,5 @@ import { KlarnaPaymentOptions, KlarnaPaymentFinalization } from './models/klarna
 export { KlarnaPaymentOptions, KlarnaPaymentFinalization };
 import { PaymentSessionCreated, PaymentSessionAuthorized, PaymentSessionFinalized, PaymentViewLoaded } from './models/klarna/KlarnaPaymentSteps';
 export { PaymentSessionCreated, PaymentSessionAuthorized, PaymentSessionFinalized, PaymentViewLoaded };
+import { PrimerKlarnaPaymentView } from './HeadlessUniversalCheckout/Components/PrimerKlarnaPaymentView'
+export { PrimerKlarnaPaymentView }

@@ -1,12 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Text,
     TouchableOpacity,
     View,
     StyleSheet,
     Button,
-    UIManager,
-    findNodeHandle
 } from 'react-native';
 import {
     KlarnaManager,
@@ -24,32 +22,18 @@ import {
     PaymentSessionCreated,
     PaymentSessionFinalized,
     PaymentViewLoaded,
+    PrimerKlarnaPaymentView,
     SessionIntent
 } from '@primer-io/react-native';
-import { PrimerKlarnaPaymentView } from '../components/PrimerKlarnaPaymentView';
 
 const klarnaManager = new KlarnaManager();
 let klarnaPaymentComponent: KlarnaPaymentComponent;
-
-const createFragment = (viewId: any) => {
-    UIManager.dispatchViewManagerCommand(
-        viewId,
-        UIManager.PrimerKlarnaPaymentView.Commands.create.toString(),
-        [viewId],
-    );
-}
 
 const HeadlessCheckoutKlarnaScreen = (props: any) => {
     const [isAuthorizationVisible, setAuthorizationVisible] = useState<boolean>(false)
     const [selectedPaymentCategoryIdentifier, setSelectedPaymentCategoryIdentifier] = useState<string | null>(null);
     const [paymentCategories, setPaymentCategories] = useState<KlarnaPaymentCategory[]>([])
-    const createFragmentCallback = useCallback((node: any) => {
-        const viewId = findNodeHandle(node);
-        console.log("View ID: " + viewId)
-        if (viewId !== null) {
-            createFragment(viewId);
-        }
-    }, []);
+
     useEffect(() => {
         (async () => {
             const klarnaManagerProps: KlarnaManagerProps = {
@@ -61,12 +45,6 @@ const HeadlessCheckoutKlarnaScreen = (props: any) => {
                         setPaymentCategories(data.paymentCategories)
                     } else if (isPaymentViewLoadedStep(data)) {
                         setAuthorizationVisible(true)
-                        // TODO: use this if onLayoutChange trick doesn't work
-                        // setTimeout(() => {
-                        //     // Code to run after the delay
-                        //     setAuthorizationVisible(false) 
-                        //     setAuthorizationVisible(true)
-                        //   }, 5000);
                     } else if (isPaymentAuthorizationStep(data)) {
                         if (data.isFinalized) {
                             console.log("Payment finalization is not required");
@@ -158,7 +136,7 @@ const HeadlessCheckoutKlarnaScreen = (props: any) => {
                 />
             </View>
 
-            {isAuthorizationVisible && <PrimerKlarnaPaymentView style={{ flex: 1 }} ref={createFragmentCallback} />}
+            {isAuthorizationVisible && <PrimerKlarnaPaymentView style={{ flex: 1 }} />}
 
             <View style={styles.button}>
                 {isAuthorizationVisible && <Button onPress={() => onSubmit()} title="Continue" />}
