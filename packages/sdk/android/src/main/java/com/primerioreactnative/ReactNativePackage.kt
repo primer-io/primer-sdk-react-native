@@ -34,7 +34,7 @@ class ReactNativePackage : ReactPackage {
       PrimerCardholderNameEditTextManager(),
       PrimerExpiryEditTextManager(),
       PrimerCvvEditTextManager(),
-      PrimerKlarnaPaymentViewManager()
+      PrimerKlarnaPaymentViewManager(reactContext)
     )
   }
 }
