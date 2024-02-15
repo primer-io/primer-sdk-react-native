@@ -21,7 +21,7 @@ import {
   PrimerSettings,
   SessionIntent
 } from '@primer-io/react-native';
-import ToggleButton from '../components/ToggleButton';
+import SegmentedControl from '@react-native-segmented-control/segmented-control';
 
 let log: string = "";
 let merchantPaymentId: string | null = null;
@@ -69,7 +69,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
   const [clientSession, setClientSession] = useState<null | any>(null);
   const [paymentMethods, setPaymentMethods] = useState<undefined | PaymentMethod[]>(undefined);
   const [paymentMethodsAssets, setPaymentMethodsAssets] = useState<undefined | Asset[]>(undefined);
-  const [sessionIntentButtonIndex, setSessionIntentButtonIndex] = useState<number>(0);
+  const [selectedSessionIntent, setSelectedSessionIntent] = useState<SessionIntent>(SessionIntent.CHECKOUT);
 
   const updateLogs = (str: string) => {
     console.log(str);
@@ -293,10 +293,6 @@ export const HeadlessCheckoutScreen = (props: any) => {
     }
   };
 
-  const getPaymentSessionIntent = () => {
-    return sessionIntentButtonIndex == 0 ? SessionIntent.CHECKOUT : SessionIntent.VAULT
-  }
-
   const pay = async (paymentMethod: PaymentMethod, implementationType: string) => {
     try {
       if (implementationType === "NATIVE_UI") {
@@ -304,10 +300,9 @@ export const HeadlessCheckoutScreen = (props: any) => {
         await createClientSessionIfNeeded();
         const nativeUIManager = new NativeUIManager();
         await nativeUIManager.configure(paymentMethod.paymentMethodType);
-        const paymentSessionIntent = getPaymentSessionIntent()
-        console.log("Payment session intent is " + paymentSessionIntent)
+        console.log("Payment session intent is " + selectedSessionIntent)
         if (paymentMethod.paymentMethodType === "KLARNA") {
-          props.navigation.navigate('Klarna', { paymentSessionIntent: paymentSessionIntent });
+          props.navigation.navigate('Klarna', { paymentSessionIntent: selectedSessionIntent });
         } else {
           await nativeUIManager.showPaymentMethod(SessionIntent.CHECKOUT);
         }
@@ -354,24 +349,20 @@ export const HeadlessCheckoutScreen = (props: any) => {
     }
   }
 
-  const renderSessionIntentToggleButtons = () => {
-    const buttonLabels = ["Checkout", "Vault"];
-
+  const renderSessionIntentSegmentedControl = () => {
+    const values = [SessionIntent.CHECKOUT, SessionIntent.VAULT]
     return (
       <View style={{
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 20,
+        marginVertical: 20,
       }}>
-        {buttonLabels.map((text, index) => (
-          <ToggleButton
-            key={index}
-            onPress={() => setSessionIntentButtonIndex(index)}
-            selected={index == sessionIntentButtonIndex}
-            text={text}
-          />
-        ))}
+        <SegmentedControl
+          values={values}
+          selectedIndex={values.indexOf(selectedSessionIntent)}
+          onChange={(event) => {
+            const selectedIndex = event.nativeEvent.selectedSegmentIndex;
+            setSelectedSessionIntent(values[selectedIndex]);
+          }}
+        />
       </View>
     );
   };
@@ -434,7 +425,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
 
   return (
     <View style={{ paddingHorizontal: 24, flex: 1 }}>
-      {renderSessionIntentToggleButtons()}
+      {renderSessionIntentSegmentedControl()}
       {renderPaymentMethodsUI()}
       {renderLoadingOverlay()}
     </View>
