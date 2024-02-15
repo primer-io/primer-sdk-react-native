@@ -22,8 +22,7 @@ import {
     PaymentSessionCreated,
     PaymentSessionFinalized,
     PaymentViewLoaded,
-    PrimerKlarnaPaymentView,
-    SessionIntent
+    PrimerKlarnaPaymentView
 } from '@primer-io/react-native';
 
 const klarnaManager = new KlarnaManager();
@@ -37,7 +36,7 @@ const HeadlessCheckoutKlarnaScreen = (props: any) => {
     useEffect(() => {
         (async () => {
             const klarnaManagerProps: KlarnaManagerProps = {
-                primerSessionIntent: SessionIntent.CHECKOUT,
+                primerSessionIntent: props.route.params.paymentSessionIntent,
                 onStep: (data: PaymentSessionCreated | PaymentSessionAuthorized | PaymentSessionFinalized | PaymentViewLoaded) => {
                     const log = `\nonStep: ${JSON.stringify(data)}\n`;
                     console.log(log);
@@ -76,6 +75,7 @@ const HeadlessCheckoutKlarnaScreen = (props: any) => {
                 },
             };
             klarnaPaymentComponent = await klarnaManager.provide(klarnaManagerProps);
+            console.log("Starting Klarna payment component");
             klarnaPaymentComponent?.start();
         })()
     }, []);
