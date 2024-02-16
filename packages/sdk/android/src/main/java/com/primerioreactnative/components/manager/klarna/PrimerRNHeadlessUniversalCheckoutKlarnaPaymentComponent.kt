@@ -339,5 +339,7 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaPaymentComponent(
             """
             Could not retrieve running activity from context.
             """
+
+        val TAG = PrimerRNHeadlessUniversalCheckoutKlarnaPaymentComponent::class.simpleName
     }
 }

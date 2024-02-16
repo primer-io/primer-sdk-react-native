@@ -136,7 +136,7 @@ const HeadlessCheckoutKlarnaScreen = (props: any) => {
                 />
             </View>
 
-            {isAuthorizationVisible && <PrimerKlarnaPaymentView style={{ flex: 1 }} />}
+            {isAuthorizationVisible && <PrimerKlarnaPaymentView style={{ minHeight: 250 }} />}
 
             <View style={styles.button}>
                 {isAuthorizationVisible && <Button onPress={() => onSubmit()} title="Continue" />}
