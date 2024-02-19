@@ -61,7 +61,7 @@ export class PrimerHeadlessUniversalCheckoutKlarnaManager {
     // API
     ///////////////////////////////////////////
 
-    async provide(props: KlarnaManagerProps): Promise<KlarnaComponent | any> {
+    async provide(props: KlarnaManagerProps): Promise<KlarnaComponent> {
         await this.configureListeners(props);
 
         const klarnaComponent: KlarnaComponent = {
