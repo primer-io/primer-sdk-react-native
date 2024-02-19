@@ -26,7 +26,7 @@ import com.primerioreactnative.datamodels.NamedValidatedData
 import com.primerioreactnative.utils.convertJsonToArray
 import com.primerioreactnative.utils.convertJsonToMap
 import com.primerioreactnative.utils.errorTo
-import io.primer.android.components.presentation.paymentMethods.nativeUi.klarna.composable.KlarnaPaymentComponent
+import io.primer.android.components.presentation.paymentMethods.nativeUi.klarna.composable.KlarnaComponent
 import io.primer.android.components.presentation.paymentMethods.nativeUi.klarna.models.KlarnaPaymentCollectableData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -51,15 +51,15 @@ import io.primer.android.components.manager.klarna.PrimerHeadlessUniversalChecko
 import io.primer.android.PrimerSessionIntent
 import android.util.Log
 
-class PrimerRNHeadlessUniversalCheckoutKlarnaPaymentComponent(
+class PrimerRNHeadlessUniversalCheckoutKlarnaComponent(
     private val reactContext: ReactApplicationContext
 ) : ReactContextBaseJavaModule(reactContext) {
 
-    override fun getName(): String = "RNTPrimerHeadlessUniversalCheckoutKlarnaPaymentComponent"
+    override fun getName(): String = "RNTPrimerHeadlessUniversalCheckoutKlarnaComponent"
 
     private var job: Job? = null
     private var viewModelStoreOwner: ViewModelStoreOwner? = null
-    private var klarnaPaymentComponent: KlarnaPaymentComponent? = null
+    private var klarnaComponent: KlarnaComponent? = null
 
     @ReactMethod
     fun configure(intent: String, promise: Promise) {
@@ -80,8 +80,8 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaPaymentComponent(
                 ?: run { PrimerRNViewModelStoreOwner() }
 
         viewModelStoreOwner = currentViewModelStoreOwner
-        klarnaPaymentComponent = PrimerHeadlessUniversalCheckoutKlarnaManager(currentViewModelStoreOwner, primerSessionIntent)
-            .provideKlarnaPaymentComponent()
+        klarnaComponent = PrimerHeadlessUniversalCheckoutKlarnaManager(currentViewModelStoreOwner)
+            .provideKlarnaComponent(primerSessionIntent)()
 
         val lifecycleScope =
             (reactContext.currentActivity as? LifecycleOwner)?.lifecycleScope
@@ -89,7 +89,7 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaPaymentComponent(
 
         job =
             lifecycleScope.launch {
-                if (klarnaPaymentComponent == null) {
+                if (klarnaComponent == null) {
                     val exception = ErrorTypeRN.NativeBridgeFailed errorTo UNINITIALIZED_ERROR
                     promise.reject(exception.errorId, exception.description)
                 } else {
@@ -107,28 +107,28 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaPaymentComponent(
 
     @ReactMethod
     fun start(promise: Promise) {
-      if (klarnaPaymentComponent == null) {
+      if (klarnaComponent == null) {
         val exception = ErrorTypeRN.NativeBridgeFailed errorTo UNINITIALIZED_ERROR
         promise.reject(exception.errorId, exception.description)
       } else {
-        klarnaPaymentComponent?.start()
+        klarnaComponent?.start()
         promise.resolve(null)
       }
     }
   
     @ReactMethod
     fun submit(promise: Promise) {
-      if (klarnaPaymentComponent == null) {
+      if (klarnaComponent == null) {
         val exception = ErrorTypeRN.NativeBridgeFailed errorTo UNINITIALIZED_ERROR
         promise.reject(exception.errorId, exception.description)
       } else {
-        klarnaPaymentComponent?.submit()
+        klarnaComponent?.submit()
         promise.resolve(null)
       }
     }
 
     private suspend fun configureErrorListener() {
-        klarnaPaymentComponent?.componentError?.collectLatest { error ->
+        klarnaComponent?.componentError?.collectLatest { error ->
             sendEvent(
                 PrimerHeadlessUniversalCheckoutComponentEvent.ON_ERROR.eventName,
                 JSONObject().apply {
@@ -144,7 +144,7 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaPaymentComponent(
     }
 
     private suspend fun configureStepListener() {
-        klarnaPaymentComponent?.componentStep?.collectLatest { klarnaStep ->
+        klarnaComponent?.componentStep?.collectLatest { klarnaStep ->
             when (klarnaStep) {
                 is KlarnaPaymentStep.PaymentSessionCreated -> {
                     sendEvent(
@@ -188,7 +188,7 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaPaymentComponent(
     }
 
     private suspend fun configureValidationListener() {
-        klarnaPaymentComponent?.componentValidationStatus?.collectLatest { validationStatus ->
+        klarnaComponent?.componentValidationStatus?.collectLatest { validationStatus ->
           when (validationStatus) {
             is PrimerValidationStatus.Validating -> {
               sendEvent(
@@ -278,11 +278,11 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaPaymentComponent(
         if (activity == null) {
             val exception = ErrorTypeRN.NativeBridgeFailed errorTo MISSING_ACTIVITY_ERROR
             promise.reject(exception.errorId, exception.description)
-        } else if (klarnaPaymentComponent == null) {
+        } else if (klarnaComponent == null) {
             val exception = ErrorTypeRN.NativeBridgeFailed errorTo UNINITIALIZED_ERROR
             promise.reject(exception.errorId, exception.description)
         } else {
-            klarnaPaymentComponent?.updateCollectedData(KlarnaPaymentCollectableData.PaymentOptions(
+            klarnaComponent?.updateCollectedData(KlarnaPaymentCollectableData.PaymentOptions(
                 context = activity,
                 returnIntentUrl = requireNotNull(returnIntentUrl),
                 paymentCategory = KlarnaPaymentCategoryRN.toKlarnaPaymentCategory()
@@ -293,11 +293,11 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaPaymentComponent(
 
     @ReactMethod
     fun onFinalizePayment(promise: Promise) {
-        if (klarnaPaymentComponent == null) {
+        if (klarnaComponent == null) {
             val exception = ErrorTypeRN.NativeBridgeFailed errorTo UNINITIALIZED_ERROR
             promise.reject(exception.errorId, exception.description)
         } else {
-            klarnaPaymentComponent?.updateCollectedData(KlarnaPaymentCollectableData.FinalizePayment)
+            klarnaComponent?.updateCollectedData(KlarnaPaymentCollectableData.FinalizePayment)
             promise.resolve(null)
         }
     }
@@ -324,7 +324,7 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaPaymentComponent(
     fun cleanUp(promise: Promise) {
         job?.cancel()
         job = null
-        klarnaPaymentComponent = null
+        klarnaComponent = null
         viewModelStoreOwner?.viewModelStore?.clear()
         promise.resolve(null)
     }
@@ -332,14 +332,14 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaPaymentComponent(
     private companion object {
         const val UNINITIALIZED_ERROR =
             """
-            The KlarnaPaymentComponent has not been initialized.
-            Make sure you have initialized the `KlarnaPaymentComponent` first.
+            The KlarnaComponent has not been initialized.
+            Make sure you have initialized the `KlarnaComponent` first.
             """
         const val MISSING_ACTIVITY_ERROR =
             """
             Could not retrieve running activity from context.
             """
 
-        val TAG = PrimerRNHeadlessUniversalCheckoutKlarnaPaymentComponent::class.simpleName
+        val TAG = PrimerRNHeadlessUniversalCheckoutKlarnaComponent::class.simpleName
     }
 }

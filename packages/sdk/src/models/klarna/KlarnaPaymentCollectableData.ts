@@ -1,12 +1,12 @@
 import { KlarnaPaymentCategory } from "./KlarnaPaymentCategory";
-import { KlarnaPaymentComponent } from "src/HeadlessUniversalCheckout/Managers/PaymentMethodManagers/KlarnaManager";
+import { KlarnaComponent } from "src/HeadlessUniversalCheckout/Managers/PaymentMethodManagers/KlarnaManager";
 
 export type KlarnaPaymentOptions = IKlarnaPaymentOptions
 
 export type KlarnaPaymentFinalization = { "name": "finalizePayment" }
 
 /**
- * Interface representing Klarna payment options required for configuring the {@link KlarnaPaymentComponent}.
+ * Interface representing Klarna payment options required for configuring the {@link KlarnaComponent}.
  */
 interface IKlarnaPaymentOptions {
     /**

@@ -10,9 +10,9 @@ import { PaymentSessionAuthorized, PaymentSessionCreated, PaymentSessionFinalize
 import { EventType, eventTypes } from './Utils/EventType';
 import { PrimerSessionIntent } from 'src/models/PrimerSessionIntent';
 
-const { RNTPrimerHeadlessUniversalCheckoutKlarnaPaymentComponent } = NativeModules;
+const { RNTPrimerHeadlessUniversalCheckoutKlarnaComponent } = NativeModules;
 
-const eventEmitter = new NativeEventEmitter(RNTPrimerHeadlessUniversalCheckoutKlarnaPaymentComponent);
+const eventEmitter = new NativeEventEmitter(RNTPrimerHeadlessUniversalCheckoutKlarnaComponent);
 export interface KlarnaManagerProps {
     primerSessionIntent: PrimerSessionIntent;
     onStep?: (metadata: PaymentSessionCreated | PaymentSessionAuthorized | PaymentSessionFinalized) => void;
@@ -23,7 +23,7 @@ export interface KlarnaManagerProps {
     onValidationError?: (data: PrimerComponentDataValidationError<KlarnaPaymentOptions | KlarnaPaymentFinalization>) => void;
 }
 
-export interface KlarnaPaymentComponent {
+export interface KlarnaComponent {
     /**
      * Starts the component, causing the {@link PaymentSessionCreated} step
      * to be emitted.
@@ -61,25 +61,25 @@ export class PrimerHeadlessUniversalCheckoutKlarnaManager {
     // API
     ///////////////////////////////////////////
 
-    async provide(props: KlarnaManagerProps): Promise<KlarnaPaymentComponent | any> {
+    async provide(props: KlarnaManagerProps): Promise<KlarnaComponent | any> {
         await this.configureListeners(props);
 
-        const klarnaPaymentComponent: KlarnaPaymentComponent = {
+        const klarnaComponent: KlarnaComponent = {
             start: async () => {
-                RNTPrimerHeadlessUniversalCheckoutKlarnaPaymentComponent.start();
+                RNTPrimerHeadlessUniversalCheckoutKlarnaComponent.start();
             },
             submit: async () => {
-                RNTPrimerHeadlessUniversalCheckoutKlarnaPaymentComponent.submit();
+                RNTPrimerHeadlessUniversalCheckoutKlarnaComponent.submit();
             },
             onSetPaymentOptions: async (paymentOptions: KlarnaPaymentOptions) => {
-                RNTPrimerHeadlessUniversalCheckoutKlarnaPaymentComponent.onSetPaymentOptions(paymentOptions);
+                RNTPrimerHeadlessUniversalCheckoutKlarnaComponent.onSetPaymentOptions(paymentOptions);
             },
             onFinalizePayment: async () => {
-                RNTPrimerHeadlessUniversalCheckoutKlarnaPaymentComponent.onFinalizePayment();
+                RNTPrimerHeadlessUniversalCheckoutKlarnaComponent.onFinalizePayment();
             },
         }
-        await RNTPrimerHeadlessUniversalCheckoutKlarnaPaymentComponent.configure(props.primerSessionIntent);
-        return klarnaPaymentComponent;
+        await RNTPrimerHeadlessUniversalCheckoutKlarnaComponent.configure(props.primerSessionIntent);
+        return klarnaComponent;
     }
 
     private async configureListeners(props: KlarnaManagerProps): Promise<void> {

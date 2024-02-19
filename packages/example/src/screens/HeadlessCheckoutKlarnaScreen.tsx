@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import {
     KlarnaManager,
-    KlarnaPaymentComponent,
+    KlarnaComponent,
     PrimerError,
     PrimerInvalidComponentData,
     PrimerValidComponentData,
@@ -26,7 +26,7 @@ import {
 } from '@primer-io/react-native';
 
 const klarnaManager = new KlarnaManager();
-let klarnaPaymentComponent: KlarnaPaymentComponent;
+let klarnaComponent: KlarnaComponent;
 
 const HeadlessCheckoutKlarnaScreen = (props: any) => {
     const [isAuthorizationVisible, setAuthorizationVisible] = useState<boolean>(false)
@@ -74,9 +74,9 @@ const HeadlessCheckoutKlarnaScreen = (props: any) => {
                     console.log(log);
                 },
             };
-            klarnaPaymentComponent = await klarnaManager.provide(klarnaManagerProps);
+            klarnaComponent = await klarnaManager.provide(klarnaManagerProps);
             console.log("Starting Klarna payment component");
-            klarnaPaymentComponent?.start();
+            klarnaComponent?.start();
         })()
     }, []);
 
@@ -86,7 +86,7 @@ const HeadlessCheckoutKlarnaScreen = (props: any) => {
                 (paymentCategory) => paymentCategory.identifier === selectedPaymentCategoryIdentifier
             ) as KlarnaPaymentCategory
 
-            await klarnaPaymentComponent.onSetPaymentOptions(
+            await klarnaComponent.onSetPaymentOptions(
                 {
                     returnIntentUrl: "app://deeplink.return.activity.rn",
                     paymentCategory: klarnaPaymentCategory
@@ -98,12 +98,12 @@ const HeadlessCheckoutKlarnaScreen = (props: any) => {
     };
 
     const onFinalizePayment = async () => {
-        await klarnaPaymentComponent.onFinalizePayment();
+        await klarnaComponent.onFinalizePayment();
     };
 
     const onSubmit = async () => {
         try {
-            await klarnaPaymentComponent.submit();
+            await klarnaComponent.submit();
         } catch (err) {
             console.error(err);
         }

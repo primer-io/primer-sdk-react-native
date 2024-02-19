@@ -87,8 +87,8 @@ import PrimerHeadlessUniversalCheckoutVaultManager from './HeadlessUniversalChec
 export {
     PrimerHeadlessUniversalCheckoutVaultManager as VaultManager
 }
-import { PrimerHeadlessUniversalCheckoutKlarnaManager, KlarnaPaymentComponent, KlarnaManagerProps } from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/KlarnaManager';
-export { PrimerHeadlessUniversalCheckoutKlarnaManager as KlarnaManager, KlarnaPaymentComponent, KlarnaManagerProps };
+import { PrimerHeadlessUniversalCheckoutKlarnaManager, KlarnaComponent, KlarnaManagerProps } from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/KlarnaManager';
+export { PrimerHeadlessUniversalCheckoutKlarnaManager as KlarnaManager, KlarnaComponent, KlarnaManagerProps };
 import { NamedComponentStep } from './models/NamedComponentStep';
 export { NamedComponentStep };
 import { KlarnaPaymentCategory } from './models/klarna/KlarnaPaymentCategory';
