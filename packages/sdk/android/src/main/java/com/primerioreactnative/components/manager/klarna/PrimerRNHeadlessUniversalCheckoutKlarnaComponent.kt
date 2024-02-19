@@ -81,7 +81,7 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaComponent(
 
         viewModelStoreOwner = currentViewModelStoreOwner
         klarnaComponent = PrimerHeadlessUniversalCheckoutKlarnaManager(currentViewModelStoreOwner)
-            .provideKlarnaComponent(primerSessionIntent)()
+            .provideKlarnaComponent(primerSessionIntent)
 
         val lifecycleScope =
             (reactContext.currentActivity as? LifecycleOwner)?.lifecycleScope
