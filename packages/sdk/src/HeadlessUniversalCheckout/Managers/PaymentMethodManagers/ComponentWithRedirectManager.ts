@@ -3,7 +3,8 @@ import {
   NativeModules,
   EmitterSubscription,
 } from 'react-native';
-import { BankId, BankListFilter, NamedComponentStep } from 'src/models/ComponentWithRedirectModels';
+import { BankId, BankListFilter } from 'src/models/componentWithRedirect/ComponentWithRedirectCollectableData';
+import { NamedComponentStep } from 'src/models/NamedComponentStep';
 import { IssuingBank } from 'src/models/IssuingBank';
 import { PrimerComponentDataValidationError, PrimerInvalidComponentData, PrimerValidComponentData, PrimerValidatingComponentData } from 'src/models/PrimerComponentDataValidation';
 import { PrimerError } from 'src/models/PrimerError';

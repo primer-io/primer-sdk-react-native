@@ -273,7 +273,7 @@ class PrimerRNHeadlessUniversalCheckoutBanksComponent(
     const val UNINITIALIZED_ERROR =
         """
         The BanksComponent has not been initialized.
-        Make sure you have initialized the `BanksComponent' first.
+        Make sure you have initialized the `BanksComponent` first.
       """
   }
 }
