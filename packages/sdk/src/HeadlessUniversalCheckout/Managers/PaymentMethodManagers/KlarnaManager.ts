@@ -15,7 +15,7 @@ const { RNTPrimerHeadlessUniversalCheckoutKlarnaComponent } = NativeModules;
 const eventEmitter = new NativeEventEmitter(RNTPrimerHeadlessUniversalCheckoutKlarnaComponent);
 export interface KlarnaManagerProps {
     primerSessionIntent: PrimerSessionIntent;
-    onStep?: (metadata: PaymentSessionCreated | PaymentSessionAuthorized | PaymentSessionFinalized) => void;
+    onStep?: (data: PaymentSessionCreated | PaymentSessionAuthorized | PaymentSessionFinalized) => void;
     onError?: (error: PrimerError) => void;
     onInvalid?: (data: PrimerInvalidComponentData<KlarnaPaymentOptions | KlarnaPaymentFinalization>) => void;
     onValid?: (data: PrimerValidComponentData<KlarnaPaymentOptions | KlarnaPaymentFinalization>) => void;
