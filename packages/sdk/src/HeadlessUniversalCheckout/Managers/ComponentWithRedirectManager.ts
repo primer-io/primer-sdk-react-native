@@ -28,7 +28,7 @@ const eventTypes: EventType[] = [
 
 export interface ComponentWithRedirectManagerProps {
   paymentMethodType: string;
-  onStep?: (metadata: IssuingBank[] | NamedComponentStep) => void;
+  onStep?: (data: IssuingBank[] | NamedComponentStep) => void;
   onError?: (error: PrimerError) => void;
   onInvalid?: (data: PrimerInvalidComponentData<BankId | BankListFilter>) => void;
   onValid?: (data: PrimerValidComponentData<BankId | BankListFilter>) => void;
