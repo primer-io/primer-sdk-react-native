@@ -37,7 +37,7 @@ const HeadlessCheckoutKlarnaScreen = (props: any) => {
         (async () => {
             const klarnaManagerProps: KlarnaManagerProps = {
                 primerSessionIntent: props.route.params.paymentSessionIntent,
-                onStep: (data: PaymentSessionCreated | PaymentSessionAuthorized | PaymentSessionFinalized | PaymentViewLoaded) => {
+                onStep: (data: PaymentSessionCreated | PaymentViewLoaded | PaymentSessionAuthorized | PaymentSessionFinalized) => {
                     const log = `\nonStep: ${JSON.stringify(data)}\n`;
                     console.log(log);
                     if (isPaymentSessionCreatedStep(data)) {
