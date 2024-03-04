@@ -99,7 +99,7 @@ export let appPaymentParameters: AppPaymentParameters = {
                     itemId: 'shoes-3213',
                     description: 'Fancy Shoes',
                     discountAmount: 0,
-                    productType: "DIGITAL"
+                    productType: "PHYSICAL"
                 },
                 // {
                 //     amount: 1000,
