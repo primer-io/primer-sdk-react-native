@@ -1,5 +1,5 @@
 variables:
-  NODE_VERSION: '16.13.1'
+  NODE_VERSION: '18'
 
 workflow:
   rules:
@@ -11,6 +11,9 @@ build-and-release:
   script:
     # Check version
     - npm --version
+    # Install dependencies
+    - apk add --no-cache curl bash
+    - apk add --no-cache --upgrade grep
     # Install yarn
     - |
       curl -o- -L https://yarnpkg.com/install.sh | bash
