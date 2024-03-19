@@ -348,6 +348,7 @@ extension RNTPrimer: PrimerDelegate {
 
 
     func primerWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) {
+
         if self.implementedRNCallbacks?.isOnBeforePaymentCreateImplemented == true {
             self.primerWillCreatePaymentWithDataDecisionHandler = { errorMessage in
                 DispatchQueue.main.async {
@@ -361,8 +362,9 @@ extension RNTPrimer: PrimerDelegate {
 
             DispatchQueue.main.async {
                 do {
-                    let checkoutPaymentmethodData = try JSONEncoder().encode(data)
-                    let checkoutPaymentmethodJson = try JSONSerialization.jsonObject(with: checkoutPaymentmethodData, options: .allowFragments)
+                    let checkoutPaymentmethodJson = try data
+                        .toPrimerCheckoutPaymentMethodDataRN()
+                        .toJsonObject()
                     self.sendEvent(withName: PrimerEvents.onBeforePaymentCreate.stringValue, body: checkoutPaymentmethodJson)
                 } catch {
                     self.handleRNBridgeError(error, checkoutData: nil, stopOnDebug: true)

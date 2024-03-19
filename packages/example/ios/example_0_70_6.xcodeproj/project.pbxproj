@@ -9,14 +9,14 @@
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* example_0_70_6Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* example_0_70_6Tests.m */; };
 		04979F682AB1E55A00469C99 /* main.jsbundle in Resources */ = {isa = PBXBuildFile; fileRef = 04979F672AB1E55A00469C99 /* main.jsbundle */; };
-		0A8A495313396B7978626F87 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
+		0A8A495313396B7978626F87 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		3241F34BC2B5FCB4F21E124C /* libPods-example_0_70_6.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8506A336B2E8D5A4CD4A0573 /* libPods-example_0_70_6.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		B0972B4F010DEAE974258944 /* libPods-example_0_70_6-example_0_70_6Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 97523A0A7243A7D0355FEFCD /* libPods-example_0_70_6-example_0_70_6Tests.a */; };
-		E5DBDCA9DB9CEA199422E9A9 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
+		E5DBDCA9DB9CEA199422E9A9 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,7 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0A8A495313396B7978626F87 /* (null) in Frameworks */,
+				0A8A495313396B7978626F87 /* BuildFile in Frameworks */,
 				B0972B4F010DEAE974258944 /* libPods-example_0_70_6-example_0_70_6Tests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -65,7 +65,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E5DBDCA9DB9CEA199422E9A9 /* (null) in Frameworks */,
+				E5DBDCA9DB9CEA199422E9A9 /* BuildFile in Frameworks */,
 				3241F34BC2B5FCB4F21E124C /* libPods-example_0_70_6.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -185,8 +185,8 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "example_0_70_6" */;
 			buildPhases = (
-				04DB853E2B766F4700910EAE /* Update Version */,
 				4B1E6488C47AA458460E1A8F /* [CP] Check Pods Manifest.lock */,
+				04DB853E2B766F4700910EAE /* Update Version */,
 				FD10A7F022414F080027D42C /* Start Packager */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
