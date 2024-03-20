@@ -136,5 +136,5 @@ dependencies {
   api 'com.facebook.react:react-native:+'
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
   implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1"
-  implementation 'io.primer:android:2.24.0'
+  implementation 'io.primer:android:2.26.0'
 }
