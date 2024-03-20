@@ -5,8 +5,8 @@ import com.facebook.react.bridge.*
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.primerioreactnative.datamodels.*
 import com.primerioreactnative.utils.PrimerImplementedRNCallbacks
-import com.primerioreactnative.utils.convertJsonToMap
 import com.primerioreactnative.utils.errorTo
+import com.primerioreactnative.utils.toWritableMap
 import io.primer.android.Primer
 import io.primer.android.data.settings.PrimerSettings
 import kotlinx.serialization.decodeFromString
@@ -202,7 +202,7 @@ class PrimerRN(reactContext: ReactApplicationContext, private val json: Json) :
   }
 
   private fun prepareData(data: JSONObject?): WritableMap {
-    return data?.let { convertJsonToMap(data) } ?: Arguments.createMap()
+    return data.toWritableMap()
   }
 }
 

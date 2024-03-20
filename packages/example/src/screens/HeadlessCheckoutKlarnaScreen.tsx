@@ -9,6 +9,7 @@ import {
 import {
     KlarnaManager,
     KlarnaComponent,
+    KlarnaPaymentStep,
     PrimerError,
     PrimerInvalidComponentData,
     PrimerValidComponentData,
@@ -37,7 +38,7 @@ const HeadlessCheckoutKlarnaScreen = (props: any) => {
         (async () => {
             const klarnaManagerProps: KlarnaManagerProps = {
                 primerSessionIntent: props.route.params.paymentSessionIntent,
-                onStep: (data: PaymentSessionCreated | PaymentViewLoaded | PaymentSessionAuthorized | PaymentSessionFinalized) => {
+                onStep: (data: KlarnaPaymentStep) => {
                     const log = `\nonStep: ${JSON.stringify(data)}\n`;
                     console.log(log);
                     if (isPaymentSessionCreatedStep(data)) {
@@ -145,17 +146,17 @@ const HeadlessCheckoutKlarnaScreen = (props: any) => {
     );
 };
 
-function isPaymentSessionCreatedStep(data?: PaymentSessionCreated | PaymentSessionAuthorized | PaymentSessionFinalized | PaymentViewLoaded): data is PaymentSessionCreated {
+function isPaymentSessionCreatedStep(data?: KlarnaPaymentStep): data is PaymentSessionCreated {
     console.log("Checking if isPaymentSessionCreatedStep");
     return (data as PaymentSessionCreated).paymentCategories !== undefined;
 }
 
-function isPaymentViewLoadedStep(data?: PaymentSessionCreated | PaymentSessionAuthorized | PaymentSessionFinalized | PaymentViewLoaded): data is PaymentViewLoaded {
+function isPaymentViewLoadedStep(data?: KlarnaPaymentStep): data is PaymentViewLoaded {
     console.log("Checking if isPaymentViewLoadedStep");
     return (data as PaymentViewLoaded).name == "paymentViewLoaded";
 }
 
-function isPaymentAuthorizationStep(data?: PaymentSessionCreated | PaymentSessionAuthorized | PaymentSessionFinalized | PaymentViewLoaded): data is PaymentSessionAuthorized {
+function isPaymentAuthorizationStep(data?: KlarnaPaymentStep): data is PaymentSessionAuthorized {
     console.log("Checking if isPaymentAuthorizationStep");
     return (data as PaymentSessionAuthorized).isFinalized !== undefined;
 }

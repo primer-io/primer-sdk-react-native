@@ -23,8 +23,8 @@ import com.primerioreactnative.components.events.PrimerHeadlessUniversalCheckout
 import com.primerioreactnative.datamodels.ErrorTypeRN
 import com.primerioreactnative.datamodels.NamedComponentStep
 import com.primerioreactnative.datamodels.NamedValidatedData
-import com.primerioreactnative.utils.convertJsonToArray
-import com.primerioreactnative.utils.convertJsonToMap
+import com.primerioreactnative.utils.toWritableMap
+import com.primerioreactnative.utils.toWritableArray
 import com.primerioreactnative.utils.errorTo
 import io.primer.android.components.presentation.paymentMethods.nativeUi.klarna.composable.KlarnaComponent
 import io.primer.android.components.presentation.paymentMethods.nativeUi.klarna.models.KlarnaPaymentCollectableData
@@ -301,12 +301,6 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaComponent(
             promise.resolve(null)
         }
     }
-
-    private fun JSONObject?.toWritableMap(): WritableMap =
-        this?.let { convertJsonToMap(this) } ?: Arguments.createMap()
-
-    private fun JSONArray?.toWritableArray(): WritableArray =
-        this?.let { convertJsonToArray(this) } ?: Arguments.createArray()
 
     private fun sendEvent(name: String, data: JSONObject?) {
         reactApplicationContext

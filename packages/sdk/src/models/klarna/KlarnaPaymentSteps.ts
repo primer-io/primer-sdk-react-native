@@ -1,5 +1,7 @@
 import { KlarnaPaymentCategory } from "./KlarnaPaymentCategory"
 
+export type KlarnaPaymentStep = PaymentSessionCreated | PaymentViewLoaded | PaymentSessionAuthorized | PaymentSessionFinalized
+
 /**
  * A type representing the created payment session.
  */

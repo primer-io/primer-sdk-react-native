@@ -6,7 +6,7 @@ import {
 import { PrimerComponentDataValidationError, PrimerInvalidComponentData, PrimerValidComponentData, PrimerValidatingComponentData } from 'src/models/PrimerComponentDataValidation';
 import { PrimerError } from 'src/models/PrimerError';
 import { KlarnaPaymentFinalization, KlarnaPaymentOptions } from 'src/models/klarna/KlarnaPaymentCollectableData';
-import { PaymentSessionAuthorized, PaymentSessionCreated, PaymentSessionFinalized, PaymentViewLoaded } from 'src/models/klarna/KlarnaPaymentSteps';
+import { KlarnaPaymentStep, PaymentSessionCreated } from 'src/models/klarna/KlarnaPaymentSteps';
 import { EventType, eventTypes } from './Utils/EventType';
 import { PrimerSessionIntent } from 'src/models/PrimerSessionIntent';
 
@@ -15,7 +15,7 @@ const { RNTPrimerHeadlessUniversalCheckoutKlarnaComponent } = NativeModules;
 const eventEmitter = new NativeEventEmitter(RNTPrimerHeadlessUniversalCheckoutKlarnaComponent);
 export interface KlarnaManagerProps {
     primerSessionIntent: PrimerSessionIntent;
-    onStep?: (data: PaymentSessionCreated | PaymentViewLoaded | PaymentSessionAuthorized | PaymentSessionFinalized) => void;
+    onStep?: (data: KlarnaPaymentStep) => void;
     onError?: (error: PrimerError) => void;
     onInvalid?: (data: PrimerInvalidComponentData<KlarnaPaymentOptions | KlarnaPaymentFinalization>) => void;
     onValid?: (data: PrimerValidComponentData<KlarnaPaymentOptions | KlarnaPaymentFinalization>) => void;

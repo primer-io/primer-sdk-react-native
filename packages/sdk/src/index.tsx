@@ -97,7 +97,7 @@ import { PrimerValidComponentData, PrimerValidatingComponentData, PrimerInvalidC
 export { PrimerValidComponentData, PrimerValidatingComponentData, PrimerInvalidComponentData, PrimerComponentDataValidationError };
 import { KlarnaPaymentOptions, KlarnaPaymentFinalization } from './models/klarna/KlarnaPaymentCollectableData';
 export { KlarnaPaymentOptions, KlarnaPaymentFinalization };
-import { PaymentSessionCreated, PaymentSessionAuthorized, PaymentSessionFinalized, PaymentViewLoaded } from './models/klarna/KlarnaPaymentSteps';
-export { PaymentSessionCreated, PaymentSessionAuthorized, PaymentSessionFinalized, PaymentViewLoaded };
+import { PaymentSessionCreated, PaymentSessionAuthorized, PaymentSessionFinalized, PaymentViewLoaded, KlarnaPaymentStep } from './models/klarna/KlarnaPaymentSteps';
+export { PaymentSessionCreated, PaymentSessionAuthorized, PaymentSessionFinalized, PaymentViewLoaded, KlarnaPaymentStep };
 import { PrimerKlarnaPaymentView } from './HeadlessUniversalCheckout/Components/PrimerKlarnaPaymentView'
 export { PrimerKlarnaPaymentView }
