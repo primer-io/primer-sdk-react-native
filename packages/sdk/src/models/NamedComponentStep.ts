@@ -7,5 +7,5 @@ interface INamedComponentStep {
     /**
      * The name of this component step.
      */
-    name: string
+    stepName: string
 }

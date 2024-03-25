@@ -1,3 +1,4 @@
+import { NamedComponentStep } from "./../NamedComponentStep";
 import { KlarnaPaymentCategory } from "./KlarnaPaymentCategory"
 
 export type KlarnaPaymentStep = PaymentSessionCreated | PaymentViewLoaded | PaymentSessionAuthorized | PaymentSessionFinalized
@@ -5,27 +6,25 @@ export type KlarnaPaymentStep = PaymentSessionCreated | PaymentViewLoaded | Paym
 /**
  * A type representing the created payment session.
  */
-export type PaymentSessionCreated = IPaymentSessionCreated;
+export type PaymentSessionCreated = {
+    "stepName": "paymentSessionCreated",
+    paymentCategories: KlarnaPaymentCategory[];
+} & NamedComponentStep
 
 /**
  * A type representing the authorized payment session.
  */
-export type PaymentSessionAuthorized = IPaymentSessionAuthorized;
+export type PaymentSessionAuthorized = {
+    "stepName": "paymentSessionAuthorized",
+    isFinalized: boolean;
+} & NamedComponentStep
 
 /**
  * A type representing the finalized payment session.
  */
-export type PaymentSessionFinalized = { "name": "paymentSessionFinalized" };
+export type PaymentSessionFinalized = { "stepName": "paymentSessionFinalized" } & NamedComponentStep;
 
 /**
  * A type that indicates that the payment view is loaded and ready to be displayed.
  */
-export type PaymentViewLoaded = { "name": "paymentViewLoaded" };
-
-interface IPaymentSessionCreated {
-    paymentCategories: KlarnaPaymentCategory[];
-}
-
-interface IPaymentSessionAuthorized {
-    isFinalized: boolean;
-}
+export type PaymentViewLoaded = { "stepName": "paymentViewLoaded" } & NamedComponentStep;

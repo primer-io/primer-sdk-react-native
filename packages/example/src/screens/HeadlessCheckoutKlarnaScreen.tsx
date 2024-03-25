@@ -19,10 +19,6 @@ import {
     KlarnaPaymentFinalization,
     KlarnaPaymentOptions,
     KlarnaPaymentCategory,
-    PaymentSessionAuthorized,
-    PaymentSessionCreated,
-    PaymentSessionFinalized,
-    PaymentViewLoaded,
     PrimerKlarnaPaymentView
 } from '@primer-io/react-native';
 
@@ -41,17 +37,25 @@ const HeadlessCheckoutKlarnaScreen = (props: any) => {
                 onStep: (data: KlarnaPaymentStep) => {
                     const log = `\nonStep: ${JSON.stringify(data)}\n`;
                     console.log(log);
-                    if (isPaymentSessionCreatedStep(data)) {
-                        setPaymentCategories(data.paymentCategories)
-                    } else if (isPaymentViewLoadedStep(data)) {
-                        setAuthorizationVisible(true)
-                    } else if (isPaymentAuthorizationStep(data)) {
-                        if (data.isFinalized) {
-                            console.log("Payment finalization is not required");
-                        } else {
-                            console.log("Finalizing payment");
-                            onFinalizePayment();
-                        }
+                    switch (data.stepName) {
+                        case "paymentSessionCreated":
+                            setPaymentCategories(data.paymentCategories);
+                            break;
+                    
+                        case "paymentViewLoaded":
+                            setAuthorizationVisible(true);
+                            break;
+                    
+                        case "paymentSessionAuthorized":
+                            if (data.isFinalized) {
+                                console.log("Payment finalization is not required");
+                            } else {
+                                console.log("Finalizing payment");
+                                onFinalizePayment();
+                            }
+                            break;
+                        case "paymentSessionFinalized":
+                            break;
                     }
                 },
                 onError: (error: PrimerError) => {
@@ -145,21 +149,6 @@ const HeadlessCheckoutKlarnaScreen = (props: any) => {
         </View>
     );
 };
-
-function isPaymentSessionCreatedStep(data?: KlarnaPaymentStep): data is PaymentSessionCreated {
-    console.log("Checking if isPaymentSessionCreatedStep");
-    return (data as PaymentSessionCreated).paymentCategories !== undefined;
-}
-
-function isPaymentViewLoadedStep(data?: KlarnaPaymentStep): data is PaymentViewLoaded {
-    console.log("Checking if isPaymentViewLoadedStep");
-    return (data as PaymentViewLoaded).name == "paymentViewLoaded";
-}
-
-function isPaymentAuthorizationStep(data?: KlarnaPaymentStep): data is PaymentSessionAuthorized {
-    console.log("Checking if isPaymentAuthorizationStep");
-    return (data as PaymentSessionAuthorized).isFinalized !== undefined;
-}
 
 const PaymentCategories = ({ paymentCategories, selectedPaymentCategoryIdentifier, onPress }: {
     paymentCategories: KlarnaPaymentCategory[],

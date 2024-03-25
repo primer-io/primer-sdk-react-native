@@ -45,6 +45,7 @@ import io.primer.android.components.manager.core.composable.PrimerValidationStat
 import com.primerioreactnative.datamodels.PrimerValidationErrorRN
 import com.primerioreactnative.datamodels.klarna.KlarnaPaymentCollectableDataRN
 import com.primerioreactnative.datamodels.PrimerErrorRN
+import com.primerioreactnative.datamodels.NamedComponentStepImpl
 import io.primer.android.components.presentation.paymentMethods.nativeUi.klarna.models.KlarnaPaymentStep
 import io.primer.android.components.domain.payments.paymentMethods.nativeUi.klarna.models.KlarnaPaymentCategory
 import io.primer.android.components.manager.klarna.PrimerHeadlessUniversalCheckoutKlarnaManager
@@ -135,7 +136,7 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaComponent(
                     put(
                         "errors",
                         JSONArray().apply {
-                            put(JSONObject(Json.encodeToString(error.toPrimerErrorRN())))
+                            put(JSONObject(json.encodeToString(error.toPrimerErrorRN())))
                         }
                     )
                 }
@@ -150,7 +151,7 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaComponent(
                     sendEvent(
                         name = PrimerHeadlessUniversalCheckoutComponentEvent.ON_STEP.eventName,
                         data = JSONObject(
-                            Json.encodeToString(klarnaStep.toPaymentSessionCreatedRN())
+                            json.encodeToString(klarnaStep.toPaymentSessionCreatedRN())
                         )
                     )
                 }
@@ -161,7 +162,7 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaComponent(
                     sendEvent(
                         name = PrimerHeadlessUniversalCheckoutComponentEvent.ON_STEP.eventName,
                         data = JSONObject(
-                            Json.encodeToString(NamedComponentStep(name = "paymentViewLoaded"))
+                            json.encodeToString(NamedComponentStepImpl(stepName = "paymentViewLoaded"))
                         )
                     )
                 }
@@ -170,7 +171,7 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaComponent(
                     sendEvent(
                         name = PrimerHeadlessUniversalCheckoutComponentEvent.ON_STEP.eventName,
                         data = JSONObject(
-                            Json.encodeToString(klarnaStep.toPaymentSessionAuthorizedRN())
+                            json.encodeToString(klarnaStep.toPaymentSessionAuthorizedRN())
                         )
                     )
                 }
@@ -179,7 +180,7 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaComponent(
                     sendEvent(
                         name = PrimerHeadlessUniversalCheckoutComponentEvent.ON_STEP.eventName,
                         data = JSONObject(
-                            Json.encodeToString(NamedComponentStep(name = "paymentSessionFinalized"))
+                            json.encodeToString(NamedComponentStepImpl(stepName = "paymentSessionFinalized"))
                         )
                     )
                 }
@@ -208,7 +209,7 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaComponent(
                         JSONArray(
                             validationStatus.validationErrors.map {
                               JSONObject(
-                                  Json.encodeToString(
+                                  json.encodeToString(
                                       PrimerValidationErrorRN(
                                           it.errorId,
                                           it.description,
@@ -238,7 +239,7 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaComponent(
                     put(
                         "errors",
                         JSONArray().apply { 
-                          put(JSONObject(Json.encodeToString(validationStatus.error.toPrimerErrorRN())))
+                          put(JSONObject(json.encodeToString(validationStatus.error.toPrimerErrorRN())))
                         }
                     )
                   }
@@ -252,7 +253,7 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaComponent(
         put(
             "data",
             JSONObject(
-                Json.encodeToString(
+                json.encodeToString(
                     when (collectableData) {
                         is KlarnaPaymentCollectableData.PaymentOptions -> collectableData.toPaymentOptionsRN()
                         is KlarnaPaymentCollectableData.FinalizePayment -> collectableData.toFinalizePaymentRN()
@@ -335,5 +336,7 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaComponent(
             """
 
         val TAG = PrimerRNHeadlessUniversalCheckoutKlarnaComponent::class.simpleName
+
+        val json by lazy { Json { encodeDefaults = true } }
     }
 }
