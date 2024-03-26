@@ -7,9 +7,10 @@ import com.primerioreactnative.datamodels.NamedComponentStep
 internal sealed interface KlarnaPaymentStepRN : NamedComponentStep {
     @Serializable
     data class PaymentSessionCreatedRN(
-        override val stepName: String = "paymentSessionCreated",
         val paymentCategories: List<KlarnaPaymentCategoryRN>
-    ) : KlarnaPaymentStepRN
+    ) : KlarnaPaymentStepRN {
+        override val stepName: String = "paymentSessionCreated"
+    }
 
     @Serializable 
     class PaymentViewLoadedRN : KlarnaPaymentStepRN {
@@ -18,9 +19,10 @@ internal sealed interface KlarnaPaymentStepRN : NamedComponentStep {
 
     @Serializable 
     data class PaymentSessionAuthorizedRN(
-        override val stepName: String = "paymentSessionAuthorized",
         val isFinalized: Boolean
-    ) : KlarnaPaymentStepRN
+    ) : KlarnaPaymentStepRN {
+        override val stepName: String = "paymentSessionAuthorized"
+    }
 
     @Serializable 
     class PaymentSessionFinalizedRN : KlarnaPaymentStepRN {

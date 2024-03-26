@@ -8,10 +8,11 @@ import kotlinx.serialization.Serializable
 internal sealed interface KlarnaPaymentCollectableDataRN : NamedComponentValidatableData {
     @Serializable
     data class PaymentOptionsRN(
-        override val validatableDataName: String = "klarnaPaymentOptions",
         val returnIntentUrl: String,
         val paymentCategory: KlarnaPaymentCategoryRN
-    ) : KlarnaPaymentCollectableDataRN
+    ) : KlarnaPaymentCollectableDataRN {
+        override val validatableDataName: String = "klarnaPaymentOptions"
+    }
 
     @Serializable
     class FinalizePaymentRN : KlarnaPaymentCollectableDataRN {
