@@ -13,6 +13,9 @@ export type PaymentViewLoaded = { stepName: "paymentViewLoaded" } & NamedCompone
  */
 export type PaymentSessionCreated = {
     stepName: "paymentSessionCreated",
+    /**
+     * The list of available Klarna payment categories.
+     */
     paymentCategories: KlarnaPaymentCategory[]
 } & NamedComponentStep
 
@@ -21,6 +24,9 @@ export type PaymentSessionCreated = {
  */
 export type PaymentSessionAuthorized = {
     stepName: "paymentSessionAuthorized",
+    /**
+     * The state of the finalization.
+     */
     isFinalized: boolean
 } & NamedComponentStep
 
