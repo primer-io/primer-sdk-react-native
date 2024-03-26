@@ -1,6 +1,5 @@
 package com.primerioreactnative.components.events
 
-// TODO: reuse in iDeal
 internal enum class PrimerHeadlessUniversalCheckoutComponentEvent(val eventName: String) {
   ON_STEP("onStep"),
   ON_ERROR("onError"),
