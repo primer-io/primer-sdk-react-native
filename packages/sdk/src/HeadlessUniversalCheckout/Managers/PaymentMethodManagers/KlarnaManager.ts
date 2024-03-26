@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 import { PrimerComponentDataValidationError, PrimerInvalidComponentData, PrimerValidComponentData, PrimerValidatingComponentData } from 'src/models/PrimerComponentDataValidation';
 import { PrimerError } from 'src/models/PrimerError';
-import { KlarnaPaymentFinalization, KlarnaPaymentOptions } from 'src/models/klarna/KlarnaPaymentCollectableData';
+import { KlarnaPaymentOptions, KlarnaPaymentValidatableData } from 'src/models/klarna/KlarnaPaymentCollectableData';
 import { KlarnaPaymentStep, PaymentSessionCreated } from 'src/models/klarna/KlarnaPaymentSteps';
 import { EventType, eventTypes } from './Utils/EventType';
 import { PrimerSessionIntent } from 'src/models/PrimerSessionIntent';
@@ -17,10 +17,10 @@ export interface KlarnaManagerProps {
     primerSessionIntent: PrimerSessionIntent;
     onStep?: (data: KlarnaPaymentStep) => void;
     onError?: (error: PrimerError) => void;
-    onInvalid?: (data: PrimerInvalidComponentData<KlarnaPaymentOptions | KlarnaPaymentFinalization>) => void;
-    onValid?: (data: PrimerValidComponentData<KlarnaPaymentOptions | KlarnaPaymentFinalization>) => void;
-    onValidating?: (data: PrimerValidatingComponentData<KlarnaPaymentOptions | KlarnaPaymentFinalization>) => void;
-    onValidationError?: (data: PrimerComponentDataValidationError<KlarnaPaymentOptions | KlarnaPaymentFinalization>) => void;
+    onInvalid?: (data: PrimerInvalidComponentData<KlarnaPaymentValidatableData>) => void;
+    onValid?: (data: PrimerValidComponentData<KlarnaPaymentValidatableData>) => void;
+    onValidating?: (data: PrimerValidatingComponentData<KlarnaPaymentValidatableData>) => void;
+    onValidationError?: (data: PrimerComponentDataValidationError<KlarnaPaymentValidatableData>) => void;
 }
 
 export interface KlarnaComponent {

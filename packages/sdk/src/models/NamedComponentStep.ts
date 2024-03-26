@@ -1,7 +1,7 @@
 export type NamedComponentStep = INamedComponentStep;
 
 /**
- * A component step that can only be identified via its name due to its lack of properties.
+ * A component step that can be identified via its name.
  */
 interface INamedComponentStep {
     /**

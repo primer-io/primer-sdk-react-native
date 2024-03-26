@@ -16,10 +16,9 @@ import {
     PrimerValidatingComponentData,
     PrimerComponentDataValidationError,
     KlarnaManagerProps,
-    KlarnaPaymentFinalization,
-    KlarnaPaymentOptions,
     KlarnaPaymentCategory,
-    PrimerKlarnaPaymentView
+    PrimerKlarnaPaymentView,
+    KlarnaPaymentValidatableData
 } from '@primer-io/react-native';
 
 const klarnaManager = new KlarnaManager();
@@ -41,11 +40,11 @@ const HeadlessCheckoutKlarnaScreen = (props: any) => {
                         case "paymentSessionCreated":
                             setPaymentCategories(data.paymentCategories);
                             break;
-                    
+
                         case "paymentViewLoaded":
                             setAuthorizationVisible(true);
                             break;
-                    
+
                         case "paymentSessionAuthorized":
                             if (data.isFinalized) {
                                 console.log("Payment finalization is not required");
@@ -62,19 +61,19 @@ const HeadlessCheckoutKlarnaScreen = (props: any) => {
                     const log = `\nonError: ${JSON.stringify(error)}\n`;
                     console.log(log);
                 },
-                onInvalid: (data: PrimerInvalidComponentData<KlarnaPaymentOptions | KlarnaPaymentFinalization>) => {
+                onInvalid: (data: PrimerInvalidComponentData<KlarnaPaymentValidatableData>) => {
                     const log = `\nonInvalid: ${JSON.stringify(data)}\n`;
                     console.log(log);
                 },
-                onValid: (data: PrimerValidComponentData<KlarnaPaymentOptions | KlarnaPaymentFinalization>) => {
+                onValid: (data: PrimerValidComponentData<KlarnaPaymentValidatableData>) => {
                     const log = `\nonValid: ${JSON.stringify(data)}\n`;
                     console.log(log);
                 },
-                onValidating: (data: PrimerValidatingComponentData<KlarnaPaymentOptions | KlarnaPaymentFinalization>) => {
+                onValidating: (data: PrimerValidatingComponentData<KlarnaPaymentValidatableData>) => {
                     const log = `\onValidating: ${JSON.stringify(data)}\n`;
                     console.log(log);
                 },
-                onValidationError: (data: PrimerComponentDataValidationError<KlarnaPaymentOptions | KlarnaPaymentFinalization>) => {
+                onValidationError: (data: PrimerComponentDataValidationError<KlarnaPaymentValidatableData>) => {
                     const log = `\nonValidationError: ${JSON.stringify(data)}\n`;
                     console.log(log);
                 },

@@ -1,15 +1,16 @@
+import { NamedComponentValidatableData } from "./NamedComponentValidatableData";
 import { PrimerError } from "./PrimerError";
 import { PrimerValidationError } from "./PrimerValidationError";
 
-export type PrimerValidatingComponentData<T> = IPrimerValidatingComponentData<T>;
-export type PrimerValidComponentData<T> = IPrimerValidComponentData<T>;
-export type PrimerInvalidComponentData<T> = IPrimerInvalidComponentData<T>;
-export type PrimerComponentDataValidationError<T> = IPrimerComponentDataValidationError<T>;
+export type PrimerValidatingComponentData<T extends NamedComponentValidatableData> = IPrimerValidatingComponentData<T>;
+export type PrimerValidComponentData<T extends NamedComponentValidatableData> = IPrimerValidComponentData<T>;
+export type PrimerInvalidComponentData<T extends NamedComponentValidatableData> = IPrimerInvalidComponentData<T>;
+export type PrimerComponentDataValidationError<T extends NamedComponentValidatableData> = IPrimerComponentDataValidationError<T>;
 
 /**
  * Interface that indicates that data is currently in the process of being validated.
  */
-interface IPrimerValidatingComponentData<T> {
+interface IPrimerValidatingComponentData<T extends NamedComponentValidatableData> {
     /**
      * The data being validated.
      */
@@ -19,7 +20,7 @@ interface IPrimerValidatingComponentData<T> {
 /**
  * Interface that indicates that the data has been successfully validated.
  */
-interface IPrimerValidComponentData<T> {
+interface IPrimerValidComponentData<T extends NamedComponentValidatableData> {
     /**
      * The successfully validated data.
      */
@@ -29,7 +30,7 @@ interface IPrimerValidComponentData<T> {
 /**
  * Interface that indicates that the data has been considered invalid after validation.
  */
-interface IPrimerInvalidComponentData<T> {
+interface IPrimerInvalidComponentData<T extends NamedComponentValidatableData> {
     /**
     * The data that failed validation.
     */
@@ -45,7 +46,7 @@ interface IPrimerInvalidComponentData<T> {
 /**
  * Interface that represents an error that occurred during the validation process.
  */
-interface IPrimerComponentDataValidationError<T> {
+interface IPrimerComponentDataValidationError<T extends NamedComponentValidatableData> {
     /**
      * The data for which an error ocurred during validation.
      */

@@ -11,4 +11,4 @@ internal fun PaymentOptions.toPaymentOptionsRN() =
         paymentCategory = paymentCategory.toKlarnaPaymentCategoryRN()
     )
 
-internal fun FinalizePayment.toFinalizePaymentRN() = FinalizePaymentRN
+internal fun FinalizePayment.toFinalizePaymentRN() = FinalizePaymentRN()
