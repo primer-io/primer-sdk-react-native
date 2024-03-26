@@ -1,6 +1,6 @@
 package com.primerioreactnative.components.events
 
-internal enum class PrimerHeadlessUniversalCheckoutRedirectManagerEvent(val eventName: String) {
+internal enum class PrimerHeadlessUniversalCheckoutComponentEvent(val eventName: String) {
   ON_STEP("onStep"),
   ON_ERROR("onError"),
   ON_IN_VALID("onInvalid"),

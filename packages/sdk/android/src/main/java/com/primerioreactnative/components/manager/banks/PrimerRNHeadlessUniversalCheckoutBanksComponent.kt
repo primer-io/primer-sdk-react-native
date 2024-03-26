@@ -12,11 +12,13 @@ import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.primerioreactnative.PrimerRNViewModelStoreOwner
-import com.primerioreactnative.components.events.PrimerHeadlessUniversalCheckoutRedirectManagerEvent
+import com.primerioreactnative.components.events.PrimerHeadlessUniversalCheckoutComponentEvent
 import com.primerioreactnative.datamodels.ErrorTypeRN
 import com.primerioreactnative.datamodels.PrimerValidationErrorRN
-import com.primerioreactnative.datamodels.redirect.toBankIdRN
-import com.primerioreactnative.datamodels.redirect.toFilterRN
+import com.primerioreactnative.datamodels.extensions.banks.toBankIdRN
+import com.primerioreactnative.datamodels.extensions.banks.toFilterRN
+import com.primerioreactnative.datamodels.extensions.banks.toLoadingRN
+import com.primerioreactnative.datamodels.extensions.banks.toBanksRetrievedRN
 import com.primerioreactnative.datamodels.NamedComponentStep
 import com.primerioreactnative.extensions.toPrimerErrorRN
 import com.primerioreactnative.extensions.toPrimerIssuingBankRN
@@ -130,12 +132,12 @@ class PrimerRNHeadlessUniversalCheckoutBanksComponent(
   private suspend fun configureErrorListener() {
     banksComponent?.componentError?.collectLatest { error ->
       sendEvent(
-          PrimerHeadlessUniversalCheckoutRedirectManagerEvent.ON_ERROR.eventName,
+          PrimerHeadlessUniversalCheckoutComponentEvent.ON_ERROR.eventName,
           JSONObject().apply { 
             put(
               "errors", 
               JSONArray().apply { 
-                put(JSONObject(Json.encodeToString(error.toPrimerErrorRN())))
+                put(JSONObject(json.encodeToString(error.toPrimerErrorRN())))
               }
             ) 
           }
@@ -148,15 +150,15 @@ class PrimerRNHeadlessUniversalCheckoutBanksComponent(
       when (banksStep) {
         is BanksStep.Loading -> {
           sendEvent(
-            PrimerHeadlessUniversalCheckoutRedirectManagerEvent.ON_STEP.eventName,
-            JSONObject(Json.encodeToString(NamedComponentStep("loading")))
+            PrimerHeadlessUniversalCheckoutComponentEvent.ON_STEP.eventName,
+            JSONObject(json.encodeToString(banksStep.toLoadingRN()))
           )
         }
         is BanksStep.BanksRetrieved -> {
           sendEvent(
-            PrimerHeadlessUniversalCheckoutRedirectManagerEvent.ON_STEP.eventName,
-            JSONArray(
-              Json.encodeToString(banksStep.banks.map { it.toPrimerIssuingBankRN() })
+            PrimerHeadlessUniversalCheckoutComponentEvent.ON_STEP.eventName,
+            JSONObject(
+              json.encodeToString(banksStep.toBanksRetrievedRN())
             )
           )
         }
@@ -169,7 +171,7 @@ class PrimerRNHeadlessUniversalCheckoutBanksComponent(
       when (validationStatus) {
         is PrimerValidationStatus.Validating -> {
           sendEvent(
-              PrimerHeadlessUniversalCheckoutRedirectManagerEvent.ON_VALIDATING.eventName,
+              PrimerHeadlessUniversalCheckoutComponentEvent.ON_VALIDATING.eventName,
               JSONObject().apply {
                 putData(validationStatus.collectableData as BanksCollectableData)
               }
@@ -177,7 +179,7 @@ class PrimerRNHeadlessUniversalCheckoutBanksComponent(
         }
         is PrimerValidationStatus.Invalid -> {
           sendEvent(
-              PrimerHeadlessUniversalCheckoutRedirectManagerEvent.ON_IN_VALID.eventName,
+              PrimerHeadlessUniversalCheckoutComponentEvent.ON_IN_VALID.eventName,
               JSONObject().apply {
                 putData(validationStatus.collectableData as BanksCollectableData)
                 put(
@@ -185,7 +187,7 @@ class PrimerRNHeadlessUniversalCheckoutBanksComponent(
                     JSONArray(
                         validationStatus.validationErrors.map {
                           JSONObject(
-                              Json.encodeToString(
+                              json.encodeToString(
                                   PrimerValidationErrorRN(
                                       it.errorId,
                                       it.description,
@@ -201,7 +203,7 @@ class PrimerRNHeadlessUniversalCheckoutBanksComponent(
         }
         is PrimerValidationStatus.Valid -> {
           sendEvent(
-              PrimerHeadlessUniversalCheckoutRedirectManagerEvent.ON_VALID.eventName,
+              PrimerHeadlessUniversalCheckoutComponentEvent.ON_VALID.eventName,
               JSONObject().apply {
                 putData(validationStatus.collectableData as BanksCollectableData)
               }
@@ -209,13 +211,13 @@ class PrimerRNHeadlessUniversalCheckoutBanksComponent(
         }
         is PrimerValidationStatus.Error -> {
           sendEvent(
-              PrimerHeadlessUniversalCheckoutRedirectManagerEvent.ON_VALIDATION_ERROR.eventName,
+              PrimerHeadlessUniversalCheckoutComponentEvent.ON_VALIDATION_ERROR.eventName,
               JSONObject().apply {
                 putData(validationStatus.collectableData as BanksCollectableData)
                 put(
                     "errors",
                     JSONArray().apply { 
-                      put(JSONObject(Json.encodeToString(validationStatus.error.toPrimerErrorRN())))
+                      put(JSONObject(json.encodeToString(validationStatus.error.toPrimerErrorRN())))
                     }
                 )
               }
@@ -228,13 +230,14 @@ class PrimerRNHeadlessUniversalCheckoutBanksComponent(
   private fun JSONObject.putData(collectableData: BanksCollectableData) {
     put(
         "data",
-        when (collectableData) {
-          is BanksCollectableData.BankId ->
-              JSONObject(Json.encodeToString(collectableData.toBankIdRN()))
-          is BanksCollectableData.Filter ->
-              JSONObject(Json.encodeToString(collectableData.toFilterRN()))
-          else -> null
-        }
+        JSONObject(
+          json.encodeToString(
+            when (collectableData) {
+              is BanksCollectableData.BankId -> collectableData.toBankIdRN()
+              is BanksCollectableData.Filter -> collectableData.toFilterRN()
+            }
+          )
+        )
     )
   }
 
@@ -275,5 +278,7 @@ class PrimerRNHeadlessUniversalCheckoutBanksComponent(
         The BanksComponent has not been initialized.
         Make sure you have initialized the `BanksComponent` first.
       """
+
+    val json = Json { encodeDefaults = true }
   }
 }

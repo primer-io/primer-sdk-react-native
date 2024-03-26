@@ -10,15 +10,14 @@ import {
   ComponentWithRedirectManager, 
   BanksComponent, 
   IssuingBank, 
-  BankId, 
-  BankListFilter, 
   PrimerError, 
+  BanksStep,
+  BanksValidatableData,
   PrimerInvalidComponentData, 
   PrimerValidComponentData, 
   PrimerValidatingComponentData, 
   PrimerComponentDataValidationError, 
-  ComponentWithRedirectManagerProps,
-  NamedComponentStep
+  BanksComponentProps,
 } from '@primer-io/react-native';
 import TextField from '../components/TextField';
 
@@ -34,43 +33,50 @@ const HeadlessCheckoutWithRedirect = (props: any) => {
 
   useEffect(() => {
     (async () => {
-      const componentWithRedirectManagerProps: ComponentWithRedirectManagerProps = {
+      const banksComponentProps: BanksComponentProps = {
         paymentMethodType: props.route.params.paymentMethodType,
-        onStep: (data: IssuingBank[] | NamedComponentStep) => {
+        onStep: (data: BanksStep) => {
           const log = `\nonStep: ${JSON.stringify(data)}\n`;
           console.log(log);
-          if (isIssuingBankList(data)) {
-            setBanks(data);
-            setIsLoading(false);
-          } else if (isLoadingStep(data)) {
-            console.log("Loading...")
-            setIsLoading(true)
+          switch(data.stepName) {
+            case "banksLoading":
+              console.log("Loading...");
+              setIsLoading(true);
+              break;
+            case "banksRetrieved":
+              setBanks(data.banks);
+              setIsLoading(false);
+              break;
           }
         },
         onError: (error: PrimerError) => {
           const log = `\nonError: ${JSON.stringify(error)}\n`;
           console.log(log);
         },
-        onInvalid: (data: PrimerInvalidComponentData<BankId | BankListFilter>) => {
+        onInvalid: (data: PrimerInvalidComponentData<BanksValidatableData>) => {
           const log = `\nonInvalid: ${JSON.stringify(data)}\n`;
           console.log(log);
           setIsLoading(false);
           setIsValidating(null);
         },
-        onValid: (data: PrimerValidComponentData<BankId | BankListFilter>) => {
+        onValid: (data: PrimerValidComponentData<BanksValidatableData>) => {
           const log = `\nonValid: ${JSON.stringify(data)}\n`;
           console.log(log);
           setIsLoading(false);
           setIsValidating(null);
-          if (isBankId(data?.data)) {
-            submit()
+          switch(data.data.validatableDataName) {
+            case "bankId":
+              submit();
+              break;
+            default:
+              break;
           }
         },
-        onValidating: (data: PrimerValidatingComponentData<BankId | BankListFilter>) => {
+        onValidating: (data: PrimerValidatingComponentData<BanksValidatableData>) => {
           const log = `\onValidating: ${JSON.stringify(data)}\n`;
           console.log(log);
         },
-        onValidationError: (data: PrimerComponentDataValidationError<BankId | BankListFilter>) => {
+        onValidationError: (data: PrimerComponentDataValidationError<BanksValidatableData>) => {
           const log = `\nonValidationError: ${JSON.stringify(data)}\n`;
           console.log(log);
           setIsLoading(false);
@@ -78,7 +84,7 @@ const HeadlessCheckoutWithRedirect = (props: any) => {
         },
       };
 
-      banksComponent = await componentWithRedirectManager.provide(componentWithRedirectManagerProps);
+      banksComponent = await componentWithRedirectManager.provide(banksComponentProps);
       banksComponent?.start();
     })()
   }, []);
@@ -223,18 +229,6 @@ const Bank = ({ item, isValidating, onPay }: {
       )}
     </TouchableOpacity>
   );
-}
-
-function isBankId(data?: BankId | BankListFilter): data is BankId {
-  return (data as BankId).id !== undefined;
-}
-
-function isIssuingBankList(data?: IssuingBank[] | any): data is IssuingBank[] {
-  return (data as IssuingBank[]).length !== undefined;
-}
-
-function isLoadingStep(data?: IssuingBank[] | NamedComponentStep): data is NamedComponentStep {
-  return (data as NamedComponentStep).name === "loading"
 }
 
 export default HeadlessCheckoutWithRedirect;

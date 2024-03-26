@@ -2,6 +2,6 @@ package com.primerioreactnative.datamodels
 
 import kotlinx.serialization.Serializable
 
-internal interface NamedComponentStep {
-    val stepName: String
+internal interface NamedComponentValidatableData {
+    val validatableDataName: String
 }

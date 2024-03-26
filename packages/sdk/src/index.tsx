@@ -62,12 +62,16 @@ import PrimerHeadlessUniversalCheckoutVaultManager from './HeadlessUniversalChec
 export {
   PrimerHeadlessUniversalCheckoutVaultManager as VaultManager
 }
-import { PrimerHeadlessUniversalCheckoutComponentWithRedirectManager, BanksComponent, ComponentWithRedirectManagerProps } from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/ComponentWithRedirectManager';
-export { PrimerHeadlessUniversalCheckoutComponentWithRedirectManager as ComponentWithRedirectManager, BanksComponent, ComponentWithRedirectManagerProps };
+import { PrimerHeadlessUniversalCheckoutComponentWithRedirectManager, BanksComponent, BanksComponentProps } from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/ComponentWithRedirectManager';
+export { PrimerHeadlessUniversalCheckoutComponentWithRedirectManager as ComponentWithRedirectManager, BanksComponent, BanksComponentProps as ComponentWithRedirectManagerProps };
 import { IssuingBank } from './models/IssuingBank';
 export { IssuingBank };
-import { BankId, BankListFilter } from './models/componentWithRedirect/ComponentWithRedirectCollectableData';
-export { BankId, BankListFilter };
+import { BankId, BankListFilter, BanksValidatableData } from './models/banks/BanksCollectableData';
+export { BankId, BankListFilter, BanksValidatableData };
+import { BanksLoading, BanksRetrieved, BanksStep } from './models/banks/BanksSteps';
+export { BanksLoading, BanksRetrieved, BanksStep };
+import { NamedComponentValidatableData } from './models/NamedComponentValidatableData';
+export { NamedComponentValidatableData };
 import { NamedComponentStep } from './models/NamedComponentStep';
 export { NamedComponentStep };
 import { PrimerValidComponentData, PrimerValidatingComponentData, PrimerInvalidComponentData, PrimerComponentDataValidationError } from './models/PrimerComponentDataValidation';
