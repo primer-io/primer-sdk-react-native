@@ -12,8 +12,8 @@ import com.primerioreactnative.components.datamodels.manager.raw.retailOutlets.t
 import com.primerioreactnative.components.events.PrimerHeadlessUniversalCheckoutEvent
 import com.primerioreactnative.datamodels.ErrorTypeRN
 import com.primerioreactnative.datamodels.PrimerErrorRN
-import com.primerioreactnative.utils.convertJsonToMap
 import com.primerioreactnative.utils.errorTo
+import com.primerioreactnative.utils.toWritableMap
 import io.primer.android.ExperimentalPrimerApi
 import io.primer.android.components.SdkUninitializedException
 import io.primer.android.components.domain.exception.UnsupportedPaymentMethodManagerException
@@ -185,7 +185,7 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
   }
 
   private fun prepareData(data: JSONObject?): WritableMap {
-    return data?.let { convertJsonToMap(data) } ?: Arguments.createMap()
+    return data.toWritableMap()
   }
 
   private fun onError(exception: PrimerErrorRN) {

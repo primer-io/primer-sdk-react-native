@@ -91,6 +91,12 @@ export default HeadlessCheckoutVaultScreen = (props: any) => {
         setIsLoading(false);
         navigateToResultScreen();
       },
+      onCheckoutComplete: (checkoutData) => {
+        merchantCheckoutData = checkoutData;
+        updateLogs(`\n✅ onCheckoutComplete\ncheckoutData: ${JSON.stringify(checkoutData, null, 2)}\n`);
+        setIsLoading(false);
+        navigateToResultScreen();
+      },
       onTokenizationSuccess: async (paymentMethodTokenData, handler) => {
         updateLogs(`\nℹ️ onTokenizationSuccess\npaymentMethodTokenData: ${JSON.stringify(paymentMethodTokenData, null, 2)}\n`);
         setIsLoading(false);
@@ -278,11 +284,21 @@ export default HeadlessCheckoutVaultScreen = (props: any) => {
             color: 'black'
           }} onPress={() => setSelectedVaultedPaymentMethod(item)}
           >
-            {'••••' + item.paymentInstrumentData.last4Digits}
+            {getVaultedPaymentData(item)}
           </Text>
         })
       );
     }
+  }
+
+  const getVaultedPaymentData = (item: any) => {
+      const last4Digits = item.paymentInstrumentData.last4Digits
+      if (last4Digits !== undefined) {
+        return '••••' + last4Digits
+      }
+      const email = item.paymentInstrumentData?.sessionData?.billingAddress?.email ?? ""
+      const paymentMethodType = item?.paymentMethodType ?? ""
+      return paymentMethodType + ": " + email;
   }
 
   const renderVaultAdditionalData = () => {
