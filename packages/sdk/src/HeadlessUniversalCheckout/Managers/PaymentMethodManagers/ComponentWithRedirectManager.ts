@@ -10,6 +10,7 @@ import { PrimerComponentDataValidationError, PrimerInvalidComponentData, PrimerV
 import { PrimerError } from 'src/models/PrimerError';
 import { BanksStep } from 'src/models/banks/BanksSteps';
 import { NamedComponentValidatableData } from 'src/models/NamedComponentValidatableData';
+import { EventType, eventTypes } from './Utils/EventType';
 
 const { RNTPrimerHeadlessUniversalCheckoutBanksComponent } =
   NativeModules;
@@ -17,17 +18,6 @@ const { RNTPrimerHeadlessUniversalCheckoutBanksComponent } =
 const eventEmitter = new NativeEventEmitter(
   RNTPrimerHeadlessUniversalCheckoutBanksComponent
 );
-
-type EventType = 'onStep' | 'onError' | 'onInvalid' | 'onValid' | 'onValidating' | 'onValidationError';
-
-const eventTypes: EventType[] = [
-  'onStep',
-  'onError',
-  'onInvalid',
-  'onValid',
-  'onValidating',
-  'onValidationError'
-];
 
 export interface ComponentWithRedirectManagerProps<T extends NamedComponentStep, U extends NamedComponentValidatableData> {
   paymentMethodType: string;
