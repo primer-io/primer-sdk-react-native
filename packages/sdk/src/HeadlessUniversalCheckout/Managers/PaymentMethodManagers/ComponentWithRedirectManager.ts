@@ -10,7 +10,6 @@ import { PrimerComponentDataValidationError, PrimerInvalidComponentData, PrimerV
 import { PrimerError } from 'src/models/PrimerError';
 import { BanksStep } from 'src/models/banks/BanksSteps';
 import { NamedComponentValidatableData } from 'src/models/NamedComponentValidatableData';
-import { ComponentWithRedirectManager } from 'src';
 
 const { RNTPrimerHeadlessUniversalCheckoutBanksComponent } =
   NativeModules;
