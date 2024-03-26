@@ -118,7 +118,7 @@ dependencies {
 
   implementation project(':primerioreactnative')
 
-  implementation "io.primer:3ds-android:1.3.0"
+  implementation "io.primer:3ds-android:1.4.0"
   implementation "io.primer:ipay88-my-android:1.0.1"
   implementation "io.primer:klarna-android:1.0.1"
 
