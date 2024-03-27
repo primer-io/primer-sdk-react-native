@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class PrimerErrorRN(
   val errorId: String? = null,
+  val errorCode: String? = null,
   val description: String? = null,
   val diagnosticsId: String? = null,
   val recoverySuggestion: String? = null
@@ -19,3 +20,10 @@ enum class ErrorTypeRN(val errorId: String) {
   VaultManagerDeleteFailed("vaulted-manager-delete-failed"),
   InvalidVaultedPaymentMethodId("invalid-vaulted-payment-method-id")
 }
+
+@Serializable
+data class PrimerValidationErrorRN(
+  val errorId: String? = null,
+  val description: String? = null,
+  val diagnosticsId: String? = null,
+)

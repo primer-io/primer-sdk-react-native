@@ -243,10 +243,11 @@ class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckou
     if (implementedRNCallbacks?.isOnErrorImplemented == true) {
       sendErrorWithCheckoutData?.invoke(
         PrimerErrorRN(
-          error.errorId,
-          error.description,
-          error.diagnosticsId,
-          error.recoverySuggestion
+          errorId = error.errorId,
+          errorCode = error.errorCode,
+          description = error.description,
+          diagnosticsId = error.diagnosticsId,
+          recoverySuggestion = error.recoverySuggestion
         ), checkoutData?.toPrimerCheckoutDataRN()
       )
     } else {
@@ -258,10 +259,11 @@ class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckou
     if (implementedRNCallbacks?.isOnErrorImplemented == true) {
       sendError?.invoke(
         PrimerErrorRN(
-          error.errorId,
-          error.description,
-          error.diagnosticsId,
-          error.recoverySuggestion
+          errorId = error.errorId,
+          errorCode = error.errorCode,
+          description = error.description,
+          diagnosticsId = error.diagnosticsId,
+          recoverySuggestion = error.recoverySuggestion
         )
       )
     } else {
