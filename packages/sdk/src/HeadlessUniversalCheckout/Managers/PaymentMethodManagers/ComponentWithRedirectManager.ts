@@ -9,7 +9,6 @@ import { IssuingBank } from 'src/models/IssuingBank';
 import { PrimerComponentDataValidationError, PrimerInvalidComponentData, PrimerValidComponentData, PrimerValidatingComponentData } from 'src/models/PrimerComponentDataValidation';
 import { PrimerError } from 'src/models/PrimerError';
 import { BanksStep } from 'src/models/banks/BanksSteps';
-import { NamedComponentValidatableData } from 'src/models/NamedComponentValidatableData';
 import { EventType, eventTypes } from './Utils/EventType';
 
 const { RNTPrimerHeadlessUniversalCheckoutBanksComponent } =
@@ -19,17 +18,15 @@ const eventEmitter = new NativeEventEmitter(
   RNTPrimerHeadlessUniversalCheckoutBanksComponent
 );
 
-export interface ComponentWithRedirectManagerProps<T extends NamedComponentStep, U extends NamedComponentValidatableData> {
+export interface ComponentWithRedirectManagerProps {
   paymentMethodType: string;
-  onStep?: (data: T) => void;
+  onStep?: (data: BanksStep) => void;
   onError?: (error: PrimerError) => void;
-  onInvalid?: (data: PrimerInvalidComponentData<U>) => void;
-  onValid?: (data: PrimerValidComponentData<U>) => void;
-  onValidating?: (data: PrimerValidatingComponentData<U>) => void;
-  onValidationError?: (data: PrimerComponentDataValidationError<U>) => void;
+  onInvalid?: (data: PrimerInvalidComponentData<BanksValidatableData>) => void;
+  onValid?: (data: PrimerValidComponentData<BanksValidatableData>) => void;
+  onValidating?: (data: PrimerValidatingComponentData<BanksValidatableData>) => void;
+  onValidationError?: (data: PrimerComponentDataValidationError<BanksValidatableData>) => void;
 }
-
-export interface BanksComponentProps extends ComponentWithRedirectManagerProps<BanksStep, BanksValidatableData> {}
 
 export interface BanksComponent {
   /**
@@ -74,7 +71,7 @@ export class PrimerHeadlessUniversalCheckoutComponentWithRedirectManager {
   // API
   ///////////////////////////////////////////
 
-  async provide<T extends NamedComponentStep, U extends NamedComponentValidatableData>(props: ComponentWithRedirectManagerProps<T, U>): Promise<BanksComponent | any> {
+  async provide(props: ComponentWithRedirectManagerProps): Promise<BanksComponent | any> {
     await this.configureListeners(props);
 
     if (props.paymentMethodType == "ADYEN_IDEAL") {
@@ -99,7 +96,7 @@ export class PrimerHeadlessUniversalCheckoutComponentWithRedirectManager {
     }
   }
 
-  private async configureListeners<T extends NamedComponentStep, U extends NamedComponentValidatableData>(props: ComponentWithRedirectManagerProps<T, U>): Promise<void> {
+  private async configureListeners(props: ComponentWithRedirectManagerProps): Promise<void> {
     if (props?.onStep) {
       this.addListener('onStep', (data) => {
         props.onStep?.(data);

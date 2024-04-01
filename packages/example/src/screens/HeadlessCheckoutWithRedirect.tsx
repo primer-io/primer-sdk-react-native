@@ -8,6 +8,7 @@ import {
 import { ActivityIndicator } from 'react-native';
 import { 
   ComponentWithRedirectManager, 
+  ComponentWithRedirectManagerProps,
   BanksComponent, 
   IssuingBank, 
   PrimerError, 
@@ -17,7 +18,6 @@ import {
   PrimerValidComponentData, 
   PrimerValidatingComponentData, 
   PrimerComponentDataValidationError, 
-  BanksComponentProps,
 } from '@primer-io/react-native';
 import TextField from '../components/TextField';
 
@@ -33,7 +33,7 @@ const HeadlessCheckoutWithRedirect = (props: any) => {
 
   useEffect(() => {
     (async () => {
-      const banksComponentProps: BanksComponentProps = {
+      const componentWithRedirectManagerProps: ComponentWithRedirectManagerProps = {
         paymentMethodType: props.route.params.paymentMethodType,
         onStep: (data: BanksStep) => {
           const log = `\nonStep: ${JSON.stringify(data)}\n`;
@@ -84,7 +84,7 @@ const HeadlessCheckoutWithRedirect = (props: any) => {
         },
       };
 
-      banksComponent = await componentWithRedirectManager.provide(banksComponentProps);
+      banksComponent = await componentWithRedirectManager.provide(componentWithRedirectManagerProps);
       banksComponent?.start();
     })()
   }, []);
