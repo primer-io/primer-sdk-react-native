@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import PrimerSDK
 
 @objc
 class KlarnaPaymentCategoryRN: NSObject, Codable {
@@ -19,5 +20,14 @@ class KlarnaPaymentCategoryRN: NSObject, Codable {
         self.name = name
         self.descriptiveAssetUrl = descriptiveAssetUrl
         self.standardAssetUrl = standardAssetUrl
+    }
+}
+
+extension KlarnaPaymentCategory {
+    func toKlarnaPaymentCategoryRN() -> KlarnaPaymentCategoryRN {
+        return KlarnaPaymentCategoryRN(identifier: self.id,
+                                       name: self.name,
+                                       descriptiveAssetUrl: self.descriptiveAssetUrl,
+                                       standardAssetUrl: self.descriptiveAssetUrl)
     }
 }

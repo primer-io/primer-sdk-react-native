@@ -15,10 +15,10 @@ protocol KlarnaStepRN {
 /// Session creation
 class PaymentSessionCreatedRN: KlarnaStepRN, Encodable {
     var stepName: String = "paymentSessionCreated"
-    var paymentCategories: [KlarnaPaymentCategory]
+    var paymentCategories: [KlarnaPaymentCategoryRN]
     
     init(paymentCategories: [KlarnaPaymentCategory]) {
-        self.paymentCategories = paymentCategories
+        self.paymentCategories = paymentCategories.map { $0.toKlarnaPaymentCategoryRN() }
     }
 }
 
