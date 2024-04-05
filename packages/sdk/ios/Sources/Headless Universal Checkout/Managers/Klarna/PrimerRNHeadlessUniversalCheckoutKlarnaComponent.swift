@@ -13,7 +13,9 @@ import PrimerSDK
 class RNTPrimerHeadlessUniversalCheckoutKlarnaComponent: RCTEventEmitter {
     
     private var klarnaManager: PrimerHeadlessUniversalCheckout.KlarnaManager = PrimerHeadlessUniversalCheckout.KlarnaManager()
+    private var paymentViewManager = RNTPrimerKlarnaPaymentViewManager()
     var klarnaComponent: (any KlarnaComponent)?
+    var clientToken: String?
     
     override class func requiresMainQueueSetup() -> Bool {
         return true
@@ -117,7 +119,10 @@ class RNTPrimerHeadlessUniversalCheckoutKlarnaComponent: RCTEventEmitter {
             return
         }
         
-        klarnaComponent.updateCollectedData(collectableData: KlarnaCollectableData.paymentCategory(klarnaPaymentCategory, clientToken: ""))
+        DispatchQueue.main.async {
+            klarnaComponent.updateCollectedData(collectableData: KlarnaCollectableData.paymentCategory(klarnaPaymentCategory, clientToken: self.clientToken))
+        }
+        
         resolver(nil)
     }
     
@@ -153,7 +158,8 @@ extension RNTPrimerHeadlessUniversalCheckoutKlarnaComponent: PrimerHeadlessStepp
         guard let step = step as? KlarnaStep else { return }
         
         switch step {
-        case .paymentSessionCreated(_ , let categories):
+        case .paymentSessionCreated(let clientToken , let categories):
+            self.clientToken = clientToken
             let rnSessionCreated = try? step.toPaymentSessionCreatedRN(categories: categories).toJsonObject()
             
             sendEvent(
@@ -186,6 +192,10 @@ extension RNTPrimerHeadlessUniversalCheckoutKlarnaComponent: PrimerHeadlessStepp
             )
             
         case .viewLoaded(let view):
+            let paymentView = PrimerKlarnaPaymentView()
+            paymentView.updateWith(view: view ?? UIView())
+            paymentViewManager.updatePrimerKlarnaPaymentView(view: paymentView)
+            
             let rnPaymentViewLoaded = try? step.toPaymentViewLoadedRN().toJsonObject()
             
             sendEvent(
