@@ -50,6 +50,8 @@ class RNTPrimerHeadlessUniversalCheckoutKlarnaComponent: RCTEventEmitter {
             klarnaComponent?.stepDelegate = self
             klarnaComponent?.errorDelegate = self
             klarnaComponent?.validationDelegate = self
+            
+            resolver(nil)
         } catch {
             rejecter(error.rnError["errorId"]!, error.rnError["description"], error)
         }
@@ -69,6 +71,8 @@ class RNTPrimerHeadlessUniversalCheckoutKlarnaComponent: RCTEventEmitter {
         _ resolver: RCTPromiseResolveBlock,
         rejecter: RCTPromiseRejectBlock
     ) {
+        print("Start Klarna process")
+        
         guard let klarnaComponent = self.klarnaComponent else {
             rejecter("UNINITIALIZED_ERROR", "Klarna component is uninitialized", nil)
             return
@@ -94,16 +98,16 @@ class RNTPrimerHeadlessUniversalCheckoutKlarnaComponent: RCTEventEmitter {
     
     @objc
     public func onSetPaymentOptions(
-        _ dictionary: NSDictionary,
+        _ paymentOptions: NSDictionary,
         resolver: RCTPromiseResolveBlock,
         rejecter: RCTPromiseRejectBlock
     ) {
-        guard let paymentCategoryDict = dictionary["paymentCategory"] as? [String: Any] else {
+        guard let paymentCategoryDict = paymentOptions["paymentCategory"] as? NSDictionary else {
             rejecter("error", "paymentCategory is missing or not a dictionary", nil)
             return
         }
         
-        guard let klarnaPaymentCategory = getDecodedKlarnaPaymentCategory(dictionary) else {
+        guard let klarnaPaymentCategory = getDecodedKlarnaPaymentCategory(paymentCategoryDict) else {
             rejecter("error", "Failed to parse paymentCategory", nil)
             return
         }
@@ -127,8 +131,20 @@ class RNTPrimerHeadlessUniversalCheckoutKlarnaComponent: RCTEventEmitter {
     }
     
     private func getDecodedKlarnaPaymentCategory(_ dictionary: NSDictionary) -> KlarnaPaymentCategory? {
-        guard let jsonData = try? JSONSerialization.data(withJSONObject: dictionary, options: []) else { return nil }
-        return try? JSONDecoder().decode(KlarnaPaymentCategory.self, from: jsonData)
+        let transformedDictionary = transformKey(for: dictionary)
+        guard let jsonData = try? JSONSerialization.data(withJSONObject: transformedDictionary, options: []) else { return nil }
+        let paymentCategory = try? JSONDecoder().decode(KlarnaPaymentCategory.self, from: jsonData)
+        return paymentCategory
+    }
+    
+    private func transformKey(for dictionary: NSDictionary) -> [String: Any] {
+        let transformedDictionary = dictionary.reduce(into: [String: Any]()) { (result, element) in
+            // Check if the current key is "identifier" and change it to "id", otherwise keep the original key
+            let key: String = (element.key as? String) == "identifier" ? "id" : (element.key as? String) ?? ""
+            result[key] = element.value
+        }
+        
+        return transformedDictionary
     }
 }
 
@@ -170,8 +186,6 @@ extension RNTPrimerHeadlessUniversalCheckoutKlarnaComponent: PrimerHeadlessStepp
             )
             
         case .viewLoaded(let view):
-            // Update the PaymentViewManager with the view parameter.
-            
             let rnPaymentViewLoaded = try? step.toPaymentViewLoadedRN().toJsonObject()
             
             sendEvent(
@@ -217,7 +231,7 @@ extension RNTPrimerHeadlessUniversalCheckoutKlarnaComponent: PrimerHeadlessValid
         var serializedData: Any?
         switch data {
         case .paymentCategory(let category, _):
-            let rnPaymentCategory = data.toPaymentCategoryRN(category: category)
+            let rnPaymentCategory = data.toKlarnaPaymentOptionsRN(category: category)
             serializedData = try? ["data": rnPaymentCategory].toJsonObject()
         case .finalizePayment:
             let rnFinalizePayment = data.toFinalizePaymentRN()
