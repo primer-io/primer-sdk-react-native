@@ -244,7 +244,8 @@ const CheckoutScreen = (props: any) => {
                 checkProvidedNetworks: false
             },
             googlePayOptions: {
-             isCaptureBillingAddressEnabled: true
+             isCaptureBillingAddressEnabled: true,
+             isExistingPaymentMethodRequired: true,
             },
             threeDsOptions: {
                 iOS: {

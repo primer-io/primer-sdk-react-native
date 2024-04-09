@@ -11,7 +11,13 @@ fun PrimerPaymentMethodOptionsRN.toPrimerPaymentMethodOptions() = PrimerPaymentM
 )
 
 fun PrimerGooglePayOptionsRN.toPrimerGooglePayOptions() =
-  PrimerGooglePayOptions(merchantName, allowedCardNetworks, buttonStyle, captureBillingAddress)
+  PrimerGooglePayOptions(
+    merchantName = merchantName,
+    allowedCardNetworks = allowedCardNetworks,
+    buttonStyle = buttonStyle,
+    captureBillingAddress = captureBillingAddress,
+    existingPaymentMethodRequired = existingPaymentMethodRequired
+  )
 
 fun PrimerKlarnaOptionsRN.toPrimerKlarnaOptions() =
   PrimerKlarnaOptions(recurringPaymentDescription, webViewTitle)
