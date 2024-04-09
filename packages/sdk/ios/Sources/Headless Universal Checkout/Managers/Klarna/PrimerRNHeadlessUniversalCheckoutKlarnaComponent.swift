@@ -13,7 +13,6 @@ import PrimerSDK
 class RNTPrimerHeadlessUniversalCheckoutKlarnaComponent: RCTEventEmitter {
     
     private var klarnaManager: PrimerHeadlessUniversalCheckout.KlarnaManager = PrimerHeadlessUniversalCheckout.KlarnaManager()
-    private var paymentViewManager = RNTPrimerKlarnaPaymentViewManager()
     var klarnaComponent: (any KlarnaComponent)?
     var clientToken: String?
     
@@ -192,9 +191,9 @@ extension RNTPrimerHeadlessUniversalCheckoutKlarnaComponent: PrimerHeadlessStepp
             )
             
         case .viewLoaded(let view):
-            let paymentView = PrimerKlarnaPaymentView()
-            paymentView.updateWith(view: view ?? UIView())
-            paymentViewManager.updatePrimerKlarnaPaymentView(view: paymentView)
+            DispatchQueue.main.async {
+                RNTPrimerKlarnaPaymentViewManager.updatePrimerKlarnaPaymentView(view)
+            }
             
             let rnPaymentViewLoaded = try? step.toPaymentViewLoadedRN().toJsonObject()
             
@@ -202,6 +201,7 @@ extension RNTPrimerHeadlessUniversalCheckoutKlarnaComponent: PrimerHeadlessStepp
                 withName: PrimerHeadlessUniversalCheckoutComponentEvent.onStep.stringValue,
                 body: rnPaymentViewLoaded
             )
+            
         default:
             break
         }
