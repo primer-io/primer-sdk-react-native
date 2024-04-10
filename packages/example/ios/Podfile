@@ -26,8 +26,7 @@ end
 
 target 'example_0_70_6' do
   config = use_native_modules!
-  use_frameworks!
-  
+
   # Flags change depending on the env values.
   flags = get_default_flags()
 
@@ -44,8 +43,9 @@ target 'example_0_70_6' do
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
-  
+
   pod 'primer-io-react-native', :path => '../../sdk'
+  pod 'PrimerSDK'
   pod 'Primer3DS'
   pod 'PrimerIPay88MYSDK'
   pod 'PrimerKlarnaSDK'
@@ -63,16 +63,16 @@ target 'example_0_70_6' do
       :mac_catalyst_enabled => false
     )
     __apply_Xcode_12_5_M1_post_install_workaround(installer)
-    
+
     fix_code_signing(installer)
-    
+
     installer.pods_project.targets.each do |target|
       if target.name == "primer-io-react-native" || target.name == "PrimerSDK"
         target.build_configurations.each do |config|
           config.build_settings['SWIFT_INCLUDE_PATHS'] = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/Primer3DS ${PODS_CONFIGURATION_BUILD_DIR}/PrimerKlarnaSDK ${PODS_CONFIGURATION_BUILD_DIR}/PrimerIPay88MYSDK"
-          # config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -Xcc -fmodule-map-file="${PODS_CONFIGURATION_BUILD_DIR}/Primer3DS/Primer3DS.modulemap" -Xcc  -fmodule-map-file="${PODS_CONFIGURATION_BUILD_DIR}/PrimerKlarnaSDK/PrimerKlarnaSDK.modulemap" -Xcc  -fmodule-map-file="${PODS_CONFIGURATION_BUILD_DIR}/PrimerIPay88MYSDK/PrimerIPay88MYSDK.modulemap"'
+          config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -Xcc -fmodule-map-file="${PODS_CONFIGURATION_BUILD_DIR}/Primer3DS/Primer3DS.modulemap" -Xcc  -fmodule-map-file="${PODS_CONFIGURATION_BUILD_DIR}/PrimerIPay88MYSDK/PrimerIPay88MYSDK.modulemap"'
 
-          config.build_settings['OTHER_LDFLAGS'] = '$(inherited) -framework "Primer3DS" -framework "PrimerKlarnaSDK" -framework "PrimerIPay88MYSDK"'
+          config.build_settings['OTHER_LDFLAGS'] = '$(inherited) -weak_library -l"Primer3DS" -l"PrimerKlarnaSDK" -l"PrimerIPay88MYSDK"'
         end
       end
     end
@@ -85,7 +85,7 @@ def fix_code_signing(installer)
     project.targets.each do |target|
       if target.respond_to?(:product_type) and target.product_type == "com.apple.product-type.bundle"
       puts "Fixing code signing for #{target.name}..."
-      
+
       target.build_configurations.each do |config|
         config.build_settings["DEVELOPMENT_TEAM"] = "N8UN9TR5DY"
       end
