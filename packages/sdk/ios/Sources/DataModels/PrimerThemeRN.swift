@@ -8,7 +8,11 @@ struct PrimerThemeRN: Decodable {
 extension PrimerThemeRN {
     func asPrimerTheme() -> PrimerTheme {
 
-        guard let colors = colors else {
+        let isDarkMode = UITraitCollection.current.userInterfaceStyle == .dark
+
+        let _colors = isDarkMode ? darkModeColors : colors
+
+        guard let colors = _colors else {
             return PrimerTheme()
         }
 
