@@ -7,19 +7,44 @@ struct PrimerThemeRN: Decodable {
 
 extension PrimerThemeRN {
     func asPrimerTheme() -> PrimerTheme {
-        return PrimerTheme()
+
+        guard let colors = colors else {
+            return PrimerTheme()
+        }
+
+        let data = PrimerThemeData()
+        data.colors = PrimerThemeData.ColorSwatch()
+
+        if let mainColor = colors.mainColor?.uiColor ?? colors.text?.uiColor {
+            data.colors.primary = mainColor
+            data.colors.dark = mainColor
+            data.colors.gray = mainColor
+        }
+        if let disabledColor = colors.disabled?.uiColor {
+            data.colors.lightGray = disabledColor
+            data.buttons.main.disabledColor = disabledColor
+        }
+        if let errorColor = colors.error?.uiColor {
+            data.colors.error = errorColor
+        }
+        if let borderColor = colors.borders?.uiColor {
+            data.buttons.main.border.defaultColor = borderColor
+            data.input.border.defaultColor = borderColor
+        }
+
+        return PrimerTheme(with: data)
     }
 }
 
 struct ColorThemeRN: Decodable {
-    let mainColor: ColorRN?
-    let contrastingColor: ColorRN?
-    let background: ColorRN?
-    let text: ColorRN?
-    let contrastingText: ColorRN?
-    let borders: ColorRN?
-    let disabled: ColorRN?
-    let error: ColorRN?
+    let mainColor: ColorRN? // primary
+    let contrastingColor: ColorRN? // ???
+    let background: ColorRN? // light
+    let text: ColorRN? // primary
+    let contrastingText: ColorRN? // ??
+    let borders: ColorRN? // ??
+    let disabled: ColorRN? // lightGray
+    let error: ColorRN? // error
 }
 
 extension ColorThemeRN {
