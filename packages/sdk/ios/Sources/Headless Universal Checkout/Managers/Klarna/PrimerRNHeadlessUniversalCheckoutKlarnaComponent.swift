@@ -166,13 +166,17 @@ extension RNTPrimerHeadlessUniversalCheckoutKlarnaComponent: PrimerHeadlessStepp
                 body: rnSessionCreated
             )
             
-        case .paymentSessionAuthorized(_ , _):
+        case .paymentSessionAuthorized(_ , let checkoutData):
             let rnSessionAuthorized = try? step.toPaymentSessionAuthorizedRN(isFinalized: true).toJsonObject()
             
             sendEvent(
                 withName: PrimerHeadlessUniversalCheckoutComponentEvent.onStep.stringValue,
                 body: rnSessionAuthorized
             )
+            
+            DispatchQueue.main.async {
+                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(checkoutData)
+            }
             
         case .paymentSessionFinalizationRequired:
             let rnSessionAuthorized = try? step.toPaymentSessionAuthorizedRN(isFinalized: false).toJsonObject()
@@ -182,13 +186,17 @@ extension RNTPrimerHeadlessUniversalCheckoutKlarnaComponent: PrimerHeadlessStepp
                 body: rnSessionAuthorized
             )
             
-        case .paymentSessionFinalized(_ , _):
+        case .paymentSessionFinalized(_ , let checkoutData):
             let rnSessionFinalized = try? step.toPaymentSessionFinalizedRN().toJsonObject()
             
             sendEvent(
                 withName: PrimerHeadlessUniversalCheckoutComponentEvent.onStep.stringValue,
                 body: rnSessionFinalized
             )
+            
+            DispatchQueue.main.async {
+                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(checkoutData)
+            }
             
         case .viewLoaded(let view):
             DispatchQueue.main.async {
