@@ -36,6 +36,10 @@ extension PrimerThemeRN {
             data.input.border.defaultColor = borderColor
         }
 
+        if let backgroundColor = colors.background?.uiColor {
+            data.view.backgroundColor = backgroundColor
+        }
+
         return PrimerTheme(with: data)
     }
 }

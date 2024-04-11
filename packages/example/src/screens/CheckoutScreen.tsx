@@ -263,8 +263,8 @@ const CheckoutScreen = (props: any) => {
             theme: {
                 colors: {
                     mainColor: {
-                        red: 255,
-                        green: 214,
+                        red: 214,
+                        green: 255,
                         blue: 1,
                         alpha: 255
                     },
@@ -283,9 +283,9 @@ const CheckoutScreen = (props: any) => {
                         alpha: 255
                     },
                     background: {
-                        red: 1,
-                        green: 255,
-                        blue: 1,
+                        red: 255,
+                        green: 1,
+                        blue: 255,
                         alpha: 255
                     }
                 }
