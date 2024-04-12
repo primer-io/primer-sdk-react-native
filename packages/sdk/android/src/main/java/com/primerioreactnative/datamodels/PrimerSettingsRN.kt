@@ -76,7 +76,8 @@ data class PrimerGooglePayOptionsRN(
     "VISA"
   ),
   var buttonStyle: GooglePayButtonStyle = GooglePayButtonStyle.BLACK,
-  @SerialName("isCaptureBillingAddressEnabled") var captureBillingAddress: Boolean = false
+  @SerialName("isCaptureBillingAddressEnabled") var captureBillingAddress: Boolean = false,
+  @SerialName("isExistingPaymentMethodRequired") var existingPaymentMethodRequired: Boolean = false
 )
 
 @Serializable

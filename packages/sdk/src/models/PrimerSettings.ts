@@ -111,6 +111,7 @@ interface IPrimerGooglePayOptions {
   merchantName?: string;
   allowedCardNetworks?: string[];
   isCaptureBillingAddressEnabled?: boolean;
+  isExistingPaymentMethodRequired?: boolean;
 }
 
 interface IPrimerKlarnaOptions {

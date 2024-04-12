@@ -79,6 +79,7 @@ export interface IClientSessionPaymentMethodOptions {
             VISA?: IClientSessionPaymentMethodOptionsSurcharge;
             MASTERCARD?: IClientSessionPaymentMethodOptionsSurcharge;
         },
+        captureVaultedCardCvv: boolean;
     },
 }
 
