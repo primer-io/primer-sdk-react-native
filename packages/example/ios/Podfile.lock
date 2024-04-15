@@ -11,19 +11,15 @@ PODS:
     - ReactCommon/turbomodule/core (= 0.72.0)
   - fmt (6.2.1)
   - glog (0.3.5)
-  - KlarnaMobileSDK (2.2.2):
-    - KlarnaMobileSDK/full (= 2.2.2)
-  - KlarnaMobileSDK/full (2.2.2)
-  - primer-io-react-native (2.20.0):
-    - PrimerSDK (= 2.21.0)
+  - primer-io-react-native (2.21.0):
+    - PrimerSDK (= 2.26.0)
     - React-Core
-  - Primer3DS (2.2.0)
+  - Primer3DS (2.3.2)
   - PrimerIPay88MYSDK (0.1.7)
-  - PrimerKlarnaSDK (1.0.4):
-    - KlarnaMobileSDK (= 2.2.2)
-  - PrimerSDK (2.21.0):
-    - PrimerSDK/Core (= 2.21.0)
-  - PrimerSDK/Core (2.21.0)
+  - PrimerKlarnaSDK (1.1.0)
+  - PrimerSDK (2.26.0):
+    - PrimerSDK/Core (= 2.26.0)
+  - PrimerSDK/Core (2.26.0)
   - RCT-Folly (2021.07.22.00):
     - boost
     - DoubleConversion
@@ -423,6 +419,7 @@ DEPENDENCIES:
   - Primer3DS
   - PrimerIPay88MYSDK
   - PrimerKlarnaSDK
+  - PrimerSDK
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
   - RCTTypeSafety (from `../node_modules/react-native/Libraries/TypeSafety`)
@@ -466,7 +463,6 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - fmt
-    - KlarnaMobileSDK
     - Primer3DS
     - PrimerIPay88MYSDK
     - PrimerKlarnaSDK
@@ -570,12 +566,11 @@ SPEC CHECKSUMS:
   FBReactNativeSpec: 6e7e74b1ed7f0a1a469a82a67521b33285f5fef3
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
-  KlarnaMobileSDK: 23b44390d06c6e3a90b5325bea6c10bf97ac6044
-  primer-io-react-native: fc2a5e97d43d9cbc7fef8881f2fc5c9539fc40d5
-  Primer3DS: affa70b17e4b7f8f3bd6110fa88dce24cb5ac4c0
+  primer-io-react-native: 126746c8011a140542efae99945a93d06c514d86
+  Primer3DS: 81e7969033230c7346a517cd609be956914738bb
   PrimerIPay88MYSDK: 436ee0be7e2c97e4e81456ccddee20175e9e3c4d
-  PrimerKlarnaSDK: de4b8b8fda075e3e4ebbd4ab80bd141c76a30d85
-  PrimerSDK: ee8781b2ecb4ecf578d9329ec5fc22083eb24f43
+  PrimerKlarnaSDK: 83e9a1357a7247bf8fa2836fc945cf97644d601d
+  PrimerSDK: ffa6b212c08cab4157bae5f89566ad9f89f2d613
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
   RCTRequired: 656ef0536dd60a9740961ade6a64ba0cb0572d2b
   RCTTypeSafety: 82bd23b63f043d1a6b8e80e72fd15c08e04528a4
@@ -616,6 +611,6 @@ SPEC CHECKSUMS:
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   Yoga: 1d6727ed193122f6adaf435c3de1a768326ff83b
 
-PODFILE CHECKSUM: 73870261e98d8ed4bc79a7995f2ff1edc466043f
+PODFILE CHECKSUM: 2ccfeb204f53b339ccddcb46e657d385a9286c66
 
-COCOAPODS: 1.14.3
+COCOAPODS: 1.15.2
