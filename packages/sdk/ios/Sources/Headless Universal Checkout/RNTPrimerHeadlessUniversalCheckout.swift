@@ -450,7 +450,9 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
                 }
 
                 do {
-                    let checkoutPaymentmethodJson = try data.toJsonObject()
+                    let checkoutPaymentmethodJson = try data
+                        .toPrimerCheckoutPaymentMethodDataRN()
+                        .toJsonObject()
                     self.sendEvent(
                         withName: rnCallbackName,
                         body: checkoutPaymentmethodJson)
