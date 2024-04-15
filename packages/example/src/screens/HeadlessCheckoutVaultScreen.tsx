@@ -292,13 +292,26 @@ export default HeadlessCheckoutVaultScreen = (props: any) => {
   }
 
   const getVaultedPaymentData = (item: any) => {
-      const last4Digits = item.paymentInstrumentData.last4Digits
-      if (last4Digits !== undefined) {
-        return '••••' + last4Digits
-      }
-      const email = item.paymentInstrumentData?.sessionData?.billingAddress?.email ?? ""
       const paymentMethodType = item?.paymentMethodType ?? ""
-      return paymentMethodType + ": " + email;
+      var suffix: string | null = null
+      switch (paymentMethodType) {
+        case "PAYMENT_CARD":
+        case "GOOGLE_PAY":
+        case "APPLE_PAY":
+          const last4Digits = item.paymentInstrumentData.last4Digits
+          if (last4Digits !== undefined) {
+            suffix = "••••" + last4Digits
+          }
+          break;
+        case "PAYPAL":
+          suffix = item.paymentInstrumentData?.externalPayerInfo?.email ?? ""
+          break;
+        case "KLARNA":
+          const billingAddress = item.paymentInstrumentData?.sessionData?.billingAddress
+          suffix = billingAddress?.email ?? ""
+          break;
+      }
+      return paymentMethodType + ": " + (suffix ?? "-");
   }
 
   const renderVaultAdditionalData = () => {
