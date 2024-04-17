@@ -1,9 +1,7 @@
 export type PrimerCheckoutPaymentMethodData = IPrimerCheckoutPaymentMethodData;
 
 interface IPrimerCheckoutPaymentMethodData {
-    /**
-    * @deprecated The method should not be used
-    */
+    * @deprecated use paymentMethod field instead
     paymentMethodType: string;
     
     paymentMethod: string;
