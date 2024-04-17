@@ -38,6 +38,7 @@ const SettingsScreen = ({ navigation }) => {
     const [currency, setCurrency] = React.useState<string>("EUR");
     const [countryCode, setCountryCode] = React.useState<string>("DE");
     const [orderId, setOrderId] = React.useState<string | undefined>(appPaymentParameters.clientSessionRequestBody.orderId);
+    const [captureVaultedCardCvv, setCaptureVaultedCardCvv] = React.useState<string | undefined>(appPaymentParameters.clientSessionRequestBody.paymentMethod?.options?.PAYMENT_CARD?.captureVaultedCardCvv);
 
     const [merchantName, setMerchantName] = React.useState<string | undefined>(appPaymentParameters.merchantName);
 
@@ -125,6 +126,20 @@ const SettingsScreen = ({ navigation }) => {
                         let selectedPaymentHandling = makePaymentHandlingFromIntVal(selectedIndex);
                         setPaymentHandling(selectedPaymentHandling);
                     }}
+                />
+            </View>
+        );
+    }
+
+    const renderRecaptureCvvSection = () => {
+        return (
+            <View style={{ marginTop: 12, marginBottom: 8, flexDirection:'row', alignItems:'center', justifyContent:'left'}}>
+                <Text style={{ ...styles.heading1 }}>
+                    Enable Recapture CVV
+                </Text>
+                <Switch
+                  onValueChange={setCaptureVaultedCardCvv}
+                  value={captureVaultedCardCvv}
                 />
             </View>
         );
@@ -273,6 +288,8 @@ const SettingsScreen = ({ navigation }) => {
                 {renderEnvironmentSection()}
 
                 {renderPaymentHandlingSection()}
+
+                {renderRecaptureCvvSection()}
 
                 {renderOrderSection()}
             </View>
@@ -739,15 +756,16 @@ const SettingsScreen = ({ navigation }) => {
                 currentPaymentMethodOptions.ADYEN_GIROPAY = undefined;
             }
 
-            if (visaSurcharge) {
+            if (visaSurcharge || captureVaultedCardCvv) {
                 currentPaymentMethodOptions.PAYMENT_CARD = {
                     networks: {
                         VISA: {
                             surcharge: {
-                                amount: visaSurcharge
+                                amount: visaSurcharge ?? 0
                             }
                         }
-                    }
+                    },
+                    captureVaultedCardCvv: captureVaultedCardCvv
                 }
             } else {
                 currentPaymentMethodOptions.PAYMENT_CARD = undefined;

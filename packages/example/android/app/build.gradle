@@ -100,9 +100,6 @@ android {
 
 repositories {
   maven {
-    url "${ARTIFACTORY_3DS_URL}"
-  }
-  maven {
     url "${KLARNA_DISTRIBUTION_URL}"
   }
   mavenLocal()
@@ -114,9 +111,9 @@ dependencies {
 
   implementation project(':primerioreactnative')
 
-  implementation "io.primer:3ds-android:1.4.0"
-  implementation "io.primer:ipay88-my-android:1.0.1"
-  implementation "io.primer:klarna-android:1.0.1"
+  implementation "io.primer:3ds-android:1.4.2"
+  implementation "io.primer:ipay88-my-android:1.0.3"
+  implementation "io.primer:klarna-android:1.0.4"
 
   implementation project(path: ':primerioreactnative')
 
