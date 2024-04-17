@@ -82,14 +82,28 @@ class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckou
   override fun onPaymentMethodShowed(paymentMethodType: String) {
     sendEvent?.invoke(
       PrimerHeadlessUniversalCheckoutEvent.ON_PAYMENT_METHOD_SHOW.eventName,
-      JSONObject(Json.encodeToString(PrimerPaymentMethodDataRN(paymentMethodType, paymentMethodType)))
+      JSONObject(
+              Json.encodeToString(
+                  PrimerPaymentMethodDataRN(
+                      paymentMethodType = paymentMethodType,
+                      paymentMethod = paymentMethodType
+                  )
+              )
+          )
     )
   }
 
   override fun onTokenizationStarted(paymentMethodType: String) {
     sendEvent?.invoke(
       PrimerHeadlessUniversalCheckoutEvent.ON_TOKENIZE_START.eventName,
-      JSONObject(Json.encodeToString(PrimerPaymentMethodDataRN(paymentMethodType, paymentMethodType)))
+      JSONObject(
+              Json.encodeToString(
+                  PrimerPaymentMethodDataRN(
+                      paymentMethodType = paymentMethodType,
+                      paymentMethod = paymentMethodType
+                  )
+              )
+          )
     )
   }
 
