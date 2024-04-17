@@ -10,10 +10,12 @@ import PrimerSDK
 
 extension PrimerCheckoutPaymentMethodData {
     func toPrimerCheckoutPaymentMethodDataRN() -> PrimerCheckoutPaymentMethodDataRN {
-        PrimerCheckoutPaymentMethodDataRN(paymentMethodType: self.paymentMethodType.type)
+        PrimerCheckoutPaymentMethodDataRN(paymentMethodType: self.paymentMethodType.type,
+                                          paymentMethod: self.paymentMethodType.type)
     }
 }
 
 struct PrimerCheckoutPaymentMethodDataRN: Codable {
     let paymentMethodType: String
+    let paymentMethod: String
 }
