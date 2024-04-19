@@ -3,4 +3,4 @@ package com.primerioreactnative.datamodels
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class PrimerPaymentMethodDataRN(val paymentMethodType: String)
+data class PrimerPaymentMethodDataRN(val paymentMethodType: String, val paymentMethod: String)
