@@ -1,0 +1,56 @@
+name: Run Jest Tests
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    name: Execute Jest Unit Tests
+
+    steps:
+      - name: Cancel previous run workflows
+        uses: styfle/cancel-workflow-action@0.12.1
+        with:
+          access_token: ${{ github.token }}
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4.0.2
+        with:
+          node-version: '18'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Run Jest Tests
+        run: yarn test
+        env:
+          CI: true
+
+      - name: Create Slack Notification for Test Results
+        if: always()  # This ensures the notification step runs whether the tests pass or fail
+        uses: slackapi/slack-github-action@v1.25.0
+        with:
+          channel-id: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
+          payload-file-path: 'path/to/your/slack/payload.json'  # Define your payload according to your needs
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+
+      - name: Post test results to GitHub PR
+        if: always()  # This ensures the report step runs whether the tests pass or fail
+        run: |
+          echo "Test results summary" >> ${{ github.workspace }}/test-results.md
+          gh pr comment ${{ github.event.pull_request.number }} --body-file ${{ github.workspace }}/test-results.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
