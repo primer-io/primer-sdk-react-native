@@ -1,14 +1,6 @@
 name: Run Jest Tests
 
-on:
-  push:
-    branches:
-      - main
-      - develop
-  pull_request:
-    branches:
-      - main
-      - develop
+on: pull_request
 
 jobs:
   run-tests:
@@ -37,15 +29,6 @@ jobs:
         run: yarn test
         env:
           CI: true
-
-      - name: Create Slack Notification for Test Results
-        if: always()  # This ensures the notification step runs whether the tests pass or fail
-        uses: slackapi/slack-github-action@v1.25.0
-        with:
-          channel-id: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
-          payload-file-path: 'path/to/your/slack/payload.json'  # Define your payload according to your needs
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
       - name: Post test results to GitHub PR
         if: always()  # This ensures the report step runs whether the tests pass or fail
