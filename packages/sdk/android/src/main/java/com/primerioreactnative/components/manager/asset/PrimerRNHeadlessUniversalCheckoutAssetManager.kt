@@ -13,8 +13,8 @@ import com.primerioreactnative.components.datamodels.manager.asset.PrimerRNPayme
 import com.primerioreactnative.components.datamodels.manager.asset.PrimerRNPaymentMethodAssets
 import com.primerioreactnative.components.datamodels.manager.asset.toPrimerRNPaymentMethodAsset
 import com.primerioreactnative.datamodels.ErrorTypeRN
-import com.primerioreactnative.utils.convertJsonToMap
 import com.primerioreactnative.utils.errorTo
+import com.primerioreactnative.utils.toWritableMap
 import io.primer.android.ExperimentalPrimerApi
 import io.primer.android.components.SdkUninitializedException
 import io.primer.android.components.ui.assets.PrimerHeadlessUniversalCheckoutAssetsManager
@@ -52,13 +52,11 @@ internal class PrimerRNHeadlessUniversalCheckoutAssetManager(
               drawableToBitmap(ContextCompat.getDrawable(reactContext, resourceId)!!),
             )
             promise.resolve(
-              convertJsonToMap(
-                JSONObject(
+              JSONObject(
                   Json.encodeToString(
                     PrimerCardNetworkAsset("file://${file.absolutePath}")
                   )
-                )
-              )
+                ).toWritableMap()
             )
           }
       } catch (e: SdkUninitializedException) {
@@ -78,8 +76,7 @@ internal class PrimerRNHeadlessUniversalCheckoutAssetManager(
           paymentMethodTypeStr
         )
       promise.resolve(
-        convertJsonToMap(
-          JSONObject(
+        JSONObject(
             Json.encodeToString(
               PrimerRNPaymentMethodAssetWrapper(
                 paymentMethodAsset.toPrimerRNPaymentMethodAsset(
@@ -87,9 +84,8 @@ internal class PrimerRNHeadlessUniversalCheckoutAssetManager(
                   paymentMethodTypeStr
                 )
               )
-            )
           )
-        )
+        ).toWritableMap()
       )
     } catch (e: SdkUninitializedException) {
       promise.reject(ErrorTypeRN.UnitializedSdkSession.errorId, e.message, e)
@@ -111,18 +107,17 @@ internal class PrimerRNHeadlessUniversalCheckoutAssetManager(
         promise.reject(exception.errorId, exception.description)
       }
       promise.resolve(
-        convertJsonToMap(
-          JSONObject(
+        JSONObject(
             Json.encodeToString(
               PrimerRNPaymentMethodAssets(paymentMethodAssets.map {
                 it.toPrimerRNPaymentMethodAsset(
                   reactContext,
                   it.paymentMethodType
                 )
-              })
+              }
             )
           )
-        )
+        ).toWritableMap()
       )
     } catch (e: SdkUninitializedException) {
       promise.reject(ErrorTypeRN.UnitializedSdkSession.errorId, e.message, e)

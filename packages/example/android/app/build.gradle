@@ -1,5 +1,8 @@
-apply plugin: "com.android.application"
-apply plugin: "com.facebook.react"
+plugins {
+  id 'org.jetbrains.kotlin.android'
+  id 'com.android.application'
+  id 'com.facebook.react'
+}
 
 react {
   /* Folders */

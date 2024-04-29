@@ -11,8 +11,8 @@ import com.primerioreactnative.components.datamodels.manager.vault.toPrimerRNVal
 import com.primerioreactnative.components.datamodels.manager.vault.toPrimerRNVaultedPaymentMethod
 import com.primerioreactnative.components.datamodels.manager.vault.toPrimerVaultedCardAdditionalData
 import com.primerioreactnative.datamodels.ErrorTypeRN
-import com.primerioreactnative.utils.convertJsonToMap
 import com.primerioreactnative.utils.errorTo
+import com.primerioreactnative.utils.toWritableMap
 import io.primer.android.components.manager.vault.PrimerHeadlessUniversalCheckoutVaultManager
 import io.primer.android.components.manager.vault.PrimerHeadlessUniversalCheckoutVaultManagerInterface
 import kotlinx.coroutines.CoroutineScope
@@ -51,15 +51,13 @@ class PrimerRNHeadlessUniversalCheckoutVaultManager(
     vaultScope.launch {
       nativeVaultManager.fetchVaultedPaymentMethods().onSuccess { vaultedPaymentMethods ->
         promise.resolve(
-          convertJsonToMap(
-            JSONObject(
+          JSONObject(
               Json.encodeToString(
                 PrimerRNVaultedPaymentMethods(vaultedPaymentMethods.map {
                   it.toPrimerRNVaultedPaymentMethod()
                 })
               )
-            )
-          )
+          ).toWritableMap()
         )
       }.onFailure { throwable ->
         val exception =
@@ -100,15 +98,13 @@ class PrimerRNHeadlessUniversalCheckoutVaultManager(
         additionalData.toPrimerVaultedCardAdditionalData()
       ).onSuccess { errors ->
         promise.resolve(
-          convertJsonToMap(
-            JSONObject(
+          JSONObject(
               Json.encodeToString(
                 PrimerRNValidationErrors(errors.map {
                   it.toPrimerRNValidationError()
                 })
               )
-            )
-          )
+          ).toWritableMap()
         )
       }.onFailure { throwable ->
         promise.reject(
