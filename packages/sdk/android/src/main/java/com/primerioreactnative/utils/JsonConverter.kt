@@ -15,7 +15,7 @@ internal fun JSONArray?.toWritableArray(): WritableArray =
   this?.let { convertJsonToArray(this) } ?: Arguments.createArray()
 
 @Throws(JSONException::class)
-private fun convertJsonToMap(jsonObject: JSONObject): WritableMap {
+internal fun convertJsonToMap(jsonObject: JSONObject): WritableMap {
   val map = Arguments.createMap()
   val iterator = jsonObject.keys()
   while (iterator.hasNext()) {
@@ -34,7 +34,7 @@ private fun convertJsonToMap(jsonObject: JSONObject): WritableMap {
 }
 
 @Throws(JSONException::class)
-private fun convertJsonToArray(jsonArray: JSONArray): WritableArray {
+internal fun convertJsonToArray(jsonArray: JSONArray): WritableArray {
   val array: WritableArray = Arguments.createArray()
   for (i in 0 until jsonArray.length()) {
     when (val value = jsonArray[i]) {

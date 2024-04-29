@@ -12,6 +12,7 @@ import RawAdyenBancontactCardScreen from './screens/RawAdyenBancontactCardScreen
 import RawRetailOutletScreen from './screens/RawRetailOutletScreen';
 import HeadlessCheckoutVaultScreen from './screens/HeadlessCheckoutVaultScreen';
 import HeadlessCheckoutKlarnaScreen from './screens/HeadlessCheckoutKlarnaScreen';
+import HeadlessCheckoutWithRedirect from './screens/HeadlessCheckoutWithRedirect';
 import { LogBox } from 'react-native';
 
 const Stack = createNativeStackNavigator();
@@ -35,6 +36,7 @@ const App = () => {
           <Stack.Screen name="RawAdyenBancontactCard" component={RawAdyenBancontactCardScreen} />
           <Stack.Screen name="RawRetailOutlet" component={RawRetailOutletScreen} />
           <Stack.Screen name="Klarna" component={HeadlessCheckoutKlarnaScreen} />
+          <Stack.Screen name="HeadlessCheckoutWithRedirect" component={HeadlessCheckoutWithRedirect} />
         </Stack.Navigator>
       </NavigationContainer>
   );

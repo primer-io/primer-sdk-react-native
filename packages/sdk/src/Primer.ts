@@ -224,10 +224,11 @@ async function configureListeners(): Promise<void> {
         RNPrimer.addListener('onError', data => {
           if (data && data.error && data.error.errorId && primerSettings && primerSettings.onError) {
             const errorId: string = data.error.errorId;
+            const errorCode: string | undefined = data.error.errorCode;
             const description: string | undefined = data.error.description;
             const recoverySuggestion: string | undefined = data.error.recoverySuggestion;
             const diagnosticsId: string | undefined = data.error.diagnosticsId;
-            const primerError = new PrimerError(errorId, description || 'Unknown error', recoverySuggestion, diagnosticsId);
+            const primerError = new PrimerError(errorId, errorCode, description || 'Unknown error', recoverySuggestion, diagnosticsId);
             primerSettings.onError(primerError, data.checkoutData || null, errorHandler);
           }
         });
