@@ -20,6 +20,7 @@ import {
   PrimerSettings,
   SessionIntent,
 } from '@primer-io/react-native';
+import SegmentedControl from '@react-native-segmented-control/segmented-control';
 
 let log: string = '';
 let merchantPaymentId: string | null = null;
@@ -28,9 +29,7 @@ let merchantCheckoutAdditionalInfo: CheckoutAdditionalInfo | null = null;
 let merchantPayment: IPayment | null = null;
 let merchantPrimerError: Error | unknown | null = null;
 
-const selectImplemetationType = (
-  paymentMethod: PaymentMethod,
-): Promise<string> => {
+const selectImplementationType = (paymentMethod: PaymentMethod): Promise<string> => {
   return new Promise((resolve, reject) => {
     const buttons: any[] = [];
 
@@ -62,12 +61,9 @@ const selectImplemetationType = (
 export const HeadlessCheckoutScreen = (props: any) => {
   const [isLoading, setIsLoading] = useState(true);
   const [clientSession, setClientSession] = useState<null | any>(null);
-  const [paymentMethods, setPaymentMethods] = useState<
-    undefined | PaymentMethod[]
-  >(undefined);
-  const [paymentMethodsAssets, setPaymentMethodsAssets] = useState<
-    undefined | Asset[]
-  >(undefined);
+  const [paymentMethods, setPaymentMethods] = useState<undefined | PaymentMethod[]>(undefined);
+  const [paymentMethodsAssets, setPaymentMethodsAssets] = useState<undefined | Asset[]>(undefined);
+  const [selectedSessionIntent, setSelectedSessionIntent] = useState<SessionIntent>(SessionIntent.CHECKOUT);
 
   const updateLogs = (str: string) => {
     console.log(str);
@@ -86,7 +82,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
       },
     },
     debugOptions: {
-      is3DSSanityCheckEnabled: false,
+      is3DSSanityCheckEnabled: false
     },
     headlessUniversalCheckoutCallbacks: {
       onAvailablePaymentMethodsLoad: availablePaymentMethods => {
@@ -350,9 +346,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
       if (paymentMethod.paymentMethodManagerCategories.length === 1) {
         pay(paymentMethod, paymentMethod.paymentMethodManagerCategories[0]);
       } else {
-        const selectedImplementationType = await selectImplemetationType(
-          paymentMethod,
-        );
+        const selectedImplementationType = await selectImplementationType(paymentMethod);
         pay(paymentMethod, selectedImplementationType);
       }
     } catch (err) {
@@ -378,9 +372,9 @@ export const HeadlessCheckoutScreen = (props: any) => {
         await createClientSessionIfNeeded();
         const nativeUIManager = new NativeUIManager();
         await nativeUIManager.configure(paymentMethod.paymentMethodType);
-
-        if (paymentMethod.paymentMethodType === 'KLARNA') {
-          await nativeUIManager.showPaymentMethod(SessionIntent.VAULT);
+        console.log("Payment session intent is " + selectedSessionIntent)
+        if (paymentMethod.paymentMethodType === "KLARNA") {
+          props.navigation.navigate('Klarna', { paymentSessionIntent: selectedSessionIntent });
         } else {
           await nativeUIManager.showPaymentMethod(SessionIntent.CHECKOUT);
         }
@@ -440,6 +434,24 @@ export const HeadlessCheckoutScreen = (props: any) => {
       setIsLoading(false);
       console.error(err);
     }
+  };
+
+  const renderSessionIntentSegmentedControl = () => {
+    const values = [SessionIntent.CHECKOUT, SessionIntent.VAULT]
+    return (
+      <View style={{
+        marginVertical: 20,
+      }}>
+        <SegmentedControl
+          values={values}
+          selectedIndex={values.indexOf(selectedSessionIntent)}
+          onChange={(event) => {
+            const selectedIndex = event.nativeEvent.selectedSegmentIndex;
+            setSelectedSessionIntent(values[selectedIndex]);
+          }}
+        />
+      </View>
+    );
   };
 
   const renderPaymentMethodsUI = () => {
@@ -511,7 +523,8 @@ export const HeadlessCheckoutScreen = (props: any) => {
   };
 
   return (
-    <View style={{paddingHorizontal: 24, flex: 1}}>
+    <View style={{ paddingHorizontal: 24, flex: 1 }}>
+      {renderSessionIntentSegmentedControl()}
       {renderPaymentMethodsUI()}
       {renderLoadingOverlay()}
     </View>

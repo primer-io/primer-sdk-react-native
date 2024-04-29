@@ -5,5 +5,6 @@ import com.primerioreactnative.datamodels.PrimerErrorRN
 
 infix fun ErrorTypeRN.errorTo(message: String) = PrimerErrorRN(
   errorId = errorId,
+  errorCode = null,
   description = message
 )

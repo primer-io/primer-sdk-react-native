@@ -215,7 +215,7 @@ class PrimerRNEventListener : PrimerCheckoutListener {
           errorCode = error.errorCode,
           description = error.description,
           diagnosticsId = error.diagnosticsId,
-          recoverySuggestion= error.recoverySuggestion
+          recoverySuggestion = error.recoverySuggestion
         ), checkoutData?.toPrimerCheckoutDataRN()
       )
     } else {

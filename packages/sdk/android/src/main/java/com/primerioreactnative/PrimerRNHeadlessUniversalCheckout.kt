@@ -6,8 +6,8 @@ import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.primerioreactnative.datamodels.*
 import com.primerioreactnative.components.events.PrimerHeadlessUniversalCheckoutEvent
 import com.primerioreactnative.utils.PrimerHeadlessUniversalCheckoutImplementedRNCallbacks
-import com.primerioreactnative.utils.convertJsonToMap
 import com.primerioreactnative.utils.errorTo
+import com.primerioreactnative.utils.toWritableMap
 import io.primer.android.ExperimentalPrimerApi
 import io.primer.android.components.PrimerHeadlessUniversalCheckout
 import kotlinx.serialization.decodeFromString
@@ -156,7 +156,7 @@ class PrimerRNHeadlessUniversalCheckout(
   }
 
   private fun prepareData(data: JSONObject?): WritableMap {
-    return data?.let { convertJsonToMap(data) } ?: Arguments.createMap()
+    return data.toWritableMap()
   }
 
   private companion object {

@@ -24,5 +24,19 @@
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
     </activity>
+    <activity
+      android:name="com.example_0_70_6.DeeplinkReturnActivity"
+      android:exported="true"
+      android:launchMode="singleTop">
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+
+        <data android:scheme="app" />
+        <data android:host="deeplink.return.activity.rn" />
+      </intent-filter>
+    </activity>
   </application>
 </manifest>

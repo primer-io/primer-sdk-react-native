@@ -9,35 +9,35 @@ jobs:
     name: Build and upload app to Appetize 🚀
     steps:
       - name: Cancel previous jobs
-        uses: styfle/cancel-workflow-action@0.11.0
+        uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # v0.12.1
         with:
           access_token: ${{ github.token }}
 
       - name: Git Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@1d96c772d19495a3b5c517cd2bc0cb401ea0529f # v4.1.3
 
       - name: Select Xcode Version
-        uses: maxim-lobanov/setup-xcode@v1
+        uses: maxim-lobanov/setup-xcode@60606e260d2fc5762a71e64e74b2174e8ea3c8bd # v1.6.0
         with:
           xcode-version: '15.2'
 
       - name: Install SSH key
-        uses: shimataro/ssh-key-action@v2
+        uses: shimataro/ssh-key-action@d4fffb50872869abe2d9a9098a6d9c5aa7d16be4 # v2.7.0
         with:
           key: ${{ secrets.SSH_KEY }}
           name: id_rsa_github_actions
           known_hosts: unnecessary
 
-      - uses: webfactory/ssh-agent@v0.7.0
+      - uses: webfactory/ssh-agent@dc588b651fe13675774614f8e6a936a468676387 # 0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
 
-      - uses: ruby/setup-ruby@v1
+      - uses: ruby/setup-ruby@6bd3d993c602f6b675728ebaecb2b569ff86e99b # v1.174.0
         with:
           ruby-version: "2.7"
           bundler-cache: true
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
         with:
           node-version: 18
           cache: 'yarn'
@@ -47,7 +47,7 @@ jobs:
         run: echo "dir=$(npm config get cache)" >> ${GITHUB_OUTPUT}
 
       - name: Cache npm dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
         id: npm-cache
         with:
           path: ${{ steps.npm-cache-dir.outputs.dir }}
@@ -60,7 +60,7 @@ jobs:
           npm config set legacy-peer-deps true
 
       - name: Cache pods
-        uses: actions/cache@v3
+        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
         with:
           path: |
             packages/example/ios/Pods
@@ -74,10 +74,10 @@ jobs:
         run: |
           yarn install
 
-      - name: pod install 
+      - name: pod install
         run: |
           yarn pods
-  
+
       - name: Create main.jsbundle
         run: |
           yarn --cwd packages/example build:ios
@@ -96,14 +96,14 @@ jobs:
           SOURCE_BRANCH: ${{ github.head_ref }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
 
-      - uses: peter-evans/find-comment@v2
+      - uses: peter-evans/find-comment@3eae4d37986fb5a8592848f6a574fdf654e61f9e # v3.1.0
         if: ${{ success() }}
         id: find_comment
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body-includes: Appetize iOS link
 
-      - uses: peter-evans/create-or-update-comment@v2
+      - uses: peter-evans/create-or-update-comment@71345be0265236311c031f5c7866368bd1eff043 # v4.0.0
         if: ${{ success() }}
         with:
           body: |
@@ -120,7 +120,7 @@ jobs:
 
       - name: Slack Success Notification
         if: ${{ success() && github.event.pull_request.base.ref == 'master' }}
-        uses: slackapi/slack-github-action@v1.23.0
+        uses: slackapi/slack-github-action@6c661ce58804a1a20f6dc5fbee7f0381b469e001 # v1.25.0
         with:
           channel-id: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
           payload-file-path: '/var/tmp/appetize-success-link-summary.json'
@@ -134,7 +134,7 @@ jobs:
 
       - name: Slack Notification
         if: ${{ failure() && github.event.pull_request.base.ref == 'master' }}
-        uses: slackapi/slack-github-action@v1.23.0
+        uses: slackapi/slack-github-action@6c661ce58804a1a20f6dc5fbee7f0381b469e001 # v1.25.0
         with:
           channel-id: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
           payload-file-path: '/var/tmp/appetize-failure-link-summary.json'
@@ -142,7 +142,7 @@ jobs:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
       - name: Save Simulator app
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
         id: save_simulator_app_id_step
         with:
           name: PrimerSDK_Debug_Build
@@ -163,13 +163,13 @@ jobs:
             GITLAB_TEMP_PATH: ${{ secrets.GITLAB_APPIUM_PULL_KEY }}
 
       - name: Retrieve Browserstack ID
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@9c19ed7fe5d278cd354c7dfd5d3b88589c7e2395 # v4.1.6
         with:
           name: browserstack_id
           path: /var/tmp
 
       - name: Setup node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
         with:
           node-version: 18
 
@@ -195,7 +195,7 @@ jobs:
       - name: Post detailed summary to Slack channel thread
         if: ${{ failure() && github.event.pull_request.base.ref == 'master' }}
         id: slack_thread
-        uses: slackapi/slack-github-action@v1.23.0
+        uses: slackapi/slack-github-action@6c661ce58804a1a20f6dc5fbee7f0381b469e001 # v1.25.00
         with:
           channel-id: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
           payload-file-path: '/var/tmp/slack_failed_summary.json'
