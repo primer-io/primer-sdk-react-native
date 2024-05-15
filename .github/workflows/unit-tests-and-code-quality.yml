@@ -1,0 +1,50 @@
+name: Unit Tests and Code Quality
+on: push
+jobs:
+  run-unit-tests:
+    name: Run unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          cache: 'yarn'
+          node-version-file: '.nvmrc'
+
+      - name: Install modules
+        run: yarn install --immutable
+
+      - name: Run tests and generate lcov report
+        run: yarn test:unit:coverage:lcov -- --maxWorkers=1
+
+      - uses: actions/upload-artifact@master
+        with:
+          name: coverage-file
+          path: coverage
+
+  sonarcloud:
+    needs:
+      - run-unit-tests
+    name: Run Code checks using Sonar
+    runs-on: macos-13-large
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+      - uses: actions/download-artifact@master
+        with:
+          name: coverage-file
+          path: coverage
+      - name: SonarCloud Scan
+        uses: ./.github/actions/sonar
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
+          sonar-host: https://sonarcloud.io.
+          pull-request-number: ${{ github.event.pull_request.number }}
+          branch: ${{ github.head_ref }}
+          base-branch: ${{ github.base_ref }}
+          pull-request-sha: ${{ github.event.pull_request.head.sha }}
+          coverage-file-name: ./coverage/lcov.info
