@@ -31,7 +31,15 @@ platform :ios do
 ###################### PUBLIC LANES #######################
 
   lane :tests do
-    run_tests(workspace: app_workspace)
+
+    run_tests(workspace: app_workspace,
+              destination: "platform=iOS Simulator,name=iPhone 14 Pro",
+              xcargs: "EXCLUDED_ARCHS[sdk=iphonesimulator*]=arm64",
+              result_bundle: true,
+              code_coverage: true,
+              skip_package_dependencies_resolution: true,
+              output_directory: Dir.pwd + "/test_output"
+     )
   end
 
   lane :ui_tests do

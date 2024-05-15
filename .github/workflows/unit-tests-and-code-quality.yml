@@ -2,10 +2,10 @@ name: Unit Tests and Code Quality
 on: push
 jobs:
   run-unit-tests:
-    name: Run unit tests
+    name: Run RN unit tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -23,6 +23,20 @@ jobs:
           name: coverage-file
           path: coverage
 
+  run-unit-tests-android:
+    name: Run Android unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          cache: 'yarn'
+
+      - name: Install modules
+        run: yarn install --immutable
+
       - uses: ruby/setup-ruby@6bd3d993c602f6b675728ebaecb2b569ff86e99b # v1.174.0
         with:
           ruby-version: "2.7"
@@ -34,11 +48,41 @@ jobs:
       - uses: actions/upload-artifact@master
         with:
           name: coverage-file-android
-          path: package/sdk/android/build/reports/kover
+          path: packages/sdk/android/build/reports
+
+  run-unit-tests-ios:
+    name: Run iOS unit tests
+    runs-on: macos-13-large
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          cache: 'yarn'
+
+      - name: Install modules
+        run: yarn install --immutable
+
+      - name: Run SDK tests
+        uses: ./.github/actions/ios-sdk-tests
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+          known-hosts: ${{ secrets.KNOWN_HOSTS }}
+          match-password: ${{ secrets.MATCH_PASSWORD }}
+          match-git-private-key: ${{ secrets.FASTLANE_PASSWORD }}
+          fastlane-session: ${{ secrets.FASTLANE_SESSION }}
+          fastlane-password: ${{ secrets.FASTLANE_PASSWORD }}
+          match-keychain-name: ${{ secrets.MATCH_KEYCHAIN_NAME }}
+          match-keychain-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
+          coverage-file-name: sonar-coverage.xml
 
   sonarcloud:
     needs:
       - run-unit-tests
+      - run-unit-tests-android
+      - run-unit-tests-ios
     name: Run Code checks using Sonar
     runs-on: macos-13-large
     steps:
@@ -52,7 +96,6 @@ jobs:
       - uses: actions/download-artifact@master
         with:
           name: coverage-file-android
-          path: kover
       - name: SonarCloud Scan
         uses: ./.github/actions/sonar
         with:
@@ -64,4 +107,5 @@ jobs:
           base-branch: ${{ github.base_ref }}
           pull-request-sha: ${{ github.event.pull_request.head.sha }}
           coverage-file-name: ./coverage/lcov.info
-          coverage-file-name-android: ./kover/reportsRelease.xml
+          coverage-file-name-android: ./kover/reportRelease.xml
+          coverage-file-name-ios: sonar-coverage.xml
