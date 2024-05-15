@@ -23,6 +23,11 @@ jobs:
           name: coverage-file
           path: coverage
 
+      - uses: ruby/setup-ruby@6bd3d993c602f6b675728ebaecb2b569ff86e99b # v1.174.0
+        with:
+          ruby-version: "2.7"
+          bundler-cache: true
+
       - name: Run Android unit tests and generate coverage
         run: bundle exec fastlane android run_unit_tests_coverage
 
