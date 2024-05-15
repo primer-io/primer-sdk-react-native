@@ -11,7 +11,10 @@ inputs:
     description: Sonar host URL
     required: true
   coverage-file-name:
-    description: Name of the generic coverage file
+    description: Name of the LCOV coverage file
+    required: true
+  coverage-file-name-android:
+    description: Name of the Kover coverage file
     required: true
   branch:
     description: Branch
@@ -41,6 +44,7 @@ runs:
         echo "sonar.pullrequest.base=${{ inputs.base-branch }}" >> sonar-project.properties
         echo "sonar.scm.revision=${{ inputs.pull-request-sha }}" >> sonar-project.properties
         echo "sonar.javascript.lcov.reportPaths=${{ inputs.coverage-file-name }}" >> sonar-project.properties
+        echo "sonar.coverage.jacoco.xmlReportPaths=${{ inputs.coverage-file-name-android }}" >> sonar-project.properties
     - name: Run Sonar
       shell: bash
       run: |

@@ -23,6 +23,14 @@ jobs:
           name: coverage-file
           path: coverage
 
+      - name: Run Android unit tests and generate coverage
+        run: bundle exec fastlane android run_unit_tests_coverage
+
+      - uses: actions/upload-artifact@master
+        with:
+          name: coverage-file-android
+          path: package/sdk/android/build/reports/kover
+
   sonarcloud:
     needs:
       - run-unit-tests
@@ -36,6 +44,10 @@ jobs:
         with:
           name: coverage-file
           path: coverage
+      - uses: actions/download-artifact@master
+        with:
+          name: coverage-file-android
+          path: kover
       - name: SonarCloud Scan
         uses: ./.github/actions/sonar
         with:
@@ -47,3 +59,4 @@ jobs:
           base-branch: ${{ github.base_ref }}
           pull-request-sha: ${{ github.event.pull_request.head.sha }}
           coverage-file-name: ./coverage/lcov.info
+          coverage-file-name-android: ./kover/reportsRelease.xml

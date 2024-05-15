@@ -84,6 +84,9 @@ platform :android do
        save_browserstack_id(browserstack_id: ENV['BROWSERSTACK_APP_ID'])
     end
 
+    lane :run_unit_tests_coverage do
+        gradle(task: "clean koverXmlReportRelease", project_dir: 'packages/example/android/')
+    end
 
     desc 'Store the Browserstack ID into a file'
     private_lane :save_browserstack_id do |options|
