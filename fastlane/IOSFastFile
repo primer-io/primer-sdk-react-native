@@ -31,10 +31,10 @@ platform :ios do
 ###################### PUBLIC LANES #######################
 
   lane :tests do
-
+    sim_version = options[:sim_version] || "17.2"
     run_tests(workspace: app_workspace,
               scheme: "example_0_70_6Tests",
-              destination: "platform=iOS Simulator,name=iPhone 14 Pro",
+              destination: "OS=#{sim_version},name=iPhone 14 Pro",
               xcargs: "EXCLUDED_ARCHS[sdk=iphonesimulator*]=arm64",
               result_bundle: true,
               code_coverage: true,
