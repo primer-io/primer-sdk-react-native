@@ -35,7 +35,7 @@ platform :ios do
     run_tests(workspace: app_workspace,
               scheme: "example_0_70_6Tests",
               sdk: "iphonesimulator#{sim_version}",
-              destination: "name=iPhone SE (3rd generation) (17.0)",
+              destination: "os=#{sim_version},name=iPhone SE (3rd generation)",
               result_bundle: true,
               code_coverage: true,
               skip_package_dependencies_resolution: true,
