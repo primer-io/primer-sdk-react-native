@@ -30,7 +30,7 @@ platform :ios do
 
 ###################### PUBLIC LANES #######################
 
-  lane :tests do
+  lane :tests do |options|
     sim_version = options[:sim_version] || "17.2"
     run_tests(workspace: app_workspace,
               scheme: "example_0_70_6Tests",
