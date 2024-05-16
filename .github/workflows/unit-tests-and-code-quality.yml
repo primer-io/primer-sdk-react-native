@@ -42,6 +42,11 @@ jobs:
           ruby-version: "2.7"
           bundler-cache: true
 
+      - name: Install packages
+        shell: bash
+        run: |
+          yarn install
+
       - name: Run Android unit tests and generate coverage
         run: bundle exec fastlane android run_unit_tests_coverage
 
