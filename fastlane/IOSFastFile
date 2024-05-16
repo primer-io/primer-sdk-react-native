@@ -31,11 +31,10 @@ platform :ios do
 ###################### PUBLIC LANES #######################
 
   lane :tests do |options|
-    sim_version = options[:sim_version] || "17.2"
     run_tests(workspace: app_workspace,
               scheme: "example_0_70_6Tests",
               sdk: "iphonesimulator#{sim_version}",
-              destination: "os=#{sim_version},name=iphone 14 pro",
+              destination: "iPhone SE (3rd generation)",
               result_bundle: true,
               code_coverage: true,
               skip_package_dependencies_resolution: true,
