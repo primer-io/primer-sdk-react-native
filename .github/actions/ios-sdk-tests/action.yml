@@ -84,7 +84,3 @@ runs:
       run: |
         bash scripts/xccov-to-sonarqube-generic.sh fastlane/test_output/example_0_70_6Tests.xcresult/ > coverage.xml
         sed "s#$PWD/##g" coverage.xml > ${{ inputs.coverage-file-name }}
-    - uses: actions/upload-artifact@master
-      with:
-        name: coverage-file-ios
-        path: ${{ inputs.coverage-file-name }}
