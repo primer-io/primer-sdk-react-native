@@ -65,3 +65,8 @@ lib/
 
 # npm
 .npmrc
+
+# files
+**/coverage/*
+**/coverage.json
+.nyc_output/

@@ -17,7 +17,7 @@ jobs:
 
       - uses: ruby/setup-ruby@6bd3d993c602f6b675728ebaecb2b569ff86e99b # v1.174.0
         with:
-          ruby-version: "2.7"
+          ruby-version: "3.2"
           bundler-cache: true
 
       - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
