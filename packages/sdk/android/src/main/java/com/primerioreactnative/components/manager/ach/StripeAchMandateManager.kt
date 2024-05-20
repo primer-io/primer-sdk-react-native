@@ -17,42 +17,27 @@ class StripeAchMandateManager(
 
     @ReactMethod
     fun acceptMandate(promise: Promise) {
-        val lifecycleScope = getLifecycleScopeOrNull()
-
-        if (lifecycleScope == null) {
-            val exception = ErrorTypeRN.NativeBridgeFailed errorTo UNSUPPORTED_ACTIVITY_ERROR
-            promise.reject(exception.errorId, exception.description)
-        } else {
-            lifecycleScope.launch {
-                val function = StripeAchMandateManager.Companion.acceptMandate
-                if (function == null) {
-                    val exception =
-                            ErrorTypeRN.NativeBridgeFailed errorTo UNITIALIZED_ACCEPT_MANDATE
-                    promise.reject(exception.errorId, exception.description)
-                } else {
-                    function()
-                    promise.resolve(null)
-                }
-            }
-        }
+        executeMandateAction(promise, StripeAchMandateManager.Companion.acceptMandate, UNITIALIZED_ACCEPT_MANDATE)
     }
-
+    
     @ReactMethod
     fun declineMandate(promise: Promise) {
+        executeMandateAction(promise, StripeAchMandateManager.Companion.declineMandate, UNITIALIZED_DECLINE_MANDATE)
+    }
+    
+    private fun executeMandateAction(promise: Promise, action: (suspend () -> Unit)?, error: String) {
         val lifecycleScope = getLifecycleScopeOrNull()
-
+    
         if (lifecycleScope == null) {
             val exception = ErrorTypeRN.NativeBridgeFailed errorTo UNSUPPORTED_ACTIVITY_ERROR
             promise.reject(exception.errorId, exception.description)
         } else {
             lifecycleScope.launch {
-                val function = StripeAchMandateManager.Companion.declineMandate
-                if (function == null) {
-                    val exception =
-                            ErrorTypeRN.NativeBridgeFailed errorTo UNITIALIZED_DECLINE_MANDATE
+                if (action == null) {
+                    val exception = ErrorTypeRN.NativeBridgeFailed errorTo error
                     promise.reject(exception.errorId, exception.description)
                 } else {
-                    function()
+                    action()
                     promise.resolve(null)
                 }
             }
