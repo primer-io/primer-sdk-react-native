@@ -291,13 +291,17 @@ class RNTPrimer: RCTEventEmitter {
             var body: [String: Any] = ["error": error.rnError]
             if let checkoutData = checkoutData,
                let data = try? JSONEncoder().encode(checkoutData),
-               let json = try? JSONSerialization.jsonObject(with: data){
+               let json = try? JSONSerialization.jsonObject(with: data) {
                 body["checkoutData"] = json
             }
-            print(body)
-            self.sendEvent(withName: PrimerEvents.onError.stringValue, body: body)
+            if self.bridge != nil {
+                self.sendEvent(withName: PrimerEvents.onError.stringValue, body: body)
+            } else {
+                print("Bridge is not set")
+            }
         }
     }
+
 }
 
 // MARK: - PRIMER DELEGATE

@@ -180,4 +180,3 @@ extension RNTPrimerHeadlessUniversalCheckoutBanksComponent: PrimerHeadlessErrora
             body: serializedData)
     }
 }
-
