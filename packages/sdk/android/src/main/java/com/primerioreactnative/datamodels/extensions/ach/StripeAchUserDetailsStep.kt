@@ -4,7 +4,7 @@ import com.primerioreactnative.datamodels.ach.StripeAchUserDetailsStepRN
 import io.primer.android.components.presentation.paymentMethods.nativeUi.stripe.ach.composable.StripeAchUserDetailsStep
 
 internal fun StripeAchUserDetailsStep.TokenizationStarted.toTokenizationStartedRN() =
-    StripeAchUserDetailsStepRN.TokenizationStartedRN()
+    StripeAchUserDetailsStepRN.TokenizationStartedRN
 
 internal fun StripeAchUserDetailsStep.CollectUserDetails.toCollectUserDetailsRN() =
     StripeAchUserDetailsStepRN.CollectUserDetailsRN(

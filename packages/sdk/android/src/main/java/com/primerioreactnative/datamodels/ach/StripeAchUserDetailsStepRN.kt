@@ -7,7 +7,7 @@ import com.primerioreactnative.datamodels.PrimerIssuingBankRN
 @Serializable
 internal sealed interface StripeAchUserDetailsStepRN : NamedComponentStep {
     @Serializable
-    class TokenizationStartedRN : StripeAchUserDetailsStepRN {
+    object TokenizationStartedRN : StripeAchUserDetailsStepRN {
         override val stepName: String = "tokenizationStarted"
     }
 
