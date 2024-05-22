@@ -1,7 +1,6 @@
 package com.primerioreactnative.extensions
 
 import com.primerioreactnative.datamodels.PrimerUIOptionsRN
-import io.primer.android.ui.settings.PrimerTheme
 import io.primer.android.ui.settings.PrimerUIOptions
 
 internal fun PrimerUIOptionsRN.toPrimerUIOptions() =
@@ -9,5 +8,5 @@ internal fun PrimerUIOptionsRN.toPrimerUIOptions() =
     isInitScreenEnabled,
     isSuccessScreenEnabled,
     isErrorScreenEnabled,
-    PrimerTheme.build()
+    theme.toPrimerTheme()
   )
