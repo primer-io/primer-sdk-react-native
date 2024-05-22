@@ -19,7 +19,7 @@ extension PrimerThemeRN {
         let data = PrimerThemeData()
         data.colors = PrimerThemeData.ColorSwatch()
 
-        if let mainColor = colors.mainColor?.uiColor ?? colors.text?.uiColor {
+        if let mainColor = colors.text?.uiColor ?? colors.mainColor?.uiColor {
             data.colors.primary = mainColor
             data.colors.dark = mainColor
             data.colors.gray = mainColor
