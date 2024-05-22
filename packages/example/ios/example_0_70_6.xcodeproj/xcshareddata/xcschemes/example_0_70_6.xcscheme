@@ -38,6 +38,17 @@
                ReferencedContainer = "container:example_0_70_6.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "F0C3A33E2BF60743002E6AC4"
+               BuildableName = "ios_sdk_tests.xctest"
+               BlueprintName = "ios_sdk_tests"
+               ReferencedContainer = "container:example_0_70_6.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

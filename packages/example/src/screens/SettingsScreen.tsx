@@ -77,6 +77,7 @@ const SettingsScreen = ({ navigation }) => {
                     Environment
                 </Text>
                 <SegmentedControl
+                    testID="Enviroment"
                     style={{ marginTop: 6 }}
                     values={['Dev', 'Sandbox', 'Staging', 'Production']}
                     selectedIndex={environment}
@@ -88,6 +89,7 @@ const SettingsScreen = ({ navigation }) => {
                 />
                 <TextField
                     title='API Key'
+                    testID="ApiKey"
                     style={{ marginVertical: 8 }}
                     value={apiKey}
                     placeholder={'Set API key'}
@@ -623,6 +625,7 @@ const SettingsScreen = ({ navigation }) => {
         return (
             <View>
                 <TouchableOpacity
+                    testID='PrimerSDK'
                     style={{ ...styles.button, marginVertical: 5, backgroundColor: 'black' }}
                     onPress={() => {
                         updateAppPaymentParameters();
@@ -638,6 +641,7 @@ const SettingsScreen = ({ navigation }) => {
                 </TouchableOpacity>
 
                 <TouchableOpacity
+                    testID='HeadlessUniversalCheckout'
                     style={{ ...styles.button, marginVertical: 5, backgroundColor: 'black' }}
                     onPress={() => {
                         updateAppPaymentParameters();

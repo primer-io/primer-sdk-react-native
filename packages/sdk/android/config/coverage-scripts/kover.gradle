@@ -1,0 +1,26 @@
+apply plugin: 'org.jetbrains.kotlinx.kover'
+
+subprojects {
+    koverReport {
+        filters {
+            excludes {
+                packages(
+                        '**.example.**',
+                )
+            }
+        }
+        androidReports("release") {
+            verify {
+                rule {
+                    // add lower bound for percentage of covered lines
+                    minBound(80)
+
+                    // add upper bound for percentage of covered lines
+                    maxBound(100)
+                }
+            }
+        }
+    }
+
+    tasks["koverXmlReportRelease"].dependsOn "testReleaseUnitTest"
+}

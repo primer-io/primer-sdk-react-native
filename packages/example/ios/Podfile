@@ -48,7 +48,7 @@ target 'example_0_70_6' do
   pod 'PrimerSDK'
   pod 'Primer3DS'
   pod 'PrimerIPay88MYSDK'
-  pod 'PrimerKlarnaSDK'
+  pod 'PrimerKlarnaSDK', '1.1.0'
 
   target 'example_0_70_6Tests' do
     inherit! :complete

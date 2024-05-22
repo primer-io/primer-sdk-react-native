@@ -1,0 +1,128 @@
+name: Unit Tests and Code Quality
+on: push
+jobs:
+  run-unit-tests:
+    name: Run RN unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        with:
+          cache: 'yarn'
+
+      - name: Install modules
+        run: yarn install --immutable
+
+      - name: Run tests and generate lcov report
+        run: yarn test:unit:coverage:lcov -- --maxWorkers=1
+
+      - uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
+        with:
+          name: coverage-file-rn
+          path: coverage
+
+  run-unit-tests-android:
+    name: Run Android unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        with:
+          cache: 'yarn'
+
+      - name: Install modules
+        run: yarn install --immutable
+
+      - uses: ruby/setup-ruby@6bd3d993c602f6b675728ebaecb2b569ff86e99b # v1.174.0
+        with:
+          ruby-version: "3.2"
+          bundler-cache: true
+
+      - name: Install packages
+        shell: bash
+        run: |
+          yarn install
+
+      - name: Run Android unit tests and generate coverage
+        run: bundle exec fastlane android run_unit_tests_coverage
+
+      - uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
+        with:
+          name: coverage-file-android
+          path: packages/sdk/android/build/reports
+
+  run-unit-tests-ios:
+    name: Run iOS unit tests
+    runs-on: macos-13-large
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        with:
+          cache: 'yarn'
+
+      - name: Install modules
+        run: yarn install --immutable
+
+      - name: Run SDK tests
+        uses: ./.github/actions/ios-sdk-tests
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+          known-hosts: ${{ secrets.KNOWN_HOSTS }}
+          match-password: ${{ secrets.MATCH_PASSWORD }}
+          match-git-private-key: ${{ secrets.FASTLANE_PASSWORD }}
+          fastlane-session: ${{ secrets.FASTLANE_SESSION }}
+          fastlane-password: ${{ secrets.FASTLANE_PASSWORD }}
+          match-keychain-name: ${{ secrets.MATCH_KEYCHAIN_NAME }}
+          match-keychain-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
+          coverage-file-name: sonar-coverage.xml
+
+      - uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
+        with:
+          name: coverage-file-ios
+          path: sonar-coverage.xml
+
+  sonarcloud:
+    needs:
+      - run-unit-tests
+      - run-unit-tests-android
+      - run-unit-tests-ios
+    name: Run Code checks using Sonar
+    runs-on: macos-13-large
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+
+      - uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e # v4.1.7
+        with:
+          name: coverage-file-rn
+          path: coverage
+
+      - uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e # v4.1.7
+        with:
+          name: coverage-file-android
+
+      - uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e # v4.1.7
+        with:
+          name: coverage-file-ios
+
+      - name: SonarCloud Scan
+        uses: ./.github/actions/sonar
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
+          sonar-host: https://sonarcloud.io.
+          pull-request-number: ${{ github.event.pull_request.number }}
+          branch: ${{ github.head_ref }}
+          base-branch: ${{ github.base_ref }}
+          pull-request-sha: ${{ github.event.pull_request.head.sha }}
+          coverage-file-name: ./coverage/lcov.info
+          coverage-file-name-android: ./kover/reportRelease.xml
+          coverage-file-name-ios: sonar-coverage.xml

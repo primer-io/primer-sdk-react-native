@@ -8,6 +8,9 @@ import com.primerioreactnative.components.manager.asset.PrimerRNHeadlessUniversa
 import com.primerioreactnative.components.manager.nativeUi.PrimerRNHeadlessUniversalCheckoutNativeUiManager
 import com.primerioreactnative.components.manager.raw.PrimerRNHeadlessUniversalCheckoutRawManager
 import com.primerioreactnative.components.manager.vault.PrimerRNHeadlessUniversalCheckoutVaultManager
+import com.primerioreactnative.components.manager.redirect.PrimerRNHeadlessUniversalCheckoutBanksComponent
+import com.primerioreactnative.components.manager.klarna.PrimerRNHeadlessUniversalCheckoutKlarnaComponent
+import com.primerioreactnative.components.manager.klarna.PrimerKlarnaPaymentViewManager
 import kotlinx.serialization.json.Json
 
 class ReactNativePackage : ReactPackage {
@@ -21,7 +24,11 @@ class ReactNativePackage : ReactPackage {
       PrimerRNHeadlessUniversalCheckoutRawManager(reactContext, json),
       PrimerRNHeadlessUniversalCheckoutNativeUiManager(reactContext),
       PrimerRNHeadlessUniversalCheckoutAssetManager(reactContext),
-      PrimerRNHeadlessUniversalCheckoutVaultManager(reactContext, json)
+      PrimerRNHeadlessUniversalCheckoutVaultManager(reactContext, json),
+      PrimerRNHeadlessUniversalCheckoutKlarnaComponent(reactContext),
+      //region Component with redirect components
+      PrimerRNHeadlessUniversalCheckoutBanksComponent(reactContext)
+      //endregion
     )
   }
 
@@ -31,6 +38,7 @@ class ReactNativePackage : ReactPackage {
       PrimerCardholderNameEditTextManager(),
       PrimerExpiryEditTextManager(),
       PrimerCvvEditTextManager(),
+      PrimerKlarnaPaymentViewManager(reactContext)
     )
   }
 }

@@ -52,10 +52,11 @@ internal class PrimerRNHeadlessUniversalCheckoutNativeUiManager(
 
     if (::nativeUiManager.isInitialized.not()) {
       val exception = PrimerErrorRN(
-        ErrorTypeRN.NativeBridgeFailed.errorId,
-        "The NativeUIManager has not been initialized.",
-        null,
-        "Initialize the NativeUIManager by calling the configure function" +
+        errorId = ErrorTypeRN.NativeBridgeFailed.errorId,
+        errorCode = null,
+        description = "The NativeUIManager has not been initialized.",
+        diagnosticsId = null,
+        recoverySuggestion = "Initialize the NativeUIManager by calling the configure function" +
           " and providing a payment method type."
       )
       promise.reject(exception.errorId, exception.description)
@@ -63,10 +64,11 @@ internal class PrimerRNHeadlessUniversalCheckoutNativeUiManager(
         .firstOrNull { intentStr.equals(it.name, true) } == null
     ) {
       val exception = PrimerErrorRN(
-        ErrorTypeRN.NativeBridgeFailed.errorId,
-        "Invalid value for 'intent'.",
-        null,
-        "'intent' can be 'CHECKOUT' or 'VAULT'."
+        errorId = ErrorTypeRN.NativeBridgeFailed.errorId,
+        errorCode = null,
+        description = "Invalid value for 'intent'.",
+        diagnosticsId = null,
+        recoverySuggestion = "'intent' can be 'CHECKOUT' or 'VAULT'."
       )
       promise.reject(exception.errorId, exception.description)
     } else {

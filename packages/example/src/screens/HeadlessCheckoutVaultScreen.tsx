@@ -91,6 +91,12 @@ export default HeadlessCheckoutVaultScreen = (props: any) => {
         setIsLoading(false);
         navigateToResultScreen();
       },
+      onCheckoutComplete: (checkoutData) => {
+        merchantCheckoutData = checkoutData;
+        updateLogs(`\n✅ onCheckoutComplete\ncheckoutData: ${JSON.stringify(checkoutData, null, 2)}\n`);
+        setIsLoading(false);
+        navigateToResultScreen();
+      },
       onTokenizationSuccess: async (paymentMethodTokenData, handler) => {
         updateLogs(`\nℹ️ onTokenizationSuccess\npaymentMethodTokenData: ${JSON.stringify(paymentMethodTokenData, null, 2)}\n`);
         setIsLoading(false);
@@ -278,11 +284,34 @@ export default HeadlessCheckoutVaultScreen = (props: any) => {
             color: 'black'
           }} onPress={() => setSelectedVaultedPaymentMethod(item)}
           >
-            {'••••' + item.paymentInstrumentData.last4Digits}
+            {getVaultedPaymentData(item)}
           </Text>
         })
       );
     }
+  }
+
+  const getVaultedPaymentData = (item: any) => {
+      const paymentMethodType = item?.paymentMethodType ?? ""
+      var suffix: string | null = null
+      switch (paymentMethodType) {
+        case "PAYMENT_CARD":
+        case "GOOGLE_PAY":
+        case "APPLE_PAY":
+          const last4Digits = item.paymentInstrumentData.last4Digits
+          if (last4Digits !== undefined) {
+            suffix = "••••" + last4Digits
+          }
+          break;
+        case "PAYPAL":
+          suffix = item.paymentInstrumentData?.externalPayerInfo?.email ?? ""
+          break;
+        case "KLARNA":
+          const billingAddress = item.paymentInstrumentData?.sessionData?.billingAddress
+          suffix = billingAddress?.email ?? ""
+          break;
+      }
+      return paymentMethodType + ": " + (suffix ?? "-");
   }
 
   const renderVaultAdditionalData = () => {

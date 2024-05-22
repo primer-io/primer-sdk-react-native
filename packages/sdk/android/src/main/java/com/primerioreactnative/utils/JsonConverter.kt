@@ -7,6 +7,13 @@ import org.json.JSONException
 
 import org.json.JSONObject
 
+
+internal fun JSONObject?.toWritableMap(): WritableMap =
+  this?.let { convertJsonToMap(this) } ?: Arguments.createMap()
+
+internal fun JSONArray?.toWritableArray(): WritableArray =
+  this?.let { convertJsonToArray(this) } ?: Arguments.createArray()
+
 @Throws(JSONException::class)
 internal fun convertJsonToMap(jsonObject: JSONObject): WritableMap {
   val map = Arguments.createMap()
@@ -27,7 +34,7 @@ internal fun convertJsonToMap(jsonObject: JSONObject): WritableMap {
 }
 
 @Throws(JSONException::class)
-private fun convertJsonToArray(jsonArray: JSONArray): WritableArray {
+internal fun convertJsonToArray(jsonArray: JSONArray): WritableArray {
   val array: WritableArray = Arguments.createArray()
   for (i in 0 until jsonArray.length()) {
     when (val value = jsonArray[i]) {

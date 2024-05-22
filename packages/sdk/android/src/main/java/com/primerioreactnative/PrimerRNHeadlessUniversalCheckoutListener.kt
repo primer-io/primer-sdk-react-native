@@ -10,8 +10,8 @@ import com.primerioreactnative.extensions.toPrimerCheckoutDataRN
 import com.primerioreactnative.extensions.toPrimerClientSessionRN
 import com.primerioreactnative.extensions.toPrimerPaymentMethodDataRN
 import com.primerioreactnative.utils.PrimerHeadlessUniversalCheckoutImplementedRNCallbacks
-import com.primerioreactnative.utils.convertJsonToMap
 import com.primerioreactnative.utils.errorTo
+import com.primerioreactnative.utils.toWritableMap
 import io.primer.android.completion.PrimerHeadlessUniversalCheckoutResumeDecisionHandler
 import io.primer.android.completion.PrimerPaymentCreationDecisionHandler
 import io.primer.android.components.PrimerHeadlessUniversalCheckoutListener
@@ -61,28 +61,49 @@ class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckou
       availablePaymentMethods
     )
     successCallback?.resolve(
-      convertJsonToMap(availablePaymentMethods)
+      availablePaymentMethods.toWritableMap()
     )
   }
 
   override fun onPreparationStarted(paymentMethodType: String) {
     sendEvent?.invoke(
       PrimerHeadlessUniversalCheckoutEvent.ON_PREPARE_START.eventName,
-      JSONObject(Json.encodeToString(PrimerPaymentMethodDataRN(paymentMethodType)))
+      JSONObject(
+              Json.encodeToString(
+                  PrimerPaymentMethodDataRN(
+                      paymentMethodType = paymentMethodType,
+                      paymentMethod = paymentMethodType
+                  )
+              )
+          )
     )
   }
 
   override fun onPaymentMethodShowed(paymentMethodType: String) {
     sendEvent?.invoke(
       PrimerHeadlessUniversalCheckoutEvent.ON_PAYMENT_METHOD_SHOW.eventName,
-      JSONObject(Json.encodeToString(PrimerPaymentMethodDataRN(paymentMethodType)))
+      JSONObject(
+              Json.encodeToString(
+                  PrimerPaymentMethodDataRN(
+                      paymentMethodType = paymentMethodType,
+                      paymentMethod = paymentMethodType
+                  )
+              )
+          )
     )
   }
 
   override fun onTokenizationStarted(paymentMethodType: String) {
     sendEvent?.invoke(
       PrimerHeadlessUniversalCheckoutEvent.ON_TOKENIZE_START.eventName,
-      JSONObject(Json.encodeToString(PrimerPaymentMethodDataRN(paymentMethodType)))
+      JSONObject(
+              Json.encodeToString(
+                  PrimerPaymentMethodDataRN(
+                      paymentMethodType = paymentMethodType,
+                      paymentMethod = paymentMethodType
+                  )
+              )
+          )
     )
   }
 
@@ -243,10 +264,11 @@ class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckou
     if (implementedRNCallbacks?.isOnErrorImplemented == true) {
       sendErrorWithCheckoutData?.invoke(
         PrimerErrorRN(
-          error.errorId,
-          error.description,
-          error.diagnosticsId,
-          error.recoverySuggestion
+          errorId = error.errorId,
+          errorCode = error.errorCode,
+          description = error.description,
+          diagnosticsId = error.diagnosticsId,
+          recoverySuggestion = error.recoverySuggestion
         ), checkoutData?.toPrimerCheckoutDataRN()
       )
     } else {
@@ -258,10 +280,11 @@ class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckou
     if (implementedRNCallbacks?.isOnErrorImplemented == true) {
       sendError?.invoke(
         PrimerErrorRN(
-          error.errorId,
-          error.description,
-          error.diagnosticsId,
-          error.recoverySuggestion
+          errorId = error.errorId,
+          errorCode = error.errorCode,
+          description = error.description,
+          diagnosticsId = error.diagnosticsId,
+          recoverySuggestion = error.recoverySuggestion
         )
       )
     } else {
