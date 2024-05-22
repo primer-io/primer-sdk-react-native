@@ -56,7 +56,7 @@ data class PrimerThemeRN(
   fun toPrimerTheme(): PrimerTheme {
     val isDarkMode = false
 
-    return PrimerTheme.buildRN(
+    return PrimerTheme.buildWithDynamicValues(
       isDarkMode = isDarkMode,
       mainColor = when {
         isDarkMode -> darkModeColors?.mainColor?.toHexStrColor()
