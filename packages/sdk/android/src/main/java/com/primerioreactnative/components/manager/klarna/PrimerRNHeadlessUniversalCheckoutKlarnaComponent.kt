@@ -259,12 +259,12 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaComponent(
         val returnIntentUrl = readableMap.getString("returnIntentUrl")
         val paymentCategory = readableMap.getMap("paymentCategory") as ReadableMap
         val json = Json { ignoreUnknownKeys = true }
-        val KlarnaPaymentCategoryRN =
+        val klarnaPaymentCategoryRN =
             json.decodeFromString<KlarnaPaymentCategoryRN>(
                 Json.encodeToString(paymentCategory.toHashMap() as Map<String, String>)
             )
 
-        val activity = getCurrentActivity()
+        val activity = currentActivity
 
         if (activity == null) {
             val exception = ErrorTypeRN.NativeBridgeFailed errorTo MISSING_ACTIVITY_ERROR
@@ -277,7 +277,7 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaComponent(
                 KlarnaPaymentCollectableData.PaymentOptions(
                     context = activity,
                     returnIntentUrl = requireNotNull(returnIntentUrl),
-                    paymentCategory = KlarnaPaymentCategoryRN.toKlarnaPaymentCategory()
+                    paymentCategory = klarnaPaymentCategoryRN.toKlarnaPaymentCategory()
                 )
             )
             promise.resolve(null)
@@ -326,8 +326,6 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaComponent(
                 """
             Could not retrieve running activity from context.
             """
-
-        val TAG = PrimerRNHeadlessUniversalCheckoutKlarnaComponent::class.simpleName
 
         val json by lazy { Json { encodeDefaults = true } }
     }
