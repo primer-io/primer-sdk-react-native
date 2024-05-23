@@ -4,19 +4,19 @@ import com.primerioreactnative.datamodels.NamedComponentValidatableData
 import kotlinx.serialization.Serializable
 
 @Serializable
-internal sealed interface StripeAchUserDetailsCollectableDataRN : NamedComponentValidatableData {
+internal sealed interface AchUserDetailsCollectableDataRN : NamedComponentValidatableData {
     @Serializable
-    data class FirstNameRN(val value: String) : StripeAchUserDetailsCollectableDataRN {
+    data class FirstNameRN(val value: String) : AchUserDetailsCollectableDataRN {
         override val validatableDataName = "firstName"
     }
 
     @Serializable
-    data class LastNameRN(val value: String) : StripeAchUserDetailsCollectableDataRN {
+    data class LastNameRN(val value: String) : AchUserDetailsCollectableDataRN {
         override val validatableDataName = "lastName"
     }
 
     @Serializable
-    data class EmailAddressRN(val value: String) : StripeAchUserDetailsCollectableDataRN {
+    data class EmailAddressRN(val value: String) : AchUserDetailsCollectableDataRN {
         override val validatableDataName = "emailAddress"
     }
 }

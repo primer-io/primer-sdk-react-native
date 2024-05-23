@@ -5,18 +5,18 @@ import com.primerioreactnative.datamodels.NamedComponentStep
 import com.primerioreactnative.datamodels.PrimerIssuingBankRN
 
 @Serializable
-internal sealed interface StripeAchUserDetailsStepRN : NamedComponentStep {
+internal sealed interface AchUserDetailsStepRN : NamedComponentStep {
     @Serializable
-    object TokenizationStartedRN : StripeAchUserDetailsStepRN {
-        override val stepName: String = "tokenizationStarted"
+    object UserDetailsCollectedRN : AchUserDetailsStepRN {
+        override val stepName: String = "userDetailsCollected"
     }
 
     @Serializable
-    data class CollectUserDetailsRN(
+    data class UserDetailsRetrievedRN(
         val firstName: String,
         val lastName: String,
         val emailAddress: String
-    ) : StripeAchUserDetailsStepRN {
-        override val stepName: String = "collectUserDetails"
+    ) : AchUserDetailsStepRN {
+        override val stepName: String = "userDetailsRetrieved"
     }
 }

@@ -16,11 +16,11 @@ import com.primerioreactnative.PrimerRNViewModelStoreOwner
 import com.primerioreactnative.components.events.PrimerHeadlessUniversalCheckoutComponentEvent
 import com.primerioreactnative.datamodels.ErrorTypeRN
 import com.primerioreactnative.datamodels.PrimerValidationErrorRN
-import com.primerioreactnative.datamodels.extensions.ach.toCollectUserDetailsRN
+import com.primerioreactnative.datamodels.extensions.ach.toUserDetailsCollectedRN
 import com.primerioreactnative.datamodels.extensions.ach.toEmailAddressRN
 import com.primerioreactnative.datamodels.extensions.ach.toFirstNameRN
 import com.primerioreactnative.datamodels.extensions.ach.toLastNameRN
-import com.primerioreactnative.datamodels.extensions.ach.toTokenizationStartedRN
+import com.primerioreactnative.datamodels.extensions.ach.toUserDetailsRetrievedRN
 import com.primerioreactnative.extensions.toPrimerErrorRN
 import com.primerioreactnative.utils.convertJsonToArray
 import com.primerioreactnative.utils.convertJsonToMap
@@ -28,8 +28,8 @@ import com.primerioreactnative.utils.errorTo
 import io.primer.android.components.manager.ach.PrimerHeadlessUniversalCheckoutAchManager
 import io.primer.android.components.manager.core.composable.PrimerValidationStatus
 import io.primer.android.components.presentation.paymentMethods.nativeUi.stripe.ach.StripeAchUserDetailsComponent
-import io.primer.android.components.presentation.paymentMethods.nativeUi.stripe.ach.composable.StripeAchUserDetailsCollectableData
-import io.primer.android.components.presentation.paymentMethods.nativeUi.stripe.ach.composable.StripeAchUserDetailsStep
+import io.primer.android.components.presentation.paymentMethods.nativeUi.stripe.ach.composable.AchUserDetailsCollectableData
+import io.primer.android.components.presentation.paymentMethods.nativeUi.stripe.ach.composable.AchUserDetailsStep
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.collectLatest
@@ -38,6 +38,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONArray
 import org.json.JSONObject
+import android.util.Log
 
 class PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent(
     private val reactContext: ReactApplicationContext,
@@ -65,30 +66,27 @@ class PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent(
     viewModelStoreOwner = currentViewModelStoreOwner
 
     runCatching {
-      PrimerHeadlessUniversalCheckoutAchManager(
-              currentViewModelStoreOwner,
-              activity.activityResultRegistry
-          )
-          .provideStripeAchUserDetailsComponent()
+      PrimerHeadlessUniversalCheckoutAchManager(currentViewModelStoreOwner)
+          .provide<StripeAchUserDetailsComponent>("STRIPE_ACH")
     }
         .onSuccess { component = it }
+        .onFailure { 
+          val exception = ErrorTypeRN.NativeBridgeFailed errorTo "$INITIALIZATION_ERROR: ${it.message}"
+          promise.reject(exception.errorId, exception.description)
+          return
+         }
 
     val lifecycleScope = (activity as LifecycleOwner).lifecycleScope
 
     job =
         lifecycleScope.launch {
-          if (component == null) {
-            val exception = ErrorTypeRN.NativeBridgeFailed errorTo INITIALIZATION_ERROR
-            promise.reject(exception.errorId, exception.description)
-          } else {
-            coroutineScope {
-              launch { configureStepListener() }
+          coroutineScope {
+            launch { configureStepListener() }
 
-              launch { configureValidationListener() }
+            launch { configureValidationListener() }
 
-              launch { configureErrorListener() }
-              promise.resolve(null)
-            }
+            launch { configureErrorListener() }
+            promise.resolve(null)
           }
         }
   }
@@ -121,7 +119,7 @@ class PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent(
       val exception = ErrorTypeRN.NativeBridgeFailed errorTo UNINITIALIZED_ERROR
       promise.reject(exception.errorId, exception.description)
     } else {
-      component?.updateCollectedData(StripeAchUserDetailsCollectableData.FirstName(firstName))
+      component?.updateCollectedData(AchUserDetailsCollectableData.FirstName(firstName))
       promise.resolve(null)
     }
   }
@@ -132,18 +130,18 @@ class PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent(
       val exception = ErrorTypeRN.NativeBridgeFailed errorTo UNINITIALIZED_ERROR
       promise.reject(exception.errorId, exception.description)
     } else {
-      component?.updateCollectedData(StripeAchUserDetailsCollectableData.LastName(lastName))
+      component?.updateCollectedData(AchUserDetailsCollectableData.LastName(lastName))
       promise.resolve(null)
     }
   }
 
   @ReactMethod
-  fun onSetEmailAddressName(emailAddress: String, promise: Promise) {
+  fun onSetEmailAddress(emailAddress: String, promise: Promise) {
     if (component == null) {
       val exception = ErrorTypeRN.NativeBridgeFailed errorTo UNINITIALIZED_ERROR
       promise.reject(exception.errorId, exception.description)
     } else {
-      component?.updateCollectedData(StripeAchUserDetailsCollectableData.EmailAddress(emailAddress))
+      component?.updateCollectedData(AchUserDetailsCollectableData.EmailAddress(emailAddress))
       promise.resolve(null)
     }
   }
@@ -165,16 +163,16 @@ class PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent(
   private suspend fun configureStepListener() {
     component?.componentStep?.collectLatest { step ->
       when (step) {
-        is StripeAchUserDetailsStep.CollectUserDetails -> {
+        is AchUserDetailsStep.UserDetailsRetrieved -> {
           sendEvent(
               PrimerHeadlessUniversalCheckoutComponentEvent.ON_STEP.eventName,
-              JSONObject(json.encodeToString(step.toCollectUserDetailsRN()))
+              JSONObject(json.encodeToString(step.toUserDetailsRetrievedRN()))
           )
         }
-        is StripeAchUserDetailsStep.TokenizationStarted -> {
+        is AchUserDetailsStep.UserDetailsCollected -> {
           sendEvent(
               PrimerHeadlessUniversalCheckoutComponentEvent.ON_STEP.eventName,
-              JSONObject(json.encodeToString(step.toTokenizationStartedRN()))
+              JSONObject(json.encodeToString(step.toUserDetailsCollectedRN()))
           )
         }
       }
@@ -188,7 +186,7 @@ class PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent(
           sendEvent(
               PrimerHeadlessUniversalCheckoutComponentEvent.ON_VALIDATING.eventName,
               JSONObject().apply {
-                putData(validationStatus.collectableData as StripeAchUserDetailsCollectableData)
+                putData(validationStatus.collectableData as AchUserDetailsCollectableData)
               }
           )
         }
@@ -196,7 +194,7 @@ class PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent(
           sendEvent(
               PrimerHeadlessUniversalCheckoutComponentEvent.ON_IN_VALID.eventName,
               JSONObject().apply {
-                putData(validationStatus.collectableData as StripeAchUserDetailsCollectableData)
+                putData(validationStatus.collectableData as AchUserDetailsCollectableData)
                 put(
                     "errors",
                     JSONArray(
@@ -220,7 +218,7 @@ class PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent(
           sendEvent(
               PrimerHeadlessUniversalCheckoutComponentEvent.ON_VALID.eventName,
               JSONObject().apply {
-                putData(validationStatus.collectableData as StripeAchUserDetailsCollectableData)
+                putData(validationStatus.collectableData as AchUserDetailsCollectableData)
               }
           )
         }
@@ -228,7 +226,7 @@ class PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent(
           sendEvent(
               PrimerHeadlessUniversalCheckoutComponentEvent.ON_VALIDATION_ERROR.eventName,
               JSONObject().apply {
-                putData(validationStatus.collectableData as StripeAchUserDetailsCollectableData)
+                putData(validationStatus.collectableData as AchUserDetailsCollectableData)
                 put(
                     "errors",
                     JSONArray().apply {
@@ -242,16 +240,16 @@ class PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent(
     }
   }
 
-  private fun JSONObject.putData(collectableData: StripeAchUserDetailsCollectableData) {
+  private fun JSONObject.putData(collectableData: AchUserDetailsCollectableData) {
     put(
         "data",
         JSONObject(
             json.encodeToString(
                 when (collectableData) {
-                  is StripeAchUserDetailsCollectableData.FirstName ->
+                  is AchUserDetailsCollectableData.FirstName ->
                       collectableData.toFirstNameRN()
-                  is StripeAchUserDetailsCollectableData.LastName -> collectableData.toLastNameRN()
-                  is StripeAchUserDetailsCollectableData.EmailAddress ->
+                  is AchUserDetailsCollectableData.LastName -> collectableData.toLastNameRN()
+                  is AchUserDetailsCollectableData.EmailAddress ->
                       collectableData.toEmailAddressRN()
                 }
             )
@@ -290,7 +288,7 @@ class PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent(
     promise.resolve(null)
   }
 
-  private companion object {
+  companion object {
     const val INITIALIZATION_ERROR = """
       An error occurred during component initialization.
     """
