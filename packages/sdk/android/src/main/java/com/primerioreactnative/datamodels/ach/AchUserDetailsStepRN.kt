@@ -7,7 +7,7 @@ import com.primerioreactnative.datamodels.PrimerIssuingBankRN
 @Serializable
 internal sealed interface AchUserDetailsStepRN : NamedComponentStep {
     @Serializable
-    object UserDetailsCollectedRN : AchUserDetailsStepRN {
+    class UserDetailsCollectedRN : AchUserDetailsStepRN {
         override val stepName: String = "userDetailsCollected"
     }
 

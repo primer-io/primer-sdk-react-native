@@ -18,6 +18,6 @@ internal fun PrimerCheckoutAdditionalInfo.toCheckoutAdditionalInfoRN() = when (t
   is XenditCheckoutVoucherAdditionalInfo ->
     XenditCheckoutVoucherAdditionalInfoRN(expiresAt, couponCode, retailerName)
   is AchAdditionalInfo.DisplayMandate ->
-    AchAdditionalInfoDisplayMandateRN
+    AchAdditionalInfoDisplayMandateRN()
   else -> null
 }

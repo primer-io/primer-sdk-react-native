@@ -252,8 +252,8 @@ class PrimerRNHeadlessUniversalCheckoutListener(
         is PromptPayCheckoutAdditionalInfo -> {
             sendEvent?.invoke(
                 PrimerHeadlessUniversalCheckoutEvent.ON_CHECKOUT_ADDITIONAL_INFO.eventName,
-                JSONObject(Json.encodeToString(additionalInfo.toCheckoutAdditionalInfoRN())).apply {
-                    remove("type")
+                JSONObject(json.encodeToString(additionalInfo.toCheckoutAdditionalInfoRN())).apply {
+                  remove("type")
                 }
             )
         }
@@ -274,7 +274,7 @@ class PrimerRNHeadlessUniversalCheckoutListener(
             PrimerRNStripeAchMandateManager.declineMandate = additionalInfo.onDeclineMandate
             sendEvent?.invoke(
                 PrimerHeadlessUniversalCheckoutEvent.ON_CHECKOUT_ADDITIONAL_INFO.eventName,
-                JSONObject(Json.encodeToString(additionalInfo.toCheckoutAdditionalInfoRN()))
+                JSONObject(json.encodeToString(additionalInfo.toCheckoutAdditionalInfoRN()))
             )
         }
       }
@@ -360,5 +360,9 @@ class PrimerRNHeadlessUniversalCheckoutListener(
     tokenizeSuccessDecisionHandler = null
     resumeSuccessDecisionHandler = null
     implementedRNCallbacks = null
+  }
+
+  private companion object {
+    val json = Json { encodeDefaults = true }
   }
 }
