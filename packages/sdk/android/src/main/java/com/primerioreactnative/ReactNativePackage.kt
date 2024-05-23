@@ -12,7 +12,7 @@ import com.primerioreactnative.components.manager.redirect.PrimerRNHeadlessUnive
 import com.primerioreactnative.components.manager.klarna.PrimerRNHeadlessUniversalCheckoutKlarnaComponent
 import com.primerioreactnative.components.manager.klarna.PrimerKlarnaPaymentViewManager
 import com.primerioreactnative.components.manager.ach.PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent
-import com.primerioreactnative.components.manager.ach.StripeAchMandateManager
+import com.primerioreactnative.components.manager.ach.PrimerRNStripeAchMandateManager
 import kotlinx.serialization.json.Json
 
 class ReactNativePackage : ReactPackage {
@@ -29,7 +29,7 @@ class ReactNativePackage : ReactPackage {
       PrimerRNHeadlessUniversalCheckoutVaultManager(reactContext, json),
       PrimerRNHeadlessUniversalCheckoutKlarnaComponent(reactContext),
       PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent(reactContext),
-      StripeAchMandateManager(reactContext),
+      PrimerRNStripeAchMandateManager(reactContext),
       //region Component with redirect components
       PrimerRNHeadlessUniversalCheckoutBanksComponent(reactContext)
       //endregion

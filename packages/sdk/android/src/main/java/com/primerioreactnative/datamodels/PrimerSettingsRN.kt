@@ -33,7 +33,8 @@ data class PrimerPaymentMethodOptionsRN(
   var googlePayOptions: PrimerGooglePayOptionsRN = PrimerGooglePayOptionsRN(),
   var klarnaOptions: PrimerKlarnaOptionsRN = PrimerKlarnaOptionsRN(),
   var apayaOptions: PrimerApayaOptionsRN = PrimerApayaOptionsRN(),
-  var threeDsOptions: PrimerThreeDsOptionsRN = PrimerThreeDsOptionsRN()
+  var threeDsOptions: PrimerThreeDsOptionsRN = PrimerThreeDsOptionsRN(),
+  var stripeOptions: PrimerStripeOptionsRN = PrimerStripeOptionsRN(),
 )
 
 @Serializable
@@ -85,6 +86,11 @@ data class PrimerKlarnaOptionsRN(
   var recurringPaymentDescription: String? = null,
   @Deprecated("This property is deprecated and will be removed in future release.")
   var webViewTitle: String? = null,
+)
+
+@Serializable
+data class PrimerStripeOptionsRN(
+  var publishableKey: String? = null,
 )
 
 @Serializable

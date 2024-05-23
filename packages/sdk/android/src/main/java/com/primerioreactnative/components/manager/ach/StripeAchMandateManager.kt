@@ -10,19 +10,19 @@ import com.primerioreactnative.datamodels.ErrorTypeRN
 import com.primerioreactnative.utils.errorTo
 import kotlinx.coroutines.launch
 
-class StripeAchMandateManager(
+class PrimerRNStripeAchMandateManager(
         private val reactContext: ReactApplicationContext,
 ) : ReactContextBaseJavaModule(reactContext) {
-    override fun getName() = "StripeAchMandateManager"
+    override fun getName() = "RNStripeAchMandateManager"
 
     @ReactMethod
     fun acceptMandate(promise: Promise) {
-        executeMandateAction(promise, StripeAchMandateManager.Companion.acceptMandate, UNITIALIZED_ACCEPT_MANDATE)
+        executeMandateAction(promise, PrimerRNStripeAchMandateManager.Companion.acceptMandate, UNITIALIZED_ACCEPT_MANDATE)
     }
     
     @ReactMethod
     fun declineMandate(promise: Promise) {
-        executeMandateAction(promise, StripeAchMandateManager.Companion.declineMandate, UNITIALIZED_DECLINE_MANDATE)
+        executeMandateAction(promise, PrimerRNStripeAchMandateManager.Companion.declineMandate, UNITIALIZED_DECLINE_MANDATE)
     }
     
     private fun executeMandateAction(promise: Promise, action: (suspend () -> Unit)?, error: String) {

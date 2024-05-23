@@ -1,9 +1,12 @@
 package com.primerioreactnative
 
 import com.facebook.react.bridge.Promise
+import com.facebook.react.bridge.ReactContext
 import com.primerioreactnative.components.datamodels.core.PrimerRNAvailablePaymentMethods
 import com.primerioreactnative.components.datamodels.core.toPrimerRNHeadlessUniversalCheckoutPaymentMethod
 import com.primerioreactnative.components.events.PrimerHeadlessUniversalCheckoutEvent
+import com.primerioreactnative.components.manager.ach.PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent
+import com.primerioreactnative.components.manager.ach.PrimerRNStripeAchMandateManager
 import com.primerioreactnative.datamodels.*
 import com.primerioreactnative.extensions.toCheckoutAdditionalInfoRN
 import com.primerioreactnative.extensions.toPrimerCheckoutDataRN
@@ -23,13 +26,18 @@ import io.primer.android.domain.error.models.PrimerError
 import io.primer.android.domain.payments.additionalInfo.MultibancoCheckoutAdditionalInfo
 import io.primer.android.domain.payments.additionalInfo.PrimerCheckoutAdditionalInfo
 import io.primer.android.domain.payments.additionalInfo.PromptPayCheckoutAdditionalInfo
+import io.primer.android.domain.payments.additionalInfo.AchAdditionalInfo
 import io.primer.android.domain.tokenization.models.PrimerPaymentMethodData
 import io.primer.android.domain.tokenization.models.PrimerPaymentMethodTokenData
+import io.primer.android.Primer
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
+import androidx.activity.ComponentActivity
 
-class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckoutListener,
+class PrimerRNHeadlessUniversalCheckoutListener(
+  private val reactContext: ReactContext
+) : PrimerHeadlessUniversalCheckoutListener,
   PrimerHeadlessUniversalCheckoutUiListener {
   private var paymentCreationDecisionHandler: ((errorMessage: String?) -> Unit)? = null
   private var tokenizeSuccessDecisionHandler: ((resumeToken: String?, errorMessage: String?) -> Unit)? =
@@ -240,13 +248,35 @@ class PrimerRNHeadlessUniversalCheckoutListener : PrimerHeadlessUniversalCheckou
 
   override fun onCheckoutAdditionalInfoReceived(additionalInfo: PrimerCheckoutAdditionalInfo) {
     if (implementedRNCallbacks?.isOnCheckoutAdditionalInfoImplemented == true) {
-      if (additionalInfo is PromptPayCheckoutAdditionalInfo) {
-        sendEvent?.invoke(
-          PrimerHeadlessUniversalCheckoutEvent.ON_CHECKOUT_ADDITIONAL_INFO.eventName,
-          JSONObject(Json.encodeToString(additionalInfo.toCheckoutAdditionalInfoRN())).apply {
-            remove("type")
+      when (additionalInfo) {
+        is PromptPayCheckoutAdditionalInfo -> {
+            sendEvent?.invoke(
+                PrimerHeadlessUniversalCheckoutEvent.ON_CHECKOUT_ADDITIONAL_INFO.eventName,
+                JSONObject(Json.encodeToString(additionalInfo.toCheckoutAdditionalInfoRN())).apply {
+                    remove("type")
+                }
+            )
+        }
+        is AchAdditionalInfo.ProvideActivityResultRegistry -> {
+          val activityResultRegistry = (reactContext.currentActivity as? ComponentActivity)?.activityResultRegistry
+          if (activityResultRegistry == null) {
+            sendError?.invoke(
+              ErrorTypeRN.NativeBridgeFailed
+                errorTo PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent.UNSUPPORTED_ACTIVITY_ERROR
+            )
+          } else {
+            additionalInfo.provide(activityResultRegistry)
           }
-        )
+        }
+
+        is AchAdditionalInfo.DisplayMandate -> {
+            PrimerRNStripeAchMandateManager.acceptMandate = additionalInfo.onAcceptMandate
+            PrimerRNStripeAchMandateManager.declineMandate = additionalInfo.onDeclineMandate
+            sendEvent?.invoke(
+                PrimerHeadlessUniversalCheckoutEvent.ON_CHECKOUT_ADDITIONAL_INFO.eventName,
+                JSONObject(Json.encodeToString(additionalInfo.toCheckoutAdditionalInfoRN()))
+            )
+        }
       }
     } else {
       sendError?.invoke(
