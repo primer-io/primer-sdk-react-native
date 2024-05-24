@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
+  Alert,
   Button,
   FlatList,
   ScrollView,
@@ -22,6 +23,7 @@ import {
   PrimerSettings,
   ValidationError
 } from '@primer-io/react-native';
+import { showAchMandateAlert } from './AchMandateAlert';
 
 let log: string = "";
 let merchantPaymentId: string | null = null;
@@ -84,6 +86,11 @@ export default HeadlessCheckoutVaultScreen = (props: any) => {
         merchantCheckoutAdditionalInfo = additionalInfo;
         updateLogs(`\nℹ️ onCheckoutPending\nadditionalInfo: ${JSON.stringify(additionalInfo, null, 2)}\n`);
         setIsLoading(false);
+        switch(merchantCheckoutAdditionalInfo.additionalInfoName) {
+          case "DisplayStripeAchMandateAdditionalInfo":
+            showAchMandateAlert();
+            break;
+        }
       },
       onCheckoutPending: (checkoutAdditionalInfo) => {
         merchantCheckoutAdditionalInfo = checkoutAdditionalInfo;
@@ -297,19 +304,31 @@ export default HeadlessCheckoutVaultScreen = (props: any) => {
       switch (paymentMethodType) {
         case "PAYMENT_CARD":
         case "GOOGLE_PAY":
-        case "APPLE_PAY":
-          const last4Digits = item.paymentInstrumentData.last4Digits
+        case "APPLE_PAY": {
+          let last4Digits = item.paymentInstrumentData.last4Digits
           if (last4Digits !== undefined) {
             suffix = "••••" + last4Digits
           }
           break;
-        case "PAYPAL":
+        }
+        case "PAYPAL": {
           suffix = item.paymentInstrumentData?.externalPayerInfo?.email ?? ""
           break;
-        case "KLARNA":
+        }
+        case "KLARNA": {
           const billingAddress = item.paymentInstrumentData?.sessionData?.billingAddress
           suffix = billingAddress?.email ?? ""
           break;
+        }
+        case "STRIPE_ACH": {
+          const bankName = item.paymentInstrumentData?.bankName ?? "-";
+          suffix = "(" + bankName + ")"
+          const last4Digits = item.paymentInstrumentData?.last4Digits;
+          if (last4Digits !== undefined) {
+            suffix += " ••••" + last4Digits
+          }
+          break;
+        }
       }
       return paymentMethodType + ": " + (suffix ?? "-");
   }

@@ -18,9 +18,10 @@ import {
   NativeUIManager,
   PaymentMethod,
   PrimerSettings,
-  SessionIntent,
+  SessionIntent
 } from '@primer-io/react-native';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
+import { showAchMandateAlert } from './AchMandateAlert';
 
 let log: string = '';
 let merchantPaymentId: string | null = null;
@@ -79,6 +80,9 @@ export const HeadlessCheckoutScreen = (props: any) => {
     paymentMethodOptions: {
       iOS: {
         urlScheme: 'merchant://primer.io',
+      },
+      stripeOptions: {
+          publishableKey: "pk_test_51MoI84BvedTI81V7r8h9B1XSl7lqU5rEdZHx8N6qoNeXDyyhUq8ziBgWXyMlO3bPADYRdAiYFQJg51fWN784pIBH00Y5YTas27"
       },
     },
     debugOptions: {
@@ -142,6 +146,11 @@ export const HeadlessCheckoutScreen = (props: any) => {
           )}\n`,
         );
         setIsLoading(false);
+        switch(merchantCheckoutAdditionalInfo.additionalInfoName) {
+          case "DisplayStripeAchMandateAdditionalInfo":
+            showAchMandateAlert();
+            break;
+        }
       },
       onCheckoutComplete: checkoutData => {
         merchantCheckoutData = checkoutData;
@@ -375,6 +384,8 @@ export const HeadlessCheckoutScreen = (props: any) => {
         console.log("Payment session intent is " + selectedSessionIntent)
         if (paymentMethod.paymentMethodType === "KLARNA") {
           props.navigation.navigate('Klarna', { paymentSessionIntent: selectedSessionIntent });
+        } else if (paymentMethod.paymentMethodType === "STRIPE_ACH") {
+          props.navigation.navigate('HeadlessCheckoutStripeAchScreen');
         } else {
           await nativeUIManager.showPaymentMethod(SessionIntent.CHECKOUT);
         }

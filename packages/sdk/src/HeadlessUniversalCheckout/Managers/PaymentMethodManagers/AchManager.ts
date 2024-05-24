@@ -9,7 +9,7 @@ import { EventType, eventTypes } from './Utils/EventType';
 import { AchUserDetailsStep, UserDetailsRetrieved } from 'src/models/ach/AchUserDetailsSteps';
 import { StripeAchUserDetailsValidatableData } from 'src/models/ach/AchUserDetailsCollectableData';
 
-const { RNHeadlessUniversalCheckoutStripeAchUserDetailsComponent, RNStripeAchMandateManager } = NativeModules;
+const { RNHeadlessUniversalCheckoutStripeAchUserDetailsComponent } = NativeModules;
 
 const eventEmitter = new NativeEventEmitter(RNHeadlessUniversalCheckoutStripeAchUserDetailsComponent);
 export interface AchManagerProps {
@@ -52,16 +52,6 @@ export interface StripeAchComponent {
      * last name and email address.
      */
     submit(): Promise<void>;
-
-    /**
-     * Accepts the Stripe ACH mandate, completing the payment.
-     */
-    acceptMandate(): Promise<void>;
-
-    /**
-     * Declines the Stripe ACH mandate, cancelling the payment.
-     */
-    declineMandate(): Promise<void>;
 }
 
 export class PrimerHeadlessUniversalCheckoutAchManager {
@@ -92,13 +82,7 @@ export class PrimerHeadlessUniversalCheckoutAchManager {
             },
             onSetEmailAddress: async (value: String) => {
                 RNHeadlessUniversalCheckoutStripeAchUserDetailsComponent.onSetEmailAddress(value);
-            },
-            acceptMandate: async () => {
-                RNStripeAchMandateManager.acceptMandate();
-            },
-            declineMandate: async () => {
-                RNStripeAchMandateManager.declineMandate();
-            },
+            }
         }
         await RNHeadlessUniversalCheckoutStripeAchUserDetailsComponent.configure();
         return component;

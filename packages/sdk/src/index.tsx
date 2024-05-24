@@ -82,6 +82,8 @@ import { StripeAchFirstName, StripeAchLastName, StripeAchEmailAddress } from './
 export { StripeAchFirstName, StripeAchLastName, StripeAchEmailAddress };
 import { PrimerHeadlessUniversalCheckoutAchManager, StripeAchComponent, AchManagerProps } from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/AchManager';
 export { PrimerHeadlessUniversalCheckoutAchManager as AchManager, StripeAchComponent, AchManagerProps };
+import { PrimerHeadlessUniversalCheckoutAchMandateManager } from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/AchMandateManager';
+export { PrimerHeadlessUniversalCheckoutAchMandateManager as AchMandateManager };
 
 import { PrimerHeadlessUniversalCheckoutComponentWithRedirectManager, BanksComponent, ComponentWithRedirectManagerProps } from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/ComponentWithRedirectManager';
 export { PrimerHeadlessUniversalCheckoutComponentWithRedirectManager as ComponentWithRedirectManager, BanksComponent, ComponentWithRedirectManagerProps };
