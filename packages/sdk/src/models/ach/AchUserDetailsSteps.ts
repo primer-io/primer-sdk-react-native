@@ -10,15 +10,15 @@ export type UserDetailsRetrieved = {
     /**
      * The first name previously sent on client session creation.
      */
-    firstName: String,
+    firstName: string,
     /**
-     * The first name previously sent on client session creation.
+     * The last name previously sent on client session creation.
      */
-    lastName: String,
+    lastName: string,
     /**
      * The email address previously sent on client session creation.
      */
-    emailAddress: String
+    emailAddress: string
 } & NamedComponentStep
 
 /**

@@ -7,7 +7,7 @@ export type AchUserDetailsValidatableData = AchFirstName | AchLastName | AchEmai
  */
 export type AchFirstName = {
     validatableDataName: "firstName",
-    value: String
+    value: string
 } & NamedComponentValidatableData
 
 /**
@@ -15,7 +15,7 @@ export type AchFirstName = {
  */
 export type AchLastName = {
     validatableDataName: "lastName",
-    value: String
+    value: string
 } & NamedComponentValidatableData
 
 /**
@@ -23,5 +23,5 @@ export type AchLastName = {
  */
 export type AchEmailAddress = {
     validatableDataName: "emailAddress",
-    value: String
+    value: string
 } & NamedComponentValidatableData
