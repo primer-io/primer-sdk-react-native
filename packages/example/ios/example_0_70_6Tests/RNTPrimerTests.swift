@@ -62,110 +62,191 @@ class RNTPrimerTests: XCTestCase {
     // MARK: - DECISION HANDLERS
 
     func testHandleTokenizationNewClientToken() {
-        let expectation = self.expectation(description: "HandleTokenizationNewClientToken completes")
+        let handlerExpectation = self.expectation(description: "HandleTokenizationNewClientToken handler executed")
+        let resolverExpectation = self.expectation(description: "HandleTokenizationNewClientToken resolver executed")
 
+        // Set the handler
+        rnPrimer.primerDidTokenizePaymentMethodDecisionHandler = { newClientToken, _ in
+            XCTAssertEqual(newClientToken, "newClientToken")
+            handlerExpectation.fulfill()
+        }
+
+        // Call the method
         rnPrimer.handleTokenizationNewClientToken("newClientToken", resolver: { _ in
-            expectation.fulfill()
+            resolverExpectation.fulfill()
         }, rejecter: { _, _, _ in
             XCTFail("HandleTokenizationNewClientToken failed")
         })
 
-        waitForExpectations(timeout: 2.0, handler: nil)
+        wait(for: [handlerExpectation, resolverExpectation], timeout: 2.0)
+        XCTAssertNil(rnPrimer.primerDidTokenizePaymentMethodDecisionHandler)
     }
 
     func testHandleTokenizationSuccess() {
-        let expectation = self.expectation(description: "HandleTokenizationSuccess completes")
+        let handlerExpectation = self.expectation(description: "HandleTokenizationSuccess handler executed")
+        let resolverExpectation = self.expectation(description: "HandleTokenizationSuccess resolver executed")
 
+        // Set the handler
+        rnPrimer.primerDidTokenizePaymentMethodDecisionHandler = { newClientToken, _ in
+            XCTAssertNil(newClientToken)
+            handlerExpectation.fulfill()
+        }
+
+        // Call the method
         rnPrimer.handleTokenizationSuccess({ _ in
-            expectation.fulfill()
+            resolverExpectation.fulfill()
         }, rejecter: { _, _, _ in
             XCTFail("HandleTokenizationSuccess failed")
         })
 
-        waitForExpectations(timeout: 2.0, handler: nil)
+        wait(for: [handlerExpectation, resolverExpectation], timeout: 2.0)
+        XCTAssertNil(rnPrimer.primerDidTokenizePaymentMethodDecisionHandler)
     }
 
     func testHandleTokenizationFailure() {
-        let expectation = self.expectation(description: "HandleTokenizationFailure completes")
+        let handlerExpectation = self.expectation(description: "HandleTokenizationFailure handler executed")
+        let resolverExpectation = self.expectation(description: "HandleTokenizationFailure resolver executed")
 
+        // Set the handler
+        rnPrimer.primerDidTokenizePaymentMethodDecisionHandler = { _, errorMessage in
+            XCTAssertEqual(errorMessage, "errorMessage")
+            handlerExpectation.fulfill()
+        }
+
+        // Call the method
         rnPrimer.handleTokenizationFailure("errorMessage", resolver: { _ in
-            expectation.fulfill()
+            resolverExpectation.fulfill()
         }, rejecter: { _, _, _ in
             XCTFail("HandleTokenizationFailure failed")
         })
 
-        waitForExpectations(timeout: 2.0, handler: nil)
+        wait(for: [handlerExpectation, resolverExpectation], timeout: 2.0)
+        XCTAssertNil(rnPrimer.primerDidTokenizePaymentMethodDecisionHandler)
     }
 
     func testHandleResumeWithNewClientToken() {
-        let expectation = self.expectation(description: "HandleResumeWithNewClientToken completes")
+        let handlerExpectation = self.expectation(description: "HandleResumeWithNewClientToken handler executed")
+        let resolverExpectation = self.expectation(description: "HandleResumeWithNewClientToken resolver executed")
 
+        // Set the handler
+        rnPrimer.primerDidResumeWithDecisionHandler = { newClientToken, _ in
+            XCTAssertEqual(newClientToken, "newClientToken")
+            handlerExpectation.fulfill()
+        }
+
+        // Call the method
         rnPrimer.handleResumeWithNewClientToken("newClientToken", resolver: { _ in
-            expectation.fulfill()
+            resolverExpectation.fulfill()
         }, rejecter: { _, _, _ in
             XCTFail("HandleResumeWithNewClientToken failed")
         })
 
-        waitForExpectations(timeout: 2.0, handler: nil)
+        wait(for: [handlerExpectation, resolverExpectation], timeout: 2.0)
+        XCTAssertNil(rnPrimer.primerDidResumeWithDecisionHandler)
     }
 
     func testHandleResumeSuccess() {
-        let expectation = self.expectation(description: "HandleResumeSuccess completes")
+        let handlerExpectation = self.expectation(description: "HandleResumeSuccess handler executed")
+        let resolverExpectation = self.expectation(description: "HandleResumeSuccess resolver executed")
 
+        // Set the handler
+        rnPrimer.primerDidResumeWithDecisionHandler = { newClientToken, _ in
+            XCTAssertNil(newClientToken)
+            handlerExpectation.fulfill()
+        }
+
+        // Call the method
         rnPrimer.handleResumeSuccess({ _ in
-            expectation.fulfill()
+            resolverExpectation.fulfill()
         }, rejecter: { _, _, _ in
             XCTFail("HandleResumeSuccess failed")
         })
 
-        waitForExpectations(timeout: 2.0, handler: nil)
+        wait(for: [handlerExpectation, resolverExpectation], timeout: 2.0)
+        XCTAssertNil(rnPrimer.primerDidResumeWithDecisionHandler)
     }
 
     func testHandleResumeFailure() {
-        let expectation = self.expectation(description: "HandleResumeFailure completes")
+        let handlerExpectation = self.expectation(description: "HandleResumeFailure handler executed")
+        let resolverExpectation = self.expectation(description: "HandleResumeFailure resolver executed")
 
+        // Set the handler
+        rnPrimer.primerDidResumeWithDecisionHandler = { _, errorMessage in
+            XCTAssertEqual(errorMessage, "errorMessage")
+            handlerExpectation.fulfill()
+        }
+
+        // Call the method
         rnPrimer.handleResumeFailure("errorMessage", resolver: { _ in
-            expectation.fulfill()
+            resolverExpectation.fulfill()
         }, rejecter: { _, _, _ in
             XCTFail("HandleResumeFailure failed")
         })
 
-        waitForExpectations(timeout: 2.0, handler: nil)
+        wait(for: [handlerExpectation, resolverExpectation], timeout: 2.0)
+        XCTAssertNil(rnPrimer.primerDidResumeWithDecisionHandler)
     }
 
     func testHandlePaymentCreationAbort() {
-        let expectation = self.expectation(description: "HandlePaymentCreationAbort completes")
+        let handlerExpectation = self.expectation(description: "HandlePaymentCreationAbort handler executed")
+        let resolverExpectation = self.expectation(description: "HandlePaymentCreationAbort resolver executed")
 
+        // Set the handler
+        rnPrimer.primerWillCreatePaymentWithDataDecisionHandler = { errorMessage in
+            XCTAssertEqual(errorMessage, "errorMessage")
+            handlerExpectation.fulfill()
+        }
+
+        // Call the method
         rnPrimer.handlePaymentCreationAbort("errorMessage", resolver: { _ in
-            expectation.fulfill()
+            resolverExpectation.fulfill()
         }, rejecter: { _, _, _ in
             XCTFail("HandlePaymentCreationAbort failed")
         })
 
-        waitForExpectations(timeout: 2.0, handler: nil)
+        wait(for: [handlerExpectation, resolverExpectation], timeout: 2.0)
+        XCTAssertNil(rnPrimer.primerWillCreatePaymentWithDataDecisionHandler)
     }
 
     func testHandlePaymentCreationContinue() {
-        let expectation = self.expectation(description: "HandlePaymentCreationContinue completes")
+        let handlerExpectation = self.expectation(description: "HandlePaymentCreationContinue handler executed")
+        let resolverExpectation = self.expectation(description: "HandlePaymentCreationContinue resolver executed")
 
+        // Set the handler
+        rnPrimer.primerWillCreatePaymentWithDataDecisionHandler = { errorMessage in
+            XCTAssertNil(errorMessage)
+            handlerExpectation.fulfill()
+        }
+
+        // Call the method
         rnPrimer.handlePaymentCreationContinue({ _ in
-            expectation.fulfill()
+            resolverExpectation.fulfill()
         }, rejecter: { _, _, _ in
             XCTFail("HandlePaymentCreationContinue failed")
         })
 
-        waitForExpectations(timeout: 2.0, handler: nil)
+        wait(for: [handlerExpectation, resolverExpectation], timeout: 2.0)
+        XCTAssertNil(rnPrimer.primerWillCreatePaymentWithDataDecisionHandler)
     }
 
     func testShowErrorMessage() {
-        let expectation = self.expectation(description: "ShowErrorMessage completes")
+        let handlerExpectation = self.expectation(description: "ShowErrorMessage handler executed")
+        let resolverExpectation = self.expectation(description: "ShowErrorMessage resolver executed")
 
+        // Set the handler
+        rnPrimer.primerDidFailWithErrorDecisionHandler = { errorMessage in
+            XCTAssertEqual(errorMessage, "errorMessage")
+            handlerExpectation.fulfill()
+        }
+
+        // Call the method
         rnPrimer.showErrorMessage("errorMessage", resolver: { _ in
-            expectation.fulfill()
+            resolverExpectation.fulfill()
         }, rejecter: { _, _, _ in
             XCTFail("ShowErrorMessage failed")
         })
 
-        waitForExpectations(timeout: 2.0, handler: nil)
+        wait(for: [handlerExpectation, resolverExpectation], timeout: 2.0)
+        XCTAssertNil(rnPrimer.primerDidFailWithErrorDecisionHandler)
     }
 }

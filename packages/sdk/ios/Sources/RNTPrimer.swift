@@ -55,11 +55,11 @@ enum PrimerEvents: Int, CaseIterable {
 @objc(NativePrimer)
 class RNTPrimer: RCTEventEmitter {
 
-    private var primerWillCreatePaymentWithDataDecisionHandler: ((_ errorMessage: String?) -> Void)?
-    private var primerDidTokenizePaymentMethodDecisionHandler: ((_ resumeToken: String?, _ errorMessage: String?) -> Void)?
-    private var primerDidResumeWithDecisionHandler: ((_ resumeToken: String?, _ errorMessage: String?) -> Void)?
-    private var primerDidFailWithErrorDecisionHandler: ((_ errorMessage: String) -> Void)?
-    private var implementedRNCallbacks: ImplementedRNCallbacks?
+    var primerWillCreatePaymentWithDataDecisionHandler: ((_ errorMessage: String?) -> Void)?
+    var primerDidTokenizePaymentMethodDecisionHandler: ((_ resumeToken: String?, _ errorMessage: String?) -> Void)?
+    var primerDidResumeWithDecisionHandler: ((_ resumeToken: String?, _ errorMessage: String?) -> Void)?
+    var primerDidFailWithErrorDecisionHandler: ((_ errorMessage: String) -> Void)?
+    var implementedRNCallbacks: ImplementedRNCallbacks?
 
     // MARK: - INITIALIZATION & REACT NATIVE SUPPORT
 
