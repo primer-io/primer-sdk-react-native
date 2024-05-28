@@ -12,7 +12,9 @@ import PrimerSDK
 @objc(RNTPrimerHeadlessUniversalCheckoutKlarnaComponent)
 class RNTPrimerHeadlessUniversalCheckoutKlarnaComponent: RCTEventEmitter {
     
+#if canImport(PrimerKlarnaSDK)
     private var klarnaManager: PrimerHeadlessUniversalCheckout.KlarnaManager = PrimerHeadlessUniversalCheckout.KlarnaManager()
+#endif
     var klarnaComponent: (any KlarnaComponent)?
     var clientToken: String?
     
@@ -46,12 +48,21 @@ class RNTPrimerHeadlessUniversalCheckoutKlarnaComponent: RCTEventEmitter {
                     recoverySuggestion: "'intent' can be 'CHECKOUT' or 'VAULT'.")
                 throw err
             }
-            
+#if canImport(PrimerKlarnaSDK)
             klarnaComponent = try klarnaManager.provideKlarnaComponent(with: sessionIntent)
             klarnaComponent?.stepDelegate = self
             klarnaComponent?.errorDelegate = self
             klarnaComponent?.validationDelegate = self
-            
+#else
+            let err = RNTNativeError(
+                errorId: "native-ios",
+                errorDescription: "PrimerKlarnaSDK missing",
+                recoverySuggestion: "Check if PrimerKlarnaSDK is included in your Podfile")
+
+            throw err
+#endif
+
+
             resolver(nil)
         } catch {
             rejecter(error.rnError["errorId"]!, error.rnError["description"], error)
