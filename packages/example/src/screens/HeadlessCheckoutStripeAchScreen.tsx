@@ -105,7 +105,7 @@ const HeadlessCheckoutStripeAchScreen = (props: any) => {
             };
             console.log("Initializing Stripe ACH component")
             try {
-                component = await achManager.provideStripeAchComponent(achManagerProps);
+                component = await achManager.provide(achManagerProps);
                 console.log("Starting Stripe ACH component");
                 component?.start();
             } catch (error) {

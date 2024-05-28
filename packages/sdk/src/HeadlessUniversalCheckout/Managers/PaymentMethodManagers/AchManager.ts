@@ -64,7 +64,7 @@ export class PrimerHeadlessUniversalCheckoutAchManager {
     // API
     ///////////////////////////////////////////
 
-    async provideStripeAchComponent(props: AchManagerProps): Promise<StripeAchComponent> {
+    async provide(props: AchManagerProps): Promise<StripeAchComponent | any> {
         await this.configureListeners(props);
 
         const component: StripeAchComponent = {

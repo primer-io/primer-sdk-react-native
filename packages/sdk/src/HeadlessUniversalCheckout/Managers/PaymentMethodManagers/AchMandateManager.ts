@@ -15,7 +15,7 @@ export class PrimerHeadlessUniversalCheckoutAchMandateManager {
     ///////////////////////////////////////////
 
     /**
-     * Accepts the Stripe ACH mandate, completing the payment.
+     * Accepts the ACH mandate, completing the payment.
      */
     async acceptMandate(): Promise<void> {
         console.log("Accepting mandate");
@@ -23,7 +23,7 @@ export class PrimerHeadlessUniversalCheckoutAchMandateManager {
     }
 
     /**
-     * Declines the Stripe ACH mandate, cancelling the payment.
+     * Declines the ACH mandate, cancelling the payment.
      */
     async declineMandate(): Promise<void> {
         console.log("Declining mandate");
