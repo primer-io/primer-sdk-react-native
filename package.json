@@ -7,6 +7,8 @@
     },
     "scripts": {
         "bootstrap": "yarn install",
-        "pods": "cd packages/example/ios && pod-install --quiet"
+        "pods": "cd packages/example/ios && pod-install --quiet",
+        "test": "yarn --cwd packages/sdk test",
+        "test:unit:coverage:lcov": "yarn --cwd packages/sdk test && node scripts/aggregate-coverage.js && nyc report --reporter lcov"
     }
 }
