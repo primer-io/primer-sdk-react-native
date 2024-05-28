@@ -15,7 +15,7 @@ import {
     PrimerValidatingComponentData,
     PrimerComponentDataValidationError,
     AchManagerProps,
-    StripeAchUserDetailsValidatableData,
+    AchUserDetailsValidatableData,
 } from '@primer-io/react-native';
 import TextField from '../components/TextField';
 
@@ -52,7 +52,7 @@ const HeadlessCheckoutStripeAchScreen = (props: any) => {
                     const log = `\nonError: ${JSON.stringify(error)}\n`;
                     console.log(log);
                 },
-                onInvalid: (data: PrimerInvalidComponentData<StripeAchUserDetailsValidatableData>) => {
+                onInvalid: (data: PrimerInvalidComponentData<AchUserDetailsValidatableData>) => {
                     const log = `\nonInvalid: ${JSON.stringify(data)}\n`;
                     console.log(log);
                     let error = data?.errors[0]?.description ?? null
@@ -68,7 +68,7 @@ const HeadlessCheckoutStripeAchScreen = (props: any) => {
                             break;
                     }
                 },
-                onValid: (data: PrimerValidComponentData<StripeAchUserDetailsValidatableData>) => {
+                onValid: (data: PrimerValidComponentData<AchUserDetailsValidatableData>) => {
                     const log = `\nonValid: ${JSON.stringify(data)}\n`;
                     console.log(log);
                     switch (data.data.validatableDataName) {
@@ -83,11 +83,11 @@ const HeadlessCheckoutStripeAchScreen = (props: any) => {
                             break;
                     }
                 },
-                onValidating: (data: PrimerValidatingComponentData<StripeAchUserDetailsValidatableData>) => {
+                onValidating: (data: PrimerValidatingComponentData<AchUserDetailsValidatableData>) => {
                     const log = `\onValidating: ${JSON.stringify(data)}\n`;
                     console.log(log);
                 },
-                onValidationError: (data: PrimerComponentDataValidationError<StripeAchUserDetailsValidatableData>) => {
+                onValidationError: (data: PrimerComponentDataValidationError<AchUserDetailsValidatableData>) => {
                     const log = `\nonValidationError: ${JSON.stringify(data)}\n`;
                     console.log(log);
                     switch (data.data.validatableDataName) {

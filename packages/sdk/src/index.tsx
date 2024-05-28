@@ -78,8 +78,8 @@ import { PrimerKlarnaPaymentView } from './HeadlessUniversalCheckout/Components/
 export { PrimerKlarnaPaymentView }
 import { UserDetailsRetrieved, UserDetailsCollected, AchUserDetailsStep } from './models/ach/AchUserDetailsSteps';
 export { UserDetailsRetrieved as CollectUserDetails, UserDetailsCollected as TokenizationStarted, AchUserDetailsStep }
-import { StripeAchFirstName, StripeAchLastName, StripeAchEmailAddress } from './models/ach/AchUserDetailsCollectableData';
-export { StripeAchFirstName, StripeAchLastName, StripeAchEmailAddress };
+import { AchFirstName, AchLastName, AchEmailAddress, AchUserDetailsValidatableData } from './models/ach/AchUserDetailsCollectableData';
+export { AchFirstName, AchLastName, AchEmailAddress, AchUserDetailsValidatableData };
 import { PrimerHeadlessUniversalCheckoutAchManager, StripeAchComponent, AchManagerProps } from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/AchManager';
 export { PrimerHeadlessUniversalCheckoutAchManager as AchManager, StripeAchComponent, AchManagerProps };
 import { PrimerHeadlessUniversalCheckoutAchMandateManager } from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/AchMandateManager';
