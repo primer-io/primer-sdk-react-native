@@ -6,7 +6,7 @@ import com.primerioreactnative.components.datamodels.core.PrimerRNAvailablePayme
 import com.primerioreactnative.components.datamodels.core.toPrimerRNHeadlessUniversalCheckoutPaymentMethod
 import com.primerioreactnative.components.events.PrimerHeadlessUniversalCheckoutEvent
 import com.primerioreactnative.components.manager.ach.PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent
-import com.primerioreactnative.components.manager.ach.PrimerRNStripeAchMandateManager
+import com.primerioreactnative.components.manager.ach.PrimerRNAchMandateManager
 import com.primerioreactnative.datamodels.*
 import com.primerioreactnative.extensions.toCheckoutAdditionalInfoRN
 import com.primerioreactnative.extensions.toPrimerCheckoutDataRN
@@ -270,8 +270,8 @@ class PrimerRNHeadlessUniversalCheckoutListener(
         }
 
         is AchAdditionalInfo.DisplayMandate -> {
-            PrimerRNStripeAchMandateManager.acceptMandate = additionalInfo.onAcceptMandate
-            PrimerRNStripeAchMandateManager.declineMandate = additionalInfo.onDeclineMandate
+            PrimerRNAchMandateManager.acceptMandate = additionalInfo.onAcceptMandate
+            PrimerRNAchMandateManager.declineMandate = additionalInfo.onDeclineMandate
             sendEvent?.invoke(
                 PrimerHeadlessUniversalCheckoutEvent.ON_CHECKOUT_ADDITIONAL_INFO.eventName,
                 JSONObject(json.encodeToString(additionalInfo.toCheckoutAdditionalInfoRN())).apply {
