@@ -76,10 +76,10 @@ import { PaymentSessionCreated, PaymentSessionAuthorized, PaymentSessionFinalize
 export { PaymentSessionCreated, PaymentSessionAuthorized, PaymentSessionFinalized, PaymentViewLoaded, KlarnaPaymentStep };
 import { PrimerKlarnaPaymentView } from './HeadlessUniversalCheckout/Components/PrimerKlarnaPaymentView'
 export { PrimerKlarnaPaymentView }
-import { UserDetailsRetrieved, UserDetailsCollected, AchUserDetailsStep } from './models/ach/AchUserDetailsSteps';
-export { UserDetailsRetrieved as CollectUserDetails, UserDetailsCollected as TokenizationStarted, AchUserDetailsStep }
-import { AchFirstName, AchLastName, AchEmailAddress, AchUserDetailsValidatableData } from './models/ach/AchUserDetailsCollectableData';
-export { AchFirstName, AchLastName, AchEmailAddress, AchUserDetailsValidatableData };
+import { UserDetailsRetrieved, UserDetailsCollected, AchStep } from './models/ach/AchSteps';
+export { UserDetailsRetrieved as CollectUserDetails, UserDetailsCollected, AchStep }
+import { AchFirstName, AchLastName, AchEmailAddress, AchValidatableData } from './models/ach/AchCollectableData';
+export { AchFirstName, AchLastName, AchEmailAddress, AchValidatableData };
 import { PrimerHeadlessUniversalCheckoutAchManager, StripeAchComponent, AchManagerProps } from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/AchManager';
 export { PrimerHeadlessUniversalCheckoutAchManager as AchManager, StripeAchComponent, AchManagerProps };
 import { PrimerHeadlessUniversalCheckoutAchMandateManager } from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/AchMandateManager';

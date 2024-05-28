@@ -1,5 +1,7 @@
 import { NamedComponentValidatableData } from "../NamedComponentValidatableData";
 
+export type AchValidatableData = AchUserDetailsValidatableData
+
 export type AchUserDetailsValidatableData = AchFirstName | AchLastName | AchEmailAddress
 
 /**

@@ -6,19 +6,19 @@ import {
 import { PrimerComponentDataValidationError, PrimerInvalidComponentData, PrimerValidComponentData, PrimerValidatingComponentData } from 'src/models/PrimerComponentDataValidation';
 import { PrimerError } from 'src/models/PrimerError';
 import { EventType, eventTypes } from './Utils/EventType';
-import { AchUserDetailsStep, UserDetailsRetrieved } from 'src/models/ach/AchUserDetailsSteps';
-import { AchUserDetailsValidatableData } from 'src/models/ach/AchUserDetailsCollectableData';
+import { AchStep, UserDetailsRetrieved } from 'src/models/ach/AchSteps';
+import { AchValidatableData } from 'src/models/ach/AchCollectableData';
 
 const { RNHeadlessUniversalCheckoutStripeAchUserDetailsComponent } = NativeModules;
 
 const eventEmitter = new NativeEventEmitter(RNHeadlessUniversalCheckoutStripeAchUserDetailsComponent);
 export interface AchManagerProps {
-    onStep?: (data: AchUserDetailsStep) => void;
+    onStep?: (data: AchStep) => void;
     onError?: (error: PrimerError) => void;
-    onInvalid?: (data: PrimerInvalidComponentData<AchUserDetailsValidatableData>) => void;
-    onValid?: (data: PrimerValidComponentData<AchUserDetailsValidatableData>) => void;
-    onValidating?: (data: PrimerValidatingComponentData<AchUserDetailsValidatableData>) => void;
-    onValidationError?: (data: PrimerComponentDataValidationError<AchUserDetailsValidatableData>) => void;
+    onInvalid?: (data: PrimerInvalidComponentData<AchValidatableData>) => void;
+    onValid?: (data: PrimerValidComponentData<AchValidatableData>) => void;
+    onValidating?: (data: PrimerValidatingComponentData<AchValidatableData>) => void;
+    onValidationError?: (data: PrimerComponentDataValidationError<AchValidatableData>) => void;
 }
 
 export interface StripeAchComponent {

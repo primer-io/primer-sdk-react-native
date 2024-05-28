@@ -1,5 +1,7 @@
 import { NamedComponentStep } from "../NamedComponentStep";
 
+export type AchStep = AchUserDetailsStep
+
 export type AchUserDetailsStep = UserDetailsRetrieved | UserDetailsCollected
 
 /**

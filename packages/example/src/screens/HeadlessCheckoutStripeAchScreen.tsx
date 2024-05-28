@@ -8,14 +8,14 @@ import {
 import {
     AchManager,
     StripeAchComponent,
-    AchUserDetailsStep,
+    AchStep,
     PrimerError,
     PrimerInvalidComponentData,
     PrimerValidComponentData,
     PrimerValidatingComponentData,
     PrimerComponentDataValidationError,
     AchManagerProps,
-    AchUserDetailsValidatableData,
+    AchValidatableData,
 } from '@primer-io/react-native';
 import TextField from '../components/TextField';
 
@@ -33,7 +33,7 @@ const HeadlessCheckoutStripeAchScreen = (props: any) => {
     useEffect(() => {
         (async () => {
             const achManagerProps: AchManagerProps = {
-                onStep: (data: AchUserDetailsStep) => {
+                onStep: (data: AchStep) => {
                     const log = `\nonStep: ${JSON.stringify(data)}\n`;
                     console.log(log);
                     switch (data.stepName) {
@@ -52,7 +52,7 @@ const HeadlessCheckoutStripeAchScreen = (props: any) => {
                     const log = `\nonError: ${JSON.stringify(error)}\n`;
                     console.log(log);
                 },
-                onInvalid: (data: PrimerInvalidComponentData<AchUserDetailsValidatableData>) => {
+                onInvalid: (data: PrimerInvalidComponentData<AchValidatableData>) => {
                     const log = `\nonInvalid: ${JSON.stringify(data)}\n`;
                     console.log(log);
                     let error = data?.errors[0]?.description ?? null
@@ -68,7 +68,7 @@ const HeadlessCheckoutStripeAchScreen = (props: any) => {
                             break;
                     }
                 },
-                onValid: (data: PrimerValidComponentData<AchUserDetailsValidatableData>) => {
+                onValid: (data: PrimerValidComponentData<AchValidatableData>) => {
                     const log = `\nonValid: ${JSON.stringify(data)}\n`;
                     console.log(log);
                     switch (data.data.validatableDataName) {
@@ -83,11 +83,11 @@ const HeadlessCheckoutStripeAchScreen = (props: any) => {
                             break;
                     }
                 },
-                onValidating: (data: PrimerValidatingComponentData<AchUserDetailsValidatableData>) => {
+                onValidating: (data: PrimerValidatingComponentData<AchValidatableData>) => {
                     const log = `\onValidating: ${JSON.stringify(data)}\n`;
                     console.log(log);
                 },
-                onValidationError: (data: PrimerComponentDataValidationError<AchUserDetailsValidatableData>) => {
+                onValidationError: (data: PrimerComponentDataValidationError<AchValidatableData>) => {
                     const log = `\nonValidationError: ${JSON.stringify(data)}\n`;
                     console.log(log);
                     switch (data.data.validatableDataName) {
