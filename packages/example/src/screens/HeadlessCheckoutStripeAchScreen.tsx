@@ -92,13 +92,13 @@ const HeadlessCheckoutStripeAchScreen = (props: any) => {
                     console.log(log);
                     switch (data.data.validatableDataName) {
                         case "firstName":
-                            setFirstNameError(data.data.error)
+                            setFirstNameError(data.error.description)
                             break;
                         case "lastName":
-                            setLastNameError(data.data.error)
+                            setLastNameError(data.error.description)
                             break;
                         case "emailAddress":
-                            setEmailAddressError(data.data.error)
+                            setEmailAddressError(data.error.description)
                             break;
                     }
                 },
