@@ -47,62 +47,107 @@ class RNTPrimerHeadlessUniversalCheckoutTests: XCTestCase {
     // MARK: - Decision Handlers
 
     func testHandleTokenizationNewClientToken() {
-        let expectation = self.expectation(description: "HandleTokenizationNewClientToken completes")
+        let handlerExpectation = self.expectation(description: "HandleTokenizationNewClientToken handler executed")
+        let resolverExpectation = self.expectation(description: "HandleTokenizationNewClientToken resolver executed")
 
+        // Set the handler
+        rnPrimerHeadlessUniversalCheckout.primerDidTokenizePaymentMethodDecisionHandler = { newClientToken, _ in
+            XCTAssertEqual(newClientToken, "newClientToken")
+            handlerExpectation.fulfill()
+        }
+
+        // Call the method
         rnPrimerHeadlessUniversalCheckout.handleTokenizationNewClientToken("newClientToken", resolver: { _ in
-            expectation.fulfill()
+            resolverExpectation.fulfill()
         }, rejecter: { _, _, _ in
             XCTFail("HandleTokenizationNewClientToken failed")
         })
 
-        waitForExpectations(timeout: 2.0, handler: nil)
+        wait(for: [handlerExpectation, resolverExpectation], timeout: 2.0)
+        XCTAssertNil(rnPrimerHeadlessUniversalCheckout.primerDidTokenizePaymentMethodDecisionHandler)
     }
 
     func testHandleResumeWithNewClientToken() {
-        let expectation = self.expectation(description: "HandleResumeWithNewClientToken completes")
+        let handlerExpectation = self.expectation(description: "HandleResumeWithNewClientToken handler executed")
+        let resolverExpectation = self.expectation(description: "HandleResumeWithNewClientToken resolver executed")
 
+        // Set the handler
+        rnPrimerHeadlessUniversalCheckout.primerDidResumeWithDecisionHandler = { newClientToken, _ in
+            XCTAssertEqual(newClientToken, "newClientToken")
+            handlerExpectation.fulfill()
+        }
+
+        // Call the method
         rnPrimerHeadlessUniversalCheckout.handleResumeWithNewClientToken("newClientToken", resolver: { _ in
-            expectation.fulfill()
+            resolverExpectation.fulfill()
         }, rejecter: { _, _, _ in
             XCTFail("HandleResumeWithNewClientToken failed")
         })
 
-        waitForExpectations(timeout: 2.0, handler: nil)
+        wait(for: [handlerExpectation, resolverExpectation], timeout: 2.0)
+        XCTAssertNil(rnPrimerHeadlessUniversalCheckout.primerDidResumeWithDecisionHandler)
     }
 
     func testHandleCompleteFlow() {
-        let expectation = self.expectation(description: "HandleCompleteFlow completes")
+        let handlerExpectation = self.expectation(description: "HandleCompleteFlow handler executed")
+        let resolverExpectation = self.expectation(description: "HandleCompleteFlow resolver executed")
 
+        // Set the handler
+        rnPrimerHeadlessUniversalCheckout.primerDidResumeWithDecisionHandler = { newClientToken, _ in
+            XCTAssertNil(newClientToken)
+            handlerExpectation.fulfill()
+        }
+
+        // Call the method
         rnPrimerHeadlessUniversalCheckout.handleCompleteFlow({ _ in
-            expectation.fulfill()
+            resolverExpectation.fulfill()
         }, rejecter: { _, _, _ in
             XCTFail("HandleCompleteFlow failed")
         })
 
-        waitForExpectations(timeout: 2.0, handler: nil)
+        wait(for: [handlerExpectation, resolverExpectation], timeout: 2.0)
+        XCTAssertNil(rnPrimerHeadlessUniversalCheckout.primerDidResumeWithDecisionHandler)
     }
 
     func testHandlePaymentCreationAbort() {
-        let expectation = self.expectation(description: "HandlePaymentCreationAbort completes")
+        let handlerExpectation = self.expectation(description: "HandlePaymentCreationAbort handler executed")
+        let resolverExpectation = self.expectation(description: "HandlePaymentCreationAbort resolver executed")
 
+        // Set the handler
+        rnPrimerHeadlessUniversalCheckout.primerWillCreatePaymentWithDataDecisionHandler = { errorMessage in
+            XCTAssertEqual(errorMessage, "errorMessage")
+            handlerExpectation.fulfill()
+        }
+
+        // Call the method
         rnPrimerHeadlessUniversalCheckout.handlePaymentCreationAbort("errorMessage", resolver: { _ in
-            expectation.fulfill()
+            resolverExpectation.fulfill()
         }, rejecter: { _, _, _ in
             XCTFail("HandlePaymentCreationAbort failed")
         })
 
-        waitForExpectations(timeout: 2.0, handler: nil)
+        wait(for: [handlerExpectation, resolverExpectation], timeout: 2.0)
+        XCTAssertNil(rnPrimerHeadlessUniversalCheckout.primerWillCreatePaymentWithDataDecisionHandler)
     }
 
     func testHandlePaymentCreationContinue() {
-        let expectation = self.expectation(description: "HandlePaymentCreationContinue completes")
+        let handlerExpectation = self.expectation(description: "HandlePaymentCreationContinue handler executed")
+        let resolverExpectation = self.expectation(description: "HandlePaymentCreationContinue resolver executed")
 
+        // Set the handler
+        rnPrimerHeadlessUniversalCheckout.primerWillCreatePaymentWithDataDecisionHandler = { errorMessage in
+            XCTAssertNil(errorMessage)
+            handlerExpectation.fulfill()
+        }
+
+        // Call the method
         rnPrimerHeadlessUniversalCheckout.handlePaymentCreationContinue({ _ in
-            expectation.fulfill()
+            resolverExpectation.fulfill()
         }, rejecter: { _, _, _ in
             XCTFail("HandlePaymentCreationContinue failed")
         })
 
-        waitForExpectations(timeout: 2.0, handler: nil)
+        wait(for: [handlerExpectation, resolverExpectation], timeout: 2.0)
+        XCTAssertNil(rnPrimerHeadlessUniversalCheckout.primerWillCreatePaymentWithDataDecisionHandler)
     }
 }
