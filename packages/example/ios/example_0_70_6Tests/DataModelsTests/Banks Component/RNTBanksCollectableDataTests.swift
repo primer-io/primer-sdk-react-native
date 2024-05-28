@@ -25,16 +25,9 @@ class BanksCollectableDataRNTests: XCTestCase {
 
     func testBanksCollectableDataToBankIdRN() {
         let bankData = BanksCollectableData.bankId(bankId: "bankId123")
-        let bankIdRN: BankIdRN?
 
-        switch bankData {
-        case .bankId(let bankId):
-            bankIdRN = BankIdRN(id: bankId)
-        default:
-            bankIdRN = nil
-        }
-
-        if let bankIdRN = bankIdRN {
+        if case let .bankId(bankId) = bankData {
+            let bankIdRN = BankIdRN(id: bankId)
             XCTAssertEqual(bankIdRN.validatableDataName, "bankId")
             XCTAssertEqual(bankIdRN.id, "bankId123")
         } else {
@@ -44,16 +37,9 @@ class BanksCollectableDataRNTests: XCTestCase {
 
     func testBanksCollectableDataToFilterRN() {
         let filterData = BanksCollectableData.bankFilterText(text: "filterText")
-        let filterRN: FilterRN?
 
-        switch filterData {
-        case .bankFilterText(let text):
-            filterRN = FilterRN(text: text)
-        default:
-            filterRN = nil
-        }
-
-        if let filterRN = filterRN {
+        if case let .bankFilterText(text) = filterData {
+            let filterRN = FilterRN(text: text)
             XCTAssertEqual(filterRN.validatableDataName, "bankListFilter")
             XCTAssertEqual(filterRN.text, "filterText")
         } else {

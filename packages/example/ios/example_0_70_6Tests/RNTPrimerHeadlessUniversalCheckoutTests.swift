@@ -32,7 +32,6 @@ class RNTPrimerHeadlessUniversalCheckoutTests: XCTestCase {
 
     // MARK: - API
 
-
     func testCleanUp() {
         let expectation = self.expectation(description: "CleanUp completes")
 
