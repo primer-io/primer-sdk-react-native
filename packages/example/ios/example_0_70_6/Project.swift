@@ -69,8 +69,8 @@ let project = Project(
                                             LaunchArgument(name: "-PrimerDebugEnabled", isEnabled: true),
                                             LaunchArgument(name: "-PrimerAnalyticsDebugEnabled", isEnabled: true)
                                         ]
-                                                 )
-                                    )
-              )
+                                        )
+               )
+        )
     ]
 )
