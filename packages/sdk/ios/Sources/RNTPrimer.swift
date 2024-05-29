@@ -55,11 +55,11 @@ enum PrimerEvents: Int, CaseIterable {
 @objc(NativePrimer)
 class RNTPrimer: RCTEventEmitter {
 
-    private var primerWillCreatePaymentWithDataDecisionHandler: ((_ errorMessage: String?) -> Void)?
-    private var primerDidTokenizePaymentMethodDecisionHandler: ((_ resumeToken: String?, _ errorMessage: String?) -> Void)?
-    private var primerDidResumeWithDecisionHandler: ((_ resumeToken: String?, _ errorMessage: String?) -> Void)?
-    private var primerDidFailWithErrorDecisionHandler: ((_ errorMessage: String) -> Void)?
-    private var implementedRNCallbacks: ImplementedRNCallbacks?
+    var primerWillCreatePaymentWithDataDecisionHandler: ((_ errorMessage: String?) -> Void)?
+    var primerDidTokenizePaymentMethodDecisionHandler: ((_ resumeToken: String?, _ errorMessage: String?) -> Void)?
+    var primerDidResumeWithDecisionHandler: ((_ resumeToken: String?, _ errorMessage: String?) -> Void)?
+    var primerDidFailWithErrorDecisionHandler: ((_ errorMessage: String) -> Void)?
+    var implementedRNCallbacks: ImplementedRNCallbacks?
 
     // MARK: - INITIALIZATION & REACT NATIVE SUPPORT
 
@@ -291,13 +291,17 @@ class RNTPrimer: RCTEventEmitter {
             var body: [String: Any] = ["error": error.rnError]
             if let checkoutData = checkoutData,
                let data = try? JSONEncoder().encode(checkoutData),
-               let json = try? JSONSerialization.jsonObject(with: data){
+               let json = try? JSONSerialization.jsonObject(with: data) {
                 body["checkoutData"] = json
             }
-            print(body)
-            self.sendEvent(withName: PrimerEvents.onError.stringValue, body: body)
+            if self.bridge != nil {
+                self.sendEvent(withName: PrimerEvents.onError.stringValue, body: body)
+            } else {
+                print("Bridge is not set")
+            }
         }
     }
+
 }
 
 // MARK: - PRIMER DELEGATE
