@@ -24,7 +24,7 @@ export interface AppPaymentParameters {
     merchantName?: string;
 }
 
-export let customApiKey: string | undefined = "71347d48-c050-49c2-ac51-202525c4c0ec";
+export let customApiKey: string | undefined;
 export let customClientToken: string | undefined;
 
 // @ts-ignore

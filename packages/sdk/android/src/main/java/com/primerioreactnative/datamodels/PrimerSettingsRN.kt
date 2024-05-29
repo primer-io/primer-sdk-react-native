@@ -7,6 +7,7 @@ import com.primerioreactnative.extensions.toPrimerUIOptions
 import io.primer.android.data.settings.GooglePayButtonStyle
 import io.primer.android.data.settings.PrimerPaymentHandling
 import io.primer.android.data.settings.PrimerSettings
+import io.primer.android.ui.settings.PrimerTheme
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -44,7 +45,68 @@ data class PrimerUIOptionsRN(
   var isInitScreenEnabled: Boolean = true,
   var isSuccessScreenEnabled: Boolean = true,
   var isErrorScreenEnabled: Boolean = true,
+  var theme: PrimerThemeRN = PrimerThemeRN()
 )
+
+@Serializable
+data class PrimerThemeRN(
+  val colors: ColorThemeRN? = null,
+  val darkModeColors: ColorThemeRN? = null
+) {
+  fun toPrimerTheme(): PrimerTheme {
+    val isDarkMode = false
+
+    return PrimerTheme.buildWithDynamicValues(
+      isDarkMode = isDarkMode,
+      mainColor = when {
+        isDarkMode -> darkModeColors?.mainColor?.toHexStrColor()
+        else -> colors?.mainColor?.toHexStrColor()
+      },
+      backgroundColor = when {
+        isDarkMode -> darkModeColors?.background?.toHexStrColor()
+        else -> colors?.background?.toHexStrColor()
+      },
+      disabledColor = when {
+        isDarkMode -> darkModeColors?.disabled?.toHexStrColor()
+        else -> colors?.disabled?.toHexStrColor()
+      },
+      textColor = when {
+        isDarkMode -> darkModeColors?.text?.toHexStrColor()
+        else -> colors?.text?.toHexStrColor()
+      },
+      bordersColor = when {
+        isDarkMode -> darkModeColors?.borders?.toHexStrColor()
+        else -> colors?.borders?.toHexStrColor()
+      },
+      errorColor = when {
+        isDarkMode -> darkModeColors?.error?.toHexStrColor()
+        else -> colors?.error?.toHexStrColor()
+      }
+    )
+  }
+}
+
+@Serializable
+data class ColorThemeRN(
+  val mainColor: ColorRN? = null,
+  val contrastingColor: ColorRN? = null,
+  val background: ColorRN? = null,
+  val text: ColorRN? = null,
+  val contrastingText: ColorRN? = null,
+  val borders: ColorRN? = null, // or main color
+  val disabled: ColorRN? = null,
+  val error: ColorRN? = null,
+)
+
+@Serializable
+data class ColorRN(
+  val alpha: Int = 0,
+  val red: Int = 0,
+  val green: Int = 0,
+  val blue: Int = 0
+) {
+  fun toHexStrColor() = String.format("#%02X%02X%02X%02X", alpha, red, green, blue)
+}
 
 @Serializable
 data class PrimerDebugOptionsRN(val is3DSSanityCheckEnabled: Boolean = true)
