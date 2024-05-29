@@ -13,6 +13,7 @@ const { RNHeadlessUniversalCheckoutStripeAchUserDetailsComponent } = NativeModul
 
 const eventEmitter = new NativeEventEmitter(RNHeadlessUniversalCheckoutStripeAchUserDetailsComponent);
 export interface AchManagerProps {
+    paymentMethodType: string;
     onStep?: (data: AchStep) => void;
     onError?: (error: PrimerError) => void;
     onInvalid?: (data: PrimerInvalidComponentData<AchValidatableData>) => void;
@@ -67,25 +68,29 @@ export class PrimerHeadlessUniversalCheckoutAchManager {
     async provide(props: AchManagerProps): Promise<StripeAchComponent | any> {
         await this.configureListeners(props);
 
-        const component: StripeAchComponent = {
-            start: async () => {
-                RNHeadlessUniversalCheckoutStripeAchUserDetailsComponent.start();
-            },
-            submit: async () => {
-                RNHeadlessUniversalCheckoutStripeAchUserDetailsComponent.submit();
-            },
-            onSetFirstName: async (value: String) => {
-                RNHeadlessUniversalCheckoutStripeAchUserDetailsComponent.onSetFirstName(value);
-            },
-            onSetLastName: async (value: String) => {
-                RNHeadlessUniversalCheckoutStripeAchUserDetailsComponent.onSetLastName(value);
-            },
-            onSetEmailAddress: async (value: String) => {
-                RNHeadlessUniversalCheckoutStripeAchUserDetailsComponent.onSetEmailAddress(value);
+        if (props.paymentMethodType == "STRIPE_ACH") {
+            const component: StripeAchComponent = {
+                start: async () => {
+                    RNHeadlessUniversalCheckoutStripeAchUserDetailsComponent.start();
+                },
+                submit: async () => {
+                    RNHeadlessUniversalCheckoutStripeAchUserDetailsComponent.submit();
+                },
+                onSetFirstName: async (value: String) => {
+                    RNHeadlessUniversalCheckoutStripeAchUserDetailsComponent.onSetFirstName(value);
+                },
+                onSetLastName: async (value: String) => {
+                    RNHeadlessUniversalCheckoutStripeAchUserDetailsComponent.onSetLastName(value);
+                },
+                onSetEmailAddress: async (value: String) => {
+                    RNHeadlessUniversalCheckoutStripeAchUserDetailsComponent.onSetEmailAddress(value);
+                }
             }
+            await RNHeadlessUniversalCheckoutStripeAchUserDetailsComponent.configure();
+            return component;
+        } else {
+            return null;
         }
-        await RNHeadlessUniversalCheckoutStripeAchUserDetailsComponent.configure();
-        return component;
     }
 
     private async configureListeners(props: AchManagerProps): Promise<void> {

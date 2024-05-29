@@ -33,6 +33,7 @@ const HeadlessCheckoutStripeAchScreen = (props: any) => {
     useEffect(() => {
         (async () => {
             const achManagerProps: AchManagerProps = {
+                paymentMethodType: "STRIPE_ACH",
                 onStep: (data: AchStep) => {
                     const log = `\nonStep: ${JSON.stringify(data)}\n`;
                     console.log(log);
