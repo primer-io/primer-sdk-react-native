@@ -80,8 +80,8 @@ import { UserDetailsRetrieved, UserDetailsCollected, AchStep } from './models/ac
 export { UserDetailsRetrieved as CollectUserDetails, UserDetailsCollected, AchStep }
 import { AchFirstName, AchLastName, AchEmailAddress, AchValidatableData } from './models/ach/AchCollectableData';
 export { AchFirstName, AchLastName, AchEmailAddress, AchValidatableData };
-import { PrimerHeadlessUniversalCheckoutAchManager, StripeAchComponent, AchManagerProps } from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/AchManager';
-export { PrimerHeadlessUniversalCheckoutAchManager as AchManager, StripeAchComponent, AchManagerProps };
+import { PrimerHeadlessUniversalCheckoutAchManager, StripeAchUserDetailsComponent, AchManagerProps } from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/AchManager';
+export { PrimerHeadlessUniversalCheckoutAchManager as AchManager, StripeAchUserDetailsComponent, AchManagerProps };
 import { PrimerHeadlessUniversalCheckoutAchMandateManager } from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/AchMandateManager';
 export { PrimerHeadlessUniversalCheckoutAchMandateManager as AchMandateManager };
 

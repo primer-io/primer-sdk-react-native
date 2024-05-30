@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 import {
     AchManager,
-    StripeAchComponent,
+    StripeAchUserDetailsComponent,
     AchStep,
     PrimerError,
     PrimerInvalidComponentData,
@@ -20,7 +20,7 @@ import {
 import TextField from '../components/TextField';
 
 const achManager = new AchManager();
-let component: StripeAchComponent;
+let component: StripeAchUserDetailsComponent;
 
 const HeadlessCheckoutStripeAchScreen = (props: any) => {
     const [firstName, setFirstName] = useState<string>("");
@@ -59,13 +59,13 @@ const HeadlessCheckoutStripeAchScreen = (props: any) => {
                     let error = data?.errors[0]?.description ?? null
                     switch (data.data.validatableDataName) {
                         case "firstName":
-                            setFirstNameError(error)
+                            setFirstNameError(error);
                             break;
                         case "lastName":
-                            setLastNameError(error)
+                            setLastNameError(error);
                             break;
                         case "emailAddress":
-                            setEmailAddressError(error)
+                            setEmailAddressError(error);
                             break;
                     }
                 },
@@ -74,13 +74,13 @@ const HeadlessCheckoutStripeAchScreen = (props: any) => {
                     console.log(log);
                     switch (data.data.validatableDataName) {
                         case "firstName":
-                            setFirstNameError(null)
+                            setFirstNameError(null);
                             break;
                         case "lastName":
-                            setLastNameError(null)
+                            setLastNameError(null);
                             break;
                         case "emailAddress":
-                            setEmailAddressError(null)
+                            setEmailAddressError(null);
                             break;
                     }
                 },
@@ -93,13 +93,13 @@ const HeadlessCheckoutStripeAchScreen = (props: any) => {
                     console.log(log);
                     switch (data.data.validatableDataName) {
                         case "firstName":
-                            setFirstNameError(data.error.description)
+                            setFirstNameError(data.error.description);
                             break;
                         case "lastName":
-                            setLastNameError(data.error.description)
+                            setLastNameError(data.error.description);
                             break;
                         case "emailAddress":
-                            setEmailAddressError(data.error.description)
+                            setEmailAddressError(data.error.description);
                             break;
                     }
                 },

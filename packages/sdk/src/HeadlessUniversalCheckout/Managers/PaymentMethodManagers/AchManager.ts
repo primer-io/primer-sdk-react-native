@@ -22,7 +22,7 @@ export interface AchManagerProps {
     onValidationError?: (data: PrimerComponentDataValidationError<AchValidatableData>) => void;
 }
 
-export interface StripeAchComponent {
+export interface StripeAchUserDetailsComponent {
     /**
      * Starts the component, causing the {@link UserDetailsRetrieved} step
      * to be emitted.
@@ -65,11 +65,11 @@ export class PrimerHeadlessUniversalCheckoutAchManager {
     // API
     ///////////////////////////////////////////
 
-    async provide(props: AchManagerProps): Promise<StripeAchComponent | any> {
+    async provide(props: AchManagerProps): Promise<StripeAchUserDetailsComponent | any> {
         await this.configureListeners(props);
 
         if (props.paymentMethodType == "STRIPE_ACH") {
-            const component: StripeAchComponent = {
+            const component: StripeAchUserDetailsComponent = {
                 start: async () => {
                     RNHeadlessUniversalCheckoutStripeAchUserDetailsComponent.start();
                 },
