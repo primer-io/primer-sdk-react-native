@@ -149,10 +149,5 @@ interface IPrimerThreeDsOptions {
 //----------------------------------------
 
 interface IPrimerStripeOptions {
-  iOS?: {
-    publishableKey?: string; // TODO TWS: iOS
-  };
-  android?: {
-    publishableKey?: string;
-  };
+  publishableKey?: string;
 }

@@ -82,7 +82,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
         urlScheme: 'merchant://primer.io',
       },
       stripeOptions: {
-          publishableKey: "pk_test_51MoI84BvedTI81V7r8h9B1XSl7lqU5rEdZHx8N6qoNeXDyyhUq8ziBgWXyMlO3bPADYRdAiYFQJg51fWN784pIBH00Y5YTas27"
+          publishableKey: "pk_test_51O8zfQKUK6bXIdC2xPvSS6UvriE9kwpvttwB7H9PAzhNAZoGzLgiDOyd4WooozeWHxoRrKo6b2VjZYxNCMX3W7bk00rMDivjau"
       },
     },
     debugOptions: {

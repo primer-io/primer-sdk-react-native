@@ -114,6 +114,9 @@ repositories {
   maven {
     url "${KLARNA_DISTRIBUTION_URL}"
   }
+    maven { // TODO TWS: remove before release
+        url "https://s01.oss.sonatype.org/content/repositories/staging/"
+    }
   mavenLocal()
 }
 
@@ -126,7 +129,7 @@ dependencies {
   implementation "io.primer:3ds-android:1.4.2"
   implementation "io.primer:ipay88-my-android:1.0.3"
   implementation "io.primer:klarna-android:1.0.4"
-  implementation "io.primer:stripe-android:1.0.2-snapshot" // TODO TWS: use release version
+  implementation "io.primer:stripe-android:1.1.0" // TODO TWS: use release version
 
   implementation project(path: ':primerioreactnative')
 
