@@ -254,7 +254,14 @@ const CheckoutScreen = (props: any) => {
                 android: {
                     threeDsAppRequestorUrl: "https://primer.io"
                 }
-            }
+            },
+            stripeOptions: {
+                publishableKey: "pk_test_51O8zfQKUK6bXIdC2xPvSS6UvriE9kwpvttwB7H9PAzhNAZoGzLgiDOyd4WooozeWHxoRrKo6b2VjZYxNCMX3W7bk00rMDivjau",
+                mandateData: {
+                    fullMandateResourceKey: "stripe_ach_full_mandate_text", // TODO TWS: iOS to define localized string with this exact key
+                    // merchantName: "Primer Inc.",
+                }
+            },
         },
         uiOptions: {
             isInitScreenEnabled: true,
