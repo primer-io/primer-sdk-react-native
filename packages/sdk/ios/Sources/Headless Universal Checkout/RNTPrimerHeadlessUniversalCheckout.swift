@@ -63,11 +63,11 @@ enum PrimerHeadlessUniversalCheckoutEvents: Int, CaseIterable {
 @objc(PrimerHeadlessUniversalCheckout)
 class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
 
-    private var settings: PrimerSettings?
-    private var primerWillCreatePaymentWithDataDecisionHandler: ((_ errorMessage: String?) -> Void)?
-    private var primerDidTokenizePaymentMethodDecisionHandler: ((_ resumeToken: String?, _ errorMessage: String?) -> Void)?
-    private var primerDidResumeWithDecisionHandler: ((_ resumeToken: String?, _ errorMessage: String?) -> Void)?
-    private var implementedRNCallbacks: ImplementedRNCallbacks?
+    var settings: PrimerSettings?
+    var primerWillCreatePaymentWithDataDecisionHandler: ((_ errorMessage: String?) -> Void)?
+    var primerDidTokenizePaymentMethodDecisionHandler: ((_ resumeToken: String?, _ errorMessage: String?) -> Void)?
+    var primerDidResumeWithDecisionHandler: ((_ resumeToken: String?, _ errorMessage: String?) -> Void)?
+    var implementedRNCallbacks: ImplementedRNCallbacks?
 
     override class func requiresMainQueueSetup() -> Bool {
         return true
