@@ -21,7 +21,7 @@ class PrimerRNHeadlessUniversalCheckout(
   private val json: Json,
 ) : ReactContextBaseJavaModule(reactContext) {
 
-  private val listener = PrimerRNHeadlessUniversalCheckoutListener()
+  private val listener = PrimerRNHeadlessUniversalCheckoutListener(reactContext)
 
   init {
     listener.sendEvent = { eventName, paramsJson -> sendEvent(eventName, paramsJson) }
