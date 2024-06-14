@@ -189,8 +189,7 @@ extension RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent: Prime
     func didUpdate(validationStatus: PrimerSDK.PrimerValidationStatus, for data: PrimerSDK.PrimerCollectableData?) {
         guard let data = data as? ACHUserDetailsCollectableData else { return }
     
-        let jsonEncoder = JSONEncoder()
-        var allData = [String: Any]()
+        var errorJsonObject: Any?
         let eventName: String
         
         switch validationStatus {
@@ -199,24 +198,24 @@ extension RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent: Prime
         case .validating:
             eventName = PrimerHeadlessUniversalCheckoutComponentEvent.onValidating.stringValue
         case .invalid(let errors):
-            allData["errors"] = errors.map { $0.toPrimerValidationErrorRN() }
+            errorJsonObject = try? ["errors": errors.map { $0.toPrimerValidationErrorRN() }].toJsonObject()
             eventName = PrimerHeadlessUniversalCheckoutComponentEvent.onInvalid.stringValue
         case .error(let error):
-            allData["errors"] = [error.toPrimerErrorRN()]
+            errorJsonObject = try? ["errors": [error.toPrimerErrorRN()]].toJsonObject()
             eventName = PrimerHeadlessUniversalCheckoutComponentEvent.onValidationError.stringValue
         }
         
+        var dataJsonObject: Any?
         switch data {
         case .firstName(let value):
-            allData["data"] = data.toFirstNameRN(value: value)
+            dataJsonObject = try? ["data": data.toFirstNameRN(value: value)].toJsonObject()
         case .lastName(let value):
-            allData["data"] = data.toLastNameRN(value: value)
+            dataJsonObject = try? ["data": data.toLastNameRN(value: value)].toJsonObject()
         case .emailAddress(let value):
-            allData["data"] = data.toEmailAddressRN(value: value)
+            dataJsonObject = try? ["data": data.toEmailAddressRN(value: value)].toJsonObject()
         }
-        
-        let eventData: Data = (try? JSONSerialization.data(withJSONObject: allData, options: .fragmentsAllowed)) ?? Data()
-        sendEvent(withName: eventName, body: try? JSONSerialization.jsonObject(with: eventData, options: .allowFragments))
+        let allData = ((dataJsonObject as? [String: Any]) ?? [:]).merging((errorJsonObject as? [String: Any]) ?? [:]) { (_, new) in new }
+        sendEvent(withName: eventName, body: allData)
     }
 }
 
