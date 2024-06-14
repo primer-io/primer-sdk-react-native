@@ -43,7 +43,7 @@ import android.util.Log
 class PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent(
     private val reactContext: ReactApplicationContext,
 ) : ReactContextBaseJavaModule(reactContext) {
-  override fun getName() = "RNHeadlessUniversalCheckoutStripeAchUserDetailsComponent"
+  override fun getName() = "RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent"
 
   private var job: Job? = null
   private var viewModelStoreOwner: ViewModelStoreOwner? = null
