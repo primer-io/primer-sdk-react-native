@@ -46,6 +46,7 @@ class RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent: RCTEventE
                 throw err
             }
             self.stripeAchUserDetailsComponent = stripeAchUserDetailsComponent
+            RNTAchMandateManager.mandateDelegate = achManager.mandateDelegate
             stripeAchUserDetailsComponent.stepDelegate = self
             stripeAchUserDetailsComponent.errorDelegate = self
             stripeAchUserDetailsComponent.validationDelegate = self
@@ -69,6 +70,7 @@ class RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent: RCTEventE
         _ resolver: RCTPromiseResolveBlock,
         rejecter: RCTPromiseRejectBlock
     ) {
+        RNTAchMandateManager.mandateDelegate = nil
         stripeAchUserDetailsComponent = nil
         resolver(nil)
     }

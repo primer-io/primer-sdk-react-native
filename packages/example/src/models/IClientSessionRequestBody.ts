@@ -8,6 +8,7 @@ export interface IClientSessionRequestBody {
     orderId?: string;
     currencyCode?: string;
     order?: IClientSessionOrder;
+    metadata: IClientSessionMetadata;
     customer?: IClientSessionCustomer;
     paymentMethod?: IClientSessionPaymentMethod;
 }
@@ -15,6 +16,10 @@ export interface IClientSessionRequestBody {
 export interface IClientSessionOrder {
     countryCode?: string;
     lineItems?: Array<IClientSessionLineItem>
+}
+
+export interface IClientSessionMetadata {
+    scenario?: string;
 }
 
 export interface IClientSessionCustomer {
@@ -91,6 +96,9 @@ export let appPaymentParameters: AppPaymentParameters = {
         customerId: `rn-customer-${makeRandomString(8)}`,
         orderId: `rn-order-${makeRandomString(8)}`,
         currencyCode: 'EUR',
+        metadata: {
+            "scenario": "STRIPE_ACH_ONEOFF"
+        },
         order: {
             countryCode: 'DE',
             lineItems: [

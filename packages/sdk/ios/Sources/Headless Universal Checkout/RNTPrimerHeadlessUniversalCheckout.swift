@@ -7,6 +7,7 @@
 
 import Foundation
 import PrimerSDK
+import React
 
 @objc
 enum PrimerHeadlessUniversalCheckoutEvents: Int, CaseIterable {
@@ -346,11 +347,57 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
         DispatchQueue.main.async {
             if self.implementedRNCallbacks?.isOnCheckoutAdditionalInfoImplemented == true {
                 do {
-                    let checkoutAdditionalInfoJson = try additionalInfo?.toJsonObject()
-                    self.sendEvent(
-                        withName: rnCallbackName,
-                        body: checkoutAdditionalInfoJson)
-
+                    switch additionalInfo {
+                        case let info as StripeBankAccountCollectorAdditionalInfo:
+                            // Handled internally, nothing for merchant to handle
+                            let keyWindow = UIApplication
+                                .shared
+                                .connectedScenes
+                                .flatMap { ($0 as? UIWindowScene)?.windows ?? [] }
+                                .last { $0.isKeyWindow }
+                            DispatchQueue.main.async {
+                                if let rootViewController = keyWindow?.rootViewController {
+                                    rootViewController.present(info.collectorViewController, animated: true, completion: nil)
+                                } else {
+                                    let checkoutData = PrimerCheckoutData(payment: nil, additionalInfo: additionalInfo)
+                                    self.handleRNBridgeError(
+                                        RNTNativeError(
+                                        errorId: "native-ios",
+                                        errorDescription: "Failed to retrieve root view controller, cannot present Stripe view controller",
+                                        recoverySuggestion: nil
+                                        ),
+                                        checkoutData: checkoutData,
+                                        stopOnDebug: true
+                                    )
+                                }
+                            }
+                            return
+                        case _ as ACHMandateAdditionalInfo:
+                            self.sendEvent(
+                                withName: rnCallbackName,
+                                body: try AchAdditionalInfoDisplayMandateRN().toJsonObject()
+                            )
+                        case let info as MultibancoCheckoutAdditionalInfo:
+                            self.sendEvent(
+                                withName: rnCallbackName,
+                                body: try MultibancoCheckoutAdditionalInfoRN(expiresAt: info.expiresAt, reference: info.reference, entity: info.entity).toJsonObject()
+                            )
+                        case let info as PromptPayCheckoutAdditionalInfo:
+                            self.sendEvent(
+                                withName: rnCallbackName,
+                                body: try PromptPayCheckoutAdditionalInfoRN(expiresAt: info.expiresAt, qrCodeUrl: info.qrCodeUrl, qrCodeBase64: info.qrCodeBase64).toJsonObject()
+                            )
+                        case let info as XenditCheckoutVoucherAdditionalInfo:
+                            self.sendEvent(
+                                withName: rnCallbackName,
+                                body: try XenditCheckoutVoucherAdditionalInfoRN(expiresAt: info.expiresAt, couponCode: info.couponCode, retailerName: info.retailerName).toJsonObject()
+                            )
+                        default:
+                            self.sendEvent(
+                                withName: rnCallbackName,
+                                body: try additionalInfo?.toJsonObject()
+                            )
+                    }
                 } catch {
                     let checkoutData = PrimerCheckoutData(payment: nil, additionalInfo: additionalInfo)
                     self.handleRNBridgeError(error, checkoutData: checkoutData, stopOnDebug: true)
