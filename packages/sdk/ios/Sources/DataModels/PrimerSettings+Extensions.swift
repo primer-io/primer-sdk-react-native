@@ -80,12 +80,18 @@ extension PrimerSettings {
             if let rnThreeDsAppRequestorUrlStr = (((settingsJson["paymentMethodOptions"] as? [String: Any])?["threeDsOptions"] as? [String: Any])?["iOS"] as? [String: Any])?["threeDsAppRequestorUrl"] as? String {
                 threeDsOptions = PrimerThreeDsOptions(threeDsAppRequestorUrl: rnThreeDsAppRequestorUrlStr)
             }
+            
+            var stripeOptions: PrimerStripeACHOptions?
+            if let rnStripePublishableKey = ((settingsJson["paymentMethodOptions"] as? [String: Any])?["stripeOptions"] as? [String: Any])?["publishableKey"] as? String {
+                stripeOptions = PrimerStripeACHOptions(publishableKey: rnStripePublishableKey)
+            }
 
             let paymentMethodOptions = PrimerPaymentMethodOptions(
                 urlScheme: rnUrlScheme,
                 applePayOptions: applePayOptions,
                 klarnaOptions: klarnaOptions,
-                threeDsOptions: threeDsOptions)
+                threeDsOptions: threeDsOptions,
+                stripeOptions: stripeOptions)
 
             self.init(
                 paymentHandling: paymentHandling,

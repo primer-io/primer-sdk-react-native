@@ -39,6 +39,6 @@ data class XenditCheckoutVoucherAdditionalInfoRN(
 }
 
 @Serializable
-class AchAdditionalInfoDisplayMandateRN : PrimerCheckoutVoucherInfoRN() {
+class AchAdditionalInfoDisplayMandateRN : PrimerCheckoutAdditionalInfoRN() {
   override val additionalInfoName: String = "DisplayStripeAchMandateAdditionalInfo"
 }
