@@ -34,10 +34,6 @@ class ReactNativePackage : ReactPackage {
 
   override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
     return mutableListOf(
-      PrimerCardNumberEditTextManager(),
-      PrimerCardholderNameEditTextManager(),
-      PrimerExpiryEditTextManager(),
-      PrimerCvvEditTextManager(),
       PrimerKlarnaPaymentViewManager(reactContext)
     )
   }
