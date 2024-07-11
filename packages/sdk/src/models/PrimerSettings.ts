@@ -96,6 +96,24 @@ interface IPrimerApplePayOptions {
   isCaptureBillingAddressEnabled?: boolean;
   showApplePayForUnsupportedDevice?: boolean;
   checkProvidedNetworks?: boolean;
+  shippingMethods?: {
+    /** A short, localized description. */
+    label: string;
+    /** The summary item’s amount. */
+    amount: string;
+    /** A unique identifier for the shipping method. */
+    identifier: string;
+    /** The summary item’s type that indicates whether the amount is final.
+     * @default 'final'
+     */
+    type?: 'pending' | 'final';
+    /** A user-readable description of the shipping method. */
+    detail?: string;
+    /** The unix timestamp of the start date of the expected range of delivery or shipping dates for a package, or the time range when an item is available for pickup. */
+    startDate?: number;
+    /** The unix timestamp of the end date of the expected range of delivery or shipping dates for a package, or the time range when an item is available for pickup. */
+    endDate?: number;
+  }[];
 }
 
 interface IPrimerCardPaymentOptions {
