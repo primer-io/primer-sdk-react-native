@@ -240,6 +240,7 @@ const CheckoutScreen = (props: any) => {
                 merchantIdentifier: "merchant.checkout.team",
                 merchantName: appPaymentParameters.merchantName || "Merchant name",
                 isCaptureBillingAddressEnabled: true,
+                isCaptureShippingAddressEnabled: true,
                 showApplePayForUnsupportedDevice: true,
                 checkProvidedNetworks: false
             },
