@@ -261,34 +261,36 @@ const CheckoutScreen = (props: any) => {
             isSuccessScreenEnabled: true,
             isErrorScreenEnabled: true,
             theme: {
-                colors: {
-                    mainColor: {
-                        red: 214,
-                        green: 255,
-                        blue: 1,
-                        alpha: 255
-                    },
-                    background: {
-                        red: 255,
-                        green: 214,
-                        blue: 1,
-                        alpha: 255
-                    }
-                },
-                darkModeColors: {
-                    mainColor: {
-                        red: 1,
-                        green: 255,
-                        blue: 1,
-                        alpha: 255
-                    },
-                    background: {
-                        red: 255,
-                        green: 1,
-                        blue: 255,
-                        alpha: 255
-                    }
-                }
+                // 👇 Uncomment to try theming drop-in checkout
+                
+                // colors: {
+                //     mainColor: {
+                //         red: 214,
+                //         green: 255,
+                //         blue: 1,
+                //         alpha: 255
+                //     },
+                //     background: {
+                //         red: 255,
+                //         green: 214,
+                //         blue: 1,
+                //         alpha: 255
+                //     }
+                // },
+                // darkModeColors: {
+                //     mainColor: {
+                //         red: 1,
+                //         green: 255,
+                //         blue: 1,
+                //         alpha: 255
+                //     },
+                //     background: {
+                //         red: 255,
+                //         green: 1,
+                //         blue: 255,
+                //         alpha: 255
+                //     }
+                // }
             }
         },
         debugOptions: {
