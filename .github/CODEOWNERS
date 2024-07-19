@@ -1,0 +1,5 @@
+*                       @primer-io/acceptance-mobile
+
+.github/CODEOWNERS      @primer-io/checkout-pci-reviewers
+.github/workflows       @primer-io/checkout-pci-reviewers
+.circleci               @primer-io/checkout-pci-reviewers
