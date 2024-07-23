@@ -7,6 +7,7 @@ export interface IClientSessionRequestBody {
     customerId?: string;
     orderId?: string;
     currencyCode?: string;
+    metadata?: IClientSessionMetadata;
     order?: IClientSessionOrder;
     customer?: IClientSessionCustomer;
     paymentMethod?: IClientSessionPaymentMethod;
@@ -15,6 +16,15 @@ export interface IClientSessionRequestBody {
 export interface IClientSessionOrder {
     countryCode?: string;
     lineItems?: Array<IClientSessionLineItem>
+}
+
+export interface IClientSessionMetadata {
+    scenario?: string;
+    deviceInfo?: IClientSessionDeviceInfo;
+}
+
+export interface IClientSessionDeviceInfo {
+    ipAddress?: string;
 }
 
 export interface IClientSessionCustomer {
@@ -91,6 +101,12 @@ export let appPaymentParameters: AppPaymentParameters = {
         customerId: `rn-customer-${makeRandomString(8)}`,
         orderId: `rn-order-${makeRandomString(8)}`,
         currencyCode: 'EUR',
+        metadata: {
+          scenario: 'STRIPE_ACH_ONEOFF',
+          deviceInfo : {
+            ipAddress: '127.0.0.1'
+          } 
+        },
         order: {
             countryCode: 'DE',
             lineItems: [
