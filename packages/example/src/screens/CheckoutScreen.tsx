@@ -254,41 +254,50 @@ const CheckoutScreen = (props: any) => {
                 android: {
                     threeDsAppRequestorUrl: "https://primer.io"
                 }
-            }
+            },
+            stripeOptions: {
+                publishableKey: "pk_test_51O8zfQKUK6bXIdC2xPvSS6UvriE9kwpvttwB7H9PAzhNAZoGzLgiDOyd4WooozeWHxoRrKo6b2VjZYxNCMX3W7bk00rMDivjau",
+                mandateData: {
+                    fullMandateResourceKey: "stripe_ach_full_mandate_text", // TODO TWS: iOS to define localized string with this exact key
+                    // merchantName: "Primer Inc.",
+                }
+            },
         },
         uiOptions: {
             isInitScreenEnabled: true,
             isSuccessScreenEnabled: true,
             isErrorScreenEnabled: true,
             theme: {
-                colors: {
-                    mainColor: {
-                        red: 214,
-                        green: 255,
-                        blue: 1,
-                        alpha: 255
-                    },
-                    background: {
-                        red: 255,
-                        green: 214,
-                        blue: 1,
-                        alpha: 255
-                    }
-                },
-                darkModeColors: {
-                    mainColor: {
-                        red: 1,
-                        green: 255,
-                        blue: 1,
-                        alpha: 255
-                    },
-                    background: {
-                        red: 255,
-                        green: 1,
-                        blue: 255,
-                        alpha: 255
-                    }
-                }
+                // 👇 Uncomment to try theming drop-in checkout
+                
+                // colors: {
+                //     mainColor: {
+                //         red: 214,
+                //         green: 255,
+                //         blue: 1,
+                //         alpha: 255
+                //     },
+                //     background: {
+                //         red: 255,
+                //         green: 214,
+                //         blue: 1,
+                //         alpha: 255
+                //     }
+                // },
+                // darkModeColors: {
+                //     mainColor: {
+                //         red: 1,
+                //         green: 255,
+                //         blue: 1,
+                //         alpha: 255
+                //     },
+                //     background: {
+                //         red: 255,
+                //         green: 1,
+                //         blue: 255,
+                //         alpha: 255
+                //     }
+                // }
             }
         },
         debugOptions: {

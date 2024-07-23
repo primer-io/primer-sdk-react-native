@@ -25,12 +25,13 @@ class ErrorExtensionTests: XCTestCase {
     }
 
     func testRNErrorForPrimerError() {
-        let error = PrimerError.generic(message: "message", userInfo: ["test1": "test2"], diagnosticsId: "diagnosticsId123")
+        let error = PrimerError.unknown(userInfo: ["test1": "test2"], diagnosticsId: "diagnosticsId123")
 
         let expected: [String: String] = [
-            "errorId": "primer-generic",
+            "description": "[unknown] Something went wrong (diagnosticsId: diagnosticsId123)",
+            "errorId": "unknown",
             "diagnosticsId": "diagnosticsId123",
-            "description": "[primer-generic] Generic error | Message: message | Data: {\n  \"test1\" : \"test2\"\n}) (diagnosticsId: diagnosticsId123)"
+            "recoverySuggestion": "Contact Primer and provide them diagnostics id diagnosticsId123"
         ]
         XCTAssertEqual(error.rnError, expected)
     }
