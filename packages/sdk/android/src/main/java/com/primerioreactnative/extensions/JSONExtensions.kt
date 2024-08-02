@@ -2,14 +2,36 @@ package com.primerioreactnative.extensions
 
 import org.json.JSONObject
 import org.json.JSONArray
-import com.primerioreactnative.utils.convertJsonToMap
-import com.primerioreactnative.utils.convertJsonToArray
-import com.facebook.react.bridge.WritableMap
-import com.facebook.react.bridge.Arguments
-import com.facebook.react.bridge.WritableArray
+import io.primer.android.domain.error.models.PrimerError
+import io.primer.android.components.domain.error.PrimerValidationError
+import kotlinx.serialization.json.Json
+import com.primerioreactnative.datamodels.PrimerValidationErrorRN
+import kotlinx.serialization.encodeToString
 
-fun JSONObject?.toWritableMap(): WritableMap =
-    this?.let { convertJsonToMap(this) } ?: Arguments.createMap()
+private val json = Json { encodeDefaults = true }
 
-fun JSONArray?.toWritableArray(): WritableArray =
-    this?.let { convertJsonToArray(this) } ?: Arguments.createArray()
+fun JSONObject.putErrors(error: PrimerError) {
+  put(
+    "errors",
+      JSONArray().apply { put(JSONObject(json.encodeToString(error.toPrimerErrorRN()))) }
+    )
+  }
+
+fun JSONObject.putValidationErrors(errors: List<PrimerValidationError>) {
+  put(
+      "errors",
+      JSONArray(
+        errors.map {
+            JSONObject(
+                json.encodeToString(
+                    PrimerValidationErrorRN(
+                        it.errorId,
+                        it.description,
+                        it.diagnosticsId,
+                    )
+                )
+            )
+          }
+      )
+  )
+}

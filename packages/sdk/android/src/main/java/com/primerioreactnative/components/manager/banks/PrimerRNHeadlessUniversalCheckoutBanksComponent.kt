@@ -20,7 +20,6 @@ import com.primerioreactnative.datamodels.extensions.banks.toFilterRN
 import com.primerioreactnative.datamodels.extensions.banks.toLoadingRN
 import com.primerioreactnative.datamodels.extensions.banks.toBanksRetrievedRN
 import com.primerioreactnative.datamodels.NamedComponentStep
-import com.primerioreactnative.extensions.toPrimerErrorRN
 import com.primerioreactnative.extensions.toPrimerIssuingBankRN
 import com.primerioreactnative.utils.convertJsonToMap
 import com.primerioreactnative.utils.convertJsonToArray
@@ -30,8 +29,10 @@ import io.primer.android.components.manager.banks.composable.BanksStep
 import io.primer.android.components.manager.componentWithRedirect.PrimerHeadlessUniversalCheckoutComponentWithRedirectManager
 import io.primer.android.components.manager.componentWithRedirect.component.BanksComponent
 import io.primer.android.components.manager.core.composable.PrimerValidationStatus
-import com.primerioreactnative.extensions.toWritableMap
-import com.primerioreactnative.extensions.toWritableArray
+import com.primerioreactnative.utils.toWritableArray
+import com.primerioreactnative.utils.toWritableMap
+import com.primerioreactnative.extensions.putErrors
+import com.primerioreactnative.extensions.putValidationErrors
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -135,14 +136,7 @@ class PrimerRNHeadlessUniversalCheckoutBanksComponent(
     banksComponent?.componentError?.collectLatest { error ->
       sendEvent(
           PrimerHeadlessUniversalCheckoutComponentEvent.ON_ERROR.eventName,
-          JSONObject().apply { 
-            put(
-              "errors", 
-              JSONArray().apply { 
-                put(JSONObject(json.encodeToString(error.toPrimerErrorRN())))
-              }
-            ) 
-          }
+          JSONObject().apply { putErrors(error) }
       )
     }
   }
@@ -184,22 +178,7 @@ class PrimerRNHeadlessUniversalCheckoutBanksComponent(
               PrimerHeadlessUniversalCheckoutComponentEvent.ON_IN_VALID.eventName,
               JSONObject().apply {
                 putData(validationStatus.collectableData as BanksCollectableData)
-                put(
-                    "errors",
-                    JSONArray(
-                        validationStatus.validationErrors.map {
-                          JSONObject(
-                              json.encodeToString(
-                                  PrimerValidationErrorRN(
-                                      it.errorId,
-                                      it.description,
-                                      it.diagnosticsId,
-                                  )
-                              )
-                          )
-                        }
-                    )
-                )
+                putValidationErrors(validationStatus.validationErrors)
               }
           )
         }
@@ -216,12 +195,7 @@ class PrimerRNHeadlessUniversalCheckoutBanksComponent(
               PrimerHeadlessUniversalCheckoutComponentEvent.ON_VALIDATION_ERROR.eventName,
               JSONObject().apply {
                 putData(validationStatus.collectableData as BanksCollectableData)
-                put(
-                    "errors",
-                    JSONArray().apply { 
-                      put(JSONObject(json.encodeToString(validationStatus.error.toPrimerErrorRN())))
-                    }
-                )
+                putErrors(validationStatus.error)
               }
           )
         }
