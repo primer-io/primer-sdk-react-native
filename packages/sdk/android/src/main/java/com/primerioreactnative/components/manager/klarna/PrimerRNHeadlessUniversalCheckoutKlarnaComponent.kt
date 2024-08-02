@@ -22,10 +22,11 @@ import com.primerioreactnative.extensions.klarna.toPaymentSessionAuthorizedRN
 import com.primerioreactnative.extensions.klarna.toPaymentSessionCreatedRN
 import com.primerioreactnative.extensions.klarna.toPaymentSessionFinalizedRN
 import com.primerioreactnative.extensions.klarna.toPaymentViewLoadedRN
-import com.primerioreactnative.extensions.toPrimerErrorRN
 import com.primerioreactnative.utils.errorTo
 import com.primerioreactnative.utils.toWritableArray
 import com.primerioreactnative.utils.toWritableMap
+import com.primerioreactnative.extensions.putErrors
+import com.primerioreactnative.extensions.putValidationErrors
 import io.primer.android.PrimerSessionIntent
 import io.primer.android.components.manager.core.composable.PrimerValidationStatus
 import io.primer.android.components.manager.klarna.PrimerHeadlessUniversalCheckoutKlarnaManager
@@ -124,14 +125,7 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaComponent(
         klarnaComponent?.componentError?.collectLatest { error ->
             sendEvent(
                     PrimerHeadlessUniversalCheckoutComponentEvent.ON_ERROR.eventName,
-                    JSONObject().apply {
-                        put(
-                                "errors",
-                                JSONArray().apply {
-                                    put(JSONObject(json.encodeToString(error.toPrimerErrorRN())))
-                                }
-                        )
-                    }
+                    JSONObject().apply { putErrors(error) }
             )
         }
     }
@@ -189,22 +183,7 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaComponent(
                             PrimerHeadlessUniversalCheckoutComponentEvent.ON_IN_VALID.eventName,
                             JSONObject().apply {
                                 putData(validationStatus.collectableData as KlarnaPaymentCollectableData)
-                                put(
-                                        "errors",
-                                        JSONArray(
-                                                validationStatus.validationErrors.map {
-                                                    JSONObject(
-                                                            json.encodeToString(
-                                                                    PrimerValidationErrorRN(
-                                                                            it.errorId,
-                                                                            it.description,
-                                                                            it.diagnosticsId,
-                                                                    )
-                                                            )
-                                                    )
-                                                }
-                                        )
-                                )
+                                putValidationErrors(validationStatus.validationErrors)
                             }
                     )
                 }
@@ -221,12 +200,7 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaComponent(
                             PrimerHeadlessUniversalCheckoutComponentEvent.ON_VALIDATION_ERROR.eventName,
                             JSONObject().apply {
                                 putData(validationStatus.collectableData as KlarnaPaymentCollectableData)
-                                put(
-                                        "errors",
-                                        JSONArray().apply {
-                                            put(JSONObject(json.encodeToString(validationStatus.error.toPrimerErrorRN())))
-                                        }
-                                )
+                                putErrors(validationStatus.error)
                             }
                     )
                 }

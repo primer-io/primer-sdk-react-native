@@ -12,6 +12,7 @@ import com.primerioreactnative.extensions.toCheckoutAdditionalInfoRN
 import com.primerioreactnative.extensions.toPrimerCheckoutDataRN
 import com.primerioreactnative.extensions.toPrimerClientSessionRN
 import com.primerioreactnative.extensions.toPrimerPaymentMethodDataRN
+import com.primerioreactnative.extensions.removeType
 import com.primerioreactnative.utils.PrimerHeadlessUniversalCheckoutImplementedRNCallbacks
 import com.primerioreactnative.utils.errorTo
 import com.primerioreactnative.utils.toWritableMap
@@ -121,7 +122,7 @@ class PrimerRNHeadlessUniversalCheckoutListener(
         PrimerHeadlessUniversalCheckoutEvent.ON_CHECKOUT_COMPLETE.eventName,
         JSONObject(Json.encodeToString(checkoutData.toPrimerCheckoutDataRN())).apply {
           val additionalInfoJson = optJSONObject(Keys.ADDITIONAL_INFO)
-          additionalInfoJson?.remove("type")
+          additionalInfoJson?.removeType()
           putOpt(Keys.ADDITIONAL_INFO, additionalInfoJson)
         }
       )
@@ -233,7 +234,7 @@ class PrimerRNHeadlessUniversalCheckoutListener(
         sendEvent?.invoke(
           PrimerHeadlessUniversalCheckoutEvent.ON_CHECKOUT_PENDING.eventName,
           JSONObject(Json.encodeToString(additionalInfo.toCheckoutAdditionalInfoRN())).apply {
-            remove("type")
+            removeType()
           }
         )
       }
@@ -253,7 +254,7 @@ class PrimerRNHeadlessUniversalCheckoutListener(
             sendEvent?.invoke(
                 PrimerHeadlessUniversalCheckoutEvent.ON_CHECKOUT_ADDITIONAL_INFO.eventName,
                 JSONObject(json.encodeToString(additionalInfo.toCheckoutAdditionalInfoRN())).apply {
-                  remove("type")
+                  removeType()
                 }
             )
         }
@@ -275,7 +276,7 @@ class PrimerRNHeadlessUniversalCheckoutListener(
             sendEvent?.invoke(
                 PrimerHeadlessUniversalCheckoutEvent.ON_CHECKOUT_ADDITIONAL_INFO.eventName,
                 JSONObject(json.encodeToString(additionalInfo.toCheckoutAdditionalInfoRN())).apply {
-                  remove("type")
+                  removeType()
                 }
             )
         }

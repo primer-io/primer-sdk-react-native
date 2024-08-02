@@ -114,9 +114,6 @@ repositories {
   maven {
     url "${KLARNA_DISTRIBUTION_URL}"
   }
-    maven { // TODO TWS: remove before release
-        url "https://s01.oss.sonatype.org/content/repositories/staging/"
-    }
   mavenLocal()
 }
 

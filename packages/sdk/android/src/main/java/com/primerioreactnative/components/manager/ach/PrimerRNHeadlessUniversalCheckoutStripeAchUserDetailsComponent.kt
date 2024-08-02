@@ -21,7 +21,6 @@ import com.primerioreactnative.datamodels.extensions.ach.toEmailAddressRN
 import com.primerioreactnative.datamodels.extensions.ach.toFirstNameRN
 import com.primerioreactnative.datamodels.extensions.ach.toLastNameRN
 import com.primerioreactnative.datamodels.extensions.ach.toUserDetailsRetrievedRN
-import com.primerioreactnative.extensions.toPrimerErrorRN
 import com.primerioreactnative.utils.convertJsonToArray
 import com.primerioreactnative.utils.convertJsonToMap
 import com.primerioreactnative.utils.errorTo
@@ -30,6 +29,11 @@ import io.primer.android.components.manager.core.composable.PrimerValidationStat
 import io.primer.android.components.presentation.paymentMethods.nativeUi.stripe.ach.StripeAchUserDetailsComponent
 import io.primer.android.components.presentation.paymentMethods.nativeUi.stripe.ach.composable.AchUserDetailsCollectableData
 import io.primer.android.components.presentation.paymentMethods.nativeUi.stripe.ach.composable.AchUserDetailsStep
+import io.primer.android.domain.error.models.PrimerError
+import com.primerioreactnative.utils.toWritableArray
+import com.primerioreactnative.utils.toWritableMap
+import com.primerioreactnative.extensions.putErrors
+import com.primerioreactnative.extensions.putValidationErrors
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.collectLatest
@@ -150,12 +154,7 @@ class PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent(
     component?.componentError?.collectLatest { error ->
       sendEvent(
           PrimerHeadlessUniversalCheckoutComponentEvent.ON_ERROR.eventName,
-          JSONObject().apply {
-            put(
-                "errors",
-                JSONArray().apply { put(JSONObject(json.encodeToString(error.toPrimerErrorRN()))) }
-            )
-          }
+          JSONObject().apply { putErrors(error) }
       )
     }
   }
@@ -195,22 +194,7 @@ class PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent(
               PrimerHeadlessUniversalCheckoutComponentEvent.ON_IN_VALID.eventName,
               JSONObject().apply {
                 putData(validationStatus.collectableData as AchUserDetailsCollectableData)
-                put(
-                    "errors",
-                    JSONArray(
-                        validationStatus.validationErrors.map {
-                          JSONObject(
-                              json.encodeToString(
-                                  PrimerValidationErrorRN(
-                                      it.errorId,
-                                      it.description,
-                                      it.diagnosticsId,
-                                  )
-                              )
-                          )
-                        }
-                    )
-                )
+                putValidationErrors(validationStatus.validationErrors)
               }
           )
         }
@@ -227,12 +211,7 @@ class PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent(
               PrimerHeadlessUniversalCheckoutComponentEvent.ON_VALIDATION_ERROR.eventName,
               JSONObject().apply {
                 putData(validationStatus.collectableData as AchUserDetailsCollectableData)
-                put(
-                    "errors",
-                    JSONArray().apply {
-                      put(JSONObject(json.encodeToString(validationStatus.error.toPrimerErrorRN())))
-                    }
-                )
+                putErrors(validationStatus.error)
               }
           )
         }
@@ -260,12 +239,6 @@ class PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent(
   @ReactMethod fun addListener(eventName: String?) = Unit
 
   @ReactMethod fun removeListeners(count: Int?) = Unit
-
-  private fun JSONObject?.toWritableMap(): WritableMap =
-      this?.let { convertJsonToMap(this) } ?: Arguments.createMap()
-
-  private fun JSONArray?.toWritableArray(): WritableArray =
-      this?.let { convertJsonToArray(this) } ?: Arguments.createArray()
 
   private fun sendEvent(name: String, data: JSONObject?) {
     reactApplicationContext
