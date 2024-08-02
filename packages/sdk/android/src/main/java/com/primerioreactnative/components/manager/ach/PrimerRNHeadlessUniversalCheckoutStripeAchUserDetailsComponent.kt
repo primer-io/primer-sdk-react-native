@@ -30,6 +30,8 @@ import io.primer.android.components.manager.core.composable.PrimerValidationStat
 import io.primer.android.components.presentation.paymentMethods.nativeUi.stripe.ach.StripeAchUserDetailsComponent
 import io.primer.android.components.presentation.paymentMethods.nativeUi.stripe.ach.composable.AchUserDetailsCollectableData
 import io.primer.android.components.presentation.paymentMethods.nativeUi.stripe.ach.composable.AchUserDetailsStep
+import com.primerioreactnative.extensions.toWritableMap
+import com.primerioreactnative.extensions.toWritableArray
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.collectLatest
@@ -260,12 +262,6 @@ class PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent(
   @ReactMethod fun addListener(eventName: String?) = Unit
 
   @ReactMethod fun removeListeners(count: Int?) = Unit
-
-  private fun JSONObject?.toWritableMap(): WritableMap =
-      this?.let { convertJsonToMap(this) } ?: Arguments.createMap()
-
-  private fun JSONArray?.toWritableArray(): WritableArray =
-      this?.let { convertJsonToArray(this) } ?: Arguments.createArray()
 
   private fun sendEvent(name: String, data: JSONObject?) {
     reactApplicationContext

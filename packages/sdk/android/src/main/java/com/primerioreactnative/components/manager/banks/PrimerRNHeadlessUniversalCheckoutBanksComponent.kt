@@ -30,6 +30,8 @@ import io.primer.android.components.manager.banks.composable.BanksStep
 import io.primer.android.components.manager.componentWithRedirect.PrimerHeadlessUniversalCheckoutComponentWithRedirectManager
 import io.primer.android.components.manager.componentWithRedirect.component.BanksComponent
 import io.primer.android.components.manager.core.composable.PrimerValidationStatus
+import com.primerioreactnative.extensions.toWritableMap
+import com.primerioreactnative.extensions.toWritableArray
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -244,12 +246,6 @@ class PrimerRNHeadlessUniversalCheckoutBanksComponent(
   @ReactMethod fun addListener(eventName: String?) = Unit
 
   @ReactMethod fun removeListeners(count: Int?) = Unit
-
-  private fun JSONObject?.toWritableMap(): WritableMap =
-    this?.let { convertJsonToMap(this) } ?: Arguments.createMap()
-
-  private fun JSONArray?.toWritableArray(): WritableArray =
-    this?.let { convertJsonToArray(this) } ?: Arguments.createArray()
 
   private fun sendEvent(name: String, data: JSONObject?) {
     reactApplicationContext
