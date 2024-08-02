@@ -35,3 +35,7 @@ fun JSONObject.putValidationErrors(errors: List<PrimerValidationError>) {
       )
   )
 }
+
+fun JSONObject.removeType() {
+  remove("type")
+}
