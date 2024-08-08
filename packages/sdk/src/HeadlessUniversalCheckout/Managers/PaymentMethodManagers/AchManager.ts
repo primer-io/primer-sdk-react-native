@@ -33,19 +33,19 @@ export interface StripeAchUserDetailsComponent {
      * Sets the customer's first name.
      * @param value The customer's first name.
      */
-    onSetFirstName(value: String): Promise<void>;
+    handleFirstNameChange(value: String): Promise<void>;
 
     /**
      * Sets the customer's last name.
      * @param value The customer's last name.
      */
-    onSetLastName(value: String): Promise<void>;
+    handleLastNameChange(value: String): Promise<void>;
 
     /**
      * Sets the customer's email address.
      * @param value The customer's email address.
      */
-    onSetEmailAddress(value: String): Promise<void>;
+    handleEmailAddressChange(value: String): Promise<void>;
 
     /**
      * Submits the component, initiating the payment authorization process. 
@@ -76,13 +76,13 @@ export class PrimerHeadlessUniversalCheckoutAchManager {
                 submit: async () => {
                     RNHeadlessUniversalCheckoutStripeAchUserDetailsComponent.submit();
                 },
-                onSetFirstName: async (value: String) => {
+                handleFirstNameChange: async (value: String) => {
                     RNHeadlessUniversalCheckoutStripeAchUserDetailsComponent.onSetFirstName(value);
                 },
-                onSetLastName: async (value: String) => {
+                handleLastNameChange: async (value: String) => {
                     RNHeadlessUniversalCheckoutStripeAchUserDetailsComponent.onSetLastName(value);
                 },
-                onSetEmailAddress: async (value: String) => {
+                handleEmailAddressChange: async (value: String) => {
                     RNHeadlessUniversalCheckoutStripeAchUserDetailsComponent.onSetEmailAddress(value);
                 }
             }
