@@ -13,6 +13,7 @@ import RawRetailOutletScreen from './screens/RawRetailOutletScreen';
 import HeadlessCheckoutVaultScreen from './screens/HeadlessCheckoutVaultScreen';
 import HeadlessCheckoutKlarnaScreen from './screens/HeadlessCheckoutKlarnaScreen';
 import HeadlessCheckoutWithRedirect from './screens/HeadlessCheckoutWithRedirect';
+import HeadlessCheckoutStripeAchScreen from './screens/HeadlessCheckoutStripeAchScreen';
 import { LogBox } from 'react-native';
 
 const Stack = createNativeStackNavigator();
@@ -37,6 +38,7 @@ const App = () => {
           <Stack.Screen name="RawRetailOutlet" component={RawRetailOutletScreen} />
           <Stack.Screen name="Klarna" component={HeadlessCheckoutKlarnaScreen} />
           <Stack.Screen name="HeadlessCheckoutWithRedirect" component={HeadlessCheckoutWithRedirect} />
+          <Stack.Screen name="HeadlessCheckoutStripeAchScreen" component={HeadlessCheckoutStripeAchScreen} />
         </Stack.Navigator>
       </NavigationContainer>
   );

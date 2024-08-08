@@ -12,10 +12,8 @@
     "build:ios": "npx react-native bundle --entry-file='../sdk/index.js' --bundle-output='./ios/main.jsbundle' --dev=true --platform='ios'"
   },
   "dependencies": {
-    "@react-native-masked-view/masked-view": "^0.2.8",
-    "@react-native-picker/picker": "^2.4.8",
     "@react-native-segmented-control/segmented-control": "^2.4.0",
-    "@react-native/gradle-plugin": "^0.72.0",
+    "@react-native/gradle-plugin": "^0.74.0",
     "@react-navigation/native": "^6.1.1",
     "@react-navigation/native-stack": "^6.9.6",
     "add": "^2.0.6",

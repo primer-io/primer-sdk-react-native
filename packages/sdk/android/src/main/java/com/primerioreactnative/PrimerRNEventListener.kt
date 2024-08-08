@@ -5,6 +5,7 @@ import com.primerioreactnative.extensions.toCheckoutAdditionalInfoRN
 import com.primerioreactnative.extensions.toPrimerCheckoutDataRN
 import com.primerioreactnative.extensions.toPrimerClientSessionRN
 import com.primerioreactnative.extensions.toPrimerPaymentMethodDataRN
+import com.primerioreactnative.extensions.removeType
 import com.primerioreactnative.utils.PrimerImplementedRNCallbacks
 import com.primerioreactnative.utils.errorTo
 import io.primer.android.PrimerCheckoutListener
@@ -45,7 +46,7 @@ class PrimerRNEventListener : PrimerCheckoutListener {
         PrimerEvents.ON_CHECKOUT_COMPLETE.eventName,
         JSONObject(Json.encodeToString(checkoutData.toPrimerCheckoutDataRN())).apply {
           val additionalInfoJson = optJSONObject(Keys.ADDITIONAL_INFO)
-          additionalInfoJson?.remove("type")
+          additionalInfoJson?.removeType()
           putOpt(Keys.ADDITIONAL_INFO, additionalInfoJson)
         }
       )
@@ -158,7 +159,7 @@ class PrimerRNEventListener : PrimerCheckoutListener {
         sendEvent?.invoke(
           PrimerEvents.ON_RESUME_PENDING.eventName,
           JSONObject(Json.encodeToString(additionalInfo.toCheckoutAdditionalInfoRN())).apply {
-            remove("type")
+            removeType()
           }
         )
       }
@@ -176,7 +177,7 @@ class PrimerRNEventListener : PrimerCheckoutListener {
         sendEvent?.invoke(
           PrimerEvents.ON_CHECKOUT_RECEIVED_ADDITIONAL_INFO.eventName,
           JSONObject(Json.encodeToString(additionalInfo.toCheckoutAdditionalInfoRN())).apply {
-            remove("type")
+            removeType()
           }
         )
       }

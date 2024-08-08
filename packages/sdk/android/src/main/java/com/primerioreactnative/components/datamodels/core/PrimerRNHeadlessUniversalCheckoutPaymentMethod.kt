@@ -21,5 +21,5 @@ internal fun PrimerHeadlessUniversalCheckoutPaymentMethod.toPrimerRNHeadlessUniv
   PrimerRNHeadlessUniversalCheckoutPaymentMethod(
     paymentMethodType,
     supportedPrimerSessionIntents,
-    paymentMethodManagerCategories.minus(PrimerPaymentMethodManagerCategory.CARD_COMPONENTS)
+    paymentMethodManagerCategories
   )

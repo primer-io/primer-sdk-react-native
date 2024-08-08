@@ -27,6 +27,12 @@ jobs:
     name: Run Android unit tests
     runs-on: ubuntu-latest
     steps:
+      - name: Set up JDK 17
+        uses: actions/setup-java@99b8673ff64fbf99d8d325f52d9a5bdedb8483e9 # v4.2.1
+        with:
+          java-version: 17
+          distribution: 'corretto'
+
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
       - name: Setup Node.js
