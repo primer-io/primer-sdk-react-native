@@ -123,22 +123,22 @@ const HeadlessCheckoutStripeAchScreen = (props: any) => {
         }
     };
 
-    const onSetFirstName = async (value: string) => {
+    const handleFirstNameChange = async (value: string) => {
         console.log("Setting first name");
         setFirstName(value);
-        await component.onSetFirstName(value);
+        await component.handleFirstNameChange(value);
     };
 
-    const onSetLastName = async (value: string) => {
+    const handleLastNameChange = async (value: string) => {
         console.log("Setting last name");
         setLastName(value);
-        await component.onSetLastName(value);
+        await component.handleLastNameChange(value);
     };
 
-    const onSetEmailAddress = async (value: string) => {
+    const handleEmailAddressChange = async (value: string) => {
         console.log("Setting email address");
         setEmailAddress(value);
-        await component.onSetEmailAddress(value);
+        await component.handleEmailAddressChange(value);
     };
 
     return (
@@ -151,9 +151,9 @@ const HeadlessCheckoutStripeAchScreen = (props: any) => {
 
             <Text style={{ fontSize: 18, fontWeight: 'bold', paddingBottom: 8 }}>Stripe ACH session</Text>
 
-            <TextFieldWithError title='First name' value={firstName} error={firstNameError} onChangeText={onSetFirstName} />
-            <TextFieldWithError title='Last name' value={lastName} error={lastNameError} onChangeText={onSetLastName} />
-            <TextFieldWithError title='Email address' value={emailAddress} error={emailAddressError} onChangeText={onSetEmailAddress} />
+            <TextFieldWithError title='First name' value={firstName} error={firstNameError} onChangeText={handleFirstNameChange} />
+            <TextFieldWithError title='Last name' value={lastName} error={lastNameError} onChangeText={handleLastNameChange} />
+            <TextFieldWithError title='Email address' value={emailAddress} error={emailAddressError} onChangeText={handleEmailAddressChange} />
 
             <View style={styles.button}>
                 <Button
