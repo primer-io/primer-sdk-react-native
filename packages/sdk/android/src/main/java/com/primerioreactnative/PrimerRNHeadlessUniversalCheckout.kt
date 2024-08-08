@@ -49,7 +49,7 @@ class PrimerRNHeadlessUniversalCheckout(
       PrimerHeadlessUniversalCheckout.current.start(
         reactContext,
         clientToken,
-        settings.toPrimerSettings(),
+        settings.toPrimerSettings(reactContext),
         listener,
         listener
       )

@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 class PrimerRNAchMandateManager(
         private val reactContext: ReactApplicationContext,
 ) : ReactContextBaseJavaModule(reactContext) {
-    override fun getName() = "RNAchMandateManager"
+    override fun getName() = "RNTAchMandateManager"
 
     @ReactMethod
     fun acceptMandate(promise: Promise) {

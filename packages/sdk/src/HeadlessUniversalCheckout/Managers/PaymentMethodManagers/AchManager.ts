@@ -9,9 +9,9 @@ import { EventType, eventTypes } from './Utils/EventType';
 import { AchStep, UserDetailsRetrieved } from 'src/models/ach/AchSteps';
 import { AchValidatableData } from 'src/models/ach/AchCollectableData';
 
-const { RNHeadlessUniversalCheckoutStripeAchUserDetailsComponent } = NativeModules;
+const { RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent } = NativeModules;
 
-const eventEmitter = new NativeEventEmitter(RNHeadlessUniversalCheckoutStripeAchUserDetailsComponent);
+const eventEmitter = new NativeEventEmitter(RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent);
 export interface AchManagerProps {
     paymentMethodType: string;
     onStep?: (data: AchStep) => void;
@@ -71,22 +71,22 @@ export class PrimerHeadlessUniversalCheckoutAchManager {
         if (props.paymentMethodType == "STRIPE_ACH") {
             const component: StripeAchUserDetailsComponent = {
                 start: async () => {
-                    RNHeadlessUniversalCheckoutStripeAchUserDetailsComponent.start();
+                    RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent.start();
                 },
                 submit: async () => {
-                    RNHeadlessUniversalCheckoutStripeAchUserDetailsComponent.submit();
+                    RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent.submit();
                 },
                 handleFirstNameChange: async (value: String) => {
-                    RNHeadlessUniversalCheckoutStripeAchUserDetailsComponent.onSetFirstName(value);
+                    RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent.onSetFirstName(value);
                 },
                 handleLastNameChange: async (value: String) => {
-                    RNHeadlessUniversalCheckoutStripeAchUserDetailsComponent.onSetLastName(value);
+                    RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent.onSetLastName(value);
                 },
                 handleEmailAddressChange: async (value: String) => {
-                    RNHeadlessUniversalCheckoutStripeAchUserDetailsComponent.onSetEmailAddress(value);
+                    RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent.onSetEmailAddress(value);
                 }
             }
-            await RNHeadlessUniversalCheckoutStripeAchUserDetailsComponent.configure();
+            await RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent.configure();
             return component;
         } else {
             return null;

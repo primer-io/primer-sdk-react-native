@@ -2,7 +2,7 @@ import {
     NativeModules
 } from 'react-native';
 
-const { RNAchMandateManager } = NativeModules;
+const { RNTAchMandateManager } = NativeModules;
 
 export class PrimerHeadlessUniversalCheckoutAchMandateManager {
     ///////////////////////////////////////////
@@ -19,7 +19,7 @@ export class PrimerHeadlessUniversalCheckoutAchMandateManager {
      */
     async acceptMandate(): Promise<void> {
         console.log("Accepting mandate");
-        await RNAchMandateManager.acceptMandate();
+        await RNTAchMandateManager.acceptMandate();
     }
 
     /**
@@ -27,6 +27,6 @@ export class PrimerHeadlessUniversalCheckoutAchMandateManager {
      */
     async declineMandate(): Promise<void> {
         console.log("Declining mandate");
-        await RNAchMandateManager.declineMandate();
+        await RNTAchMandateManager.declineMandate();
     }
 }

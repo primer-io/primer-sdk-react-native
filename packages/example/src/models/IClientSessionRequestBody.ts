@@ -9,6 +9,7 @@ export interface IClientSessionRequestBody {
     currencyCode?: string;
     metadata?: IClientSessionMetadata;
     order?: IClientSessionOrder;
+    metadata: IClientSessionMetadata;
     customer?: IClientSessionCustomer;
     paymentMethod?: IClientSessionPaymentMethod;
 }
