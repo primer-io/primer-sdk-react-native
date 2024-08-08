@@ -26,6 +26,7 @@ export interface IClientSessionMetadata {
 
 export interface IClientSessionDeviceInfo {
     ipAddress?: string;
+    userAgent?: string;
 }
 
 export interface IClientSessionCustomer {
@@ -105,7 +106,8 @@ export let appPaymentParameters: AppPaymentParameters = {
         metadata: {
           scenario: 'STRIPE_ACH_ONEOFF',
           deviceInfo : {
-            ipAddress: '127.0.0.1'
+            ipAddress: '127.0.0.1',
+            userAgent: 'React Native'
           } 
         },
         order: {
