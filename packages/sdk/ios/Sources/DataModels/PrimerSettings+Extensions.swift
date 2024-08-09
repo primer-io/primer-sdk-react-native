@@ -75,6 +75,11 @@ extension PrimerSettings {
             if let rnIs3DSSanityCheckEnabled = (settingsJson["debugOptions"] as? [String: Any])?["is3DSSanityCheckEnabled"] as? Bool {
                 debugOptions = PrimerDebugOptions(is3DSSanityCheckEnabled: rnIs3DSSanityCheckEnabled)
             }
+
+            var clientSessionCachingEnabled: Bool?
+            if let clientSessionCachingEnabledValue = (settingsJson["clientSessionCachingEnabled"] as? Bool) {
+                clientSessionCachingEnabled = clientSessionCachingEnabledValue
+            }
             
             var threeDsOptions: PrimerThreeDsOptions?
             if let rnThreeDsAppRequestorUrlStr = (((settingsJson["paymentMethodOptions"] as? [String: Any])?["threeDsOptions"] as? [String: Any])?["iOS"] as? [String: Any])?["threeDsAppRequestorUrl"] as? String {
@@ -92,7 +97,8 @@ extension PrimerSettings {
                 localeData: localeData,
                 paymentMethodOptions: paymentMethodOptions,
                 uiOptions: uiOptions,
-                debugOptions: debugOptions)
+                debugOptions: debugOptions,
+                clientSessionCachingEnabled: clientSessionCachingEnabled)
         }
     }
 }

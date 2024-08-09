@@ -9,7 +9,7 @@ buildscript {
   }
 
   dependencies {
-    classpath 'com.android.tools.build:gradle:8.2.2'
+    classpath 'com.android.tools.build:gradle:8.2.1'
     // noinspection DifferentKotlinGradleVersion
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
@@ -30,8 +30,15 @@ def getExtOrIntegerDefault(name) {
   return rootProject.ext.has(name) ? rootProject.ext.get(name) : (project.properties['ReactNative_' + name]).toInteger()
 }
 
+java {
+  toolchain {
+    languageVersion.set(JavaLanguageVersion.of(17))
+  }
+}
+
 android {
   group 'io.primer'
+  namespace "com.primerioreactnative"
   compileSdkVersion getExtOrIntegerDefault('compileSdkVersion')
   buildToolsVersion getExtOrDefault('buildToolsVersion')
   defaultConfig {
@@ -40,6 +47,10 @@ android {
 
     testInstrumentationRunnerArguments runnerBuilder: 'de.mannodermaus.junit5.AndroidJUnit5Builder'
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+  }
+
+  buildFeatures {
+    buildConfig true
   }
 
   buildTypes {
@@ -53,10 +64,6 @@ android {
   }
   lintOptions {
     disable 'GradleCompatible'
-  }
-  compileOptions {
-    sourceCompatibility JavaVersion.VERSION_17
-    targetCompatibility JavaVersion.VERSION_17
   }
   kotlinOptions {
     freeCompilerArgs += '-Xjvm-default=all'
@@ -83,8 +90,8 @@ repositories {
     defaultDir = rootProject.ext.get('reactNativeAndroidRoot')
   } else {
     defaultDir = new File(
-            projectDir,
-            '/../../../node_modules/react-native/android'
+      projectDir,
+      '/../../../node_modules/react-native/android'
     )
   }
 
@@ -104,13 +111,13 @@ repositories {
       parentDir = parentDir.parentFile
 
       def androidSourcesDir = new File(
-              parentDir,
-              'node_modules/react-native'
+        parentDir,
+        'node_modules/react-native'
       )
 
       def androidPrebuiltBinaryDir = new File(
-              parentDir,
-              'node_modules/react-native/android'
+        parentDir,
+        'node_modules/react-native/android'
       )
 
       if (androidPrebuiltBinaryDir.exists()) {
@@ -135,8 +142,8 @@ repositories {
 
   if (!found) {
     throw new GradleException(
-            "${project.name}: unable to locate React Native android sources. " +
-                    "Ensure you have you installed React Native as a dependency in your project and try again."
+      "${project.name}: unable to locate React Native android sources. " +
+        "Ensure you have you installed React Native as a dependency in your project and try again."
     )
   }
 }
@@ -148,9 +155,9 @@ dependencies {
   api 'com.facebook.react:react-native:+'
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
   implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1"
-  implementation 'io.primer:android:2.27.6'
+  implementation 'io.primer:android:2.28.0'
 
-  testImplementation 'io.mockk:mockk:1.13.10'
+  testImplementation 'io.mockk:mockk:1.13.11'
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
   testImplementation 'org.junit.jupiter:junit-jupiter-params:5.10.2'
