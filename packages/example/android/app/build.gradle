@@ -63,13 +63,22 @@ def enableProguardInReleaseBuilds = false
  */
 def jscFlavor = 'org.webkit:android-jsc:+'
 
+java {
+  toolchain {
+    languageVersion.set(JavaLanguageVersion.of(17))
+  }
+}
 
 android {
   ndkVersion rootProject.ext.ndkVersion
 
-  compileSdkVersion rootProject.ext.compileSdkVersion
+  compileSdk rootProject.ext.compileSdkVersion
 
   namespace "com.example_0_70_6"
+
+  buildFeatures {
+    buildConfig true
+  }
 
   defaultConfig {
     applicationId "com.example_0_70_6"
@@ -87,6 +96,7 @@ android {
       }
     }
   }
+
   buildTypes {
     debug {
       signingConfig signingConfigs.debug
