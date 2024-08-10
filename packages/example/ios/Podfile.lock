@@ -11,7 +11,7 @@ PODS:
     - ReactCommon/turbomodule/core (= 0.72.0)
   - fmt (6.2.1)
   - glog (0.3.5)
-  - primer-io-react-native (2.26.0):
+  - primer-io-react-native (2.26.1):
     - PrimerSDK (= 2.29.0)
     - React-Core
   - Primer3DS (2.3.2)
@@ -556,7 +556,7 @@ SPEC CHECKSUMS:
   FBReactNativeSpec: 6e7e74b1ed7f0a1a469a82a67521b33285f5fef3
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
-  primer-io-react-native: e6a3a2e62336e92904b25334f3eba6fbecc1d8d7
+  primer-io-react-native: 09a6dd449a1f8a4289a862656e4839b4855a7f9a
   Primer3DS: 81e7969033230c7346a517cd609be956914738bb
   PrimerIPay88MYSDK: 436ee0be7e2c97e4e81456ccddee20175e9e3c4d
   PrimerKlarnaSDK: 83e9a1357a7247bf8fa2836fc945cf97644d601d
