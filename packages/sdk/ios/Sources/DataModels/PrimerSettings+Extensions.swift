@@ -98,7 +98,7 @@ extension PrimerSettings {
                 paymentMethodOptions: paymentMethodOptions,
                 uiOptions: uiOptions,
                 debugOptions: debugOptions,
-                clientSessionCachingEnabled: clientSessionCachingEnabled)
+                clientSessionCachingEnabled: clientSessionCachingEnabled ?? false)
         }
     }
 }
