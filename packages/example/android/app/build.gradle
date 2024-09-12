@@ -72,7 +72,7 @@ java {
 android {
   ndkVersion rootProject.ext.ndkVersion
 
-  compileSdkVersion rootProject.ext.compileSdkVersion
+  compileSdk rootProject.ext.compileSdkVersion
 
   namespace "com.example_0_70_6"
 
@@ -96,6 +96,7 @@ android {
       }
     }
   }
+
   buildTypes {
     debug {
       signingConfig signingConfigs.debug

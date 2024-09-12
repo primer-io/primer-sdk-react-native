@@ -88,6 +88,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
     debugOptions: {
       is3DSSanityCheckEnabled: false
     },
+    clientSessionCachingEnabled: true,
     headlessUniversalCheckoutCallbacks: {
       onAvailablePaymentMethodsLoad: availablePaymentMethods => {
         updateLogs(

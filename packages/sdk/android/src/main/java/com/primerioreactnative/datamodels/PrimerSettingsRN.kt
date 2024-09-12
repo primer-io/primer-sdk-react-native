@@ -18,6 +18,7 @@ data class PrimerSettingsRN(
   var paymentMethodOptions: PrimerPaymentMethodOptionsRN = PrimerPaymentMethodOptionsRN(),
   var uiOptions: PrimerUIOptionsRN = PrimerUIOptionsRN(),
   var debugOptions: PrimerDebugOptionsRN = PrimerDebugOptionsRN(),
+  var clientSessionCachingEnabled: Boolean = false
 )
 
 @Serializable
@@ -162,11 +163,12 @@ data class PrimerApayaOptionsRN(
 )
 
 fun PrimerSettingsRN.toPrimerSettings() = PrimerSettings(
-  paymentHandling,
-  localeData.toLocale(),
-  paymentMethodOptions.toPrimerPaymentMethodOptions(),
-  uiOptions.toPrimerUIOptions(),
-  debugOptions.toPrimerDebugOptions()
+  paymentHandling = paymentHandling,
+  locale = localeData.toLocale(),
+  paymentMethodOptions = paymentMethodOptions.toPrimerPaymentMethodOptions(),
+  uiOptions = uiOptions.toPrimerUIOptions(),
+  debugOptions = debugOptions.toPrimerDebugOptions(),
+  clientSessionCachingEnabled = clientSessionCachingEnabled
 )
 
 

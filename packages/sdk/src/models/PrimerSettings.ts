@@ -22,6 +22,7 @@ interface IPrimerSettings {
   paymentMethodOptions?: IPrimerPaymentMethodOptions;
   uiOptions?: IPrimerUIOptions;
   debugOptions?: IPrimerDebugOptions;
+  clientSessionCachingEnabled?: boolean;
 
   // Dropin UI
   onBeforeClientSessionUpdate?: () => void;
