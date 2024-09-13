@@ -27,4 +27,4 @@ fun PrimerKlarnaOptionsRN.toPrimerKlarnaOptions() =
 fun PrimerThreeDsOptionsRN.toPrimerThreeDsOptions() =
     PrimerThreeDsOptions(threeDsOptionsAndroid?.threeDsAppRequestorUrl)
 
-fun PrimerStripeOptionsRN.toPrimerStripeOptions() = PrimerStripeOptions(publishableKey)
+fun PrimerStripeOptionsRN.toPrimerStripeOptions() = PrimerStripeOptions(mandateData, publishableKey)

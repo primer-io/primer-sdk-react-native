@@ -7,6 +7,7 @@ import com.primerioreactnative.extensions.toPrimerUIOptions
 import io.primer.android.data.settings.GooglePayButtonStyle
 import io.primer.android.data.settings.PrimerPaymentHandling
 import io.primer.android.data.settings.PrimerSettings
+import io.primer.android.data.settings.PrimerStripeOptions
 import io.primer.android.ui.settings.PrimerTheme
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -153,6 +154,7 @@ data class PrimerKlarnaOptionsRN(
 
 @Serializable
 data class PrimerStripeOptionsRN(
+  var mandateData: PrimerStripeOptions.MandateData? = null,
   var publishableKey: String? = null,
 )
 
