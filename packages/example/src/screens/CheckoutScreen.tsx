@@ -241,7 +241,12 @@ const CheckoutScreen = (props: any) => {
                 merchantName: appPaymentParameters.merchantName || "Merchant name",
                 isCaptureBillingAddressEnabled: true,
                 showApplePayForUnsupportedDevice: true,
-                checkProvidedNetworks: false
+                checkProvidedNetworks: false,
+                shippingOptions: {
+                    isCaptureShippingAddressEnabled: false,
+                    requireShippingMethod: false,
+                    additionalShippingContactFields: ['name', 'emailAddress', 'phoneNumber']
+                }
             },
             googlePayOptions: {
              isCaptureBillingAddressEnabled: true,
