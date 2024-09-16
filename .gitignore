@@ -70,3 +70,6 @@ lib/
 **/coverage/*
 **/coverage.json
 .nyc_output/
+
+
+fastlane/*.json
