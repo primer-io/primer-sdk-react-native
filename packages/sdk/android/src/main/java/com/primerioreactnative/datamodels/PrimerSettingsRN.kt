@@ -7,6 +7,7 @@ import com.primerioreactnative.extensions.toPrimerUIOptions
 import io.primer.android.data.settings.GooglePayButtonStyle
 import io.primer.android.data.settings.PrimerPaymentHandling
 import io.primer.android.data.settings.PrimerSettings
+import io.primer.android.data.settings.PrimerStripeOptions
 import io.primer.android.ui.settings.PrimerTheme
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -35,7 +36,8 @@ data class PrimerPaymentMethodOptionsRN(
   var googlePayOptions: PrimerGooglePayOptionsRN = PrimerGooglePayOptionsRN(),
   var klarnaOptions: PrimerKlarnaOptionsRN = PrimerKlarnaOptionsRN(),
   var apayaOptions: PrimerApayaOptionsRN = PrimerApayaOptionsRN(),
-  var threeDsOptions: PrimerThreeDsOptionsRN = PrimerThreeDsOptionsRN()
+  var threeDsOptions: PrimerThreeDsOptionsRN = PrimerThreeDsOptionsRN(),
+  var stripeOptions: PrimerStripeOptionsRN = PrimerStripeOptionsRN(),
 )
 
 @Serializable
@@ -148,6 +150,12 @@ data class PrimerKlarnaOptionsRN(
   var recurringPaymentDescription: String? = null,
   @Deprecated("This property is deprecated and will be removed in future release.")
   var webViewTitle: String? = null,
+)
+
+@Serializable
+data class PrimerStripeOptionsRN(
+  var mandateData: PrimerStripeOptions.MandateData? = null,
+  var publishableKey: String? = null,
 )
 
 @Serializable

@@ -16,7 +16,7 @@ import org.json.JSONObject
 
 class PrimerRN(reactContext: ReactApplicationContext, private val json: Json) :
   ReactContextBaseJavaModule(reactContext) {
-  private var mListener = PrimerRNEventListener()
+  private val mListener = PrimerRNEventListener()
 
   init {
     mListener.sendEvent = { eventName, paramsJson -> sendEvent(eventName, paramsJson) }

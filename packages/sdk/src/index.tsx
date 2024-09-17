@@ -76,6 +76,14 @@ import { PaymentSessionCreated, PaymentSessionAuthorized, PaymentSessionFinalize
 export { PaymentSessionCreated, PaymentSessionAuthorized, PaymentSessionFinalized, PaymentViewLoaded, KlarnaPaymentStep };
 import { PrimerKlarnaPaymentView } from './HeadlessUniversalCheckout/Components/PrimerKlarnaPaymentView'
 export { PrimerKlarnaPaymentView }
+import { UserDetailsRetrieved, UserDetailsCollected, AchStep } from './models/ach/AchSteps';
+export { UserDetailsRetrieved as CollectUserDetails, UserDetailsCollected, AchStep }
+import { AchFirstName, AchLastName, AchEmailAddress, AchValidatableData } from './models/ach/AchCollectableData';
+export { AchFirstName, AchLastName, AchEmailAddress, AchValidatableData };
+import { PrimerHeadlessUniversalCheckoutAchManager, StripeAchUserDetailsComponent, AchManagerProps } from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/AchManager';
+export { PrimerHeadlessUniversalCheckoutAchManager as AchManager, StripeAchUserDetailsComponent, AchManagerProps };
+import { PrimerHeadlessUniversalCheckoutAchMandateManager } from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/AchMandateManager';
+export { PrimerHeadlessUniversalCheckoutAchMandateManager as AchMandateManager };
 
 import { PrimerHeadlessUniversalCheckoutComponentWithRedirectManager, BanksComponent, ComponentWithRedirectManagerProps } from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/ComponentWithRedirectManager';
 export { PrimerHeadlessUniversalCheckoutComponentWithRedirectManager as ComponentWithRedirectManager, BanksComponent, ComponentWithRedirectManagerProps };

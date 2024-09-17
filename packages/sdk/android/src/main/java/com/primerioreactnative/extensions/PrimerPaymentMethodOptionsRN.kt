@@ -3,24 +3,28 @@ package com.primerioreactnative.extensions
 import com.primerioreactnative.datamodels.*
 import io.primer.android.data.settings.*
 
-fun PrimerPaymentMethodOptionsRN.toPrimerPaymentMethodOptions() = PrimerPaymentMethodOptions(
-  androidSettingsRN.redirectScheme,
-  googlePayOptions.toPrimerGooglePayOptions(),
-  klarnaOptions.toPrimerKlarnaOptions(),
-  threeDsOptions.toPrimerThreeDsOptions()
-)
+fun PrimerPaymentMethodOptionsRN.toPrimerPaymentMethodOptions() =
+    PrimerPaymentMethodOptions(
+        androidSettingsRN.redirectScheme,
+        googlePayOptions.toPrimerGooglePayOptions(),
+        klarnaOptions.toPrimerKlarnaOptions(),
+        threeDsOptions.toPrimerThreeDsOptions(),
+        stripeOptions.toPrimerStripeOptions(),
+    )
 
 fun PrimerGooglePayOptionsRN.toPrimerGooglePayOptions() =
-  PrimerGooglePayOptions(
-    merchantName = merchantName,
-    allowedCardNetworks = allowedCardNetworks,
-    buttonStyle = buttonStyle,
-    captureBillingAddress = captureBillingAddress,
-    existingPaymentMethodRequired = existingPaymentMethodRequired
-  )
+    PrimerGooglePayOptions(
+        merchantName = merchantName,
+        allowedCardNetworks = allowedCardNetworks,
+        buttonStyle = buttonStyle,
+        captureBillingAddress = captureBillingAddress,
+        existingPaymentMethodRequired = existingPaymentMethodRequired
+    )
 
 fun PrimerKlarnaOptionsRN.toPrimerKlarnaOptions() =
-  PrimerKlarnaOptions(recurringPaymentDescription, webViewTitle)
+    PrimerKlarnaOptions(recurringPaymentDescription, webViewTitle)
 
 fun PrimerThreeDsOptionsRN.toPrimerThreeDsOptions() =
-  PrimerThreeDsOptions(threeDsOptionsAndroid?.threeDsAppRequestorUrl)
+    PrimerThreeDsOptions(threeDsOptionsAndroid?.threeDsAppRequestorUrl)
+
+fun PrimerStripeOptionsRN.toPrimerStripeOptions() = PrimerStripeOptions(mandateData, publishableKey)

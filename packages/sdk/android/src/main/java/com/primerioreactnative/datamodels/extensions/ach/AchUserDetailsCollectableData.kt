@@ -1,0 +1,11 @@
+package com.primerioreactnative.datamodels.extensions.ach
+
+import com.primerioreactnative.datamodels.NamedComponentValidatableData
+import com.primerioreactnative.datamodels.ach.AchUserDetailsStepRN
+import io.primer.android.components.presentation.paymentMethods.nativeUi.stripe.ach.composable.AchUserDetailsCollectableData
+import kotlinx.serialization.Serializable
+import com.primerioreactnative.datamodels.ach.AchUserDetailsCollectableDataRN
+
+internal fun AchUserDetailsCollectableData.FirstName.toFirstNameRN() = AchUserDetailsCollectableDataRN.FirstNameRN(value)
+internal fun AchUserDetailsCollectableData.LastName.toLastNameRN() = AchUserDetailsCollectableDataRN.LastNameRN(value)
+internal fun AchUserDetailsCollectableData.EmailAddress.toEmailAddressRN() = AchUserDetailsCollectableDataRN.EmailAddressRN(value)

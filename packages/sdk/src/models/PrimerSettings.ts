@@ -85,6 +85,7 @@ interface IPrimerPaymentMethodOptions {
   googlePayOptions?: IPrimerGooglePayOptions;
   klarnaOptions?: IPrimerKlarnaOptions;
   threeDsOptions?: IPrimerThreeDsOptions;
+  stripeOptions?: IPrimerStripeOptions;
 }
 
 interface IPrimerApayaOptions {
@@ -144,4 +145,10 @@ interface IPrimerThreeDsOptions {
   android?: {
     threeDsAppRequestorUrl?: string;
   };
+}
+
+//----------------------------------------
+
+interface IPrimerStripeOptions {
+  publishableKey?: string;
 }
