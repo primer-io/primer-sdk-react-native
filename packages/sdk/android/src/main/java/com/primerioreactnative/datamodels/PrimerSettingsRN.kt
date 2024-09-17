@@ -8,17 +8,19 @@ import com.primerioreactnative.extensions.toPrimerUIOptions
 import io.primer.android.data.settings.GooglePayButtonStyle
 import io.primer.android.data.settings.PrimerPaymentHandling
 import io.primer.android.data.settings.PrimerSettings
+import io.primer.android.data.settings.PrimerStripeOptions
 import io.primer.android.ui.settings.PrimerTheme
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class PrimerSettingsRN(
-    var paymentHandling: PrimerPaymentHandling = PrimerPaymentHandling.AUTO,
-    var localeData: LocaleSettingsRN = LocaleSettingsRN(),
-    var paymentMethodOptions: PrimerPaymentMethodOptionsRN = PrimerPaymentMethodOptionsRN(),
-    var uiOptions: PrimerUIOptionsRN = PrimerUIOptionsRN(),
-    var debugOptions: PrimerDebugOptionsRN = PrimerDebugOptionsRN(),
+  var paymentHandling: PrimerPaymentHandling = PrimerPaymentHandling.AUTO,
+  var localeData: LocaleSettingsRN = LocaleSettingsRN(),
+  var paymentMethodOptions: PrimerPaymentMethodOptionsRN = PrimerPaymentMethodOptionsRN(),
+  var uiOptions: PrimerUIOptionsRN = PrimerUIOptionsRN(),
+  var debugOptions: PrimerDebugOptionsRN = PrimerDebugOptionsRN(),
+  var clientSessionCachingEnabled: Boolean = false
 )
 
 @Serializable
@@ -162,11 +164,11 @@ data class PrimerApayaOptionsRN(
     var webViewTitle: String? = null,
 )
 
-fun PrimerSettingsRN.toPrimerSettings(context: Context) =
-    PrimerSettings(
-        paymentHandling,
-        localeData.toLocale(),
-        paymentMethodOptions.toPrimerPaymentMethodOptions(context),
-        uiOptions.toPrimerUIOptions(),
-        debugOptions.toPrimerDebugOptions()
-    )
+fun PrimerSettingsRN.toPrimerSettings(context: Context) = PrimerSettings(
+  paymentHandling = paymentHandling,
+  locale = localeData.toLocale(),
+  paymentMethodOptions = paymentMethodOptions.toPrimerPaymentMethodOptions(context),
+  uiOptions = uiOptions.toPrimerUIOptions(),
+  debugOptions = debugOptions.toPrimerDebugOptions(),
+  clientSessionCachingEnabled = clientSessionCachingEnabled
+)
