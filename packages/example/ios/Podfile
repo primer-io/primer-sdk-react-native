@@ -45,11 +45,11 @@ target 'example_0_70_6' do
   )
 
   pod 'primer-io-react-native', :path => '../../sdk'
-  pod 'PrimerSDK', :git => 'https://github.com/primer-io/primer-sdk-ios', :branch => 'feature/ACC-2996-i-os-user-data-collection-and-payment-handling-implementation'  # TODO TWS: use release version
+  pod 'PrimerSDK', '2.31.0'
   pod 'Primer3DS'
   pod 'PrimerIPay88MYSDK'
   pod 'PrimerKlarnaSDK', '1.1.0'
-  pod 'PrimerStripeSDK', :git => 'https://github.com/primer-io/primer-stripe-sdk-ios', :branch => 'nq/initial_setup' # TODO TWS: use release version
+  pod 'PrimerStripeSDK', '1.0.0'
 
   target 'example_0_70_6Tests' do
     inherit! :complete
