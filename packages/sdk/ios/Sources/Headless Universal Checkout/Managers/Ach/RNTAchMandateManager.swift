@@ -32,7 +32,7 @@ class RNTAchMandateManager: NSObject, RCTBridgeModule {
         _ resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock
     ) {
         if let delegate = RNTAchMandateManager.mandateDelegate {
-            delegate.mandateAccepted()
+            delegate.acceptMandate()
             resolver(nil)
         } else {
             rejecter("native-ios", errorMessage, nil)
@@ -44,7 +44,7 @@ class RNTAchMandateManager: NSObject, RCTBridgeModule {
         _ resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock
     ) {
         if let delegate = RNTAchMandateManager.mandateDelegate {
-            delegate.mandateDeclined()
+            delegate.declineMandate()
             resolver(nil)
         } else {
             rejecter("native-ios", errorMessage, nil)

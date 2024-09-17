@@ -7,6 +7,7 @@
 
 import Foundation
 import PrimerSDK
+import PrimerStripeSDK
 import React
 
 @objc
@@ -348,7 +349,7 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
             if self.implementedRNCallbacks?.isOnCheckoutAdditionalInfoImplemented == true {
                 do {
                     switch additionalInfo {
-                        case let info as StripeBankAccountCollectorAdditionalInfo:
+                        case let info as ACHBankAccountCollectorAdditionalInfo:
                             // Handled internally, nothing for merchant to handle
                             let keyWindow = UIApplication
                                 .shared

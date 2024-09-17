@@ -86,9 +86,9 @@ extension PrimerSettings {
                 threeDsOptions = PrimerThreeDsOptions(threeDsAppRequestorUrl: rnThreeDsAppRequestorUrlStr)
             }
             
-            var stripeOptions: PrimerStripeACHOptions?
+            var stripeOptions: PrimerStripeOptions?
             if let rnStripePublishableKey = ((settingsJson["paymentMethodOptions"] as? [String: Any])?["stripeOptions"] as? [String: Any])?["publishableKey"] as? String {
-                stripeOptions = PrimerStripeACHOptions(publishableKey: rnStripePublishableKey)
+                stripeOptions = PrimerStripeOptions(publishableKey: rnStripePublishableKey)
             }
 
             let paymentMethodOptions = PrimerPaymentMethodOptions(
