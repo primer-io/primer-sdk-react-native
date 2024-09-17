@@ -14,7 +14,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
 
-class PrimerRN(reactContext: ReactApplicationContext, private val json: Json) :
+class PrimerRN(private val reactContext: ReactApplicationContext, private val json: Json) :
   ReactContextBaseJavaModule(reactContext) {
   private val mListener = PrimerRNEventListener()
 
@@ -36,7 +36,7 @@ class PrimerRN(reactContext: ReactApplicationContext, private val json: Json) :
         if (settingsStr.isBlank()) PrimerSettingsRN() else json.decodeFromString(
           settingsStr
         )
-      startSdk(settings.toPrimerSettings())
+      startSdk(settings.toPrimerSettings(reactContext))
       promise.resolve(null)
     } catch (e: Exception) {
       Log.e("PrimerRN", "configure settings error: $e")

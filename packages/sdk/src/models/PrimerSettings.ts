@@ -151,4 +151,15 @@ interface IPrimerThreeDsOptions {
 
 interface IPrimerStripeOptions {
   publishableKey?: string;
+  mandateData?: IPrimerStripeTemplateMandateData | IPrimerStripeFullMandateData;
+}
+
+interface IPrimerStripeMandateData {}
+
+interface IPrimerStripeTemplateMandateData extends IPrimerStripeMandateData {
+  merchantName: string;
+}
+
+interface IPrimerStripeFullMandateData extends IPrimerStripeMandateData {
+  fullMandateResourceKey: string;
 }
