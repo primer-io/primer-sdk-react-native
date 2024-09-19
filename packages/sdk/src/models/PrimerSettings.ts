@@ -151,7 +151,7 @@ interface IPrimerThreeDsOptions {
 
 interface IPrimerStripeOptions {
   publishableKey?: string;
-  mandateData?: IPrimerStripeTemplateMandateData | IPrimerStripeFullMandateData;
+  mandateData?: IPrimerStripeTemplateMandateData | IPrimerStripeFullMandateStringResourceData | IPrimerStripeFullMandateTextData;
 }
 
 interface IPrimerStripeMandateData {}
@@ -160,7 +160,10 @@ interface IPrimerStripeTemplateMandateData extends IPrimerStripeMandateData {
   merchantName: string;
 }
 
-interface IPrimerStripeFullMandateData extends IPrimerStripeMandateData {
-  fullMandateResourceKey?: string;
+interface IPrimerStripeFullMandateStringResourceData extends IPrimerStripeMandateData {
+  fullMandateStringResourceName: string;
+}
+
+interface IPrimerStripeFullMandateTextData extends IPrimerStripeMandateData {
   fullMandateText: string;
 }

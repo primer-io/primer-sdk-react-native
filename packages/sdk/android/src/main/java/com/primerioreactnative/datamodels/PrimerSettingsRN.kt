@@ -153,7 +153,8 @@ data class PrimerStripeOptionsRN(
 ) {
     @Serializable
     data class MandateDataRN(
-        @SerialName("fullMandateResourceKey") val fullMandateStringResName: String? = null, 
+        @SerialName("fullMandateText") val fullMandateText: String? = null, 
+        @SerialName("fullMandateStringResourceName") val fullMandateStringResName: String? = null, 
         val merchantName: String? = null
     )
 }

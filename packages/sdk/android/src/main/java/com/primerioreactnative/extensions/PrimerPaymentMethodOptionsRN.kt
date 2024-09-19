@@ -4,6 +4,7 @@ import com.primerioreactnative.datamodels.*
 import io.primer.android.data.settings.*
 import io.primer.android.data.settings.PrimerStripeOptions.MandateData.TemplateMandateData
 import io.primer.android.data.settings.PrimerStripeOptions.MandateData.FullMandateData
+import io.primer.android.data.settings.PrimerStripeOptions.MandateData.FullMandateStringData
 import android.content.Context
 
 fun PrimerPaymentMethodOptionsRN.toPrimerPaymentMethodOptions(context: Context) =
@@ -35,6 +36,7 @@ fun PrimerStripeOptionsRN.toPrimerStripeOptions(context: Context) =
 
 private fun PrimerStripeOptionsRN.MandateDataRN.toMandateData(context: Context) = when {
     merchantName != null -> TemplateMandateData(merchantName)
+    fullMandateText != null -> FullMandateStringData(fullMandateText)
     fullMandateStringResName != null -> FullMandateData(
         context.getResources().getIdentifier(fullMandateStringResName, "string", context.getPackageName())
     )
