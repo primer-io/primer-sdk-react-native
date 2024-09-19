@@ -36,9 +36,18 @@ fun PrimerStripeOptionsRN.toPrimerStripeOptions(context: Context) =
 
 private fun PrimerStripeOptionsRN.MandateDataRN.toMandateData(context: Context) = when {
     merchantName != null -> TemplateMandateData(merchantName)
+    fullMandateStringResName != null -> {
+        val stringId = context.getResources().getIdentifier(fullMandateStringResName, "string", context.getPackageName())
+        if (stringId != 0) {
+            FullMandateData(stringId)
+        } else {
+            if (fullMandateText != null) {
+                FullMandateStringData(fullMandateText)
+            } else {
+                error("Missing mandate data") 
+            }
+        }
+    }
     fullMandateText != null -> FullMandateStringData(fullMandateText)
-    fullMandateStringResName != null -> FullMandateData(
-        context.getResources().getIdentifier(fullMandateStringResName, "string", context.getPackageName())
-    )
     else -> error("Missing mandate data")
 }

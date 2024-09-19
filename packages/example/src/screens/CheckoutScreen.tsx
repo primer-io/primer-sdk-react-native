@@ -259,9 +259,9 @@ const CheckoutScreen = (props: any) => {
                 publishableKey: "<PUT_YOUR_PUBLISHABLE_KEY_HERE>",
                 mandateData: {
                     // This will be used for Android if present
-                    fullMandateStringResourceName: "stripe_ach_full_mandate_text",
+                    fullMandateStringResourceName: "stripe_ach_full_mandate_text", 
                     // This is used for iOS, and will be used for Android if `fullMandateStringResourceName: string;` is not present
-                    // fullMandateText: "Full mandate text here ...",
+                    fullMandateText: "Full mandate text here ...",
                     // Comment the above and uncomment below to use Primer's template with your merchant name
                     // merchantName: "Primer Inc.",
                 }
