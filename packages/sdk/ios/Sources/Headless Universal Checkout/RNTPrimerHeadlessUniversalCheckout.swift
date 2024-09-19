@@ -77,8 +77,6 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
 
     override init() {
         super.init()
-        PrimerHeadlessUniversalCheckout.current.delegate = self
-        PrimerHeadlessUniversalCheckout.current.uiDelegate = self
     }
 
     override func supportedEvents() -> [String]! {
@@ -93,6 +91,9 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
                                      resolver: @escaping RCTPromiseResolveBlock,
                                      rejecter: @escaping RCTPromiseRejectBlock)
     {
+        PrimerHeadlessUniversalCheckout.current.delegate = self
+        PrimerHeadlessUniversalCheckout.current.uiDelegate = self
+        
         do {
             var tmpSettings: PrimerSettings?
             if let settingsStr = settingsStr {

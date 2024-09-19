@@ -256,9 +256,13 @@ const CheckoutScreen = (props: any) => {
                 }
             },
             stripeOptions: {
-                publishableKey: "pk_test_51O8zfQKUK6bXIdC2xPvSS6UvriE9kwpvttwB7H9PAzhNAZoGzLgiDOyd4WooozeWHxoRrKo6b2VjZYxNCMX3W7bk00rMDivjau",
+                publishableKey: "<PUT_YOUR_PUBLISHABLE_KEY_HERE>",
                 mandateData: {
-                    fullMandateResourceKey: "stripe_ach_full_mandate_text", // TODO TWS: iOS to define localized string with this exact key
+                    // This will be used for Android if present, otherise
+                    fullMandateResourceKey: "stripe_ach_mandate_text", // TODO TWS: iOS to define localized string with this exact key
+                    // This is used for iOS, and will be used for Android if `fullMandateResourceKey` is not present
+                    fullMandateText: "Full mandate text here ...",
+                    // Comment the above and uncomment below to use Primer's template with your merchant name
                     // merchantName: "Primer Inc.",
                 }
             },

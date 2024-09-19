@@ -87,8 +87,25 @@ extension PrimerSettings {
             }
             
             var stripeOptions: PrimerStripeOptions?
-            if let rnStripePublishableKey = ((settingsJson["paymentMethodOptions"] as? [String: Any])?["stripeOptions"] as? [String: Any])?["publishableKey"] as? String {
-                stripeOptions = PrimerStripeOptions(publishableKey: rnStripePublishableKey)
+            if let stripeOptionsMap = ((settingsJson["paymentMethodOptions"] as? [String: Any])?["stripeOptions"] as? [String: Any]) {
+                if let publishableKey = stripeOptionsMap["publishableKey"] as? String {
+                    var mandateData: PrimerStripeOptions.MandateData?
+                    if let mandateDataMap = stripeOptionsMap["mandateData"] as? [String: String] {
+                        if let fullMandateText = mandateDataMap["fullMandateText"] {
+                            mandateData = .fullMandate(text: fullMandateText)
+                        } else if let merchantName = mandateDataMap["merchantName"] {
+                            mandateData = .templateMandate(merchantName: merchantName)
+                        } else {
+                            PrimerLogging.shared.logger.warn(message: "Found mandate data but no resource key or merchant name - check your stripe config")
+                        }
+                    } else {
+                        PrimerLogging.shared.logger.warn(message: "Found stripe options but no mandate data - check your stripe config")
+                    }
+                    stripeOptions = .init(
+                        publishableKey: publishableKey,
+                        mandateData: mandateData
+                    )
+                }
             }
 
             let paymentMethodOptions = PrimerPaymentMethodOptions(

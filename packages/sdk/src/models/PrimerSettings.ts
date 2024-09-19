@@ -161,5 +161,6 @@ interface IPrimerStripeTemplateMandateData extends IPrimerStripeMandateData {
 }
 
 interface IPrimerStripeFullMandateData extends IPrimerStripeMandateData {
-  fullMandateResourceKey: string;
+  fullMandateResourceKey?: string;
+  fullMandateText: string;
 }
