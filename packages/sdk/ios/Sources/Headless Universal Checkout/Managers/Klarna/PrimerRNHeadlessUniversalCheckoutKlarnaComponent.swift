@@ -241,7 +241,7 @@ extension RNTPrimerHeadlessUniversalCheckoutKlarnaComponent: PrimerHeadlessValid
             eventName = PrimerHeadlessUniversalCheckoutComponentEvent.onValidating.stringValue
         case .invalid(let errors):
             let rnErrors = errors.map { $0.toPrimerValidationErrorRN() }
-            let serializedData = try? ["errors": rnErrors].toJsonObject()
+            let serializedData = try? ["errors": rnErrors].toJsonObject()  // TODO TWS iOS: include 'data'
             
             self.sendEvent(
                 withName: PrimerHeadlessUniversalCheckoutComponentEvent.onInvalid.stringValue,
@@ -249,7 +249,7 @@ extension RNTPrimerHeadlessUniversalCheckoutKlarnaComponent: PrimerHeadlessValid
             return
         case .error(let error):
             let rnError = error.toPrimerErrorRN()
-            let serializedData = try? ["errors": [rnError]].toJsonObject()
+            let serializedData = try? ["errors": [rnError]].toJsonObject()  // TODO TWS iOS: include 'data'
             
             self.sendEvent(
                 withName: PrimerHeadlessUniversalCheckoutComponentEvent.onValidationError.stringValue,

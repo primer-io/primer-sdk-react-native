@@ -4,6 +4,7 @@ import com.primerioreactnative.datamodels.*
 import io.primer.android.data.settings.*
 import io.primer.android.data.settings.PrimerStripeOptions.MandateData.TemplateMandateData
 import io.primer.android.data.settings.PrimerStripeOptions.MandateData.FullMandateData
+import io.primer.android.data.settings.PrimerStripeOptions.MandateData.FullMandateStringData
 import android.content.Context
 
 fun PrimerPaymentMethodOptionsRN.toPrimerPaymentMethodOptions(context: Context) =
@@ -35,8 +36,18 @@ fun PrimerStripeOptionsRN.toPrimerStripeOptions(context: Context) =
 
 private fun PrimerStripeOptionsRN.MandateDataRN.toMandateData(context: Context) = when {
     merchantName != null -> TemplateMandateData(merchantName)
-    fullMandateStringResName != null -> FullMandateData(
-        context.getResources().getIdentifier(fullMandateStringResName, "string", context.getPackageName())
-    )
+    fullMandateStringResName != null -> {
+        val stringId = context.getResources().getIdentifier(fullMandateStringResName, "string", context.getPackageName())
+        if (stringId != 0) {
+            FullMandateData(stringId)
+        } else {
+            if (fullMandateText != null) {
+                FullMandateStringData(fullMandateText)
+            } else {
+                error("Missing mandate data") 
+            }
+        }
+    }
+    fullMandateText != null -> FullMandateStringData(fullMandateText)
     else -> error("Missing mandate data")
 }
