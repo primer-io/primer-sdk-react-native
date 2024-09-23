@@ -14,7 +14,6 @@ protocol AchUserDetailsStepRN {
 
 class UserDetailsCollectedRN: AchUserDetailsStepRN, Encodable {
     let stepName: String = "userDetailsCollected"
-
 }
 
 class UserDetailsRetrievedRN: AchUserDetailsStepRN, Encodable {
