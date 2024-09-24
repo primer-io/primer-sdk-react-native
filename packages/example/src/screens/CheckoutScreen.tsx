@@ -242,11 +242,7 @@ const CheckoutScreen = (props: any) => {
                 isCaptureBillingAddressEnabled: true,
                 showApplePayForUnsupportedDevice: true,
                 checkProvidedNetworks: false,
-                shippingOptions: {
-                    isCaptureShippingAddressEnabled: false,
-                    requireShippingMethod: false,
-                    additionalShippingContactFields: ['name', 'emailAddress', 'phoneNumber']
-                }
+                shippingOptions: appPaymentParameters.shippingOptions
             },
             googlePayOptions: {
              isCaptureBillingAddressEnabled: true,
@@ -325,14 +321,6 @@ const CheckoutScreen = (props: any) => {
             onDismiss: onDismiss,
         }
     };
-
-    if (appPaymentParameters.merchantName) {
-        //@ts-ignore
-        settings.paymentMethodOptions.applePayOptions = {
-            merchantIdentifier: 'merchant.checkout.team',
-            merchantName: appPaymentParameters.merchantName
-        };
-    }
 
     const onVaultManagerButtonTapped = async () => {
         try {
