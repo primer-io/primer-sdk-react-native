@@ -7,7 +7,6 @@
 
 import Foundation
 import PrimerSDK
-import PrimerStripeSDK
 import React
 
 @objc
