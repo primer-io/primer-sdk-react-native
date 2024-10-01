@@ -114,6 +114,13 @@ interface IPrimerGooglePayOptions {
   allowedCardNetworks?: string[];
   isCaptureBillingAddressEnabled?: boolean;
   isExistingPaymentMethodRequired?: boolean;
+  shippingAddressParameters?: IPrimerPrimerGoogleShippingAddressParameters;
+  requireShippingMethod?: boolean;
+  emailAddressRequired?: boolean;
+}
+
+interface IPrimerPrimerGoogleShippingAddressParameters {
+  isPhoneNumberRequired?: boolean;
 }
 
 interface IPrimerKlarnaOptions {
