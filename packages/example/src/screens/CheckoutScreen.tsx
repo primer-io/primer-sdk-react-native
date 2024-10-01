@@ -244,10 +244,9 @@ const CheckoutScreen = (props: any) => {
                 checkProvidedNetworks: false
             },
             googlePayOptions: {
-                merchantName: "Primer Inc.",
                 isCaptureBillingAddressEnabled: true,
                 isExistingPaymentMethodRequired: false,
-                shippingAddressParameters: PrimerGoogleShippingParameters(true),
+                shippingAddressParameters: {phoneNumberRequired: true},
                 requireShippingMethod: true,
                 emailAddressRequired: true
             },

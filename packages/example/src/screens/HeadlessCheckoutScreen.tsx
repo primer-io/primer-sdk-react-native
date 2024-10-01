@@ -90,7 +90,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
       googlePayOptions: {
         isCaptureBillingAddressEnabled: true,
         isExistingPaymentMethodRequired: false,
-        shippingAddressParameters: { isPhoneNumberRequired: true },
+        shippingAddressParameters: { phoneNumberRequired: true },
         requireShippingMethod: true,
         emailAddressRequired: true
       },
