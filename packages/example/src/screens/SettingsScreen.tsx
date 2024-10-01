@@ -79,7 +79,7 @@ const SettingsScreen = ({ navigation }) => {
                 <SegmentedControl
                     testID="Enviroment"
                     style={{ marginTop: 6 }}
-                    values={['Dev', 'Sandbox', 'Staging', 'Production']}
+                    values={['Sandbox', 'Dev', 'Staging', 'Production']}
                     selectedIndex={environment}
                     onChange={(event) => {
                         const selectedIndex = event.nativeEvent.selectedSegmentIndex;

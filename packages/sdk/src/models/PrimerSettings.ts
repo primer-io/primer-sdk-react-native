@@ -114,12 +114,12 @@ interface IPrimerGooglePayOptions {
   allowedCardNetworks?: string[];
   isCaptureBillingAddressEnabled?: boolean;
   isExistingPaymentMethodRequired?: boolean;
-  shippingAddressParameters?: IPrimerPrimerGoogleShippingAddressParameters;
+  shippingAddressParameters?: IPrimerGoogleShippingAddressParameters;
   requireShippingMethod?: boolean;
   emailAddressRequired?: boolean;
 }
 
-interface IPrimerPrimerGoogleShippingAddressParameters {
+interface IPrimerGoogleShippingAddressParameters {
   isPhoneNumberRequired?: boolean;
 }
 

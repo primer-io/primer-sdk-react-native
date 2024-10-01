@@ -244,8 +244,12 @@ const CheckoutScreen = (props: any) => {
                 checkProvidedNetworks: false
             },
             googlePayOptions: {
-             isCaptureBillingAddressEnabled: true,
-             isExistingPaymentMethodRequired: true,
+                merchantName: "Primer Inc.",
+                isCaptureBillingAddressEnabled: true,
+                isExistingPaymentMethodRequired: false,
+                shippingAddressParameters: PrimerGoogleShippingParameters(true),
+                requireShippingMethod: true,
+                emailAddressRequired: true
             },
             threeDsOptions: {
                 iOS: {
@@ -259,7 +263,7 @@ const CheckoutScreen = (props: any) => {
                 publishableKey: "<PUT_YOUR_PUBLISHABLE_KEY_HERE>",
                 mandateData: {
                     // This will be used for Android if present
-                    fullMandateStringResourceName: "stripe_ach_full_mandate_text", 
+                    fullMandateStringResourceName: "stripe_ach_full_mandate_text",
                     // This is used for iOS, and will be used for Android if `fullMandateStringResourceName: string;` is not present
                     fullMandateText: "Full mandate text here ...",
                     // Comment the above and uncomment below to use Primer's template with your merchant name
@@ -273,7 +277,7 @@ const CheckoutScreen = (props: any) => {
             isErrorScreenEnabled: true,
             theme: {
                 // 👇 Uncomment to try theming drop-in checkout
-                
+
                 // colors: {
                 //     mainColor: {
                 //         red: 214,

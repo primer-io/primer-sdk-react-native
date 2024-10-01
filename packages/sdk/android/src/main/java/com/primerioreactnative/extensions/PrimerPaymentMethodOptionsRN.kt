@@ -22,8 +22,14 @@ fun PrimerGooglePayOptionsRN.toPrimerGooglePayOptions() =
         allowedCardNetworks = allowedCardNetworks,
         buttonStyle = buttonStyle,
         captureBillingAddress = captureBillingAddress,
-        existingPaymentMethodRequired = existingPaymentMethodRequired
+        existingPaymentMethodRequired = existingPaymentMethodRequired,
+        shippingAddressParameters = shippingAddressParameters?.toPrimerGoogleShippingAddressParameters(),
+        requireShippingMethod = requireShippingMethod,
+        emailAddressRequired = emailAddressRequired
     )
+
+fun PrimerGoogleShippingAddressParametersRN.toPrimerGoogleShippingAddressParameters() =
+    PrimerGoogleShippingAddressParameters(phoneNumberRequired)
 
 fun PrimerKlarnaOptionsRN.toPrimerKlarnaOptions() =
     PrimerKlarnaOptions(recurringPaymentDescription, webViewTitle)
@@ -31,7 +37,7 @@ fun PrimerKlarnaOptionsRN.toPrimerKlarnaOptions() =
 fun PrimerThreeDsOptionsRN.toPrimerThreeDsOptions() =
     PrimerThreeDsOptions(threeDsOptionsAndroid?.threeDsAppRequestorUrl)
 
-fun PrimerStripeOptionsRN.toPrimerStripeOptions(context: Context) = 
+fun PrimerStripeOptionsRN.toPrimerStripeOptions(context: Context) =
     PrimerStripeOptions(mandateData = mandateData?.toMandateData(context), publishableKey = publishableKey)
 
 private fun PrimerStripeOptionsRN.MandateDataRN.toMandateData(context: Context) = when {
@@ -44,7 +50,7 @@ private fun PrimerStripeOptionsRN.MandateDataRN.toMandateData(context: Context) 
             if (fullMandateText != null) {
                 FullMandateStringData(fullMandateText)
             } else {
-                error("Missing mandate data") 
+                error("Missing mandate data")
             }
         }
     }
