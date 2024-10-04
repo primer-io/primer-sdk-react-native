@@ -16,7 +16,7 @@ PODS:
     - React-Core
   - Primer3DS (2.3.2)
   - PrimerIPay88MYSDK (0.1.7)
-  - PrimerKlarnaSDK (1.1.0)
+  - PrimerKlarnaSDK (1.1.1)
   - PrimerSDK (2.31.0):
     - PrimerSDK/Core (= 2.31.0)
   - PrimerSDK/Core (2.31.0)
@@ -291,7 +291,7 @@ PODS:
   - React-jsinspector (0.72.0)
   - React-logger (0.72.0):
     - glog
-  - react-native-safe-area-context (4.10.1):
+  - react-native-safe-area-context (4.8.1):
     - React-Core
   - react-native-segmented-control (2.4.3):
     - React-Core
@@ -400,10 +400,9 @@ PODS:
     - React-jsi (= 0.72.0)
     - React-logger (= 0.72.0)
     - React-perflogger (= 0.72.0)
-  - RNScreens (3.31.1):
+  - RNScreens (3.29.0):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
-    - React-RCTImage
   - SocketRocket (0.6.0)
   - Yoga (1.14.0)
 
@@ -416,7 +415,7 @@ DEPENDENCIES:
   - primer-io-react-native (from `../../sdk`)
   - Primer3DS
   - PrimerIPay88MYSDK
-  - PrimerKlarnaSDK (= 1.1.0)
+  - PrimerKlarnaSDK (= 1.1.1)
   - PrimerSDK
   - PrimerStripeSDK (= 1.0.0)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
@@ -563,7 +562,7 @@ SPEC CHECKSUMS:
   primer-io-react-native: 4b4eb3b62c7787537191a6f74598db8a78c29587
   Primer3DS: 81e7969033230c7346a517cd609be956914738bb
   PrimerIPay88MYSDK: 436ee0be7e2c97e4e81456ccddee20175e9e3c4d
-  PrimerKlarnaSDK: 83e9a1357a7247bf8fa2836fc945cf97644d601d
+  PrimerKlarnaSDK: 564105170cc7b467bf95c31851813ea41c468f8b
   PrimerSDK: 78d1a48ba9b4677f78da9750448af6c72007f4fe
   PrimerStripeSDK: c37d4e7c1b5256d67d4890c4cc4b38ddc9427489
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
@@ -581,7 +580,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: de4e98ab0f2661affeb54931806a79a93a34d1ea
   React-jsinspector: 8d754fc957255a29d93e52fc67a895045cdc8703
   React-logger: 454ffb01980778a43b0153ee98721d0275b56616
-  react-native-safe-area-context: dcab599c527c2d7de2d76507a523d20a0b83823d
+  react-native-safe-area-context: cd1169d797a2ef722a00bfc5af10748d5b6c94f9
   react-native-segmented-control: d88b35fcd06c0c8e1f1f7ed1eb066c2b02570fdd
   React-NativeModulesApple: 1d81d927ef1a67a3545a01e14c2e98500bf9b199
   React-perflogger: 684a11499a0589cc42135d6d5cc04d0e4e0e261a
@@ -600,10 +599,10 @@ SPEC CHECKSUMS:
   React-runtimescheduler: 4a36521cc1ec1bc3997ae2462b6779dadaae376b
   React-utils: c12d2e75c8bbc727939ddc4319ed95493395ed5a
   ReactCommon: b9547f82aed45eccc1aa59034dc6c72809e37000
-  RNScreens: 93ae3be2f119d955620f9bbb39ad372adb53b7a9
+  RNScreens: 3c5b9f4a9dcde752466854b6109b79c0e205dad3
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   Yoga: 1d6727ed193122f6adaf435c3de1a768326ff83b
 
-PODFILE CHECKSUM: e1d93bf98428be80f71d4652c0496e390624cf68
+PODFILE CHECKSUM: 4505e915c8982e98dcb8297a1c627233ce3a067f
 
 COCOAPODS: 1.15.2

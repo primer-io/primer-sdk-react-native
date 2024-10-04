@@ -13,6 +13,7 @@ import { styles } from '../styles';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import { Environment, makeEnvironmentFromIntVal, makePaymentHandlingFromIntVal, PaymentHandling } from '../network/Environment';
 import { appPaymentParameters, IClientSessionAddress, IClientSessionCustomer, IClientSessionLineItem, IClientSessionOrder, IClientSessionPaymentMethod, IClientSessionPaymentMethodOptions, IClientSessionRequestBody } from '../models/IClientSessionRequestBody';
+import { useState } from 'react';
 import { Switch } from 'react-native';
 import TextField from '../components/TextField';
 import type { NewLineItemScreenProps } from './NewLineItemSreen';
@@ -22,6 +23,11 @@ export interface AppPaymentParameters {
     paymentHandling: PaymentHandling;
     clientSessionRequestBody: IClientSessionRequestBody;
     merchantName?: string;
+    shippingOptions?: {
+        isCaptureShippingAddressEnabled: boolean;
+        requireShippingMethod: boolean;
+        additionalShippingContactFields: string[];
+    };
 }
 
 export let customApiKey: string | undefined;
@@ -66,6 +72,11 @@ const SettingsScreen = ({ navigation }) => {
     const [visaSurcharge, setVisaSurcharge] = React.useState<number | undefined>(appPaymentParameters.clientSessionRequestBody.paymentMethod?.options?.PAYMENT_CARD?.networks.VISA?.surcharge.amount);
     const [masterCardSurcharge, setMasterCardSurcharge] = React.useState<number | undefined>(appPaymentParameters.clientSessionRequestBody.paymentMethod?.options?.PAYMENT_CARD?.networks.MASTERCARD?.surcharge.amount);
 
+    const [isShippingOptionsApplied, setIsShippingOptionsApplied] = useState<boolean>(false);
+    const [isCaptureShippingAddressEnabled, setIsCaptureShippingAddressEnabled] = useState<boolean>(false);
+    const [requireShippingMethod, setRequireShippingMethod] = useState<boolean>(false);
+    const [additionalShippingContactFields, setAdditionalShippingContactFields] = useState<string[]>([]);
+    
     const backgroundStyle = {
         backgroundColor: isDarkMode ? Colors.black : Colors.white
     };
@@ -617,6 +628,7 @@ const SettingsScreen = ({ navigation }) => {
                 {renderMerchantSection()}
                 {renderCustomerSection()}
                 {renderSurchargeSection()}
+                {renderShippingOptionsSection()}
             </View>
         );
     }
@@ -673,6 +685,91 @@ const SettingsScreen = ({ navigation }) => {
             </View>
         );
     }
+
+    const renderShippingOptionsSection = () => {
+        return (
+            <View style={{ marginTop: 12, marginBottom: 8 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Text style={{ ...styles.heading1, marginBottom: 4 }}>
+                        Shipping Options
+                    </Text>
+                    <View style={{ flex: 1 }} />
+                    <Switch
+                        value={isShippingOptionsApplied}
+                        onValueChange={val => {
+                            setIsShippingOptionsApplied(val);
+                        }}
+                    />
+                </View>
+    
+                {
+                    !isShippingOptionsApplied ? null :
+                        <View>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 4 }}>
+                                <Text style={{ flex: 1 }}>Capture Shipping Address Enabled</Text>
+                                <Switch
+                                    value={isCaptureShippingAddressEnabled}
+                                    onValueChange={val => {
+                                        setIsCaptureShippingAddressEnabled(val);
+                                    }}
+                                />
+                            </View>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 4 }}>
+                                <Text style={{ flex: 1 }}>Require Shipping Method</Text>
+                                <Switch
+                                    value={requireShippingMethod}
+                                    onValueChange={val => {
+                                        setRequireShippingMethod(val);
+                                    }}
+                                />
+                            </View>
+                            <Text style={{ ...styles.heading2, marginVertical: 4 }}>Additional Shipping Contact Fields</Text>
+                            <View style={{ marginVertical: 4 }}>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <Text style={{ flex: 1 }}>Name</Text>
+                                    <Switch
+                                        value={additionalShippingContactFields.includes('name')}
+                                        onValueChange={val => {
+                                            if (val) {
+                                                setAdditionalShippingContactFields([...additionalShippingContactFields, 'name']);
+                                            } else {
+                                                setAdditionalShippingContactFields(additionalShippingContactFields.filter(field => field !== 'name'));
+                                            }
+                                        }}
+                                    />
+                                </View>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <Text style={{ flex: 1 }}>Email Address</Text>
+                                    <Switch
+                                        value={additionalShippingContactFields.includes('emailAddress')}
+                                        onValueChange={val => {
+                                            if (val) {
+                                                setAdditionalShippingContactFields([...additionalShippingContactFields, 'emailAddress']);
+                                            } else {
+                                                setAdditionalShippingContactFields(additionalShippingContactFields.filter(field => field !== 'emailAddress'));
+                                            }
+                                        }}
+                                    />
+                                </View>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <Text style={{ flex: 1 }}>Phone Number</Text>
+                                    <Switch
+                                        value={additionalShippingContactFields.includes('phoneNumber')}
+                                        onValueChange={val => {
+                                            if (val) {
+                                                setAdditionalShippingContactFields([...additionalShippingContactFields, 'phoneNumber']);
+                                            } else {
+                                                setAdditionalShippingContactFields(additionalShippingContactFields.filter(field => field !== 'phoneNumber'));
+                                            }
+                                        }}
+                                    />
+                                </View>
+                            </View>
+                        </View>
+                }
+            </View>
+        );
+    };
 
     const updateAppPaymentParameters = () => {
         appPaymentParameters.merchantName = merchantName;
@@ -779,6 +876,12 @@ const SettingsScreen = ({ navigation }) => {
         currentClientSessionRequestBody.paymentMethod = Object.keys(currentPaymentMethod).length === 0 ? undefined : currentPaymentMethod;
 
         appPaymentParameters.clientSessionRequestBody = currentClientSessionRequestBody;
+        appPaymentParameters.shippingOptions = isShippingOptionsApplied ? {
+            isCaptureShippingAddressEnabled: isCaptureShippingAddressEnabled,
+            requireShippingMethod: requireShippingMethod,
+            additionalShippingContactFields: additionalShippingContactFields,
+        } : undefined;
+    
     }
 
     return (
