@@ -241,11 +241,15 @@ const CheckoutScreen = (props: any) => {
                 merchantName: appPaymentParameters.merchantName || "Merchant name",
                 isCaptureBillingAddressEnabled: true,
                 showApplePayForUnsupportedDevice: true,
-                checkProvidedNetworks: false
+                checkProvidedNetworks: false,
+                shippingOptions: appPaymentParameters.shippingOptions
             },
             googlePayOptions: {
-             isCaptureBillingAddressEnabled: true,
-             isExistingPaymentMethodRequired: true,
+                isCaptureBillingAddressEnabled: true,
+                isExistingPaymentMethodRequired: false,
+                shippingAddressParameters: {phoneNumberRequired: true},
+                requireShippingMethod: true,
+                emailAddressRequired: true
             },
             threeDsOptions: {
                 iOS: {
@@ -259,7 +263,7 @@ const CheckoutScreen = (props: any) => {
                 publishableKey: "<PUT_YOUR_PUBLISHABLE_KEY_HERE>",
                 mandateData: {
                     // This will be used for Android if present
-                    fullMandateStringResourceName: "stripe_ach_full_mandate_text", 
+                    fullMandateStringResourceName: "stripe_ach_full_mandate_text",
                     // This is used for iOS, and will be used for Android if `fullMandateStringResourceName: string;` is not present
                     fullMandateText: "Full mandate text here ...",
                     // Comment the above and uncomment below to use Primer's template with your merchant name
@@ -273,7 +277,7 @@ const CheckoutScreen = (props: any) => {
             isErrorScreenEnabled: true,
             theme: {
                 // 👇 Uncomment to try theming drop-in checkout
-                
+
                 // colors: {
                 //     mainColor: {
                 //         red: 214,
@@ -320,14 +324,6 @@ const CheckoutScreen = (props: any) => {
             onDismiss: onDismiss,
         }
     };
-
-    if (appPaymentParameters.merchantName) {
-        //@ts-ignore
-        settings.paymentMethodOptions.applePayOptions = {
-            merchantIdentifier: 'merchant.checkout.team',
-            merchantName: appPaymentParameters.merchantName
-        };
-    }
 
     const onVaultManagerButtonTapped = async () => {
         try {
