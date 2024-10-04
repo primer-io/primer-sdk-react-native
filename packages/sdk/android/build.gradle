@@ -80,9 +80,6 @@ repositories {
   mavenLocal()
   mavenCentral()
   google()
-  maven {
-    url 'https://s01.oss.sonatype.org/content/repositories/staging/'
-  }
 
   def found = false
   def defaultDir = null
