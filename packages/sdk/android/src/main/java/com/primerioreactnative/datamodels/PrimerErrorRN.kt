@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class PrimerErrorRN(
-  val errorId: String? = null,
+  val errorId: String,
   val errorCode: String? = null,
   val description: String? = null,
   val diagnosticsId: String? = null,
