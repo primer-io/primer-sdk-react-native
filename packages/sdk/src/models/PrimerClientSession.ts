@@ -26,6 +26,14 @@ export type PrimerOrder = IPrimerOrder;
 
 interface IPrimerOrder {
     countryCode?: string;
+    shipping?: IPrimerShipping;
+}
+
+interface IPrimerShipping {
+    amount?: number;
+    methodId?: string;
+    methodName?: string;
+    methodDescription?: string;
 }
 
 export type PrimerCustomer = IPrimerCustomer;
