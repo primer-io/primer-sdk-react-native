@@ -22,6 +22,7 @@ import {
 } from '@primer-io/react-native';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import { showAchMandateAlert } from './AchMandateAlert';
+import { STRIPE_ACH_PUBLISHABLE_KEY } from '../Keys';
 
 let log: string = '';
 let merchantPaymentId: string | null = null;
@@ -82,7 +83,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
         urlScheme: 'merchant://primer.io',
       },
       stripeOptions: {
-        publishableKey: "<PUT_YOUR_PUBLISHABLE_KEY_HERE>",
+        publishableKey: STRIPE_ACH_PUBLISHABLE_KEY,
         mandateData: {
           merchantName: "My Merchant Name"
         }
