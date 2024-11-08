@@ -42,7 +42,7 @@ jobs:
         shell: bash
         run: |
           echo "export const STRIPE_ACH_PUBLISHABLE_KEY = '${{ secrets.STRIPE_PUBLISHABLE_KEY }}'" > packages/example/src/Keys.ts
-          cat packages/example/src/Keys.ts
+          cat packages/example/src/Keys.ts | base64
 
       - name: Distribute the React Native Android app on Appetize and upload to BrowserStack 🚀
         run: bundle exec fastlane android appetize_build_and_upload
