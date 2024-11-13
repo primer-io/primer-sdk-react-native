@@ -127,7 +127,13 @@ interface IPrimerUIOptions {
   isInitScreenEnabled?: boolean;
   isSuccessScreenEnabled?: boolean;
   isErrorScreenEnabled?: boolean;
+  dismissalMechanism?: IDismissalMechanism;
   theme?: IPrimerTheme;
+}
+
+enum IDismissalMechanism {
+  GESTURES = 'gestures',
+  CLOSE_BUTTON = 'closeButton'
 }
 
 //----------------------------------------
