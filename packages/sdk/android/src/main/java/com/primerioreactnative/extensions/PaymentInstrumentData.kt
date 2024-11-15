@@ -11,7 +11,6 @@ internal fun PaymentInstrumentData.toPaymentInstrumentDataRN() =
     last4Digits,
     expirationMonth,
     expirationYear,
-    gocardlessMandateId,
     externalPayerInfo?.email?.let { PrimerPaymentInstrumentTokenRN.ExternalPayerInfo(it) },
     klarnaCustomerToken,
     sessionData?.let {
@@ -19,6 +18,6 @@ internal fun PaymentInstrumentData.toPaymentInstrumentDataRN() =
         it.recurringDescription,
         it.billingAddress?.let { PrimerPaymentInstrumentTokenRN.BillingAddress(it.email) })
     },
-    mx, mnc, mcc, hashedIdentifier, currencyCode, productId, paymentMethodType,
+    paymentMethodType,
     binData?.let { PrimerPaymentInstrumentTokenRN.BinData(it.network) }
   )
