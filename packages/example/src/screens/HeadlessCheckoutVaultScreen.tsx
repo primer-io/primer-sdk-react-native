@@ -315,7 +315,7 @@ export default HeadlessCheckoutVaultScreen = (props: any) => {
       case "STRIPE_ACH": {
         const bankName = item.paymentInstrumentData?.bankName ?? "-";
         suffix = "(" + bankName + ")"
-        const last4Digits = item.paymentInstrumentData?.last4Digits;
+        const last4Digits = item.paymentInstrumentData?.accountNumberLast4Digits;
         if (last4Digits !== undefined) {
           suffix += " ••••" + last4Digits
         }

@@ -36,6 +36,7 @@ data class PrimerPaymentInstrumentTokenRN(
     val cardholderName: String? = null,
     val first6Digits: Int? = null,
     val last4Digits: Int? = null,
+    val accountNumberLast4Digits: Int? = null,
     val expirationMonth: Int? = null,
     val expirationYear: Int? = null,
     val externalPayerInfo: ExternalPayerInfo? = null,
@@ -45,6 +46,7 @@ data class PrimerPaymentInstrumentTokenRN(
     val paymentMethodType: String? = null,
     // bin
     val binData: BinData? = null,
+    val bankName: String? = null
   )
 
   @Serializable

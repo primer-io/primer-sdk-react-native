@@ -9,6 +9,7 @@ internal fun PaymentInstrumentData.toPaymentInstrumentDataRN() =
     cardholderName,
     first6Digits,
     last4Digits,
+    accountNumberLast4Digits,
     expirationMonth,
     expirationYear,
     externalPayerInfo?.email?.let { PrimerPaymentInstrumentTokenRN.ExternalPayerInfo(it) },
@@ -19,5 +20,6 @@ internal fun PaymentInstrumentData.toPaymentInstrumentDataRN() =
         it.billingAddress?.let { PrimerPaymentInstrumentTokenRN.BillingAddress(it.email) })
     },
     paymentMethodType,
-    binData?.let { PrimerPaymentInstrumentTokenRN.BinData(it.network) }
+    binData?.let { PrimerPaymentInstrumentTokenRN.BinData(it.network) },
+    bankName
   )
