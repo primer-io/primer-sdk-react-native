@@ -30,30 +30,18 @@ export interface IPrimerVaultData {
 }
 
 export interface IPrimerPaymentInstrumentData {
-  paypalBillingAgreementId?: string;
-  first6Digits?: string;
-  last4Digits?: string;
-  expirationMonth?: string;
-  expirationYear?: string;
+  paymentMethodType?: string;
+  first6Digits?: number;
+  last4Digits?: number;
+  expirationMonth?: number;
+  expirationYear?: number;
   cardholderName?: string;
   network?: string;
-  isNetworkTokenized?: boolean;
   klarnaCustomerToken?: string;
-
   sessionData?: IKlarnaSessionData;
   externalPayerInfo?: IExternalPayerInfo;
-  shippingAddress?: IShippingAddress;
   binData?: IBinData;
-
-  gocardlessMandateId?: string;
-  authorizationToken?: string;
-  hashedIdentifier?: string;
-  mcc?: string;
-  mnc?: string;
-  mx?: string;
-  currencyCode?: string;
-  productId?: string;
-  accountNumberLast4Digits?: string;
+  accountNumberLast4Digits?: number;
   bankName?: string;
 }
 

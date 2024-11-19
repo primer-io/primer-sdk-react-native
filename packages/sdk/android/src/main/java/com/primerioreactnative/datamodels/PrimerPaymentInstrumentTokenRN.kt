@@ -42,9 +42,7 @@ data class PrimerPaymentInstrumentTokenRN(
     val externalPayerInfo: ExternalPayerInfo? = null,
     val klarnaCustomerToken: String? = null,
     val sessionData: SessionData? = null,
-    // async
     val paymentMethodType: String? = null,
-    // bin
     val binData: BinData? = null,
     val bankName: String? = null
   )
