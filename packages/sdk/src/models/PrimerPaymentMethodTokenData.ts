@@ -47,44 +47,11 @@ export interface IPrimerPaymentInstrumentData {
 
 export interface IKlarnaSessionData {
   recurringDescription?: string;
-  purchaseCountry?: string;
-  purchaseCurrency?: string;
-  locale?: string;
-  orderAmount?: string;
-  orderLines?: IKlarnaSessionOrderLines[];
   billingAddress?: IKlarnaBillingAddress;
-  tokenDetails?: IKlarnaSessionDataTokenDetails;
-}
-
-export interface IKlarnaSessionOrderLines {
-  type?: string;
-  name?: string;
-  quantity?: number;
-  unitPrice?: number;
-  totalAmount?: number;
-  totalDiscountAmount?: number;
 }
 
 export interface IKlarnaBillingAddress {
-  addressLine1?: string;
-  addressLine2?: string;
-  addressLine3?: string;
-  city?: string;
-  countryCode?: string;
   email?: string;
-  firstName?: string;
-  lastName?: string;
-  phoneNumber?: string;
-  postalCode?: string;
-  state?: string;
-  title?: string;
-}
-
-export interface IKlarnaSessionDataTokenDetails {
-  brand?: string;
-  maskedNumber?: string;
-  type: string;
-  expiryDate?: string;
 }
 
 export interface IExternalPayerInfo {
