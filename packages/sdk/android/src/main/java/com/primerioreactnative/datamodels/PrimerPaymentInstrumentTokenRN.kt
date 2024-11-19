@@ -50,6 +50,9 @@ data class PrimerPaymentInstrumentTokenRN(
   @Serializable
   data class ExternalPayerInfo(
     val email: String,
+    val externalPayerId: String?,
+    val firstName: String?,
+    val lastName: String?
   )
 
   @Serializable

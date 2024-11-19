@@ -55,8 +55,8 @@ export interface IKlarnaBillingAddress {
 }
 
 export interface IExternalPayerInfo {
+  email: string;
   externalPayerId?: string;
-  email?: string;
   firstName?: string;
   lastName?: string;
 }
