@@ -53,6 +53,8 @@ export interface IPrimerPaymentInstrumentData {
   mx?: string;
   currencyCode?: string;
   productId?: string;
+  accountNumberLast4Digits?: string;
+  bankName?: string;
 }
 
 export interface IKlarnaSessionData {
