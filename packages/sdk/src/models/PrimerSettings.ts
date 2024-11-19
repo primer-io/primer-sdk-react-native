@@ -98,7 +98,6 @@ interface IPrimerApplePayOptions {
    * @deprecated Use Client Session API to provide merchant name value: https://primer.io/docs/payment-methods/apple-pay/direct-integration#prepare-the-client-session
    */
   merchantName?: string;
-  isCaptureBillingAddressEnabled?: boolean;
   /**
    * If you don't want to present the Apple Pay option when the device doesn't support it, set this to `false`.
    * Default value is `true`.
@@ -111,13 +110,18 @@ interface IPrimerApplePayOptions {
    */
   checkProvidedNetworks?: boolean;
   shippingOptions?: IShippingOptions;
+  billingOptions?: IBillingOptions;
 }
 interface IShippingOptions {
-  isCaptureShippingAddressEnabled: boolean;
-  additionalShippingContactFields?: AdditionalShippingContactField[];
+  shippingContactFields?: RequiredContactField[];
   requireShippingMethod: boolean;
 }
-type AdditionalShippingContactField = 'name' | 'emailAddress' | 'phoneNumber';
+interface IBillingOptions {
+  isCaptureBillingAddressEnabled: boolean;
+  requiredBillingContactFields?: RequiredContactField[];
+}
+
+type RequiredContactField = 'name' | 'emailAddress' | 'phoneNumber' | 'postalAddress';
 
 interface IPrimerCardPaymentOptions {
   is3DSOnVaultingEnabled: boolean;

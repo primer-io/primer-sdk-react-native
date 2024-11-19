@@ -242,7 +242,8 @@ const CheckoutScreen = (props: any) => {
                 isCaptureBillingAddressEnabled: true,
                 showApplePayForUnsupportedDevice: true,
                 checkProvidedNetworks: false,
-                shippingOptions: appPaymentParameters.shippingOptions
+                shippingOptions: appPaymentParameters.shippingOptions,
+                billingOptions: appPaymentParameters.billingOptions
             },
             googlePayOptions: {
                 isCaptureBillingAddressEnabled: true,
