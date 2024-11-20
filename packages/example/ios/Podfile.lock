@@ -11,15 +11,15 @@ PODS:
     - ReactCommon/turbomodule/core (= 0.72.0)
   - fmt (6.2.1)
   - glog (0.3.5)
-  - primer-io-react-native (2.27.0):
-    - PrimerSDK (= 2.31.0)
+  - primer-io-react-native (2.28.0-beta.1):
+    - PrimerSDK
     - React-Core
-  - Primer3DS (2.3.2)
+  - Primer3DS (2.4.0)
   - PrimerIPay88MYSDK (0.1.7)
   - PrimerKlarnaSDK (1.1.1)
-  - PrimerSDK (2.31.0):
-    - PrimerSDK/Core (= 2.31.0)
-  - PrimerSDK/Core (2.31.0)
+  - PrimerSDK (2.31.3):
+    - PrimerSDK/Core (= 2.31.3)
+  - PrimerSDK/Core (2.31.3)
   - PrimerStripeSDK (1.0.0)
   - RCT-Folly (2021.07.22.00):
     - boost
@@ -416,7 +416,7 @@ DEPENDENCIES:
   - Primer3DS
   - PrimerIPay88MYSDK
   - PrimerKlarnaSDK (= 1.1.1)
-  - PrimerSDK
+  - PrimerSDK (from `https://github.com/primer-io/primer-sdk-ios.git`, branch `bn/feature/ACC-4508-Expose-ApplePay-Shipping-Options`)
   - PrimerStripeSDK (= 1.0.0)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
@@ -462,7 +462,6 @@ SPEC REPOS:
     - Primer3DS
     - PrimerIPay88MYSDK
     - PrimerKlarnaSDK
-    - PrimerSDK
     - PrimerStripeSDK
     - SocketRocket
 
@@ -479,6 +478,9 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
   primer-io-react-native:
     :path: "../../sdk"
+  PrimerSDK:
+    :branch: bn/feature/ACC-4508-Expose-ApplePay-Shipping-Options
+    :git: https://github.com/primer-io/primer-sdk-ios.git
   RCT-Folly:
     :podspec: "../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTRequired:
@@ -552,6 +554,11 @@ EXTERNAL SOURCES:
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
+CHECKOUT OPTIONS:
+  PrimerSDK:
+    :commit: 677b98e205ca62a28f67940e2f4fe39bcef6c855
+    :git: https://github.com/primer-io/primer-sdk-ios.git
+
 SPEC CHECKSUMS:
   boost: 57d2868c099736d80fcd648bf211b4431e51a558
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
@@ -559,11 +566,11 @@ SPEC CHECKSUMS:
   FBReactNativeSpec: 6e7e74b1ed7f0a1a469a82a67521b33285f5fef3
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
-  primer-io-react-native: 4b4eb3b62c7787537191a6f74598db8a78c29587
-  Primer3DS: 81e7969033230c7346a517cd609be956914738bb
+  primer-io-react-native: a1692a02390c4b80b185f39c291cc0b54da8509b
+  Primer3DS: 0cd588a22e3c3c89fbbced8b252f5fab187a9ba1
   PrimerIPay88MYSDK: 436ee0be7e2c97e4e81456ccddee20175e9e3c4d
   PrimerKlarnaSDK: 564105170cc7b467bf95c31851813ea41c468f8b
-  PrimerSDK: 78d1a48ba9b4677f78da9750448af6c72007f4fe
+  PrimerSDK: 97197b708f58d992aaa40163bc3f3ba58fa8a2e6
   PrimerStripeSDK: c37d4e7c1b5256d67d4890c4cc4b38ddc9427489
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
   RCTRequired: 656ef0536dd60a9740961ade6a64ba0cb0572d2b
@@ -603,6 +610,6 @@ SPEC CHECKSUMS:
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   Yoga: 1d6727ed193122f6adaf435c3de1a768326ff83b
 
-PODFILE CHECKSUM: 4505e915c8982e98dcb8297a1c627233ce3a067f
+PODFILE CHECKSUM: e51ec02f6773a88bef8a0c92c8d7392c389ab0c3
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2

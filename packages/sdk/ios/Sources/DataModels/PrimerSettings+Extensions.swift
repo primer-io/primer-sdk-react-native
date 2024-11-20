@@ -45,7 +45,7 @@ extension PrimerSettings {
                 if let rnShippingOptions = rnApplePayOptions["shippingOptions"] as? [String: Any] {
                     let requireShippingMethod = rnShippingOptions["requireShippingMethod"] as? Bool ?? false
 
-                    var shippingContactFields: [PrimerApplePayOptions.ShippingOptions.ShippingContactField]? = nil
+                    var shippingContactFields: [PrimerApplePayOptions.RequiredContactField]? = nil
                     if let requiredFieldsStrings = rnShippingOptions["shippingContactFields"] as? [String] {
                         shippingContactFields = requiredFieldsStrings.compactMap { fieldStr in
                             switch fieldStr {
@@ -71,7 +71,7 @@ extension PrimerSettings {
 
                 var billingOptions: PrimerApplePayOptions.BillingOptions? = nil
                 if let rnBillingOptions = rnApplePayOptions["billingOptions"] as? [String: Any] {
-                    var requiredBillingContactFields: [PrimerApplePayOptions.BillingOptions.RequiredBillingContactFields]? = nil
+                    var requiredBillingContactFields: [PrimerApplePayOptions.RequiredContactField]? = nil
                     if let requiredFieldsStrings = rnBillingOptions["requiredBillingContactFields"] as? [String] {
                         requiredBillingContactFields = requiredFieldsStrings.compactMap { fieldStr in
                             switch fieldStr {
