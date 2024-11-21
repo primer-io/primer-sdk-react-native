@@ -68,6 +68,19 @@ extension PrimerSettings {
                     isInitScreenEnabled: rnUIOptions["isInitScreenEnabled"] as? Bool,
                     isSuccessScreenEnabled: rnUIOptions["isSuccessScreenEnabled"] as? Bool,
                     isErrorScreenEnabled: rnUIOptions["isErrorScreenEnabled"] as? Bool,
+                    dismissalMechanism: {
+                        if let mechanism = rnUIOptions["dismissalMechanism"] as? String {
+                            switch mechanism {
+                            case "gestures":
+                                return .gestures
+                            case "closeButton":
+                                return .closeButton
+                            default:
+                                return nil
+                            }
+                        }
+                        return nil
+                    }(),
                     theme: theme)
             }
 
