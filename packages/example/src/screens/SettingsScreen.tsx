@@ -24,9 +24,11 @@ export interface AppPaymentParameters {
     clientSessionRequestBody: IClientSessionRequestBody;
     merchantName?: string;
     shippingOptions?: {
-        isCaptureShippingAddressEnabled: boolean;
         requireShippingMethod: boolean;
-        additionalShippingContactFields: string[];
+        shippingContactFields: string[];
+    };
+    billingOptions?: {
+        requiredBillingContactFields: string[];
     };
 }
 
@@ -72,10 +74,12 @@ const SettingsScreen = ({ navigation }) => {
     const [visaSurcharge, setVisaSurcharge] = React.useState<number | undefined>(appPaymentParameters.clientSessionRequestBody.paymentMethod?.options?.PAYMENT_CARD?.networks.VISA?.surcharge.amount);
     const [masterCardSurcharge, setMasterCardSurcharge] = React.useState<number | undefined>(appPaymentParameters.clientSessionRequestBody.paymentMethod?.options?.PAYMENT_CARD?.networks.MASTERCARD?.surcharge.amount);
 
+    const [isBillingOptionsApplied, setIsBillingOptionsApplied] = useState<boolean>(false);
+    const [requiredBillingContactFields, setRequiredBillingContactFields] = useState<string[]>([]);
+
     const [isShippingOptionsApplied, setIsShippingOptionsApplied] = useState<boolean>(false);
-    const [isCaptureShippingAddressEnabled, setIsCaptureShippingAddressEnabled] = useState<boolean>(false);
     const [requireShippingMethod, setRequireShippingMethod] = useState<boolean>(false);
-    const [additionalShippingContactFields, setAdditionalShippingContactFields] = useState<string[]>([]);
+    const [shippingContactFields, setShippingContactFields] = useState<string[]>([]);
     
     const backgroundStyle = {
         backgroundColor: isDarkMode ? Colors.black : Colors.white
@@ -628,6 +632,7 @@ const SettingsScreen = ({ navigation }) => {
                 {renderMerchantSection()}
                 {renderCustomerSection()}
                 {renderSurchargeSection()}
+                {renderBillingOptionsSection()}
                 {renderShippingOptionsSection()}
             </View>
         );
@@ -686,6 +691,86 @@ const SettingsScreen = ({ navigation }) => {
         );
     }
 
+    const renderBillingOptionsSection = () => {
+        return (
+            <View style={{ marginTop: 12, marginBottom: 8 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Text style={{ ...styles.heading1, marginBottom: 4 }}>
+                        Billing Options
+                    </Text>
+                    <View style={{ flex: 1 }} />
+                    <Switch
+                        value={isBillingOptionsApplied}
+                        onValueChange={val => {
+                            setIsBillingOptionsApplied(val);
+                        }}
+                    />
+                </View>
+
+                {
+                    !isBillingOptionsApplied ? null :
+                        <View>
+                            <Text style={{ ...styles.heading2, marginVertical: 4 }}>Billing Contact Fields</Text>
+                            <View style={{ marginVertical: 4 }}>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <Text style={{ flex: 1 }}>Name</Text>
+                                    <Switch
+                                        value={requiredBillingContactFields.includes('name')}
+                                        onValueChange={val => {
+                                            if (val) {
+                                                setRequiredBillingContactFields([...requiredBillingContactFields, 'name']);
+                                            } else {
+                                                setRequiredBillingContactFields(requiredBillingContactFields.filter(field => field !== 'name'));
+                                            }
+                                        }}
+                                    />
+                                </View>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <Text style={{ flex: 1 }}>Email Address</Text>
+                                    <Switch
+                                        value={requiredBillingContactFields.includes('emailAddress')}
+                                        onValueChange={val => {
+                                            if (val) {
+                                                setRequiredBillingContactFields([...requiredBillingContactFields, 'emailAddress']);
+                                            } else {
+                                                setRequiredBillingContactFields(requiredBillingContactFields.filter(field => field !== 'emailAddress'));
+                                            }
+                                        }}
+                                    />
+                                </View>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <Text style={{ flex: 1 }}>Phone Number</Text>
+                                    <Switch
+                                        value={requiredBillingContactFields.includes('phoneNumber')}
+                                        onValueChange={val => {
+                                            if (val) {
+                                                setRequiredBillingContactFields([...requiredBillingContactFields, 'phoneNumber']);
+                                            } else {
+                                                setRequiredBillingContactFields(requiredBillingContactFields.filter(field => field !== 'phoneNumber'));
+                                            }
+                                        }}
+                                    />
+                                </View>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <Text style={{ flex: 1 }}>Postal Address</Text>
+                                    <Switch
+                                        value={requiredBillingContactFields.includes('postalAddress')}
+                                        onValueChange={val => {
+                                            if (val) {
+                                                setRequiredBillingContactFields([...requiredBillingContactFields, 'postalAddress']);
+                                            } else {
+                                                setRequiredBillingContactFields(requiredBillingContactFields.filter(field => field !== 'postalAddress'));
+                                            }
+                                        }}
+                                    />
+                                </View>
+                            </View>
+                        </View>
+                }
+            </View>
+        );
+    };
+
     const renderShippingOptionsSection = () => {
         return (
             <View style={{ marginTop: 12, marginBottom: 8 }}>
@@ -706,15 +791,6 @@ const SettingsScreen = ({ navigation }) => {
                     !isShippingOptionsApplied ? null :
                         <View>
                             <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 4 }}>
-                                <Text style={{ flex: 1 }}>Capture Shipping Address Enabled</Text>
-                                <Switch
-                                    value={isCaptureShippingAddressEnabled}
-                                    onValueChange={val => {
-                                        setIsCaptureShippingAddressEnabled(val);
-                                    }}
-                                />
-                            </View>
-                            <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 4 }}>
                                 <Text style={{ flex: 1 }}>Require Shipping Method</Text>
                                 <Switch
                                     value={requireShippingMethod}
@@ -723,17 +799,17 @@ const SettingsScreen = ({ navigation }) => {
                                     }}
                                 />
                             </View>
-                            <Text style={{ ...styles.heading2, marginVertical: 4 }}>Additional Shipping Contact Fields</Text>
+                            <Text style={{ ...styles.heading2, marginVertical: 4 }}>Shipping Contact Fields</Text>
                             <View style={{ marginVertical: 4 }}>
                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                     <Text style={{ flex: 1 }}>Name</Text>
                                     <Switch
-                                        value={additionalShippingContactFields.includes('name')}
+                                        value={shippingContactFields.includes('name')}
                                         onValueChange={val => {
                                             if (val) {
-                                                setAdditionalShippingContactFields([...additionalShippingContactFields, 'name']);
+                                                setShippingContactFields([...shippingContactFields, 'name']);
                                             } else {
-                                                setAdditionalShippingContactFields(additionalShippingContactFields.filter(field => field !== 'name'));
+                                                setShippingContactFields(shippingContactFields.filter(field => field !== 'name'));
                                             }
                                         }}
                                     />
@@ -741,12 +817,12 @@ const SettingsScreen = ({ navigation }) => {
                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                     <Text style={{ flex: 1 }}>Email Address</Text>
                                     <Switch
-                                        value={additionalShippingContactFields.includes('emailAddress')}
+                                        value={shippingContactFields.includes('emailAddress')}
                                         onValueChange={val => {
                                             if (val) {
-                                                setAdditionalShippingContactFields([...additionalShippingContactFields, 'emailAddress']);
+                                                setShippingContactFields([...shippingContactFields, 'emailAddress']);
                                             } else {
-                                                setAdditionalShippingContactFields(additionalShippingContactFields.filter(field => field !== 'emailAddress'));
+                                                setShippingContactFields(shippingContactFields.filter(field => field !== 'emailAddress'));
                                             }
                                         }}
                                     />
@@ -754,12 +830,25 @@ const SettingsScreen = ({ navigation }) => {
                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                     <Text style={{ flex: 1 }}>Phone Number</Text>
                                     <Switch
-                                        value={additionalShippingContactFields.includes('phoneNumber')}
+                                        value={shippingContactFields.includes('phoneNumber')}
                                         onValueChange={val => {
                                             if (val) {
-                                                setAdditionalShippingContactFields([...additionalShippingContactFields, 'phoneNumber']);
+                                                setShippingContactFields([...shippingContactFields, 'phoneNumber']);
                                             } else {
-                                                setAdditionalShippingContactFields(additionalShippingContactFields.filter(field => field !== 'phoneNumber'));
+                                                setShippingContactFields(shippingContactFields.filter(field => field !== 'phoneNumber'));
+                                            }
+                                        }}
+                                    />
+                                </View>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <Text style={{ flex: 1 }}>Postal Address</Text>
+                                    <Switch
+                                        value={shippingContactFields.includes('postalAddress')}
+                                        onValueChange={val => {
+                                            if (val) {
+                                                setShippingContactFields([...shippingContactFields, 'postalAddress']);
+                                            } else {
+                                                setShippingContactFields(shippingContactFields.filter(field => field !== 'postalAddress'));
                                             }
                                         }}
                                     />
@@ -877,11 +966,12 @@ const SettingsScreen = ({ navigation }) => {
 
         appPaymentParameters.clientSessionRequestBody = currentClientSessionRequestBody;
         appPaymentParameters.shippingOptions = isShippingOptionsApplied ? {
-            isCaptureShippingAddressEnabled: isCaptureShippingAddressEnabled,
             requireShippingMethod: requireShippingMethod,
-            additionalShippingContactFields: additionalShippingContactFields,
+            shippingContactFields: shippingContactFields,
         } : undefined;
-    
+        appPaymentParameters.billingOptions = isBillingOptionsApplied ? {
+            requiredBillingContactFields: requiredBillingContactFields,
+        } : undefined;
     }
 
     return (
