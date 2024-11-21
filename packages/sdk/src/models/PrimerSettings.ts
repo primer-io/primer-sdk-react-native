@@ -1,4 +1,3 @@
-
 import type { PrimerCheckoutData } from "./PrimerCheckoutData";
 import type { PrimerCheckoutAdditionalInfo } from "./PrimerCheckoutAdditionalInfo";
 import type { PrimerCheckoutPaymentMethodData } from "./PrimerCheckoutPaymentMethodData";
@@ -99,6 +98,10 @@ interface IPrimerApplePayOptions {
    */
   merchantName?: string;
   /**
+   * @deprecated Use BillingOptions to configure required billing fields.
+   */
+  isCaptureBillingAddressEnabled: boolean;
+  /**
    * If you don't want to present the Apple Pay option when the device doesn't support it, set this to `false`.
    * Default value is `true`.
    */
@@ -117,7 +120,6 @@ interface IShippingOptions {
   requireShippingMethod: boolean;
 }
 interface IBillingOptions {
-  isCaptureBillingAddressEnabled: boolean;
   requiredBillingContactFields?: RequiredContactField[];
 }
 
