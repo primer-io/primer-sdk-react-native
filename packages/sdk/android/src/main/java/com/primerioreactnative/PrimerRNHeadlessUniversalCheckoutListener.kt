@@ -24,10 +24,10 @@ import io.primer.android.components.domain.core.models.PrimerHeadlessUniversalCh
 import io.primer.android.domain.PrimerCheckoutData
 import io.primer.android.domain.action.models.PrimerClientSession
 import io.primer.android.domain.error.models.PrimerError
-import io.primer.android.domain.payments.additionalInfo.MultibancoCheckoutAdditionalInfo
-import io.primer.android.domain.payments.additionalInfo.PrimerCheckoutAdditionalInfo
-import io.primer.android.domain.payments.additionalInfo.PromptPayCheckoutAdditionalInfo
-import io.primer.android.domain.payments.additionalInfo.AchAdditionalInfo
+import io.primer.android.vouchers.multibanco.MultibancoCheckoutAdditionalInfo
+import io.primer.android.payments.core.additionalInfo.PrimerCheckoutAdditionalInfo
+import io.primer.android.qrcode.QrCodeCheckoutAdditionalInfo
+import io.primer.android.stripe.ach.api.additionalInfo.AchAdditionalInfo
 import io.primer.android.domain.tokenization.models.PrimerPaymentMethodData
 import io.primer.android.domain.tokenization.models.PrimerPaymentMethodTokenData
 import io.primer.android.Primer
@@ -250,7 +250,7 @@ class PrimerRNHeadlessUniversalCheckoutListener(
   override fun onCheckoutAdditionalInfoReceived(additionalInfo: PrimerCheckoutAdditionalInfo) {
     if (implementedRNCallbacks?.isOnCheckoutAdditionalInfoImplemented == true) {
       when (additionalInfo) {
-        is PromptPayCheckoutAdditionalInfo -> {
+        is QrCodeCheckoutAdditionalInfo -> {
             sendEvent?.invoke(
                 PrimerHeadlessUniversalCheckoutEvent.ON_CHECKOUT_ADDITIONAL_INFO.eventName,
                 JSONObject(json.encodeToString(additionalInfo.toCheckoutAdditionalInfoRN())).apply {

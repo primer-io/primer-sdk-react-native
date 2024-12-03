@@ -26,7 +26,7 @@ import com.primerioreactnative.utils.convertJsonToArray
 import com.primerioreactnative.utils.errorTo
 import io.primer.android.components.manager.banks.composable.BanksCollectableData
 import io.primer.android.components.manager.banks.composable.BanksStep
-import io.primer.android.components.manager.componentWithRedirect.PrimerHeadlessUniversalCheckoutComponentWithRedirectManager
+import io.primer.android.components.componentWithRedirect.PrimerHeadlessUniversalCheckoutComponentWithRedirectManager
 import io.primer.android.components.manager.componentWithRedirect.component.BanksComponent
 import io.primer.android.components.manager.core.composable.PrimerValidationStatus
 import com.primerioreactnative.utils.toWritableArray

@@ -9,7 +9,7 @@ import android.widget.TextView
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewGroupManager
-import io.primer.android.components.presentation.paymentMethods.nativeUi.klarna.PrimerKlarnaPaymentView
+import io.primer.android.klarna.api.ui.PrimerKlarnaPaymentView
 import java.lang.ref.WeakReference
 import java.util.Timer
 import java.util.TimerTask

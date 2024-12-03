@@ -1,7 +1,7 @@
 package com.primerioreactnative.datamodels.extensions.ach
 
 import com.primerioreactnative.datamodels.ach.AchUserDetailsStepRN
-import io.primer.android.components.presentation.paymentMethods.nativeUi.stripe.ach.composable.AchUserDetailsStep
+import io.primer.android.stripe.ach.api.composable.AchUserDetailsStep
 
 internal fun AchUserDetailsStep.UserDetailsCollected.toUserDetailsCollectedRN() =
     AchUserDetailsStepRN.UserDetailsCollectedRN()
