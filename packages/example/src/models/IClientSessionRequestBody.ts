@@ -71,6 +71,7 @@ export interface IClientSession_Action {
 
 export interface IClientSessionPaymentMethod {
     vaultOnSuccess?: boolean;
+    vaultOnAgreement?: boolean;
     paymentType?: string;
     options?: IClientSessionPaymentMethodOptions;
 }
@@ -158,6 +159,7 @@ export let appPaymentParameters: AppPaymentParameters = {
         },
         paymentMethod: {
             vaultOnSuccess: false,
+            vaultOnAgreement: false,
             paymentType: 'FIRST_PAYMENT',
         }
     },
