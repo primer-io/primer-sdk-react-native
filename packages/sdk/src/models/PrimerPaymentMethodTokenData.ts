@@ -30,18 +30,18 @@ export interface IPrimerVaultData {
 }
 
 export interface IPrimerPaymentInstrumentData {
-  paymentMethodType?: string;
+  network?: string;
+  cardholderName?: string;
   first6Digits?: number;
   last4Digits?: number;
+  accountNumberLast4Digits?: number;
   expirationMonth?: number;
   expirationYear?: number;
-  cardholderName?: string;
-  network?: string;
+  externalPayerInfo?: IExternalPayerInfo;
   klarnaCustomerToken?: string;
   sessionData?: IKlarnaSessionData;
-  externalPayerInfo?: IExternalPayerInfo;
+  paymentMethodType?: string;
   binData?: IBinData;
-  accountNumberLast4Digits?: number;
   bankName?: string;
 }
 
