@@ -1,14 +1,14 @@
-import React, {useEffect, useState} from 'react';
-import {Alert, Image, TouchableOpacity, View} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Alert, Image, TouchableOpacity, View } from 'react-native';
 import {
   createClientSession,
   createPayment,
   resumePayment,
 } from '../network/api';
-import {appPaymentParameters} from '../models/IClientSessionRequestBody';
-import type {IPayment} from '../models/IPayment';
-import {getPaymentHandlingStringVal} from '../network/Environment';
-import {ActivityIndicator} from 'react-native';
+import { appPaymentParameters } from '../models/IClientSessionRequestBody';
+import type { IPayment } from '../models/IPayment';
+import { getPaymentHandlingStringVal } from '../network/Environment';
+import { ActivityIndicator } from 'react-native';
 import {
   Asset,
   AssetsManager,
@@ -151,7 +151,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
           )}\n`,
         );
         setIsLoading(false);
-        switch(merchantCheckoutAdditionalInfo.additionalInfoName) {
+        switch (merchantCheckoutAdditionalInfo.additionalInfoName) {
           case "DisplayStripeAchMandateAdditionalInfo":
             showAchMandateAlert();
             break;
@@ -389,8 +389,6 @@ export const HeadlessCheckoutScreen = (props: any) => {
         console.log("Payment session intent is " + selectedSessionIntent)
         if (paymentMethod.paymentMethodType === "KLARNA") {
           props.navigation.navigate('Klarna', { paymentSessionIntent: selectedSessionIntent });
-        } else if (paymentMethod.paymentMethodType === "STRIPE_ACH") {
-          props.navigation.navigate('HeadlessCheckoutStripeAchScreen');
         } else {
           await nativeUIManager.showPaymentMethod(SessionIntent.CHECKOUT);
         }
@@ -429,6 +427,8 @@ export const HeadlessCheckoutScreen = (props: any) => {
             paymentMethodType: paymentMethod.paymentMethodType,
           });
         }
+      } else if (implementationType === "STRIPE_ACH" && paymentMethod.paymentMethodType === "STRIPE_ACH") {
+        props.navigation.navigate('HeadlessCheckoutStripeAchScreen');
       } else {
         Alert.alert(
           'Warning!',
@@ -437,7 +437,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
             {
               text: 'Cancel',
               style: 'cancel',
-              onPress: () => {},
+              onPress: () => { },
             },
           ],
           {
@@ -501,7 +501,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
                 .toLowerCase()
                 .replace('_', '-')}`}>
               <Image
-                style={{height: 36, width: '100%', resizeMode: 'contain'}}
+                style={{ height: 36, width: '100%', resizeMode: 'contain' }}
                 source={{
                   uri:
                     paymentMethodsAsset.paymentMethodLogo.colored ||
