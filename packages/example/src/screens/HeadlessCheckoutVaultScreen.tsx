@@ -273,18 +273,20 @@ export default HeadlessCheckoutVaultScreen = (props: any) => {
     } else {
       return (
         vaultedPaymentMethods.map((item) => {
-          return <Text style={{
-            marginHorizontal: 20,
-            paddingTop: 1,
-            paddingBottom: 10,
-            paddingHorizontal: 10,
-            fontSize: 18,
-            height: 40,
-            color: 'black'
-          }} onPress={() => setSelectedVaultedPaymentMethod(item)}
-          >
-            {getVaultedPaymentData(item)}
-          </Text>
+          return <View style={{flexDirection:'row'}}> 
+            <Text style={{
+              marginHorizontal: 20,
+              paddingTop: 1,
+              paddingBottom: 10,
+              paddingHorizontal: 10,
+              fontSize: 18,
+              flexWrap: 'wrap',
+              color: 'black'
+            }} onPress={() => setSelectedVaultedPaymentMethod(item)}
+            >
+              • {getVaultedPaymentData(item)}
+            </Text>
+          </View>
         })
       );
     }
@@ -315,7 +317,7 @@ export default HeadlessCheckoutVaultScreen = (props: any) => {
       case "STRIPE_ACH": {
         const bankName = item.paymentInstrumentData?.bankName ?? "-";
         suffix = "(" + bankName + ")"
-        const last4Digits = item.paymentInstrumentData?.last4Digits;
+        const last4Digits = item.paymentInstrumentData?.accountNumberLast4Digits;
         if (last4Digits !== undefined) {
           suffix += " ••••" + last4Digits
         }
