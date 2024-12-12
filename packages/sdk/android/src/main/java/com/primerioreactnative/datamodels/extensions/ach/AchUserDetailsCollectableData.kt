@@ -2,7 +2,7 @@ package com.primerioreactnative.datamodels.extensions.ach
 
 import com.primerioreactnative.datamodels.NamedComponentValidatableData
 import com.primerioreactnative.datamodels.ach.AchUserDetailsStepRN
-import io.primer.android.components.presentation.paymentMethods.nativeUi.stripe.ach.composable.AchUserDetailsCollectableData
+import io.primer.android.stripe.ach.api.composable.AchUserDetailsCollectableData
 import kotlinx.serialization.Serializable
 import com.primerioreactnative.datamodels.ach.AchUserDetailsCollectableDataRN
 
