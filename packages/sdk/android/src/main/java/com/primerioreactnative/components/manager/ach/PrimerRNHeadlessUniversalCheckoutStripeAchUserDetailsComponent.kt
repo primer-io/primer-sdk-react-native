@@ -24,11 +24,11 @@ import com.primerioreactnative.datamodels.extensions.ach.toUserDetailsRetrievedR
 import com.primerioreactnative.utils.convertJsonToArray
 import com.primerioreactnative.utils.convertJsonToMap
 import com.primerioreactnative.utils.errorTo
-import io.primer.android.components.manager.ach.PrimerHeadlessUniversalCheckoutAchManager
+import io.primer.android.components.ach.PrimerHeadlessUniversalCheckoutAchManager
 import io.primer.android.components.manager.core.composable.PrimerValidationStatus
-import io.primer.android.components.presentation.paymentMethods.nativeUi.stripe.ach.StripeAchUserDetailsComponent
-import io.primer.android.components.presentation.paymentMethods.nativeUi.stripe.ach.composable.AchUserDetailsCollectableData
-import io.primer.android.components.presentation.paymentMethods.nativeUi.stripe.ach.composable.AchUserDetailsStep
+import io.primer.android.stripe.ach.api.component.StripeAchUserDetailsComponent
+import io.primer.android.stripe.ach.api.composable.AchUserDetailsCollectableData
+import io.primer.android.stripe.ach.api.composable.AchUserDetailsStep
 import io.primer.android.domain.error.models.PrimerError
 import com.primerioreactnative.utils.toWritableArray
 import com.primerioreactnative.utils.toWritableMap

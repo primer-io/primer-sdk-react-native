@@ -35,18 +35,33 @@ export interface KlarnaComponent {
      * triggering the validation flow.
      * @param paymentOptions The options to use when initializing the Klarna 
      * payment view.
+     * @deprecated use handlePaymentOptionsChange function instead.
      */
     onSetPaymentOptions(paymentOptions: KlarnaPaymentOptions): Promise<void>;
 
     /**
+     * Sets the options to use when initializing the Klarna payment view, 
+     * triggering the validation flow.
+     * @param paymentOptions The options to use when initializing the Klarna 
+     * payment view.
+     */
+    handlePaymentOptionsChange(paymentOptions: KlarnaPaymentOptions): Promise<void>;
+
+    /**
      * Finalizes the payment.
+     * @deprecated use finalizePayment function instead.
      */
     onFinalizePayment(): Promise<void>;
 
     /**
+     * Finalizes the payment.
+     */
+    finalizePayment(): Promise<void>;
+
+    /**
      * Submits the component, initiating the payment authorization process. 
      * This function should only be called after setting the payment options 
-     * {@link onSetPaymentOptions}.
+     * {@link handlePaymentOptionsChange}.
      */
     submit(): Promise<void>;
 }
@@ -74,7 +89,13 @@ export class PrimerHeadlessUniversalCheckoutKlarnaManager {
             onSetPaymentOptions: async (paymentOptions: KlarnaPaymentOptions) => {
                 RNTPrimerHeadlessUniversalCheckoutKlarnaComponent.onSetPaymentOptions(paymentOptions);
             },
+            handlePaymentOptionsChange: async (paymentOptions: KlarnaPaymentOptions) => {
+                RNTPrimerHeadlessUniversalCheckoutKlarnaComponent.onSetPaymentOptions(paymentOptions);
+            },
             onFinalizePayment: async () => {
+                RNTPrimerHeadlessUniversalCheckoutKlarnaComponent.onFinalizePayment();
+            },
+            finalizePayment: async () => {
                 RNTPrimerHeadlessUniversalCheckoutKlarnaComponent.onFinalizePayment();
             },
         }

@@ -110,7 +110,7 @@ const HeadlessCheckoutWithRedirect = (props: any) => {
           setSearch(value);
 
           try {
-            await banksComponent.onBankFilterChange(value);
+            await banksComponent.handleBankFilterChange(value);
           } catch (err) {
             console.error(err);
           }
@@ -122,7 +122,7 @@ const HeadlessCheckoutWithRedirect = (props: any) => {
         onPay={async (id: string) => {
           try {
             setIsValidating(id);
-            await banksComponent.onBankSelected(id);
+            await banksComponent.handleBankChange(id);
           } catch (err) {
             setIsValidating(null);
             console.error(err);

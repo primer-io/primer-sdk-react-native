@@ -29,10 +29,10 @@ import com.primerioreactnative.extensions.putErrors
 import com.primerioreactnative.extensions.putValidationErrors
 import io.primer.android.PrimerSessionIntent
 import io.primer.android.components.manager.core.composable.PrimerValidationStatus
-import io.primer.android.components.manager.klarna.PrimerHeadlessUniversalCheckoutKlarnaManager
-import io.primer.android.components.presentation.paymentMethods.nativeUi.klarna.composable.KlarnaComponent
-import io.primer.android.components.presentation.paymentMethods.nativeUi.klarna.models.KlarnaPaymentCollectableData
-import io.primer.android.components.presentation.paymentMethods.nativeUi.klarna.models.KlarnaPaymentStep
+import io.primer.android.klarna.PrimerHeadlessUniversalCheckoutKlarnaManager
+import io.primer.android.klarna.api.component.KlarnaComponent
+import io.primer.android.klarna.api.composable.KlarnaPaymentCollectableData
+import io.primer.android.klarna.api.composable.KlarnaPaymentStep
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

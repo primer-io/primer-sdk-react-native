@@ -42,6 +42,11 @@ jobs:
           node-version: 18
           cache: 'yarn'
 
+      - name: Create Keys.ts
+        shell: bash
+        run: |
+          echo "export const STRIPE_ACH_PUBLISHABLE_KEY = '${{ secrets.STRIPE_PUBLISHABLE_KEY }}'" > packages/example/src/Keys.ts
+
       - name: Get npm cache directory
         id: npm-cache-dir
         run: echo "dir=$(npm config get cache)" >> ${GITHUB_OUTPUT}

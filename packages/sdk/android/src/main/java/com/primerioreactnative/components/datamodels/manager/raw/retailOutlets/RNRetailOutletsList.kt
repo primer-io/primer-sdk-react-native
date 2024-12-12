@@ -1,6 +1,6 @@
 package com.primerioreactnative.components.datamodels.manager.raw.retailOutlets
 
-import io.primer.android.data.payments.configure.retailOutlets.RetailOutletsList
+import io.primer.android.RetailOutletsList
 import kotlinx.serialization.Serializable
 
 @Serializable

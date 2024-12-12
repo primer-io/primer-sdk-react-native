@@ -22,6 +22,7 @@ import {
     ResumeHandler,
     TokenizationHandler
 } from '@primer-io/react-native';
+import { STRIPE_ACH_PUBLISHABLE_KEY } from '../Keys';
 
 let clientToken: string | null = null;
 let paymentId: string | null = null;
@@ -256,7 +257,7 @@ const CheckoutScreen = (props: any) => {
                 }
             },
             stripeOptions: {
-                publishableKey: "<PUT_YOUR_PUBLISHABLE_KEY_HERE>",
+                publishableKey: STRIPE_ACH_PUBLISHABLE_KEY,
                 mandateData: {
                     // This will be used for Android if present
                     fullMandateStringResourceName: "stripe_ach_full_mandate_text", 
