@@ -8,5 +8,12 @@ internal fun PrimerUIOptionsRN.toPrimerUIOptions() =
     isInitScreenEnabled,
     isSuccessScreenEnabled,
     isErrorScreenEnabled,
+    dismissalMechanism?.let {
+        when (it) {
+            "gestures" -> PrimerUIOptions.DismissalMechanism.GESTURES
+            "closeButton" -> PrimerUIOptions.DismissalMechanism.CLOSE_BUTTON
+            else -> null
+        }
+    },
     theme.toPrimerTheme()
   )
