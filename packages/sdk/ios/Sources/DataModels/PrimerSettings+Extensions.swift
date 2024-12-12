@@ -69,15 +69,19 @@ extension PrimerSettings {
                     isSuccessScreenEnabled: rnUIOptions["isSuccessScreenEnabled"] as? Bool,
                     isErrorScreenEnabled: rnUIOptions["isErrorScreenEnabled"] as? Bool,
                     dismissalMechanism: {
-                        if let mechanism = rnUIOptions["dismissalMechanism"] as? String {
-                            switch mechanism {
-                            case "gestures":
-                                return .gestures
-                            case "closeButton":
-                                return .closeButton
-                            default:
-                                return nil
+                        if let mechanisms = rnUIOptions["dismissalMechanism"] as? [String] {
+                          var dismissalMechanisms: [DismissalMechanism] = []
+                            for mechanism in mechanisms {
+                                switch mechanism {
+                                case "gestures":
+                                    dismissalMechanisms.append(.gestures)
+                                case "closeButton":
+                                    dismissalMechanisms.append(.closeButton)
+                                default:
+                                    break
+                                }
                             }
+                            return dismissalMechanisms.isEmpty ? nil : dismissalMechanisms
                         }
                         return nil
                     }(),
