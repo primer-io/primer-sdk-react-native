@@ -45,7 +45,7 @@ target 'example_0_70_6' do
   )
 
   pod 'primer-io-react-native', :path => '../../sdk'
-  pod 'PrimerSDK', :git => 'https://github.com/primer-io/primer-sdk-ios.git', :branch => 'bn/feature/ACC-4508-Expose-ApplePay-Shipping-Options'
+  pod 'PrimerSDK'
   pod 'Primer3DS'
   pod 'PrimerIPay88MYSDK'
   pod 'PrimerKlarnaSDK', '1.1.1'
