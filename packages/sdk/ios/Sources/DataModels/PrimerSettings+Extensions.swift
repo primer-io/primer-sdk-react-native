@@ -43,12 +43,11 @@ extension PrimerSettings {
                 
                 var shippingOptions: PrimerApplePayOptions.ShippingOptions? = nil
                 if let rnShippingOptions = rnApplePayOptions["shippingOptions"] as? [String: Any] {
-                    let isCaptureShippingAddressEnabled = rnShippingOptions["isCaptureShippingAddressEnabled"] as? Bool ?? false
                     let requireShippingMethod = rnShippingOptions["requireShippingMethod"] as? Bool ?? false
 
-                    var additionalShippingContactFields: [PrimerApplePayOptions.ShippingOptions.AdditionalShippingContactField]? = nil
-                    if let additionalFieldsStrings = rnShippingOptions["additionalShippingContactFields"] as? [String] {
-                        additionalShippingContactFields = additionalFieldsStrings.compactMap { fieldStr in
+                    var shippingContactFields: [PrimerApplePayOptions.RequiredContactField]? = nil
+                    if let requiredFieldsStrings = rnShippingOptions["shippingContactFields"] as? [String] {
+                        shippingContactFields = requiredFieldsStrings.compactMap { fieldStr in
                             switch fieldStr {
                             case "name":
                                 return .name
@@ -56,6 +55,8 @@ extension PrimerSettings {
                                 return .emailAddress
                             case "phoneNumber":
                                 return .phoneNumber
+                            case "postalAddress":
+                                return .postalAddress
                             default:
                                 return nil // Ignore unknown values or handle accordingly
                             }
@@ -63,9 +64,33 @@ extension PrimerSettings {
                     }
 
                     shippingOptions = PrimerApplePayOptions.ShippingOptions(
-                        isCaptureShippingAddressEnabled: isCaptureShippingAddressEnabled,
-                        additionalShippingContactFields: additionalShippingContactFields,
+                        shippingContactFields: shippingContactFields,
                         requireShippingMethod: requireShippingMethod
+                    )
+                }
+
+                var billingOptions: PrimerApplePayOptions.BillingOptions? = nil
+                if let rnBillingOptions = rnApplePayOptions["billingOptions"] as? [String: Any] {
+                    var requiredBillingContactFields: [PrimerApplePayOptions.RequiredContactField]? = nil
+                    if let requiredFieldsStrings = rnBillingOptions["requiredBillingContactFields"] as? [String] {
+                        requiredBillingContactFields = requiredFieldsStrings.compactMap { fieldStr in
+                            switch fieldStr {
+                            case "name":
+                                return .name
+                            case "emailAddress":
+                                return .emailAddress
+                            case "phoneNumber":
+                                return .phoneNumber
+                            case "postalAddress":
+                                return .postalAddress
+                            default:
+                                return nil // Ignore unknown values or handle accordingly
+                            }
+                        }
+                    }
+
+                    billingOptions = PrimerApplePayOptions.BillingOptions(
+                        requiredBillingContactFields: requiredBillingContactFields
                     )
                 }
 
@@ -75,7 +100,8 @@ extension PrimerSettings {
                     isCaptureBillingAddressEnabled: rnApplePayIsCaptureBillingAddressEnabled,
                     showApplePayForUnsupportedDevice: rnApplePayShowApplePayForUnsupportedDevice,
                     checkProvidedNetworks: rnApplePayCheckProvidedNetworks,
-                    shippingOptions: shippingOptions
+                    shippingOptions: shippingOptions,
+                    billingOptions: billingOptions
                 )
             }
             
