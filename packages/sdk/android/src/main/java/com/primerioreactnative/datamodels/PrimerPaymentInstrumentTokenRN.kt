@@ -36,28 +36,23 @@ data class PrimerPaymentInstrumentTokenRN(
     val cardholderName: String? = null,
     val first6Digits: Int? = null,
     val last4Digits: Int? = null,
+    val accountNumberLast4Digits: Int? = null,
     val expirationMonth: Int? = null,
     val expirationYear: Int? = null,
-    val gocardlessMandateId: String? = null,
     val externalPayerInfo: ExternalPayerInfo? = null,
     val klarnaCustomerToken: String? = null,
     val sessionData: SessionData? = null,
-    // apaya
-    val mx: String? = null,
-    val mnc: Int? = null,
-    val mcc: Int? = null,
-    val hashedIdentifier: String? = null,
-    val currencyCode: String? = null,
-    val productId: String? = null,
-    // async
     val paymentMethodType: String? = null,
-    // bin
     val binData: BinData? = null,
+    val bankName: String? = null
   )
 
   @Serializable
   data class ExternalPayerInfo(
     val email: String,
+    val externalPayerId: String?,
+    val firstName: String?,
+    val lastName: String?
   )
 
   @Serializable

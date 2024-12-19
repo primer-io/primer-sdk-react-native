@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Alert,
   Button,
-  FlatList,
   ScrollView,
   Text,
   TextInput,
@@ -23,7 +21,6 @@ import {
   PrimerSettings,
   ValidationError
 } from '@primer-io/react-native';
-import { showAchMandateAlert } from './AchMandateAlert';
 
 let log: string = "";
 let merchantPaymentId: string | null = null;
@@ -86,11 +83,6 @@ export default HeadlessCheckoutVaultScreen = (props: any) => {
         merchantCheckoutAdditionalInfo = additionalInfo;
         updateLogs(`\nℹ️ onCheckoutPending\nadditionalInfo: ${JSON.stringify(additionalInfo, null, 2)}\n`);
         setIsLoading(false);
-        switch(merchantCheckoutAdditionalInfo.additionalInfoName) {
-          case "DisplayStripeAchMandateAdditionalInfo":
-            showAchMandateAlert();
-            break;
-        }
       },
       onCheckoutPending: (checkoutAdditionalInfo) => {
         merchantCheckoutAdditionalInfo = checkoutAdditionalInfo;
@@ -281,56 +273,58 @@ export default HeadlessCheckoutVaultScreen = (props: any) => {
     } else {
       return (
         vaultedPaymentMethods.map((item) => {
-          return <Text style={{
-            marginHorizontal: 20,
-            paddingTop: 1,
-            paddingBottom: 10,
-            paddingHorizontal: 10,
-            fontSize: 18,
-            height: 40,
-            color: 'black'
-          }} onPress={() => setSelectedVaultedPaymentMethod(item)}
-          >
-            {getVaultedPaymentData(item)}
-          </Text>
+          return <View style={{flexDirection:'row'}}> 
+            <Text style={{
+              marginHorizontal: 20,
+              paddingTop: 1,
+              paddingBottom: 10,
+              paddingHorizontal: 10,
+              fontSize: 18,
+              flexWrap: 'wrap',
+              color: 'black'
+            }} onPress={() => setSelectedVaultedPaymentMethod(item)}
+            >
+              • {getVaultedPaymentData(item)}
+            </Text>
+          </View>
         })
       );
     }
   }
 
   const getVaultedPaymentData = (item: any) => {
-      const paymentMethodType = item?.paymentMethodType ?? ""
-      var suffix: string | null = null
-      switch (paymentMethodType) {
-        case "PAYMENT_CARD":
-        case "GOOGLE_PAY":
-        case "APPLE_PAY": {
-          let last4Digits = item.paymentInstrumentData.last4Digits
-          if (last4Digits !== undefined) {
-            suffix = "••••" + last4Digits
-          }
-          break;
+    const paymentMethodType = item?.paymentMethodType ?? ""
+    var suffix: string | null = null
+    switch (paymentMethodType) {
+      case "PAYMENT_CARD":
+      case "GOOGLE_PAY":
+      case "APPLE_PAY": {
+        let last4Digits = item.paymentInstrumentData.last4Digits
+        if (last4Digits !== undefined) {
+          suffix = "••••" + last4Digits
         }
-        case "PAYPAL": {
-          suffix = item.paymentInstrumentData?.externalPayerInfo?.email ?? ""
-          break;
-        }
-        case "KLARNA": {
-          const billingAddress = item.paymentInstrumentData?.sessionData?.billingAddress
-          suffix = billingAddress?.email ?? ""
-          break;
-        }
-        case "STRIPE_ACH": {
-          const bankName = item.paymentInstrumentData?.bankName ?? "-";
-          suffix = "(" + bankName + ")"
-          const last4Digits = item.paymentInstrumentData?.last4Digits;
-          if (last4Digits !== undefined) {
-            suffix += " ••••" + last4Digits
-          }
-          break;
-        }
+        break;
       }
-      return paymentMethodType + ": " + (suffix ?? "-");
+      case "PAYPAL": {
+        suffix = item.paymentInstrumentData?.externalPayerInfo?.email ?? ""
+        break;
+      }
+      case "KLARNA": {
+        const billingAddress = item.paymentInstrumentData?.sessionData?.billingAddress
+        suffix = billingAddress?.email ?? ""
+        break;
+      }
+      case "STRIPE_ACH": {
+        const bankName = item.paymentInstrumentData?.bankName ?? "-";
+        suffix = "(" + bankName + ")"
+        const last4Digits = item.paymentInstrumentData?.accountNumberLast4Digits;
+        if (last4Digits !== undefined) {
+          suffix += " ••••" + last4Digits
+        }
+        break;
+      }
+    }
+    return paymentMethodType + ": " + (suffix ?? "-");
   }
 
   const renderVaultAdditionalData = () => {

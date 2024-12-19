@@ -15,9 +15,9 @@ import io.primer.android.completion.PrimerResumeDecisionHandler
 import io.primer.android.domain.PrimerCheckoutData
 import io.primer.android.domain.action.models.PrimerClientSession
 import io.primer.android.domain.error.models.PrimerError
-import io.primer.android.domain.payments.additionalInfo.MultibancoCheckoutAdditionalInfo
-import io.primer.android.domain.payments.additionalInfo.PrimerCheckoutAdditionalInfo
-import io.primer.android.domain.payments.additionalInfo.PromptPayCheckoutAdditionalInfo
+import io.primer.android.vouchers.multibanco.MultibancoCheckoutAdditionalInfo
+import io.primer.android.payments.core.additionalInfo.PrimerCheckoutAdditionalInfo
+import io.primer.android.qrcode.QrCodeCheckoutAdditionalInfo
 import io.primer.android.domain.tokenization.models.PrimerPaymentMethodData
 import io.primer.android.domain.tokenization.models.PrimerPaymentMethodTokenData
 import kotlinx.serialization.encodeToString
@@ -173,7 +173,7 @@ class PrimerRNEventListener : PrimerCheckoutListener {
 
   override fun onAdditionalInfoReceived(additionalInfo: PrimerCheckoutAdditionalInfo) {
     if (implementedRNCallbacks?.isOnCheckoutAdditionalInfoImplemented == true) {
-      if (additionalInfo is PromptPayCheckoutAdditionalInfo) {
+      if (additionalInfo is QrCodeCheckoutAdditionalInfo) {
         sendEvent?.invoke(
           PrimerEvents.ON_CHECKOUT_RECEIVED_ADDITIONAL_INFO.eventName,
           JSONObject(Json.encodeToString(additionalInfo.toCheckoutAdditionalInfoRN())).apply {

@@ -19,7 +19,7 @@ import io.primer.android.components.SdkUninitializedException
 import io.primer.android.components.domain.exception.UnsupportedPaymentMethodManagerException
 import io.primer.android.components.manager.raw.PrimerHeadlessUniversalCheckoutRawDataManager
 import io.primer.android.components.manager.raw.PrimerHeadlessUniversalCheckoutRawDataManagerInterface
-import io.primer.android.data.payments.configure.retailOutlets.RetailOutletsList
+import io.primer.android.RetailOutletsList
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json

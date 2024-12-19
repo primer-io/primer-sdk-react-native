@@ -5,10 +5,10 @@ import com.primerioreactnative.datamodels.klarna.KlarnaPaymentStepRN.PaymentView
 import com.primerioreactnative.datamodels.klarna.KlarnaPaymentStepRN.PaymentSessionAuthorizedRN
 import com.primerioreactnative.datamodels.klarna.KlarnaPaymentStepRN.PaymentSessionFinalizedRN
 import com.primerioreactnative.extensions.klarna.toKlarnaPaymentCategoryRN
-import io.primer.android.components.presentation.paymentMethods.nativeUi.klarna.models.KlarnaPaymentStep.PaymentSessionCreated
-import io.primer.android.components.presentation.paymentMethods.nativeUi.klarna.models.KlarnaPaymentStep.PaymentViewLoaded
-import io.primer.android.components.presentation.paymentMethods.nativeUi.klarna.models.KlarnaPaymentStep.PaymentSessionAuthorized
-import io.primer.android.components.presentation.paymentMethods.nativeUi.klarna.models.KlarnaPaymentStep.PaymentSessionFinalized
+import  io.primer.android.klarna.api.composable.KlarnaPaymentStep.PaymentSessionCreated
+import io.primer.android.klarna.api.composable.KlarnaPaymentStep.PaymentViewLoaded
+import io.primer.android.klarna.api.composable.KlarnaPaymentStep.PaymentSessionAuthorized
+import io.primer.android.klarna.api.composable.KlarnaPaymentStep.PaymentSessionFinalized
 
 internal fun PaymentSessionCreated.toPaymentSessionCreatedRN() =
     PaymentSessionCreatedRN(paymentCategories = paymentCategories.map { it.toKlarnaPaymentCategoryRN() })

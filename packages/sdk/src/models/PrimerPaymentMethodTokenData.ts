@@ -30,76 +30,33 @@ export interface IPrimerVaultData {
 }
 
 export interface IPrimerPaymentInstrumentData {
-  paypalBillingAgreementId?: string;
-  first6Digits?: string;
-  last4Digits?: string;
-  expirationMonth?: string;
-  expirationYear?: string;
-  cardholderName?: string;
   network?: string;
-  isNetworkTokenized?: boolean;
-  klarnaCustomerToken?: string;
-
-  sessionData?: IKlarnaSessionData;
+  cardholderName?: string;
+  first6Digits?: number;
+  last4Digits?: number;
+  accountNumberLast4Digits?: number;
+  expirationMonth?: number;
+  expirationYear?: number;
   externalPayerInfo?: IExternalPayerInfo;
-  shippingAddress?: IShippingAddress;
+  klarnaCustomerToken?: string;
+  sessionData?: IKlarnaSessionData;
+  paymentMethodType?: string;
   binData?: IBinData;
-
-  gocardlessMandateId?: string;
-  authorizationToken?: string;
-  hashedIdentifier?: string;
-  mcc?: string;
-  mnc?: string;
-  mx?: string;
-  currencyCode?: string;
-  productId?: string;
+  bankName?: string;
 }
 
 export interface IKlarnaSessionData {
   recurringDescription?: string;
-  purchaseCountry?: string;
-  purchaseCurrency?: string;
-  locale?: string;
-  orderAmount?: string;
-  orderLines?: IKlarnaSessionOrderLines[];
   billingAddress?: IKlarnaBillingAddress;
-  tokenDetails?: IKlarnaSessionDataTokenDetails;
-}
-
-export interface IKlarnaSessionOrderLines {
-  type?: string;
-  name?: string;
-  quantity?: number;
-  unitPrice?: number;
-  totalAmount?: number;
-  totalDiscountAmount?: number;
 }
 
 export interface IKlarnaBillingAddress {
-  addressLine1?: string;
-  addressLine2?: string;
-  addressLine3?: string;
-  city?: string;
-  countryCode?: string;
   email?: string;
-  firstName?: string;
-  lastName?: string;
-  phoneNumber?: string;
-  postalCode?: string;
-  state?: string;
-  title?: string;
-}
-
-export interface IKlarnaSessionDataTokenDetails {
-  brand?: string;
-  maskedNumber?: string;
-  type: string;
-  expiryDate?: string;
 }
 
 export interface IExternalPayerInfo {
+  email: string;
   externalPayerId?: string;
-  email?: string;
   firstName?: string;
   lastName?: string;
 }
