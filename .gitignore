@@ -73,3 +73,6 @@ lib/
 
 
 fastlane/*.json
+
+# Secrets
+Keys.ts
