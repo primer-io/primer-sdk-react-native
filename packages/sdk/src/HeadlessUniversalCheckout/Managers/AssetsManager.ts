@@ -27,6 +27,9 @@ class PrimerHeadlessUniversalCheckoutAssetsManager {
         });
     }
 
+   /**
+   * @deprecated Use scrollTo instead
+   */
     async getPaymentMethodAsset(paymentMethodType: string): Promise<Asset> {
         return new Promise(async (resolve, reject) => {
             try {
