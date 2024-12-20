@@ -18,7 +18,7 @@ import com.primerioreactnative.utils.toWritableMap
 import io.primer.android.ExperimentalPrimerApi
 import io.primer.android.components.SdkUninitializedException
 import io.primer.android.components.ui.assets.PrimerHeadlessUniversalCheckoutAssetsManager
-import io.primer.android.ui.CardNetwork
+import io.primer.android.configuration.data.model.CardNetwork
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject

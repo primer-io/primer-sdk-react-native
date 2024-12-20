@@ -50,7 +50,7 @@ const HeadlessCheckoutKlarnaScreen = (props: any) => {
                                 console.log("Payment finalization is not required");
                             } else {
                                 console.log("Finalizing payment");
-                                onFinalizePayment();
+                                finalizePayment();
                             }
                             break;
                         case "paymentSessionFinalized":
@@ -84,13 +84,13 @@ const HeadlessCheckoutKlarnaScreen = (props: any) => {
         })()
     }, []);
 
-    const onPaymentCategorySelected = async () => {
+    const handlePaymentCategoryChange = async () => {
         try {
             const klarnaPaymentCategory = paymentCategories.find(
                 (paymentCategory) => paymentCategory.identifier === selectedPaymentCategoryIdentifier
             ) as KlarnaPaymentCategory
 
-            await klarnaComponent.onSetPaymentOptions(
+            await klarnaComponent.handlePaymentOptionsChange(
                 {
                     returnIntentUrl: "app://deeplink.return.activity.rn",
                     paymentCategory: klarnaPaymentCategory
@@ -101,8 +101,8 @@ const HeadlessCheckoutKlarnaScreen = (props: any) => {
         }
     };
 
-    const onFinalizePayment = async () => {
-        await klarnaComponent.onFinalizePayment();
+    const finalizePayment = async () => {
+        await klarnaComponent.finalizePayment();
     };
 
     const onSubmit = async () => {
@@ -135,7 +135,7 @@ const HeadlessCheckoutKlarnaScreen = (props: any) => {
             <View style={styles.button}>
                 <Button
                     disabled={selectedPaymentCategoryIdentifier === null}
-                    onPress={() => onPaymentCategorySelected()}
+                    onPress={() => handlePaymentCategoryChange()}
                     title="Initialize Klarna view"
                 />
             </View>
