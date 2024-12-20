@@ -242,11 +242,16 @@ const CheckoutScreen = (props: any) => {
                 merchantName: appPaymentParameters.merchantName || "Merchant name",
                 isCaptureBillingAddressEnabled: true,
                 showApplePayForUnsupportedDevice: true,
-                checkProvidedNetworks: false
+                checkProvidedNetworks: false,
+                shippingOptions: appPaymentParameters.shippingOptions,
+                billingOptions: appPaymentParameters.billingOptions
             },
             googlePayOptions: {
                 isCaptureBillingAddressEnabled: true,
-                isExistingPaymentMethodRequired: true,
+                isExistingPaymentMethodRequired: false,
+                shippingAddressParameters: {phoneNumberRequired: true},
+                requireShippingMethod: false,
+                emailAddressRequired: true
             },
             threeDsOptions: {
                 iOS: {
@@ -319,14 +324,6 @@ const CheckoutScreen = (props: any) => {
         onError: onError,
         onDismiss: onDismiss,
     };
-
-    if (appPaymentParameters.merchantName) {
-        //@ts-ignore
-        settings.paymentMethodOptions.applePayOptions = {
-            merchantIdentifier: 'merchant.checkout.team',
-            merchantName: appPaymentParameters.merchantName
-        };
-    }
 
     const onVaultManagerButtonTapped = async () => {
         try {

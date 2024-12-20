@@ -1,4 +1,3 @@
-
 import type { PrimerCheckoutData } from "./PrimerCheckoutData";
 import type { PrimerCheckoutAdditionalInfo } from "./PrimerCheckoutAdditionalInfo";
 import type { PrimerCheckoutPaymentMethodData } from "./PrimerCheckoutPaymentMethodData";
@@ -94,11 +93,37 @@ interface IPrimerApayaOptions {
 
 interface IPrimerApplePayOptions {
   merchantIdentifier: string;
-  merchantName: string;
-  isCaptureBillingAddressEnabled?: boolean;
+  /**
+   * @deprecated Use Client Session API to provide merchant name value: https://primer.io/docs/payment-methods/apple-pay/direct-integration#prepare-the-client-session
+   */
+  merchantName?: string;
+  /**
+   * @deprecated Use BillingOptions to configure required billing fields.
+   */
+  isCaptureBillingAddressEnabled: boolean;
+  /**
+   * If you don't want to present the Apple Pay option when the device doesn't support it, set this to `false`.
+   * Default value is `true`.
+   */
   showApplePayForUnsupportedDevice?: boolean;
+  /**
+   * Due to reports about the Apple Pay flow not presenting because `canMakePayments(usingNetworks:)` was returning false
+   * when there were no cards in the Wallet, we introduced this flag to continue supporting the old behavior.
+   * Default value is `true`.
+   */
   checkProvidedNetworks?: boolean;
+  shippingOptions?: IShippingOptions;
+  billingOptions?: IBillingOptions;
 }
+interface IShippingOptions {
+  shippingContactFields?: RequiredContactField[];
+  requireShippingMethod: boolean;
+}
+interface IBillingOptions {
+  requiredBillingContactFields?: RequiredContactField[];
+}
+
+type RequiredContactField = 'name' | 'emailAddress' | 'phoneNumber' | 'postalAddress';
 
 interface IPrimerCardPaymentOptions {
   is3DSOnVaultingEnabled: boolean;
@@ -114,6 +139,13 @@ interface IPrimerGooglePayOptions {
   allowedCardNetworks?: string[];
   isCaptureBillingAddressEnabled?: boolean;
   isExistingPaymentMethodRequired?: boolean;
+  shippingAddressParameters?: IPrimerGoogleShippingAddressParameters;
+  requireShippingMethod?: boolean;
+  emailAddressRequired?: boolean;
+}
+
+interface IPrimerGoogleShippingAddressParameters {
+  isPhoneNumberRequired?: boolean;
 }
 
 interface IPrimerKlarnaOptions {
