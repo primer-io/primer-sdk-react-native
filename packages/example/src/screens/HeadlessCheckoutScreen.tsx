@@ -10,16 +10,13 @@ import type { IPayment } from '../models/IPayment';
 import { getPaymentHandlingStringVal } from '../network/Environment';
 import { ActivityIndicator } from 'react-native';
 import {
-  Asset,
   AssetsManager,
   CheckoutAdditionalInfo,
   CheckoutData,
   HeadlessUniversalCheckout,
   NativeResourceView,
   NativeUIManager,
-  NativeViewResource,
   PaymentMethod,
-  PrimerGooglePayButton,
   PrimerSettings,
   Resource,
   SessionIntent
