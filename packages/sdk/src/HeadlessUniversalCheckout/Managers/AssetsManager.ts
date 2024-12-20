@@ -65,6 +65,19 @@ class PrimerHeadlessUniversalCheckoutAssetsManager {
             }
         });
     }
+
+    async getPaymentMethodResource(paymentMethodType: string): Promise<Resource> {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const data = await RNTPrimerHeadlessUniversalCheckoutAssetsManager.getPaymentMethodResource(paymentMethodType);
+                const paymentMethodResource: Resource = data.paymentMethodResource;
+                resolve(paymentMethodResource);
+            } catch (err) {
+                console.error(err);
+                reject(err);
+            }
+        });
+    }
 }
 
 export default PrimerHeadlessUniversalCheckoutAssetsManager;

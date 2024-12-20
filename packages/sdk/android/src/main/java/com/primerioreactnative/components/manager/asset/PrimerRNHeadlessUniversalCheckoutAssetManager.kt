@@ -12,6 +12,7 @@ import com.primerioreactnative.components.assets.AssetsManager.drawableToBitmap
 import com.primerioreactnative.components.assets.CardNetworkImageFileProvider.getFileForCardNetworkAsset
 import com.primerioreactnative.components.datamodels.manager.asset.PrimerCardNetworkAsset
 import com.primerioreactnative.components.datamodels.manager.asset.PrimerRNPaymentMethodAssetWrapper
+import com.primerioreactnative.components.datamodels.manager.asset.PrimerRNPaymentMethodResourceWrapper
 import com.primerioreactnative.components.datamodels.manager.asset.PrimerRNPaymentMethodAssets
 import com.primerioreactnative.components.datamodels.manager.asset.toPrimerRNPaymentMethodAsset
 import com.primerioreactnative.components.datamodels.manager.asset.toPrimerRNPaymentMethodNativeView
@@ -162,6 +163,41 @@ internal class PrimerRNHeadlessUniversalCheckoutAssetManager(
                 }
               }
             )
+          )
+        ).toWritableMap()
+      )
+    } catch (e: SdkUninitializedException) {
+      promise.reject(ErrorTypeRN.UnitializedSdkSession.errorId, e.message, e)
+    }
+  }
+
+  @ReactMethod
+  fun getPaymentMethodResource(paymentMethodTypeStr: String, promise: Promise) {
+    try {
+      val paymentMethodResource =
+        PrimerHeadlessUniversalCheckoutAssetsManager.getPaymentMethodResource(reactContext, paymentMethodTypeStr)
+      promise.resolve(
+        JSONObject(
+            Json.encodeToString(
+                PrimerRNPaymentMethodResourceWrapper(
+                  when (paymentMethodResource) {
+                    is PrimerPaymentMethodAsset -> {
+                      paymentMethodResource.toPrimerRNPaymentMethodAsset(
+                        reactContext = reactContext, 
+                        paymentMethodType = paymentMethodResource.paymentMethodType
+                      )
+                    }
+                    is PrimerPaymentMethodNativeView -> {
+                      PrimerGooglePayButtonManager.updatePrimerGooglePayButtonCreator { 
+                        context -> paymentMethodResource.createView(context) 
+                      }
+  
+                      paymentMethodResource.toPrimerRNPaymentMethodNativeView(
+                        paymentMethodType = paymentMethodResource.paymentMethodType
+                      )
+                    }
+                  }
+                )
           )
         ).toWritableMap()
       )
