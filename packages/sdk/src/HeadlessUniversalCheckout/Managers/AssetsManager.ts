@@ -28,7 +28,7 @@ class PrimerHeadlessUniversalCheckoutAssetsManager {
     }
 
    /**
-   * @deprecated Use scrollTo instead
+   * @deprecated Use getPaymentMethodResource instead
    */
     async getPaymentMethodAsset(paymentMethodType: string): Promise<Asset> {
         return new Promise(async (resolve, reject) => {
@@ -43,6 +43,9 @@ class PrimerHeadlessUniversalCheckoutAssetsManager {
         });
     }
 
+   /**
+   * @deprecated Use getPaymentMethodResources instead
+   */
     async getPaymentMethodAssets(): Promise<Asset[]> {
         return new Promise(async (resolve, reject) => {
             try {
