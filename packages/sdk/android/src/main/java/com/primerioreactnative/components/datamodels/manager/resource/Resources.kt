@@ -64,7 +64,7 @@ data class PrimerCardNetworkAsset(
   val cardNetworkImageURL: String
 )
 
-internal fun PrimerPaymentMethodAsset.toPrimerRNPaymentMethodAsset(
+fun PrimerPaymentMethodAsset.toPrimerRNPaymentMethodAsset(
   reactContext: ReactApplicationContext,
   paymentMethodType: String,
 ) = PrimerRNPaymentMethodResource.PrimerRNPaymentMethodAsset(
@@ -109,7 +109,7 @@ internal fun PrimerPaymentMethodAsset.toPrimerRNPaymentMethodAsset(
   )
 )
 
-internal fun PrimerPaymentMethodNativeView.toPrimerRNPaymentMethodNativeView(paymentMethodType: String) = PrimerRNPaymentMethodResource.PrimerRNPaymentMethodNativeView(
+fun PrimerPaymentMethodNativeView.toPrimerRNPaymentMethodNativeView(paymentMethodType: String) = PrimerRNPaymentMethodResource.PrimerRNPaymentMethodNativeView(
   paymentMethodType = paymentMethodType,
   paymentMethodName = paymentMethodName,
   nativeViewName = when (paymentMethodType) {

@@ -488,7 +488,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
           const isNativeView = typeof paymentMethodResource.nativeViewName === "string";
           return isNativeView ? (
             <TouchableOpacity
-              onPress={() => { // TODO TWS: tap doesn't work
+              onPress={() => {
                 paymentMethodButtonTapped(
                   paymentMethodResource.paymentMethodType,
                 );
