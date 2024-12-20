@@ -1,15 +1,25 @@
-import { StyleSheet, View, ViewStyle, NativeModules } from "react-native";
+import { GestureResponderEvent, StyleSheet, TouchableOpacity, ViewStyle, NativeModules } from "react-native";
 import { PrimerGooglePayButton } from "./PrimerGooglePayButton";
 import { IPrimerGooglePayButtonOptions } from "./../models"
 import React from "react";
 
-export const NativeResourceView: React.FC<{ nativeViewName: string, style?: ViewStyle }> = ({ nativeViewName, style }) => {
+interface NativeResourceViewProps {
+    nativeViewName: string;
+    style?: ViewStyle;
+    onPress?: (event: GestureResponderEvent) => void;
+}
+
+export const NativeResourceView: React.FC<NativeResourceViewProps> = ({
+    nativeViewName,
+    style,
+    onPress,
+}) => {
     return (
-        <View>
-            {nativeViewName === "PrimerGooglePayButton" ? (
+        <TouchableOpacity onPress={onPress}>
+            {nativeViewName === 'PrimerGooglePayButton' ? (
                 <PrimerGooglePayButton style={[styles.defaultContainer, style]} />
             ) : null}
-        </View>
+        </TouchableOpacity>
     );
 };
 

@@ -496,14 +496,14 @@ export const HeadlessCheckoutScreen = (props: any) => {
           const isNativeView = typeof paymentMethodResource.nativeViewName === "string";
           return isNativeView ? (
             <TouchableOpacity
-              onPress={() => {
-                paymentMethodButtonTapped(
-                  paymentMethodResource.paymentMethodType,
-                );
-              }}
               testID={testId}
               key={paymentMethodResource.paymentMethodType}>
               <NativeResourceView
+                onPress={() => {
+                  paymentMethodButtonTapped(
+                    paymentMethodResource.paymentMethodType,
+                  );
+                }}
                 nativeViewName={paymentMethodResource.nativeViewName!}
                 style={{
                   marginHorizontal: 20,
