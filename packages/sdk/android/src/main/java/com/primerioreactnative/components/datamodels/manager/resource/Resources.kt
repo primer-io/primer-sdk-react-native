@@ -6,24 +6,43 @@ import com.primerioreactnative.components.assets.AssetsManager
 import com.primerioreactnative.components.assets.AssetsManager.drawableToBitmap
 import com.primerioreactnative.components.assets.PaymentMethodAssetFileProvider.getFileForPaymentMethodAsset
 import io.primer.android.components.ui.assets.PrimerPaymentMethodAsset
+import io.primer.android.components.ui.assets.PrimerPaymentMethodNativeView
 import kotlinx.serialization.Serializable
 
 @Serializable
+sealed interface PrimerRNPaymentMethodResource {
+  val paymentMethodType: String
+  val paymentMethodName: String
+
+  @Serializable
+  data class PrimerRNPaymentMethodAsset(
+    override val paymentMethodType: String,
+    override val paymentMethodName: String,
+    val paymentMethodLogo: PrimerRNPaymentMethodLogo,
+    val paymentMethodBackgroundColor: PrimerRNPaymentMethodBackgroundColor
+  ) : PrimerRNPaymentMethodResource
+
+  @Serializable
+  data class PrimerRNPaymentMethodNativeView(
+    override val paymentMethodType: String,
+    override val paymentMethodName: String,
+    val nativeViewName: String
+  ) : PrimerRNPaymentMethodResource
+}
+
+@Serializable
 data class PrimerRNPaymentMethodAssets(
-  val paymentMethodAssets: List<PrimerRNPaymentMethodAsset>
+  val paymentMethodAssets: List<PrimerRNPaymentMethodResource.PrimerRNPaymentMethodAsset>
+)
+
+@Serializable
+data class PrimerRNPaymentMethodResources(
+  val paymentMethodResources: List<PrimerRNPaymentMethodResource>
 )
 
 @Serializable
 data class PrimerRNPaymentMethodAssetWrapper(
-  val paymentMethodAsset: PrimerRNPaymentMethodAsset
-)
-
-@Serializable
-data class PrimerRNPaymentMethodAsset(
-  val paymentMethodType: String,
-  val paymentMethodName: String,
-  val paymentMethodLogo: PrimerRNPaymentMethodLogo,
-  val paymentMethodBackgroundColor: PrimerRNPaymentMethodBackgroundColor
+  val paymentMethodAsset: PrimerRNPaymentMethodResource.PrimerRNPaymentMethodAsset
 )
 
 @Serializable
@@ -48,7 +67,7 @@ data class PrimerCardNetworkAsset(
 internal fun PrimerPaymentMethodAsset.toPrimerRNPaymentMethodAsset(
   reactContext: ReactApplicationContext,
   paymentMethodType: String,
-) = PrimerRNPaymentMethodAsset(
+) = PrimerRNPaymentMethodResource.PrimerRNPaymentMethodAsset(
   paymentMethodType,
   paymentMethodName,
   PrimerRNPaymentMethodLogo(
@@ -90,6 +109,14 @@ internal fun PrimerPaymentMethodAsset.toPrimerRNPaymentMethodAsset(
   )
 )
 
+internal fun PrimerPaymentMethodNativeView.toPrimerRNPaymentMethodNativeView(paymentMethodType: String) = PrimerRNPaymentMethodResource.PrimerRNPaymentMethodNativeView(
+  paymentMethodType = paymentMethodType,
+  paymentMethodName = paymentMethodName,
+  nativeViewName = when (paymentMethodType) {
+    "GOOGLE_PAY" -> "PrimerGooglePayButton"
+    else -> error("Native view for '$paymentMethodType'is not supported")
+  }
+)
 
 private fun getFileUrl(
   reactContext: ReactApplicationContext,

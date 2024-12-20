@@ -15,14 +15,19 @@ import {
   CheckoutAdditionalInfo,
   CheckoutData,
   HeadlessUniversalCheckout,
+  NativeResourceView,
   NativeUIManager,
+  NativeViewResource,
   PaymentMethod,
+  PrimerGooglePayButton,
   PrimerSettings,
+  Resource,
   SessionIntent
 } from '@primer-io/react-native';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import { showAchMandateAlert } from './AchMandateAlert';
 import { STRIPE_ACH_PUBLISHABLE_KEY } from '../Keys';
+import { PrimerPaymentMethodAsset } from '@primer-io/react-native/lib/typescript/models/PrimerPaymentMethodResource';
 
 let log: string = '';
 let merchantPaymentId: string | null = null;
@@ -64,7 +69,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
   const [isLoading, setIsLoading] = useState(true);
   const [clientSession, setClientSession] = useState<null | any>(null);
   const [paymentMethods, setPaymentMethods] = useState<undefined | PaymentMethod[]>(undefined);
-  const [paymentMethodsAssets, setPaymentMethodsAssets] = useState<undefined | Asset[]>(undefined);
+  const [paymentMethodsResources, setPaymentMethodsResources] = useState<undefined | Resource[]>(undefined);
   const [selectedSessionIntent, setSelectedSessionIntent] = useState<SessionIntent>(SessionIntent.CHECKOUT);
 
   const updateLogs = (str: string) => {
@@ -338,8 +343,8 @@ export const HeadlessCheckoutScreen = (props: any) => {
       setPaymentMethods(availablePaymentMethods);
       // updateLogs(`\nℹ️ Available payment methods:\n${JSON.stringify(availablePaymentMethods, null, 2)}`);
       const assetsManager = new AssetsManager();
-      const assets = await assetsManager.getPaymentMethodAssets();
-      setPaymentMethodsAssets(assets);
+      const resources = await assetsManager.getPaymentMethodResources();
+      setPaymentMethodsResources(resources);
     } catch (err) {
       console.error(err);
     }
@@ -471,41 +476,61 @@ export const HeadlessCheckoutScreen = (props: any) => {
   };
 
   const renderPaymentMethodsUI = () => {
-    if (!paymentMethodsAssets) {
+    if (!paymentMethodsResources) {
       return null;
     }
-
     return (
       <View>
-        {paymentMethodsAssets.map(paymentMethodsAsset => {
-          return (
+        {paymentMethodsResources.map(paymentMethodResource => {
+          const testId = `button-${paymentMethodResource.paymentMethodType
+            .toLowerCase()
+            .replace('_', '-')}`
+          const isNativeView = typeof paymentMethodResource.nativeViewName === "string";
+          return isNativeView ? (
             <TouchableOpacity
-              key={paymentMethodsAsset.paymentMethodType}
+              onPress={() => { // TODO TWS: tap doesn't work
+                paymentMethodButtonTapped(
+                  paymentMethodResource.paymentMethodType,
+                );
+              }}
+              testID={testId}
+              key={paymentMethodResource.paymentMethodType}>
+              <NativeResourceView
+                nativeViewName={paymentMethodResource.nativeViewName!}
+                style={{
+                  marginHorizontal: 20,
+                  marginVertical: 8,
+                  justifyContent: 'center',
+                  alignItems: 'center'
+                }}
+              />
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              key={paymentMethodResource.paymentMethodType}
               style={{
                 marginHorizontal: 20,
                 marginVertical: 8,
                 height: 50,
                 backgroundColor:
-                  paymentMethodsAsset.paymentMethodBackgroundColor.colored ||
-                  paymentMethodsAsset.paymentMethodBackgroundColor.light,
+                  (paymentMethodResource as PrimerPaymentMethodAsset).paymentMethodBackgroundColor.colored ||
+                  (paymentMethodResource as PrimerPaymentMethodAsset).paymentMethodBackgroundColor.light,
                 justifyContent: 'center',
                 alignItems: 'center',
                 borderRadius: 4,
               }}
               onPress={() => {
                 paymentMethodButtonTapped(
-                  paymentMethodsAsset.paymentMethodType,
+                  paymentMethodResource.paymentMethodType,
                 );
               }}
-              testID={`button-${paymentMethodsAsset.paymentMethodType
-                .toLowerCase()
-                .replace('_', '-')}`}>
+              testID={testId}>
               <Image
                 style={{ height: 36, width: '100%', resizeMode: 'contain' }}
                 source={{
                   uri:
-                    paymentMethodsAsset.paymentMethodLogo.colored ||
-                    paymentMethodsAsset.paymentMethodLogo.light,
+                    (paymentMethodResource as PrimerPaymentMethodAsset).paymentMethodLogo.colored ||
+                    (paymentMethodResource as PrimerPaymentMethodAsset).paymentMethodLogo.light,
                 }}
               />
             </TouchableOpacity>
