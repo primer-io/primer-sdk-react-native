@@ -78,6 +78,8 @@ import { PrimerKlarnaPaymentView } from './HeadlessUniversalCheckout/Components/
 export { PrimerKlarnaPaymentView }
 import { NativeResourceView } from './HeadlessUniversalCheckout/Components/NativeResourceView'
 export { NativeResourceView }
+import { PrimerGooglePayButtonConstants } from './HeadlessUniversalCheckout/Components/NativeResourceView'
+export { PrimerGooglePayButtonConstants }
 import { PrimerGooglePayButton } from './HeadlessUniversalCheckout/Components/PrimerGooglePayButton'
 export { PrimerGooglePayButton }
 import { UserDetailsRetrieved, UserDetailsCollected, AchStep } from './models/ach/AchSteps';
