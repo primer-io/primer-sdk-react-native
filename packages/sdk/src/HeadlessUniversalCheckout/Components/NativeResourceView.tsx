@@ -1,5 +1,6 @@
-import { StyleSheet, View, ViewStyle } from "react-native";
+import { StyleSheet, View, ViewStyle, NativeModules } from "react-native";
 import { PrimerGooglePayButton } from "./PrimerGooglePayButton";
+import { IPrimerGooglePayButtonOptions } from "./../models"
 import React from "react";
 
 export const NativeResourceView: React.FC<{ nativeViewName: string, style?: ViewStyle }> = ({ nativeViewName, style }) => {
@@ -11,6 +12,8 @@ export const NativeResourceView: React.FC<{ nativeViewName: string, style?: View
         </View>
     );
 };
+
+export const PrimerGooglePayButtonConstants = NativeModules.PrimerGooglePayButtonConstants?.getConstants();
 
 const styles = StyleSheet.create({
     defaultContainer: {
