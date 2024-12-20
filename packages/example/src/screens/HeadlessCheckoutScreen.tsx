@@ -392,11 +392,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
         const nativeUIManager = new NativeUIManager();
         await nativeUIManager.configure(paymentMethod.paymentMethodType);
         console.log("Payment session intent is " + selectedSessionIntent)
-        if (paymentMethod.paymentMethodType === "KLARNA") {
-          props.navigation.navigate('Klarna', { paymentSessionIntent: selectedSessionIntent });
-        } else {
-          await nativeUIManager.showPaymentMethod(SessionIntent.CHECKOUT);
-        }
+        await nativeUIManager.showPaymentMethod(SessionIntent.CHECKOUT);
       } else if (implementationType === 'COMPONENT_WITH_REDIRECT') {
         await createClientSessionIfNeeded();
 
@@ -434,7 +430,10 @@ export const HeadlessCheckoutScreen = (props: any) => {
         }
       } else if (implementationType === "STRIPE_ACH" && paymentMethod.paymentMethodType === "STRIPE_ACH") {
         props.navigation.navigate('HeadlessCheckoutStripeAchScreen');
-      } else {
+      } else if (implementationType === "KLARNA" && paymentMethod.paymentMethodType === "KLARNA") {
+        props.navigation.navigate('Klarna', { paymentSessionIntent: selectedSessionIntent });
+      } 
+      else {
         Alert.alert(
           'Warning!',
           `${implementationType} is not supported on Headless Universal Checkout yet.`,
