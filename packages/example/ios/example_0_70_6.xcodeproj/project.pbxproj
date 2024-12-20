@@ -11,7 +11,6 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		2AFFC5EA253F6AAEBD0671E4 /* libPods-example_0_70_6-example_0_70_6Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ECA758289041F58D094B823C /* libPods-example_0_70_6-example_0_70_6Tests.a */; };
 		6CA351F7D8EEBFA61B7FE8CC /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		A127AC7D2BFF7A3500D45E2B /* RNTRedirectManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A127AC7C2BFF7A3500D45E2B /* RNTRedirectManagerTests.swift */; };
@@ -30,7 +29,6 @@
 		A17A44BC2BFB8C7B00433548 /* RNTNativeErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17A44BB2BFB8C7B00433548 /* RNTNativeErrorTests.swift */; };
 		A17A44C02BFF650A00433548 /* RNTBanksCollectableDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17A44BF2BFF650A00433548 /* RNTBanksCollectableDataTests.swift */; };
 		A17A44C82BFF731B00433548 /* RNTPrimerHeadlessUniversalCheckoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17A44C72BFF731B00433548 /* RNTPrimerHeadlessUniversalCheckoutTests.swift */; };
-		B3D223C4B7AB466615F0F466 /* libPods-example_0_70_6.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 20185F46DDF3173026CBAA23 /* libPods-example_0_70_6.a */; };
 		C010C35792AF87095495BFED /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
 		E16CF7F4755D26808C11D46B /* libPods-example_0_70_6.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C9D32523BA7FCFF6870795 /* libPods-example_0_70_6.a */; };
 		F004EDB82BF60A4E006F3CAA /* UIColorExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F004EDB72BF60A4E006F3CAA /* UIColorExtensionTests.swift */; };
@@ -246,7 +244,8 @@
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
 				E91CA344DCF5C5EDF388A7DE /* [CP] Embed Pods Frameworks */,
-				81C4CC695331F63CE0AE90D0 /* [CP] Copy Pods Resources */,
+				81C4CC695331F63CE0AE90D0 /* [CP] Embed Pods Frameworks */,
+				097EA5B241F5F0833C36CE86 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -377,6 +376,23 @@
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"../node_modules/react-native/scripts/xcode/with-environment.sh\"\nSCRIPT_LOCATION=\"../../../scripts/update-ios-version.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $SCRIPT_LOCATION\"\n";
 		};
+		097EA5B241F5F0833C36CE86 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-example_0_70_6-example_0_70_6Tests/Pods-example_0_70_6-example_0_70_6Tests-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-example_0_70_6-example_0_70_6Tests/Pods-example_0_70_6-example_0_70_6Tests-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-example_0_70_6-example_0_70_6Tests/Pods-example_0_70_6-example_0_70_6Tests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		30720E07EEA4FFFF93F1F3B3 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -411,7 +427,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-example_0_70_6/Pods-example_0_70_6-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		81C4CC695331F63CE0AE90D0 /* [CP] Copy Pods Resources */ = {
+		81C4CC695331F63CE0AE90D0 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
