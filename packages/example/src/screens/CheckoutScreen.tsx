@@ -22,6 +22,7 @@ import {
     ResumeHandler,
     TokenizationHandler
 } from '@primer-io/react-native';
+import { STRIPE_ACH_PUBLISHABLE_KEY } from '../Keys';
 
 let clientToken: string | null = null;
 let paymentId: string | null = null;
@@ -249,7 +250,7 @@ const CheckoutScreen = (props: any) => {
                 isCaptureBillingAddressEnabled: true,
                 isExistingPaymentMethodRequired: false,
                 shippingAddressParameters: {phoneNumberRequired: true},
-                requireShippingMethod: true,
+                requireShippingMethod: false,
                 emailAddressRequired: true
             },
             threeDsOptions: {
@@ -261,7 +262,7 @@ const CheckoutScreen = (props: any) => {
                 }
             },
             stripeOptions: {
-                publishableKey: "<PUT_YOUR_PUBLISHABLE_KEY_HERE>",
+                publishableKey: STRIPE_ACH_PUBLISHABLE_KEY,
                 mandateData: {
                     // This will be used for Android if present
                     fullMandateStringResourceName: "stripe_ach_full_mandate_text",
@@ -312,18 +313,16 @@ const CheckoutScreen = (props: any) => {
         debugOptions: {
             is3DSSanityCheckEnabled: false
         },
-        primerCallbacks: {
-            onBeforeClientSessionUpdate: onBeforeClientSessionUpdate,
-            onClientSessionUpdate: onClientSessionUpdate,
-            onBeforePaymentCreate: onBeforePaymentCreate,
-            onCheckoutComplete: onCheckoutComplete,
-            onTokenizeSuccess: onTokenizeSuccess,
-            onResumeSuccess: onResumeSuccess,
-            onResumePending: onResumePending,
-            onCheckoutReceivedAdditionalInfo: onCheckoutReceivedAdditionalInfo,
-            onError: onError,
-            onDismiss: onDismiss,
-        }
+        onBeforeClientSessionUpdate: onBeforeClientSessionUpdate,
+        onClientSessionUpdate: onClientSessionUpdate,
+        onBeforePaymentCreate: onBeforePaymentCreate,
+        onCheckoutComplete: onCheckoutComplete,
+        onTokenizeSuccess: onTokenizeSuccess,
+        onResumeSuccess: onResumeSuccess,
+        onResumePending: onResumePending,
+        onCheckoutReceivedAdditionalInfo: onCheckoutReceivedAdditionalInfo,
+        onError: onError,
+        onDismiss: onDismiss,
     };
 
     const onVaultManagerButtonTapped = async () => {
@@ -390,25 +389,25 @@ const CheckoutScreen = (props: any) => {
     }
 
     const onGooglePayButtonTapped = async () => {
-          try {
-              setIsLoading(true);
-              const clientSession: IClientSession = await createClientSession();
-              clientToken = clientSession.clientToken;
-              await Primer.configure(settings);
-              await Primer.showPaymentMethod("GOOGLE_PAY", "CHECKOUT", clientToken)
+        try {
+            setIsLoading(true);
+            const clientSession: IClientSession = await createClientSession();
+            clientToken = clientSession.clientToken;
+            await Primer.configure(settings);
+            await Primer.showPaymentMethod("GOOGLE_PAY", "CHECKOUT", clientToken)
 
-          } catch (err) {
-              setIsLoading(false);
+        } catch (err) {
+            setIsLoading(false);
 
-              if (err instanceof Error) {
-                  setError(err);
-              } else if (typeof err === "string") {
-                  setError(new Error(err));
-              } else {
-                  setError(new Error('Unknown error'));
-              }
-          }
-      }
+            if (err instanceof Error) {
+                setError(err);
+            } else if (typeof err === "string") {
+                setError(new Error(err));
+            } else {
+                setError(new Error('Unknown error'));
+            }
+        }
+    }
 
     return (
         <View style={backgroundStyle}>
@@ -445,7 +444,7 @@ const CheckoutScreen = (props: any) => {
             </TouchableOpacity>
 
             <TouchableOpacity
-                style={{ ...styles.button, marginHorizontal: 20,  marginVertical: 5, backgroundColor: 'black' }}
+                style={{ ...styles.button, marginHorizontal: 20, marginVertical: 5, backgroundColor: 'black' }}
                 onPress={onGooglePayButtonTapped}
             >
                 <Text

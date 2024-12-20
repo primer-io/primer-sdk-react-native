@@ -35,6 +35,26 @@ export interface AppPaymentParameters {
 export let customApiKey: string | undefined;
 export let customClientToken: string | undefined;
 
+enum CheckoutVaultingType {
+    NONE,
+    VAULT_ON_SUCCESS,
+    VAULT_ON_AGREEMENT
+}
+
+export function makeCheckoutVaultingTypeFromIntVal(env: number): CheckoutVaultingType {
+    switch (env) {
+        case 0:
+            return CheckoutVaultingType.NONE;
+        case 1:
+            return CheckoutVaultingType.VAULT_ON_SUCCESS;
+        case 2:
+            return CheckoutVaultingType.VAULT_ON_AGREEMENT;
+        default:
+            throw new Error("Failed to create checkout vaulting type.");
+    }
+}
+
+
 // @ts-ignore
 const SettingsScreen = ({ navigation }) => {
     const isDarkMode = useColorScheme() === 'dark';
@@ -80,7 +100,12 @@ const SettingsScreen = ({ navigation }) => {
     const [isShippingOptionsApplied, setIsShippingOptionsApplied] = useState<boolean>(false);
     const [requireShippingMethod, setRequireShippingMethod] = useState<boolean>(false);
     const [shippingContactFields, setShippingContactFields] = useState<string[]>([]);
-    
+
+    const vaultOnSuccess = appPaymentParameters.clientSessionRequestBody.paymentMethod?.vaultOnSuccess;
+    const vaultOnAgreement = appPaymentParameters.clientSessionRequestBody.paymentMethod?.vaultOnAgreement;
+
+    const [checkoutVaultingType, setCheckoutVaultingType] = React.useState<CheckoutVaultingType | undefined>(vaultOnSuccess ? CheckoutVaultingType.VAULT_ON_SUCCESS : vaultOnAgreement ? CheckoutVaultingType.VAULT_ON_AGREEMENT : CheckoutVaultingType.NONE);
+
     const backgroundStyle = {
         backgroundColor: isDarkMode ? Colors.black : Colors.white
     };
@@ -122,6 +147,23 @@ const SettingsScreen = ({ navigation }) => {
                         setClientToken(text);
                     }}
                 />
+
+
+                <Text
+                style={{ marginVertical: 8, ...styles.heading1 }}>
+                    Checkout vaulting
+                </Text>
+                <SegmentedControl
+                    testID="CheckoutVaulting"
+                    style={{ marginTop: 6, height: 56 }}
+                    values={['No vaulting', 'Vault on success', 'Vault on agreement']}
+                    selectedIndex={checkoutVaultingType}
+                    onChange={(event) => {
+                        const selectedIndex = event.nativeEvent.selectedSegmentIndex;
+                        let selectedCheckoutVaultingType = makeCheckoutVaultingTypeFromIntVal(selectedIndex);
+                        setCheckoutVaultingType(selectedCheckoutVaultingType);
+                    }}
+                />
             </View>
         )
     }
@@ -148,13 +190,13 @@ const SettingsScreen = ({ navigation }) => {
 
     const renderRecaptureCvvSection = () => {
         return (
-            <View style={{ marginTop: 12, marginBottom: 8, flexDirection:'row', alignItems:'center', justifyContent:'left'}}>
+            <View style={{ marginTop: 12, marginBottom: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'left' }}>
                 <Text style={{ ...styles.heading1 }}>
                     Enable Recapture CVV
                 </Text>
                 <Switch
-                  onValueChange={setCaptureVaultedCardCvv}
-                  value={captureVaultedCardCvv}
+                    onValueChange={setCaptureVaultedCardCvv}
+                    value={captureVaultedCardCvv}
                 />
             </View>
         );
@@ -786,7 +828,7 @@ const SettingsScreen = ({ navigation }) => {
                         }}
                     />
                 </View>
-    
+
                 {
                     !isShippingOptionsApplied ? null :
                         <View>
@@ -962,6 +1004,8 @@ const SettingsScreen = ({ navigation }) => {
 
 
         currentPaymentMethod.options = Object.keys(currentPaymentMethodOptions || {}).length === 0 ? undefined : currentPaymentMethodOptions;
+        currentPaymentMethod.vaultOnSuccess = checkoutVaultingType === CheckoutVaultingType.VAULT_ON_SUCCESS;
+        currentPaymentMethod.vaultOnAgreement = checkoutVaultingType === CheckoutVaultingType.VAULT_ON_AGREEMENT;
         currentClientSessionRequestBody.paymentMethod = Object.keys(currentPaymentMethod).length === 0 ? undefined : currentPaymentMethod;
 
         appPaymentParameters.clientSessionRequestBody = currentClientSessionRequestBody;

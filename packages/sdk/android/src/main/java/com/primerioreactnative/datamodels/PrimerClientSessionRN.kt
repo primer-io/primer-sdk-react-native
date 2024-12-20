@@ -1,6 +1,6 @@
 package com.primerioreactnative.datamodels
 
-import io.primer.android.data.configuration.models.CountryCode
+import io.primer.android.configuration.data.model.CountryCode
 import io.primer.android.domain.action.models.*
 import kotlinx.serialization.Serializable
 
