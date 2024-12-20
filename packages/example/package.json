@@ -9,7 +9,9 @@
     "start": "react-native start",
     "test": "jest",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "build:ios": "npx react-native bundle --entry-file='../sdk/index.js' --bundle-output='./ios/main.jsbundle' --dev=true --platform='ios'"
+    "build:ios": "npx react-native bundle --entry-file='../sdk/index.js' --bundle-output='./ios/main.jsbundle' --dev=true --platform='ios'",
+    "build:android:dev":"npx react-native bundle --platform android --dev true --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res && npx react-native run-android",
+    "build:android:release":"npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res && npx react-native run-android"
   },
   "dependencies": {
     "@react-native-segmented-control/segmented-control": "^2.4.0",

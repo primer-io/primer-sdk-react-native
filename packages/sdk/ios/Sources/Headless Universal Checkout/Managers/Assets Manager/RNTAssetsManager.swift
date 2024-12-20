@@ -116,4 +116,66 @@ class RNTPrimerHeadlessUniversalCheckoutAssetsManager: RCTEventEmitter {
       rejecter(error.rnError["errorId"]!, error.rnError["description"], error)
     }
   }
+
+  @objc
+  func getPaymentMethodResources(
+    _ resolver: RCTPromiseResolveBlock,
+    rejecter: RCTPromiseRejectBlock
+  ) {
+    do {
+      let paymentMethodResources = try PrimerSDK.PrimerHeadlessUniversalCheckout.AssetsManager
+        .getPaymentMethodAssets()
+
+      let rntPaymentMethodResources = paymentMethodResources.compactMap({
+        try? RNTPrimerPaymentMethodAsset(primerPaymentMethodAsset: $0).toJsonObject()
+      })
+      guard !rntPaymentMethodResources.isEmpty else {
+        let err = RNTNativeError(
+          errorId: "native-ios",
+          errorDescription: "Failed to find resources for this session",
+          recoverySuggestion: nil)
+        throw err
+      }
+
+      resolver(["paymentMethodResources": rntPaymentMethodResources])
+
+    } catch {
+      rejecter(error.rnError["errorId"]!, error.rnError["description"], error)
+    }
+  }
+
+  @objc
+  func getPaymentMethodResource(
+    _ paymentMethodType: String,
+    resolver: RCTPromiseResolveBlock,
+    rejecter: RCTPromiseRejectBlock
+  ) {
+    do {
+      guard
+        let paymentMethodResource = try PrimerSDK.PrimerHeadlessUniversalCheckout.AssetsManager
+          .getPaymentMethodAsset(for: paymentMethodType)
+      else {
+        let err = RNTNativeError(
+          errorId: "native-ios",
+          errorDescription: "Failed to find resource of \(paymentMethodType) for this session",
+          recoverySuggestion: nil)
+        throw err
+      }
+
+      if let rntPaymentMethodResource = try? RNTPrimerPaymentMethodAsset(
+        primerPaymentMethodAsset: paymentMethodResource
+      ).toJsonObject() {
+        resolver(["paymentMethodResource": rntPaymentMethodResource])
+      } else {
+        let err = RNTNativeError(
+          errorId: "native-ios",
+          errorDescription: "Failed to create the RNTPrimerPaymentMethodAsset",
+          recoverySuggestion: nil)
+        throw err
+      }
+
+    } catch {
+      rejecter(error.rnError["errorId"]!, error.rnError["description"], error)
+    }
+  }
 }

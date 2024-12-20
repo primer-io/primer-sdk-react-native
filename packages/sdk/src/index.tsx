@@ -34,10 +34,10 @@ export {
 } from './models/PrimerCheckoutData';
 export { PrimerCheckoutPaymentMethodData as CheckoutPaymentMethodData } from './models/PrimerCheckoutPaymentMethodData';
 export { PrimerError } from './models/PrimerError';
-export type { IPrimerAsset as Asset } from './models/PrimerAsset';
+export type { PrimerPaymentMethodAsset as Asset} from './models/PrimerPaymentMethodResource';
+export type { IPrimerPaymentMethodResource as Resource, PrimerPaymentMethodAsset as AssetResource, PrimerPaymentMethodNativeView as NativeViewResource, IPrimerAsset as AssetResourceColors } from './models/PrimerPaymentMethodResource';
 export { PrimerHeadlessUniversalCheckout as HeadlessUniversalCheckout } from './HeadlessUniversalCheckout/PrimerHeadlessUniversalCheckout';
 export type { IPrimerHeadlessUniversalCheckoutPaymentMethod as PaymentMethod } from './models/PrimerHeadlessUniversalCheckoutPaymentMethod';
-
 import PrimerHeadlessUniversalCheckoutAssetsManager from './HeadlessUniversalCheckout/Managers/AssetsManager';
 export { PrimerHeadlessUniversalCheckoutAssetsManager as AssetsManager };
 import PrimerHeadlessUniversalCheckoutPaymentMethodNativeUIManager from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/NativeUIManager';
@@ -76,6 +76,10 @@ import { PaymentSessionCreated, PaymentSessionAuthorized, PaymentSessionFinalize
 export { PaymentSessionCreated, PaymentSessionAuthorized, PaymentSessionFinalized, PaymentViewLoaded, KlarnaPaymentStep };
 import { PrimerKlarnaPaymentView } from './HeadlessUniversalCheckout/Components/PrimerKlarnaPaymentView'
 export { PrimerKlarnaPaymentView }
+import { NativeResourceView } from './HeadlessUniversalCheckout/Components/NativeResourceView'
+export { NativeResourceView }
+import { PrimerGooglePayButton } from './HeadlessUniversalCheckout/Components/PrimerGooglePayButton'
+export { PrimerGooglePayButton }
 import { UserDetailsRetrieved, UserDetailsCollected, AchStep } from './models/ach/AchSteps';
 export { UserDetailsRetrieved as CollectUserDetails, UserDetailsCollected, AchStep }
 import { AchFirstName, AchLastName, AchEmailAddress, AchValidatableData } from './models/ach/AchCollectableData';
