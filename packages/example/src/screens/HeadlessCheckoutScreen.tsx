@@ -90,6 +90,13 @@ export const HeadlessCheckoutScreen = (props: any) => {
           merchantName: "My Merchant Name"
         }
       },
+      googlePayOptions: {
+        isCaptureBillingAddressEnabled: true,
+        isExistingPaymentMethodRequired: false,
+        shippingAddressParameters: { phoneNumberRequired: true },
+        requireShippingMethod: false,
+        emailAddressRequired: true
+      },
     },
     debugOptions: {
       is3DSSanityCheckEnabled: false

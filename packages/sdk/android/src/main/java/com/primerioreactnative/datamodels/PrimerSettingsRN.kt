@@ -25,13 +25,13 @@ data class PrimerSettingsRN(
 
 @Serializable
 data class LocaleSettingsRN(
-    val languageCode: String? = null, 
+    val languageCode: String? = null,
     val localeCode: String? = null
 )
 
 @Serializable
 data class PrimerPaymentMethodOptionsRN(
-    @SerialName("android") 
+    @SerialName("android")
     val androidSettingsRN: AndroidSettingsRN = AndroidSettingsRN(),
     var cardPaymentOptions: PrimerCardPaymentOptionsRN = PrimerCardPaymentOptionsRN(),
     var googlePayOptions: PrimerGooglePayOptionsRN = PrimerGooglePayOptionsRN(),
@@ -124,7 +124,7 @@ data class PrimerThreeDsOptionsRN(
     val threeDsOptionsAndroid: PrimerThreeDsAndroidOptionsRN? = null
 )
 
-@Serializable 
+@Serializable
 data class PrimerThreeDsAndroidOptionsRN(val threeDsAppRequestorUrl: String? = null)
 
 @Serializable
@@ -133,10 +133,20 @@ data class PrimerGooglePayOptionsRN(
     var allowedCardNetworks: List<String> =
         listOf("AMEX", "DISCOVER", "JCB", "MASTERCARD", "VISA"),
     var buttonStyle: GooglePayButtonStyle = GooglePayButtonStyle.BLACK,
-    @SerialName("isCaptureBillingAddressEnabled") 
+    @SerialName("isCaptureBillingAddressEnabled")
     var captureBillingAddress: Boolean = false,
     @SerialName("isExistingPaymentMethodRequired")
-    var existingPaymentMethodRequired: Boolean = false
+    var existingPaymentMethodRequired: Boolean = false,
+    var shippingAddressParameters: PrimerGoogleShippingAddressParametersRN? = null,
+    @SerialName("requireShippingMethod")
+    var requireShippingMethod: Boolean = false,
+    @SerialName("emailAddressRequired")
+    var emailAddressRequired: Boolean = false
+)
+
+@Serializable
+data class PrimerGoogleShippingAddressParametersRN(
+  var phoneNumberRequired: Boolean = false
 )
 
 @Serializable
@@ -153,8 +163,8 @@ data class PrimerStripeOptionsRN(
 ) {
     @Serializable
     data class MandateDataRN(
-        @SerialName("fullMandateText") val fullMandateText: String? = null, 
-        @SerialName("fullMandateStringResourceName") val fullMandateStringResName: String? = null, 
+        @SerialName("fullMandateText") val fullMandateText: String? = null,
+        @SerialName("fullMandateStringResourceName") val fullMandateStringResName: String? = null,
         val merchantName: String? = null
     )
 }

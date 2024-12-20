@@ -48,7 +48,7 @@ target 'example_0_70_6' do
   pod 'PrimerSDK'
   pod 'Primer3DS'
   pod 'PrimerIPay88MYSDK'
-  pod 'PrimerKlarnaSDK', '1.1.0'
+  pod 'PrimerKlarnaSDK', '1.1.1'
   pod 'PrimerStripeSDK', '1.0.0'
 
   target 'example_0_70_6Tests' do

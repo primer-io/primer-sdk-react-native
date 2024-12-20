@@ -28,6 +28,15 @@ data class PrimerCustomerRN(
 @Serializable
 data class PrimerOrderRN(
   val countryCode: CountryCode?,
+  val shipping: PrimerShippingRN?
+)
+
+@Serializable
+data class PrimerShippingRN(
+  val amount: Int?,
+  val methodId: String?,
+  val methodName: String?,
+  val methodDescription: String?
 )
 
 @Serializable
