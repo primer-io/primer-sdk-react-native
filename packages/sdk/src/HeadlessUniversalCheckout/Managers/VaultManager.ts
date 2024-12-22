@@ -4,7 +4,6 @@ import { PrimerVaultedPaymentMethod as VaultedPaymentMethod } from 'src/models/P
 import { PrimerVaultedPaymentMethodAdditionalData as VaultedPaymentMethodAdditionalData } from 'src/models/PrimerVaultedPaymentMethodAdditionalData';
 import { PrimerVaultedPaymentMethodResult } from 'src/models/PrimerVaultedPaymentMethodResult';
 import { PrimerValidationErrorResult } from 'src/models/PrimerValidationErrorResult';
-import { PrimerPaymentMethodTokenData } from 'src/models/PrimerPaymentMethodTokenData';
 
 const { RNPrimerHeadlessUniversalCheckoutVaultManager } = NativeModules;
 
