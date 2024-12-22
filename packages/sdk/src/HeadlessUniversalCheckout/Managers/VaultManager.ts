@@ -4,6 +4,7 @@ import { PrimerVaultedPaymentMethod as VaultedPaymentMethod } from 'src/models/P
 import { PrimerVaultedPaymentMethodAdditionalData as VaultedPaymentMethodAdditionalData } from 'src/models/PrimerVaultedPaymentMethodAdditionalData';
 import { PrimerVaultedPaymentMethodResult } from 'src/models/PrimerVaultedPaymentMethodResult';
 import { PrimerValidationErrorResult } from 'src/models/PrimerValidationErrorResult';
+import { PrimerPaymentMethodTokenData } from 'src/models/PrimerPaymentMethodTokenData';
 
 const { RNPrimerHeadlessUniversalCheckoutVaultManager } = NativeModules;
 
@@ -36,7 +37,8 @@ class PrimerHeadlessUniversalCheckoutVaultManager {
                 const data: PrimerVaultedPaymentMethodResult =
                     await RNPrimerHeadlessUniversalCheckoutVaultManager.fetchVaultedPaymentMethods();
                 const paymentMethods: VaultedPaymentMethod[] = data.paymentMethods;
-                resolve(paymentMethods);
+                const mappedPaymentMethods = sanitizePaymentMethods(paymentMethods);
+                resolve(mappedPaymentMethods);
             } catch (err) {
                 console.error(err);
                 reject(err);
@@ -85,6 +87,22 @@ class PrimerHeadlessUniversalCheckoutVaultManager {
             }
         });
     }
+}
+
+function sanitizePaymentMethods(paymentMethods: VaultedPaymentMethod[]): VaultedPaymentMethod[] {
+    return paymentMethods.map(method => {
+        if (method.paymentInstrumentData?.accountNumberLastFourDigits !== undefined) {
+            const { accountNumberLastFourDigits, ...rest } = method.paymentInstrumentData;
+            return {
+                ...method,
+                paymentInstrumentData: {
+                    ...rest,
+                    accountNumberLast4Digits: accountNumberLastFourDigits
+                }
+            };
+        }
+        return method;
+    });
 }
 
 export default PrimerHeadlessUniversalCheckoutVaultManager;
