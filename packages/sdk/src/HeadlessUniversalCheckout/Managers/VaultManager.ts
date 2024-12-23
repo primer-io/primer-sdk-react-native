@@ -88,10 +88,13 @@ class PrimerHeadlessUniversalCheckoutVaultManager {
     }
 }
 
+// Convert accountNumberLastFourDigits to accountNumberLast4Digits when present
+// Overcomes an iOS limitation of toJsonObject()
 function sanitizePaymentMethods(paymentMethods: VaultedPaymentMethod[]): VaultedPaymentMethod[] {
     return paymentMethods.map(method => {
-        if (method.paymentInstrumentData?.accountNumberLastFourDigits !== undefined) {
-            const { accountNumberLastFourDigits, ...rest } = method.paymentInstrumentData;
+        const unwrappedInstrumentData = method.paymentInstrumentData as any;
+        if (unwrappedInstrumentData?.accountNumberLastFourDigits !== undefined) {
+            const { accountNumberLastFourDigits, ...rest } = unwrappedInstrumentData;
             return {
                 ...method,
                 paymentInstrumentData: {
@@ -103,5 +106,6 @@ function sanitizePaymentMethods(paymentMethods: VaultedPaymentMethod[]): Vaulted
         return method;
     });
 }
+
 
 export default PrimerHeadlessUniversalCheckoutVaultManager;
