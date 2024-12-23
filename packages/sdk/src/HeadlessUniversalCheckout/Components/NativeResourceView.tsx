@@ -1,6 +1,5 @@
 import { GestureResponderEvent, StyleSheet, TouchableOpacity, ViewStyle, NativeModules } from "react-native";
 import { PrimerGooglePayButton } from "./PrimerGooglePayButton";
-import { IPrimerGooglePayButtonOptions } from "./../models"
 import React from "react";
 
 interface NativeResourceViewProps {
