@@ -1,5 +1,8 @@
-import { requireNativeComponent } from "react-native";
+import { requireNativeComponent, ViewProps } from "react-native";
 
-export const PrimerGooglePayButton = requireNativeComponent<{}>(
+interface PrimerGooglePayButtonProps extends ViewProps {
+}
+
+export const PrimerGooglePayButton = requireNativeComponent<PrimerGooglePayButtonProps>(
     'PrimerGooglePayButton'
 );
