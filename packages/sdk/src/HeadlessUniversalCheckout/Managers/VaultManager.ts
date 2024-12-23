@@ -36,7 +36,8 @@ class PrimerHeadlessUniversalCheckoutVaultManager {
                 const data: PrimerVaultedPaymentMethodResult =
                     await RNPrimerHeadlessUniversalCheckoutVaultManager.fetchVaultedPaymentMethods();
                 const paymentMethods: VaultedPaymentMethod[] = data.paymentMethods;
-                resolve(paymentMethods);
+                const mappedPaymentMethods = sanitizePaymentMethods(paymentMethods);
+                resolve(mappedPaymentMethods);
             } catch (err) {
                 console.error(err);
                 reject(err);
@@ -85,6 +86,22 @@ class PrimerHeadlessUniversalCheckoutVaultManager {
             }
         });
     }
+}
+
+function sanitizePaymentMethods(paymentMethods: VaultedPaymentMethod[]): VaultedPaymentMethod[] {
+    return paymentMethods.map(method => {
+        if (method.paymentInstrumentData?.accountNumberLastFourDigits !== undefined) {
+            const { accountNumberLastFourDigits, ...rest } = method.paymentInstrumentData;
+            return {
+                ...method,
+                paymentInstrumentData: {
+                    ...rest,
+                    accountNumberLast4Digits: accountNumberLastFourDigits
+                }
+            };
+        }
+        return method;
+    });
 }
 
 export default PrimerHeadlessUniversalCheckoutVaultManager;
