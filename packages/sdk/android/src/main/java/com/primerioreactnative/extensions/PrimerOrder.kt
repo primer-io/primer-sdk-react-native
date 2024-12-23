@@ -5,7 +5,8 @@ import com.primerioreactnative.datamodels.PrimerShippingRN
 import io.primer.android.domain.action.models.PrimerOrder
 import io.primer.android.domain.action.models.PrimerShipping
 
-// TODO enable shipping
-internal fun PrimerOrder.toPrimerOrderRN() = PrimerOrderRN(countryCode, null)
+internal fun PrimerOrder.toPrimerOrderRN() =
+  PrimerOrderRN(countryCode = countryCode, shipping = shipping?.toPrimerShippingRN())
 
-internal fun PrimerShipping.toPrimerShippingRN() = PrimerShippingRN(amount, methodId, methodName, methodDescription)
+internal fun PrimerShipping.toPrimerShippingRN() =
+  PrimerShippingRN(amount, methodId, methodName, methodDescription)

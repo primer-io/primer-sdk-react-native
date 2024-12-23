@@ -18,7 +18,14 @@ RCT_EXTERN_METHOD(getPaymentMethodAsset:(NSString *)paymentMethodType
                       resolver:(RCTPromiseResolveBlock)resolver
                       rejecter:(RCTPromiseRejectBlock)rejecter)
 
+RCT_EXTERN_METHOD(getPaymentMethodResource:(NSString *)paymentMethodType
+                      resolver:(RCTPromiseResolveBlock)resolver
+                      rejecter:(RCTPromiseRejectBlock)rejecter)
+
 RCT_EXTERN_METHOD(getPaymentMethodAssets:(RCTPromiseResolveBlock)resolver
+                    rejecter:(RCTPromiseRejectBlock)rejecter)
+
+RCT_EXTERN_METHOD(getPaymentMethodResources:(RCTPromiseResolveBlock)resolver
                     rejecter:(RCTPromiseRejectBlock)rejecter)
 
 @end

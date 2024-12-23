@@ -1,4 +1,5 @@
-import { IPrimerAsset as Asset } from '../../models/PrimerAsset';
+import { Resource } from 'src';
+import { IPrimerAsset as Asset } from '../../models/PrimerPaymentMethodResource';
 import { NativeModules } from 'react-native';
 
 const { RNTPrimerHeadlessUniversalCheckoutAssetsManager } = NativeModules;
@@ -26,6 +27,9 @@ class PrimerHeadlessUniversalCheckoutAssetsManager {
         });
     }
 
+   /**
+   * @deprecated Use getPaymentMethodResource instead
+   */
     async getPaymentMethodAsset(paymentMethodType: string): Promise<Asset> {
         return new Promise(async (resolve, reject) => {
             try {
@@ -39,12 +43,41 @@ class PrimerHeadlessUniversalCheckoutAssetsManager {
         });
     }
 
+   /**
+   * @deprecated Use getPaymentMethodResources instead
+   */
     async getPaymentMethodAssets(): Promise<Asset[]> {
         return new Promise(async (resolve, reject) => {
             try {
                 const data = await RNTPrimerHeadlessUniversalCheckoutAssetsManager.getPaymentMethodAssets();
                 const paymentMethodAssets: Asset[] = data.paymentMethodAssets;
                 resolve(paymentMethodAssets);
+            } catch (err) {
+                console.error(err);
+                reject(err);
+            }
+        });
+    }
+
+    async getPaymentMethodResources(): Promise<Resource[]> {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const data = await RNTPrimerHeadlessUniversalCheckoutAssetsManager.getPaymentMethodResources();
+                const paymentMethodResources: Resource[] = data.paymentMethodResources;
+                resolve(paymentMethodResources);
+            } catch (err) {
+                console.error(err);
+                reject(err);
+            }
+        });
+    }
+
+    async getPaymentMethodResource(paymentMethodType: string): Promise<Resource> {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const data = await RNTPrimerHeadlessUniversalCheckoutAssetsManager.getPaymentMethodResource(paymentMethodType);
+                const paymentMethodResource: Resource = data.paymentMethodResource;
+                resolve(paymentMethodResource);
             } catch (err) {
                 console.error(err);
                 reject(err);

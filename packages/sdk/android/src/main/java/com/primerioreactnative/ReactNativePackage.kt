@@ -11,8 +11,10 @@ import com.primerioreactnative.components.manager.vault.PrimerRNHeadlessUniversa
 import com.primerioreactnative.components.manager.redirect.PrimerRNHeadlessUniversalCheckoutBanksComponent
 import com.primerioreactnative.components.manager.klarna.PrimerRNHeadlessUniversalCheckoutKlarnaComponent
 import com.primerioreactnative.components.manager.klarna.PrimerKlarnaPaymentViewManager
+import com.primerioreactnative.components.manager.googlePay.PrimerGooglePayButtonManager
 import com.primerioreactnative.components.manager.ach.PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent
 import com.primerioreactnative.components.manager.ach.PrimerRNAchMandateManager
+import com.primerioreactnative.components.manager.googlePay.PrimerGooglePayButtonConstantsModule
 import kotlinx.serialization.json.Json
 
 class ReactNativePackage : ReactPackage {
@@ -31,14 +33,18 @@ class ReactNativePackage : ReactPackage {
       PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent(reactContext),
       PrimerRNAchMandateManager(reactContext),
       //region Component with redirect components
-      PrimerRNHeadlessUniversalCheckoutBanksComponent(reactContext)
+      PrimerRNHeadlessUniversalCheckoutBanksComponent(reactContext),
       //endregion
+      // region Google Pay Helpers
+      PrimerGooglePayButtonConstantsModule(reactContext),
+      // endregion
     )
   }
 
   override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
     return mutableListOf(
-      PrimerKlarnaPaymentViewManager(reactContext)
+      PrimerKlarnaPaymentViewManager(),
+      PrimerGooglePayButtonManager()
     )
   }
 }

@@ -142,6 +142,12 @@ interface IPrimerGooglePayOptions {
   shippingAddressParameters?: IPrimerGoogleShippingAddressParameters;
   requireShippingMethod?: boolean;
   emailAddressRequired?: boolean;
+  buttonOptions?; IPrimerGooglePayButtonOptions;
+}
+
+interface IPrimerGooglePayButtonOptions {
+  buttonType?: number;
+  buttonTheme?: number
 }
 
 interface IPrimerGoogleShippingAddressParameters {
