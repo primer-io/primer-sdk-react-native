@@ -18,6 +18,7 @@ import {
   NativeUIManager,
   PaymentMethod,
   PrimerSettings,
+  PrimerGooglePayButtonConstants,
   Resource,
   SessionIntent
 } from '@primer-io/react-native';
@@ -95,7 +96,11 @@ export const HeadlessCheckoutScreen = (props: any) => {
         isExistingPaymentMethodRequired: false,
         shippingAddressParameters: { phoneNumberRequired: true },
         requireShippingMethod: false,
-        emailAddressRequired: true
+        emailAddressRequired: true,
+        buttonOptions: {
+          buttonTheme: PrimerGooglePayButtonConstants.Themes.Light,
+          buttonType: PrimerGooglePayButtonConstants.Types.Checkout
+        }
       },
     },
     debugOptions: {
@@ -436,7 +441,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
         props.navigation.navigate('HeadlessCheckoutStripeAchScreen');
       } else if (implementationType === "KLARNA" && paymentMethod.paymentMethodType === "KLARNA") {
         props.navigation.navigate('Klarna', { paymentSessionIntent: selectedSessionIntent });
-      } 
+      }
       else {
         Alert.alert(
           'Warning!',

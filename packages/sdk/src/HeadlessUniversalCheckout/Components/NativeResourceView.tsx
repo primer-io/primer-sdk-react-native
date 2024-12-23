@@ -1,5 +1,6 @@
-import { GestureResponderEvent, StyleSheet, TouchableOpacity, ViewStyle } from "react-native";
+import { GestureResponderEvent, StyleSheet, TouchableOpacity, ViewStyle, NativeModules } from "react-native";
 import { PrimerGooglePayButton } from "./PrimerGooglePayButton";
+import { IPrimerGooglePayButtonOptions } from "./../models"
 import React from "react";
 
 interface NativeResourceViewProps {
@@ -21,6 +22,8 @@ export const NativeResourceView: React.FC<NativeResourceViewProps> = ({
         </TouchableOpacity>
     );
 };
+
+export const PrimerGooglePayButtonConstants = NativeModules.PrimerGooglePayButtonConstants?.getConstants();
 
 const styles = StyleSheet.create({
     defaultContainer: {
