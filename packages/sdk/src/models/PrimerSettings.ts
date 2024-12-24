@@ -165,14 +165,11 @@ interface IPrimerUIOptions {
   isInitScreenEnabled?: boolean;
   isSuccessScreenEnabled?: boolean;
   isErrorScreenEnabled?: boolean;
-  dismissalMechanism?: IDismissalMechanism;
+  dismissalMechanism?: DismissalMechanism[];
   theme?: IPrimerTheme;
 }
 
-enum IDismissalMechanism {
-  GESTURES = 'gestures',
-  CLOSE_BUTTON = 'closeButton'
-}
+export type DismissalMechanism = 'gestures' | 'closeButton';
 
 //----------------------------------------
 
