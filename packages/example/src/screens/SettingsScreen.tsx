@@ -13,6 +13,7 @@ import { styles } from '../styles';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import { Environment, makeEnvironmentFromIntVal, makePaymentHandlingFromIntVal, PaymentHandling } from '../network/Environment';
 import { appPaymentParameters, IClientSessionAddress, IClientSessionCustomer, IClientSessionLineItem, IClientSessionOrder, IClientSessionPaymentMethod, IClientSessionPaymentMethodOptions, IClientSessionRequestBody } from '../models/IClientSessionRequestBody';
+import { useState } from 'react';
 import { Switch } from 'react-native';
 import TextField from '../components/TextField';
 import type { NewLineItemScreenProps } from './NewLineItemSreen';
@@ -22,10 +23,37 @@ export interface AppPaymentParameters {
     paymentHandling: PaymentHandling;
     clientSessionRequestBody: IClientSessionRequestBody;
     merchantName?: string;
+    shippingOptions?: {
+        requireShippingMethod: boolean;
+        shippingContactFields: string[];
+    };
+    billingOptions?: {
+        requiredBillingContactFields: string[];
+    };
 }
 
 export let customApiKey: string | undefined;
 export let customClientToken: string | undefined;
+
+enum CheckoutVaultingType {
+    NONE,
+    VAULT_ON_SUCCESS,
+    VAULT_ON_AGREEMENT
+}
+
+export function makeCheckoutVaultingTypeFromIntVal(env: number): CheckoutVaultingType {
+    switch (env) {
+        case 0:
+            return CheckoutVaultingType.NONE;
+        case 1:
+            return CheckoutVaultingType.VAULT_ON_SUCCESS;
+        case 2:
+            return CheckoutVaultingType.VAULT_ON_AGREEMENT;
+        default:
+            throw new Error("Failed to create checkout vaulting type.");
+    }
+}
+
 
 // @ts-ignore
 const SettingsScreen = ({ navigation }) => {
@@ -65,6 +93,18 @@ const SettingsScreen = ({ navigation }) => {
     const [adyenSofortSurcharge, setAdyenSofortySurcharge] = React.useState<number | undefined>(appPaymentParameters.clientSessionRequestBody.paymentMethod?.options?.ADYEN_SOFORT?.surcharge.amount);
     const [visaSurcharge, setVisaSurcharge] = React.useState<number | undefined>(appPaymentParameters.clientSessionRequestBody.paymentMethod?.options?.PAYMENT_CARD?.networks.VISA?.surcharge.amount);
     const [masterCardSurcharge, setMasterCardSurcharge] = React.useState<number | undefined>(appPaymentParameters.clientSessionRequestBody.paymentMethod?.options?.PAYMENT_CARD?.networks.MASTERCARD?.surcharge.amount);
+
+    const [isBillingOptionsApplied, setIsBillingOptionsApplied] = useState<boolean>(false);
+    const [requiredBillingContactFields, setRequiredBillingContactFields] = useState<string[]>([]);
+
+    const [isShippingOptionsApplied, setIsShippingOptionsApplied] = useState<boolean>(false);
+    const [requireShippingMethod, setRequireShippingMethod] = useState<boolean>(false);
+    const [shippingContactFields, setShippingContactFields] = useState<string[]>([]);
+
+    const vaultOnSuccess = appPaymentParameters.clientSessionRequestBody.paymentMethod?.vaultOnSuccess;
+    const vaultOnAgreement = appPaymentParameters.clientSessionRequestBody.paymentMethod?.vaultOnAgreement;
+
+    const [checkoutVaultingType, setCheckoutVaultingType] = React.useState<CheckoutVaultingType | undefined>(vaultOnSuccess ? CheckoutVaultingType.VAULT_ON_SUCCESS : vaultOnAgreement ? CheckoutVaultingType.VAULT_ON_AGREEMENT : CheckoutVaultingType.NONE);
 
     const backgroundStyle = {
         backgroundColor: isDarkMode ? Colors.black : Colors.white
@@ -107,6 +147,23 @@ const SettingsScreen = ({ navigation }) => {
                         setClientToken(text);
                     }}
                 />
+
+
+                <Text
+                style={{ marginVertical: 8, ...styles.heading1 }}>
+                    Checkout vaulting
+                </Text>
+                <SegmentedControl
+                    testID="CheckoutVaulting"
+                    style={{ marginTop: 6, height: 56 }}
+                    values={['No vaulting', 'Vault on success', 'Vault on agreement']}
+                    selectedIndex={checkoutVaultingType}
+                    onChange={(event) => {
+                        const selectedIndex = event.nativeEvent.selectedSegmentIndex;
+                        let selectedCheckoutVaultingType = makeCheckoutVaultingTypeFromIntVal(selectedIndex);
+                        setCheckoutVaultingType(selectedCheckoutVaultingType);
+                    }}
+                />
             </View>
         )
     }
@@ -133,13 +190,13 @@ const SettingsScreen = ({ navigation }) => {
 
     const renderRecaptureCvvSection = () => {
         return (
-            <View style={{ marginTop: 12, marginBottom: 8, flexDirection:'row', alignItems:'center', justifyContent:'left'}}>
+            <View style={{ marginTop: 12, marginBottom: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'left' }}>
                 <Text style={{ ...styles.heading1 }}>
                     Enable Recapture CVV
                 </Text>
                 <Switch
-                  onValueChange={setCaptureVaultedCardCvv}
-                  value={captureVaultedCardCvv}
+                    onValueChange={setCaptureVaultedCardCvv}
+                    value={captureVaultedCardCvv}
                 />
             </View>
         );
@@ -617,6 +674,8 @@ const SettingsScreen = ({ navigation }) => {
                 {renderMerchantSection()}
                 {renderCustomerSection()}
                 {renderSurchargeSection()}
+                {renderBillingOptionsSection()}
+                {renderShippingOptionsSection()}
             </View>
         );
     }
@@ -673,6 +732,175 @@ const SettingsScreen = ({ navigation }) => {
             </View>
         );
     }
+
+    const renderBillingOptionsSection = () => {
+        return (
+            <View style={{ marginTop: 12, marginBottom: 8 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Text style={{ ...styles.heading1, marginBottom: 4 }}>
+                        Billing Options
+                    </Text>
+                    <View style={{ flex: 1 }} />
+                    <Switch
+                        value={isBillingOptionsApplied}
+                        onValueChange={val => {
+                            setIsBillingOptionsApplied(val);
+                        }}
+                    />
+                </View>
+
+                {
+                    !isBillingOptionsApplied ? null :
+                        <View>
+                            <Text style={{ ...styles.heading2, marginVertical: 4 }}>Billing Contact Fields</Text>
+                            <View style={{ marginVertical: 4 }}>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <Text style={{ flex: 1 }}>Name</Text>
+                                    <Switch
+                                        value={requiredBillingContactFields.includes('name')}
+                                        onValueChange={val => {
+                                            if (val) {
+                                                setRequiredBillingContactFields([...requiredBillingContactFields, 'name']);
+                                            } else {
+                                                setRequiredBillingContactFields(requiredBillingContactFields.filter(field => field !== 'name'));
+                                            }
+                                        }}
+                                    />
+                                </View>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <Text style={{ flex: 1 }}>Email Address</Text>
+                                    <Switch
+                                        value={requiredBillingContactFields.includes('emailAddress')}
+                                        onValueChange={val => {
+                                            if (val) {
+                                                setRequiredBillingContactFields([...requiredBillingContactFields, 'emailAddress']);
+                                            } else {
+                                                setRequiredBillingContactFields(requiredBillingContactFields.filter(field => field !== 'emailAddress'));
+                                            }
+                                        }}
+                                    />
+                                </View>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <Text style={{ flex: 1 }}>Phone Number</Text>
+                                    <Switch
+                                        value={requiredBillingContactFields.includes('phoneNumber')}
+                                        onValueChange={val => {
+                                            if (val) {
+                                                setRequiredBillingContactFields([...requiredBillingContactFields, 'phoneNumber']);
+                                            } else {
+                                                setRequiredBillingContactFields(requiredBillingContactFields.filter(field => field !== 'phoneNumber'));
+                                            }
+                                        }}
+                                    />
+                                </View>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <Text style={{ flex: 1 }}>Postal Address</Text>
+                                    <Switch
+                                        value={requiredBillingContactFields.includes('postalAddress')}
+                                        onValueChange={val => {
+                                            if (val) {
+                                                setRequiredBillingContactFields([...requiredBillingContactFields, 'postalAddress']);
+                                            } else {
+                                                setRequiredBillingContactFields(requiredBillingContactFields.filter(field => field !== 'postalAddress'));
+                                            }
+                                        }}
+                                    />
+                                </View>
+                            </View>
+                        </View>
+                }
+            </View>
+        );
+    };
+
+    const renderShippingOptionsSection = () => {
+        return (
+            <View style={{ marginTop: 12, marginBottom: 8 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Text style={{ ...styles.heading1, marginBottom: 4 }}>
+                        Shipping Options
+                    </Text>
+                    <View style={{ flex: 1 }} />
+                    <Switch
+                        value={isShippingOptionsApplied}
+                        onValueChange={val => {
+                            setIsShippingOptionsApplied(val);
+                        }}
+                    />
+                </View>
+
+                {
+                    !isShippingOptionsApplied ? null :
+                        <View>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 4 }}>
+                                <Text style={{ flex: 1 }}>Require Shipping Method</Text>
+                                <Switch
+                                    value={requireShippingMethod}
+                                    onValueChange={val => {
+                                        setRequireShippingMethod(val);
+                                    }}
+                                />
+                            </View>
+                            <Text style={{ ...styles.heading2, marginVertical: 4 }}>Shipping Contact Fields</Text>
+                            <View style={{ marginVertical: 4 }}>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <Text style={{ flex: 1 }}>Name</Text>
+                                    <Switch
+                                        value={shippingContactFields.includes('name')}
+                                        onValueChange={val => {
+                                            if (val) {
+                                                setShippingContactFields([...shippingContactFields, 'name']);
+                                            } else {
+                                                setShippingContactFields(shippingContactFields.filter(field => field !== 'name'));
+                                            }
+                                        }}
+                                    />
+                                </View>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <Text style={{ flex: 1 }}>Email Address</Text>
+                                    <Switch
+                                        value={shippingContactFields.includes('emailAddress')}
+                                        onValueChange={val => {
+                                            if (val) {
+                                                setShippingContactFields([...shippingContactFields, 'emailAddress']);
+                                            } else {
+                                                setShippingContactFields(shippingContactFields.filter(field => field !== 'emailAddress'));
+                                            }
+                                        }}
+                                    />
+                                </View>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <Text style={{ flex: 1 }}>Phone Number</Text>
+                                    <Switch
+                                        value={shippingContactFields.includes('phoneNumber')}
+                                        onValueChange={val => {
+                                            if (val) {
+                                                setShippingContactFields([...shippingContactFields, 'phoneNumber']);
+                                            } else {
+                                                setShippingContactFields(shippingContactFields.filter(field => field !== 'phoneNumber'));
+                                            }
+                                        }}
+                                    />
+                                </View>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <Text style={{ flex: 1 }}>Postal Address</Text>
+                                    <Switch
+                                        value={shippingContactFields.includes('postalAddress')}
+                                        onValueChange={val => {
+                                            if (val) {
+                                                setShippingContactFields([...shippingContactFields, 'postalAddress']);
+                                            } else {
+                                                setShippingContactFields(shippingContactFields.filter(field => field !== 'postalAddress'));
+                                            }
+                                        }}
+                                    />
+                                </View>
+                            </View>
+                        </View>
+                }
+            </View>
+        );
+    };
 
     const updateAppPaymentParameters = () => {
         appPaymentParameters.merchantName = merchantName;
@@ -776,9 +1004,18 @@ const SettingsScreen = ({ navigation }) => {
 
 
         currentPaymentMethod.options = Object.keys(currentPaymentMethodOptions || {}).length === 0 ? undefined : currentPaymentMethodOptions;
+        currentPaymentMethod.vaultOnSuccess = checkoutVaultingType === CheckoutVaultingType.VAULT_ON_SUCCESS;
+        currentPaymentMethod.vaultOnAgreement = checkoutVaultingType === CheckoutVaultingType.VAULT_ON_AGREEMENT;
         currentClientSessionRequestBody.paymentMethod = Object.keys(currentPaymentMethod).length === 0 ? undefined : currentPaymentMethod;
 
         appPaymentParameters.clientSessionRequestBody = currentClientSessionRequestBody;
+        appPaymentParameters.shippingOptions = isShippingOptionsApplied ? {
+            requireShippingMethod: requireShippingMethod,
+            shippingContactFields: shippingContactFields,
+        } : undefined;
+        appPaymentParameters.billingOptions = isBillingOptionsApplied ? {
+            requiredBillingContactFields: requiredBillingContactFields,
+        } : undefined;
     }
 
     return (

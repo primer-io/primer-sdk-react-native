@@ -34,20 +34,77 @@ extension PrimerSettings {
 
             var applePayOptions: PrimerApplePayOptions?
             if let rnApplePayOptions = ((settingsJson["paymentMethodOptions"] as? [String: Any])?["applePayOptions"] as? [String: Any]),
-               let rnApplePayMerchantIdentifier = rnApplePayOptions["merchantIdentifier"] as? String,
-               let rnApplePayMerchantName = rnApplePayOptions["merchantName"] as? String
+            let rnApplePayMerchantIdentifier = rnApplePayOptions["merchantIdentifier"] as? String
             {
+                let rnApplePayMerchantName = rnApplePayOptions["merchantName"] as? String
                 let rnApplePayIsCaptureBillingAddressEnabled = (rnApplePayOptions["isCaptureBillingAddressEnabled"] as? Bool) ?? false
                 let rnApplePayShowApplePayForUnsupportedDevice = (rnApplePayOptions["showApplePayForUnsupportedDevice"] as? Bool) ?? true
                 let rnApplePayCheckProvidedNetworks = (rnApplePayOptions["checkProvidedNetworks"] as? Bool) ?? true
                 
+                var shippingOptions: PrimerApplePayOptions.ShippingOptions? = nil
+                if let rnShippingOptions = rnApplePayOptions["shippingOptions"] as? [String: Any] {
+                    let requireShippingMethod = rnShippingOptions["requireShippingMethod"] as? Bool ?? false
+
+                    var shippingContactFields: [PrimerApplePayOptions.RequiredContactField]? = nil
+                    if let requiredFieldsStrings = rnShippingOptions["shippingContactFields"] as? [String] {
+                        shippingContactFields = requiredFieldsStrings.compactMap { fieldStr in
+                            switch fieldStr {
+                            case "name":
+                                return .name
+                            case "emailAddress":
+                                return .emailAddress
+                            case "phoneNumber":
+                                return .phoneNumber
+                            case "postalAddress":
+                                return .postalAddress
+                            default:
+                                return nil // Ignore unknown values or handle accordingly
+                            }
+                        }
+                    }
+
+                    shippingOptions = PrimerApplePayOptions.ShippingOptions(
+                        shippingContactFields: shippingContactFields,
+                        requireShippingMethod: requireShippingMethod
+                    )
+                }
+
+                var billingOptions: PrimerApplePayOptions.BillingOptions? = nil
+                if let rnBillingOptions = rnApplePayOptions["billingOptions"] as? [String: Any] {
+                    var requiredBillingContactFields: [PrimerApplePayOptions.RequiredContactField]? = nil
+                    if let requiredFieldsStrings = rnBillingOptions["requiredBillingContactFields"] as? [String] {
+                        requiredBillingContactFields = requiredFieldsStrings.compactMap { fieldStr in
+                            switch fieldStr {
+                            case "name":
+                                return .name
+                            case "emailAddress":
+                                return .emailAddress
+                            case "phoneNumber":
+                                return .phoneNumber
+                            case "postalAddress":
+                                return .postalAddress
+                            default:
+                                return nil // Ignore unknown values or handle accordingly
+                            }
+                        }
+                    }
+
+                    billingOptions = PrimerApplePayOptions.BillingOptions(
+                        requiredBillingContactFields: requiredBillingContactFields
+                    )
+                }
+
                 applePayOptions = PrimerApplePayOptions(
                     merchantIdentifier: rnApplePayMerchantIdentifier,
                     merchantName: rnApplePayMerchantName,
                     isCaptureBillingAddressEnabled: rnApplePayIsCaptureBillingAddressEnabled,
                     showApplePayForUnsupportedDevice: rnApplePayShowApplePayForUnsupportedDevice,
-                    checkProvidedNetworks: rnApplePayCheckProvidedNetworks)
+                    checkProvidedNetworks: rnApplePayCheckProvidedNetworks,
+                    shippingOptions: shippingOptions,
+                    billingOptions: billingOptions
+                )
             }
+            
 
             var klarnaOptions: PrimerKlarnaOptions?
             if let rnKlarnaRecurringPaymentDescription = ((settingsJson["paymentMethodOptions"] as? [String: Any])?["klarnaOptions"] as? [String: Any])?["recurringPaymentDescription"] as? String {

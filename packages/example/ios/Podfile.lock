@@ -12,14 +12,14 @@ PODS:
   - fmt (6.2.1)
   - glog (0.3.5)
   - primer-io-react-native (2.28.0):
-    - PrimerSDK (= 2.32.1)
+    - PrimerSDK (= 2.33.1)
     - React-Core
   - Primer3DS (2.4.1)
   - PrimerIPay88MYSDK (0.1.7)
-  - PrimerKlarnaSDK (1.1.0)
-  - PrimerSDK (2.32.1):
-    - PrimerSDK/Core (= 2.32.1)
-  - PrimerSDK/Core (2.32.1)
+  - PrimerKlarnaSDK (1.1.1)
+  - PrimerSDK (2.33.1):
+    - PrimerSDK/Core (= 2.33.1)
+  - PrimerSDK/Core (2.33.1)
   - PrimerStripeSDK (1.0.0)
   - RCT-Folly (2021.07.22.00):
     - boost
@@ -416,7 +416,7 @@ DEPENDENCIES:
   - primer-io-react-native (from `../../sdk`)
   - Primer3DS
   - PrimerIPay88MYSDK
-  - PrimerKlarnaSDK (= 1.1.0)
+  - PrimerKlarnaSDK (= 1.1.1)
   - PrimerSDK
   - PrimerStripeSDK (= 1.0.0)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
@@ -560,12 +560,13 @@ SPEC CHECKSUMS:
   FBReactNativeSpec: 6e7e74b1ed7f0a1a469a82a67521b33285f5fef3
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
-  primer-io-react-native: 9166bd7132de8f0f6cfbde99c3de7d4ec1c71d19
+  primer-io-react-native: af63625ceba86ab8883fd13940a366a075846fda
   Primer3DS: c5d066773d72c8ad74e6fccbdbbb8f3b54eadd97
   PrimerIPay88MYSDK: 436ee0be7e2c97e4e81456ccddee20175e9e3c4d
-  PrimerKlarnaSDK: 83e9a1357a7247bf8fa2836fc945cf97644d601d
-  PrimerSDK: 41eb9f627fa189f3edafdb18ea2a671d4403b3e2
+  PrimerKlarnaSDK: 564105170cc7b467bf95c31851813ea41c468f8b
+  PrimerSDK: 181f7b12d3d436916bfea9a2c58d49a694aa8186
   PrimerStripeSDK: c37d4e7c1b5256d67d4890c4cc4b38ddc9427489
+  RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
   RCTRequired: 656ef0536dd60a9740961ade6a64ba0cb0572d2b
   RCTTypeSafety: 82bd23b63f043d1a6b8e80e72fd15c08e04528a4
@@ -575,8 +576,14 @@ SPEC CHECKSUMS:
   React-Core: fce0e8a04de16c69e766f26b652e7ca9927eda9b
   React-CoreModules: b02ca7a4fb869bcbe4c0ed2c939d433f13a120c5
   React-cxxreact: 9738d95069cfbe030d5f44319c9b44028f442d82
+  React-Codegen: 7dcfe258f856ac8381a905f0669435736bcfb5b9
+  React-Core: fce0e8a04de16c69e766f26b652e7ca9927eda9b
+  React-CoreModules: b02ca7a4fb869bcbe4c0ed2c939d433f13a120c5
+  React-cxxreact: 9738d95069cfbe030d5f44319c9b44028f442d82
   React-debug: 77ab539975d81d27153e2998bc1214a2473cde01
   React-jsc: 3c0b9256529613da65281effc9ddf1067a2e075f
+  React-jsi: 26276762f73bf53c33c3d5252664c32ba4509f8b
+  React-jsiexecutor: de4e98ab0f2661affeb54931806a79a93a34d1ea
   React-jsi: 26276762f73bf53c33c3d5252664c32ba4509f8b
   React-jsiexecutor: de4e98ab0f2661affeb54931806a79a93a34d1ea
   React-jsinspector: 8d754fc957255a29d93e52fc67a895045cdc8703
@@ -584,9 +591,14 @@ SPEC CHECKSUMS:
   react-native-safe-area-context: dcab599c527c2d7de2d76507a523d20a0b83823d
   react-native-segmented-control: d88b35fcd06c0c8e1f1f7ed1eb066c2b02570fdd
   React-NativeModulesApple: 1d81d927ef1a67a3545a01e14c2e98500bf9b199
+  React-logger: 454ffb01980778a43b0153ee98721d0275b56616
+  react-native-safe-area-context: dcab599c527c2d7de2d76507a523d20a0b83823d
+  react-native-segmented-control: d88b35fcd06c0c8e1f1f7ed1eb066c2b02570fdd
+  React-NativeModulesApple: 1d81d927ef1a67a3545a01e14c2e98500bf9b199
   React-perflogger: 684a11499a0589cc42135d6d5cc04d0e4e0e261a
   React-RCTActionSheet: 00b0a4c382a13b834124fa3f541a7d8d1d56efb9
   React-RCTAnimation: 10c24c66fb504f2faa53f4ec0666c4568255cff9
+  React-RCTAppDelegate: 0402b094e4f630aee6831570731759a43a69a28c
   React-RCTAppDelegate: 0402b094e4f630aee6831570731759a43a69a28c
   React-RCTBlob: 48aaf595ea4f209faa8a80f26c23a4b9c271248f
   React-RCTImage: 2f609dd1c80c4aec8edf2ca235cba476fdd442ec
@@ -601,9 +613,14 @@ SPEC CHECKSUMS:
   React-utils: c12d2e75c8bbc727939ddc4319ed95493395ed5a
   ReactCommon: b9547f82aed45eccc1aa59034dc6c72809e37000
   RNScreens: 93ae3be2f119d955620f9bbb39ad372adb53b7a9
+  React-runtimescheduler: 4a36521cc1ec1bc3997ae2462b6779dadaae376b
+  React-utils: c12d2e75c8bbc727939ddc4319ed95493395ed5a
+  ReactCommon: b9547f82aed45eccc1aa59034dc6c72809e37000
+  RNScreens: 93ae3be2f119d955620f9bbb39ad372adb53b7a9
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   Yoga: 1d6727ed193122f6adaf435c3de1a768326ff83b
 
-PODFILE CHECKSUM: e1d93bf98428be80f71d4652c0496e390624cf68
+PODFILE CHECKSUM: 4505e915c8982e98dcb8297a1c627233ce3a067f
 
+COCOAPODS: 1.16.2
 COCOAPODS: 1.16.2

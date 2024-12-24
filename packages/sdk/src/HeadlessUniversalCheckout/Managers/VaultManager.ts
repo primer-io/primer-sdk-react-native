@@ -36,7 +36,8 @@ class PrimerHeadlessUniversalCheckoutVaultManager {
                 const data: PrimerVaultedPaymentMethodResult =
                     await RNPrimerHeadlessUniversalCheckoutVaultManager.fetchVaultedPaymentMethods();
                 const paymentMethods: VaultedPaymentMethod[] = data.paymentMethods;
-                resolve(paymentMethods);
+                const mappedPaymentMethods = sanitizePaymentMethods(paymentMethods);
+                resolve(mappedPaymentMethods);
             } catch (err) {
                 console.error(err);
                 reject(err);
@@ -86,5 +87,25 @@ class PrimerHeadlessUniversalCheckoutVaultManager {
         });
     }
 }
+
+// Convert accountNumberLastFourDigits to accountNumberLast4Digits when present
+// Overcomes an iOS limitation of toJsonObject()
+function sanitizePaymentMethods(paymentMethods: VaultedPaymentMethod[]): VaultedPaymentMethod[] {
+    return paymentMethods.map(method => {
+        const unwrappedInstrumentData = method.paymentInstrumentData as any;
+        if (unwrappedInstrumentData?.accountNumberLastFourDigits !== undefined) {
+            const { accountNumberLastFourDigits, ...rest } = unwrappedInstrumentData;
+            return {
+                ...method,
+                paymentInstrumentData: {
+                    ...rest,
+                    accountNumberLast4Digits: accountNumberLastFourDigits
+                }
+            };
+        }
+        return method;
+    });
+}
+
 
 export default PrimerHeadlessUniversalCheckoutVaultManager;

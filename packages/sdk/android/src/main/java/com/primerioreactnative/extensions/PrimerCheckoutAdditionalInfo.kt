@@ -4,17 +4,17 @@ import com.primerioreactnative.datamodels.MultibancoCheckoutAdditionalInfoRN
 import com.primerioreactnative.datamodels.PromptPayCheckoutAdditionalInfoRN
 import com.primerioreactnative.datamodels.XenditCheckoutVoucherAdditionalInfoRN
 import com.primerioreactnative.datamodels.AchAdditionalInfoDisplayMandateRN
-import io.primer.android.domain.payments.additionalInfo.MultibancoCheckoutAdditionalInfo
-import io.primer.android.domain.payments.additionalInfo.PrimerCheckoutAdditionalInfo
-import io.primer.android.domain.payments.additionalInfo.PromptPayCheckoutAdditionalInfo
-import io.primer.android.domain.payments.additionalInfo.XenditCheckoutVoucherAdditionalInfo
-import io.primer.android.domain.payments.additionalInfo.AchAdditionalInfo
+import io.primer.android.vouchers.multibanco.MultibancoCheckoutAdditionalInfo
+import io.primer.android.payments.core.additionalInfo.PrimerCheckoutAdditionalInfo
+import io.primer.android.qrcode.QrCodeCheckoutAdditionalInfo
+import io.primer.android.vouchers.retailOutlets.XenditCheckoutVoucherAdditionalInfo
+import io.primer.android.stripe.ach.api.additionalInfo.AchAdditionalInfo
 
 internal fun PrimerCheckoutAdditionalInfo.toCheckoutAdditionalInfoRN() = when (this) {
   is MultibancoCheckoutAdditionalInfo ->
     MultibancoCheckoutAdditionalInfoRN(expiresAt, reference, entity)
-  is PromptPayCheckoutAdditionalInfo ->
-    PromptPayCheckoutAdditionalInfoRN(expiresAt, qrCodeUrl, qrCodeBase64)
+  is QrCodeCheckoutAdditionalInfo ->
+  PromptPayCheckoutAdditionalInfoRN(expiresAt.orEmpty(), qrCodeUrl, qrCodeBase64)
   is XenditCheckoutVoucherAdditionalInfo ->
     XenditCheckoutVoucherAdditionalInfoRN(expiresAt, couponCode, retailerName)
   is AchAdditionalInfo.DisplayMandate ->

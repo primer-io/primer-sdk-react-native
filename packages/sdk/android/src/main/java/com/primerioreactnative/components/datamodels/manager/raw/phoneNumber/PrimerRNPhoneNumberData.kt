@@ -1,6 +1,6 @@
 package com.primerioreactnative.components.datamodels.manager.raw.phoneNumber
 
-import io.primer.android.components.domain.core.models.phoneNumber.PrimerPhoneNumberData
+import io.primer.android.phoneNumber.PrimerPhoneNumberData
 import kotlinx.serialization.Serializable
 
 @Serializable

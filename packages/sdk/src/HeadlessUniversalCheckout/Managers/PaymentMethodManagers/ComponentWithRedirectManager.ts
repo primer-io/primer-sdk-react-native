@@ -42,8 +42,25 @@ export interface BanksComponent {
    * Selects the bank with the given {@link bankId}, triggering the
    * validation flow.
    * @param bankId The id of the selected bank.
+   * @deprecated use handleBankChange function instead.
    */
   onBankSelected(bankId: string): Promise<void>;
+
+  /**
+   * Selects the bank with the given {@link bankId}, triggering the
+   * validation flow.
+   * @param bankId The id of the selected bank.
+   */
+  handleBankChange(bankId: string): Promise<void>;
+
+  /**
+   * Filters down the bank list with the given {@link filter}, triggering
+   * the validation flow and a new step emission that contains the filtered
+   * list of banks in the form of an {@link IssuingBank} array.
+   * @param filter The text to filter the bank list by.
+   * @deprecated use handleBankFilterChange function instead.
+   */
+  onBankFilterChange(filter: string): Promise<void>;
 
   /**
    * Filters down the bank list with the given {@link filter}, triggering
@@ -51,12 +68,12 @@ export interface BanksComponent {
    * list of banks in the form of an {@link IssuingBank} array.
    * @param filter The text to filter the bank list by.
    */
-  onBankFilterChange(filter: string): Promise<void>;
+  handleBankFilterChange(filter: string): Promise<void>;
 
   /**
    * Submits the component, triggering tokenization and a redirect to the 
    * bank's page for finalizing the payment. This function should only be 
-   * called after selecting a bank via {@link onBankSelected}.
+   * called after selecting a bank via {@link handleBankChange}.
    */
   submit(): Promise<void>;
 }
@@ -85,7 +102,13 @@ export class PrimerHeadlessUniversalCheckoutComponentWithRedirectManager {
         onBankFilterChange: async (filter: String) => {
           RNTPrimerHeadlessUniversalCheckoutBanksComponent.onBankFilterChange(filter);
         },
+        handleBankFilterChange: async (filter: String) => {
+          RNTPrimerHeadlessUniversalCheckoutBanksComponent.onBankFilterChange(filter);
+        },
         onBankSelected: async (bankId: String) => {
+          RNTPrimerHeadlessUniversalCheckoutBanksComponent.onBankSelected(bankId);
+        },
+        handleBankChange: async (bankId: String) => {
           RNTPrimerHeadlessUniversalCheckoutBanksComponent.onBankSelected(bankId);
         },
       }
