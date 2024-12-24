@@ -1,4 +1,3 @@
-
 import * as React from 'react';
 import { View, Text, useColorScheme, TouchableOpacity } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
@@ -277,6 +276,7 @@ const CheckoutScreen = (props: any) => {
             isInitScreenEnabled: true,
             isSuccessScreenEnabled: true,
             isErrorScreenEnabled: true,
+            dismissalMechanism: ['gestures', 'closeButton'],
             theme: {
                 // 👇 Uncomment to try theming drop-in checkout
 

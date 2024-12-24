@@ -50,6 +50,7 @@ data class PrimerUIOptionsRN(
   var isInitScreenEnabled: Boolean = true,
   var isSuccessScreenEnabled: Boolean = true,
   var isErrorScreenEnabled: Boolean = true,
+  var dismissalMechanism: List<String>? = listOf("gestures"),
   var theme: PrimerThemeRN = PrimerThemeRN()
 )
 
