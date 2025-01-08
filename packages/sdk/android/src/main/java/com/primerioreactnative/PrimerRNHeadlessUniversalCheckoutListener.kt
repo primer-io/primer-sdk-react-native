@@ -1,18 +1,23 @@
 package com.primerioreactnative
 
+import androidx.activity.ComponentActivity
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactContext
 import com.primerioreactnative.components.datamodels.core.PrimerRNAvailablePaymentMethods
 import com.primerioreactnative.components.datamodels.core.toPrimerRNHeadlessUniversalCheckoutPaymentMethod
 import com.primerioreactnative.components.events.PrimerHeadlessUniversalCheckoutEvent
-import com.primerioreactnative.components.manager.ach.PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent
 import com.primerioreactnative.components.manager.ach.PrimerRNAchMandateManager
-import com.primerioreactnative.datamodels.*
+import com.primerioreactnative.components.manager.ach.PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent
+import com.primerioreactnative.datamodels.ErrorTypeRN
+import com.primerioreactnative.datamodels.PrimerCheckoutDataRN
+import com.primerioreactnative.datamodels.PrimerErrorRN
+import com.primerioreactnative.datamodels.PrimerPaymentInstrumentTokenRN
+import com.primerioreactnative.datamodels.PrimerPaymentMethodDataRN
+import com.primerioreactnative.extensions.removeType
 import com.primerioreactnative.extensions.toCheckoutAdditionalInfoRN
 import com.primerioreactnative.extensions.toPrimerCheckoutDataRN
 import com.primerioreactnative.extensions.toPrimerClientSessionRN
 import com.primerioreactnative.extensions.toPrimerPaymentMethodDataRN
-import com.primerioreactnative.extensions.removeType
 import com.primerioreactnative.utils.PrimerHeadlessUniversalCheckoutImplementedRNCallbacks
 import com.primerioreactnative.utils.errorTo
 import com.primerioreactnative.utils.toWritableMap
@@ -24,20 +29,18 @@ import io.primer.android.components.domain.core.models.PrimerHeadlessUniversalCh
 import io.primer.android.domain.PrimerCheckoutData
 import io.primer.android.domain.action.models.PrimerClientSession
 import io.primer.android.domain.error.models.PrimerError
-import io.primer.android.vouchers.multibanco.MultibancoCheckoutAdditionalInfo
+import io.primer.android.domain.tokenization.models.PrimerPaymentMethodData
+import io.primer.android.domain.tokenization.models.PrimerPaymentMethodTokenData
 import io.primer.android.payments.core.additionalInfo.PrimerCheckoutAdditionalInfo
 import io.primer.android.qrcode.QrCodeCheckoutAdditionalInfo
 import io.primer.android.stripe.ach.api.additionalInfo.AchAdditionalInfo
-import io.primer.android.domain.tokenization.models.PrimerPaymentMethodData
-import io.primer.android.domain.tokenization.models.PrimerPaymentMethodTokenData
-import io.primer.android.Primer
+import io.primer.android.vouchers.multibanco.MultibancoCheckoutAdditionalInfo
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
-import androidx.activity.ComponentActivity
 
 class PrimerRNHeadlessUniversalCheckoutListener(
-  private val reactContext: ReactContext
+  private val reactContext: ReactContext,
 ) : PrimerHeadlessUniversalCheckoutListener,
   PrimerHeadlessUniversalCheckoutUiListener {
   private var paymentCreationDecisionHandler: ((errorMessage: String?) -> Unit)? = null
@@ -60,17 +63,17 @@ class PrimerRNHeadlessUniversalCheckoutListener(
       JSONObject(
         Json.encodeToString(
           PrimerRNAvailablePaymentMethods(
-            paymentMethods.map { it.toPrimerRNHeadlessUniversalCheckoutPaymentMethod() }
-          )
-        )
+            paymentMethods.map { it.toPrimerRNHeadlessUniversalCheckoutPaymentMethod() },
+          ),
+        ),
       )
 
     sendEvent?.invoke(
       PrimerHeadlessUniversalCheckoutEvent.ON_AVAILABLE_PAYMENT_METHODS_LOAD.eventName,
-      availablePaymentMethods
+      availablePaymentMethods,
     )
     successCallback?.resolve(
-      availablePaymentMethods.toWritableMap()
+      availablePaymentMethods.toWritableMap(),
     )
   }
 
@@ -78,13 +81,13 @@ class PrimerRNHeadlessUniversalCheckoutListener(
     sendEvent?.invoke(
       PrimerHeadlessUniversalCheckoutEvent.ON_PREPARE_START.eventName,
       JSONObject(
-              Json.encodeToString(
-                  PrimerPaymentMethodDataRN(
-                      paymentMethodType = paymentMethodType,
-                      paymentMethod = paymentMethodType
-                  )
-              )
-          )
+        Json.encodeToString(
+          PrimerPaymentMethodDataRN(
+            paymentMethodType = paymentMethodType,
+            paymentMethod = paymentMethodType,
+          ),
+        ),
+      ),
     )
   }
 
@@ -92,13 +95,13 @@ class PrimerRNHeadlessUniversalCheckoutListener(
     sendEvent?.invoke(
       PrimerHeadlessUniversalCheckoutEvent.ON_PAYMENT_METHOD_SHOW.eventName,
       JSONObject(
-              Json.encodeToString(
-                  PrimerPaymentMethodDataRN(
-                      paymentMethodType = paymentMethodType,
-                      paymentMethod = paymentMethodType
-                  )
-              )
-          )
+        Json.encodeToString(
+          PrimerPaymentMethodDataRN(
+            paymentMethodType = paymentMethodType,
+            paymentMethod = paymentMethodType,
+          ),
+        ),
+      ),
     )
   }
 
@@ -106,13 +109,13 @@ class PrimerRNHeadlessUniversalCheckoutListener(
     sendEvent?.invoke(
       PrimerHeadlessUniversalCheckoutEvent.ON_TOKENIZE_START.eventName,
       JSONObject(
-              Json.encodeToString(
-                  PrimerPaymentMethodDataRN(
-                      paymentMethodType = paymentMethodType,
-                      paymentMethod = paymentMethodType
-                  )
-              )
-          )
+        Json.encodeToString(
+          PrimerPaymentMethodDataRN(
+            paymentMethodType = paymentMethodType,
+            paymentMethod = paymentMethodType,
+          ),
+        ),
+      ),
     )
   }
 
@@ -124,19 +127,19 @@ class PrimerRNHeadlessUniversalCheckoutListener(
           val additionalInfoJson = optJSONObject(Keys.ADDITIONAL_INFO)
           additionalInfoJson?.removeType()
           putOpt(Keys.ADDITIONAL_INFO, additionalInfoJson)
-        }
+        },
       )
     } else {
       sendError?.invoke(
         ErrorTypeRN.NativeBridgeFailed
-          errorTo "Callback [onCheckoutComplete] should be implemented."
+          errorTo "Callback [onCheckoutComplete] should be implemented.",
       )
     }
   }
 
   override fun onBeforePaymentCreated(
     paymentMethodData: PrimerPaymentMethodData,
-    createPaymentHandler: PrimerPaymentCreationDecisionHandler
+    createPaymentHandler: PrimerPaymentCreationDecisionHandler,
   ) {
     if (implementedRNCallbacks?.isOnBeforePaymentCreateImplemented == true) {
       paymentCreationDecisionHandler = { errorMessage ->
@@ -147,7 +150,7 @@ class PrimerRNHeadlessUniversalCheckoutListener(
       }
       sendEvent?.invoke(
         PrimerHeadlessUniversalCheckoutEvent.ON_BEFORE_PAYMENT_CREATE.eventName,
-        JSONObject(Json.encodeToString(paymentMethodData.toPrimerPaymentMethodDataRN()))
+        JSONObject(Json.encodeToString(paymentMethodData.toPrimerPaymentMethodDataRN())),
       )
     } else {
       super.onBeforePaymentCreated(paymentMethodData, createPaymentHandler)
@@ -158,7 +161,7 @@ class PrimerRNHeadlessUniversalCheckoutListener(
     if (implementedRNCallbacks?.isOnBeforeClientSessionUpdateImplemented == true) {
       sendEvent?.invoke(
         PrimerHeadlessUniversalCheckoutEvent.ON_BEFORE_CLIENT_SESSION_UPDATE.eventName,
-        null
+        null,
       )
     } else {
       super.onBeforeClientSessionUpdated()
@@ -172,9 +175,9 @@ class PrimerRNHeadlessUniversalCheckoutListener(
         JSONObject().apply {
           put(
             "clientSession",
-            JSONObject(Json.encodeToString(clientSession.toPrimerClientSessionRN()))
+            JSONObject(Json.encodeToString(clientSession.toPrimerClientSessionRN())),
           )
-        }
+        },
       )
     } else {
       super.onClientSessionUpdated(clientSession)
@@ -183,13 +186,14 @@ class PrimerRNHeadlessUniversalCheckoutListener(
 
   override fun onTokenizeSuccess(
     paymentMethodTokenData: PrimerPaymentMethodTokenData,
-    decisionHandler: PrimerHeadlessUniversalCheckoutResumeDecisionHandler
+    decisionHandler: PrimerHeadlessUniversalCheckoutResumeDecisionHandler,
   ) {
     if (implementedRNCallbacks?.isOnTokenizeSuccessImplemented == true) {
       val token = PrimerPaymentInstrumentTokenRN.fromPaymentMethodToken(paymentMethodTokenData)
-      val request = JSONObject().apply {
-        put("paymentMethodTokenData", JSONObject(Json.encodeToString(token)))
-      }
+      val request =
+        JSONObject().apply {
+          put("paymentMethodTokenData", JSONObject(Json.encodeToString(token)))
+        }
       tokenizeSuccessDecisionHandler = { newClientToken, _ ->
         when {
           newClientToken != null -> decisionHandler.continueWithNewClientToken(newClientToken)
@@ -199,14 +203,14 @@ class PrimerRNHeadlessUniversalCheckoutListener(
     } else {
       sendError?.invoke(
         ErrorTypeRN.NativeBridgeFailed
-          errorTo "Callback [onTokenizeSuccess] should be implemented."
+          errorTo "Callback [onTokenizeSuccess] should be implemented.",
       )
     }
   }
 
   override fun onCheckoutResume(
     resumeToken: String,
-    decisionHandler: PrimerHeadlessUniversalCheckoutResumeDecisionHandler
+    decisionHandler: PrimerHeadlessUniversalCheckoutResumeDecisionHandler,
   ) {
     if (implementedRNCallbacks?.isOnCheckoutResumeImplemented == true) {
       resumeSuccessDecisionHandler = { newClientToken, _ ->
@@ -218,12 +222,12 @@ class PrimerRNHeadlessUniversalCheckoutListener(
       val resumeToken = mapOf(Keys.RESUME_TOKEN to resumeToken)
       sendEvent?.invoke(
         PrimerHeadlessUniversalCheckoutEvent.ON_CHECKOUT_SUCCESS.eventName,
-        JSONObject(Json.encodeToString(resumeToken))
+        JSONObject(Json.encodeToString(resumeToken)),
       )
     } else {
       sendError?.invoke(
         ErrorTypeRN.NativeBridgeFailed
-          errorTo "Callback ${PrimerHeadlessUniversalCheckoutEvent.ON_CHECKOUT_SUCCESS.eventName} should be implemented."
+          errorTo "Callback ${PrimerHeadlessUniversalCheckoutEvent.ON_CHECKOUT_SUCCESS.eventName} should be implemented.",
       )
     }
   }
@@ -235,14 +239,14 @@ class PrimerRNHeadlessUniversalCheckoutListener(
           PrimerHeadlessUniversalCheckoutEvent.ON_CHECKOUT_PENDING.eventName,
           JSONObject(Json.encodeToString(additionalInfo.toCheckoutAdditionalInfoRN())).apply {
             removeType()
-          }
+          },
         )
       }
     } else {
       sendError?.invoke(
         ErrorTypeRN.NativeBridgeFailed
           errorTo "Callback [${PrimerHeadlessUniversalCheckoutEvent.ON_CHECKOUT_PENDING.eventName}] " +
-          "should be implemented."
+          "should be implemented.",
       )
     }
   }
@@ -251,19 +255,19 @@ class PrimerRNHeadlessUniversalCheckoutListener(
     if (implementedRNCallbacks?.isOnCheckoutAdditionalInfoImplemented == true) {
       when (additionalInfo) {
         is QrCodeCheckoutAdditionalInfo -> {
-            sendEvent?.invoke(
-                PrimerHeadlessUniversalCheckoutEvent.ON_CHECKOUT_ADDITIONAL_INFO.eventName,
-                JSONObject(json.encodeToString(additionalInfo.toCheckoutAdditionalInfoRN())).apply {
-                  removeType()
-                }
-            )
+          sendEvent?.invoke(
+            PrimerHeadlessUniversalCheckoutEvent.ON_CHECKOUT_ADDITIONAL_INFO.eventName,
+            JSONObject(json.encodeToString(additionalInfo.toCheckoutAdditionalInfoRN())).apply {
+              removeType()
+            },
+          )
         }
         is AchAdditionalInfo.ProvideActivityResultRegistry -> {
           val activityResultRegistry = (reactContext.currentActivity as? ComponentActivity)?.activityResultRegistry
           if (activityResultRegistry == null) {
             sendError?.invoke(
               ErrorTypeRN.NativeBridgeFailed
-                errorTo PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent.UNSUPPORTED_ACTIVITY_ERROR
+                errorTo PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent.UNSUPPORTED_ACTIVITY_ERROR,
             )
           } else {
             additionalInfo.provide(activityResultRegistry)
@@ -271,21 +275,21 @@ class PrimerRNHeadlessUniversalCheckoutListener(
         }
 
         is AchAdditionalInfo.DisplayMandate -> {
-            PrimerRNAchMandateManager.acceptMandate = additionalInfo.onAcceptMandate
-            PrimerRNAchMandateManager.declineMandate = additionalInfo.onDeclineMandate
-            sendEvent?.invoke(
-                PrimerHeadlessUniversalCheckoutEvent.ON_CHECKOUT_ADDITIONAL_INFO.eventName,
-                JSONObject(json.encodeToString(additionalInfo.toCheckoutAdditionalInfoRN())).apply {
-                  removeType()
-                }
-            )
+          PrimerRNAchMandateManager.acceptMandate = additionalInfo.onAcceptMandate
+          PrimerRNAchMandateManager.declineMandate = additionalInfo.onDeclineMandate
+          sendEvent?.invoke(
+            PrimerHeadlessUniversalCheckoutEvent.ON_CHECKOUT_ADDITIONAL_INFO.eventName,
+            JSONObject(json.encodeToString(additionalInfo.toCheckoutAdditionalInfoRN())).apply {
+              removeType()
+            },
+          )
         }
       }
     } else {
       sendError?.invoke(
         ErrorTypeRN.NativeBridgeFailed
           errorTo "Callback [${PrimerHeadlessUniversalCheckoutEvent.ON_CHECKOUT_ADDITIONAL_INFO.eventName}]" +
-          " should be implemented."
+          " should be implemented.",
       )
     }
   }
@@ -301,8 +305,9 @@ class PrimerRNHeadlessUniversalCheckoutListener(
           errorCode = error.errorCode,
           description = error.description,
           diagnosticsId = error.diagnosticsId,
-          recoverySuggestion = error.recoverySuggestion
-        ), checkoutData?.toPrimerCheckoutDataRN()
+          recoverySuggestion = error.recoverySuggestion,
+        ),
+        checkoutData?.toPrimerCheckoutDataRN(),
       )
     } else {
       super.onFailed(error, checkoutData)
@@ -317,8 +322,8 @@ class PrimerRNHeadlessUniversalCheckoutListener(
           errorCode = error.errorCode,
           description = error.description,
           diagnosticsId = error.diagnosticsId,
-          recoverySuggestion = error.recoverySuggestion
-        )
+          recoverySuggestion = error.recoverySuggestion,
+        ),
       )
     } else {
       super.onFailed(error)
@@ -351,10 +356,7 @@ class PrimerRNHeadlessUniversalCheckoutListener(
   }
   // endregion
 
-  fun setImplementedCallbacks(
-    implementedRNCallbacks:
-    PrimerHeadlessUniversalCheckoutImplementedRNCallbacks
-  ) {
+  fun setImplementedCallbacks(implementedRNCallbacks: PrimerHeadlessUniversalCheckoutImplementedRNCallbacks) {
     this.implementedRNCallbacks = implementedRNCallbacks
   }
 

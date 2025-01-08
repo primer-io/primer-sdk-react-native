@@ -1,7 +1,7 @@
 package com.primerioreactnative.datamodels
 
 import com.primerioreactnative.extensions.toPaymentInstrumentDataRN
-import io.primer.android.data.tokenization.models.*
+import io.primer.android.data.tokenization.models.TokenType
 import io.primer.android.domain.tokenization.models.PrimerPaymentMethodTokenData
 import kotlinx.serialization.Serializable
 
@@ -15,7 +15,6 @@ data class PrimerPaymentInstrumentTokenRN(
   val threeDSecureAuthentication: ThreeDSAuthenticationData? = null,
   val vaultData: VaultData? = null,
 ) {
-
   @Serializable
   data class VaultData(
     val customerId: String,
@@ -44,7 +43,7 @@ data class PrimerPaymentInstrumentTokenRN(
     val sessionData: SessionData? = null,
     val paymentMethodType: String? = null,
     val binData: BinData? = null,
-    val bankName: String? = null
+    val bankName: String? = null,
   )
 
   @Serializable
@@ -52,7 +51,7 @@ data class PrimerPaymentInstrumentTokenRN(
     val email: String,
     val externalPayerId: String?,
     val firstName: String?,
-    val lastName: String?
+    val lastName: String?,
   )
 
   @Serializable

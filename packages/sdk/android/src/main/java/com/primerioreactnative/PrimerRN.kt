@@ -1,9 +1,19 @@
 package com.primerioreactnative
 
 import android.util.Log
-import com.facebook.react.bridge.*
+import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.Promise
+import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.ReactContextBaseJavaModule
+import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.bridge.WritableMap
 import com.facebook.react.modules.core.DeviceEventManagerModule
-import com.primerioreactnative.datamodels.*
+import com.primerioreactnative.datamodels.ErrorTypeRN
+import com.primerioreactnative.datamodels.PrimerCheckoutDataRN
+import com.primerioreactnative.datamodels.PrimerErrorRN
+import com.primerioreactnative.datamodels.PrimerEvents
+import com.primerioreactnative.datamodels.PrimerSettingsRN
+import com.primerioreactnative.datamodels.toPrimerSettings
 import com.primerioreactnative.utils.PrimerImplementedRNCallbacks
 import com.primerioreactnative.utils.errorTo
 import com.primerioreactnative.utils.toWritableMap
@@ -29,13 +39,20 @@ class PrimerRN(private val reactContext: ReactApplicationContext, private val js
   override fun getName(): String = "NativePrimer"
 
   @ReactMethod
-  fun configure(settingsStr: String, promise: Promise) {
+  fun configure(
+    settingsStr: String,
+    promise: Promise,
+  ) {
     try {
       Log.d("PrimerRN", "settings: $settingsStr")
       val settings =
-        if (settingsStr.isBlank()) PrimerSettingsRN() else json.decodeFromString(
-          settingsStr
-        )
+        if (settingsStr.isBlank()) {
+          PrimerSettingsRN()
+        } else {
+          json.decodeFromString(
+            settingsStr,
+          )
+        }
       startSdk(settings.toPrimerSettings(reactContext))
       promise.resolve(null)
     } catch (e: Exception) {
@@ -49,27 +66,32 @@ class PrimerRN(private val reactContext: ReactApplicationContext, private val js
   @ReactMethod
   fun showUniversalCheckoutWithClientToken(
     clientToken: String,
-    promise: Promise
+    promise: Promise,
   ) {
     try {
       Primer.instance.showUniversalCheckout(reactApplicationContext.applicationContext, clientToken)
       promise.resolve(null)
     } catch (e: Exception) {
-      val exception = ErrorTypeRN.NativeBridgeFailed errorTo
-        "Primer SDK failed: ${e.message}"
+      val exception =
+        ErrorTypeRN.NativeBridgeFailed errorTo
+          "Primer SDK failed: ${e.message}"
       onError(exception)
       promise.reject(exception.errorId, exception.description, e)
     }
   }
 
   @ReactMethod
-  fun showVaultManagerWithClientToken(clientToken: String, promise: Promise) {
+  fun showVaultManagerWithClientToken(
+    clientToken: String,
+    promise: Promise,
+  ) {
     try {
       Primer.instance.showVaultManager(reactApplicationContext.applicationContext, clientToken)
       promise.resolve(null)
     } catch (e: Exception) {
-      val exception = ErrorTypeRN.NativeBridgeFailed errorTo
-        "Primer SDK failed: ${e.message}"
+      val exception =
+        ErrorTypeRN.NativeBridgeFailed errorTo
+          "Primer SDK failed: ${e.message}"
       onError(exception)
       promise.reject(exception.errorId, exception.description, e)
     }
@@ -89,7 +111,10 @@ class PrimerRN(private val reactContext: ReactApplicationContext, private val js
 
   // region tokenization handlers
   @ReactMethod
-  fun handleTokenizationNewClientToken(newClientToken: String, promise: Promise) {
+  fun handleTokenizationNewClientToken(
+    newClientToken: String,
+    promise: Promise,
+  ) {
     mListener.handleTokenizationNewClientToken(newClientToken)
     promise.resolve(null)
   }
@@ -101,7 +126,10 @@ class PrimerRN(private val reactContext: ReactApplicationContext, private val js
   }
 
   @ReactMethod
-  fun handleTokenizationFailure(errorMessage: String?, promise: Promise) {
+  fun handleTokenizationFailure(
+    errorMessage: String?,
+    promise: Promise,
+  ) {
     mListener.handleTokenizationFailure(errorMessage.orEmpty())
     promise.resolve(null)
   }
@@ -109,7 +137,10 @@ class PrimerRN(private val reactContext: ReactApplicationContext, private val js
 
   // region resume handlers
   @ReactMethod
-  fun handleResumeNewClientToken(newClientToken: String, promise: Promise) {
+  fun handleResumeNewClientToken(
+    newClientToken: String,
+    promise: Promise,
+  ) {
     mListener.handleResumeNewClientToken(newClientToken)
     promise.resolve(null)
   }
@@ -121,7 +152,10 @@ class PrimerRN(private val reactContext: ReactApplicationContext, private val js
   }
 
   @ReactMethod
-  fun handleResumeFailure(errorMessage: String?, promise: Promise) {
+  fun handleResumeFailure(
+    errorMessage: String?,
+    promise: Promise,
+  ) {
     mListener.handleResumeFailure(errorMessage.orEmpty())
     promise.resolve(null)
   }
@@ -135,7 +169,10 @@ class PrimerRN(private val reactContext: ReactApplicationContext, private val js
   }
 
   @ReactMethod
-  fun handlePaymentCreationAbort(errorMessage: String?, promise: Promise) {
+  fun handlePaymentCreationAbort(
+    errorMessage: String?,
+    promise: Promise,
+  ) {
     mListener.handlePaymentCreationAbort(errorMessage.orEmpty())
     promise.resolve(null)
   }
@@ -143,14 +180,20 @@ class PrimerRN(private val reactContext: ReactApplicationContext, private val js
 
   // region error handlers
   @ReactMethod
-  fun showErrorMessage(errorMessage: String?, promise: Promise) {
+  fun showErrorMessage(
+    errorMessage: String?,
+    promise: Promise,
+  ) {
     mListener.handleErrorMessage(errorMessage.orEmpty())
     promise.resolve(null)
   }
   // endregion
 
   @ReactMethod
-  fun setImplementedRNCallbacks(implementedRNCallbacksStr: String, promise: Promise) {
+  fun setImplementedRNCallbacks(
+    implementedRNCallbacksStr: String,
+    promise: Promise,
+  ) {
     try {
       Log.d("PrimerRN", "implementedRNCallbacks: $implementedRNCallbacksStr")
       val implementedRNCallbacks =
@@ -175,7 +218,10 @@ class PrimerRN(private val reactContext: ReactApplicationContext, private val js
     Primer.instance.configure(settings, mListener)
   }
 
-  private fun onError(exception: PrimerErrorRN, checkoutDataRN: PrimerCheckoutDataRN? = null) {
+  private fun onError(
+    exception: PrimerErrorRN,
+    checkoutDataRN: PrimerCheckoutDataRN? = null,
+  ) {
     val params = Arguments.createMap()
     val errorJson = JSONObject(Json.encodeToString(exception))
     val errorData = prepareData(errorJson)
@@ -188,16 +234,22 @@ class PrimerRN(private val reactContext: ReactApplicationContext, private val js
     sendEvent(PrimerEvents.ON_ERROR.eventName, params)
   }
 
-  private fun sendEvent(name: String, params: WritableMap) {
+  private fun sendEvent(
+    name: String,
+    params: WritableMap,
+  ) {
     reactApplicationContext.getJSModule(
-      DeviceEventManagerModule.RCTDeviceEventEmitter::class.java
+      DeviceEventManagerModule.RCTDeviceEventEmitter::class.java,
     ).emit(name, params)
   }
 
-  private fun sendEvent(name: String, data: JSONObject?) {
+  private fun sendEvent(
+    name: String,
+    data: JSONObject?,
+  ) {
     val params = prepareData(data)
     reactApplicationContext.getJSModule(
-      DeviceEventManagerModule.RCTDeviceEventEmitter::class.java
+      DeviceEventManagerModule.RCTDeviceEventEmitter::class.java,
     ).emit(name, params)
   }
 

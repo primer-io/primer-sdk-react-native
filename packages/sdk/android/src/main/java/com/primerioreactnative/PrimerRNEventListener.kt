@@ -1,11 +1,15 @@
 package com.primerioreactnative
 
-import com.primerioreactnative.datamodels.*
+import com.primerioreactnative.datamodels.ErrorTypeRN
+import com.primerioreactnative.datamodels.PrimerCheckoutDataRN
+import com.primerioreactnative.datamodels.PrimerErrorRN
+import com.primerioreactnative.datamodels.PrimerEvents
+import com.primerioreactnative.datamodels.PrimerPaymentInstrumentTokenRN
+import com.primerioreactnative.extensions.removeType
 import com.primerioreactnative.extensions.toCheckoutAdditionalInfoRN
 import com.primerioreactnative.extensions.toPrimerCheckoutDataRN
 import com.primerioreactnative.extensions.toPrimerClientSessionRN
 import com.primerioreactnative.extensions.toPrimerPaymentMethodDataRN
-import com.primerioreactnative.extensions.removeType
 import com.primerioreactnative.utils.PrimerImplementedRNCallbacks
 import com.primerioreactnative.utils.errorTo
 import io.primer.android.PrimerCheckoutListener
@@ -15,17 +19,16 @@ import io.primer.android.completion.PrimerResumeDecisionHandler
 import io.primer.android.domain.PrimerCheckoutData
 import io.primer.android.domain.action.models.PrimerClientSession
 import io.primer.android.domain.error.models.PrimerError
-import io.primer.android.vouchers.multibanco.MultibancoCheckoutAdditionalInfo
-import io.primer.android.payments.core.additionalInfo.PrimerCheckoutAdditionalInfo
-import io.primer.android.qrcode.QrCodeCheckoutAdditionalInfo
 import io.primer.android.domain.tokenization.models.PrimerPaymentMethodData
 import io.primer.android.domain.tokenization.models.PrimerPaymentMethodTokenData
+import io.primer.android.payments.core.additionalInfo.PrimerCheckoutAdditionalInfo
+import io.primer.android.qrcode.QrCodeCheckoutAdditionalInfo
+import io.primer.android.vouchers.multibanco.MultibancoCheckoutAdditionalInfo
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
 
 class PrimerRNEventListener : PrimerCheckoutListener {
-
   private var paymentCreationDecisionHandler: ((errorMessage: String?) -> Unit)? = null
   private var primerErrorDecisionHandler: ((errorMessage: String?) -> Unit)? = null
   private var tokenizeSuccessDecisionHandler: ((resumeToken: String?, errorMessage: String?) -> Unit)? =
@@ -48,19 +51,19 @@ class PrimerRNEventListener : PrimerCheckoutListener {
           val additionalInfoJson = optJSONObject(Keys.ADDITIONAL_INFO)
           additionalInfoJson?.removeType()
           putOpt(Keys.ADDITIONAL_INFO, additionalInfoJson)
-        }
+        },
       )
     } else {
       sendError?.invoke(
         ErrorTypeRN.NativeBridgeFailed
-          errorTo "Callback [onCheckoutComplete] should be implemented."
+          errorTo "Callback [onCheckoutComplete] should be implemented.",
       )
     }
   }
 
   override fun onBeforePaymentCreated(
     paymentMethodData: PrimerPaymentMethodData,
-    decisionHandler: PrimerPaymentCreationDecisionHandler
+    decisionHandler: PrimerPaymentCreationDecisionHandler,
   ) {
     if (implementedRNCallbacks?.isOnBeforePaymentCreateImplemented == true) {
       paymentCreationDecisionHandler = { errorMessage ->
@@ -71,7 +74,7 @@ class PrimerRNEventListener : PrimerCheckoutListener {
       }
       sendEvent?.invoke(
         PrimerEvents.ON_BEFORE_PAYMENT_CREATE.eventName,
-        JSONObject(Json.encodeToString(paymentMethodData.toPrimerPaymentMethodDataRN()))
+        JSONObject(Json.encodeToString(paymentMethodData.toPrimerPaymentMethodDataRN())),
       )
     } else {
       super.onBeforePaymentCreated(paymentMethodData, decisionHandler)
@@ -82,7 +85,7 @@ class PrimerRNEventListener : PrimerCheckoutListener {
     if (implementedRNCallbacks?.isOnBeforeClientSessionUpdateImplemented == true) {
       sendEvent?.invoke(
         PrimerEvents.ON_BEFORE_CLIENT_SESSION_UPDATE.eventName,
-        null
+        null,
       )
     } else {
       super.onBeforeClientSessionUpdated()
@@ -96,9 +99,9 @@ class PrimerRNEventListener : PrimerCheckoutListener {
         JSONObject().apply {
           put(
             "clientSession",
-            JSONObject(Json.encodeToString(clientSession.toPrimerClientSessionRN()))
+            JSONObject(Json.encodeToString(clientSession.toPrimerClientSessionRN())),
           )
-        }
+        },
       )
     } else {
       super.onClientSessionUpdated(clientSession)
@@ -107,7 +110,7 @@ class PrimerRNEventListener : PrimerCheckoutListener {
 
   override fun onTokenizeSuccess(
     paymentMethodTokenData: PrimerPaymentMethodTokenData,
-    decisionHandler: PrimerResumeDecisionHandler
+    decisionHandler: PrimerResumeDecisionHandler,
   ) {
     if (implementedRNCallbacks?.isOnTokenizeSuccessImplemented == true) {
       val token = PrimerPaymentInstrumentTokenRN.fromPaymentMethodToken(paymentMethodTokenData)
@@ -123,14 +126,14 @@ class PrimerRNEventListener : PrimerCheckoutListener {
     } else {
       sendError?.invoke(
         ErrorTypeRN.NativeBridgeFailed
-          errorTo "Callback [onTokenizeSuccess] should be implemented."
+          errorTo "Callback [onTokenizeSuccess] should be implemented.",
       )
     }
   }
 
   override fun onResumeSuccess(
     resumeToken: String,
-    decisionHandler: PrimerResumeDecisionHandler
+    decisionHandler: PrimerResumeDecisionHandler,
   ) {
     if (implementedRNCallbacks?.isOnCheckoutResumeImplemented == true) {
       resumeSuccessDecisionHandler = { newClientToken, err ->
@@ -143,12 +146,12 @@ class PrimerRNEventListener : PrimerCheckoutListener {
 
       sendEvent?.invoke(
         PrimerEvents.ON_RESUME_SUCCESS.eventName,
-        JSONObject(Json.encodeToString(mapOf(Keys.RESUME_TOKEN to resumeToken)))
+        JSONObject(Json.encodeToString(mapOf(Keys.RESUME_TOKEN to resumeToken))),
       )
     } else {
       sendError?.invoke(
         ErrorTypeRN.NativeBridgeFailed
-          errorTo "Callback [onResumeSuccess] should be implemented."
+          errorTo "Callback [onResumeSuccess] should be implemented.",
       )
     }
   }
@@ -160,13 +163,13 @@ class PrimerRNEventListener : PrimerCheckoutListener {
           PrimerEvents.ON_RESUME_PENDING.eventName,
           JSONObject(Json.encodeToString(additionalInfo.toCheckoutAdditionalInfoRN())).apply {
             removeType()
-          }
+          },
         )
       }
     } else {
       sendError?.invoke(
         ErrorTypeRN.NativeBridgeFailed
-          errorTo "Callback [onResumePending] should be implemented."
+          errorTo "Callback [onResumePending] should be implemented.",
       )
     }
   }
@@ -178,13 +181,13 @@ class PrimerRNEventListener : PrimerCheckoutListener {
           PrimerEvents.ON_CHECKOUT_RECEIVED_ADDITIONAL_INFO.eventName,
           JSONObject(Json.encodeToString(additionalInfo.toCheckoutAdditionalInfoRN())).apply {
             removeType()
-          }
+          },
         )
       }
     } else {
       sendError?.invoke(
         ErrorTypeRN.NativeBridgeFailed
-          errorTo "Callback [onAdditionalInfoReceived] should be implemented."
+          errorTo "Callback [onAdditionalInfoReceived] should be implemented.",
       )
     }
   }
@@ -193,7 +196,7 @@ class PrimerRNEventListener : PrimerCheckoutListener {
     if (implementedRNCallbacks?.isOnDismissImplemented == true) {
       sendEvent?.invoke(
         PrimerEvents.ON_DISMISS.eventName,
-        null
+        null,
       )
     }
 
@@ -204,7 +207,7 @@ class PrimerRNEventListener : PrimerCheckoutListener {
   override fun onFailed(
     error: PrimerError,
     checkoutData: PrimerCheckoutData?,
-    errorHandler: PrimerErrorDecisionHandler?
+    errorHandler: PrimerErrorDecisionHandler?,
   ) {
     if (implementedRNCallbacks?.isOnErrorImplemented == true) {
       primerErrorDecisionHandler = { errorMessage: String? ->
@@ -216,15 +219,19 @@ class PrimerRNEventListener : PrimerCheckoutListener {
           errorCode = error.errorCode,
           description = error.description,
           diagnosticsId = error.diagnosticsId,
-          recoverySuggestion = error.recoverySuggestion
-        ), checkoutData?.toPrimerCheckoutDataRN()
+          recoverySuggestion = error.recoverySuggestion,
+        ),
+        checkoutData?.toPrimerCheckoutDataRN(),
       )
     } else {
       super.onFailed(error, checkoutData, errorHandler)
     }
   }
 
-  override fun onFailed(error: PrimerError, errorHandler: PrimerErrorDecisionHandler?) {
+  override fun onFailed(
+    error: PrimerError,
+    errorHandler: PrimerErrorDecisionHandler?,
+  ) {
     if (implementedRNCallbacks?.isOnErrorImplemented == true) {
       primerErrorDecisionHandler = { errorMessage: String? ->
         errorHandler?.showErrorMessage(errorMessage)
@@ -235,8 +242,8 @@ class PrimerRNEventListener : PrimerCheckoutListener {
           errorCode = error.errorCode,
           description = error.description,
           diagnosticsId = error.diagnosticsId,
-          recoverySuggestion = error.recoverySuggestion
-        )
+          recoverySuggestion = error.recoverySuggestion,
+        ),
       )
     } else {
       super.onFailed(error, errorHandler)
@@ -257,7 +264,7 @@ class PrimerRNEventListener : PrimerCheckoutListener {
   fun handleTokenizationFailure(errorMessage: String) {
     tokenizeSuccessDecisionHandler?.invoke(
       null,
-      errorMessage.ifBlank { null }
+      errorMessage.ifBlank { null },
     )
     tokenizeSuccessDecisionHandler = null
   }
@@ -277,7 +284,7 @@ class PrimerRNEventListener : PrimerCheckoutListener {
   fun handleResumeFailure(errorMessage: String) {
     resumeSuccessDecisionHandler?.invoke(
       null,
-      errorMessage.ifBlank { null }
+      errorMessage.ifBlank { null },
     )
     resumeSuccessDecisionHandler = null
   }

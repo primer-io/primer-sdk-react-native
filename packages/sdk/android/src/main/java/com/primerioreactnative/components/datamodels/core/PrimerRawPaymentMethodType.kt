@@ -5,5 +5,5 @@ internal enum class PrimerRawPaymentMethodType {
   XENDIT_OVO,
   ADYEN_MBWAY,
   ADYEN_BANCONTACT_CARD,
-  XENDIT_RETAIL_OUTLETS
+  XENDIT_RETAIL_OUTLETS,
 }

@@ -11,5 +11,5 @@ internal fun PrimerClientSession.toPrimerClientSessionRN() =
     totalAmount,
     lineItems?.map { it.toPrimerLineItemRN() },
     orderDetails?.toPrimerOrderRN(),
-    customer?.toPrimerCustomerRN()
+    customer?.toPrimerCustomerRN(),
   )

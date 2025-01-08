@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class PrimerCheckoutDataRN(
   val payment: PrimerPaymentRN,
-  val additionalInfo: PrimerCheckoutAdditionalInfoRN? = null
+  val additionalInfo: PrimerCheckoutAdditionalInfoRN? = null,
 )
 
 @Serializable

@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class PrimerRNAvailablePaymentMethods(
-  val availablePaymentMethods: List<PrimerRNHeadlessUniversalCheckoutPaymentMethod>
+  val availablePaymentMethods: List<PrimerRNHeadlessUniversalCheckoutPaymentMethod>,
 )
 
 @Serializable
@@ -21,5 +21,5 @@ internal fun PrimerHeadlessUniversalCheckoutPaymentMethod.toPrimerRNHeadlessUniv
   PrimerRNHeadlessUniversalCheckoutPaymentMethod(
     paymentMethodType,
     supportedPrimerSessionIntents,
-    paymentMethodManagerCategories
+    paymentMethodManagerCategories,
   )

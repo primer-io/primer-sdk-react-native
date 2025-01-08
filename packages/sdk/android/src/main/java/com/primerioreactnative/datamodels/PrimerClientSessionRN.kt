@@ -1,7 +1,6 @@
 package com.primerioreactnative.datamodels
 
 import io.primer.android.configuration.data.model.CountryCode
-import io.primer.android.domain.action.models.*
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -28,7 +27,7 @@ data class PrimerCustomerRN(
 @Serializable
 data class PrimerOrderRN(
   val countryCode: CountryCode?,
-  val shipping: PrimerShippingRN?
+  val shipping: PrimerShippingRN?,
 )
 
 @Serializable
@@ -36,7 +35,7 @@ data class PrimerShippingRN(
   val amount: Int?,
   val methodId: String?,
   val methodName: String?,
-  val methodDescription: String?
+  val methodDescription: String?,
 )
 
 @Serializable
@@ -47,7 +46,7 @@ data class PrimerLineItemRN(
   val discountAmount: Int?,
   val quantity: Int?,
   val taxCode: String?,
-  val taxAmount: Int?
+  val taxAmount: Int?,
 )
 
 @Serializable

@@ -9,6 +9,6 @@ internal data class PrimerRNPhoneNumberData(
 ) {
   fun toPrimerPhoneNumberData() =
     PrimerPhoneNumberData(
-      phoneNumber.orEmpty()
+      phoneNumber.orEmpty(),
     )
 }

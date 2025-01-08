@@ -15,10 +15,12 @@ import org.json.JSONObject
 @ExperimentalPrimerApi
 internal class PrimerRNHeadlessUniversalCheckoutRawManagerListener :
   PrimerHeadlessUniversalCheckoutRawDataManagerListener {
-
   var sendEvent: ((eventName: String, paramsJson: JSONObject?) -> Unit)? = null
 
-  override fun onValidationChanged(isValid: Boolean, errors: List<PrimerInputValidationError>) {
+  override fun onValidationChanged(
+    isValid: Boolean,
+    errors: List<PrimerInputValidationError>,
+  ) {
     sendEvent?.invoke(
       PrimerHeadlessUniversalCheckoutRawDataManagerEvent.ON_VALIDATION_CHANGED.eventName,
       JSONObject().apply {
@@ -33,14 +35,14 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManagerListener :
                     it.errorId,
                     it.description,
                     it.inputElementType.name,
-                    it.diagnosticsId
-                  )
-                )
+                    it.diagnosticsId,
+                  ),
+                ),
               )
-            }
-          )
+            },
+          ),
         )
-      }
+      },
     )
   }
 
@@ -51,7 +53,7 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManagerListener :
         if (metadata is PrimerCardMetadata) {
           put("cardNetwork", metadata.cardNetwork.name)
         }
-      }
+      },
     )
   }
 }

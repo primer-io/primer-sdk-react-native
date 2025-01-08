@@ -1,7 +1,6 @@
 package com.primerioreactnative.datamodels
 
 internal enum class PrimerEvents(val eventName: String) {
-
   ON_CHECKOUT_COMPLETE("onCheckoutComplete"),
   ON_BEFORE_CLIENT_SESSION_UPDATE("onBeforeClientSessionUpdate"),
   ON_CLIENT_SESSION_UPDATE("onClientSessionUpdate"),

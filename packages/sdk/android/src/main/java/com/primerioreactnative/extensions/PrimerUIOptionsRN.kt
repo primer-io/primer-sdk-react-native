@@ -8,5 +8,5 @@ internal fun PrimerUIOptionsRN.toPrimerUIOptions() =
     isInitScreenEnabled,
     isSuccessScreenEnabled,
     isErrorScreenEnabled,
-    theme.toPrimerTheme()
+    theme.toPrimerTheme(),
   )

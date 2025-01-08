@@ -1,10 +1,19 @@
 package com.primerioreactnative
 
 import android.util.Log
-import com.facebook.react.bridge.*
+import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.Promise
+import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.ReactContextBaseJavaModule
+import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.bridge.WritableMap
 import com.facebook.react.modules.core.DeviceEventManagerModule
-import com.primerioreactnative.datamodels.*
 import com.primerioreactnative.components.events.PrimerHeadlessUniversalCheckoutEvent
+import com.primerioreactnative.datamodels.ErrorTypeRN
+import com.primerioreactnative.datamodels.PrimerCheckoutDataRN
+import com.primerioreactnative.datamodels.PrimerErrorRN
+import com.primerioreactnative.datamodels.PrimerSettingsRN
+import com.primerioreactnative.datamodels.toPrimerSettings
 import com.primerioreactnative.utils.PrimerHeadlessUniversalCheckoutImplementedRNCallbacks
 import com.primerioreactnative.utils.errorTo
 import com.primerioreactnative.utils.toWritableMap
@@ -20,7 +29,6 @@ class PrimerRNHeadlessUniversalCheckout(
   private val reactContext: ReactApplicationContext,
   private val json: Json,
 ) : ReactContextBaseJavaModule(reactContext) {
-
   private val listener = PrimerRNHeadlessUniversalCheckoutListener(reactContext)
 
   init {
@@ -38,20 +46,24 @@ class PrimerRNHeadlessUniversalCheckout(
   fun startWithClientToken(
     clientToken: String,
     settingsStr: String?,
-    promise: Promise
+    promise: Promise,
   ) {
     listener.successCallback = promise
     try {
       val settings =
-        if (settingsStr.isNullOrBlank()) PrimerSettingsRN() else json.decodeFromString(
-          settingsStr
-        )
+        if (settingsStr.isNullOrBlank()) {
+          PrimerSettingsRN()
+        } else {
+          json.decodeFromString(
+            settingsStr,
+          )
+        }
       PrimerHeadlessUniversalCheckout.current.start(
         reactContext,
         clientToken,
         settings.toPrimerSettings(reactContext),
         listener,
-        listener
+        listener,
       )
     } catch (e: Exception) {
       promise.reject(
@@ -70,7 +82,10 @@ class PrimerRNHeadlessUniversalCheckout(
 
   // region tokenization handlers
   @ReactMethod
-  fun handleTokenizationNewClientToken(newClientToken: String, promise: Promise) {
+  fun handleTokenizationNewClientToken(
+    newClientToken: String,
+    promise: Promise,
+  ) {
     listener.handleTokenizationNewClientToken(newClientToken)
     promise.resolve(null)
   }
@@ -78,7 +93,10 @@ class PrimerRNHeadlessUniversalCheckout(
 
   // region resume handlers
   @ReactMethod
-  fun handleResumeNewClientToken(newClientToken: String, promise: Promise) {
+  fun handleResumeNewClientToken(
+    newClientToken: String,
+    promise: Promise,
+  ) {
     listener.handleResumeNewClientToken(newClientToken)
     promise.resolve(null)
   }
@@ -99,19 +117,25 @@ class PrimerRNHeadlessUniversalCheckout(
   }
 
   @ReactMethod
-  fun handlePaymentCreationAbort(errorMessage: String?, promise: Promise) {
+  fun handlePaymentCreationAbort(
+    errorMessage: String?,
+    promise: Promise,
+  ) {
     listener.handlePaymentCreationAbort(errorMessage.orEmpty())
     promise.resolve(null)
   }
   // endregion
 
   @ReactMethod
-  fun setImplementedRNCallbacks(implementedRNCallbacksStr: String, promise: Promise) {
+  fun setImplementedRNCallbacks(
+    implementedRNCallbacksStr: String,
+    promise: Promise,
+  ) {
     try {
       Log.d(TAG, "implementedRNCallbacks: $implementedRNCallbacksStr")
       val implementedRNCallbacks =
         json.decodeFromString<PrimerHeadlessUniversalCheckoutImplementedRNCallbacks>(
-          implementedRNCallbacksStr
+          implementedRNCallbacksStr,
         )
       listener.setImplementedCallbacks(implementedRNCallbacks)
       promise.resolve(null)
@@ -129,7 +153,10 @@ class PrimerRNHeadlessUniversalCheckout(
   @ReactMethod
   fun removeListeners(count: Int?) = Unit
 
-  private fun onError(exception: PrimerErrorRN, checkoutDataRN: PrimerCheckoutDataRN? = null) {
+  private fun onError(
+    exception: PrimerErrorRN,
+    checkoutDataRN: PrimerCheckoutDataRN? = null,
+  ) {
     val params = Arguments.createMap()
     val errorJson = JSONObject(Json.encodeToString(exception))
     val errorData = prepareData(errorJson)
@@ -142,16 +169,22 @@ class PrimerRNHeadlessUniversalCheckout(
     sendEvent(PrimerHeadlessUniversalCheckoutEvent.ON_ERROR.eventName, params)
   }
 
-  private fun sendEvent(name: String, params: WritableMap) {
+  private fun sendEvent(
+    name: String,
+    params: WritableMap,
+  ) {
     reactApplicationContext.getJSModule(
-      DeviceEventManagerModule.RCTDeviceEventEmitter::class.java
+      DeviceEventManagerModule.RCTDeviceEventEmitter::class.java,
     ).emit(name, params)
   }
 
-  private fun sendEvent(name: String, data: JSONObject?) {
+  private fun sendEvent(
+    name: String,
+    data: JSONObject?,
+  ) {
     val params = prepareData(data)
     reactApplicationContext.getJSModule(
-      DeviceEventManagerModule.RCTDeviceEventEmitter::class.java
+      DeviceEventManagerModule.RCTDeviceEventEmitter::class.java,
     ).emit(name, params)
   }
 

@@ -1,18 +1,15 @@
 package com.primerioreactnative.utils
 
-import com.facebook.react.bridge.*
+import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.WritableArray
+import com.facebook.react.bridge.WritableMap
 import org.json.JSONArray
-
 import org.json.JSONException
-
 import org.json.JSONObject
 
+internal fun JSONObject?.toWritableMap(): WritableMap = this?.let { convertJsonToMap(this) } ?: Arguments.createMap()
 
-internal fun JSONObject?.toWritableMap(): WritableMap =
-  this?.let { convertJsonToMap(this) } ?: Arguments.createMap()
-
-internal fun JSONArray?.toWritableArray(): WritableArray =
-  this?.let { convertJsonToArray(this) } ?: Arguments.createArray()
+internal fun JSONArray?.toWritableArray(): WritableArray = this?.let { convertJsonToArray(this) } ?: Arguments.createArray()
 
 @Throws(JSONException::class)
 internal fun convertJsonToMap(jsonObject: JSONObject): WritableMap {
@@ -45,7 +42,6 @@ internal fun convertJsonToArray(jsonArray: JSONArray): WritableArray {
       is Double -> array.pushDouble(value)
       is String -> array.pushString(value)
       else -> array.pushString(value.toString())
-
     }
   }
   return array

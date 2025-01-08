@@ -5,7 +5,6 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.google.android.gms.wallet.button.ButtonConstants
 
 internal object PrimerGooglePayButtonOptionsMapping {
-
   fun getOptions(): Map<String, Map<String, Int>> {
     val themes = hashMapOf<String, Int>()
     themes["Dark"] = ButtonConstants.ButtonTheme.DARK
@@ -27,9 +26,7 @@ internal object PrimerGooglePayButtonOptionsMapping {
 
 class PrimerGooglePayButtonConstantsModule(reactContext: ReactApplicationContext) :
   ReactContextBaseJavaModule(reactContext) {
-
-  override fun getConstants(): Map<String, Any> =
-    PrimerGooglePayButtonOptionsMapping.getOptions()
+  override fun getConstants(): Map<String, Any> = PrimerGooglePayButtonOptionsMapping.getOptions()
 
   override fun getName() = NAME
 

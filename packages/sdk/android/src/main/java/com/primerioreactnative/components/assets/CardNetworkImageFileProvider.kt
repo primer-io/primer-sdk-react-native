@@ -4,7 +4,6 @@ import com.facebook.react.bridge.ReactApplicationContext
 import java.io.File
 
 internal object CardNetworkImageFileProvider {
-
   private const val ASSETS_DIRECTORY = "primer-react-native-sdk"
 
   fun getFileForCardNetworkAsset(
@@ -13,10 +12,11 @@ internal object CardNetworkImageFileProvider {
   ): File {
     val directory = File(context.filesDir, ASSETS_DIRECTORY)
     if (!directory.exists()) directory.mkdirs()
-    val file = File(
-      directory,
-      path.lowercase()
-    )
+    val file =
+      File(
+        directory,
+        path.lowercase(),
+      )
     if (!file.exists()) file.createNewFile()
     return file
   }

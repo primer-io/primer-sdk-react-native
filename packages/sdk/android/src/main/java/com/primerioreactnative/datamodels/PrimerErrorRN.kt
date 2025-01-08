@@ -8,7 +8,7 @@ data class PrimerErrorRN(
   val errorCode: String? = null,
   val description: String? = null,
   val diagnosticsId: String? = null,
-  val recoverySuggestion: String? = null
+  val recoverySuggestion: String? = null,
 )
 
 @Serializable
@@ -18,7 +18,7 @@ enum class ErrorTypeRN(val errorId: String) {
   UnsupportedPaymentMethod("unsupported-payment-method-type"),
   UnsupportedPaymentIntent("unsupported-session-intent"),
   VaultManagerDeleteFailed("vaulted-manager-delete-failed"),
-  InvalidVaultedPaymentMethodId("invalid-vaulted-payment-method-id")
+  InvalidVaultedPaymentMethodId("invalid-vaulted-payment-method-id"),
 }
 
 @Serializable

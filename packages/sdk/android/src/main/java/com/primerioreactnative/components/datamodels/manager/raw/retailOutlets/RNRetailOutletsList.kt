@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 internal data class RNRetailOutletsList(
-  val result: List<RNRetailOutlet>
+  val result: List<RNRetailOutlet>,
 )
 
 @Serializable
@@ -16,13 +16,14 @@ internal data class RNRetailOutlet(
   val iconUrl: String,
 )
 
-internal fun RetailOutletsList.toRNRetailOutletsList() = RNRetailOutletsList(
-  result.map {
-    RNRetailOutlet(
-      it.id,
-      it.name,
-      it.disabled,
-      it.iconUrl,
-    )
-  }
-)
+internal fun RetailOutletsList.toRNRetailOutletsList() =
+  RNRetailOutletsList(
+    result.map {
+      RNRetailOutlet(
+        it.id,
+        it.name,
+        it.disabled,
+        it.iconUrl,
+      )
+    },
+  )

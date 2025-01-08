@@ -19,54 +19,54 @@ sealed interface PrimerRNPaymentMethodResource {
     override val paymentMethodType: String,
     override val paymentMethodName: String,
     val paymentMethodLogo: PrimerRNPaymentMethodLogo,
-    val paymentMethodBackgroundColor: PrimerRNPaymentMethodBackgroundColor
+    val paymentMethodBackgroundColor: PrimerRNPaymentMethodBackgroundColor,
   ) : PrimerRNPaymentMethodResource
 
   @Serializable
   data class PrimerRNPaymentMethodNativeView(
     override val paymentMethodType: String,
     override val paymentMethodName: String,
-    val nativeViewName: String
+    val nativeViewName: String,
   ) : PrimerRNPaymentMethodResource
 }
 
 @Serializable
 data class PrimerRNPaymentMethodAssets(
-  val paymentMethodAssets: List<PrimerRNPaymentMethodResource.PrimerRNPaymentMethodAsset>
+  val paymentMethodAssets: List<PrimerRNPaymentMethodResource.PrimerRNPaymentMethodAsset>,
 )
 
 @Serializable
 data class PrimerRNPaymentMethodResources(
-  val paymentMethodResources: List<PrimerRNPaymentMethodResource>
+  val paymentMethodResources: List<PrimerRNPaymentMethodResource>,
 )
 
 @Serializable
 data class PrimerRNPaymentMethodAssetWrapper(
-  val paymentMethodAsset: PrimerRNPaymentMethodResource.PrimerRNPaymentMethodAsset
+  val paymentMethodAsset: PrimerRNPaymentMethodResource.PrimerRNPaymentMethodAsset,
 )
 
 @Serializable
 data class PrimerRNPaymentMethodResourceWrapper(
-  val paymentMethodResource: PrimerRNPaymentMethodResource
+  val paymentMethodResource: PrimerRNPaymentMethodResource,
 )
 
 @Serializable
 data class PrimerRNPaymentMethodLogo(
   val colored: String?,
   val light: String?,
-  val dark: String?
+  val dark: String?,
 )
 
 @Serializable
 data class PrimerRNPaymentMethodBackgroundColor(
   val colored: String?,
   val light: String?,
-  val dark: String?
+  val dark: String?,
 )
 
 @Serializable
 data class PrimerCardNetworkAsset(
-  val cardNetworkImageURL: String
+  val cardNetworkImageURL: String,
 )
 
 fun PrimerPaymentMethodAsset.toPrimerRNPaymentMethodAsset(
@@ -81,7 +81,7 @@ fun PrimerPaymentMethodAsset.toPrimerRNPaymentMethodAsset(
         reactContext,
         paymentMethodType,
         AssetsManager.ImageColorType.COLORED,
-        it
+        it,
       )
     },
     paymentMethodLogo.light?.let {
@@ -89,7 +89,7 @@ fun PrimerPaymentMethodAsset.toPrimerRNPaymentMethodAsset(
         reactContext,
         paymentMethodType,
         AssetsManager.ImageColorType.LIGHT,
-        it
+        it,
       )
     },
     paymentMethodLogo.dark?.let {
@@ -97,9 +97,9 @@ fun PrimerPaymentMethodAsset.toPrimerRNPaymentMethodAsset(
         reactContext,
         paymentMethodType,
         AssetsManager.ImageColorType.DARK,
-        it
+        it,
       )
-    }
+    },
   ),
   PrimerRNPaymentMethodBackgroundColor(
     paymentMethodBackgroundColor.colored?.let {
@@ -110,18 +110,20 @@ fun PrimerPaymentMethodAsset.toPrimerRNPaymentMethodAsset(
     },
     paymentMethodBackgroundColor.dark?.let {
       String.format("#%06X", (0xFFFFFF and it))
-    }
-  )
+    },
+  ),
 )
 
-fun PrimerPaymentMethodNativeView.toPrimerRNPaymentMethodNativeView(paymentMethodType: String) = PrimerRNPaymentMethodResource.PrimerRNPaymentMethodNativeView(
-  paymentMethodType = paymentMethodType,
-  paymentMethodName = paymentMethodName,
-  nativeViewName = when (paymentMethodType) {
-    "GOOGLE_PAY" -> "PrimerGooglePayButton"
-    else -> error("Native view for '$paymentMethodType'is not supported")
-  }
-)
+fun PrimerPaymentMethodNativeView.toPrimerRNPaymentMethodNativeView(paymentMethodType: String) =
+  PrimerRNPaymentMethodResource.PrimerRNPaymentMethodNativeView(
+    paymentMethodType = paymentMethodType,
+    paymentMethodName = paymentMethodName,
+    nativeViewName =
+      when (paymentMethodType) {
+        "GOOGLE_PAY" -> "PrimerGooglePayButton"
+        else -> error("Native view for '$paymentMethodType'is not supported")
+      },
+  )
 
 private fun getFileUrl(
   reactContext: ReactApplicationContext,

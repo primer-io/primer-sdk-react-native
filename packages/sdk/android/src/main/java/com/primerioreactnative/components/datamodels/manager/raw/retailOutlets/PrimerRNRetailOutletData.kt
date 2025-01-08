@@ -5,8 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 internal data class PrimerRNRetailOutletData(
-  val id: String
+  val id: String,
 ) {
-
   fun toPrimerRetailOutletData() = PrimerRetailerData(id)
 }

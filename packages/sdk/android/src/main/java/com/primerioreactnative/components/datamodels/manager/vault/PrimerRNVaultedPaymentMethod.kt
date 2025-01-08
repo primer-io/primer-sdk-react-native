@@ -14,12 +14,12 @@ data class PrimerRNVaultedPaymentMethod(
   val paymentInstrumentType: String,
   val paymentMethodType: String,
   val paymentInstrumentData: PaymentInstrumentData?,
-  val threeDSecureAuthentication: ThreeDSAuthenticationData? = null
+  val threeDSecureAuthentication: ThreeDSAuthenticationData? = null,
 )
 
 @Serializable
 data class PrimerRNVaultedPaymentMethods(
-  val paymentMethods: List<PrimerRNVaultedPaymentMethod>
+  val paymentMethods: List<PrimerRNVaultedPaymentMethod>,
 )
 
 internal fun PrimerVaultedPaymentMethod.toPrimerRNVaultedPaymentMethod() =
@@ -29,6 +29,5 @@ internal fun PrimerVaultedPaymentMethod.toPrimerRNVaultedPaymentMethod() =
     paymentInstrumentType,
     paymentMethodType,
     paymentInstrumentData.toPaymentInstrumentDataRN(),
-    threeDSecureAuthentication?.toThreeDsAuthenticationDataRN()
+    threeDSecureAuthentication?.toThreeDsAuthenticationDataRN(),
   )
-

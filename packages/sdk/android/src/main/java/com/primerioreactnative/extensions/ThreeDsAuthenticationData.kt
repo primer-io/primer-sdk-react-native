@@ -9,5 +9,5 @@ internal fun AuthenticationDetails.toThreeDsAuthenticationDataRN() =
     reasonCode,
     reasonText,
     protocolVersion,
-    challengeIssued
+    challengeIssued,
   )

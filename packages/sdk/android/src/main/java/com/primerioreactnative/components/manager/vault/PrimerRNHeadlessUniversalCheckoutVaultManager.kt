@@ -27,7 +27,6 @@ class PrimerRNHeadlessUniversalCheckoutVaultManager(
   reactContext: ReactApplicationContext,
   private val json: Json,
 ) : ReactContextBaseJavaModule(reactContext) {
-
   private val vaultScope = CoroutineScope(SupervisorJob())
   private lateinit var nativeVaultManager: PrimerHeadlessUniversalCheckoutVaultManagerInterface
 
@@ -40,8 +39,10 @@ class PrimerRNHeadlessUniversalCheckoutVaultManager(
       promise.resolve(null)
     } catch (e: Exception) {
       val exception =
-        ErrorTypeRN.NativeBridgeFailed errorTo (e.message
-          ?: "An error occurs while initialising the vault manager.")
+        ErrorTypeRN.NativeBridgeFailed errorTo (
+          e.message
+            ?: "An error occurs while initialising the vault manager."
+        )
       promise.reject(exception.errorId, exception.description)
     }
   }
@@ -52,24 +53,31 @@ class PrimerRNHeadlessUniversalCheckoutVaultManager(
       nativeVaultManager.fetchVaultedPaymentMethods().onSuccess { vaultedPaymentMethods ->
         promise.resolve(
           JSONObject(
-              Json.encodeToString(
-                PrimerRNVaultedPaymentMethods(vaultedPaymentMethods.map {
+            Json.encodeToString(
+              PrimerRNVaultedPaymentMethods(
+                vaultedPaymentMethods.map {
                   it.toPrimerRNVaultedPaymentMethod()
-                })
-              )
-          ).toWritableMap()
+                },
+              ),
+            ),
+          ).toWritableMap(),
         )
       }.onFailure { throwable ->
         val exception =
-          ErrorTypeRN.NativeBridgeFailed errorTo (throwable.message
-            ?: "An error occurs while fetching vaulted payment methods.")
+          ErrorTypeRN.NativeBridgeFailed errorTo (
+            throwable.message
+              ?: "An error occurs while fetching vaulted payment methods."
+          )
         promise.reject(exception.errorId, exception.description)
       }
     }
   }
 
   @ReactMethod
-  fun deleteVaultedPaymentMethod(vaultedPaymentMethodId: String, promise: Promise) {
+  fun deleteVaultedPaymentMethod(
+    vaultedPaymentMethodId: String,
+    promise: Promise,
+  ) {
     vaultScope.launch {
       nativeVaultManager.deleteVaultedPaymentMethod(vaultedPaymentMethodId).onSuccess {
         promise.resolve(null)
@@ -77,7 +85,7 @@ class PrimerRNHeadlessUniversalCheckoutVaultManager(
         promise.reject(
           ErrorTypeRN.VaultManagerDeleteFailed.errorId,
           throwable.message,
-          throwable
+          throwable,
         )
       }
     }
@@ -87,7 +95,7 @@ class PrimerRNHeadlessUniversalCheckoutVaultManager(
   fun validate(
     vaultedPaymentMethodId: String,
     additionalDataStr: String,
-    promise: Promise
+    promise: Promise,
   ) {
     val additionalData: PrimerRNVaultedPaymentMethodAdditionalData =
       json.decodeFromString(additionalDataStr)
@@ -95,22 +103,24 @@ class PrimerRNHeadlessUniversalCheckoutVaultManager(
     vaultScope.launch {
       nativeVaultManager.validate(
         vaultedPaymentMethodId,
-        additionalData.toPrimerVaultedCardAdditionalData()
+        additionalData.toPrimerVaultedCardAdditionalData(),
       ).onSuccess { errors ->
         promise.resolve(
           JSONObject(
-              Json.encodeToString(
-                PrimerRNValidationErrors(errors.map {
+            Json.encodeToString(
+              PrimerRNValidationErrors(
+                errors.map {
                   it.toPrimerRNValidationError()
-                })
-              )
-          ).toWritableMap()
+                },
+              ),
+            ),
+          ).toWritableMap(),
         )
       }.onFailure { throwable ->
         promise.reject(
           ErrorTypeRN.InvalidVaultedPaymentMethodId.errorId,
           throwable.message,
-          throwable
+          throwable,
         )
       }
     }
@@ -119,7 +129,7 @@ class PrimerRNHeadlessUniversalCheckoutVaultManager(
   @ReactMethod
   fun startPaymentFlow(
     vaultedPaymentMethodId: String,
-    promise: Promise
+    promise: Promise,
   ) {
     vaultScope.launch {
       nativeVaultManager.startPaymentFlow(vaultedPaymentMethodId).onSuccess {
@@ -128,7 +138,7 @@ class PrimerRNHeadlessUniversalCheckoutVaultManager(
         promise.reject(
           ErrorTypeRN.InvalidVaultedPaymentMethodId.errorId,
           throwable.message,
-          throwable
+          throwable,
         )
       }
     }
@@ -138,7 +148,7 @@ class PrimerRNHeadlessUniversalCheckoutVaultManager(
   fun startPaymentFlowWithAdditionalData(
     vaultedPaymentMethodId: String,
     additionalDataStr: String,
-    promise: Promise
+    promise: Promise,
   ) {
     val additionalData: PrimerRNVaultedPaymentMethodAdditionalData =
       json.decodeFromString(additionalDataStr)
@@ -146,14 +156,14 @@ class PrimerRNHeadlessUniversalCheckoutVaultManager(
     vaultScope.launch {
       nativeVaultManager.startPaymentFlow(
         vaultedPaymentMethodId,
-        additionalData.toPrimerVaultedCardAdditionalData()
+        additionalData.toPrimerVaultedCardAdditionalData(),
       ).onSuccess {
         promise.resolve(null)
       }.onFailure { throwable ->
         promise.reject(
           ErrorTypeRN.InvalidVaultedPaymentMethodId.errorId,
           throwable.message,
-          throwable
+          throwable,
         )
       }
     }

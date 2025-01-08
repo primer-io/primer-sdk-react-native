@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 internal class ErrorHelperTest {
-
   // Create a mock ErrorTypeRN instance
   private val errorType = ErrorTypeRN.InvalidVaultedPaymentMethodId
 

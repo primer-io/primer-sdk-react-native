@@ -19,18 +19,21 @@ import io.primer.android.domain.exception.UnsupportedPaymentIntentException
 internal class PrimerRNHeadlessUniversalCheckoutNativeUiManager(
   private val reactContext: ReactApplicationContext,
 ) : ReactContextBaseJavaModule(reactContext) {
-
   private lateinit var nativeUiManager: PrimerHeadlessUniversalCheckoutNativeUiManagerInterface
   private var paymentMethodTypeStr: String? = null
 
   override fun getName() = "RNTPrimerHeadlessUniversalPaymentMethodNativeUIManager"
 
   @ReactMethod
-  fun configure(paymentMethodTypeStr: String, promise: Promise) {
+  fun configure(
+    paymentMethodTypeStr: String,
+    promise: Promise,
+  ) {
     try {
-      nativeUiManager = PrimerHeadlessUniversalCheckoutNativeUiManager.newInstance(
-        paymentMethodTypeStr
-      )
+      nativeUiManager =
+        PrimerHeadlessUniversalCheckoutNativeUiManager.newInstance(
+          paymentMethodTypeStr,
+        )
       this.paymentMethodTypeStr = paymentMethodTypeStr
       promise.resolve(null)
     } catch (e: SdkUninitializedException) {
@@ -47,35 +50,37 @@ internal class PrimerRNHeadlessUniversalCheckoutNativeUiManager(
   @ReactMethod
   fun showPaymentMethod(
     intentStr: String,
-    promise: Promise
+    promise: Promise,
   ) {
-
     if (::nativeUiManager.isInitialized.not()) {
-      val exception = PrimerErrorRN(
-        errorId = ErrorTypeRN.NativeBridgeFailed.errorId,
-        errorCode = null,
-        description = "The NativeUIManager has not been initialized.",
-        diagnosticsId = null,
-        recoverySuggestion = "Initialize the NativeUIManager by calling the configure function" +
-          " and providing a payment method type."
-      )
+      val exception =
+        PrimerErrorRN(
+          errorId = ErrorTypeRN.NativeBridgeFailed.errorId,
+          errorCode = null,
+          description = "The NativeUIManager has not been initialized.",
+          diagnosticsId = null,
+          recoverySuggestion =
+            "Initialize the NativeUIManager by calling the configure function" +
+              " and providing a payment method type.",
+        )
       promise.reject(exception.errorId, exception.description)
     } else if (PrimerSessionIntent.values()
         .firstOrNull { intentStr.equals(it.name, true) } == null
     ) {
-      val exception = PrimerErrorRN(
-        errorId = ErrorTypeRN.NativeBridgeFailed.errorId,
-        errorCode = null,
-        description = "Invalid value for 'intent'.",
-        diagnosticsId = null,
-        recoverySuggestion = "'intent' can be 'CHECKOUT' or 'VAULT'."
-      )
+      val exception =
+        PrimerErrorRN(
+          errorId = ErrorTypeRN.NativeBridgeFailed.errorId,
+          errorCode = null,
+          description = "Invalid value for 'intent'.",
+          diagnosticsId = null,
+          recoverySuggestion = "'intent' can be 'CHECKOUT' or 'VAULT'.",
+        )
       promise.reject(exception.errorId, exception.description)
     } else {
       try {
         nativeUiManager.showPaymentMethod(
           reactContext,
-          PrimerSessionIntent.valueOf(intentStr.uppercase())
+          PrimerSessionIntent.valueOf(intentStr.uppercase()),
         )
       } catch (e: UnsupportedPaymentIntentException) {
         promise.reject(ErrorTypeRN.UnsupportedPaymentIntent.errorId, e.message, e)

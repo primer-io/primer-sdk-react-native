@@ -6,6 +6,9 @@ buildscript {
     google()
     mavenCentral()
     mavenLocal()
+    maven {
+      url "https://plugins.gradle.org/m2/"
+    }
   }
 
   dependencies {
@@ -14,12 +17,14 @@ buildscript {
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
     classpath "org.jetbrains.kotlinx:kover-gradle-plugin:$kover_version"
+    classpath "org.jlleitschuh.gradle:ktlint-gradle:12.1.2"
   }
 }
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlinx-serialization'
+apply plugin: 'org.jlleitschuh.gradle.ktlint'
 apply from: "./config/coverage-scripts/kover.gradle"
 
 def getExtOrDefault(name) {
@@ -145,6 +150,21 @@ repositories {
         "Ensure you have you installed React Native as a dependency in your project and try again."
     )
   }
+}
+
+ktlint {
+    debug = false
+    verbose = false
+    android = true
+    outputToConsole = true
+    ignoreFailures = false
+
+    disabledRules = ["import-ordering", "enum-entry-name-case"] // issue with false positives
+
+    reporters {
+        reporter "plain"
+        reporter "json"
+    }
 }
 
 def kotlin_version = getExtOrDefault('kotlinVersion')
