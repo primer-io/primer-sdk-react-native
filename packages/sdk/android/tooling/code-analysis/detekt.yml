@@ -1,0 +1,11 @@
+build:
+  maxIssues: 10
+style:
+  MaxLineLength:
+    excludes: [ '**/test/**', '**/*.Test.kt', '**/*.Spec.kt' ]
+    excludeCommentStatements: true
+complexity:
+  LongMethod:
+    excludes: [ '**/test/**', '**/*.Test.kt', '**/*.Spec.kt' ]
+  LargeClass:
+    excludes: [ '**/test/**', '**/*.Test.kt', '**/*.Spec.kt' ]

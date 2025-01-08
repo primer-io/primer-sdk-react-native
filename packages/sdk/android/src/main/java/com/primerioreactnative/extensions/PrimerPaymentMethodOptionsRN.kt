@@ -53,7 +53,10 @@ fun PrimerGooglePayButtonOptionsRN.toPrimerGooglePayButtonOptions() =
 
 fun PrimerKlarnaOptionsRN.toPrimerKlarnaOptions() = PrimerKlarnaOptions(recurringPaymentDescription, webViewTitle)
 
-fun PrimerThreeDsOptionsRN.toPrimerThreeDsOptions() = PrimerThreeDsOptions(threeDsOptionsAndroid?.threeDsAppRequestorUrl)
+fun PrimerThreeDsOptionsRN.toPrimerThreeDsOptions() =
+  PrimerThreeDsOptions(
+    threeDsOptionsAndroid?.threeDsAppRequestorUrl,
+  )
 
 fun PrimerStripeOptionsRN.toPrimerStripeOptions(context: Context) =
   PrimerStripeOptions(

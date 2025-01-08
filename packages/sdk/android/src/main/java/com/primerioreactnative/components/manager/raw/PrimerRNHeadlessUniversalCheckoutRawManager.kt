@@ -31,6 +31,7 @@ import kotlinx.serialization.json.Json
 import org.json.JSONArray
 import org.json.JSONObject
 
+@Suppress("TooManyFunctions")
 @ExperimentalPrimerApi
 internal class PrimerRNHeadlessUniversalCheckoutRawManager(
   reactContext: ReactApplicationContext,

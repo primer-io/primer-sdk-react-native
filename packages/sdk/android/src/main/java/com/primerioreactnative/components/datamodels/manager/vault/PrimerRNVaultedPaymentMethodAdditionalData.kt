@@ -8,4 +8,7 @@ data class PrimerRNVaultedPaymentMethodAdditionalData(
   val cvv: String,
 )
 
-internal fun PrimerRNVaultedPaymentMethodAdditionalData.toPrimerVaultedCardAdditionalData() = PrimerVaultedCardAdditionalData(cvv)
+internal fun PrimerRNVaultedPaymentMethodAdditionalData.toPrimerVaultedCardAdditionalData() =
+  PrimerVaultedCardAdditionalData(
+    cvv,
+  )

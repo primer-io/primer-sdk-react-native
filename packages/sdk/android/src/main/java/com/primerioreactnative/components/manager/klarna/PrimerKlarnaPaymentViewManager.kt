@@ -11,7 +11,10 @@ import java.lang.ref.WeakReference
 class PrimerKlarnaPaymentViewManager : SimpleViewManager<NativeViewContainer>() {
   override fun getName() = REACT_CLASS
 
-  override fun createViewInstance(reactContext: ThemedReactContext): NativeViewContainer = NativeViewContainer(reactContext)
+  override fun createViewInstance(reactContext: ThemedReactContext): NativeViewContainer =
+    NativeViewContainer(
+      reactContext,
+    )
 
   override fun onAfterUpdateTransaction(view: NativeViewContainer) {
     super.onAfterUpdateTransaction(view)

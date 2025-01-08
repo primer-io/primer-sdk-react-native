@@ -14,6 +14,9 @@ internal fun PaymentSessionCreated.toPaymentSessionCreatedRN() =
 
 internal fun PaymentViewLoaded.toPaymentViewLoadedRN() = PaymentViewLoadedRN()
 
-internal fun PaymentSessionAuthorized.toPaymentSessionAuthorizedRN() = PaymentSessionAuthorizedRN(isFinalized = isFinalized)
+internal fun PaymentSessionAuthorized.toPaymentSessionAuthorizedRN() =
+  PaymentSessionAuthorizedRN(
+    isFinalized = isFinalized,
+  )
 
 internal fun PaymentSessionFinalized.toPaymentSessionFinalizedRN() = PaymentSessionFinalizedRN()

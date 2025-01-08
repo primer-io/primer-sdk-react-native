@@ -28,6 +28,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
 
+@Suppress("TooManyFunctions")
 class PrimerRNEventListener : PrimerCheckoutListener {
   private var paymentCreationDecisionHandler: ((errorMessage: String?) -> Unit)? = null
   private var primerErrorDecisionHandler: ((errorMessage: String?) -> Unit)? = null

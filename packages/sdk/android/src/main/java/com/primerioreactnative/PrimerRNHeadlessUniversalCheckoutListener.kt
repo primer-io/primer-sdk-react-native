@@ -39,6 +39,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
 
+@Suppress("TooManyFunctions")
 class PrimerRNHeadlessUniversalCheckoutListener(
   private val reactContext: ReactContext,
 ) : PrimerHeadlessUniversalCheckoutListener,
@@ -227,7 +228,8 @@ class PrimerRNHeadlessUniversalCheckoutListener(
     } else {
       sendError?.invoke(
         ErrorTypeRN.NativeBridgeFailed
-          errorTo "Callback ${PrimerHeadlessUniversalCheckoutEvent.ON_CHECKOUT_SUCCESS.eventName} should be implemented.",
+          errorTo "Callback " +
+          "${PrimerHeadlessUniversalCheckoutEvent.ON_CHECKOUT_SUCCESS.eventName} should be implemented.",
       )
     }
   }
