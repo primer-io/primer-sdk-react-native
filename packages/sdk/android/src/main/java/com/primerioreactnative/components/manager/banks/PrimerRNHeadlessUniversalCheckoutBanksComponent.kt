@@ -1,4 +1,4 @@
-package com.primerioreactnative.components.manager.redirect
+package com.primerioreactnative.components.manager.banks
 
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelStoreOwner

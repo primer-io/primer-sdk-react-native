@@ -73,6 +73,7 @@ internal class PrimerRNHeadlessUniversalCheckoutAssetManager(
     }
   }
 
+  @Suppress("SwallowedException")
   @ReactMethod
   fun getPaymentMethodAsset(
     paymentMethodTypeStr: String,
@@ -97,11 +98,11 @@ internal class PrimerRNHeadlessUniversalCheckoutAssetManager(
         ).toWritableMap(),
       )
     } catch (e: SdkUninitializedException) {
-      promise.reject(ErrorTypeRN.UnitializedSdkSession.errorId, e.message, e)
+      return promise.reject(ErrorTypeRN.UnitializedSdkSession.errorId, e.message, e)
     } catch (e: Exception) {
       val exception =
         ErrorTypeRN.NativeBridgeFailed errorTo "Failed to find asset of $paymentMethodTypeStr for this session."
-      promise.reject(exception.errorId, exception.description)
+      return promise.reject(exception.errorId, exception.description)
     }
   }
 

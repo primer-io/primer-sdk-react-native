@@ -24,6 +24,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
 
+@Suppress("TooManyFunctions")
 class PrimerRN(private val reactContext: ReactApplicationContext, private val json: Json) :
   ReactContextBaseJavaModule(reactContext) {
   private val mListener = PrimerRNEventListener()

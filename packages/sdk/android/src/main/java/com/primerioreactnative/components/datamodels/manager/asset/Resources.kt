@@ -9,6 +9,9 @@ import io.primer.android.components.ui.assets.PrimerPaymentMethodAsset
 import io.primer.android.components.ui.assets.PrimerPaymentMethodNativeView
 import kotlinx.serialization.Serializable
 
+private const val WHITE_COLOR = 0xFFFFFF
+private const val COLOR_FORMAT = "#%06X"
+
 @Serializable
 sealed interface PrimerRNPaymentMethodResource {
   val paymentMethodType: String
@@ -103,13 +106,13 @@ fun PrimerPaymentMethodAsset.toPrimerRNPaymentMethodAsset(
   ),
   PrimerRNPaymentMethodBackgroundColor(
     paymentMethodBackgroundColor.colored?.let {
-      String.format("#%06X", (0xFFFFFF and it))
+      String.format(COLOR_FORMAT, (WHITE_COLOR and it))
     },
     paymentMethodBackgroundColor.light?.let {
-      String.format("#%06X", (0xFFFFFF and it))
+      String.format(COLOR_FORMAT, (WHITE_COLOR and it))
     },
     paymentMethodBackgroundColor.dark?.let {
-      String.format("#%06X", (0xFFFFFF and it))
+      String.format(COLOR_FORMAT, (WHITE_COLOR and it))
     },
   ),
 )

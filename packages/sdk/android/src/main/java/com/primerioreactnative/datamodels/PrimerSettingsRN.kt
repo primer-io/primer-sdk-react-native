@@ -12,6 +12,8 @@ import io.primer.android.ui.settings.PrimerTheme
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+private const val COLOR_FORMAT = "#%02X%02X%02X%02X"
+
 @Serializable
 data class PrimerSettingsRN(
   var paymentHandling: PrimerPaymentHandling = PrimerPaymentHandling.AUTO,
@@ -115,7 +117,7 @@ data class ColorRN(
   val green: Int = 0,
   val blue: Int = 0,
 ) {
-  fun toHexStrColor() = String.format("#%02X%02X%02X%02X", alpha, red, green, blue)
+  fun toHexStrColor() = String.format(COLOR_FORMAT, alpha, red, green, blue)
 }
 
 @Serializable
