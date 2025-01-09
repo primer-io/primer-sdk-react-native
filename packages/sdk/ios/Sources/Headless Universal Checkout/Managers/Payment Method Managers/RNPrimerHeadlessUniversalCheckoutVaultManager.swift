@@ -1,7 +1,9 @@
 import PrimerSDK
 
+// swiftlint:disable type_name
 @objc(RNPrimerHeadlessUniversalCheckoutVaultManager)
 class RNPrimerHeadlessUniversalCheckoutVaultManager: RCTEventEmitter {
+    // swiftlint:enable type_name
 
     private var vaultedManager: PrimerHeadlessUniversalCheckout.VaultManager!
 
@@ -14,7 +16,7 @@ class RNPrimerHeadlessUniversalCheckoutVaultManager: RCTEventEmitter {
     }
 
     @objc
-    func configure(_ resolver : @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
+    func configure(_ resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
         do {
             self.vaultedManager = PrimerSDK.PrimerHeadlessUniversalCheckout.VaultManager()
             try self.vaultedManager.configure()
@@ -39,7 +41,7 @@ class RNPrimerHeadlessUniversalCheckoutVaultManager: RCTEventEmitter {
             }
         }
     }
-    
+
     @objc
     func deleteVaultedPaymentMethod(_ vaultedPaymentMethodId: String, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
         self.vaultedManager.deleteVaultedPaymentMethod(id: vaultedPaymentMethodId) { err in
@@ -50,7 +52,7 @@ class RNPrimerHeadlessUniversalCheckoutVaultManager: RCTEventEmitter {
             }
         }
     }
-    
+
     @objc
     func validate(_ vaultedPaymentMethodId: String, additionalDataStr: String, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
         do {
@@ -66,12 +68,12 @@ class RNPrimerHeadlessUniversalCheckoutVaultManager: RCTEventEmitter {
             rejecter(error.rnError["errorId"]!, error.rnError["description"], error)
         }
     }
-    
+
     @objc
     func startPaymentFlow(_ vaultedPaymentMethodId: String, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
         self.vaultedManager.startPaymentFlow(vaultedPaymentMethodId: vaultedPaymentMethodId)
     }
-    
+
     @objc
     func startPaymentFlowWithAdditionalData(_ vaultedPaymentMethodId: String, additionalDataStr: String, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
         do {

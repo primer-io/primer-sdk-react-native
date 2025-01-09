@@ -16,7 +16,7 @@ protocol KlarnaStepRN {
 class PaymentSessionCreatedRN: KlarnaStepRN, Encodable {
     var stepName: String = "paymentSessionCreated"
     var paymentCategories: [KlarnaPaymentCategoryRN]
-    
+
     init(paymentCategories: [KlarnaPaymentCategory]) {
         self.paymentCategories = paymentCategories.map { $0.toKlarnaPaymentCategoryRN() }
     }
@@ -26,7 +26,7 @@ class PaymentSessionCreatedRN: KlarnaStepRN, Encodable {
 class PaymentSessionAuthorizedRN: KlarnaStepRN, Encodable {
     var stepName: String = "paymentSessionAuthorized"
     var isFinalized: Bool
-    
+
     init(isFinalized: Bool) {
         self.isFinalized = isFinalized
     }
@@ -46,15 +46,15 @@ extension KlarnaStep {
     func toPaymentSessionCreatedRN(categories: [KlarnaPaymentCategory]) -> PaymentSessionCreatedRN {
         return PaymentSessionCreatedRN(paymentCategories: categories)
     }
-    
+
     func toPaymentSessionAuthorizedRN(isFinalized: Bool) -> PaymentSessionAuthorizedRN {
         return PaymentSessionAuthorizedRN(isFinalized: isFinalized)
     }
-    
+
     func toPaymentSessionFinalizedRN() -> PaymentSessionFinalizedRN {
         return PaymentSessionFinalizedRN()
     }
-    
+
     func toPaymentViewLoadedRN() -> PaymentViewLoadedRN {
         return PaymentViewLoadedRN()
     }

@@ -8,8 +8,10 @@
 import Foundation
 import PrimerSDK
 
+// swiftlint:disable type_name
 @objc
 enum PrimerHeadlessUniversalCheckoutRawDataManagerEvents: Int, CaseIterable {
+    // swiftlint:enable type_name
 
     case onMetadataChange = 0
     case onValidation
@@ -24,8 +26,10 @@ enum PrimerHeadlessUniversalCheckoutRawDataManagerEvents: Int, CaseIterable {
     }
 }
 
+// swiftlint:disable type_name
 @objc(RNTPrimerHeadlessUniversalCheckoutRawDataManager)
 class RNTPrimerHeadlessUniversalCheckoutRawDataManager: RCTEventEmitter {
+    // swiftlint:enable type_name
 
     private var rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager!
     private var paymentMethodType: String?
@@ -163,7 +167,7 @@ class RNTPrimerHeadlessUniversalCheckoutRawDataManager: RCTEventEmitter {
 
 extension RNTPrimerHeadlessUniversalCheckoutRawDataManager: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
 
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, metadataDidChange metadata: [String : Any]?) {
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, metadataDidChange metadata: [String: Any]?) {
         DispatchQueue.main.async {
             self.sendEvent(withName: PrimerHeadlessUniversalCheckoutRawDataManagerEvents.onMetadataChange.stringValue, body: metadata)
         }
@@ -189,7 +193,7 @@ extension RNTPrimerHeadlessUniversalCheckoutRawDataManager: PrimerHeadlessUniver
             var body: [String: Any] = ["error": error.rnError]
             if let checkoutData = checkoutData,
                let data = try? JSONEncoder().encode(checkoutData),
-               let json = try? JSONSerialization.jsonObject(with: data){
+               let json = try? JSONSerialization.jsonObject(with: data) {
                 body["checkoutData"] = json
             }
             print(body)

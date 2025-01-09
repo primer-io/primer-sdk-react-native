@@ -1,8 +1,8 @@
 import PrimerSDK
 
 struct PrimerThemeRN: Decodable {
-    let colors: ColorThemeRN?;
-    let darkModeColors: ColorThemeRN?;
+    let colors: ColorThemeRN?
+    let darkModeColors: ColorThemeRN?
 }
 
 extension PrimerThemeRN {
@@ -10,9 +10,9 @@ extension PrimerThemeRN {
 
         let isDarkMode = UITraitCollection.current.userInterfaceStyle == .dark
 
-        let _colors = isDarkMode ? darkModeColors : colors
+        let currentColors = isDarkMode ? darkModeColors : colors
 
-        guard let colors = _colors else {
+        guard let colors = currentColors else {
             return PrimerTheme()
         }
 
@@ -71,9 +71,9 @@ extension ColorThemeRN {
             success1: mainColor?.uiColor ?? .systemBlue
         )
     }
-    
+
     @available(iOS 13.0, *)
-    var primerDarkModeTheme: ColorTheme  {
+    var primerDarkModeTheme: ColorTheme {
         return PrimerDefaultTheme(
             text1: text?.uiColor ?? .white,
             text2: contrastingText?.uiColor ?? .white,

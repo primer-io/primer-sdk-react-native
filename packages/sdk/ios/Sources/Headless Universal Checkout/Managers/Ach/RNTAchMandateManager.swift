@@ -12,20 +12,20 @@ import PrimerSDK
 @objc(RNTAchMandateManager)
 class RNTAchMandateManager: NSObject, RCTBridgeModule {
     private let errorMessage = "Mandate delegate is not defined"
-    
+
     static func moduleName() -> String! {
         return "RNTAchMandateManager"
     }
-    
+
     func methodQueue() -> DispatchQueue {
         return DispatchQueue.main
     }
-    
+
     @objc static func requiresMainQueueSetup() -> Bool {
         return true
     }
-    
-    static var mandateDelegate: ACHMandateDelegate? = nil
+
+    static var mandateDelegate: ACHMandateDelegate?
 
     @objc
     func acceptMandate(
@@ -38,7 +38,7 @@ class RNTAchMandateManager: NSObject, RCTBridgeModule {
             rejecter("native-ios", errorMessage, nil)
         }
     }
-    
+
     @objc
     func declineMandate(
         _ resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock

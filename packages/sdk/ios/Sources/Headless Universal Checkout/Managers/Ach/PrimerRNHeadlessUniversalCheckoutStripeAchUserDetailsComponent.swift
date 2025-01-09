@@ -9,36 +9,39 @@ import Foundation
 import UIKit
 import PrimerSDK
 
+// swiftlint:disable type_name
 @objc(RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent)
 class RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent: RCTEventEmitter {
-    
-#if canImport(PrimerStripeSDK)
+    // swiftlint:enable type_name
+
+    #if canImport(PrimerStripeSDK)
     private var achManager: PrimerHeadlessUniversalCheckout.AchManager = PrimerHeadlessUniversalCheckout.AchManager()
-#endif
+    #endif
     var stripeAchUserDetailsComponent: (any StripeAchUserDetailsComponent)?
     var clientToken: String?
-    
+
     override class func requiresMainQueueSetup() -> Bool {
         return true
     }
-    
+
     override init() {
         super.init()
     }
-    
+
     override func supportedEvents() -> [String] {
         return PrimerHeadlessUniversalCheckoutComponentEvent.allCases.compactMap({ $0.stringValue })
     }
-    
+
     // MARK: - API
-    
+
     @objc
     public func configure(_ resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
         print("configure")
-        
+
         do {
-#if canImport(PrimerStripeSDK)
-            guard let stripeAchUserDetailsComponent: any StripeAchUserDetailsComponent = try? achManager.provide(paymentMethodType: "STRIPE_ACH") else {
+            #if canImport(PrimerStripeSDK)
+            guard let stripeAchUserDetailsComponent: any StripeAchUserDetailsComponent =
+                    try? achManager.provide(paymentMethodType: "STRIPE_ACH") else {
                 let err = RNTNativeError(
                     errorId: "native-ios",
                     errorDescription: "Failed to find asset of STRIPE_ACH for this session",
@@ -50,14 +53,14 @@ class RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent: RCTEventE
             stripeAchUserDetailsComponent.stepDelegate = self
             stripeAchUserDetailsComponent.errorDelegate = self
             stripeAchUserDetailsComponent.validationDelegate = self
-#else
+            #else
             let err = RNTNativeError(
                 errorId: "native-ios",
                 errorDescription: "PrimerStripeSDK missing",
                 recoverySuggestion: "Check if PrimerStripeSDK is included in your Podfile")
 
             throw err
-#endif
+            #endif
 
             resolver(nil)
         } catch {
@@ -74,23 +77,23 @@ class RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent: RCTEventE
         stripeAchUserDetailsComponent = nil
         resolver(nil)
     }
-    
+
     @objc
     public func start(
         _ resolver: RCTPromiseResolveBlock,
         rejecter: RCTPromiseRejectBlock
     ) {
         print("Start Stripe ACH process")
-        
+
         guard let stripeAchUserDetailsComponent = self.stripeAchUserDetailsComponent else {
             rejecter("UNINITIALIZED_ERROR", "Stripe ACH user details component is uninitialized", nil)
             return
         }
-        
+
         stripeAchUserDetailsComponent.start()
         resolver(nil)
     }
-    
+
     @objc
     public func submit(
         _ resolver: RCTPromiseResolveBlock,
@@ -100,11 +103,11 @@ class RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent: RCTEventE
             rejecter("UNINITIALIZED_ERROR", "Stripe ACH user details component is uninitialized", nil)
             return
         }
-        
+
         stripeAchUserDetailsComponent.submit()
         resolver(nil)
     }
-    
+
     @objc
     public func onSetFirstName(
         _ firstName: String,
@@ -115,14 +118,14 @@ class RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent: RCTEventE
             rejecter("UNINITIALIZED_ERROR", "Stripe ACH user details component is uninitialized", nil)
             return
         }
-        
+
         DispatchQueue.main.async {
             stripeAchUserDetailsComponent.updateCollectedData(collectableData: ACHUserDetailsCollectableData.firstName(firstName))
         }
-        
+
         resolver(nil)
     }
-    
+
     @objc
     public func onSetLastName(
         _ lastName: String,
@@ -133,14 +136,14 @@ class RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent: RCTEventE
             rejecter("UNINITIALIZED_ERROR", "Stripe ACH user details component is uninitialized", nil)
             return
         }
-        
+
         DispatchQueue.main.async {
             stripeAchUserDetailsComponent.updateCollectedData(collectableData: ACHUserDetailsCollectableData.lastName(lastName))
         }
-        
+
         resolver(nil)
     }
-    
+
     @objc
     public func onSetEmailAddress(
         _ emailAddress: String,
@@ -151,11 +154,11 @@ class RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent: RCTEventE
             rejecter("UNINITIALIZED_ERROR", "Stripe ACH user details component is uninitialized", nil)
             return
         }
-        
+
         DispatchQueue.main.async {
             stripeAchUserDetailsComponent.updateCollectedData(collectableData: ACHUserDetailsCollectableData.emailAddress(emailAddress))
         }
-        
+
         resolver(nil)
     }
 }
@@ -163,24 +166,28 @@ class RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent: RCTEventE
 extension RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent: PrimerHeadlessSteppableDelegate {
     func didReceiveStep(step: PrimerSDK.PrimerHeadlessStep) {
         guard let step = step as? ACHUserDetailsStep else { return }
-        
+
         switch step {
         case .retrievedUserDetails(let details):
-            let json = try? step.toUserDetailsRetrievedRN(firstName: details.firstName, lastName: details.lastName, emailAddress: details.emailAddress).toJsonObject()
-            
+            let json = try? step.toUserDetailsRetrievedRN(
+                firstName: details.firstName,
+                lastName: details.lastName,
+                emailAddress: details.emailAddress
+            ).toJsonObject()
+
             sendEvent(
                 withName: PrimerHeadlessUniversalCheckoutComponentEvent.onStep.stringValue,
                 body: json
             )
-            
+
         case .didCollectUserDetails:
             let json = try? step.toUserDetailsCollectedRN().toJsonObject()
-            
+
             sendEvent(
                 withName: PrimerHeadlessUniversalCheckoutComponentEvent.onStep.stringValue,
                 body: json
             )
-            
+
         default:
             break
         }
@@ -190,10 +197,10 @@ extension RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent: Prime
 extension RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent: PrimerHeadlessValidatableDelegate {
     func didUpdate(validationStatus: PrimerSDK.PrimerValidationStatus, for data: PrimerSDK.PrimerCollectableData?) {
         guard let data = data as? ACHUserDetailsCollectableData else { return }
-    
+
         var errorJsonObject: Any?
         let eventName: String
-        
+
         switch validationStatus {
         case .valid:
             eventName = PrimerHeadlessUniversalCheckoutComponentEvent.onValid.stringValue
@@ -206,7 +213,7 @@ extension RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent: Prime
             errorJsonObject = try? ["errors": [error.toPrimerErrorRN()]].toJsonObject()
             eventName = PrimerHeadlessUniversalCheckoutComponentEvent.onValidationError.stringValue
         }
-        
+
         var dataJsonObject: Any?
         switch data {
         case .firstName(let value):
@@ -225,7 +232,7 @@ extension RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent: Prime
     func didReceiveError(error: PrimerSDK.PrimerError) {
         let rnError = error.toPrimerErrorRN()
         let serializedData = try? ["errors": [rnError]].toJsonObject()
-        
+
         self.sendEvent(
             withName: PrimerHeadlessUniversalCheckoutComponentEvent.onError.stringValue,
             body: serializedData)

@@ -9,6 +9,7 @@ import Foundation
 import PrimerSDK
 import UIKit
 
+// swiftlint:disable file_length
 @objc
 enum PrimerEvents: Int, CaseIterable {
 
@@ -55,8 +56,10 @@ enum PrimerEvents: Int, CaseIterable {
 @objc(NativePrimer)
 class RNTPrimer: RCTEventEmitter {
 
+    // swiftlint:disable identifier_name
     var primerWillCreatePaymentWithDataDecisionHandler: ((_ errorMessage: String?) -> Void)?
     var primerDidTokenizePaymentMethodDecisionHandler: ((_ resumeToken: String?, _ errorMessage: String?) -> Void)?
+    // swiftlint:enable identifier_name
     var primerDidResumeWithDecisionHandler: ((_ resumeToken: String?, _ errorMessage: String?) -> Void)?
     var primerDidFailWithErrorDecisionHandler: ((_ errorMessage: String) -> Void)?
     var implementedRNCallbacks: ImplementedRNCallbacks?
@@ -124,7 +127,7 @@ class RNTPrimer: RCTEventEmitter {
             }
         }
     }
-    
+
     @objc
     public func showPaymentMethod(_ paymentMethod: String, intent: String, clientToken: String, resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
         DispatchQueue.main.async {
@@ -137,7 +140,7 @@ class RNTPrimer: RCTEventEmitter {
                 rejecter(err.rnError["errorId"]!, err.rnError["description"], err)
                 return
             }
-            
+
             PrimerSDK.Primer.shared.showPaymentMethod(paymentMethod, intent: primerIntent, clientToken: clientToken) { err in
                 if let err = err {
                     rejecter(err.rnError["errorId"]!, err.rnError["description"], err)
@@ -270,11 +273,11 @@ class RNTPrimer: RCTEventEmitter {
                         recoverySuggestion: nil)
                     throw err
                 }
-                
+
                 self.implementedRNCallbacks = try JSONDecoder().decode(ImplementedRNCallbacks.self, from: implementedRNCallbacksData)
                 resolver(nil)
             } catch {
-                self.primerDidFailWithError(error, data: nil) { decisionHandler in
+                self.primerDidFailWithError(error, data: nil) { _ in
 
                 }
                 rejecter(error.rnError["errorId"]!, error.rnError["description"], error)
@@ -329,27 +332,26 @@ extension RNTPrimer: PrimerDelegate {
     }
 
     func primerDidEnterResumePendingWithPaymentAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?) {
-      DispatchQueue.main.async {
-          if self.implementedRNCallbacks?.isOnCheckoutResumeImplemented == true {
-              do {
-                  let checkoutAdditionalInfo = try JSONEncoder().encode(additionalInfo)
-                  let checkoutAdditionalInfoJson = try JSONSerialization.jsonObject(with: checkoutAdditionalInfo, options: .allowFragments)
-                  self.sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onCheckoutPending.stringValue, body: checkoutAdditionalInfoJson)
-              } catch {
-                  let checkoutData = PrimerCheckoutData(payment: nil, additionalInfo: additionalInfo)
-                  self.handleRNBridgeError(error, checkoutData: checkoutData, stopOnDebug: true)
-              }
-          } else {
-              let err = RNTNativeError(
-                  errorId: "native-ios",
-                  errorDescription: "Callback [onResumePending] should be implemented.",
-                  recoverySuggestion: nil)
-              let checkoutData = PrimerCheckoutData(payment: nil, additionalInfo: additionalInfo)
-              self.handleRNBridgeError(err, checkoutData: checkoutData, stopOnDebug: false)
-          }
-      }
+        DispatchQueue.main.async {
+            if self.implementedRNCallbacks?.isOnCheckoutResumeImplemented == true {
+                do {
+                    let checkoutAdditionalInfo = try JSONEncoder().encode(additionalInfo)
+                    let checkoutAdditionalInfoJson = try JSONSerialization.jsonObject(with: checkoutAdditionalInfo, options: .allowFragments)
+                    self.sendEvent(withName: PrimerHeadlessUniversalCheckoutEvents.onCheckoutPending.stringValue, body: checkoutAdditionalInfoJson)
+                } catch {
+                    let checkoutData = PrimerCheckoutData(payment: nil, additionalInfo: additionalInfo)
+                    self.handleRNBridgeError(error, checkoutData: checkoutData, stopOnDebug: true)
+                }
+            } else {
+                let err = RNTNativeError(
+                    errorId: "native-ios",
+                    errorDescription: "Callback [onResumePending] should be implemented.",
+                    recoverySuggestion: nil)
+                let checkoutData = PrimerCheckoutData(payment: nil, additionalInfo: additionalInfo)
+                self.handleRNBridgeError(err, checkoutData: checkoutData, stopOnDebug: false)
+            }
+        }
     }
-
 
     func primerWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) {
 
@@ -492,3 +494,4 @@ extension RNTPrimer: PrimerDelegate {
         }
     }
 }
+// swiftlint:enable file_length

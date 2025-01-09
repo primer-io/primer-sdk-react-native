@@ -8,26 +8,28 @@
 import Foundation
 import PrimerSDK
 
+// swiftlint:disable type_name
 @objc(RNTPrimerHeadlessUniversalCheckoutBanksComponent)
 class RNTPrimerHeadlessUniversalCheckoutBanksComponent: RCTEventEmitter {
-    
+    // swiftlint:enable type_name
+
     private var redirectManager: PrimerHeadlessUniversalCheckout.ComponentWithRedirectManager!
     var banksComponent: (any BanksComponent)?
-    
+
     override class func requiresMainQueueSetup() -> Bool {
         return true
     }
-    
+
     override init() {
         super.init()
     }
-    
+
     override func supportedEvents() -> [String] {
         return PrimerHeadlessUniversalCheckoutComponentEvent.allCases.compactMap({ $0.stringValue })
     }
-    
+
     // MARK: - API
-    
+
     @objc
     public func configure(
         _ paymentMethodTypeStr: String,
@@ -67,7 +69,7 @@ class RNTPrimerHeadlessUniversalCheckoutBanksComponent: RCTEventEmitter {
         self.banksComponent = nil
         resolver(nil)
     }
-    
+
     @objc
     public func start(
         _ resolver: RCTPromiseResolveBlock,
@@ -76,7 +78,7 @@ class RNTPrimerHeadlessUniversalCheckoutBanksComponent: RCTEventEmitter {
         banksComponent?.start()
         resolver(nil)
     }
-    
+
     @objc
     public func submit(
         _ resolver: RCTPromiseResolveBlock,
@@ -85,7 +87,7 @@ class RNTPrimerHeadlessUniversalCheckoutBanksComponent: RCTEventEmitter {
         banksComponent?.submit()
         resolver(nil)
     }
-    
+
     @objc
     public func onBankFilterChange(
         _ filterText: String,
@@ -95,7 +97,7 @@ class RNTPrimerHeadlessUniversalCheckoutBanksComponent: RCTEventEmitter {
         banksComponent?.updateCollectedData(collectableData: BanksCollectableData.bankFilterText(text: filterText))
         resolver(nil)
     }
-    
+
     @objc
     public func onBankSelected(
         _ bankId: String,
@@ -113,7 +115,7 @@ extension RNTPrimerHeadlessUniversalCheckoutBanksComponent: PrimerHeadlessSteppa
         switch step {
         case .loading: // Handle bank list loading being in progress (e.g. show loading indicator)
             let rnLoading = try? step.toLoadingRN().toJsonObject()
-            
+
             sendEvent(
                 withName: PrimerHeadlessUniversalCheckoutComponentEvent.onStep.stringValue,
                 body: rnLoading
@@ -131,7 +133,7 @@ extension RNTPrimerHeadlessUniversalCheckoutBanksComponent: PrimerHeadlessSteppa
 extension RNTPrimerHeadlessUniversalCheckoutBanksComponent: PrimerHeadlessValidatableDelegate {
     func didUpdate(validationStatus: PrimerSDK.PrimerValidationStatus, for data: PrimerSDK.PrimerCollectableData?) {
         guard let data = data as? BanksCollectableData else { return }
-        
+
         let eventName: String
         switch validationStatus {
         case .valid:
@@ -141,7 +143,7 @@ extension RNTPrimerHeadlessUniversalCheckoutBanksComponent: PrimerHeadlessValida
         case .invalid(let errors):
             let rnErrors = errors.map { $0.toPrimerValidationErrorRN() }
             let serializedData = try? ["errors": rnErrors].toJsonObject()
-            
+
             self.sendEvent(
                 withName: PrimerHeadlessUniversalCheckoutComponentEvent.onInvalid.stringValue,
                 body: serializedData)
@@ -149,7 +151,7 @@ extension RNTPrimerHeadlessUniversalCheckoutBanksComponent: PrimerHeadlessValida
         case .error(let error):
             let rnError = error.toPrimerErrorRN()
             let serializedData = try? ["errors": [rnError]].toJsonObject()
-            
+
             self.sendEvent(
                 withName: PrimerHeadlessUniversalCheckoutComponentEvent.onValidationError.stringValue,
                 body: serializedData)
@@ -174,7 +176,7 @@ extension RNTPrimerHeadlessUniversalCheckoutBanksComponent: PrimerHeadlessErrora
     func didReceiveError(error: PrimerSDK.PrimerError) {
         let rnError = error.toPrimerErrorRN()
         let serializedData = try? ["errors": [rnError]].toJsonObject()
-        
+
         self.sendEvent(
             withName: PrimerHeadlessUniversalCheckoutComponentEvent.onError.stringValue,
             body: serializedData)

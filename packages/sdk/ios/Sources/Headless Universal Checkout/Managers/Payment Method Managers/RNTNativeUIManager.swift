@@ -8,8 +8,10 @@
 import Foundation
 import PrimerSDK
 
+// swiftlint:disable type_name
 @objc(RNTPrimerHeadlessUniversalPaymentMethodNativeUIManager)
 class RNTPrimerHeadlessUniversalPaymentMethodNativeUIManager: RCTEventEmitter {
+    // swiftlint:enable type_name
 
     var paymentMethodNativeUIManager: PrimerSDK.PrimerHeadlessUniversalCheckout.NativeUIManager!
 

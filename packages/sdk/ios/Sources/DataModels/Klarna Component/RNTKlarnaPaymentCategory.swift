@@ -14,7 +14,7 @@ class KlarnaPaymentCategoryRN: NSObject, Codable {
     var name: String
     var descriptiveAssetUrl: String
     var standardAssetUrl: String
-    
+
     init(identifier: String, name: String, descriptiveAssetUrl: String, standardAssetUrl: String) {
         self.identifier = identifier
         self.name = name

@@ -2,19 +2,29 @@ import PrimerSDK
 
 extension PrimerSettings {
 
+    // swiftlint:disable function_body_length
+    // swiftlint:disable cyclomatic_complexity
     convenience init(settingsStr: String?) throws {
         if settingsStr == nil {
             self.init()
         } else {
             guard let settingsData = settingsStr!.data(using: .utf8) else {
-                let err = RNTNativeError(errorId: "native-ios", errorDescription: "The value of the 'settings' object is invalid.", recoverySuggestion: "Provide a valid 'settings' object")
+                let err = RNTNativeError(
+                    errorId: "native-ios",
+                    errorDescription: "The value of the 'settings' object is invalid.",
+                    recoverySuggestion: "Provide a valid 'settings' object"
+                )
                 throw err
             }
 
             let settingsJson = try JSONSerialization.jsonObject(with: settingsData)
 
             guard let settingsJson = settingsJson as? [String: Any] else {
-                let err = RNTNativeError(errorId: "native-ios", errorDescription: "The 'settings' object is not a valid JSON", recoverySuggestion: "Provide a valid 'settings' object")
+                let err = RNTNativeError(
+                    errorId: "native-ios",
+                    errorDescription: "The 'settings' object is not a valid JSON",
+                    recoverySuggestion: "Provide a valid 'settings' object"
+                )
                 throw err
             }
 
@@ -34,18 +44,19 @@ extension PrimerSettings {
 
             var applePayOptions: PrimerApplePayOptions?
             if let rnApplePayOptions = ((settingsJson["paymentMethodOptions"] as? [String: Any])?["applePayOptions"] as? [String: Any]),
-            let rnApplePayMerchantIdentifier = rnApplePayOptions["merchantIdentifier"] as? String
-            {
+            let rnApplePayMerchantIdentifier = rnApplePayOptions["merchantIdentifier"] as? String {
                 let rnApplePayMerchantName = rnApplePayOptions["merchantName"] as? String
                 let rnApplePayIsCaptureBillingAddressEnabled = (rnApplePayOptions["isCaptureBillingAddressEnabled"] as? Bool) ?? false
+                // swiftlint:disable identifier_name
                 let rnApplePayShowApplePayForUnsupportedDevice = (rnApplePayOptions["showApplePayForUnsupportedDevice"] as? Bool) ?? true
+                // swiftlint:enable identifier_name
                 let rnApplePayCheckProvidedNetworks = (rnApplePayOptions["checkProvidedNetworks"] as? Bool) ?? true
-                
-                var shippingOptions: PrimerApplePayOptions.ShippingOptions? = nil
+
+                var shippingOptions: PrimerApplePayOptions.ShippingOptions?
                 if let rnShippingOptions = rnApplePayOptions["shippingOptions"] as? [String: Any] {
                     let requireShippingMethod = rnShippingOptions["requireShippingMethod"] as? Bool ?? false
 
-                    var shippingContactFields: [PrimerApplePayOptions.RequiredContactField]? = nil
+                    var shippingContactFields: [PrimerApplePayOptions.RequiredContactField]?
                     if let requiredFieldsStrings = rnShippingOptions["shippingContactFields"] as? [String] {
                         shippingContactFields = requiredFieldsStrings.compactMap { fieldStr in
                             switch fieldStr {
@@ -69,9 +80,9 @@ extension PrimerSettings {
                     )
                 }
 
-                var billingOptions: PrimerApplePayOptions.BillingOptions? = nil
+                var billingOptions: PrimerApplePayOptions.BillingOptions?
                 if let rnBillingOptions = rnApplePayOptions["billingOptions"] as? [String: Any] {
-                    var requiredBillingContactFields: [PrimerApplePayOptions.RequiredContactField]? = nil
+                    var requiredBillingContactFields: [PrimerApplePayOptions.RequiredContactField]?
                     if let requiredFieldsStrings = rnBillingOptions["requiredBillingContactFields"] as? [String] {
                         requiredBillingContactFields = requiredFieldsStrings.compactMap { fieldStr in
                             switch fieldStr {
@@ -104,10 +115,13 @@ extension PrimerSettings {
                     billingOptions: billingOptions
                 )
             }
-            
 
             var klarnaOptions: PrimerKlarnaOptions?
-            if let rnKlarnaRecurringPaymentDescription = ((settingsJson["paymentMethodOptions"] as? [String: Any])?["klarnaOptions"] as? [String: Any])?["recurringPaymentDescription"] as? String {
+            if let rnKlarnaRecurringPaymentDescription =
+                ((settingsJson["paymentMethodOptions"]
+                as? [String: Any])?["klarnaOptions"]
+                as? [String: Any])?["recurringPaymentDescription"]
+                as? String {
                 klarnaOptions = PrimerKlarnaOptions(recurringPaymentDescription: rnKlarnaRecurringPaymentDescription)
             }
 
@@ -137,12 +151,17 @@ extension PrimerSettings {
             if let clientSessionCachingEnabledValue = (settingsJson["clientSessionCachingEnabled"] as? Bool) {
                 clientSessionCachingEnabled = clientSessionCachingEnabledValue
             }
-            
+
             var threeDsOptions: PrimerThreeDsOptions?
-            if let rnThreeDsAppRequestorUrlStr = (((settingsJson["paymentMethodOptions"] as? [String: Any])?["threeDsOptions"] as? [String: Any])?["iOS"] as? [String: Any])?["threeDsAppRequestorUrl"] as? String {
+            if let rnThreeDsAppRequestorUrlStr =
+                (((settingsJson["paymentMethodOptions"]
+                    as? [String: Any])?["threeDsOptions"]
+                    as? [String: Any])?["iOS"]
+                    as? [String: Any])?["threeDsAppRequestorUrl"]
+                    as? String {
                 threeDsOptions = PrimerThreeDsOptions(threeDsAppRequestorUrl: rnThreeDsAppRequestorUrlStr)
             }
-            
+
             var stripeOptions: PrimerStripeOptions?
             if let stripeOptionsMap = ((settingsJson["paymentMethodOptions"] as? [String: Any])?["stripeOptions"] as? [String: Any]) {
                 if let publishableKey = stripeOptionsMap["publishableKey"] as? String {
@@ -153,7 +172,9 @@ extension PrimerSettings {
                         } else if let merchantName = mandateDataMap["merchantName"] {
                             mandateData = .templateMandate(merchantName: merchantName)
                         } else {
-                            PrimerLogging.shared.logger.warn(message: "Found mandate data but no resource key or merchant name - check your stripe config")
+                            PrimerLogging.shared.logger.warn(
+                                message: "Found mandate data but no resource key or merchant name - check your stripe config"
+                            )
                         }
                     } else {
                         PrimerLogging.shared.logger.warn(message: "Found stripe options but no mandate data - check your stripe config")
@@ -181,4 +202,6 @@ extension PrimerSettings {
                 clientSessionCachingEnabled: clientSessionCachingEnabled ?? false)
         }
     }
+    // swiftlint:enable function_body_length
+    // swiftlint:enable cyclomatic_complexity
 }

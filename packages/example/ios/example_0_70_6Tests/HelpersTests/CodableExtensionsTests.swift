@@ -9,7 +9,7 @@ import XCTest
 @testable import primer_io_react_native
 
 // Define test structs conforming to Encodable and Decodable for testing purposes
-fileprivate struct TestStruct: Codable, Equatable {
+private struct TestStruct: Codable, Equatable {
     let id: Int
     let name: String
 }

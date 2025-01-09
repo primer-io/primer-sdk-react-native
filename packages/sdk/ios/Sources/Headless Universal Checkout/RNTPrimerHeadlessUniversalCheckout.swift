@@ -9,6 +9,7 @@ import Foundation
 import PrimerSDK
 import React
 
+// swiftlint:disable file_length
 @objc
 enum PrimerHeadlessUniversalCheckoutEvents: Int, CaseIterable {
 
@@ -65,8 +66,10 @@ enum PrimerHeadlessUniversalCheckoutEvents: Int, CaseIterable {
 class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
 
     var settings: PrimerSettings?
+    // swiftlint:disable identifier_name
     var primerWillCreatePaymentWithDataDecisionHandler: ((_ errorMessage: String?) -> Void)?
     var primerDidTokenizePaymentMethodDecisionHandler: ((_ resumeToken: String?, _ errorMessage: String?) -> Void)?
+    // swiftlint:enable identifier_name
     var primerDidResumeWithDecisionHandler: ((_ resumeToken: String?, _ errorMessage: String?) -> Void)?
     var implementedRNCallbacks: ImplementedRNCallbacks?
 
@@ -88,11 +91,10 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
     public func startWithClientToken(_ clientToken: String,
                                      settingsStr: String?,
                                      resolver: @escaping RCTPromiseResolveBlock,
-                                     rejecter: @escaping RCTPromiseRejectBlock)
-    {
+                                     rejecter: @escaping RCTPromiseRejectBlock) {
         PrimerHeadlessUniversalCheckout.current.delegate = self
         PrimerHeadlessUniversalCheckout.current.uiDelegate = self
-        
+
         do {
             var tmpSettings: PrimerSettings?
             if let settingsStr = settingsStr {
@@ -105,13 +107,13 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
                 settings: settings,
                 delegate: self,
                 uiDelegate: self) { paymentMethods, err in
-                    if let err = err {
-                        rejecter(err.rnError["errorId"]!, err.rnError["description"], err)
-                    } else if let paymentMethods = paymentMethods {
-                        let paymentMethodObjects = paymentMethods.compactMap({ $0.toJsonObject() })
-                        resolver(["availablePaymentMethods": paymentMethodObjects])
-                    }
+                if let err = err {
+                    rejecter(err.rnError["errorId"]!, err.rnError["description"], err)
+                } else if let paymentMethods = paymentMethods {
+                    let paymentMethodObjects = paymentMethods.compactMap({ $0.toJsonObject() })
+                    resolver(["availablePaymentMethods": paymentMethodObjects])
                 }
+            }
 
         } catch {
             rejecter(error.rnError["errorId"]!, error.rnError["description"], error)
@@ -212,7 +214,7 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
             var body: [String: Any] = ["error": error.rnError]
             if let checkoutData = checkoutData,
                let data = try? JSONEncoder().encode(checkoutData),
-               let json = try? JSONSerialization.jsonObject(with: data){
+               let json = try? JSONSerialization.jsonObject(with: data) {
                 body["checkoutData"] = json
             }
 
@@ -253,7 +255,7 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
 
         DispatchQueue.main.async {
             if self.implementedRNCallbacks?.isOnTokenizationSuccessImplemented == true {
-                self.primerDidTokenizePaymentMethodDecisionHandler = { (newClientToken, errorMessage) in
+                self.primerDidTokenizePaymentMethodDecisionHandler = { (newClientToken, _) in
                     DispatchQueue.main.async {
                         if let newClientToken = newClientToken {
                             decisionHandler(.continueWithNewClientToken(newClientToken))
@@ -290,7 +292,7 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
 
         DispatchQueue.main.async {
             if self.implementedRNCallbacks?.isOnCheckoutResumeImplemented == true {
-                self.primerDidResumeWithDecisionHandler = { (resumeToken, errorMessage) in
+                self.primerDidResumeWithDecisionHandler = { (resumeToken, _) in
                     DispatchQueue.main.async {
                         if let resumeToken = resumeToken {
                             decisionHandler(.continueWithNewClientToken(resumeToken))
@@ -342,62 +344,77 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
     }
 
     // case onCheckoutAdditionalInfo
+    // swiftlint:disable identifier_name
+    // swiftlint:disable function_body_length
     func primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?) {
+        // swiftlint:enable identifier_name
         let rnCallbackName = PrimerHeadlessUniversalCheckoutEvents.onCheckoutAdditionalInfo.stringValue
 
         DispatchQueue.main.async {
             if self.implementedRNCallbacks?.isOnCheckoutAdditionalInfoImplemented == true {
                 do {
                     switch additionalInfo {
-                        case let info as ACHBankAccountCollectorAdditionalInfo:
-                            // Handled internally, nothing for merchant to handle
-                            let keyWindow = UIApplication
-                                .shared
-                                .connectedScenes
-                                .flatMap { ($0 as? UIWindowScene)?.windows ?? [] }
-                                .last { $0.isKeyWindow }
-                            DispatchQueue.main.async {
-                                if let rootViewController = keyWindow?.rootViewController {
-                                    rootViewController.present(info.collectorViewController, animated: true, completion: nil)
-                                } else {
-                                    let checkoutData = PrimerCheckoutData(payment: nil, additionalInfo: additionalInfo)
-                                    self.handleRNBridgeError(
-                                        RNTNativeError(
+                    case let info as ACHBankAccountCollectorAdditionalInfo:
+                        // Handled internally, nothing for merchant to handle
+                        let keyWindow = UIApplication
+                            .shared
+                            .connectedScenes
+                            .flatMap { ($0 as? UIWindowScene)?.windows ?? [] }
+                            .last { $0.isKeyWindow }
+                        DispatchQueue.main.async {
+                            if let rootViewController = keyWindow?.rootViewController {
+                                rootViewController.present(info.collectorViewController, animated: true, completion: nil)
+                            } else {
+                                let checkoutData = PrimerCheckoutData(payment: nil, additionalInfo: additionalInfo)
+                                self.handleRNBridgeError(
+                                    RNTNativeError(
                                         errorId: "native-ios",
                                         errorDescription: "Failed to retrieve root view controller, cannot present Stripe view controller",
                                         recoverySuggestion: nil
-                                        ),
-                                        checkoutData: checkoutData,
-                                        stopOnDebug: true
-                                    )
-                                }
+                                    ),
+                                    checkoutData: checkoutData,
+                                    stopOnDebug: true
+                                )
                             }
-                            return
-                        case _ as ACHMandateAdditionalInfo:
-                            self.sendEvent(
-                                withName: rnCallbackName,
-                                body: try AchAdditionalInfoDisplayMandateRN().toJsonObject()
-                            )
-                        case let info as MultibancoCheckoutAdditionalInfo:
-                            self.sendEvent(
-                                withName: rnCallbackName,
-                                body: try MultibancoCheckoutAdditionalInfoRN(expiresAt: info.expiresAt, reference: info.reference, entity: info.entity).toJsonObject()
-                            )
-                        case let info as PromptPayCheckoutAdditionalInfo:
-                            self.sendEvent(
-                                withName: rnCallbackName,
-                                body: try PromptPayCheckoutAdditionalInfoRN(expiresAt: info.expiresAt, qrCodeUrl: info.qrCodeUrl, qrCodeBase64: info.qrCodeBase64).toJsonObject()
-                            )
-                        case let info as XenditCheckoutVoucherAdditionalInfo:
-                            self.sendEvent(
-                                withName: rnCallbackName,
-                                body: try XenditCheckoutVoucherAdditionalInfoRN(expiresAt: info.expiresAt, couponCode: info.couponCode, retailerName: info.retailerName).toJsonObject()
-                            )
-                        default:
-                            self.sendEvent(
-                                withName: rnCallbackName,
-                                body: try additionalInfo?.toJsonObject()
-                            )
+                        }
+                        return
+                    case _ as ACHMandateAdditionalInfo:
+                        self.sendEvent(
+                            withName: rnCallbackName,
+                            body: try AchAdditionalInfoDisplayMandateRN().toJsonObject()
+                        )
+                    case let info as MultibancoCheckoutAdditionalInfo:
+                        self.sendEvent(
+                            withName: rnCallbackName,
+                            body: try MultibancoCheckoutAdditionalInfoRN(
+                                expiresAt: info.expiresAt,
+                                reference: info.reference,
+                                entity: info.entity
+                            ).toJsonObject()
+                        )
+                    case let info as PromptPayCheckoutAdditionalInfo:
+                        self.sendEvent(
+                            withName: rnCallbackName,
+                            body: try PromptPayCheckoutAdditionalInfoRN(
+                                expiresAt: info.expiresAt,
+                                qrCodeUrl: info.qrCodeUrl,
+                                qrCodeBase64: info.qrCodeBase64
+                            ).toJsonObject()
+                        )
+                    case let info as XenditCheckoutVoucherAdditionalInfo:
+                        self.sendEvent(
+                            withName: rnCallbackName,
+                            body: try XenditCheckoutVoucherAdditionalInfoRN(
+                                expiresAt: info.expiresAt,
+                                couponCode: info.couponCode,
+                                retailerName: info.retailerName
+                            ).toJsonObject()
+                        )
+                    default:
+                        self.sendEvent(
+                            withName: rnCallbackName,
+                            body: try additionalInfo?.toJsonObject()
+                        )
                     }
                 } catch {
                     let checkoutData = PrimerCheckoutData(payment: nil, additionalInfo: additionalInfo)
@@ -414,6 +431,7 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
             }
         }
     }
+    // swiftlint:enable function_body_length
 
     // case onError
     func primerHeadlessUniversalCheckoutDidFail(withError err: Error, checkoutData: PrimerCheckoutData?) {
@@ -546,3 +564,4 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutUID
         }
     }
 }
+// swiftlint:enable file_length

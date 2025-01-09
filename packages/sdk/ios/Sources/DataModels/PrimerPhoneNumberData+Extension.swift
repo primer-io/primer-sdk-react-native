@@ -22,8 +22,7 @@ extension PrimerPhoneNumberData {
                 return nil
             }
 
-            if let phoneNumber = dict["phoneNumber"]
-            {
+            if let phoneNumber = dict["phoneNumber"] {
                 self.init(
                     phoneNumber: phoneNumber)
             } else {

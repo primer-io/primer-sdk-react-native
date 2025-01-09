@@ -43,11 +43,11 @@ extension ACHUserDetailsCollectableData {
     func toFirstNameRN(value: String) -> FirstNameRN {
         return FirstNameRN(value: value)
     }
-    
+
     func toLastNameRN(value: String) -> LastNameRN {
         return LastNameRN(value: value)
     }
-    
+
     func toEmailAddressRN(value: String) -> EmailAddressRN {
         return EmailAddressRN(value: value)
     }
