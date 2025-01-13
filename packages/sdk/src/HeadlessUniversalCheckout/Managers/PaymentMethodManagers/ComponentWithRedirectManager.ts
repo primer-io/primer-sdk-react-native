@@ -1,22 +1,18 @@
-import {
-  NativeEventEmitter,
-  NativeModules,
-  EmitterSubscription,
-} from 'react-native';
+import { NativeEventEmitter, NativeModules, EmitterSubscription } from 'react-native';
 import { BanksValidatableData } from 'src/models/banks/BanksCollectableData';
-import { NamedComponentStep } from 'src/models/NamedComponentStep';
-import { IssuingBank } from 'src/models/IssuingBank';
-import { PrimerComponentDataValidationError, PrimerInvalidComponentData, PrimerValidComponentData, PrimerValidatingComponentData } from 'src/models/PrimerComponentDataValidation';
+import {
+  PrimerComponentDataValidationError,
+  PrimerInvalidComponentData,
+  PrimerValidComponentData,
+  PrimerValidatingComponentData,
+} from 'src/models/PrimerComponentDataValidation';
 import { PrimerError } from 'src/models/PrimerError';
 import { BanksStep } from 'src/models/banks/BanksSteps';
 import { EventType, eventTypes } from './Utils/EventType';
 
-const { RNTPrimerHeadlessUniversalCheckoutBanksComponent } =
-  NativeModules;
+const { RNTPrimerHeadlessUniversalCheckoutBanksComponent } = NativeModules;
 
-const eventEmitter = new NativeEventEmitter(
-  RNTPrimerHeadlessUniversalCheckoutBanksComponent
-);
+const eventEmitter = new NativeEventEmitter(RNTPrimerHeadlessUniversalCheckoutBanksComponent);
 
 export interface ComponentWithRedirectManagerProps {
   paymentMethodType: string;
@@ -30,10 +26,10 @@ export interface ComponentWithRedirectManagerProps {
 
 export interface BanksComponent {
   /**
-   * Starts the component, causing step emissions. 
-   * First, with a {@link NamedComponentStep} instance  where 
-   * {@link NamedComponentStep.name} has a value of 'loading', followed 
-   * by another emission that contains the list of banks in the form of an 
+   * Starts the component, causing step emissions.
+   * First, with a {@link NamedComponentStep} instance  where
+   * {@link NamedComponentStep.name} has a value of 'loading', followed
+   * by another emission that contains the list of banks in the form of an
    * {@link IssuingBank} array.
    */
   start(): Promise<void>;
@@ -71,8 +67,8 @@ export interface BanksComponent {
   handleBankFilterChange(filter: string): Promise<void>;
 
   /**
-   * Submits the component, triggering tokenization and a redirect to the 
-   * bank's page for finalizing the payment. This function should only be 
+   * Submits the component, triggering tokenization and a redirect to the
+   * bank's page for finalizing the payment. This function should only be
    * called after selecting a bank via {@link handleBankChange}.
    */
   submit(): Promise<void>;
@@ -82,7 +78,7 @@ export class PrimerHeadlessUniversalCheckoutComponentWithRedirectManager {
   ///////////////////////////////////////////
   // Init
   ///////////////////////////////////////////
-  constructor() { }
+  constructor() {}
 
   ///////////////////////////////////////////
   // API
@@ -91,7 +87,7 @@ export class PrimerHeadlessUniversalCheckoutComponentWithRedirectManager {
   async provide(props: ComponentWithRedirectManagerProps): Promise<BanksComponent | any> {
     await this.configureListeners(props);
 
-    if (props.paymentMethodType == "ADYEN_IDEAL") {
+    if (props.paymentMethodType === 'ADYEN_IDEAL') {
       const banksComponent: BanksComponent = {
         start: async () => {
           RNTPrimerHeadlessUniversalCheckoutBanksComponent.start();
@@ -111,7 +107,7 @@ export class PrimerHeadlessUniversalCheckoutComponentWithRedirectManager {
         handleBankChange: async (bankId: String) => {
           RNTPrimerHeadlessUniversalCheckoutBanksComponent.onBankSelected(bankId);
         },
-      }
+      };
       await RNTPrimerHeadlessUniversalCheckoutBanksComponent.configure(props.paymentMethodType);
       return banksComponent;
     } else {
@@ -161,10 +157,7 @@ export class PrimerHeadlessUniversalCheckoutComponentWithRedirectManager {
   // HELPERS
   ///////////////////////////////////////////
 
-  async addListener(
-    eventType: EventType,
-    listener: (...args: any[]) => any
-  ): Promise<EmitterSubscription> {
+  async addListener(eventType: EventType, listener: (...args: any[]) => any): Promise<EmitterSubscription> {
     return eventEmitter.addListener(eventType, listener);
   }
 
@@ -177,8 +170,6 @@ export class PrimerHeadlessUniversalCheckoutComponentWithRedirectManager {
   }
 
   removeAllListeners() {
-    eventTypes.forEach((eventType) =>
-      this.removeAllListenersForEvent(eventType)
-    );
+    eventTypes.forEach((eventType) => this.removeAllListenersForEvent(eventType));
   }
 }

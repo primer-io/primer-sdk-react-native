@@ -1,4 +1,4 @@
-import { toRgbColor } from "../../utils/index";
+import { toRgbColor } from '../../utils/index';
 
 describe('toRgbColor function', () => {
   it('should return null for invalid hex color strings', () => {

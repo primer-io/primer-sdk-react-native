@@ -4,28 +4,27 @@ import type { PrimerSessionIntent } from 'src/models/PrimerSessionIntent';
 const { RNTPrimerHeadlessUniversalPaymentMethodNativeUIManager } = NativeModules;
 
 class PrimerHeadlessUniversalCheckoutPaymentMethodNativeUIManager {
+  ///////////////////////////////////////////
+  // Init
+  ///////////////////////////////////////////
+  constructor() {}
 
-    ///////////////////////////////////////////
-    // Init
-    ///////////////////////////////////////////
-    constructor() {}
+  ///////////////////////////////////////////
+  // Native API
+  ///////////////////////////////////////////
 
-    ///////////////////////////////////////////
-    // Native API
-    ///////////////////////////////////////////
-
-    async configure(paymentMethodType: string): Promise<void> {
-        try {
-            await RNTPrimerHeadlessUniversalPaymentMethodNativeUIManager.configure(paymentMethodType);
-        } catch (err) {
-            console.error(err);
-            throw err;
-        }
+  async configure(paymentMethodType: string): Promise<void> {
+    try {
+      await RNTPrimerHeadlessUniversalPaymentMethodNativeUIManager.configure(paymentMethodType);
+    } catch (err) {
+      console.error(err);
+      throw err;
     }
+  }
 
-    async showPaymentMethod(intent: PrimerSessionIntent): Promise<void> {
-        return RNTPrimerHeadlessUniversalPaymentMethodNativeUIManager.showPaymentMethod(intent);
-    }
+  async showPaymentMethod(intent: PrimerSessionIntent): Promise<void> {
+    return RNTPrimerHeadlessUniversalPaymentMethodNativeUIManager.showPaymentMethod(intent);
+  }
 }
 
 export default PrimerHeadlessUniversalCheckoutPaymentMethodNativeUIManager;

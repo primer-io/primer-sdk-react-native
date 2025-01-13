@@ -1,6 +1,5 @@
-
 export interface RawDataScreenProps {
-    navigation: any;
-    clientSession: any;
-    route: any;
+  navigation: any;
+  clientSession: any;
+  route: any;
 }

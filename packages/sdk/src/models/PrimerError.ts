@@ -5,7 +5,13 @@ export class PrimerError extends Error {
   recoverySuggestion?: string;
   diagnosticsId?: string;
 
-  constructor(errorId: string, errorCode: string | undefined, description: string, recoverySuggestion: string | undefined, diagnosticsId: string | undefined) {
+  constructor(
+    errorId: string,
+    errorCode: string | undefined,
+    description: string,
+    recoverySuggestion: string | undefined,
+    diagnosticsId: string | undefined
+  ) {
     super(description);
     this.errorId = errorId;
     this.errorCode = errorCode;

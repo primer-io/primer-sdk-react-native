@@ -1,17 +1,17 @@
-import type { PrimerCheckoutData } from "./PrimerCheckoutData";
-import type { PrimerCheckoutAdditionalInfo } from "./PrimerCheckoutAdditionalInfo";
-import type { PrimerCheckoutPaymentMethodData } from "./PrimerCheckoutPaymentMethodData";
-import type { PrimerClientSession } from "./PrimerClientSession";
-import type { PrimerPaymentMethodTokenData } from "./PrimerPaymentMethodTokenData";
-import type { PrimerError } from "./PrimerError";
-import type { IPrimerTheme } from "./PrimerTheme";
+import type { PrimerCheckoutData } from './PrimerCheckoutData';
+import type { PrimerCheckoutAdditionalInfo } from './PrimerCheckoutAdditionalInfo';
+import type { PrimerCheckoutPaymentMethodData } from './PrimerCheckoutPaymentMethodData';
+import type { PrimerClientSession } from './PrimerClientSession';
+import type { PrimerPaymentMethodTokenData } from './PrimerPaymentMethodTokenData';
+import type { PrimerError } from './PrimerError';
+import type { IPrimerTheme } from './PrimerTheme';
 import type {
   PrimerPaymentCreationHandler,
   PrimerTokenizationHandler,
   PrimerResumeHandler,
   PrimerErrorHandler,
-  PrimerHeadlessUniversalCheckoutResumeHandler
-} from "./PrimerHandlers";
+  PrimerHeadlessUniversalCheckoutResumeHandler,
+} from './PrimerHandlers';
 
 export type PrimerSettings = IPrimerSettings;
 
@@ -26,19 +26,32 @@ interface IPrimerSettings {
   // Dropin UI
   onBeforeClientSessionUpdate?: () => void;
   onClientSessionUpdate?: (clientSession: PrimerClientSession) => void;
-  onBeforePaymentCreate?: (checkoutPaymentMethodData: PrimerCheckoutPaymentMethodData, handler: PrimerPaymentCreationHandler) => void;
+  onBeforePaymentCreate?: (
+    checkoutPaymentMethodData: PrimerCheckoutPaymentMethodData,
+    handler: PrimerPaymentCreationHandler
+  ) => void;
   onCheckoutComplete?: (checkoutData: PrimerCheckoutData) => void;
-  onTokenizeSuccess?: (paymentMethodTokenData: PrimerPaymentMethodTokenData, handler: PrimerTokenizationHandler) => void;
+  onTokenizeSuccess?: (
+    paymentMethodTokenData: PrimerPaymentMethodTokenData,
+    handler: PrimerTokenizationHandler
+  ) => void;
   onResumeSuccess?: (resumeToken: string, handler: PrimerResumeHandler) => void;
   onResumePending?: (additionalInfo: PrimerCheckoutAdditionalInfo) => void;
   onCheckoutReceivedAdditionalInfo?: (additionalInfo: PrimerCheckoutAdditionalInfo) => void;
-  onError?: (error: PrimerError, checkoutData: PrimerCheckoutData | null, handler: PrimerErrorHandler | undefined) => void;
+  onError?: (
+    error: PrimerError,
+    checkoutData: PrimerCheckoutData | null,
+    handler: PrimerErrorHandler | undefined
+  ) => void;
   onDismiss?: () => void;
 
   headlessUniversalCheckoutCallbacks?: {
     onAvailablePaymentMethodsLoad?: (availablePaymentMethods: any[]) => void;
     onTokenizationStart?: (paymentMethodType: string) => void;
-    onTokenizationSuccess?: (paymentMethodTokenData: PrimerPaymentMethodTokenData, handler: PrimerHeadlessUniversalCheckoutResumeHandler) => void;
+    onTokenizationSuccess?: (
+      paymentMethodTokenData: PrimerPaymentMethodTokenData,
+      handler: PrimerHeadlessUniversalCheckoutResumeHandler
+    ) => void;
 
     onCheckoutResume?: (resumeToken: string, handler: PrimerHeadlessUniversalCheckoutResumeHandler) => void;
     onCheckoutPending?: (additionalInfo: PrimerCheckoutAdditionalInfo) => void;
@@ -49,18 +62,21 @@ interface IPrimerSettings {
     onBeforeClientSessionUpdate?: () => void;
 
     onClientSessionUpdate?: (clientSession: PrimerClientSession) => void;
-    onBeforePaymentCreate?: (checkoutPaymentMethodData: PrimerCheckoutPaymentMethodData, handler: PrimerPaymentCreationHandler) => void;
+    onBeforePaymentCreate?: (
+      checkoutPaymentMethodData: PrimerCheckoutPaymentMethodData,
+      handler: PrimerPaymentCreationHandler
+    ) => void;
     onPreparationStart?: (paymentMethodType: string) => void;
 
     onPaymentMethodShow?: (paymentMethodType: string) => void;
-  }
+  };
 }
 
 //----------------------------------------
 
 interface IPrimerLocaleData {
-  languageCode?: string
-  localeCode?: string
+  languageCode?: string;
+  localeCode?: string;
 }
 
 //----------------------------------------
@@ -68,16 +84,16 @@ interface IPrimerLocaleData {
 interface IPrimerPaymentMethodOptions {
   iOS?: {
     urlScheme?: string;
-  }
+  };
   android?: {
     redirectScheme?: string;
-  },
+  };
   apayaOptions?: IPrimerApayaOptions;
   applePayOptions?: IPrimerApplePayOptions;
 
   /**
-  * @obsoleted The IPrimerCardPaymentOptions is obsoleted on v.2.14.0
-  */
+   * @obsoleted The IPrimerCardPaymentOptions is obsoleted on v.2.14.0
+   */
   cardPaymentOptions?: IPrimerCardPaymentOptions;
 
   goCardlessOptions?: IPrimerGoCardlessOptions;

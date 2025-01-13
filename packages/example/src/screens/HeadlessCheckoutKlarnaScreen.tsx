@@ -1,202 +1,234 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
+import {Text, TouchableOpacity, View, StyleSheet, Button} from 'react-native';
 import {
-    Text,
-    TouchableOpacity,
-    View,
-    StyleSheet,
-    Button,
-} from 'react-native';
-import {
-    KlarnaManager,
-    KlarnaComponent,
-    KlarnaPaymentStep,
-    PrimerError,
-    PrimerInvalidComponentData,
-    PrimerValidComponentData,
-    PrimerValidatingComponentData,
-    PrimerComponentDataValidationError,
-    KlarnaManagerProps,
-    KlarnaPaymentCategory,
-    PrimerKlarnaPaymentView,
-    KlarnaPaymentValidatableData
+  KlarnaManager,
+  KlarnaComponent,
+  KlarnaPaymentStep,
+  PrimerError,
+  PrimerInvalidComponentData,
+  PrimerValidComponentData,
+  PrimerValidatingComponentData,
+  PrimerComponentDataValidationError,
+  KlarnaManagerProps,
+  KlarnaPaymentCategory,
+  PrimerKlarnaPaymentView,
+  KlarnaPaymentValidatableData,
 } from '@primer-io/react-native';
 
 const klarnaManager = new KlarnaManager();
 let klarnaComponent: KlarnaComponent;
 
 const HeadlessCheckoutKlarnaScreen = (props: any) => {
-    const [isAuthorizationVisible, setAuthorizationVisible] = useState<boolean>(false)
-    const [selectedPaymentCategoryIdentifier, setSelectedPaymentCategoryIdentifier] = useState<string | null>(null);
-    const [paymentCategories, setPaymentCategories] = useState<KlarnaPaymentCategory[]>([])
+  const [isAuthorizationVisible, setAuthorizationVisible] =
+    useState<boolean>(false);
+  const [
+    selectedPaymentCategoryIdentifier,
+    setSelectedPaymentCategoryIdentifier,
+  ] = useState<string | null>(null);
+  const [paymentCategories, setPaymentCategories] = useState<
+    KlarnaPaymentCategory[]
+  >([]);
 
-    useEffect(() => {
-        (async () => {
-            const klarnaManagerProps: KlarnaManagerProps = {
-                primerSessionIntent: props.route.params.paymentSessionIntent,
-                onStep: (data: KlarnaPaymentStep) => {
-                    const log = `\nonStep: ${JSON.stringify(data)}\n`;
-                    console.log(log);
-                    switch (data.stepName) {
-                        case "paymentSessionCreated":
-                            setPaymentCategories(data.paymentCategories);
-                            break;
+  useEffect(() => {
+    (async () => {
+      const klarnaManagerProps: KlarnaManagerProps = {
+        primerSessionIntent: props.route.params.paymentSessionIntent,
+        onStep: (data: KlarnaPaymentStep) => {
+          const log = `\nonStep: ${JSON.stringify(data)}\n`;
+          console.log(log);
+          switch (data.stepName) {
+            case 'paymentSessionCreated':
+              setPaymentCategories(data.paymentCategories);
+              break;
 
-                        case "paymentViewLoaded":
-                            setAuthorizationVisible(true);
-                            break;
+            case 'paymentViewLoaded':
+              setAuthorizationVisible(true);
+              break;
 
-                        case "paymentSessionAuthorized":
-                            if (data.isFinalized) {
-                                console.log("Payment finalization is not required");
-                            } else {
-                                console.log("Finalizing payment");
-                                finalizePayment();
-                            }
-                            break;
-                        case "paymentSessionFinalized":
-                            break;
-                    }
-                },
-                onError: (error: PrimerError) => {
-                    const log = `\nonError: ${JSON.stringify(error)}\n`;
-                    console.log(log);
-                },
-                onInvalid: (data: PrimerInvalidComponentData<KlarnaPaymentValidatableData>) => {
-                    const log = `\nonInvalid: ${JSON.stringify(data)}\n`;
-                    console.log(log);
-                },
-                onValid: (data: PrimerValidComponentData<KlarnaPaymentValidatableData>) => {
-                    const log = `\nonValid: ${JSON.stringify(data)}\n`;
-                    console.log(log);
-                },
-                onValidating: (data: PrimerValidatingComponentData<KlarnaPaymentValidatableData>) => {
-                    const log = `\onValidating: ${JSON.stringify(data)}\n`;
-                    console.log(log);
-                },
-                onValidationError: (data: PrimerComponentDataValidationError<KlarnaPaymentValidatableData>) => {
-                    const log = `\nonValidationError: ${JSON.stringify(data)}\n`;
-                    console.log(log);
-                },
-            };
-            klarnaComponent = await klarnaManager.provide(klarnaManagerProps);
-            console.log("Starting Klarna payment component");
-            klarnaComponent?.start();
-        })()
-    }, []);
+            case 'paymentSessionAuthorized':
+              if (data.isFinalized) {
+                console.log('Payment finalization is not required');
+              } else {
+                console.log('Finalizing payment');
+                finalizePayment();
+              }
+              break;
+            case 'paymentSessionFinalized':
+              break;
+          }
+        },
+        onError: (error: PrimerError) => {
+          const log = `\nonError: ${JSON.stringify(error)}\n`;
+          console.log(log);
+        },
+        onInvalid: (
+          data: PrimerInvalidComponentData<KlarnaPaymentValidatableData>,
+        ) => {
+          const log = `\nonInvalid: ${JSON.stringify(data)}\n`;
+          console.log(log);
+        },
+        onValid: (
+          data: PrimerValidComponentData<KlarnaPaymentValidatableData>,
+        ) => {
+          const log = `\nonValid: ${JSON.stringify(data)}\n`;
+          console.log(log);
+        },
+        onValidating: (
+          data: PrimerValidatingComponentData<KlarnaPaymentValidatableData>,
+        ) => {
+          const log = `\onValidating: ${JSON.stringify(data)}\n`;
+          console.log(log);
+        },
+        onValidationError: (
+          data: PrimerComponentDataValidationError<KlarnaPaymentValidatableData>,
+        ) => {
+          const log = `\nonValidationError: ${JSON.stringify(data)}\n`;
+          console.log(log);
+        },
+      };
+      klarnaComponent = await klarnaManager.provide(klarnaManagerProps);
+      console.log('Starting Klarna payment component');
+      klarnaComponent?.start();
+    })();
+  });
 
-    const handlePaymentCategoryChange = async () => {
-        try {
-            const klarnaPaymentCategory = paymentCategories.find(
-                (paymentCategory) => paymentCategory.identifier === selectedPaymentCategoryIdentifier
-            ) as KlarnaPaymentCategory
+  const handlePaymentCategoryChange = async () => {
+    try {
+      const klarnaPaymentCategory = paymentCategories.find(
+        paymentCategory =>
+          paymentCategory.identifier === selectedPaymentCategoryIdentifier,
+      ) as KlarnaPaymentCategory;
 
-            await klarnaComponent.handlePaymentOptionsChange(
-                {
-                    returnIntentUrl: "app://deeplink.return.activity.rn",
-                    paymentCategory: klarnaPaymentCategory
-                }
-            );
-        } catch (err) {
-            console.error(err);
-        }
-    };
+      await klarnaComponent.handlePaymentOptionsChange({
+        returnIntentUrl: 'app://deeplink.return.activity.rn',
+        paymentCategory: klarnaPaymentCategory,
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-    const finalizePayment = async () => {
-        await klarnaComponent.finalizePayment();
-    };
+  const finalizePayment = async () => {
+    await klarnaComponent.finalizePayment();
+  };
 
-    const onSubmit = async () => {
-        try {
-            await klarnaComponent.submit();
-        } catch (err) {
-            console.error(err);
-        }
-    };
+  const onSubmit = async () => {
+    try {
+      await klarnaComponent.submit();
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-    return (
-        <View
-            style={{
-                padding: 16,
-                flex: 1,
-                backgroundColor: 'white',
-            }}>
+  return (
+    <View
+      style={{
+        padding: 16,
+        flex: 1,
+        backgroundColor: 'white',
+      }}>
+      <Text style={{fontSize: 18, fontWeight: 'bold', paddingBottom: 8}}>
+        Klarna session
+      </Text>
 
-            <Text style={{ fontSize: 18, fontWeight: 'bold', paddingBottom: 8 }}>Klarna session</Text>
+      <PaymentCategories
+        selectedPaymentCategoryIdentifier={selectedPaymentCategoryIdentifier}
+        paymentCategories={paymentCategories}
+        onPress={identifier => {
+          setAuthorizationVisible(false);
+          setSelectedPaymentCategoryIdentifier(identifier);
+        }}
+      />
 
-            <PaymentCategories
-                selectedPaymentCategoryIdentifier={selectedPaymentCategoryIdentifier}
-                paymentCategories={paymentCategories}
-                onPress={(identifier) => {
-                    setAuthorizationVisible(false);
-                    setSelectedPaymentCategoryIdentifier(identifier);
-                }}
-            />
+      <View style={styles.button}>
+        <Button
+          disabled={selectedPaymentCategoryIdentifier === null}
+          onPress={() => handlePaymentCategoryChange()}
+          title="Initialize Klarna view"
+        />
+      </View>
 
-            <View style={styles.button}>
-                <Button
-                    disabled={selectedPaymentCategoryIdentifier === null}
-                    onPress={() => handlePaymentCategoryChange()}
-                    title="Initialize Klarna view"
-                />
-            </View>
+      {isAuthorizationVisible && (
+        <PrimerKlarnaPaymentView style={{minHeight: 250}} />
+      )}
 
-            {isAuthorizationVisible && <PrimerKlarnaPaymentView style={{ minHeight: 250 }} />}
-
-            <View style={styles.button}>
-                {isAuthorizationVisible && <Button onPress={() => onSubmit()} title="Continue" />}
-            </View>
-        </View>
-    );
+      <View style={styles.button}>
+        {isAuthorizationVisible && (
+          <Button onPress={() => onSubmit()} title="Continue" />
+        )}
+      </View>
+    </View>
+  );
 };
 
-const PaymentCategories = ({ paymentCategories, selectedPaymentCategoryIdentifier, onPress }: {
-    paymentCategories: KlarnaPaymentCategory[],
-    selectedPaymentCategoryIdentifier: string | null,
-    onPress: (identifier: string) => void
+const PaymentCategories = ({
+  paymentCategories,
+  selectedPaymentCategoryIdentifier,
+  onPress,
+}: {
+  paymentCategories: KlarnaPaymentCategory[];
+  selectedPaymentCategoryIdentifier: string | null;
+  onPress: (identifier: string) => void;
 }) => {
-    return <>{paymentCategories.map(paymentCategory => (
+  return (
+    <>
+      {paymentCategories.map(paymentCategory => (
         <RadioButton
-            key={paymentCategory.identifier}
-            text={paymentCategory.name}
-            isChecked={selectedPaymentCategoryIdentifier == paymentCategory.identifier}
-            onPress={() => onPress(paymentCategory.identifier)}
+          key={paymentCategory.identifier}
+          text={paymentCategory.name}
+          isChecked={
+            selectedPaymentCategoryIdentifier == paymentCategory.identifier
+          }
+          onPress={() => onPress(paymentCategory.identifier)}
         />
-    ))}</>
-}
+      ))}
+    </>
+  );
+};
 
-const RadioButton = ({ text, isChecked, onPress }: { text: string, isChecked: boolean, onPress: () => void }) => {
-    return (
-        <TouchableOpacity style={styles.radioButton} onPress={() => onPress()}>
-            <View style={[styles.radioCircle, isChecked && styles.checkedRadioCircle]} />
-            <Text style={styles.radioText}>{text}</Text>
-        </TouchableOpacity>
-    );
+const RadioButton = ({
+  text,
+  isChecked,
+  onPress,
+}: {
+  text: string;
+  isChecked: boolean;
+  onPress: () => void;
+}) => {
+  return (
+    <TouchableOpacity style={styles.radioButton} onPress={() => onPress()}>
+      <View
+        style={[styles.radioCircle, isChecked && styles.checkedRadioCircle]}
+      />
+      <Text style={styles.radioText}>{text}</Text>
+    </TouchableOpacity>
+  );
 };
 
 const styles = StyleSheet.create({
-    radioButton: {
-        paddingVertical: 4,
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    radioText: {
-        paddingStart: 8,
-    },
-    radioCircle: {
-        width: 20,
-        height: 20,
-        borderRadius: 10,
-        borderWidth: 2,
-        borderColor: '#2C98F0',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    checkedRadioCircle: {
-        backgroundColor: '#2C98F0',
-    },
-    button: {
-        paddingTop: 16,
-    },
+  radioButton: {
+    paddingVertical: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  radioText: {
+    paddingStart: 8,
+  },
+  radioCircle: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: '#2C98F0',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkedRadioCircle: {
+    backgroundColor: '#2C98F0',
+  },
+  button: {
+    paddingTop: 16,
+  },
 });
 
 export default HeadlessCheckoutKlarnaScreen;
