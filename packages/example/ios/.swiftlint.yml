@@ -10,6 +10,3 @@ line_length:
 
 included:
   - ../../sdk/ios/Sources
-
-excluded:
-  - ../../sdk/ios/Sources/PrimerSDK/Classes/Third Party/PromiseKit
