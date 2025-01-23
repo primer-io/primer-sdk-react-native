@@ -104,7 +104,6 @@ extension PrimerSettings {
                     billingOptions: billingOptions
                 )
             }
-            
 
             var klarnaOptions: PrimerKlarnaOptions?
             if let rnKlarnaRecurringPaymentDescription = ((settingsJson["paymentMethodOptions"] as? [String: Any])?["klarnaOptions"] as? [String: Any])?["recurringPaymentDescription"] as? String {
@@ -155,6 +154,21 @@ extension PrimerSettings {
                 clientSessionCachingEnabled = clientSessionCachingEnabledValue
             }
             
+            var apiVersion: PrimerAPIVersion?
+            if let apiVersionValue = (settingsJson["apiVersion"] as? String) {
+                switch (apiVersionValue) {
+                    case "2.3":
+                        apiVersion = PrimerAPIVersion.V2_3
+                        break
+                    case "2.4":
+                        apiVersion = PrimerAPIVersion.V2_4
+                        break
+                    default:
+                        throw RNTNativeError(errorId: "native-ios", errorDescription: "The value of the 'apiVersion' string is invalid.", recoverySuggestion: "Provide a valid 'apiVersion' string")
+                        break
+                }
+            }
+
             var threeDsOptions: PrimerThreeDsOptions?
             if let rnThreeDsAppRequestorUrlStr = (((settingsJson["paymentMethodOptions"] as? [String: Any])?["threeDsOptions"] as? [String: Any])?["iOS"] as? [String: Any])?["threeDsAppRequestorUrl"] as? String {
                 threeDsOptions = PrimerThreeDsOptions(threeDsAppRequestorUrl: rnThreeDsAppRequestorUrlStr)
@@ -195,7 +209,8 @@ extension PrimerSettings {
                 paymentMethodOptions: paymentMethodOptions,
                 uiOptions: uiOptions,
                 debugOptions: debugOptions,
-                clientSessionCachingEnabled: clientSessionCachingEnabled ?? false)
+                clientSessionCachingEnabled: clientSessionCachingEnabled ?? false,
+                apiVersion: apiVersion)
         }
     }
 }

@@ -2,7 +2,7 @@ package com.primerioreactnative.components.manager.raw
 
 import com.primerioreactnative.components.events.PrimerHeadlessUniversalCheckoutRawDataManagerEvent
 import com.primerioreactnative.datamodels.PrimerInputValidationErrorRN
-import io.primer.android.ExperimentalPrimerApi
+import io.primer.android.core.ExperimentalPrimerApi
 import io.primer.android.components.domain.core.models.card.PrimerCardMetadata
 import io.primer.android.components.domain.core.models.metadata.PrimerPaymentMethodMetadata
 import io.primer.android.components.domain.error.PrimerInputValidationError
