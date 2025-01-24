@@ -65,7 +65,11 @@ export default HeadlessCheckoutVaultScreen = (props: any) => {
     headlessUniversalCheckoutCallbacks: {
       onAvailablePaymentMethodsLoad: availablePaymentMethods => {
         updateLogs(
-          `\nℹ️ onAvailablePaymentMethodsLoad\n${JSON.stringify(availablePaymentMethods, null, 2)}\n`,
+          `\nℹ️ onAvailablePaymentMethodsLoad\n${JSON.stringify(
+            availablePaymentMethods,
+            null,
+            2,
+          )}\n`,
         );
         setIsLoading(false);
       },
@@ -89,20 +93,32 @@ export default HeadlessCheckoutVaultScreen = (props: any) => {
       },
       onClientSessionUpdate: updatedClientSession => {
         updateLogs(
-          `\nℹ️ onClientSessionUpdate\nclientSession: ${JSON.stringify(updatedClientSession, null, 2)}\n`,
+          `\nℹ️ onClientSessionUpdate\nclientSession: ${JSON.stringify(
+            updatedClientSession,
+            null,
+            2,
+          )}\n`,
         );
       },
       onCheckoutAdditionalInfo: additionalInfo => {
         merchantCheckoutAdditionalInfo = additionalInfo;
         updateLogs(
-          `\nℹ️ onCheckoutPending\nadditionalInfo: ${JSON.stringify(additionalInfo, null, 2)}\n`,
+          `\nℹ️ onCheckoutPending\nadditionalInfo: ${JSON.stringify(
+            additionalInfo,
+            null,
+            2,
+          )}\n`,
         );
         setIsLoading(false);
       },
       onCheckoutPending: checkoutAdditionalInfo => {
         merchantCheckoutAdditionalInfo = checkoutAdditionalInfo;
         updateLogs(
-          `\n✅ onCheckoutPending\nadditionalInfo: ${JSON.stringify(checkoutAdditionalInfo, null, 2)}\n`,
+          `\n✅ onCheckoutPending\nadditionalInfo: ${JSON.stringify(
+            checkoutAdditionalInfo,
+            null,
+            2,
+          )}\n`,
         );
         setIsLoading(false);
         navigateToResultScreen();
@@ -110,14 +126,22 @@ export default HeadlessCheckoutVaultScreen = (props: any) => {
       onCheckoutComplete: checkoutData => {
         merchantCheckoutData = checkoutData;
         updateLogs(
-          `\n✅ onCheckoutComplete\ncheckoutData: ${JSON.stringify(checkoutData, null, 2)}\n`,
+          `\n✅ onCheckoutComplete\ncheckoutData: ${JSON.stringify(
+            checkoutData,
+            null,
+            2,
+          )}\n`,
         );
         setIsLoading(false);
         navigateToResultScreen();
       },
       onTokenizationSuccess: async (paymentMethodTokenData, handler) => {
         updateLogs(
-          `\nℹ️ onTokenizationSuccess\npaymentMethodTokenData: ${JSON.stringify(paymentMethodTokenData, null, 2)}\n`,
+          `\nℹ️ onTokenizationSuccess\npaymentMethodTokenData: ${JSON.stringify(
+            paymentMethodTokenData,
+            null,
+            2,
+          )}\n`,
         );
         setIsLoading(false);
 
@@ -166,7 +190,11 @@ export default HeadlessCheckoutVaultScreen = (props: any) => {
             merchantPayment = payment;
             handler.complete();
             updateLogs(
-              `\n✅ Payment resumed\npayment: ${JSON.stringify(payment, null, 2)}`,
+              `\n✅ Payment resumed\npayment: ${JSON.stringify(
+                payment,
+                null,
+                2,
+              )}`,
             );
             setIsLoading(false);
             navigateToResultScreen();
@@ -198,6 +226,7 @@ export default HeadlessCheckoutVaultScreen = (props: any) => {
     },
   };
 
+  /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
     createClientSessionIfNeeded()
       .then(session => {
@@ -207,7 +236,8 @@ export default HeadlessCheckoutVaultScreen = (props: any) => {
         setIsLoading(false);
         console.error(err);
       });
-  });
+  }, []);
+  /* eslint-enable react-hooks/exhaustive-deps */
 
   const createClientSessionIfNeeded = (): Promise<any> => {
     return new Promise(async (resolve, reject) => {

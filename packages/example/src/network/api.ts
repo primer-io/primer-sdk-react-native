@@ -56,7 +56,9 @@ export const createClientSession = async () => {
       return response.data;
     } else {
       const err = new Error(
-        `Request failed with status ${response.status}.\nBody: ${JSON.stringify(response.data)}`,
+        `Request failed with status ${response.status}.\nBody: ${JSON.stringify(
+          response.data,
+        )}`,
       );
       console.error(err);
       throw err;
@@ -101,7 +103,9 @@ export const setClientSessionActions = async (
       return clientSession;
     } else {
       const err = new Error(
-        `Request failed with status ${response.status}.\nBody: ${JSON.stringify(response.data)}`,
+        `Request failed with status ${response.status}.\nBody: ${JSON.stringify(
+          response.data,
+        )}`,
       );
       console.error(err);
       throw err;
@@ -145,7 +149,9 @@ export const createPayment = async (paymentMethodToken: string) => {
       return payment;
     } else {
       const err = new Error(
-        `Request failed with status ${response.status}.\nBody: ${JSON.stringify(response.data)}`,
+        `Request failed with status ${response.status}.\nBody: ${JSON.stringify(
+          response.data,
+        )}`,
       );
       console.error(err);
       throw err;
@@ -189,7 +195,9 @@ export const resumePayment = async (paymentId: string, resumeToken: string) => {
       return response.data;
     } else {
       const err = new Error(
-        `Request failed with status ${response.status}.\nBody: ${JSON.stringify(response.data)}`,
+        `Request failed with status ${response.status}.\nBody: ${JSON.stringify(
+          response.data,
+        )}`,
       );
       console.error(err);
       throw err;

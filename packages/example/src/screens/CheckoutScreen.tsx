@@ -43,13 +43,11 @@ interface Log {
 const CheckoutScreen = (props: any) => {
   const isDarkMode = useColorScheme() === 'dark';
   //@ts-ignore
-  const [_, setIsLoading] = React.useState<boolean>(false);
+  const [, setIsLoading] = React.useState<boolean>(false);
   //@ts-ignore
-  const [_, setLoadingMessage] = React.useState<string | undefined>(
-    'undefined',
-  );
+  const [, setLoadingMessage] = React.useState<string | undefined>('undefined');
   //@ts-ignore
-  const [_, setError] = React.useState<Error | null>(null);
+  const [, setError] = React.useState<Error | null>(null);
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,

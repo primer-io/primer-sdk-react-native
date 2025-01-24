@@ -30,9 +30,11 @@ const RawCardDataScreen = (props: any) => {
   const [metadataLog, setMetadataLog] = useState<string>('');
   const [validationLog, setValidationLog] = useState<string>('');
 
+  /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
     initialize();
-  });
+  }, []);
+  /* eslint-enable react-hooks/exhaustive-deps */
 
   const initialize = async () => {
     await rawDataManager.configure({

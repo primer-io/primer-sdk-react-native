@@ -301,6 +301,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
     };
   }
 
+  /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
     createClientSessionIfNeeded()
       .then(session => {
@@ -311,7 +312,8 @@ export const HeadlessCheckoutScreen = (props: any) => {
         setIsLoading(false);
         console.error(err);
       });
-  });
+  }, []);
+  /* eslint-enable react-hooks/exhaustive-deps */
 
   const createClientSessionIfNeeded = (): Promise<any> => {
     return new Promise(async (resolve, reject) => {
@@ -381,8 +383,9 @@ export const HeadlessCheckoutScreen = (props: any) => {
       if (paymentMethod.paymentMethodManagerCategories.length === 1) {
         pay(paymentMethod, paymentMethod.paymentMethodManagerCategories[0]);
       } else {
-        const selectedImplementationType =
-          await selectImplementationType(paymentMethod);
+        const selectedImplementationType = await selectImplementationType(
+          paymentMethod,
+        );
         pay(paymentMethod, selectedImplementationType);
       }
     } catch (err) {

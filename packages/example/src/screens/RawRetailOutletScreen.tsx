@@ -8,10 +8,10 @@ const rawDataManager = new RawDataManager();
 
 const RawRetailOutletScreen = (props: any) => {
   //@ts-ignore
-  const [isLoading, _] = useState(false);
+  const [isLoading] = useState(false);
   const [isCardFormValid, setIsCardFormValid] = useState(false);
   //@ts-ignore
-  const [_, setRequiredInputElementTypes] = useState<string[] | undefined>(
+  const [, setRequiredInputElementTypes] = useState<string[] | undefined>(
     undefined,
   );
   const [retailers, setRetailers] = useState<any[] | undefined>(undefined);
@@ -21,9 +21,11 @@ const RawRetailOutletScreen = (props: any) => {
   const [metadataLog, setMetadataLog] = useState<string>('');
   const [validationLog, setValidationLog] = useState<string>('');
 
+  /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
     initialize();
-  });
+  }, []);
+  /* eslint-enable react-hooks/exhaustive-deps */
 
   const initialize = async () => {
     const response = await rawDataManager.configure({

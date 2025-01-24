@@ -219,8 +219,8 @@ const SettingsScreen = ({navigation}) => {
     vaultOnSuccess
       ? CheckoutVaultingType.VAULT_ON_SUCCESS
       : vaultOnAgreement
-        ? CheckoutVaultingType.VAULT_ON_AGREEMENT
-        : CheckoutVaultingType.NONE,
+      ? CheckoutVaultingType.VAULT_ON_AGREEMENT
+      : CheckoutVaultingType.NONE,
   );
 
   const backgroundStyle = {
@@ -428,7 +428,9 @@ const SettingsScreen = ({navigation}) => {
           <Text
             style={{
               fontWeight: '600',
-            }}>{`${(lineItems || []).map(item => item.amount * item.quantity).reduce((prev, next) => prev + next, 0)}`}</Text>
+            }}>{`${(lineItems || [])
+            .map(item => item.amount * item.quantity)
+            .reduce((prev, next) => prev + next, 0)}`}</Text>
         </View>
       </View>
     );

@@ -27,6 +27,7 @@ const HeadlessCheckoutStripeAchScreen = (props: any) => {
     null,
   );
 
+  /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
     (async () => {
       const achManagerProps: AchManagerProps = {
@@ -114,7 +115,8 @@ const HeadlessCheckoutStripeAchScreen = (props: any) => {
         console.log('Failed to init Stripe ACH component: ' + error);
       }
     })();
-  });
+  }, []);
+  /* eslint-enable react-hooks/exhaustive-deps */
 
   const onSubmit = async () => {
     try {

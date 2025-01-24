@@ -26,6 +26,7 @@ const HeadlessCheckoutWithRedirect = (props: any) => {
   const [banks, setBanks] = useState<IssuingBank[]>([]);
   const [search, setSearch] = useState<string>('');
 
+  /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
     (async () => {
       const componentWithRedirectManagerProps: ComponentWithRedirectManagerProps =
@@ -91,7 +92,8 @@ const HeadlessCheckoutWithRedirect = (props: any) => {
       );
       banksComponent?.start();
     })();
-  });
+  }, []);
+  /* eslint-enable react-hooks/exhaustive-deps */
 
   const submit = async () => {
     try {

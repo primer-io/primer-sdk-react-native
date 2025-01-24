@@ -29,6 +29,7 @@ const HeadlessCheckoutKlarnaScreen = (props: any) => {
     KlarnaPaymentCategory[]
   >([]);
 
+  /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
     (async () => {
       const klarnaManagerProps: KlarnaManagerProps = {
@@ -90,7 +91,8 @@ const HeadlessCheckoutKlarnaScreen = (props: any) => {
       console.log('Starting Klarna payment component');
       klarnaComponent?.start();
     })();
-  });
+  }, []);
+  /* eslint-enable react-hooks/exhaustive-deps */
 
   const handlePaymentCategoryChange = async () => {
     try {
