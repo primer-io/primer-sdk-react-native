@@ -7,7 +7,7 @@ import com.facebook.react.bridge.ReactMethod
 import com.primerioreactnative.datamodels.ErrorTypeRN
 import com.primerioreactnative.datamodels.PrimerErrorRN
 import com.primerioreactnative.utils.errorTo
-import io.primer.android.ExperimentalPrimerApi
+import io.primer.android.core.ExperimentalPrimerApi
 import io.primer.android.PrimerSessionIntent
 import io.primer.android.components.SdkUninitializedException
 import io.primer.android.components.domain.exception.UnsupportedPaymentMethodManagerException
