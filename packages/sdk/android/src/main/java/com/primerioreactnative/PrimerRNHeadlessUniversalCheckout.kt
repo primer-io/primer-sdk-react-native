@@ -8,7 +8,7 @@ import com.primerioreactnative.components.events.PrimerHeadlessUniversalCheckout
 import com.primerioreactnative.utils.PrimerHeadlessUniversalCheckoutImplementedRNCallbacks
 import com.primerioreactnative.utils.errorTo
 import com.primerioreactnative.utils.toWritableMap
-import io.primer.android.ExperimentalPrimerApi
+import io.primer.android.core.ExperimentalPrimerApi
 import io.primer.android.components.PrimerHeadlessUniversalCheckout
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
