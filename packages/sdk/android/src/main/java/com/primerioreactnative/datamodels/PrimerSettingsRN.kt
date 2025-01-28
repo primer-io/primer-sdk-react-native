@@ -64,35 +64,35 @@ data class PrimerThemeRN(
     return PrimerTheme.buildWithDynamicValues(
       isDarkMode = isDarkMode,
       mainColor =
-        when {
-          isDarkMode -> darkModeColors?.mainColor?.toHexStrColor()
-          else -> colors?.mainColor?.toHexStrColor()
-        },
+      when {
+        isDarkMode -> darkModeColors?.mainColor?.toHexStrColor()
+        else -> colors?.mainColor?.toHexStrColor()
+      },
       backgroundColor =
-        when {
-          isDarkMode -> darkModeColors?.background?.toHexStrColor()
-          else -> colors?.background?.toHexStrColor()
-        },
+      when {
+        isDarkMode -> darkModeColors?.background?.toHexStrColor()
+        else -> colors?.background?.toHexStrColor()
+      },
       disabledColor =
-        when {
-          isDarkMode -> darkModeColors?.disabled?.toHexStrColor()
-          else -> colors?.disabled?.toHexStrColor()
-        },
+      when {
+        isDarkMode -> darkModeColors?.disabled?.toHexStrColor()
+        else -> colors?.disabled?.toHexStrColor()
+      },
       textColor =
-        when {
-          isDarkMode -> darkModeColors?.text?.toHexStrColor()
-          else -> colors?.text?.toHexStrColor()
-        },
+      when {
+        isDarkMode -> darkModeColors?.text?.toHexStrColor()
+        else -> colors?.text?.toHexStrColor()
+      },
       bordersColor =
-        when {
-          isDarkMode -> darkModeColors?.borders?.toHexStrColor()
-          else -> colors?.borders?.toHexStrColor()
-        },
+      when {
+        isDarkMode -> darkModeColors?.borders?.toHexStrColor()
+        else -> colors?.borders?.toHexStrColor()
+      },
       errorColor =
-        when {
-          isDarkMode -> darkModeColors?.error?.toHexStrColor()
-          else -> colors?.error?.toHexStrColor()
-        },
+      when {
+        isDarkMode -> darkModeColors?.error?.toHexStrColor()
+        else -> colors?.error?.toHexStrColor()
+      },
     )
   }
 }

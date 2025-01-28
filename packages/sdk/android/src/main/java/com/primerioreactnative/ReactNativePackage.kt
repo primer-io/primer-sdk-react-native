@@ -31,9 +31,9 @@ class ReactNativePackage : ReactPackage {
       PrimerRNHeadlessUniversalCheckoutKlarnaComponent(reactContext),
       PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent(reactContext),
       PrimerRNAchMandateManager(reactContext),
-      //region Component with redirect components
+      // region Component with redirect components
       PrimerRNHeadlessUniversalCheckoutBanksComponent(reactContext),
-      //endregion
+      // endregion
       // region Google Pay Helpers
       PrimerGooglePayButtonConstantsModule(reactContext),
       // endregion

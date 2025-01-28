@@ -42,7 +42,7 @@ class PrimerRNHeadlessUniversalCheckoutVaultManager(
         ErrorTypeRN.NativeBridgeFailed errorTo (
           e.message
             ?: "An error occurs while initialising the vault manager."
-        )
+          )
       promise.reject(exception.errorId, exception.description)
     }
   }
@@ -67,7 +67,7 @@ class PrimerRNHeadlessUniversalCheckoutVaultManager(
           ErrorTypeRN.NativeBridgeFailed errorTo (
             throwable.message
               ?: "An error occurs while fetching vaulted payment methods."
-          )
+            )
         promise.reject(exception.errorId, exception.description)
       }
     }

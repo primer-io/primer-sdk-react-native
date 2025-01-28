@@ -78,6 +78,7 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
                 ),
               )
             }
+
             else -> promise.resolve(null)
           }
         } else {
@@ -132,14 +133,17 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
               json.decodeFromString<PrimerRNCardData>(
                 rawDataStr,
               ).toPrimerCardData()
+
             PrimerRawPaymentMethodType.XENDIT_OVO,
             PrimerRawPaymentMethodType.ADYEN_MBWAY,
             ->
               json.decodeFromString<PrimerRNPhoneNumberData>(rawDataStr)
                 .toPrimerPhoneNumberData()
+
             PrimerRawPaymentMethodType.ADYEN_BANCONTACT_CARD ->
               json.decodeFromString<PrimerRNBancontactCardData>(rawDataStr)
                 .toPrimerBancontactCardData()
+
             PrimerRawPaymentMethodType.XENDIT_RETAIL_OUTLETS ->
               json.decodeFromString<PrimerRNRetailOutletData>(rawDataStr)
                 .toPrimerRetailOutletData()

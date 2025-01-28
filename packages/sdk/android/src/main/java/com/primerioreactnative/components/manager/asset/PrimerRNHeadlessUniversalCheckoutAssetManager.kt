@@ -48,6 +48,7 @@ internal class PrimerRNHeadlessUniversalCheckoutAssetManager(
           ErrorTypeRN.NativeBridgeFailed errorTo "Failed to find asset of $cardNetworkStr."
         promise.reject(exception.errorId, exception.description)
       }
+
       else ->
         try {
           PrimerHeadlessUniversalCheckoutAssetsManager.getCardNetworkImage(cardNetwork)
@@ -157,6 +158,7 @@ internal class PrimerRNHeadlessUniversalCheckoutAssetManager(
                       paymentMethodType = it.paymentMethodType,
                     )
                   }
+
                   is PrimerPaymentMethodNativeView -> {
                     PrimerGooglePayButtonManager.updatePrimerGooglePayButtonCreator { context ->
                       it.createView(context)
@@ -196,6 +198,7 @@ internal class PrimerRNHeadlessUniversalCheckoutAssetManager(
                     paymentMethodType = paymentMethodResource.paymentMethodType,
                   )
                 }
+
                 is PrimerPaymentMethodNativeView -> {
                   PrimerGooglePayButtonManager.updatePrimerGooglePayButtonCreator { context ->
                     paymentMethodResource.createView(context)

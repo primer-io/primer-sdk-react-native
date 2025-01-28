@@ -151,6 +151,7 @@ class PrimerRNHeadlessUniversalCheckoutBanksComponent(
             JSONObject(json.encodeToString(banksStep.toLoadingRN())),
           )
         }
+
         is BanksStep.BanksRetrieved -> {
           sendEvent(
             PrimerHeadlessUniversalCheckoutComponentEvent.ON_STEP.eventName,
@@ -174,6 +175,7 @@ class PrimerRNHeadlessUniversalCheckoutBanksComponent(
             },
           )
         }
+
         is PrimerValidationStatus.Invalid -> {
           sendEvent(
             PrimerHeadlessUniversalCheckoutComponentEvent.ON_IN_VALID.eventName,
@@ -183,6 +185,7 @@ class PrimerRNHeadlessUniversalCheckoutBanksComponent(
             },
           )
         }
+
         is PrimerValidationStatus.Valid -> {
           sendEvent(
             PrimerHeadlessUniversalCheckoutComponentEvent.ON_VALID.eventName,
@@ -191,6 +194,7 @@ class PrimerRNHeadlessUniversalCheckoutBanksComponent(
             },
           )
         }
+
         is PrimerValidationStatus.Error -> {
           sendEvent(
             PrimerHeadlessUniversalCheckoutComponentEvent.ON_VALIDATION_ERROR.eventName,
@@ -218,9 +222,11 @@ class PrimerRNHeadlessUniversalCheckoutBanksComponent(
     )
   }
 
-  @ReactMethod fun addListener(eventName: String?) = Unit
+  @ReactMethod
+  fun addListener(eventName: String?) = Unit
 
-  @ReactMethod fun removeListeners(count: Int?) = Unit
+  @ReactMethod
+  fun removeListeners(count: Int?) = Unit
 
   private fun sendEvent(
     name: String,

@@ -9,7 +9,7 @@ internal fun BanksStep.Loading.toLoadingRN() = BanksStepRN.LoadingRN()
 internal fun BanksStep.BanksRetrieved.toBanksRetrievedRN() =
   BanksStepRN.BanksRetrievedRN(
     banks =
-      banks.map {
-        it.toPrimerIssuingBankRN()
-      },
+    banks.map {
+      it.toPrimerIssuingBankRN()
+    },
   )

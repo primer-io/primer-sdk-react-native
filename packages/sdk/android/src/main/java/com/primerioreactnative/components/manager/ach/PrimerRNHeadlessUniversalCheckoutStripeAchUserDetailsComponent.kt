@@ -170,6 +170,7 @@ class PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent(
             JSONObject(json.encodeToString(step.toUserDetailsRetrievedRN())),
           )
         }
+
         is AchUserDetailsStep.UserDetailsCollected -> {
           sendEvent(
             PrimerHeadlessUniversalCheckoutComponentEvent.ON_STEP.eventName,
@@ -191,6 +192,7 @@ class PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent(
             },
           )
         }
+
         is PrimerValidationStatus.Invalid -> {
           sendEvent(
             PrimerHeadlessUniversalCheckoutComponentEvent.ON_IN_VALID.eventName,
@@ -200,6 +202,7 @@ class PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent(
             },
           )
         }
+
         is PrimerValidationStatus.Valid -> {
           sendEvent(
             PrimerHeadlessUniversalCheckoutComponentEvent.ON_VALID.eventName,
@@ -208,6 +211,7 @@ class PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent(
             },
           )
         }
+
         is PrimerValidationStatus.Error -> {
           sendEvent(
             PrimerHeadlessUniversalCheckoutComponentEvent.ON_VALIDATION_ERROR.eventName,
@@ -229,6 +233,7 @@ class PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent(
           when (collectableData) {
             is AchUserDetailsCollectableData.FirstName ->
               collectableData.toFirstNameRN()
+
             is AchUserDetailsCollectableData.LastName -> collectableData.toLastNameRN()
             is AchUserDetailsCollectableData.EmailAddress ->
               collectableData.toEmailAddressRN()
@@ -238,9 +243,11 @@ class PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent(
     )
   }
 
-  @ReactMethod fun addListener(eventName: String?) = Unit
+  @ReactMethod
+  fun addListener(eventName: String?) = Unit
 
-  @ReactMethod fun removeListeners(count: Int?) = Unit
+  @ReactMethod
+  fun removeListeners(count: Int?) = Unit
 
   private fun sendEvent(
     name: String,

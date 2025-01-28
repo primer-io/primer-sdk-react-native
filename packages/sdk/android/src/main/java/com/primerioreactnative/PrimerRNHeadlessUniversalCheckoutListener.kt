@@ -43,7 +43,7 @@ import org.json.JSONObject
 class PrimerRNHeadlessUniversalCheckoutListener(
   private val reactContext: ReactContext,
 ) : PrimerHeadlessUniversalCheckoutListener,
-  PrimerHeadlessUniversalCheckoutUiListener {
+    PrimerHeadlessUniversalCheckoutUiListener {
   private var paymentCreationDecisionHandler: ((errorMessage: String?) -> Unit)? = null
   private var tokenizeSuccessDecisionHandler: ((resumeToken: String?, errorMessage: String?) -> Unit)? =
     null
@@ -264,6 +264,7 @@ class PrimerRNHeadlessUniversalCheckoutListener(
             },
           )
         }
+
         is AchAdditionalInfo.ProvideActivityResultRegistry -> {
           val activityResultRegistry = (reactContext.currentActivity as? ComponentActivity)?.activityResultRegistry
           if (activityResultRegistry == null) {

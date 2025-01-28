@@ -17,7 +17,6 @@ buildscript {
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
     classpath "org.jetbrains.kotlinx:kover-gradle-plugin:$kover_version"
-    classpath "org.jlleitschuh.gradle:ktlint-gradle:12.1.2"
     classpath "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.7"
   }
 }
@@ -25,7 +24,6 @@ buildscript {
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlinx-serialization'
-apply plugin: 'org.jlleitschuh.gradle.ktlint'
 apply plugin: 'io.gitlab.arturbosch.detekt'
 apply from: "./config/coverage-scripts/kover.gradle"
 
@@ -154,21 +152,6 @@ repositories {
   }
 }
 
-ktlint {
-    debug = false
-    verbose = false
-    android = true
-    outputToConsole = true
-    ignoreFailures = false
-
-    disabledRules = ["import-ordering", "enum-entry-name-case"] // issue with false positives
-
-    reporters {
-        reporter "plain"
-        reporter "json"
-    }
-}
-
 detekt {
     buildUponDefaultConfig = true
     def defaultConfig = file("$rootDir/tooling/code-analysis/detekt.yml")
@@ -194,6 +177,7 @@ detekt {
 def kotlin_version = getExtOrDefault('kotlinVersion')
 
 dependencies {
+  detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.7")
   // noinspection GradleDynamicVersion
   api 'com.facebook.react:react-native:+'
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"

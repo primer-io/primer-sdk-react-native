@@ -122,10 +122,10 @@ fun PrimerPaymentMethodNativeView.toPrimerRNPaymentMethodNativeView(paymentMetho
     paymentMethodType = paymentMethodType,
     paymentMethodName = paymentMethodName,
     nativeViewName =
-      when (paymentMethodType) {
-        "GOOGLE_PAY" -> "PrimerGooglePayButton"
-        else -> error("Native view for '$paymentMethodType'is not supported")
-      },
+    when (paymentMethodType) {
+      "GOOGLE_PAY" -> "PrimerGooglePayButton"
+      else -> error("Native view for '$paymentMethodType'is not supported")
+    },
   )
 
 private fun getFileUrl(

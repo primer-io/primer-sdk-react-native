@@ -60,8 +60,8 @@ internal class PrimerRNHeadlessUniversalCheckoutNativeUiManager(
           description = "The NativeUIManager has not been initialized.",
           diagnosticsId = null,
           recoverySuggestion =
-            "Initialize the NativeUIManager by calling the configure function" +
-              " and providing a payment method type.",
+          "Initialize the NativeUIManager by calling the configure function" +
+            " and providing a payment method type.",
         )
       promise.reject(exception.errorId, exception.description)
     } else if (PrimerSessionIntent.values()

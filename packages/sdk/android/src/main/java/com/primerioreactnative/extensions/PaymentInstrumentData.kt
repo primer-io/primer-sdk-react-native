@@ -13,31 +13,31 @@ internal fun PaymentInstrumentData.toPaymentInstrumentDataRN() =
     expirationMonth = expirationMonth,
     expirationYear = expirationYear,
     externalPayerInfo =
-      externalPayerInfo?.let {
-        PrimerPaymentInstrumentTokenRN.ExternalPayerInfo(
-          email = it.email,
-          externalPayerId = it.externalPayerId,
-          firstName = it.firstName,
-          lastName = it.lastName,
-        )
-      },
+    externalPayerInfo?.let {
+      PrimerPaymentInstrumentTokenRN.ExternalPayerInfo(
+        email = it.email,
+        externalPayerId = it.externalPayerId,
+        firstName = it.firstName,
+        lastName = it.lastName,
+      )
+    },
     klarnaCustomerToken = klarnaCustomerToken,
     sessionData =
-      sessionData?.let {
-        PrimerPaymentInstrumentTokenRN.SessionData(
-          recurringDescription = it.recurringDescription,
-          billingAddress =
-            it.billingAddress?.let {
-              PrimerPaymentInstrumentTokenRN.BillingAddress(
-                email = it.email,
-              )
-            },
-        )
-      },
+    sessionData?.let {
+      PrimerPaymentInstrumentTokenRN.SessionData(
+        recurringDescription = it.recurringDescription,
+        billingAddress =
+        it.billingAddress?.let {
+          PrimerPaymentInstrumentTokenRN.BillingAddress(
+            email = it.email,
+          )
+        },
+      )
+    },
     paymentMethodType = paymentMethodType,
     binData =
-      binData?.let {
-        PrimerPaymentInstrumentTokenRN.BinData(network = it.network)
-      },
+    binData?.let {
+      PrimerPaymentInstrumentTokenRN.BinData(network = it.network)
+    },
     bankName = bankName,
   )

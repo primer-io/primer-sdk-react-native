@@ -141,9 +141,9 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaComponent(
           sendEvent(
             name = PrimerHeadlessUniversalCheckoutComponentEvent.ON_STEP.eventName,
             data =
-              JSONObject(
-                json.encodeToString(klarnaStep.toPaymentSessionCreatedRN()),
-              ),
+            JSONObject(
+              json.encodeToString(klarnaStep.toPaymentSessionCreatedRN()),
+            ),
           )
         }
 
@@ -155,19 +155,21 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaComponent(
             data = JSONObject(json.encodeToString(klarnaStep.toPaymentViewLoadedRN())),
           )
         }
+
         is KlarnaPaymentStep.PaymentSessionAuthorized -> {
           sendEvent(
             name = PrimerHeadlessUniversalCheckoutComponentEvent.ON_STEP.eventName,
             data = JSONObject(json.encodeToString(klarnaStep.toPaymentSessionAuthorizedRN())),
           )
         }
+
         is KlarnaPaymentStep.PaymentSessionFinalized -> {
           sendEvent(
             name = PrimerHeadlessUniversalCheckoutComponentEvent.ON_STEP.eventName,
             data =
-              JSONObject(
-                json.encodeToString(klarnaStep.toPaymentSessionFinalizedRN()),
-              ),
+            JSONObject(
+              json.encodeToString(klarnaStep.toPaymentSessionFinalizedRN()),
+            ),
           )
         }
       }
@@ -185,6 +187,7 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaComponent(
             },
           )
         }
+
         is PrimerValidationStatus.Invalid -> {
           sendEvent(
             PrimerHeadlessUniversalCheckoutComponentEvent.ON_IN_VALID.eventName,
@@ -194,6 +197,7 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaComponent(
             },
           )
         }
+
         is PrimerValidationStatus.Valid -> {
           sendEvent(
             PrimerHeadlessUniversalCheckoutComponentEvent.ON_VALID.eventName,
@@ -202,6 +206,7 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaComponent(
             },
           )
         }
+
         is PrimerValidationStatus.Error -> {
           sendEvent(
             PrimerHeadlessUniversalCheckoutComponentEvent.ON_VALIDATION_ERROR.eventName,
@@ -223,6 +228,7 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaComponent(
           when (collectableData) {
             is KlarnaPaymentCollectableData.PaymentOptions ->
               collectableData.toPaymentOptionsRN()
+
             is KlarnaPaymentCollectableData.FinalizePayment ->
               collectableData.toFinalizePaymentRN()
           },
@@ -231,9 +237,11 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaComponent(
     )
   }
 
-  @ReactMethod fun addListener(eventName: String?) = Unit
+  @ReactMethod
+  fun addListener(eventName: String?) = Unit
 
-  @ReactMethod fun removeListeners(count: Int?) = Unit
+  @ReactMethod
+  fun removeListeners(count: Int?) = Unit
 
   @ReactMethod
   fun onSetPaymentOptions(

@@ -14,11 +14,15 @@ internal fun PrimerCheckoutAdditionalInfo.toCheckoutAdditionalInfoRN() =
   when (this) {
     is MultibancoCheckoutAdditionalInfo ->
       MultibancoCheckoutAdditionalInfoRN(expiresAt, reference, entity)
+
     is QrCodeCheckoutAdditionalInfo ->
       PromptPayCheckoutAdditionalInfoRN(expiresAt.orEmpty(), qrCodeUrl, qrCodeBase64)
+
     is XenditCheckoutVoucherAdditionalInfo ->
       XenditCheckoutVoucherAdditionalInfoRN(expiresAt, couponCode, retailerName)
+
     is AchAdditionalInfo.DisplayMandate ->
       AchAdditionalInfoDisplayMandateRN()
+
     else -> null
   }
