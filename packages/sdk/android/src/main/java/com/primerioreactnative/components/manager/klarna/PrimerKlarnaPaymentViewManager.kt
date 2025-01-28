@@ -9,33 +9,33 @@ import io.primer.android.klarna.api.ui.PrimerKlarnaPaymentView
 import java.lang.ref.WeakReference
 
 class PrimerKlarnaPaymentViewManager : SimpleViewManager<NativeViewContainer>() {
-  override fun getName() = REACT_CLASS
+    override fun getName() = REACT_CLASS
 
-  override fun createViewInstance(reactContext: ThemedReactContext): NativeViewContainer =
-    NativeViewContainer(
-      reactContext,
-    )
+    override fun createViewInstance(reactContext: ThemedReactContext): NativeViewContainer =
+        NativeViewContainer(
+            reactContext,
+        )
 
-  override fun onAfterUpdateTransaction(view: NativeViewContainer) {
-    super.onAfterUpdateTransaction(view)
-    view.addViewImpl(
-      getPrimerKlarnaPaymentViewOrNull()
-        ?: TextView(view.context).apply { text = "Error loading Klarna payment view" },
-    )
-  }
-
-  private fun getPrimerKlarnaPaymentViewOrNull(): View? {
-    return primerKlarnaPaymentView.get() ?: return null
-  }
-
-  companion object {
-    private var primerKlarnaPaymentView: WeakReference<PrimerKlarnaPaymentView?> = WeakReference(null)
-      private set
-
-    fun updatePrimerKlarnaPaymentView(view: PrimerKlarnaPaymentView) {
-      primerKlarnaPaymentView = WeakReference(view)
+    override fun onAfterUpdateTransaction(view: NativeViewContainer) {
+        super.onAfterUpdateTransaction(view)
+        view.addViewImpl(
+            getPrimerKlarnaPaymentViewOrNull()
+                ?: TextView(view.context).apply { text = "Error loading Klarna payment view" },
+        )
     }
 
-    const val REACT_CLASS = "PrimerKlarnaPaymentView"
-  }
+    private fun getPrimerKlarnaPaymentViewOrNull(): View? {
+        return primerKlarnaPaymentView.get() ?: return null
+    }
+
+    companion object {
+        private var primerKlarnaPaymentView: WeakReference<PrimerKlarnaPaymentView?> = WeakReference(null)
+            private set
+
+        fun updatePrimerKlarnaPaymentView(view: PrimerKlarnaPaymentView) {
+            primerKlarnaPaymentView = WeakReference(view)
+        }
+
+        const val REACT_CLASS = "PrimerKlarnaPaymentView"
+    }
 }

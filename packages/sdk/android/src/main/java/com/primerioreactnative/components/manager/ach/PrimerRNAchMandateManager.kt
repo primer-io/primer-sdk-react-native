@@ -11,63 +11,63 @@ import com.primerioreactnative.utils.errorTo
 import kotlinx.coroutines.launch
 
 class PrimerRNAchMandateManager(
-  private val reactContext: ReactApplicationContext,
+    private val reactContext: ReactApplicationContext,
 ) : ReactContextBaseJavaModule(reactContext) {
-  override fun getName() = "RNTAchMandateManager"
+    override fun getName() = "RNTAchMandateManager"
 
-  @ReactMethod
-  fun acceptMandate(promise: Promise) {
-    executeMandateAction(promise, PrimerRNAchMandateManager.Companion.acceptMandate, UNITIALIZED_ACCEPT_MANDATE)
-  }
-
-  @ReactMethod
-  fun declineMandate(promise: Promise) {
-    executeMandateAction(promise, PrimerRNAchMandateManager.Companion.declineMandate, UNITIALIZED_DECLINE_MANDATE)
-  }
-
-  private fun executeMandateAction(
-    promise: Promise,
-    action: (suspend () -> Unit)?,
-    error: String,
-  ) {
-    val lifecycleScope = getLifecycleScopeOrNull()
-
-    if (lifecycleScope == null) {
-      val exception = ErrorTypeRN.NativeBridgeFailed errorTo UNSUPPORTED_ACTIVITY_ERROR
-      promise.reject(exception.errorId, exception.description)
-    } else {
-      lifecycleScope.launch {
-        if (action == null) {
-          val exception = ErrorTypeRN.NativeBridgeFailed errorTo error
-          promise.reject(exception.errorId, exception.description)
-        } else {
-          action()
-          promise.resolve(null)
-        }
-      }
+    @ReactMethod
+    fun acceptMandate(promise: Promise) {
+        executeMandateAction(promise, PrimerRNAchMandateManager.Companion.acceptMandate, UNITIALIZED_ACCEPT_MANDATE)
     }
-  }
 
-  private fun getLifecycleScopeOrNull() = (reactContext.currentActivity as? LifecycleOwner)?.lifecycleScope
+    @ReactMethod
+    fun declineMandate(promise: Promise) {
+        executeMandateAction(promise, PrimerRNAchMandateManager.Companion.declineMandate, UNITIALIZED_DECLINE_MANDATE)
+    }
 
-  companion object {
-    var acceptMandate: (suspend () -> Unit)? = null
-    var declineMandate: (suspend () -> Unit)? = null
+    private fun executeMandateAction(
+        promise: Promise,
+        action: (suspend () -> Unit)?,
+        error: String,
+    ) {
+        val lifecycleScope = getLifecycleScopeOrNull()
 
-    val UNSUPPORTED_ACTIVITY_ERROR =
-      """
+        if (lifecycleScope == null) {
+            val exception = ErrorTypeRN.NativeBridgeFailed errorTo UNSUPPORTED_ACTIVITY_ERROR
+            promise.reject(exception.errorId, exception.description)
+        } else {
+            lifecycleScope.launch {
+                if (action == null) {
+                    val exception = ErrorTypeRN.NativeBridgeFailed errorTo error
+                    promise.reject(exception.errorId, exception.description)
+                } else {
+                    action()
+                    promise.resolve(null)
+                }
+            }
+        }
+    }
+
+    private fun getLifecycleScopeOrNull() = (reactContext.currentActivity as? LifecycleOwner)?.lifecycleScope
+
+    companion object {
+        var acceptMandate: (suspend () -> Unit)? = null
+        var declineMandate: (suspend () -> Unit)? = null
+
+        val UNSUPPORTED_ACTIVITY_ERROR =
+            """
       Unsupported activity type.
       Make sure your root activity extends LifecycleOwner.
-      """.trimIndent()
+            """.trimIndent()
 
-    val UNITIALIZED_ACCEPT_MANDATE =
-      """
+        val UNITIALIZED_ACCEPT_MANDATE =
+            """
       Unitialized 'acceptMandate' property.
-      """.trimIndent()
+            """.trimIndent()
 
-    val UNITIALIZED_DECLINE_MANDATE =
-      """
+        val UNITIALIZED_DECLINE_MANDATE =
+            """
       Unitialized 'declineMandate' property.
-      """.trimIndent()
-  }
+            """.trimIndent()
+    }
 }

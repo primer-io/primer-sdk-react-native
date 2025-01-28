@@ -10,13 +10,13 @@ import io.primer.android.klarna.api.composable.KlarnaPaymentStep.PaymentSessionF
 import io.primer.android.klarna.api.composable.KlarnaPaymentStep.PaymentViewLoaded
 
 internal fun PaymentSessionCreated.toPaymentSessionCreatedRN() =
-  PaymentSessionCreatedRN(paymentCategories = paymentCategories.map { it.toKlarnaPaymentCategoryRN() })
+    PaymentSessionCreatedRN(paymentCategories = paymentCategories.map { it.toKlarnaPaymentCategoryRN() })
 
 internal fun PaymentViewLoaded.toPaymentViewLoadedRN() = PaymentViewLoadedRN()
 
 internal fun PaymentSessionAuthorized.toPaymentSessionAuthorizedRN() =
-  PaymentSessionAuthorizedRN(
-    isFinalized = isFinalized,
-  )
+    PaymentSessionAuthorizedRN(
+        isFinalized = isFinalized,
+    )
 
 internal fun PaymentSessionFinalized.toPaymentSessionFinalizedRN() = PaymentSessionFinalizedRN()

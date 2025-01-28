@@ -6,9 +6,9 @@ import io.primer.android.klarna.api.composable.KlarnaPaymentCollectableData.Fina
 import io.primer.android.klarna.api.composable.KlarnaPaymentCollectableData.PaymentOptions
 
 internal fun PaymentOptions.toPaymentOptionsRN() =
-  PaymentOptionsRN(
-    returnIntentUrl = returnIntentUrl,
-    paymentCategory = paymentCategory.toKlarnaPaymentCategoryRN(),
-  )
+    PaymentOptionsRN(
+        returnIntentUrl = returnIntentUrl,
+        paymentCategory = paymentCategory.toKlarnaPaymentCategoryRN(),
+    )
 
 internal fun FinalizePayment.toFinalizePaymentRN() = FinalizePaymentRN()

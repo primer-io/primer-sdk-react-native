@@ -18,32 +18,32 @@ import com.primerioreactnative.components.manager.vault.PrimerRNHeadlessUniversa
 import kotlinx.serialization.json.Json
 
 class ReactNativePackage : ReactPackage {
-  private val json = Json { ignoreUnknownKeys = true }
+    private val json = Json { ignoreUnknownKeys = true }
 
-  override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
-    return listOf(
-      PrimerRN(reactContext, json),
-      PrimerRNHeadlessUniversalCheckout(reactContext, json),
-      PrimerRNHeadlessUniversalCheckoutRawManager(reactContext, json),
-      PrimerRNHeadlessUniversalCheckoutNativeUiManager(reactContext),
-      PrimerRNHeadlessUniversalCheckoutAssetManager(reactContext),
-      PrimerRNHeadlessUniversalCheckoutVaultManager(reactContext, json),
-      PrimerRNHeadlessUniversalCheckoutKlarnaComponent(reactContext),
-      PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent(reactContext),
-      PrimerRNAchMandateManager(reactContext),
-      // region Component with redirect components
-      PrimerRNHeadlessUniversalCheckoutBanksComponent(reactContext),
-      // endregion
-      // region Google Pay Helpers
-      PrimerGooglePayButtonConstantsModule(reactContext),
-      // endregion
-    )
-  }
+    override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
+        return listOf(
+            PrimerRN(reactContext, json),
+            PrimerRNHeadlessUniversalCheckout(reactContext, json),
+            PrimerRNHeadlessUniversalCheckoutRawManager(reactContext, json),
+            PrimerRNHeadlessUniversalCheckoutNativeUiManager(reactContext),
+            PrimerRNHeadlessUniversalCheckoutAssetManager(reactContext),
+            PrimerRNHeadlessUniversalCheckoutVaultManager(reactContext, json),
+            PrimerRNHeadlessUniversalCheckoutKlarnaComponent(reactContext),
+            PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent(reactContext),
+            PrimerRNAchMandateManager(reactContext),
+            // region Component with redirect components
+            PrimerRNHeadlessUniversalCheckoutBanksComponent(reactContext),
+            // endregion
+            // region Google Pay Helpers
+            PrimerGooglePayButtonConstantsModule(reactContext),
+            // endregion
+        )
+    }
 
-  override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
-    return mutableListOf(
-      PrimerKlarnaPaymentViewManager(),
-      PrimerGooglePayButtonManager(),
-    )
-  }
+    override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
+        return mutableListOf(
+            PrimerKlarnaPaymentViewManager(),
+            PrimerGooglePayButtonManager(),
+        )
+    }
 }

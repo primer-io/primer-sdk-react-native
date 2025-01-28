@@ -31,190 +31,193 @@ import org.json.JSONObject
 
 @ExperimentalPrimerApi
 internal class PrimerRNHeadlessUniversalCheckoutAssetManager(
-  private val reactContext: ReactApplicationContext,
+    private val reactContext: ReactApplicationContext,
 ) : ReactContextBaseJavaModule(reactContext) {
-  override fun getName() = "RNTPrimerHeadlessUniversalCheckoutAssetsManager"
+    override fun getName() = "RNTPrimerHeadlessUniversalCheckoutAssetsManager"
 
-  @ReactMethod
-  fun getCardNetworkImage(
-    cardNetworkStr: String,
-    promise: Promise,
-  ) {
-    val cardNetwork =
-      CardNetwork.Type.values().find { it.name.equals(cardNetworkStr, ignoreCase = true) }
-    when (cardNetwork) {
-      null -> {
-        val exception =
-          ErrorTypeRN.NativeBridgeFailed errorTo "Failed to find asset of $cardNetworkStr."
-        promise.reject(exception.errorId, exception.description)
-      }
-
-      else ->
-        try {
-          PrimerHeadlessUniversalCheckoutAssetsManager.getCardNetworkImage(cardNetwork)
-            .let { resourceId ->
-              val file = getFileForCardNetworkAsset(reactContext, cardNetworkStr)
-              AssetsManager.saveBitmapToFile(
-                file,
-                drawableToBitmap(ContextCompat.getDrawable(reactContext, resourceId)!!),
-              )
-              promise.resolve(
-                JSONObject(
-                  Json.encodeToString(
-                    PrimerCardNetworkAsset("file://${file.absolutePath}"),
-                  ),
-                ).toWritableMap(),
-              )
+    @ReactMethod
+    fun getCardNetworkImage(
+        cardNetworkStr: String,
+        promise: Promise,
+    ) {
+        val cardNetwork =
+            CardNetwork.Type.values().find { it.name.equals(cardNetworkStr, ignoreCase = true) }
+        when (cardNetwork) {
+            null -> {
+                val exception =
+                    ErrorTypeRN.NativeBridgeFailed errorTo "Failed to find asset of $cardNetworkStr."
+                promise.reject(exception.errorId, exception.description)
             }
-        } catch (e: SdkUninitializedException) {
-          promise.reject(ErrorTypeRN.UnitializedSdkSession.errorId, e.message, e)
-        } catch (e: Exception) {
-          promise.reject(ErrorTypeRN.NativeBridgeFailed.errorId, e.message, e)
+
+            else ->
+                try {
+                    PrimerHeadlessUniversalCheckoutAssetsManager.getCardNetworkImage(cardNetwork)
+                        .let { resourceId ->
+                            val file = getFileForCardNetworkAsset(reactContext, cardNetworkStr)
+                            AssetsManager.saveBitmapToFile(
+                                file,
+                                drawableToBitmap(ContextCompat.getDrawable(reactContext, resourceId)!!),
+                            )
+                            promise.resolve(
+                                JSONObject(
+                                    Json.encodeToString(
+                                        PrimerCardNetworkAsset("file://${file.absolutePath}"),
+                                    ),
+                                ).toWritableMap(),
+                            )
+                        }
+                } catch (e: SdkUninitializedException) {
+                    promise.reject(ErrorTypeRN.UnitializedSdkSession.errorId, e.message, e)
+                } catch (e: Exception) {
+                    promise.reject(ErrorTypeRN.NativeBridgeFailed.errorId, e.message, e)
+                }
         }
     }
-  }
 
-  @Suppress("SwallowedException")
-  @ReactMethod
-  fun getPaymentMethodAsset(
-    paymentMethodTypeStr: String,
-    promise: Promise,
-  ) {
-    try {
-      val paymentMethodAsset =
-        PrimerHeadlessUniversalCheckoutAssetsManager.getPaymentMethodAsset(
-          reactContext,
-          paymentMethodTypeStr,
-        )
-      promise.resolve(
-        JSONObject(
-          Json.encodeToString(
-            PrimerRNPaymentMethodAssetWrapper(
-              paymentMethodAsset.toPrimerRNPaymentMethodAsset(
-                reactContext,
-                paymentMethodTypeStr,
-              ),
-            ),
-          ),
-        ).toWritableMap(),
-      )
-    } catch (e: SdkUninitializedException) {
-      return promise.reject(ErrorTypeRN.UnitializedSdkSession.errorId, e.message, e)
-    } catch (e: Exception) {
-      val exception =
-        ErrorTypeRN.NativeBridgeFailed errorTo "Failed to find asset of $paymentMethodTypeStr for this session."
-      return promise.reject(exception.errorId, exception.description)
-    }
-  }
-
-  @ReactMethod
-  fun getPaymentMethodAssets(promise: Promise) {
-    try {
-      val paymentMethodAssets =
-        PrimerHeadlessUniversalCheckoutAssetsManager.getPaymentMethodAssets(reactContext)
-      if (paymentMethodAssets.isEmpty()) {
-        val exception =
-          ErrorTypeRN.NativeBridgeFailed errorTo "Failed to find assets for this session"
-        promise.reject(exception.errorId, exception.description)
-      }
-      promise.resolve(
-        JSONObject(
-          Json.encodeToString(
-            PrimerRNPaymentMethodAssets(
-              paymentMethodAssets.map {
-                it.toPrimerRNPaymentMethodAsset(
-                  reactContext,
-                  it.paymentMethodType,
+    @Suppress("SwallowedException")
+    @ReactMethod
+    fun getPaymentMethodAsset(
+        paymentMethodTypeStr: String,
+        promise: Promise,
+    ) {
+        try {
+            val paymentMethodAsset =
+                PrimerHeadlessUniversalCheckoutAssetsManager.getPaymentMethodAsset(
+                    reactContext,
+                    paymentMethodTypeStr,
                 )
-              },
-            ),
-          ),
-        ).toWritableMap(),
-      )
-    } catch (e: SdkUninitializedException) {
-      promise.reject(ErrorTypeRN.UnitializedSdkSession.errorId, e.message, e)
+            promise.resolve(
+                JSONObject(
+                    Json.encodeToString(
+                        PrimerRNPaymentMethodAssetWrapper(
+                            paymentMethodAsset.toPrimerRNPaymentMethodAsset(
+                                reactContext,
+                                paymentMethodTypeStr,
+                            ),
+                        ),
+                    ),
+                ).toWritableMap(),
+            )
+        } catch (e: SdkUninitializedException) {
+            return promise.reject(ErrorTypeRN.UnitializedSdkSession.errorId, e.message, e)
+        } catch (e: Exception) {
+            val exception =
+                ErrorTypeRN.NativeBridgeFailed errorTo "Failed to find asset of $paymentMethodTypeStr for this session."
+            return promise.reject(exception.errorId, exception.description)
+        }
     }
-  }
 
-  @ReactMethod
-  fun getPaymentMethodResources(promise: Promise) {
-    try {
-      val paymentMethodResources =
-        PrimerHeadlessUniversalCheckoutAssetsManager.getPaymentMethodResources(reactContext)
-      if (paymentMethodResources.isEmpty()) {
-        val exception =
-          ErrorTypeRN.NativeBridgeFailed errorTo "Failed to find resources for this session"
-        promise.reject(exception.errorId, exception.description)
-      }
-      promise.resolve(
-        JSONObject(
-          Json.encodeToString(
-            PrimerRNPaymentMethodResources(
-              paymentMethodResources.map {
-                when (it) {
-                  is PrimerPaymentMethodAsset -> {
-                    it.toPrimerRNPaymentMethodAsset(
-                      reactContext = reactContext,
-                      paymentMethodType = it.paymentMethodType,
-                    )
-                  }
-
-                  is PrimerPaymentMethodNativeView -> {
-                    PrimerGooglePayButtonManager.updatePrimerGooglePayButtonCreator { context ->
-                      it.createView(context)
-                    }
-
-                    it.toPrimerRNPaymentMethodNativeView(
-                      paymentMethodType = it.paymentMethodType,
-                    )
-                  }
-                }
-              },
-            ),
-          ),
-        ).toWritableMap(),
-      )
-    } catch (e: SdkUninitializedException) {
-      promise.reject(ErrorTypeRN.UnitializedSdkSession.errorId, e.message, e)
+    @ReactMethod
+    fun getPaymentMethodAssets(promise: Promise) {
+        try {
+            val paymentMethodAssets =
+                PrimerHeadlessUniversalCheckoutAssetsManager.getPaymentMethodAssets(reactContext)
+            if (paymentMethodAssets.isEmpty()) {
+                val exception =
+                    ErrorTypeRN.NativeBridgeFailed errorTo "Failed to find assets for this session"
+                promise.reject(exception.errorId, exception.description)
+            }
+            promise.resolve(
+                JSONObject(
+                    Json.encodeToString(
+                        PrimerRNPaymentMethodAssets(
+                            paymentMethodAssets.map {
+                                it.toPrimerRNPaymentMethodAsset(
+                                    reactContext,
+                                    it.paymentMethodType,
+                                )
+                            },
+                        ),
+                    ),
+                ).toWritableMap(),
+            )
+        } catch (e: SdkUninitializedException) {
+            promise.reject(ErrorTypeRN.UnitializedSdkSession.errorId, e.message, e)
+        }
     }
-  }
 
-  @ReactMethod
-  fun getPaymentMethodResource(
-    paymentMethodTypeStr: String,
-    promise: Promise,
-  ) {
-    try {
-      val paymentMethodResource =
-        PrimerHeadlessUniversalCheckoutAssetsManager.getPaymentMethodResource(reactContext, paymentMethodTypeStr)
-      promise.resolve(
-        JSONObject(
-          Json.encodeToString(
-            PrimerRNPaymentMethodResourceWrapper(
-              when (paymentMethodResource) {
-                is PrimerPaymentMethodAsset -> {
-                  paymentMethodResource.toPrimerRNPaymentMethodAsset(
-                    reactContext = reactContext,
-                    paymentMethodType = paymentMethodResource.paymentMethodType,
-                  )
-                }
+    @ReactMethod
+    fun getPaymentMethodResources(promise: Promise) {
+        try {
+            val paymentMethodResources =
+                PrimerHeadlessUniversalCheckoutAssetsManager.getPaymentMethodResources(reactContext)
+            if (paymentMethodResources.isEmpty()) {
+                val exception =
+                    ErrorTypeRN.NativeBridgeFailed errorTo "Failed to find resources for this session"
+                promise.reject(exception.errorId, exception.description)
+            }
+            promise.resolve(
+                JSONObject(
+                    Json.encodeToString(
+                        PrimerRNPaymentMethodResources(
+                            paymentMethodResources.map {
+                                when (it) {
+                                    is PrimerPaymentMethodAsset -> {
+                                        it.toPrimerRNPaymentMethodAsset(
+                                            reactContext = reactContext,
+                                            paymentMethodType = it.paymentMethodType,
+                                        )
+                                    }
 
-                is PrimerPaymentMethodNativeView -> {
-                  PrimerGooglePayButtonManager.updatePrimerGooglePayButtonCreator { context ->
-                    paymentMethodResource.createView(context)
-                  }
+                                    is PrimerPaymentMethodNativeView -> {
+                                        PrimerGooglePayButtonManager.updatePrimerGooglePayButtonCreator { context ->
+                                            it.createView(context)
+                                        }
 
-                  paymentMethodResource.toPrimerRNPaymentMethodNativeView(
-                    paymentMethodType = paymentMethodResource.paymentMethodType,
-                  )
-                }
-              },
-            ),
-          ),
-        ).toWritableMap(),
-      )
-    } catch (e: SdkUninitializedException) {
-      promise.reject(ErrorTypeRN.UnitializedSdkSession.errorId, e.message, e)
+                                        it.toPrimerRNPaymentMethodNativeView(
+                                            paymentMethodType = it.paymentMethodType,
+                                        )
+                                    }
+                                }
+                            },
+                        ),
+                    ),
+                ).toWritableMap(),
+            )
+        } catch (e: SdkUninitializedException) {
+            promise.reject(ErrorTypeRN.UnitializedSdkSession.errorId, e.message, e)
+        }
     }
-  }
+
+    @ReactMethod
+    fun getPaymentMethodResource(
+        paymentMethodTypeStr: String,
+        promise: Promise,
+    ) {
+        try {
+            val paymentMethodResource =
+                PrimerHeadlessUniversalCheckoutAssetsManager.getPaymentMethodResource(
+                    reactContext,
+                    paymentMethodTypeStr
+                )
+            promise.resolve(
+                JSONObject(
+                    Json.encodeToString(
+                        PrimerRNPaymentMethodResourceWrapper(
+                            when (paymentMethodResource) {
+                                is PrimerPaymentMethodAsset -> {
+                                    paymentMethodResource.toPrimerRNPaymentMethodAsset(
+                                        reactContext = reactContext,
+                                        paymentMethodType = paymentMethodResource.paymentMethodType,
+                                    )
+                                }
+
+                                is PrimerPaymentMethodNativeView -> {
+                                    PrimerGooglePayButtonManager.updatePrimerGooglePayButtonCreator { context ->
+                                        paymentMethodResource.createView(context)
+                                    }
+
+                                    paymentMethodResource.toPrimerRNPaymentMethodNativeView(
+                                        paymentMethodType = paymentMethodResource.paymentMethodType,
+                                    )
+                                }
+                            },
+                        ),
+                    ),
+                ).toWritableMap(),
+            )
+        } catch (e: SdkUninitializedException) {
+            promise.reject(ErrorTypeRN.UnitializedSdkSession.errorId, e.message, e)
+        }
+    }
 }

@@ -5,15 +5,15 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 internal data class PrimerRNBancontactCardData(
-  val cardNumber: String? = null,
-  val expiryDate: String? = null,
-  val expiryYear: String? = null,
-  val cardholderName: String? = null,
+    val cardNumber: String? = null,
+    val expiryDate: String? = null,
+    val expiryYear: String? = null,
+    val cardholderName: String? = null,
 ) {
-  fun toPrimerBancontactCardData() =
-    PrimerBancontactCardData(
-      cardNumber.orEmpty(),
-      expiryDate.orEmpty(),
-      cardholderName.orEmpty(),
-    )
+    fun toPrimerBancontactCardData() =
+        PrimerBancontactCardData(
+            cardNumber.orEmpty(),
+            expiryDate.orEmpty(),
+            cardholderName.orEmpty(),
+        )
 }

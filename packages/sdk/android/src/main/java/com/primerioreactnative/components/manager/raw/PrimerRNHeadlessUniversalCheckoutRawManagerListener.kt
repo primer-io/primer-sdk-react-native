@@ -14,46 +14,46 @@ import org.json.JSONObject
 
 @ExperimentalPrimerApi
 internal class PrimerRNHeadlessUniversalCheckoutRawManagerListener :
-  PrimerHeadlessUniversalCheckoutRawDataManagerListener {
-  var sendEvent: ((eventName: String, paramsJson: JSONObject?) -> Unit)? = null
+    PrimerHeadlessUniversalCheckoutRawDataManagerListener {
+    var sendEvent: ((eventName: String, paramsJson: JSONObject?) -> Unit)? = null
 
-  override fun onValidationChanged(
-    isValid: Boolean,
-    errors: List<PrimerInputValidationError>,
-  ) {
-    sendEvent?.invoke(
-      PrimerHeadlessUniversalCheckoutRawDataManagerEvent.ON_VALIDATION_CHANGED.eventName,
-      JSONObject().apply {
-        put("isValid", isValid)
-        put(
-          "errors",
-          JSONArray(
-            errors.map {
-              JSONObject(
-                Json.encodeToString(
-                  PrimerInputValidationErrorRN(
-                    it.errorId,
-                    it.description,
-                    it.inputElementType.name,
-                    it.diagnosticsId,
-                  ),
-                ),
-              )
+    override fun onValidationChanged(
+        isValid: Boolean,
+        errors: List<PrimerInputValidationError>,
+    ) {
+        sendEvent?.invoke(
+            PrimerHeadlessUniversalCheckoutRawDataManagerEvent.ON_VALIDATION_CHANGED.eventName,
+            JSONObject().apply {
+                put("isValid", isValid)
+                put(
+                    "errors",
+                    JSONArray(
+                        errors.map {
+                            JSONObject(
+                                Json.encodeToString(
+                                    PrimerInputValidationErrorRN(
+                                        it.errorId,
+                                        it.description,
+                                        it.inputElementType.name,
+                                        it.diagnosticsId,
+                                    ),
+                                ),
+                            )
+                        },
+                    ),
+                )
             },
-          ),
         )
-      },
-    )
-  }
+    }
 
-  override fun onMetadataChanged(metadata: PrimerPaymentMethodMetadata) {
-    sendEvent?.invoke(
-      PrimerHeadlessUniversalCheckoutRawDataManagerEvent.ON_METADATA_CHANGED.eventName,
-      JSONObject().apply {
-        if (metadata is PrimerCardMetadata) {
-          put("cardNetwork", metadata.cardNetwork.name)
-        }
-      },
-    )
-  }
+    override fun onMetadataChanged(metadata: PrimerPaymentMethodMetadata) {
+        sendEvent?.invoke(
+            PrimerHeadlessUniversalCheckoutRawDataManagerEvent.ON_METADATA_CHANGED.eventName,
+            JSONObject().apply {
+                if (metadata is PrimerCardMetadata) {
+                    put("cardNetwork", metadata.cardNetwork.name)
+                }
+            },
+        )
+    }
 }

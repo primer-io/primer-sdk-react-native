@@ -1,5 +1,5 @@
 package com.primerioreactnative.datamodels
 
 internal interface NamedComponentStep {
-  val stepName: String
+    val stepName: String
 }
