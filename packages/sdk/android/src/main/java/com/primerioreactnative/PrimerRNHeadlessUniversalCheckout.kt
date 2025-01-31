@@ -17,8 +17,8 @@ import com.primerioreactnative.datamodels.toPrimerSettings
 import com.primerioreactnative.utils.PrimerHeadlessUniversalCheckoutImplementedRNCallbacks
 import com.primerioreactnative.utils.errorTo
 import com.primerioreactnative.utils.toWritableMap
-import io.primer.android.core.ExperimentalPrimerApi
 import io.primer.android.components.PrimerHeadlessUniversalCheckout
+import io.primer.android.core.ExperimentalPrimerApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json

@@ -7,12 +7,12 @@ import com.facebook.react.bridge.ReactMethod
 import com.primerioreactnative.datamodels.ErrorTypeRN
 import com.primerioreactnative.datamodels.PrimerErrorRN
 import com.primerioreactnative.utils.errorTo
-import io.primer.android.core.ExperimentalPrimerApi
 import io.primer.android.PrimerSessionIntent
 import io.primer.android.components.SdkUninitializedException
 import io.primer.android.components.domain.exception.UnsupportedPaymentMethodManagerException
 import io.primer.android.components.manager.nativeUi.PrimerHeadlessUniversalCheckoutNativeUiManager
 import io.primer.android.components.manager.nativeUi.PrimerHeadlessUniversalCheckoutNativeUiManagerInterface
+import io.primer.android.core.ExperimentalPrimerApi
 import io.primer.android.domain.exception.UnsupportedPaymentIntentException
 
 @ExperimentalPrimerApi
