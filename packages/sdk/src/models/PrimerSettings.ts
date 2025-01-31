@@ -170,6 +170,8 @@ interface IPrimerUIOptions {
   theme?: IPrimerTheme;
 }
 
+export type DismissalMechanism = 'gestures' | 'closeButton';
+
 //----------------------------------------
 
 export type DismissalMechanism = 'gestures' | 'closeButton';
