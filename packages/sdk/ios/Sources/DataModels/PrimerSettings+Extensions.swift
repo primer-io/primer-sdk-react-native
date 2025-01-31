@@ -154,14 +154,14 @@ extension PrimerSettings {
                 clientSessionCachingEnabled = clientSessionCachingEnabledValue
             }
             
-            var apiVersion: PrimerAPIVersion?
+            var apiVersion: PrimerApiVersion?
             if let apiVersionValue = (settingsJson["apiVersion"] as? String) {
                 switch (apiVersionValue) {
                     case "2.3":
-                        apiVersion = PrimerAPIVersion.V2_3
+                        apiVersion = PrimerApiVersion.V2_3
                         break
                     case "2.4":
-                        apiVersion = PrimerAPIVersion.V2_4
+                        apiVersion = PrimerApiVersion.V2_4
                         break
                     default:
                         throw RNTNativeError(errorId: "native-ios", errorDescription: "The value of the 'apiVersion' string is invalid.", recoverySuggestion: "Provide a valid 'apiVersion' string")
@@ -210,7 +210,7 @@ extension PrimerSettings {
                 uiOptions: uiOptions,
                 debugOptions: debugOptions,
                 clientSessionCachingEnabled: clientSessionCachingEnabled ?? false,
-                apiVersion: apiVersion)
+                apiVersion: apiVersion ?? .latest)
         }
     }
 }
