@@ -19,7 +19,7 @@ import com.primerioreactnative.components.manager.googlePay.PrimerGooglePayButto
 import com.primerioreactnative.datamodels.ErrorTypeRN
 import com.primerioreactnative.utils.errorTo
 import com.primerioreactnative.utils.toWritableMap
-import io.primer.android.ExperimentalPrimerApi
+import io.primer.android.core.ExperimentalPrimerApi
 import io.primer.android.components.SdkUninitializedException
 import io.primer.android.components.ui.assets.PrimerHeadlessUniversalCheckoutAssetsManager
 import io.primer.android.components.ui.assets.PrimerPaymentMethodAsset

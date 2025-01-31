@@ -181,8 +181,11 @@ interface IPrimerUIOptions {
   isInitScreenEnabled?: boolean;
   isSuccessScreenEnabled?: boolean;
   isErrorScreenEnabled?: boolean;
+  dismissalMechanism?: DismissalMechanism[];
   theme?: IPrimerTheme;
 }
+
+export type DismissalMechanism = 'gestures' | 'closeButton';
 
 //----------------------------------------
 

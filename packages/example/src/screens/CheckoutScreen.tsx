@@ -304,6 +304,7 @@ const CheckoutScreen = (props: any) => {
       isInitScreenEnabled: true,
       isSuccessScreenEnabled: true,
       isErrorScreenEnabled: true,
+      dismissalMechanism: ['gestures', 'closeButton'],
       theme: {
         // 👇 Uncomment to try theming drop-in checkout
         // colors: {
