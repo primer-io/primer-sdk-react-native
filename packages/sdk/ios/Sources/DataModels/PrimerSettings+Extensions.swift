@@ -181,6 +181,20 @@ extension PrimerSettings {
         (settingsJson["clientSessionCachingEnabled"] as? Bool) {
         clientSessionCachingEnabled = clientSessionCachingEnabledValue
       }
+      
+      var apiVersion: PrimerApiVersion?
+      if let apiVersionValue = (settingsJson["apiVersion"] as? String) {
+        switch (apiVersionValue) {
+        case "2.3":
+          apiVersion = PrimerApiVersion.V2_3
+          break
+        case "2.4":
+          apiVersion = PrimerApiVersion.V2_4
+          break
+        default:
+          throw RNTNativeError(errorId: "native-ios", errorDescription: "The value of the 'apiVersion' string is invalid.", recoverySuggestion: "Provide a valid 'apiVersion' string")
+        }
+      }
 
       var threeDsOptions: PrimerThreeDsOptions?
       if let rnThreeDsAppRequestorUrlStr =
@@ -233,7 +247,8 @@ extension PrimerSettings {
         paymentMethodOptions: paymentMethodOptions,
         uiOptions: uiOptions,
         debugOptions: debugOptions,
-        clientSessionCachingEnabled: clientSessionCachingEnabled ?? false)
+        clientSessionCachingEnabled: clientSessionCachingEnabled ?? false,
+        apiVersion: apiVersion ?? .latest)
     }
   }
   // swiftlint:enable function_body_length

@@ -22,6 +22,7 @@ interface IPrimerSettings {
   uiOptions?: IPrimerUIOptions;
   debugOptions?: IPrimerDebugOptions;
   clientSessionCachingEnabled?: boolean;
+  apiVersion?: PrimerApiVersion;
 
   // Dropin UI
   onBeforeClientSessionUpdate?: () => void;
@@ -185,6 +186,8 @@ interface IPrimerUIOptions {
   theme?: IPrimerTheme;
 }
 
+//----------------------------------------
+
 export type DismissalMechanism = 'gestures' | 'closeButton';
 
 //----------------------------------------
@@ -192,6 +195,13 @@ export type DismissalMechanism = 'gestures' | 'closeButton';
 interface IPrimerDebugOptions {
   is3DSSanityCheckEnabled?: boolean;
 }
+
+//----------------------------------------
+
+/**
+ * Type representing the supported versions of the Primer API.
+ */
+export type PrimerApiVersion = '2.3' | '2.4'
 
 //----------------------------------------
 
