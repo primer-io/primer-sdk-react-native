@@ -21,12 +21,10 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Install Yarn
-        run: |
-          npm install -g yarn
+        run: npm install -g yarn
 
       - name: Install dependencies with Yarn
-        run: |
-          yarn install
+        run: yarn install
         working-directory: packages/example
 
       # Override container JDK
@@ -34,8 +32,17 @@ jobs:
         run: |
           apt-get update
           apt-get install -y openjdk-17-jdk
-          update-alternatives --set java /usr/lib/jvm/java-17-openjdk-amd64/bin/java
-          update-alternatives --set javac /usr/lib/jvm/java-17-openjdk-amd64/bin/javac
+
+      - name: Install Android SDK
+        run: |
+          apt update
+          apt install -y android-sdk
+
+      - name: Set up Android SDK
+        run: |
+          echo "ANDROID_HOME=/usr/local/lib/android-sdk" >> $GITHUB_ENV
+          echo "export ANDROID_HOME" >> $GITHUB_ENV
+          echo "export PATH=\$PATH:\$ANDROID_HOME/tools:\$ANDROID_HOME/platform-tools" >> $GITHUB_ENV
 
       - name: Run detekt
         run: ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 detekt
