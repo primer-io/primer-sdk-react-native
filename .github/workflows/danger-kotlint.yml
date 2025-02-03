@@ -41,7 +41,7 @@ jobs:
       - name: Set up Android SDK
         run: |
           echo "ANDROID_HOME=/usr/local/lib/android-sdk" >> $GITHUB_ENV
-          echo "export PATH=$PATH:/usr/local/lib/android-sdk/tools:/usr/local/lib/android-sdk/platform-tools" >> $GITHUB_ENV
+          echo "/usr/local/lib/android-sdk/tools:/usr/local/lib/android-sdk/platform-tools" >> $GITHUB_PATH
      
       - name: Verify ANDROID_HOME and PATH
         run: |
@@ -49,7 +49,7 @@ jobs:
           echo $PATH
 
       - name: Run detekt
-        run: ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64  -Dandroid.home=/usr/local/lib/android-sdk detekt
+        run: ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 -Dandroid.home=/usr/local/lib/android-sdk detekt
         working-directory: packages/example/android
 
       - name: Run Danger Kotlin
