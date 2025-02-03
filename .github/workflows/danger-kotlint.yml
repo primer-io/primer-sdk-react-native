@@ -24,7 +24,8 @@ jobs:
       #   run: chmod +x ./gradlew  
   
       - name: Run detekt
-        run: ./gradlew detekt  
+        run: ./gradlew detekt
+        working-directory: packages/example/android
 
       - name: Run Danger Kotlin
         run: danger-kotlin ci --failOnErrors --no-publish-check --remove-previous-comments
