@@ -33,10 +33,13 @@ jobs:
           apt-get update
           apt-get install -y openjdk-17-jdk
 
-      - name: Install Android SDK
-        run: |
-          apt update
-          apt install -y android-sdk
+      # - name: Install Android SDK
+      #   run: |
+      #     apt update
+      #     apt install -y android-sdk
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android-sdk@v3
 
       # - name: Set up Android SDK
       #   run: |
