@@ -38,18 +38,21 @@ jobs:
           apt update
           apt install -y android-sdk
 
-      - name: Set up Android SDK
-        run: |
-          echo "ANDROID_HOME=/usr/local/lib/android-sdk" >> $GITHUB_ENV
-          echo "/usr/local/lib/android-sdk/tools:/usr/local/lib/android-sdk/platform-tools" >> $GITHUB_PATH
+      # - name: Set up Android SDK
+      #   run: |
+      #     echo "ANDROID_HOME=/usr/local/lib/android-sdk" >> $GITHUB_ENV
+      #     echo "/usr/local/lib/android-sdk/tools:/usr/local/lib/android-sdk/platform-tools" >> $GITHUB_PATH
      
-      - name: Verify ANDROID_HOME and PATH
-        run: |
-          echo $ANDROID_HOME
-          echo $PATH
+      # - name: Verify ANDROID_HOME and PATH
+      #   run: |
+      #     echo $ANDROID_HOME
+      #     echo $PATH
+
+      - name: Set sdk.dir in local.properties
+        run: echo "sdk.dir=/usr/local/lib/android-sdk" > packages/example/android/local.properties
 
       - name: Run detekt
-        run: ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 -Dandroid.home=/usr/local/lib/android-sdk detekt
+        run: ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 detekt
         working-directory: packages/example/android
 
       - name: Run Danger Kotlin
