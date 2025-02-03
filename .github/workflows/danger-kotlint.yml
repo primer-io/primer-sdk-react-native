@@ -40,9 +40,8 @@ jobs:
 
       - name: Set up Android SDK
         run: |
-          android_home = "/usr/local/lib/android-sdk"
-          echo "ANDROID_HOME=$android_home" >> $GITHUB_ENV
-          echo "export PATH=$PATH:$android_home/tools:$android_home/platform-tools" >> $GITHUB_ENV
+          echo "ANDROID_HOME=/usr/local/lib/android-sdk" >> $GITHUB_ENV
+          echo "export PATH=$PATH:/usr/local/lib/android-sdk/tools:/usr/local/lib/android-sdk/platform-tools" >> $GITHUB_ENV
      
       - name: Verify ANDROID_HOME and PATH
         run: |
