@@ -25,7 +25,10 @@ jobs:
         run: |
           apt-get update
           apt-get install -y openjdk-17-jdk
-          update-alternatives --install /usr/bin/java java /usr/lib/jvm/java-17-openjdk-amd64/bin/java 1
+          update-alternatives --set java /usr/lib/jvm/java-17-openjdk-amd64/bin/java
+          update-alternatives --set javac /usr/lib/jvm/java-17-openjdk-amd64/bin/javac
+          export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+          export PATH=$JAVA_HOME/bin:$PATH
           update-alternatives --config java
           java -version
 
