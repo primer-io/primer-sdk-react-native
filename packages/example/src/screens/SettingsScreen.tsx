@@ -219,8 +219,8 @@ const SettingsScreen = ({navigation}) => {
     vaultOnSuccess
       ? CheckoutVaultingType.VAULT_ON_SUCCESS
       : vaultOnAgreement
-      ? CheckoutVaultingType.VAULT_ON_AGREEMENT
-      : CheckoutVaultingType.NONE,
+        ? CheckoutVaultingType.VAULT_ON_AGREEMENT
+        : CheckoutVaultingType.NONE,
   );
 
   const backgroundStyle = {

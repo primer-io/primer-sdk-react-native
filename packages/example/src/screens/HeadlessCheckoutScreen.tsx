@@ -383,9 +383,8 @@ export const HeadlessCheckoutScreen = (props: any) => {
       if (paymentMethod.paymentMethodManagerCategories.length === 1) {
         pay(paymentMethod, paymentMethod.paymentMethodManagerCategories[0]);
       } else {
-        const selectedImplementationType = await selectImplementationType(
-          paymentMethod,
-        );
+        const selectedImplementationType =
+          await selectImplementationType(paymentMethod);
         pay(paymentMethod, selectedImplementationType);
       }
     } catch (err) {
