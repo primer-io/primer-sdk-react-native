@@ -9,8 +9,8 @@ danger(args) {
 
     onGitHub {
         //region PR Contains Tests
-        let kotlinFilesContainingChanges = allSourceFiles.filter {
-            it.name.endswith(".kt") &&
+        val kotlinFilesContainingChanges = allSourceFiles.filter {
+            it.name.endsWith(".kt") &&
                 danger.utils.readFile(it).contains("import org.junit.jupiter.api.Test")
         }
         if (kotlinFilesContainingChanges.isEmpty()) {
