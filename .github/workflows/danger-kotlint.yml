@@ -32,7 +32,7 @@ jobs:
           java -version
 
       - name: Run detekt
-        run: ./gradlew --version && echo $JAVA_HOME
+        run: ./gradlew --version && echo $JAVA_HOME && java --version
         # run: ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64/bin detekt
         working-directory: packages/example/android
 
