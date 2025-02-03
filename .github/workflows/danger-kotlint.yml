@@ -41,8 +41,12 @@ jobs:
       - name: Set up Android SDK
         run: |
           echo "ANDROID_HOME=/usr/local/lib/android-sdk" >> $GITHUB_ENV
-          echo "export ANDROID_HOME" >> $GITHUB_ENV
           echo "export PATH=\$PATH:\$ANDROID_HOME/tools:\$ANDROID_HOME/platform-tools" >> $GITHUB_ENV
+     
+      - name: Verify ANDROID_HOME and PATH
+        run: |
+          echo $ANDROID_HOME
+          echo $PATH
 
       - name: Run detekt
         run: ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 detekt
