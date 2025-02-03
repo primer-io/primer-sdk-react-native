@@ -16,6 +16,7 @@ private const val COLOR_FORMAT = "#%02X%02X%02X%02X"
 
 @Serializable
 data class PrimerSettingsRN(
+    var paymentHandlingdapaymentHandlingdapaymentHandlingdapaymentHandlingdapaymentHandlingdapaymentHandlingdapaymentHandlingdapaymentHandlingdapaymentHandlingda: PrimerPaymentHandling = PrimerPaymentHandling.AUTO,
     var paymentHandling: PrimerPaymentHandling = PrimerPaymentHandling.AUTO,
     var localeData: LocaleSettingsRN = LocaleSettingsRN(),
     var paymentMethodOptions: PrimerPaymentMethodOptionsRN = PrimerPaymentMethodOptionsRN(),
