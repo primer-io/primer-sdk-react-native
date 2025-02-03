@@ -29,7 +29,7 @@ jobs:
           update-alternatives --set javac /usr/lib/jvm/java-17-openjdk-amd64/bin/javac
 
       - name: Run detekt
-        run: ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64detekt
+        run: ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 detekt
         working-directory: packages/example/android
 
       - name: Run Danger Kotlin
