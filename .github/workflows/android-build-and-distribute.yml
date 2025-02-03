@@ -1,13 +1,15 @@
 name: Android
 
-on: pull_request
+on:
+  workflow_run:
+    workflows: ["Danger (JS)", "Danger (Swift)", "Danger (Kotlin)"]
+    types: [completed]
 
 jobs:
   android-distribute-to-appetize:
     runs-on: ubuntu-latest
     name: "Build and upload app to Appetize 🚀"
     steps:
-
       - name: Cancel previous jobs
         uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # v0.12.1
         with:
