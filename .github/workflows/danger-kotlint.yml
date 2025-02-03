@@ -27,13 +27,9 @@ jobs:
           apt-get install -y openjdk-17-jdk
           update-alternatives --set java /usr/lib/jvm/java-17-openjdk-amd64/bin/java
           update-alternatives --set javac /usr/lib/jvm/java-17-openjdk-amd64/bin/javac
-          export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
-          export PATH=$JAVA_HOME/bin:$PATH
-          java -version
 
       - name: Run detekt
-        run: ./gradlew --version && echo $JAVA_HOME && java --version
-        # run: ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64/bin detekt
+        run: ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64detekt
         working-directory: packages/example/android
 
       - name: Run Danger Kotlin
