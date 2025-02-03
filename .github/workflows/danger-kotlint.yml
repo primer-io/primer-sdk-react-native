@@ -20,6 +20,11 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
+      - name: Install dependencies with Yarn
+        run: |
+          yarn install
+        working-directory: packages/example
+
       # Override container JDK
       - name: Set up JDK 17
         run: |
