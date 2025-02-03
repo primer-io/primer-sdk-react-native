@@ -40,7 +40,7 @@ jobs:
         run: echo "sdk.dir=/usr/lib/android-sdk" > packages/example/android/local.properties
 
       - name: Run detekt
-        run: ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 detekt
+        run: ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 detekt || echo "Detekt completed with errors, running Danger..."
         working-directory: packages/example/android
 
       - name: Run Danger Kotlin
