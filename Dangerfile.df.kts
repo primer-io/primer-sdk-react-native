@@ -25,7 +25,7 @@ danger(args) {
 }
 
 fun parseDetektReport() {
-    val file = File("packages/sdk/android/build/reports/detekt/report.xml")
+    val file = File("packages/sdk/android/build/reports/detekt/detekt.xml")
     if (!file.exists()) {
         warn("🙈 No detekt report found at ${file.path}")
         return
