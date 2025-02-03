@@ -24,7 +24,7 @@ jobs:
           node-version: 18
 
       - name: Install Dependencies
-        run: npm install
+        run: yarn install
 
       - name: Run Danger JS
         run: npx danger ci --dangerfile Dangerfile.ts
