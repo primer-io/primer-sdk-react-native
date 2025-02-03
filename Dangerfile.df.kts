@@ -4,7 +4,7 @@ import systems.danger.kotlin.models.github.*
 import xyz.pavelkorolev.danger.detekt.DetektPlugin
 import java.io.File
 
-register plugin DetektPlugin()
+register plugin DetektPlugin
 
 danger(args) {
     val allSourceFiles = git.modifiedFiles + git.createdFiles
