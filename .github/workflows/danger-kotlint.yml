@@ -20,9 +20,15 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      # - name: Change wrapper permissions  
-      #   run: chmod +x ./gradlew  
-  
+      # Override container JDK
+      - name: Set up JDK 17
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openjdk-17-jdk
+          sudo update-alternatives --install /usr/bin/java java /usr/lib/jvm/java-17-openjdk-amd64/bin/java 1
+          sudo update-alternatives --config java
+          java -version
+
       - name: Run detekt
         run: ./gradlew detekt
         working-directory: packages/example/android
