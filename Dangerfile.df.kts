@@ -11,7 +11,7 @@ danger(args) {
         //region PR Contains Tests
         val kotlinFilesContainingChanges = allSourceFiles.filter { path: String ->
             path.endsWith(".kt") &&
-                danger.utils.readFile(path).contains("import org.junit.jupiter.api.Test")
+                File(path).readText().contains("import org.junit.jupiter.api.Test")
         }
         if (kotlinFilesContainingChanges.isEmpty()) {
             warn("This PR doesn't seem to contain any updated Unit Test for Kotlin 🤔. Please consider double checking it 🙏")
