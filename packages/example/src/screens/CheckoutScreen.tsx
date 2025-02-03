@@ -313,6 +313,7 @@ const CheckoutScreen = (props: any) => {
         debugOptions: {
             is3DSSanityCheckEnabled: false
         },
+        apiVersion: '2.4',
         onBeforeClientSessionUpdate: onBeforeClientSessionUpdate,
         onClientSessionUpdate: onClientSessionUpdate,
         onBeforePaymentCreate: onBeforePaymentCreate,

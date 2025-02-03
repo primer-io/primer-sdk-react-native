@@ -1,5 +1,5 @@
 export { Primer } from './Primer';
-export { PrimerSettings } from './models/PrimerSettings';
+export { PrimerSettings, PrimerApiVersion } from './models/PrimerSettings';
 export { PrimerInputElementType as InputElementType } from './models/PrimerInputElementType';
 export { PrimerSessionIntent as SessionIntent } from './models/PrimerSessionIntent';
 export {

@@ -59,6 +59,7 @@ export default HeadlessCheckoutVaultScreen = (props: any) => {
     debugOptions: {
       is3DSSanityCheckEnabled: false
     },
+    apiVersion: '2.4',
     headlessUniversalCheckoutCallbacks: {
       onAvailablePaymentMethodsLoad: (availablePaymentMethods => {
         updateLogs(`\nℹ️ onAvailablePaymentMethodsLoad\n${JSON.stringify(availablePaymentMethods, null, 2)}\n`);
