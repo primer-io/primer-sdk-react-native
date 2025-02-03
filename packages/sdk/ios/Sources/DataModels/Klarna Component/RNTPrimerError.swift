@@ -34,7 +34,6 @@ struct PrimerValidationErrorRN: Encodable {
     var errorId: String?
     var description: String?
     var diagnosticsId: String?
-    var dummyPropertyHJDKASHDKJASDHKASJDHASKJDHASKDJHASDKAJSHDKSAJHDKSAJHDSAKJDHASKDJHSAKDJSAHDKAJSHDKASJDHASKJDHASKDJAHSDKJASHDKJASHSAKJH: String?
 
     init(errorId: String? = nil,
          description: String? = nil,
