@@ -49,7 +49,7 @@ jobs:
       #     echo $PATH
 
       - name: Set sdk.dir in local.properties
-        run: echo "sdk.dir=/usr/local/lib/android/sdk" > packages/example/android/local.properties
+        run: echo "sdk.dir=/usr/lib/android/sdk" > packages/example/android/local.properties
 
       - name: Run detekt
         run: ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 detekt
