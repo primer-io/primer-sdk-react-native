@@ -36,12 +36,12 @@ fun parseDetektReport() {
         val report = parse(file)
         val count = report.count
         if (count == 0) {
-            message("👏👏👏 Good job! Detekt found no violations here!")
-            return
+            message("✅ No detekt issues found.")
+        } else {
+            fail(
+                "🙁 Found **${report.count}** detekt violations."
+            )
         }
-        fail(
-            "🙁 Found **${report.count}** detekt violations."
-        )
         report(report)
     }
 }

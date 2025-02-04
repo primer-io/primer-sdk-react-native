@@ -4861,11 +4861,6 @@ csstype@^3.0.2:
   resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.1.3.tgz#d80ff294d114fb0e6ac500fbf85b60137d7eff81"
   integrity sha512-M1uQkMl8rQK/szD0LNhtqxIPLpimGm8sOBwU7lLnCpSbTyY3yeU1Vc7l4KT5zT4s/yOxHH5O7tIuuLOCnLADRw==
 
-danger-plugin-prettier@^0.2.0-development:
-  version "0.2.0-development"
-  resolved "https://registry.yarnpkg.com/danger-plugin-prettier/-/danger-plugin-prettier-0.2.0-development.tgz#a18aed2a617415acbb85bc26e02cfdb65e0ac8a8"
-  integrity sha512-U/Ov1kkFWblIwdr658DmV7iw+Su4UNvxz1YVhrfZw9E0hwEZGYrv0V8WixrljhFs9OB8HAW/7704FhB5bdyfyQ==
-
 danger@^12.3.3:
   version "12.3.3"
   resolved "https://registry.yarnpkg.com/danger/-/danger-12.3.3.tgz#48bfebf0318105101d06a358e57495a652d29758"

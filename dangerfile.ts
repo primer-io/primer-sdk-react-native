@@ -1,5 +1,5 @@
-import { danger, warn, fail } from "danger";
-import prettier from 'danger-plugin-prettier'
+import { danger, warn, fail, message } from "danger";
+import { execSync } from "child_process";
 
 const pr = danger.github.pr;
 
@@ -34,6 +34,29 @@ if (!isConventionalCommitTitle) {
 }
 // #endregion
 
-// #region Prettier
-prettier() // TODO TWS: see if it uses config
+// #region ESLint
+eslint()
 // #endregion
+
+function eslint() {
+    try {
+        const eslintOutput = execSync("npx eslint --config eslint.config.mjs --format json", { encoding: "utf-8" });
+        const errors = JSON.parse(eslintOutput);
+    
+        errors.forEach(file => {
+            file.messages.forEach(msg => {
+                fail(`[ESLint] ${file.filePath} (${msg.line}:${msg.column}) - ${msg.message} (${msg.ruleId})`);
+            });
+        });
+    
+        if (errors.length === 0) {
+            message("✅ No ESLint issues found.");
+        } else {
+            fail(
+                "🙁 Found **${errors.length}** ESLint violations."
+            )
+        }
+    } catch (error) {
+        fail(`ESLint execution failed: ${error.message}`);
+    }
+}
