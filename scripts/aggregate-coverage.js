@@ -27,11 +27,7 @@ function findCoverageFolders(directory, maxDepth = 5, currentDepth = 0) {
       if (file === 'coverage') {
         coverageFolders.push(filePath);
       } else if (currentDepth < maxDepth) {
-        const subdirectoryCoverageFolders = findCoverageFolders(
-          filePath,
-          maxDepth,
-          currentDepth + 1,
-        );
+        const subdirectoryCoverageFolders = findCoverageFolders(filePath, maxDepth, currentDepth + 1);
         coverageFolders = coverageFolders.concat(subdirectoryCoverageFolders);
       }
     }
@@ -45,11 +41,8 @@ function generateReports() {
   const coverageFolders = findCoverageFolders(PACKAGE_PATH);
   console.log(coverageFolders);
 
-  coverageFolders.forEach((coverageFolder) => {
-    const coverageFinalFilePath = path.resolve(
-      coverageFolder,
-      'coverage-final.json',
-    );
+  coverageFolders.forEach(coverageFolder => {
+    const coverageFinalFilePath = path.resolve(coverageFolder, 'coverage-final.json');
 
     fs.stat(coverageFinalFilePath, (error, stats) => {
       if (error) {
@@ -59,10 +52,7 @@ function generateReports() {
 
       try {
         const packageName = coverageFolder.split('/').slice(-2)[0];
-        const destFilePath = path.resolve(
-          REPORTS_DIR_PATH,
-          `${packageName}.json`,
-        );
+        const destFilePath = path.resolve(REPORTS_DIR_PATH, `${packageName}.json`);
 
         if (fs.existsSync(coverageFinalFilePath)) {
           fs.copyFileSync(coverageFinalFilePath, destFilePath);
