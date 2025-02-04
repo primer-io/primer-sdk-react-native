@@ -48,7 +48,7 @@
   "devDependencies": {
     "@commitlint/config-conventional": "^11.0.0",
     "@eslint/eslintrc": "^3.2.0",
-    "@eslint/js": "^9.19.0",
+    "@eslint/js": "^9.0.0",
     "@react-native-community/eslint-config": "^2.0.0",
     "@release-it/conventional-changelog": "^5.1.1",
     "@tsconfig/react-native": "^3.0.0",

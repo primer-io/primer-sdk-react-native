@@ -37,7 +37,7 @@
     "@babel/runtime": "^7.20.0",
     "@eslint/compat": "^1.2.6",
     "@eslint/eslintrc": "^3.2.0",
-    "@eslint/js": "^9.19.0",
+    "@eslint/js": "^9.0.0",
     "@react-native-community/cli-platform-android": "^10.2.0",
     "@react-native-community/cli-platform-ios": "^12.3.0",
     "@react-native/eslint-config": "^0.72.2",
