@@ -23,7 +23,7 @@ export default tseslint.config(
         rules: {
             '@typescript-eslint/no-shadow': 'error',
             'no-undef': 'off',
-            '@typescript-eslint/no-unused-vars': 'error',
+            '@typescript-eslint/no-unused-vars': ['error', { "argsIgnorePattern": "^_" }],
             'no-unused-vars': 'off',
             'no-async-promise-executor': 'off'
         },
