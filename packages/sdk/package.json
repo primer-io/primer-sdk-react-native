@@ -22,7 +22,8 @@
   "scripts": {
     "test": "jest",
     "typescript": "tsc --noEmit",
-    "lint": "eslint \"**/*.{js,ts,tsx}\"",
+    "lint": "npx eslint --config ../../eslint.config.mjs",
+    "lintAndFix": "npx eslint --config ../../eslint.config.mjs --fix",  
     "build": "bob build",
     "prepare": "bob build",
     "release": "release-it",
