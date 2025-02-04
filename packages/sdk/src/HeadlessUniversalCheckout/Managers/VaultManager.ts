@@ -101,7 +101,7 @@ class PrimerHeadlessUniversalCheckoutVaultManager {
 // Convert accountNumberLastFourDigits to accountNumberLast4Digits when present
 // Overcomes an iOS limitation of toJsonObject()
 function sanitizePaymentMethods(paymentMethods: VaultedPaymentMethod[]): VaultedPaymentMethod[] {
-  return paymentMethods.map((method) => {
+  return paymentMethods.map(method => {
     const unwrappedInstrumentData = method.paymentInstrumentData as any;
     if (unwrappedInstrumentData?.accountNumberLastFourDigits !== undefined) {
       const { accountNumberLastFourDigits, ...rest } = unwrappedInstrumentData;
