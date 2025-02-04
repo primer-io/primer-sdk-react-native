@@ -6,11 +6,7 @@ import {appPaymentParameters} from '../models/IClientSessionRequestBody';
 import type {IClientSession} from '../models/IClientSession';
 import type {IPayment} from '../models/IPayment';
 import {getPaymentHandlingStringVal} from '../network/Environment';
-import {
-  createClientSession,
-  createPayment,
-  resumePayment,
-} from '../network/api';
+import {createClientSession, createPayment, resumePayment} from '../network/api';
 import {
   CheckoutAdditionalInfo,
   CheckoutData,
@@ -29,9 +25,9 @@ import {STRIPE_ACH_PUBLISHABLE_KEY} from '../Keys';
 
 let clientToken: string | null = null;
 let paymentId: string | null = null;
-let logs: Log[] = [];
+const logs: Log[] = [];
 let merchantCheckoutData: CheckoutData | null = null;
-let merchantCheckoutAdditionalInfo: CheckoutAdditionalInfo | null = null;
+const merchantCheckoutAdditionalInfo: CheckoutAdditionalInfo | null = null;
 let merchantPayment: IPayment | null = null;
 let merchantPrimerError: Error | unknown | null = null;
 
@@ -71,7 +67,7 @@ const CheckoutScreen = (props: any) => {
 
   const onBeforePaymentCreate = (
     checkoutPaymentMethodData: CheckoutPaymentMethodData,
-    handler: PaymentCreationHandler,
+    handler: PaymentCreationHandler
   ) => {
     updateLogs({
       event: 'onBeforePaymentCreate',
@@ -102,7 +98,7 @@ const CheckoutScreen = (props: any) => {
 
   const onTokenizeSuccess = async (
     paymentMethodTokenData: PrimerPaymentMethodTokenData,
-    handler: TokenizationHandler,
+    handler: TokenizationHandler
   ) => {
     updateLogs({
       event: 'onTokenizeSuccess',
@@ -110,17 +106,13 @@ const CheckoutScreen = (props: any) => {
     });
 
     try {
-      const payment: IPayment = await createPayment(
-        paymentMethodTokenData.token,
-      );
+      const payment: IPayment = await createPayment(paymentMethodTokenData.token);
 
       if (payment.requiredAction && payment.requiredAction.clientToken) {
         paymentId = payment.id;
 
         if (payment.requiredAction.name === '3DS_AUTHENTICATION') {
-          console.warn(
-            'Make sure you have used a card number that supports 3DS, otherwise the SDK will hang.',
-          );
+          console.warn('Make sure you have used a card number that supports 3DS, otherwise the SDK will hang.');
         }
         paymentId = payment.id;
         handler.continueWithNewClientToken(payment.requiredAction.clientToken);
@@ -157,10 +149,7 @@ const CheckoutScreen = (props: any) => {
     }
   };
 
-  const onResumeSuccess = async (
-    resumeToken: string,
-    handler: ResumeHandler,
-  ) => {
+  const onResumeSuccess = async (resumeToken: string, handler: ResumeHandler) => {
     updateLogs({event: 'onResumeSuccess', value: {resumeToken: resumeToken}});
 
     try {
@@ -209,20 +198,14 @@ const CheckoutScreen = (props: any) => {
     });
   };
 
-  const onCheckoutReceivedAdditionalInfo = async (
-    additionalInfo: CheckoutAdditionalInfo,
-  ) => {
+  const onCheckoutReceivedAdditionalInfo = async (additionalInfo: CheckoutAdditionalInfo) => {
     updateLogs({
       event: 'onCheckoutReceivedAdditionalInfo',
       value: {additionalInfo: additionalInfo},
     });
   };
 
-  const onError = (
-    error: PrimerError,
-    checkoutData: CheckoutData | null,
-    handler: ErrorHandler | undefined,
-  ) => {
+  const onError = (error: PrimerError, checkoutData: CheckoutData | null, handler: ErrorHandler | undefined) => {
     merchantPrimerError = error;
     merchantCheckoutData = checkoutData;
 
@@ -250,10 +233,8 @@ const CheckoutScreen = (props: any) => {
     setIsLoading(false);
   };
 
-  let settings: PrimerSettings = {
-    paymentHandling: getPaymentHandlingStringVal(
-      appPaymentParameters.paymentHandling,
-    ),
+  const settings: PrimerSettings = {
+    paymentHandling: getPaymentHandlingStringVal(appPaymentParameters.paymentHandling),
     paymentMethodOptions: {
       iOS: {
         urlScheme: 'merchant://primer.io',
@@ -443,9 +424,7 @@ const CheckoutScreen = (props: any) => {
           backgroundColor: 'black',
         }}
         onPress={onVaultManagerButtonTapped}>
-        <Text style={{...styles.buttonText, color: 'white'}}>
-          Vault Manager
-        </Text>
+        <Text style={{...styles.buttonText, color: 'white'}}>Vault Manager</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={{
@@ -456,9 +435,7 @@ const CheckoutScreen = (props: any) => {
           backgroundColor: 'black',
         }}
         onPress={onUniversalCheckoutButtonTapped}>
-        <Text style={{...styles.buttonText, color: 'white'}}>
-          Universal Checkout
-        </Text>
+        <Text style={{...styles.buttonText, color: 'white'}}>Universal Checkout</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={{

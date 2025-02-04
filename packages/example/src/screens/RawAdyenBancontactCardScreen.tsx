@@ -1,11 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {Text, TouchableOpacity, View, ScrollView} from 'react-native';
 import {ActivityIndicator} from 'react-native';
-import {
-  InputElementType,
-  BancontactCardRedirectData,
-  RawDataManager,
-} from '@primer-io/react-native';
+import {InputElementType, BancontactCardRedirectData, RawDataManager} from '@primer-io/react-native';
 import TextField from '../components/TextField';
 import {styles} from '../styles';
 
@@ -20,9 +16,7 @@ const RawAdyenBancontactCardScreen = (props: any) => {
   //@ts-ignore
   const [isLoading, _] = useState(false);
   const [isCardFormValid, setIsCardFormValid] = useState(false);
-  const [requiredInputElementTypes, setRequiredInputElementTypes] = useState<
-    string[] | undefined
-  >(undefined);
+  const [requiredInputElementTypes, setRequiredInputElementTypes] = useState<string[] | undefined>(undefined);
   const [cardNumber, setCardNumber] = useState<string>('');
   const [expiryDate, setExpiryDate] = useState<string>('');
   const [cardholderName, setCardholderName] = useState<string | undefined>('');
@@ -57,17 +51,11 @@ const RawAdyenBancontactCardScreen = (props: any) => {
         setIsCardFormValid(isVallid);
       },
     });
-    setRequiredInputElementTypes(
-      await rawDataManager.getRequiredInputElementTypes(),
-    );
+    setRequiredInputElementTypes(await rawDataManager.getRequiredInputElementTypes());
   };
 
-  const setRawData = (
-    tmpCardNumber: string | null,
-    tmpExpiryDate: string | null,
-    tmpCardholderName: string | null,
-  ) => {
-    let rawData: BancontactCardRedirectData = {
+  const setRawData = (tmpCardNumber: string | null, tmpExpiryDate: string | null, tmpCardholderName: string | null) => {
+    const rawData: BancontactCardRedirectData = {
       cardNumber: cardNumber || '',
       expiryDate: expiryDate || '',
       cardholderName: cardholderName || '',

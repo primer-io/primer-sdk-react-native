@@ -8,9 +8,7 @@ export enum APIVersion {
   v7,
 }
 
-export function getAPIVersionStringVal(
-  apiVersion: APIVersion,
-): string | undefined {
+export function getAPIVersionStringVal(apiVersion: APIVersion): string | undefined {
   switch (apiVersion) {
     case APIVersion.v1:
       return undefined;

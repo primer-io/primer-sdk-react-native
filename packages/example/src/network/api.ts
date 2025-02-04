@@ -1,19 +1,16 @@
 import axios from 'axios';
 import {getEnvironmentStringVal} from './Environment';
-import {
-  appPaymentParameters,
-  IClientSessionActionsRequestBody,
-} from '../models/IClientSessionRequestBody';
+import {appPaymentParameters, IClientSessionActionsRequestBody} from '../models/IClientSessionRequestBody';
 import type {IPayment} from '../models/IPayment';
 import {APIVersion, getAPIVersionStringVal} from './APIVersion';
 import {customApiKey, customClientToken} from '../screens/SettingsScreen';
 
 const baseUrl = 'https://us-central1-primerdemo-8741b.cloudfunctions.net/api';
 
-let staticHeaders: {[key: string]: string} = {
+const staticHeaders: {[key: string]: string} = {
   'Content-Type': 'application/json',
   //@ts-ignore
-  environment: getEnvironmentStringVal(appPaymentParameters.environment),
+  'environment': getEnvironmentStringVal(appPaymentParameters.environment),
 };
 
 export const createClientSession = async () => {
@@ -41,11 +38,7 @@ export const createClientSession = async () => {
     console.log('BODY:');
     console.log(appPaymentParameters.clientSessionRequestBody);
     //@ts-ignore
-    const response = await axios.post(
-      url,
-      appPaymentParameters.clientSessionRequestBody,
-      {headers: headers},
-    );
+    const response = await axios.post(url, appPaymentParameters.clientSessionRequestBody, {headers: headers});
     console.log('\n\n');
     console.log(`RESPONSE:\n [${response.status}] ${url}`);
     console.log('BODY:');
@@ -55,11 +48,7 @@ export const createClientSession = async () => {
     if (response.status >= 200 && response.status < 300) {
       return response.data;
     } else {
-      const err = new Error(
-        `Request failed with status ${response.status}.\nBody: ${JSON.stringify(
-          response.data,
-        )}`,
-      );
+      const err = new Error(`Request failed with status ${response.status}.\nBody: ${JSON.stringify(response.data)}`);
       console.error(err);
       throw err;
     }
@@ -70,9 +59,7 @@ export const createClientSession = async () => {
   }
 };
 
-export const setClientSessionActions = async (
-  body: IClientSessionActionsRequestBody,
-) => {
+export const setClientSessionActions = async (body: IClientSessionActionsRequestBody) => {
   const url = baseUrl + '/client-session/actions';
   const headers: {[key: string]: string} = {
     ...staticHeaders,
@@ -102,11 +89,7 @@ export const setClientSessionActions = async (
       const clientSession = response.data;
       return clientSession;
     } else {
-      const err = new Error(
-        `Request failed with status ${response.status}.\nBody: ${JSON.stringify(
-          response.data,
-        )}`,
-      );
+      const err = new Error(`Request failed with status ${response.status}.\nBody: ${JSON.stringify(response.data)}`);
       console.error(err);
       throw err;
     }
@@ -148,11 +131,7 @@ export const createPayment = async (paymentMethodToken: string) => {
       const payment: IPayment = response.data;
       return payment;
     } else {
-      const err = new Error(
-        `Request failed with status ${response.status}.\nBody: ${JSON.stringify(
-          response.data,
-        )}`,
-      );
+      const err = new Error(`Request failed with status ${response.status}.\nBody: ${JSON.stringify(response.data)}`);
       console.error(err);
       throw err;
     }
@@ -194,11 +173,7 @@ export const resumePayment = async (paymentId: string, resumeToken: string) => {
     if (response.status >= 200 && response.status < 300) {
       return response.data;
     } else {
-      const err = new Error(
-        `Request failed with status ${response.status}.\nBody: ${JSON.stringify(
-          response.data,
-        )}`,
-      );
+      const err = new Error(`Request failed with status ${response.status}.\nBody: ${JSON.stringify(response.data)}`);
       console.error(err);
       throw err;
     }

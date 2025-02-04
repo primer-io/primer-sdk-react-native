@@ -7,10 +7,7 @@ export interface SectionProps {
 }
 import {styles} from '../styles';
 
-export const Section: React.FC<{title: string; style: SectionProps}> = ({
-  title,
-  style,
-}) => {
+export const Section: React.FC<{title: string; style: SectionProps}> = ({title, style}) => {
   return (
     <View style={{marginTop: 32, marginBottom: 12, ...style}}>
       <Text

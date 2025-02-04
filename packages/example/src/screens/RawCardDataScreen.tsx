@@ -1,11 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {Text, TouchableOpacity, View, ScrollView} from 'react-native';
 import {ActivityIndicator} from 'react-native';
-import {
-  InputElementType,
-  CardData,
-  RawDataManager,
-} from '@primer-io/react-native';
+import {InputElementType, CardData, RawDataManager} from '@primer-io/react-native';
 import TextField from '../components/TextField';
 import {styles} from '../styles';
 
@@ -20,9 +16,7 @@ const RawCardDataScreen = (props: any) => {
   //@ts-ignore
   const [isLoading, _] = useState(false);
   const [isCardFormValid, setIsCardFormValid] = useState(false);
-  const [requiredInputElementTypes, setRequiredInputElementTypes] = useState<
-    string[] | undefined
-  >(undefined);
+  const [requiredInputElementTypes, setRequiredInputElementTypes] = useState<string[] | undefined>(undefined);
   const [cardNumber, setCardNumber] = useState<string>('');
   const [expiryDate, setExpiryDate] = useState<string>('');
   const [cvv, setCvv] = useState<string>('');
@@ -58,18 +52,16 @@ const RawCardDataScreen = (props: any) => {
         setIsCardFormValid(isVallid);
       },
     });
-    setRequiredInputElementTypes(
-      await rawDataManager.getRequiredInputElementTypes(),
-    );
+    setRequiredInputElementTypes(await rawDataManager.getRequiredInputElementTypes());
   };
 
   const setRawData = (
     tmpCardNumber: string | null,
     tmpExpiryDate: string | null,
     tmpCvv: string | null,
-    tmpCardholderName: string | null,
+    tmpCardholderName: string | null
   ) => {
-    let rawData: CardData = {
+    const rawData: CardData = {
       cardNumber: cardNumber || '',
       expiryDate: expiryDate || '',
       cvv: cvv || '',

@@ -1,11 +1,5 @@
 import * as React from 'react';
-import {
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  useColorScheme,
-  View,
-} from 'react-native';
+import {ScrollView, Text, TouchableOpacity, useColorScheme, View} from 'react-native';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {styles} from '../styles';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
@@ -53,9 +47,7 @@ enum CheckoutVaultingType {
   VAULT_ON_AGREEMENT,
 }
 
-export function makeCheckoutVaultingTypeFromIntVal(
-  env: number,
-): CheckoutVaultingType {
+export function makeCheckoutVaultingTypeFromIntVal(env: number): CheckoutVaultingType {
   switch (env) {
     case 0:
       return CheckoutVaultingType.NONE;
@@ -71,156 +63,107 @@ export function makeCheckoutVaultingTypeFromIntVal(
 // @ts-ignore
 const SettingsScreen = ({navigation}) => {
   const isDarkMode = useColorScheme() === 'dark';
-  const [environment, setEnvironment] = React.useState<Environment>(
-    Environment.Sandbox,
-  );
+  const [environment, setEnvironment] = React.useState<Environment>(Environment.Sandbox);
   const [apiKey, setApiKey] = React.useState<string | undefined>(customApiKey);
-  const [clientToken, setClientToken] = React.useState<string | undefined>(
-    undefined,
-  );
-  const [paymentHandling, setPaymentHandling] = React.useState<PaymentHandling>(
-    PaymentHandling.Auto,
-  );
+  const [clientToken, setClientToken] = React.useState<string | undefined>(undefined);
+  const [paymentHandling, setPaymentHandling] = React.useState<PaymentHandling>(PaymentHandling.Auto);
   const [lineItems, setLineItems] = React.useState<IClientSessionLineItem[]>(
-    appPaymentParameters.clientSessionRequestBody.order?.lineItems || [],
+    appPaymentParameters.clientSessionRequestBody.order?.lineItems || []
   );
   const [currency, setCurrency] = React.useState<string>('EUR');
   const [countryCode, setCountryCode] = React.useState<string>('DE');
   const [orderId, setOrderId] = React.useState<string | undefined>(
-    appPaymentParameters.clientSessionRequestBody.orderId,
+    appPaymentParameters.clientSessionRequestBody.orderId
   );
-  const [captureVaultedCardCvv, setCaptureVaultedCardCvv] = React.useState<
-    string | undefined
-  >(
-    appPaymentParameters.clientSessionRequestBody.paymentMethod?.options
-      ?.PAYMENT_CARD?.captureVaultedCardCvv,
+  const [captureVaultedCardCvv, setCaptureVaultedCardCvv] = React.useState<string | undefined>(
+    appPaymentParameters.clientSessionRequestBody.paymentMethod?.options?.PAYMENT_CARD?.captureVaultedCardCvv
   );
 
-  const [merchantName, setMerchantName] = React.useState<string | undefined>(
-    appPaymentParameters.merchantName,
-  );
+  const [merchantName, setMerchantName] = React.useState<string | undefined>(appPaymentParameters.merchantName);
 
   const [isCustomerApplied, setIsCustomerApplied] = React.useState<boolean>(
-    appPaymentParameters.clientSessionRequestBody.customer !== undefined,
+    appPaymentParameters.clientSessionRequestBody.customer !== undefined
   );
   const [customerId, setCustomerId] = React.useState<string | undefined>(
-    appPaymentParameters.clientSessionRequestBody.customerId,
+    appPaymentParameters.clientSessionRequestBody.customerId
   );
   const [firstName, setFirstName] = React.useState<string | undefined>(
-    appPaymentParameters.clientSessionRequestBody.customer?.firstName,
+    appPaymentParameters.clientSessionRequestBody.customer?.firstName
   );
   const [lastName, setLastName] = React.useState<string | undefined>(
-    appPaymentParameters.clientSessionRequestBody.customer?.lastName,
+    appPaymentParameters.clientSessionRequestBody.customer?.lastName
   );
   const [email, setEmail] = React.useState<string | undefined>(
-    appPaymentParameters.clientSessionRequestBody.customer?.emailAddress,
+    appPaymentParameters.clientSessionRequestBody.customer?.emailAddress
   );
   const [phoneNumber, setPhoneNumber] = React.useState<string | undefined>(
-    appPaymentParameters.clientSessionRequestBody.customer?.mobileNumber,
+    appPaymentParameters.clientSessionRequestBody.customer?.mobileNumber
   );
-  const [nationalDocumentId, setNationalDocumentId] = React.useState<
-    string | undefined
-  >(appPaymentParameters.clientSessionRequestBody.customer?.nationalDocumentId);
+  const [nationalDocumentId, setNationalDocumentId] = React.useState<string | undefined>(
+    appPaymentParameters.clientSessionRequestBody.customer?.nationalDocumentId
+  );
   const [isAddressApplied, setIsAddressApplied] = React.useState<boolean>(
-    appPaymentParameters.clientSessionRequestBody.customer?.billingAddress !==
-      undefined,
+    appPaymentParameters.clientSessionRequestBody.customer?.billingAddress !== undefined
   );
   const [addressLine1, setAddressLine1] = React.useState<string | undefined>(
-    appPaymentParameters.clientSessionRequestBody.customer?.billingAddress
-      ?.addressLine1,
+    appPaymentParameters.clientSessionRequestBody.customer?.billingAddress?.addressLine1
   );
   const [addressLine2, setAddressLine2] = React.useState<string | undefined>(
-    appPaymentParameters.clientSessionRequestBody.customer?.billingAddress
-      ?.addressLine2,
+    appPaymentParameters.clientSessionRequestBody.customer?.billingAddress?.addressLine2
   );
   const [postalCode, setPostalCode] = React.useState<string | undefined>(
-    appPaymentParameters.clientSessionRequestBody.customer?.billingAddress
-      ?.postalCode,
+    appPaymentParameters.clientSessionRequestBody.customer?.billingAddress?.postalCode
   );
   const [city, setCity] = React.useState<string | undefined>(
-    appPaymentParameters.clientSessionRequestBody.customer?.billingAddress
-      ?.city,
+    appPaymentParameters.clientSessionRequestBody.customer?.billingAddress?.city
   );
   const [state, setState] = React.useState<string | undefined>(
-    appPaymentParameters.clientSessionRequestBody.customer?.billingAddress
-      ?.state,
+    appPaymentParameters.clientSessionRequestBody.customer?.billingAddress?.state
   );
-  const [customerAddressCountryCode, setCustomerAddressCountryCode] =
-    React.useState<string | undefined>(
-      appPaymentParameters.clientSessionRequestBody.customer?.billingAddress
-        ?.countryCode,
-    );
+  const [customerAddressCountryCode, setCustomerAddressCountryCode] = React.useState<string | undefined>(
+    appPaymentParameters.clientSessionRequestBody.customer?.billingAddress?.countryCode
+  );
 
-  const [isSurchargeApplied, setIsSurchargeApplied] =
-    React.useState<boolean>(true);
-  const [applePaySurcharge, setApplePaySurcharge] = React.useState<
-    number | undefined
-  >(
-    appPaymentParameters.clientSessionRequestBody.paymentMethod?.options
-      ?.APPLE_PAY?.surcharge.amount,
+  const [isSurchargeApplied, setIsSurchargeApplied] = React.useState<boolean>(true);
+  const [applePaySurcharge, setApplePaySurcharge] = React.useState<number | undefined>(
+    appPaymentParameters.clientSessionRequestBody.paymentMethod?.options?.APPLE_PAY?.surcharge.amount
   );
-  const [googlePaySurcharge, setGooglePaySurcharge] = React.useState<
-    number | undefined
-  >(
-    appPaymentParameters.clientSessionRequestBody.paymentMethod?.options
-      ?.GOOGLE_PAY?.surcharge.amount,
+  const [googlePaySurcharge, setGooglePaySurcharge] = React.useState<number | undefined>(
+    appPaymentParameters.clientSessionRequestBody.paymentMethod?.options?.GOOGLE_PAY?.surcharge.amount
   );
-  const [adyenGiropaySurcharge, setAdyenGiropaySurcharge] = React.useState<
-    number | undefined
-  >(
-    appPaymentParameters.clientSessionRequestBody.paymentMethod?.options
-      ?.ADYEN_GIROPAY?.surcharge.amount,
+  const [adyenGiropaySurcharge, setAdyenGiropaySurcharge] = React.useState<number | undefined>(
+    appPaymentParameters.clientSessionRequestBody.paymentMethod?.options?.ADYEN_GIROPAY?.surcharge.amount
   );
-  const [adyenIdealSurcharge, setAdyenIdealSurcharge] = React.useState<
-    number | undefined
-  >(
-    appPaymentParameters.clientSessionRequestBody.paymentMethod?.options
-      ?.ADYEN_IDEAL?.surcharge.amount,
+  const [adyenIdealSurcharge, setAdyenIdealSurcharge] = React.useState<number | undefined>(
+    appPaymentParameters.clientSessionRequestBody.paymentMethod?.options?.ADYEN_IDEAL?.surcharge.amount
   );
-  const [adyenSofortSurcharge, setAdyenSofortySurcharge] = React.useState<
-    number | undefined
-  >(
-    appPaymentParameters.clientSessionRequestBody.paymentMethod?.options
-      ?.ADYEN_SOFORT?.surcharge.amount,
+  const [adyenSofortSurcharge, setAdyenSofortySurcharge] = React.useState<number | undefined>(
+    appPaymentParameters.clientSessionRequestBody.paymentMethod?.options?.ADYEN_SOFORT?.surcharge.amount
   );
   const [visaSurcharge, setVisaSurcharge] = React.useState<number | undefined>(
-    appPaymentParameters.clientSessionRequestBody.paymentMethod?.options
-      ?.PAYMENT_CARD?.networks.VISA?.surcharge.amount,
+    appPaymentParameters.clientSessionRequestBody.paymentMethod?.options?.PAYMENT_CARD?.networks.VISA?.surcharge.amount
   );
-  const [masterCardSurcharge, setMasterCardSurcharge] = React.useState<
-    number | undefined
-  >(
-    appPaymentParameters.clientSessionRequestBody.paymentMethod?.options
-      ?.PAYMENT_CARD?.networks.MASTERCARD?.surcharge.amount,
+  const [masterCardSurcharge, setMasterCardSurcharge] = React.useState<number | undefined>(
+    appPaymentParameters.clientSessionRequestBody.paymentMethod?.options?.PAYMENT_CARD?.networks.MASTERCARD?.surcharge
+      .amount
   );
 
-  const [isBillingOptionsApplied, setIsBillingOptionsApplied] =
-    useState<boolean>(false);
-  const [requiredBillingContactFields, setRequiredBillingContactFields] =
-    useState<string[]>([]);
+  const [isBillingOptionsApplied, setIsBillingOptionsApplied] = useState<boolean>(false);
+  const [requiredBillingContactFields, setRequiredBillingContactFields] = useState<string[]>([]);
 
-  const [isShippingOptionsApplied, setIsShippingOptionsApplied] =
-    useState<boolean>(false);
-  const [requireShippingMethod, setRequireShippingMethod] =
-    useState<boolean>(false);
-  const [shippingContactFields, setShippingContactFields] = useState<string[]>(
-    [],
-  );
+  const [isShippingOptionsApplied, setIsShippingOptionsApplied] = useState<boolean>(false);
+  const [requireShippingMethod, setRequireShippingMethod] = useState<boolean>(false);
+  const [shippingContactFields, setShippingContactFields] = useState<string[]>([]);
 
-  const vaultOnSuccess =
-    appPaymentParameters.clientSessionRequestBody.paymentMethod?.vaultOnSuccess;
-  const vaultOnAgreement =
-    appPaymentParameters.clientSessionRequestBody.paymentMethod
-      ?.vaultOnAgreement;
+  const vaultOnSuccess = appPaymentParameters.clientSessionRequestBody.paymentMethod?.vaultOnSuccess;
+  const vaultOnAgreement = appPaymentParameters.clientSessionRequestBody.paymentMethod?.vaultOnAgreement;
 
-  const [checkoutVaultingType, setCheckoutVaultingType] = React.useState<
-    CheckoutVaultingType | undefined
-  >(
+  const [checkoutVaultingType, setCheckoutVaultingType] = React.useState<CheckoutVaultingType | undefined>(
     vaultOnSuccess
       ? CheckoutVaultingType.VAULT_ON_SUCCESS
       : vaultOnAgreement
         ? CheckoutVaultingType.VAULT_ON_AGREEMENT
-        : CheckoutVaultingType.NONE,
+        : CheckoutVaultingType.NONE
   );
 
   const backgroundStyle = {
@@ -238,7 +181,7 @@ const SettingsScreen = ({navigation}) => {
           selectedIndex={environment}
           onChange={event => {
             const selectedIndex = event.nativeEvent.selectedSegmentIndex;
-            let selectedEnvironment = makeEnvironmentFromIntVal(selectedIndex);
+            const selectedEnvironment = makeEnvironmentFromIntVal(selectedIndex);
             setEnvironment(selectedEnvironment);
           }}
         />
@@ -263,9 +206,7 @@ const SettingsScreen = ({navigation}) => {
           }}
         />
 
-        <Text style={{marginVertical: 8, ...styles.heading1}}>
-          Checkout vaulting
-        </Text>
+        <Text style={{marginVertical: 8, ...styles.heading1}}>Checkout vaulting</Text>
         <SegmentedControl
           testID="CheckoutVaulting"
           style={{marginTop: 6, height: 56}}
@@ -273,8 +214,7 @@ const SettingsScreen = ({navigation}) => {
           selectedIndex={checkoutVaultingType}
           onChange={event => {
             const selectedIndex = event.nativeEvent.selectedSegmentIndex;
-            let selectedCheckoutVaultingType =
-              makeCheckoutVaultingTypeFromIntVal(selectedIndex);
+            const selectedCheckoutVaultingType = makeCheckoutVaultingTypeFromIntVal(selectedIndex);
             setCheckoutVaultingType(selectedCheckoutVaultingType);
           }}
         />
@@ -292,8 +232,7 @@ const SettingsScreen = ({navigation}) => {
           selectedIndex={paymentHandling}
           onChange={event => {
             const selectedIndex = event.nativeEvent.selectedSegmentIndex;
-            let selectedPaymentHandling =
-              makePaymentHandlingFromIntVal(selectedIndex);
+            const selectedPaymentHandling = makePaymentHandlingFromIntVal(selectedIndex);
             setPaymentHandling(selectedPaymentHandling);
           }}
         />
@@ -312,10 +251,7 @@ const SettingsScreen = ({navigation}) => {
           justifyContent: 'left',
         }}>
         <Text style={{...styles.heading1}}>Enable Recapture CVV</Text>
-        <Switch
-          onValueChange={setCaptureVaultedCardCvv}
-          value={captureVaultedCardCvv}
-        />
+        <Switch onValueChange={setCaptureVaultedCardCvv} value={captureVaultedCardCvv} />
       </View>
     );
   };
@@ -487,11 +423,7 @@ const SettingsScreen = ({navigation}) => {
             <TextField
               title="Apple Pay Surcharge"
               style={{marginVertical: 4}}
-              value={
-                applePaySurcharge === undefined
-                  ? undefined
-                  : `${applePaySurcharge}`
-              }
+              value={applePaySurcharge === undefined ? undefined : `${applePaySurcharge}`}
               placeholder={'Set Apple Pay surcharge'}
               onChangeText={text => {
                 const tmpSurcharge = Number(text);
@@ -505,11 +437,7 @@ const SettingsScreen = ({navigation}) => {
             <TextField
               title="Google Pay Surcharge"
               style={{marginVertical: 4}}
-              value={
-                googlePaySurcharge === undefined
-                  ? undefined
-                  : `${googlePaySurcharge}`
-              }
+              value={googlePaySurcharge === undefined ? undefined : `${googlePaySurcharge}`}
               placeholder={'Set Google Pay surcharge'}
               onChangeText={text => {
                 const tmpSurcharge = Number(text);
@@ -523,11 +451,7 @@ const SettingsScreen = ({navigation}) => {
             <TextField
               title="Adyen Giropay Surcharge"
               style={{marginVertical: 4}}
-              value={
-                adyenGiropaySurcharge === undefined
-                  ? undefined
-                  : `${adyenGiropaySurcharge}`
-              }
+              value={adyenGiropaySurcharge === undefined ? undefined : `${adyenGiropaySurcharge}`}
               placeholder={'Set Adyen Giropay surcharge'}
               onChangeText={text => {
                 const tmpSurcharge = Number(text);
@@ -541,11 +465,7 @@ const SettingsScreen = ({navigation}) => {
             <TextField
               title="Adyen IDeal Surcharge"
               style={{marginVertical: 4}}
-              value={
-                adyenIdealSurcharge === undefined
-                  ? undefined
-                  : `${adyenIdealSurcharge}`
-              }
+              value={adyenIdealSurcharge === undefined ? undefined : `${adyenIdealSurcharge}`}
               placeholder={'Set Adyen IDeal surcharge'}
               onChangeText={text => {
                 const tmpSurcharge = Number(text);
@@ -559,11 +479,7 @@ const SettingsScreen = ({navigation}) => {
             <TextField
               title="Adyen Sofort Surcharge"
               style={{marginVertical: 4}}
-              value={
-                adyenSofortSurcharge === undefined
-                  ? undefined
-                  : `${adyenSofortSurcharge}`
-              }
+              value={adyenSofortSurcharge === undefined ? undefined : `${adyenSofortSurcharge}`}
               placeholder={'Set Adyen Sofort surcharge'}
               onChangeText={text => {
                 const tmpSurcharge = Number(text);
@@ -577,9 +493,7 @@ const SettingsScreen = ({navigation}) => {
             <TextField
               title="VISA Surcharge"
               style={{marginVertical: 4}}
-              value={
-                visaSurcharge === undefined ? undefined : `${visaSurcharge}`
-              }
+              value={visaSurcharge === undefined ? undefined : `${visaSurcharge}`}
               placeholder={'Set VISA surcharge'}
               onChangeText={text => {
                 const tmpSurcharge = Number(text);
@@ -593,11 +507,7 @@ const SettingsScreen = ({navigation}) => {
             <TextField
               title="MasterCard Surcharge"
               style={{marginVertical: 4}}
-              value={
-                masterCardSurcharge === undefined
-                  ? undefined
-                  : `${masterCardSurcharge}`
-              }
+              value={masterCardSurcharge === undefined ? undefined : `${masterCardSurcharge}`}
               placeholder={'Set MasterCard surcharge'}
               onChangeText={text => {
                 const tmpSurcharge = Number(text);
@@ -687,9 +597,7 @@ const SettingsScreen = ({navigation}) => {
 
             <View style={{marginTop: 8}}>
               <View style={{flex: 1, flexDirection: 'row'}}>
-                <Text style={{...styles.heading1, marginBottom: 4}}>
-                  Address
-                </Text>
+                <Text style={{...styles.heading1, marginBottom: 4}}>Address</Text>
                 <View style={{flex: 1}} />
                 <Switch
                   value={isAddressApplied}
@@ -797,8 +705,7 @@ const SettingsScreen = ({navigation}) => {
               color: 'black',
             },
           ]}>
-          These settings are not required, however some payment methods may need
-          them.
+          These settings are not required, however some payment methods may need them.
         </Text>
         {renderMerchantSection()}
         {renderCustomerSection()}
@@ -839,9 +746,7 @@ const SettingsScreen = ({navigation}) => {
             console.log(appPaymentParameters);
             navigation.navigate('HUC');
           }}>
-          <Text style={{...styles.buttonText, color: 'white'}}>
-            Headless Universal Checkout
-          </Text>
+          <Text style={{...styles.buttonText, color: 'white'}}>Headless Universal Checkout</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -855,9 +760,7 @@ const SettingsScreen = ({navigation}) => {
             console.log(appPaymentParameters);
             navigation.navigate('HUCVault');
           }}>
-          <Text style={{...styles.buttonText, color: 'white'}}>
-            Headless Universal Checkout Vault
-          </Text>
+          <Text style={{...styles.buttonText, color: 'white'}}>Headless Universal Checkout Vault</Text>
         </TouchableOpacity>
       </View>
     );
@@ -867,9 +770,7 @@ const SettingsScreen = ({navigation}) => {
     return (
       <View style={{marginTop: 12, marginBottom: 8}}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <Text style={{...styles.heading1, marginBottom: 4}}>
-            Billing Options
-          </Text>
+          <Text style={{...styles.heading1, marginBottom: 4}}>Billing Options</Text>
           <View style={{flex: 1}} />
           <Switch
             value={isBillingOptionsApplied}
@@ -881,9 +782,7 @@ const SettingsScreen = ({navigation}) => {
 
         {!isBillingOptionsApplied ? null : (
           <View>
-            <Text style={{...styles.heading2, marginVertical: 4}}>
-              Billing Contact Fields
-            </Text>
+            <Text style={{...styles.heading2, marginVertical: 4}}>Billing Contact Fields</Text>
             <View style={{marginVertical: 4}}>
               <View style={{flexDirection: 'row', alignItems: 'center'}}>
                 <Text style={{flex: 1}}>Name</Text>
@@ -891,16 +790,9 @@ const SettingsScreen = ({navigation}) => {
                   value={requiredBillingContactFields.includes('name')}
                   onValueChange={val => {
                     if (val) {
-                      setRequiredBillingContactFields([
-                        ...requiredBillingContactFields,
-                        'name',
-                      ]);
+                      setRequiredBillingContactFields([...requiredBillingContactFields, 'name']);
                     } else {
-                      setRequiredBillingContactFields(
-                        requiredBillingContactFields.filter(
-                          field => field !== 'name',
-                        ),
-                      );
+                      setRequiredBillingContactFields(requiredBillingContactFields.filter(field => field !== 'name'));
                     }
                   }}
                 />
@@ -911,15 +803,10 @@ const SettingsScreen = ({navigation}) => {
                   value={requiredBillingContactFields.includes('emailAddress')}
                   onValueChange={val => {
                     if (val) {
-                      setRequiredBillingContactFields([
-                        ...requiredBillingContactFields,
-                        'emailAddress',
-                      ]);
+                      setRequiredBillingContactFields([...requiredBillingContactFields, 'emailAddress']);
                     } else {
                       setRequiredBillingContactFields(
-                        requiredBillingContactFields.filter(
-                          field => field !== 'emailAddress',
-                        ),
+                        requiredBillingContactFields.filter(field => field !== 'emailAddress')
                       );
                     }
                   }}
@@ -931,15 +818,10 @@ const SettingsScreen = ({navigation}) => {
                   value={requiredBillingContactFields.includes('phoneNumber')}
                   onValueChange={val => {
                     if (val) {
-                      setRequiredBillingContactFields([
-                        ...requiredBillingContactFields,
-                        'phoneNumber',
-                      ]);
+                      setRequiredBillingContactFields([...requiredBillingContactFields, 'phoneNumber']);
                     } else {
                       setRequiredBillingContactFields(
-                        requiredBillingContactFields.filter(
-                          field => field !== 'phoneNumber',
-                        ),
+                        requiredBillingContactFields.filter(field => field !== 'phoneNumber')
                       );
                     }
                   }}
@@ -951,15 +833,10 @@ const SettingsScreen = ({navigation}) => {
                   value={requiredBillingContactFields.includes('postalAddress')}
                   onValueChange={val => {
                     if (val) {
-                      setRequiredBillingContactFields([
-                        ...requiredBillingContactFields,
-                        'postalAddress',
-                      ]);
+                      setRequiredBillingContactFields([...requiredBillingContactFields, 'postalAddress']);
                     } else {
                       setRequiredBillingContactFields(
-                        requiredBillingContactFields.filter(
-                          field => field !== 'postalAddress',
-                        ),
+                        requiredBillingContactFields.filter(field => field !== 'postalAddress')
                       );
                     }
                   }}
@@ -976,9 +853,7 @@ const SettingsScreen = ({navigation}) => {
     return (
       <View style={{marginTop: 12, marginBottom: 8}}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <Text style={{...styles.heading1, marginBottom: 4}}>
-            Shipping Options
-          </Text>
+          <Text style={{...styles.heading1, marginBottom: 4}}>Shipping Options</Text>
           <View style={{flex: 1}} />
           <Switch
             value={isShippingOptionsApplied}
@@ -1004,9 +879,7 @@ const SettingsScreen = ({navigation}) => {
                 }}
               />
             </View>
-            <Text style={{...styles.heading2, marginVertical: 4}}>
-              Shipping Contact Fields
-            </Text>
+            <Text style={{...styles.heading2, marginVertical: 4}}>Shipping Contact Fields</Text>
             <View style={{marginVertical: 4}}>
               <View style={{flexDirection: 'row', alignItems: 'center'}}>
                 <Text style={{flex: 1}}>Name</Text>
@@ -1014,14 +887,9 @@ const SettingsScreen = ({navigation}) => {
                   value={shippingContactFields.includes('name')}
                   onValueChange={val => {
                     if (val) {
-                      setShippingContactFields([
-                        ...shippingContactFields,
-                        'name',
-                      ]);
+                      setShippingContactFields([...shippingContactFields, 'name']);
                     } else {
-                      setShippingContactFields(
-                        shippingContactFields.filter(field => field !== 'name'),
-                      );
+                      setShippingContactFields(shippingContactFields.filter(field => field !== 'name'));
                     }
                   }}
                 />
@@ -1032,16 +900,9 @@ const SettingsScreen = ({navigation}) => {
                   value={shippingContactFields.includes('emailAddress')}
                   onValueChange={val => {
                     if (val) {
-                      setShippingContactFields([
-                        ...shippingContactFields,
-                        'emailAddress',
-                      ]);
+                      setShippingContactFields([...shippingContactFields, 'emailAddress']);
                     } else {
-                      setShippingContactFields(
-                        shippingContactFields.filter(
-                          field => field !== 'emailAddress',
-                        ),
-                      );
+                      setShippingContactFields(shippingContactFields.filter(field => field !== 'emailAddress'));
                     }
                   }}
                 />
@@ -1052,16 +913,9 @@ const SettingsScreen = ({navigation}) => {
                   value={shippingContactFields.includes('phoneNumber')}
                   onValueChange={val => {
                     if (val) {
-                      setShippingContactFields([
-                        ...shippingContactFields,
-                        'phoneNumber',
-                      ]);
+                      setShippingContactFields([...shippingContactFields, 'phoneNumber']);
                     } else {
-                      setShippingContactFields(
-                        shippingContactFields.filter(
-                          field => field !== 'phoneNumber',
-                        ),
-                      );
+                      setShippingContactFields(shippingContactFields.filter(field => field !== 'phoneNumber'));
                     }
                   }}
                 />
@@ -1072,16 +926,9 @@ const SettingsScreen = ({navigation}) => {
                   value={shippingContactFields.includes('postalAddress')}
                   onValueChange={val => {
                     if (val) {
-                      setShippingContactFields([
-                        ...shippingContactFields,
-                        'postalAddress',
-                      ]);
+                      setShippingContactFields([...shippingContactFields, 'postalAddress']);
                     } else {
-                      setShippingContactFields(
-                        shippingContactFields.filter(
-                          field => field !== 'postalAddress',
-                        ),
-                      );
+                      setShippingContactFields(shippingContactFields.filter(field => field !== 'postalAddress'));
                     }
                   }}
                 />
@@ -1123,8 +970,7 @@ const SettingsScreen = ({navigation}) => {
       currentCustomer.mobileNumber = phoneNumber;
 
       let currentAddress: IClientSessionAddress | undefined = {
-        ...appPaymentParameters.clientSessionRequestBody.customer
-          ?.billingAddress,
+        ...appPaymentParameters.clientSessionRequestBody.customer?.billingAddress,
       };
       if (isAddressApplied) {
         currentAddress.firstName = firstName;
@@ -1139,30 +985,20 @@ const SettingsScreen = ({navigation}) => {
         currentAddress = undefined;
       }
 
-      currentCustomer.billingAddress =
-        Object.keys(currentAddress || {}).length === 0
-          ? undefined
-          : currentAddress;
-      currentCustomer.shippingAddress =
-        Object.keys(currentAddress || {}).length === 0
-          ? undefined
-          : currentAddress;
+      currentCustomer.billingAddress = Object.keys(currentAddress || {}).length === 0 ? undefined : currentAddress;
+      currentCustomer.shippingAddress = Object.keys(currentAddress || {}).length === 0 ? undefined : currentAddress;
     } else {
       currentClientSessionRequestBody.customerId = undefined;
       currentCustomer = undefined;
     }
 
     currentClientSessionRequestBody.customer =
-      Object.keys(currentCustomer || {}).length === 0
-        ? undefined
-        : currentCustomer;
+      Object.keys(currentCustomer || {}).length === 0 ? undefined : currentCustomer;
 
     const currentPaymentMethod: IClientSessionPaymentMethod = {
       ...currentClientSessionRequestBody.paymentMethod,
     };
-    let currentPaymentMethodOptions:
-      | IClientSessionPaymentMethodOptions
-      | undefined = {...currentPaymentMethod.options};
+    let currentPaymentMethodOptions: IClientSessionPaymentMethodOptions | undefined = {...currentPaymentMethod.options};
 
     if (isSurchargeApplied) {
       if (applePaySurcharge) {
@@ -1214,20 +1050,13 @@ const SettingsScreen = ({navigation}) => {
     }
 
     currentPaymentMethod.options =
-      Object.keys(currentPaymentMethodOptions || {}).length === 0
-        ? undefined
-        : currentPaymentMethodOptions;
-    currentPaymentMethod.vaultOnSuccess =
-      checkoutVaultingType === CheckoutVaultingType.VAULT_ON_SUCCESS;
-    currentPaymentMethod.vaultOnAgreement =
-      checkoutVaultingType === CheckoutVaultingType.VAULT_ON_AGREEMENT;
+      Object.keys(currentPaymentMethodOptions || {}).length === 0 ? undefined : currentPaymentMethodOptions;
+    currentPaymentMethod.vaultOnSuccess = checkoutVaultingType === CheckoutVaultingType.VAULT_ON_SUCCESS;
+    currentPaymentMethod.vaultOnAgreement = checkoutVaultingType === CheckoutVaultingType.VAULT_ON_AGREEMENT;
     currentClientSessionRequestBody.paymentMethod =
-      Object.keys(currentPaymentMethod).length === 0
-        ? undefined
-        : currentPaymentMethod;
+      Object.keys(currentPaymentMethod).length === 0 ? undefined : currentPaymentMethod;
 
-    appPaymentParameters.clientSessionRequestBody =
-      currentClientSessionRequestBody;
+    appPaymentParameters.clientSessionRequestBody = currentClientSessionRequestBody;
     appPaymentParameters.shippingOptions = isShippingOptionsApplied
       ? {
           requireShippingMethod: requireShippingMethod,
@@ -1242,9 +1071,7 @@ const SettingsScreen = ({navigation}) => {
   };
 
   return (
-    <ScrollView
-      contentInsetAdjustmentBehavior="automatic"
-      style={backgroundStyle}>
+    <ScrollView contentInsetAdjustmentBehavior="automatic" style={backgroundStyle}>
       {/* <Header /> */}
       <View
         style={{

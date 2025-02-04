@@ -23,9 +23,7 @@ const HeadlessCheckoutStripeAchScreen = (props: any) => {
   const [emailAddress, setEmailAddress] = useState<string>('');
   const [firstNameError, setFirstNameError] = useState<string | null>(null);
   const [lastNameError, setLastNameError] = useState<string | null>(null);
-  const [emailAddressError, setEmailAddressError] = useState<string | null>(
-    null,
-  );
+  const [emailAddressError, setEmailAddressError] = useState<string | null>(null);
 
   /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
@@ -54,7 +52,7 @@ const HeadlessCheckoutStripeAchScreen = (props: any) => {
         onInvalid: (data: PrimerInvalidComponentData<AchValidatableData>) => {
           const log = `\nonInvalid: ${JSON.stringify(data)}\n`;
           console.log(log);
-          let error = data?.errors[0]?.description ?? null;
+          const error = data?.errors[0]?.description ?? null;
           switch (data.data.validatableDataName) {
             case 'firstName':
               setFirstNameError(error);
@@ -82,15 +80,11 @@ const HeadlessCheckoutStripeAchScreen = (props: any) => {
               break;
           }
         },
-        onValidating: (
-          data: PrimerValidatingComponentData<AchValidatableData>,
-        ) => {
+        onValidating: (data: PrimerValidatingComponentData<AchValidatableData>) => {
           const log = `\onValidating: ${JSON.stringify(data)}\n`;
           console.log(log);
         },
-        onValidationError: (
-          data: PrimerComponentDataValidationError<AchValidatableData>,
-        ) => {
+        onValidationError: (data: PrimerComponentDataValidationError<AchValidatableData>) => {
           const log = `\nonValidationError: ${JSON.stringify(data)}\n`;
           console.log(log);
           switch (data.data.validatableDataName) {
@@ -151,9 +145,7 @@ const HeadlessCheckoutStripeAchScreen = (props: any) => {
         flex: 1,
         backgroundColor: 'white',
       }}>
-      <Text style={{fontSize: 18, fontWeight: 'bold', paddingBottom: 8}}>
-        Stripe ACH session
-      </Text>
+      <Text style={{fontSize: 18, fontWeight: 'bold', paddingBottom: 8}}>Stripe ACH session</Text>
 
       <TextFieldWithError
         title="First name"
@@ -176,11 +168,7 @@ const HeadlessCheckoutStripeAchScreen = (props: any) => {
 
       <View style={styles.button}>
         <Button
-          disabled={
-            firstNameError != null ||
-            lastNameError != null ||
-            emailAddressError != null
-          }
+          disabled={firstNameError != null || lastNameError != null || emailAddressError != null}
           onPress={() => onSubmit()}
           title="Submit"
         />
@@ -218,11 +206,7 @@ const TextFieldWithError = ({
         value={value}
         onChangeText={onChangeText}
       />
-      {error ? (
-        <Text style={{color: 'red', marginTop: 4, marginHorizontal: 10}}>
-          {error}
-        </Text>
-      ) : null}
+      {error ? <Text style={{color: 'red', marginTop: 4, marginHorizontal: 10}}>{error}</Text> : null}
     </View>
   );
 };

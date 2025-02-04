@@ -13,26 +13,17 @@ export interface NewLineItemScreenProps {
 }
 
 const NewLineItemScreen = (props: any) => {
-  const newLineItemScreenProps: NewLineItemScreenProps | undefined =
-    props.route.params;
+  const newLineItemScreenProps: NewLineItemScreenProps | undefined = props.route.params;
   //@ts-ignore
-  const [isEditing, _] = React.useState<boolean>(
-    newLineItemScreenProps?.lineItem === undefined ? false : true,
-  );
+  const [isEditing, _] = React.useState<boolean>(newLineItemScreenProps?.lineItem === undefined ? false : true);
   const [name, setName] = React.useState<string | undefined>(
-    newLineItemScreenProps?.lineItem === undefined
-      ? undefined
-      : newLineItemScreenProps.lineItem.description,
+    newLineItemScreenProps?.lineItem === undefined ? undefined : newLineItemScreenProps.lineItem.description
   );
   const [quantity, setQuantity] = React.useState<number | undefined>(
-    newLineItemScreenProps?.lineItem === undefined
-      ? undefined
-      : newLineItemScreenProps.lineItem.quantity,
+    newLineItemScreenProps?.lineItem === undefined ? undefined : newLineItemScreenProps.lineItem.quantity
   );
   const [unitPrice, setUnitPrice] = React.useState<number | undefined>(
-    newLineItemScreenProps?.lineItem === undefined
-      ? undefined
-      : newLineItemScreenProps.lineItem.amount,
+    newLineItemScreenProps?.lineItem === undefined ? undefined : newLineItemScreenProps.lineItem.amount
   );
 
   return (
@@ -123,29 +114,20 @@ const NewLineItemScreen = (props: any) => {
             }
           }
         }}>
-        <Text style={{...styles.buttonText, color: 'white'}}>
-          {isEditing ? 'Edit Line Item' : 'Add Line Item'}
-        </Text>
+        <Text style={{...styles.buttonText, color: 'white'}}>{isEditing ? 'Edit Line Item' : 'Add Line Item'}</Text>
       </TouchableOpacity>
 
       {newLineItemScreenProps?.lineItem === undefined ? null : (
         <TouchableOpacity
           style={{...styles.button, marginBottom: 20, backgroundColor: 'red'}}
           onPress={() => {
-            if (
-              newLineItemScreenProps.onRemoveLineItem &&
-              newLineItemScreenProps.lineItem
-            ) {
-              newLineItemScreenProps.onRemoveLineItem(
-                newLineItemScreenProps.lineItem,
-              );
+            if (newLineItemScreenProps.onRemoveLineItem && newLineItemScreenProps.lineItem) {
+              newLineItemScreenProps.onRemoveLineItem(newLineItemScreenProps.lineItem);
             }
 
             props.navigation.goBack();
           }}>
-          <Text style={{...styles.buttonText, color: 'white'}}>
-            Remove Line Item
-          </Text>
+          <Text style={{...styles.buttonText, color: 'white'}}>Remove Line Item</Text>
         </TouchableOpacity>
       )}
     </View>

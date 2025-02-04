@@ -20,9 +20,7 @@ const TextField = (props: TextFieldProps) => {
   return (
     //@ts-ignore
     <View style={{...props.style}}>
-      {props.title === undefined ? null : (
-        <Text style={styles.textFieldTitle}>{props.title}</Text>
-      )}
+      {props.title === undefined ? null : <Text style={styles.textFieldTitle}>{props.title}</Text>}
       <TextInput
         testID={props.testID}
         style={[{...styles.textInput, marginTop: 4}, props.textInputStyle]}

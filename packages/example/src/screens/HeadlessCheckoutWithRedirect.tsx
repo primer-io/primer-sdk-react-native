@@ -29,67 +29,58 @@ const HeadlessCheckoutWithRedirect = (props: any) => {
   /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
     (async () => {
-      const componentWithRedirectManagerProps: ComponentWithRedirectManagerProps =
-        {
-          paymentMethodType: props.route.params.paymentMethodType,
-          onStep: (data: BanksStep) => {
-            const log = `\nonStep: ${JSON.stringify(data)}\n`;
-            console.log(log);
-            switch (data.stepName) {
-              case 'banksLoading':
-                console.log('Loading...');
-                setIsLoading(true);
-                break;
-              case 'banksRetrieved':
-                setBanks(data.banks);
-                setIsLoading(false);
-                break;
-            }
-          },
-          onError: (error: PrimerError) => {
-            const log = `\nonError: ${JSON.stringify(error)}\n`;
-            console.log(log);
-          },
-          onInvalid: (
-            data: PrimerInvalidComponentData<BanksValidatableData>,
-          ) => {
-            const log = `\nonInvalid: ${JSON.stringify(data)}\n`;
-            console.log(log);
-            setIsLoading(false);
-            setIsValidating(null);
-          },
-          onValid: (data: PrimerValidComponentData<BanksValidatableData>) => {
-            const log = `\nonValid: ${JSON.stringify(data)}\n`;
-            console.log(log);
-            setIsLoading(false);
-            setIsValidating(null);
-            switch (data.data.validatableDataName) {
-              case 'bankId':
-                submit();
-                break;
-              default:
-                break;
-            }
-          },
-          onValidating: (
-            data: PrimerValidatingComponentData<BanksValidatableData>,
-          ) => {
-            const log = `\onValidating: ${JSON.stringify(data)}\n`;
-            console.log(log);
-          },
-          onValidationError: (
-            data: PrimerComponentDataValidationError<BanksValidatableData>,
-          ) => {
-            const log = `\nonValidationError: ${JSON.stringify(data)}\n`;
-            console.log(log);
-            setIsLoading(false);
-            setIsValidating(null);
-          },
-        };
+      const componentWithRedirectManagerProps: ComponentWithRedirectManagerProps = {
+        paymentMethodType: props.route.params.paymentMethodType,
+        onStep: (data: BanksStep) => {
+          const log = `\nonStep: ${JSON.stringify(data)}\n`;
+          console.log(log);
+          switch (data.stepName) {
+            case 'banksLoading':
+              console.log('Loading...');
+              setIsLoading(true);
+              break;
+            case 'banksRetrieved':
+              setBanks(data.banks);
+              setIsLoading(false);
+              break;
+          }
+        },
+        onError: (error: PrimerError) => {
+          const log = `\nonError: ${JSON.stringify(error)}\n`;
+          console.log(log);
+        },
+        onInvalid: (data: PrimerInvalidComponentData<BanksValidatableData>) => {
+          const log = `\nonInvalid: ${JSON.stringify(data)}\n`;
+          console.log(log);
+          setIsLoading(false);
+          setIsValidating(null);
+        },
+        onValid: (data: PrimerValidComponentData<BanksValidatableData>) => {
+          const log = `\nonValid: ${JSON.stringify(data)}\n`;
+          console.log(log);
+          setIsLoading(false);
+          setIsValidating(null);
+          switch (data.data.validatableDataName) {
+            case 'bankId':
+              submit();
+              break;
+            default:
+              break;
+          }
+        },
+        onValidating: (data: PrimerValidatingComponentData<BanksValidatableData>) => {
+          const log = `\onValidating: ${JSON.stringify(data)}\n`;
+          console.log(log);
+        },
+        onValidationError: (data: PrimerComponentDataValidationError<BanksValidatableData>) => {
+          const log = `\nonValidationError: ${JSON.stringify(data)}\n`;
+          console.log(log);
+          setIsLoading(false);
+          setIsValidating(null);
+        },
+      };
 
-      banksComponent = await componentWithRedirectManager.provide(
-        componentWithRedirectManagerProps,
-      );
+      banksComponent = await componentWithRedirectManager.provide(componentWithRedirectManagerProps);
       banksComponent?.start();
     })();
   }, []);
@@ -203,12 +194,7 @@ const Banks = ({
   return (
     <>
       {banks.map((bank: IssuingBank) => (
-        <Bank
-          key={bank.id}
-          item={bank}
-          isValidating={isValidating}
-          onPay={onPay}
-        />
+        <Bank key={bank.id} item={bank} isValidating={isValidating} onPay={onPay} />
       ))}
     </>
   );
@@ -240,19 +226,11 @@ const Bank = ({
         borderColor: '#f5f5f5',
         opacity: isValidating && isValidating !== item.id ? 0.8 : 1,
       }}>
-      <Image
-        source={{uri: item.iconUrl ?? item.iconUrlStr}}
-        style={{width: 30, height: 30}}
-      />
+      <Image source={{uri: item.iconUrl ?? item.iconUrlStr}} style={{width: 30, height: 30}} />
 
       <Text style={{paddingLeft: 10}}>{item.name}</Text>
 
-      {item.id === isValidating && (
-        <ActivityIndicator
-          style={{position: 'absolute', right: 10}}
-          size="small"
-        />
-      )}
+      {item.id === isValidating && <ActivityIndicator style={{position: 'absolute', right: 10}} size="small" />}
     </TouchableOpacity>
   );
 };

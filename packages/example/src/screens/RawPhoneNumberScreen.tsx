@@ -1,11 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {Text, TouchableOpacity, View, ScrollView} from 'react-native';
 import {ActivityIndicator} from 'react-native';
-import {
-  InputElementType,
-  RawDataManager,
-  PhoneNumberData,
-} from '@primer-io/react-native';
+import {InputElementType, RawDataManager, PhoneNumberData} from '@primer-io/react-native';
 import TextField from '../components/TextField';
 import {styles} from '../styles';
 
@@ -15,9 +11,7 @@ const RawPhoneNumberDataScreen = (props: any) => {
   //@ts-ignore
   const [isLoading, _] = useState(false);
   const [isCardFormValid, setIsCardFormValid] = useState(false);
-  const [requiredInputElementTypes, setRequiredInputElementTypes] = useState<
-    string[] | undefined
-  >(undefined);
+  const [requiredInputElementTypes, setRequiredInputElementTypes] = useState<string[] | undefined>(undefined);
   const [phoneNumber, setPhoneNumber] = useState<string>('');
   const [metadataLog, setMetadataLog] = useState<string>('');
   const [validationLog, setValidationLog] = useState<string>('');
@@ -50,13 +44,11 @@ const RawPhoneNumberDataScreen = (props: any) => {
         setIsCardFormValid(isVallid);
       },
     });
-    setRequiredInputElementTypes(
-      await rawDataManager.getRequiredInputElementTypes(),
-    );
+    setRequiredInputElementTypes(await rawDataManager.getRequiredInputElementTypes());
   };
 
   const setRawData = (tmpPhoneNumber: string) => {
-    let rawData: PhoneNumberData = {
+    const rawData: PhoneNumberData = {
       phoneNumber: tmpPhoneNumber,
     };
 

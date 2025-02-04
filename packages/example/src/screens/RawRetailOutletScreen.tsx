@@ -11,13 +11,9 @@ const RawRetailOutletScreen = (props: any) => {
   const [isLoading] = useState(false);
   const [isCardFormValid, setIsCardFormValid] = useState(false);
   //@ts-ignore
-  const [, setRequiredInputElementTypes] = useState<string[] | undefined>(
-    undefined,
-  );
+  const [, setRequiredInputElementTypes] = useState<string[] | undefined>(undefined);
   const [retailers, setRetailers] = useState<any[] | undefined>(undefined);
-  const [selectedRetailOutletId, setSelectedRetailOutletId] = useState<
-    string | undefined
-  >(undefined);
+  const [selectedRetailOutletId, setSelectedRetailOutletId] = useState<string | undefined>(undefined);
   const [metadataLog, setMetadataLog] = useState<string>('');
   const [validationLog, setValidationLog] = useState<string>('');
 
@@ -56,13 +52,11 @@ const RawRetailOutletScreen = (props: any) => {
       setRetailers(currentRetailers);
     }
 
-    setRequiredInputElementTypes(
-      await rawDataManager.getRequiredInputElementTypes(),
-    );
+    setRequiredInputElementTypes(await rawDataManager.getRequiredInputElementTypes());
   };
 
   const setRawData = (tmpRetailOutletId: string) => {
-    let rawData: RetailerData = {
+    const rawData: RetailerData = {
       id: tmpRetailOutletId,
     };
 
@@ -90,10 +84,7 @@ const RawRetailOutletScreen = (props: any) => {
                 <Text
                   style={{
                     ...styles.heading3,
-                    color:
-                      data.item.id === selectedRetailOutletId
-                        ? 'blue'
-                        : 'black',
+                    color: data.item.id === selectedRetailOutletId ? 'blue' : 'black',
                   }}>
                   {data.item.name}
                 </Text>

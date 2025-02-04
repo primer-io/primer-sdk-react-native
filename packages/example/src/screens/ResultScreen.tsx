@@ -13,13 +13,11 @@ const ResultScreen = (props: any) => {
   const paramsWithoutLogs: any = {};
 
   if (props.route.params?.merchantCheckoutData) {
-    paramsWithoutLogs.merchantCheckoutData =
-      props.route.params.merchantCheckoutData;
+    paramsWithoutLogs.merchantCheckoutData = props.route.params.merchantCheckoutData;
   }
 
   if (props.route.params?.merchantCheckoutAdditionalInfo) {
-    paramsWithoutLogs.merchantCheckoutAdditionalInfo =
-      props.route.params.merchantCheckoutAdditionalInfo;
+    paramsWithoutLogs.merchantCheckoutAdditionalInfo = props.route.params.merchantCheckoutAdditionalInfo;
   }
 
   if (props.route.params?.merchantPayment) {
@@ -27,25 +25,20 @@ const ResultScreen = (props: any) => {
   }
 
   if (props.route.params?.merchantPrimerError) {
-    paramsWithoutLogs.merchantPrimerError =
-      props.route.params.merchantPrimerError;
+    paramsWithoutLogs.merchantPrimerError = props.route.params.merchantPrimerError;
   }
 
-  let logs: string | undefined = props.route.params?.logs;
+  const logs: string | undefined = props.route.params?.logs;
 
   return (
-    <ScrollView
-      contentInsetAdjustmentBehavior="automatic"
-      style={backgroundStyle}>
+    <ScrollView contentInsetAdjustmentBehavior="automatic" style={backgroundStyle}>
       <View
         style={{
           marginHorizontal: 20,
           marginVertical: 20,
           backgroundColor: 'lightgrey',
         }}>
-        <Text testID="checkout-data">
-          {JSON.stringify(paramsWithoutLogs, null, 4)}
-        </Text>
+        <Text testID="checkout-data">{JSON.stringify(paramsWithoutLogs, null, 4)}</Text>
       </View>
 
       {!logs ? null : (
