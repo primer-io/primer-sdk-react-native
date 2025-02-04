@@ -1,1 +1,1 @@
-require ('./src/index.tsx')
+require('./src/index.tsx');
