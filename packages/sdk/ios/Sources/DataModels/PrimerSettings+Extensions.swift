@@ -163,6 +163,9 @@ extension PrimerSettings {
         case "2.4":
           apiVersion = PrimerApiVersion.V2_4
           break
+        case "latest":
+          apiVersion = PrimerApiVersion.latest
+          break
         default:
           throw RNTNativeError(errorId: "native-ios", errorDescription: "The value of the 'apiVersion' string is invalid.", recoverySuggestion: "Provide a valid 'apiVersion' string")
         }
