@@ -46,11 +46,11 @@ async function eslint() {
         result.messages.forEach((eslintMessage) => {
             let errorMessage = `**[ESLint]** ${result.filePath} (${eslintMessage.line}:${eslintMessage.column}) - ${eslintMessage.message} (${eslintMessage.ruleId})`
             if (eslintMessage.severity === 1) {
-                warn(errorMessage)
                 errorCount++;
+                warn(errorMessage, result.filePath, eslintMessage.line)
             } else if (eslintMessage.severity === 2) {
-                fail(errorMessage)
                 errorCount++;
+                fail(errorMessage, result.filePath, eslintMessage.line)
             }
         });
     });
@@ -62,5 +62,5 @@ async function eslint() {
     }
 }
 
-eslint().catch((error) => console.log(`❌ ESLint execution failed: ${error.message}`));
+eslint().catch((error) => fail(`❌ ESLint execution failed: ${error.message}`));
 // #endregion
