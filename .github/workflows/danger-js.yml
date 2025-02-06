@@ -20,7 +20,7 @@ jobs:
           github_token: ${{ github.token }}
           delete_user_name: github-actions[bot]
           issue_number: ${{ github.event.number }}
-          body_regex: '/Danger JS/'
+          body_regex: '/dangerJS/'
   danger-js:
     runs-on: ubuntu-latest
     name: "Run Danger JS"
