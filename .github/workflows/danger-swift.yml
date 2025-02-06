@@ -23,7 +23,7 @@ jobs:
           github_token: ${{ github.token }}
           delete_user_name: github-actions
           issue_number: ${{ github.event.number }}
-          body_regex: /Danger Swift/
+          body_regex: Danger Swift
   danger-swift:
     needs: delete-old-danger-swift-comments
     runs-on: ubuntu-latest

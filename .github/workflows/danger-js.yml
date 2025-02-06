@@ -20,7 +20,7 @@ jobs:
           github_token: ${{ github.token }}
           delete_user_name: github-actions
           issue_number: ${{ github.event.number }}
-          body_regex: /dangerJS/
+          body_regex: dangerJS
   danger-js:
     needs: delete-old-danger-js-comments
     runs-on: ubuntu-latest
