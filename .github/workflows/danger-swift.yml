@@ -24,6 +24,6 @@ jobs:
       - name: Danger
         uses: docker://ghcr.io/danger/danger-swift-with-swiftlint:3.15.0
         with:
-            args: --failOnErrors --no-publish-check --remove-previous-comments -id swift
+            args: --danger_id=swift --failOnErrors --no-publish-check --remove-previous-comments
         env:
           GITHUB_TOKEN: ${{ github.token }}
