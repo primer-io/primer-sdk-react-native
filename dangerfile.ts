@@ -8,6 +8,9 @@ const bigPrThreshold = 600;
 const additions = pr.additions || 0;
 const deletions = pr.deletions || 0;
 
+const repoUrl = danger.github.pr.base.repo.html_url
+const branch = danger.github.pr.head.ref;
+
 if (additions + deletions > bigPrThreshold) {
     warn("Pull Request size seems relatively large. If this Pull Request contains multiple changes, please split each into separate PRs for a faster, easier review.");
 }
@@ -43,16 +46,22 @@ async function eslint() {
 
     let errorCount = 0;
     results.forEach((result) => {
-        result.messages.forEach((msg) => {
-            fail(`[ESLint] ${result.filePath} (${msg.line}:${msg.column}) - ${msg.message} (${msg.ruleId})`);
-            errorCount++;
+        result.messages.forEach((eslintMessage) => {
+            let errorMessage = `**[ESLint]** ${result.filePath} (${eslintMessage.line}:${eslintMessage.column}) - ${eslintMessage.message} (${eslintMessage.ruleId})`
+            if (eslintMessage.severity === 1) {
+                warn(errorMessage)
+                errorCount++;
+            } else if (eslintMessage.severity === 2) {
+                fail(errorMessage)
+                errorCount++;
+            }
         });
     });
 
     if (errorCount == 0) {
         message("✅ No ESLint issues found.");
     } else {
-        fail("🙁 Found **${errorCount}** ESLint violations.")
+        fail(`🙁 Found **${errorCount}** ESLint violations.`)
     }
 }
 
