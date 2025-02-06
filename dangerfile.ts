@@ -41,6 +41,9 @@ async function eslint() {
     });
     const results = await eslint.lintFiles(".");
 
+    fail("err,,,", "/primer-sdk-react-native/primer-sdk-react-native/packages/sdk/src/models/PrimerSettings.ts", 11);
+    fail("err,,,", "primer-sdk-react-native/primer-sdk-react-native/packages/sdk/src/models/PrimerSettings.ts", 11);
+    fail("err,,,", "/primer-sdk-react-native/packages/sdk/src/models/PrimerSettings.ts", 11);
     fail("err,,,", "primer-sdk-react-native/packages/sdk/src/models/PrimerSettings.ts", 11);
     fail("err,,,", "/packages/sdk/src/models/PrimerSettings.ts", 11);
     fail("err,,,", "packages/sdk/src/models/PrimerSettings.ts", 11);
