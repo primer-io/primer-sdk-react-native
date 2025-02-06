@@ -41,6 +41,8 @@ async function eslint() {
     });
     const results = await eslint.lintFiles(".");
 
+    fail("err,,,", "chore/ACC-4961/add-danger/packages/sdk/src/RNPrimer.ts", 11);
+    fail("err,,,", "blob/chore/ACC-4961/add-danger/packages/sdk/src/RNPrimer.ts", 11);
     fail("err,,,", "blob/master/packages/sdk/src/RNPrimer.ts", 11);
     fail("err,,,", "/blob/master/packages/sdk/src/RNPrimer.ts", 11);
     fail("err,,,", "primer-sdk-react-native/blob/master/packages/sdk/src/RNPrimer.ts", 11);
