@@ -50,9 +50,9 @@ let filesToLint = sdkEditedFiles.filter { $0.fileType == .swift }
 let violations = SwiftLint.lint(.files(filesToLint), inline: true, configFile: "packages/example/ios/.swiftlint.yml")
 
 if violations.isEmpty {
-    fail("🙁 Found **\(violations.count)** SwiftLint violations.")
-} else {
     message("✅ No SwiftLint violations found.")
+} else {
+    fail("🙁 Found **\(violations.count)** SwiftLint violations.")
 }
 
 // MARK: - Check Coverage
