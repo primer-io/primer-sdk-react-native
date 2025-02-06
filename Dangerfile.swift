@@ -41,6 +41,7 @@ let swiftTestFilesContainChanges = allCreatedAndModifiedFiles.filter {
 if swiftTestFilesContainChanges.isEmpty {
     warn("This PR doesn't seem to contain any updated Unit Test for Swift 🤔. Please consider double checking it 🙏")
 }
+warn ("test dummy")
 
 // MARK: - SwiftLint
 
