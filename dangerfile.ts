@@ -65,7 +65,7 @@ async function eslint() {
             let errorMessage = `**[ESLint]**: ${eslintMessage.message} - (${eslintMessage.ruleId})`
             if (eslintMessage.severity === 1) {
                 errorCount++;
-                warn(errorMessage, actualFilePath, eslintMessage.line)
+                fail(errorMessage, actualFilePath, eslintMessage.line)
             } else if (eslintMessage.severity === 2) {
                 errorCount++;
                 fail(errorMessage, actualFilePath, eslintMessage.line)
