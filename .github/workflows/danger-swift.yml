@@ -1,9 +1,9 @@
 name: Danger (Swift)
 
 on:
-  workflow_run:
-    workflows: ["Danger (JS)", "Danger (Kotlin)"]
-    types: [completed]
+  # workflow_run:
+  #   workflows: ["Danger (JS)", "Danger (Kotlin)"]
+  #   types: [completed]
   pull_request:
     types:
       - opened
