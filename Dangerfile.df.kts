@@ -41,7 +41,7 @@ fun parseDetektReport() {
         val count = report.count
         report(report)
         if (count == 0) {
-            message("✅ No detekt issues found.")
+            message("✅ No detekt violations found.")
         } else {
             fail("🙁 Found **${report.count}** detekt violations.")
         }

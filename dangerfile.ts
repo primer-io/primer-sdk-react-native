@@ -56,7 +56,7 @@ async function eslint() {
     });
 
     if (errorCount == 0) {
-        message("✅ No ESLint issues found.");
+        message("✅ No ESLint violations found.");
     } else {
         fail(`🙁 Found **${errorCount}** ESLint violations.`)
     }
