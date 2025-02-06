@@ -25,6 +25,7 @@ jobs:
           issue_number: ${{ github.event.number }}
           body_regex: '/Danger Kotlin/'
   danger-kotlin:
+    needs: delete-old-danger-kotlin-comments
     runs-on: ubuntu-latest
     name: "Run Danger Kotlin"
     container:

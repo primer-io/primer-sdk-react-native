@@ -25,6 +25,7 @@ jobs:
           issue_number: ${{ github.event.number }}
           body_regex: '/Danger Swift/'
   danger-swift:
+    needs: delete-old-danger-swift-comments
     runs-on: ubuntu-latest
     name: "Run Danger"
     steps:
