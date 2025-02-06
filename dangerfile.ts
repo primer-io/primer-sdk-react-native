@@ -1,7 +1,10 @@
 import { danger, warn, fail, message } from "danger";
 import { ESLint } from "eslint";
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
 
 const pr = danger.github.pr;
+const directory = dirname(fileURLToPath(import.meta.url));
 
 // #region PR Length
 const bigPrThreshold = 600;
@@ -60,13 +63,14 @@ async function eslint() {
     let errorCount = 0;
     results.forEach((result) => {
         result.messages.forEach((eslintMessage) => {
+            let actualFilePath = removePrefix(result.filePath, directory + "/")
             let errorMessage = `**[ESLint]** ${result.filePath} (${eslintMessage.line}:${eslintMessage.column}) - ${eslintMessage.message} (${eslintMessage.ruleId})`
             if (eslintMessage.severity === 1) {
                 errorCount++;
-                warn(errorMessage, result.filePath, eslintMessage.line)
+                warn(errorMessage, actualFilePath, eslintMessage.line)
             } else if (eslintMessage.severity === 2) {
                 errorCount++;
-                fail(errorMessage, result.filePath, eslintMessage.line)
+                fail(errorMessage, actualFilePath, eslintMessage.line)
             }
         });
     });
@@ -80,3 +84,6 @@ async function eslint() {
 
 eslint().catch((error) => fail(`❌ ESLint execution failed: ${error.message}`));
 // #endregion
+
+const removePrefix = (str: string, prefix: string) =>  
+    str.startsWith(prefix) ? str.slice(prefix.length) : str;
