@@ -15,6 +15,7 @@ protocol KlarnaStepRN {
 /// Session creation
 class PaymentSessionCreatedRN: KlarnaStepRN, Encodable {
     var stepName: String = "paymentSessionCreated"
+    var _jdasdkladklasjdaslkdjaslkdjasldkasjdlkasjdaslkdjaslkdjasldkajsdlkasjdlaksdjaslkdjasldkjasldkjasdlkasjdlaksjdlaskjdalsk: String = "paymentSessionCreated"
     var paymentCategories: [KlarnaPaymentCategoryRN]
 
     init(paymentCategories: [KlarnaPaymentCategory]) {self.paymentCategories = paymentCategories.map { $0.toKlarnaPaymentCategoryRN() }}

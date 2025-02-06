@@ -19,7 +19,7 @@ danger(args) {
                 }
         if (kotlinFilesContainingChanges.isEmpty()) {
             warn(
-                    "This PR doesn't seem to contain any updated Unit Test for Kotlin 🤔. Please consider double checking it 🙏"
+                "This PR doesn't seem to contain any updated Unit Test for Kotlin 🤔. Please consider double checking it 🙏"
             )
         }
         // endregion
