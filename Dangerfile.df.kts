@@ -39,11 +39,11 @@ fun parseDetektReport() {
     with(DetektPlugin) {
         val report = parse(file)
         val count = report.count
+        report(report)
         if (count == 0) {
             message("✅ No detekt issues found.")
         } else {
             fail("🙁 Found **${report.count}** detekt violations.")
         }
-        report(report)
     }
 }

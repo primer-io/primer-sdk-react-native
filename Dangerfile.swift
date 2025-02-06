@@ -47,7 +47,13 @@ if swiftTestFilesContainChanges.isEmpty {
 // Use a different path for SwiftLint
 
 let filesToLint = sdkEditedFiles.filter { $0.fileType == .swift }
-SwiftLint.lint(.files(filesToLint), inline: true, configFile: "packages/example/ios/.swiftlint.yml")
+let violations = SwiftLint.lint(.files(filesToLint), inline: true, configFile: "packages/example/ios/.swiftlint.yml")
+
+if violations.isEmpty {
+    fail("🙁 Found **${report.count}** SwiftLint violations.")
+} else {
+    message("✅ No SwiftLint issues found.")
+}
 
 // MARK: - Check Coverage
 
