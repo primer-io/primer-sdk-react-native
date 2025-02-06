@@ -8,9 +8,6 @@ const bigPrThreshold = 600;
 const additions = pr.additions || 0;
 const deletions = pr.deletions || 0;
 
-const repoUrl = danger.github.pr.base.repo.html_url
-const branch = danger.github.pr.head.ref;
-
 if (additions + deletions > bigPrThreshold) {
     warn("Pull Request size seems relatively large. If this Pull Request contains multiple changes, please split each into separate PRs for a faster, easier review.");
 }

@@ -1,6 +1,9 @@
 name: Danger (Kotlin)
 
 on:
+  workflow_run:
+    workflows: ["Danger (JS)"]
+    types: [completed]
   pull_request:
     types:
       - opened
