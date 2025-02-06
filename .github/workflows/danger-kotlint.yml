@@ -23,7 +23,7 @@ jobs:
           github_token: ${{ github.token }}
           delete_user_name: github-actions
           issue_number: ${{ github.event.number }}
-          body_regex: /Danger Kotlin/
+          body_regex: Danger Kotlin
   danger-kotlin:
     needs: delete-old-danger-kotlin-comments
     runs-on: ubuntu-latest
