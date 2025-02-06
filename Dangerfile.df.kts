@@ -7,15 +7,15 @@ import java.io.File
 register plugin DetektPlugin
 
 danger(args) {
-    val allSourceFiles = git.modifiedFiles + git.createdFiles
+    val allCreatedAndModifiedFiles = git.modifiedFiles + git.createdFiles
 
     onGitHub {
         //region PR Contains Tests
-        val kotlinFilesContainingChanges = allSourceFiles.filter { path: String ->
+        val kotlinFilesWithJunit = allCreatedAndModifiedFiles.filter { path: String ->
             path.endsWith(".kt") &&
                 File(path).readText().contains("import org.junit.jupiter.api.Test")
         }
-        if (kotlinFilesContainingChanges.isEmpty()) {
+        if (kotlinFilesWithJunit.isEmpty()) {
             warn("This PR doesn't seem to contain any updated Unit Test for Kotlin 🤔. Please consider double checking it 🙏")
         }
         //endregion
