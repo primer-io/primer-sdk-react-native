@@ -38,8 +38,6 @@ let swiftTestFilesContainChanges = sdkEditedFiles.filter {
         danger.utils.readFile($0).contains("import XCTest")
 }
 
-warn("swiftTestFilesContainChanges: " + swiftTestFilesContainChanges)
-
 if swiftTestFilesContainChanges.isEmpty {
     warn("This PR doesn't seem to contain any updated Unit Test for Swift 🤔. Please consider double checking it 🙏")
 }
