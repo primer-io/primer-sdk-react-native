@@ -27,6 +27,6 @@ jobs:
         run: yarn install
 
       - name: Run Danger JS
-        run: npx danger ci --danger_id=swift --dangerfile dangerfile.ts --failOnErrors --removePreviousComments
+        run: npx danger ci --id swift --dangerfile dangerfile.ts --failOnErrors --removePreviousComments
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
