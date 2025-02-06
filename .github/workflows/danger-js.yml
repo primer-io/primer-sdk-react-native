@@ -18,7 +18,7 @@ jobs:
       - uses: izhangzhihao/delete-comment@master
         with: 
           github_token: ${{ github.token }}
-          delete_user_name: github-actions[bot]
+          delete_user_name: github-actions
           issue_number: ${{ github.event.number }}
           body_regex: /dangerJS/
   danger-js:
