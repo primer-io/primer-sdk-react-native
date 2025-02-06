@@ -41,6 +41,14 @@ async function eslint() {
     });
     const results = await eslint.lintFiles(".");
 
+    fail("err,,,", "blob/master/packages/sdk/src/RNPrimer.ts", 11);
+    fail("err,,,", "/blob/master/packages/sdk/src/RNPrimer.ts", 11);
+    fail("err,,,", "primer-sdk-react-native/blob/master/packages/sdk/src/RNPrimer.ts", 11);
+    fail("err,,,", "/primer-sdk-react-native/blob/master/packages/sdk/src/RNPrimer.ts", 11);
+    fail("err,,,", "primer-io/primer-sdk-react-native/blob/master/packages/sdk/src/RNPrimer.ts", 11);
+    fail("err,,,", "/primer-io/primer-sdk-react-native/blob/master/packages/sdk/src/RNPrimer.ts", 11);
+    fail("err,,,", "github.com/primer-io/primer-sdk-react-native/blob/master/packages/sdk/src/RNPrimer.ts", 11);
+    fail("err,,,", "https://github.com/primer-io/primer-sdk-react-native/blob/master/packages/sdk/src/RNPrimer.ts", 11);
     fail("err,,,", "/primer-sdk-react-native/primer-sdk-react-native/packages/sdk/src/models/PrimerSettings.ts", 11);
     fail("err,,,", "primer-sdk-react-native/primer-sdk-react-native/packages/sdk/src/models/PrimerSettings.ts", 11);
     fail("err,,,", "/primer-sdk-react-native/packages/sdk/src/models/PrimerSettings.ts", 11);
