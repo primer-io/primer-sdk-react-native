@@ -15,17 +15,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  delete-old-danger-kotlin-comments:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: izhangzhihao/delete-comment@master
-        with: 
-          github_token: ${{ github.token }}
-          delete_user_name: github-actions
-          issue_number: ${{ github.event.number }}
-          body_regex: Danger Kotlin
   danger-kotlin:
-    needs: delete-old-danger-kotlin-comments
     runs-on: ubuntu-latest
     name: "Run Danger Kotlin"
     container:
@@ -57,6 +47,6 @@ jobs:
         working-directory: packages/example/android
 
       - name: Run Danger Kotlin
-        run: danger-kotlin ci --failOnErrors --no-publish-check
+        run: danger-kotlin ci --failOnErrors --no-publish-check --remove-previous-comments -id kt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -15,17 +15,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  delete-old-danger-swift-comments:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: izhangzhihao/delete-comment@master
-        with: 
-          github_token: ${{ github.token }}
-          delete_user_name: github-actions
-          issue_number: ${{ github.event.number }}
-          body_regex: Danger Swift
   danger-swift:
-    needs: delete-old-danger-swift-comments
     runs-on: ubuntu-latest
     name: "Run Danger"
     steps:
@@ -34,6 +24,6 @@ jobs:
       - name: Danger
         uses: docker://ghcr.io/danger/danger-swift-with-swiftlint:3.15.0
         with:
-            args: --failOnErrors --no-publish-check
+            args: --failOnErrors --no-publish-check --remove-previous-comments -id swift
         env:
           GITHUB_TOKEN: ${{ github.token }}

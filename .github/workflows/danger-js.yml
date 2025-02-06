@@ -12,17 +12,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  delete-old-danger-js-comments:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: izhangzhihao/delete-comment@master
-        with: 
-          github_token: ${{ github.token }}
-          delete_user_name: github-actions
-          issue_number: ${{ github.event.number }}
-          body_regex: dangerJS
   danger-js:
-    needs: delete-old-danger-js-comments
     runs-on: ubuntu-latest
     name: "Run Danger JS"
     steps:
@@ -37,6 +27,6 @@ jobs:
         run: yarn install
 
       - name: Run Danger JS
-        run: npx danger ci --dangerfile dangerfile.ts --failOnErrors
+        run: npx danger ci --dangerfile dangerfile.ts --failOnErrors --removePreviousComments -id js
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
