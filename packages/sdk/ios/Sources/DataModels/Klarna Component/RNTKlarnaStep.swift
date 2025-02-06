@@ -17,9 +17,7 @@ class PaymentSessionCreatedRN: KlarnaStepRN, Encodable {
     var stepName: String = "paymentSessionCreated"
     var paymentCategories: [KlarnaPaymentCategoryRN]
 
-    init(paymentCategories: [KlarnaPaymentCategory]) {
-        self.paymentCategories = paymentCategories.map { $0.toKlarnaPaymentCategoryRN() }
-    }
+    init(paymentCategories: [KlarnaPaymentCategory]) {self.paymentCategories = paymentCategories.map { $0.toKlarnaPaymentCategoryRN() }}
 }
 
 /// Session authorization
