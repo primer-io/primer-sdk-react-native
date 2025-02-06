@@ -33,7 +33,7 @@ let swiftFilesWithCopyright = sdkEditedFiles.filter {
 
 // Raw check based on created / updated files containing `import XCTest`
 
-let swiftTestFilesContainChanges = allCreatedAndModifiedFiles.filter {
+let swiftTestFilesContainChanges = sdkEditedFiles.filter {
     $0.fileType == .swift &&
         danger.utils.readFile($0).contains("import XCTest")
 }

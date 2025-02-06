@@ -1,28 +1,32 @@
 @file:DependsOn("xyz.pavelkorolev.danger.detekt:plugin:1.2.0")
+
+import java.io.File
 import systems.danger.kotlin.*
 import systems.danger.kotlin.models.github.*
 import xyz.pavelkorolev.danger.detekt.DetektPlugin
-import java.io.File
 
 register plugin DetektPlugin
 
 danger(args) {
-    val allCreatedAndModifiedFiles = git.modifiedFiles + git.createdFiles
+    val allSourceFiles = git.modifiedFiles + git.createdFiles
 
     onGitHub {
-        //region PR Contains Tests
-        val kotlinFilesWithJunit = allCreatedAndModifiedFiles.filter { path: String ->
-            path.endsWith(".kt") &&
-                File(path).readText().contains("import org.junit.jupiter.api.Test")
+        // region PR Contains Tests
+        val kotlinFilesContainingChanges =
+                allSourceFiles.filter { path: String ->
+                    path.endsWith(".kt") &&
+                            File(path).readText().contains("import org.junit.jupiter.api.Test")
+                }
+        if (kotlinFilesContainingChanges.isEmpty()) {
+            warn(
+                    "This PR doesn't seem to contain any updated Unit Test for Kotlin 🤔. Please consider double checking it 🙏"
+            )
         }
-        if (kotlinFilesWithJunit.isEmpty()) {
-            warn("This PR doesn't seem to contain any updated Unit Test for Kotlin 🤔. Please consider double checking it 🙏")
-        }
-        //endregion
+        // endregion
 
-        //region Detekt
+        // region Detekt
         parseDetektReport()
-        //endregion
+        // endregion
     }
 }
 
@@ -38,9 +42,7 @@ fun parseDetektReport() {
         if (count == 0) {
             message("✅ No detekt issues found.")
         } else {
-            fail(
-                "🙁 Found **${report.count}** detekt violations."
-            )
+            fail("🙁 Found **${report.count}** detekt violations.")
         }
         report(report)
     }
