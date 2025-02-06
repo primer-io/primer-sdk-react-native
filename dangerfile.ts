@@ -1,10 +1,8 @@
 import { danger, warn, fail, message } from "danger";
 import { ESLint } from "eslint";
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
 
 const pr = danger.github.pr;
-const directory = dirname(fileURLToPath(import.meta.url));
+const directory = process.cwd();
 
 // #region PR Length
 const bigPrThreshold = 600;
