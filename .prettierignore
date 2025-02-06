@@ -1,17 +1,11 @@
 # Ignore everything recursively
 *
 
-# But not the .ts files
-!*.ts
-
-# But not the .js files
-!*.js
-
-# But not the .tsx files
-!*.tsx
-
-# But not the .jsx files
-!*.jsx
+# But not the following
+!**/packages/sdk/src/**/*.ts
+!**/packages/sdk/src/**/*.tsx
+!**/packages/sdk/src/**/*.js
+!**/packages/sdk/src/**/*.jsx
 
 # Check subdirectories too
 !*/
