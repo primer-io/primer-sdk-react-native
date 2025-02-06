@@ -47,6 +47,6 @@ jobs:
         working-directory: packages/example/android
 
       - name: Run Danger Kotlin
-        run: danger-kotlin ci --danger_id=kt --failOnErrors --no-publish-check --remove-previous-comments
+        run: danger-kotlin ci --id=kt --failOnErrors --no-publish-check --remove-previous-comments
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
