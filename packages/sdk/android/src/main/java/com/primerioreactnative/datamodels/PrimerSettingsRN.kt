@@ -23,7 +23,7 @@ data class PrimerSettingsRN(
     var uiOptions: PrimerUIOptionsRN = PrimerUIOptionsRN(),
     var debugOptions: PrimerDebugOptionsRN = PrimerDebugOptionsRN(),
     var clientSessionCachingEnabled: Boolean = false,
-    var apiVersion: String = PrimerApiVersion.LATEST.name
+    var apiVersion: String? = "2.4"
 )
 
 @Serializable
