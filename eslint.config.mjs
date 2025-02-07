@@ -4,6 +4,7 @@ import eslint from '@eslint/js';
 import eslintReactNative from 'eslint-plugin-react-native';
 import { fixupPluginRules } from '@eslint/compat';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
+import eslintConfigPrettier from "eslint-config-prettier";
 
 export default tseslint.config(
     {
@@ -40,4 +41,5 @@ export default tseslint.config(
         },
     },
     eslintPluginPrettierRecommended,
+    eslintConfigPrettier
 );
