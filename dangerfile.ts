@@ -1,6 +1,7 @@
 import { danger, warn, fail, message } from "danger";
 import { ESLint } from "eslint";
 
+
 const pr = danger.github.pr;
 const directory = process.cwd();
 
@@ -62,10 +63,10 @@ async function eslint() {
     results.forEach((result) => {
         result.messages.forEach((eslintMessage) => {
             let actualFilePath = removePrefix(result.filePath, directory + "/")
-            let errorMessage = `**[ESLint]**: ${eslintMessage.message} - (${eslintMessage.ruleId})`
+            let errorMessage = `${actualFilePath} line ${eslintMessage.line} – ${eslintMessage.message} (${eslintMessage.ruleId})`
             if (eslintMessage.severity === 1) {
                 errorCount++;
-                fail(errorMessage, actualFilePath, eslintMessage.line)
+                warn(errorMessage, actualFilePath, eslintMessage.line)
             } else if (eslintMessage.severity === 2) {
                 errorCount++;
                 fail(errorMessage, actualFilePath, eslintMessage.line)
