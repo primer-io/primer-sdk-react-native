@@ -201,7 +201,7 @@ interface IPrimerDebugOptions {
 /**
  * Type representing the supported versions of the Primer API.
  */
-export type PrimerApiVersion = '2.3' | '2.4'
+export type PrimerApiVersion = '2.3' | '2.4' | 'latest'
 
 //----------------------------------------
 

@@ -207,6 +207,8 @@ fun PrimerSettingsRN.toPrimerSettings(context: Context) =
         apiVersion = when (apiVersion) {
             "2.3" -> PrimerApiVersion.V2_3
             "2.4" -> PrimerApiVersion.V2_4
+            "latest" -> PrimerApiVersion.LATEST
             else -> error("'$apiVersion' is not supported.")
         }
     )
+
