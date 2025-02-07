@@ -51,7 +51,7 @@ class PrimerHeadlessUniversalCheckoutRawDataManager {
   async configureListeners(): Promise<void> {
     //@ts-ignore
     if (this.options?.onMetadataChange) {
-      const sub = await this.addListener('onMetadataChange', (data) => {
+      const sub = await this.addListener('onMetadataChange', data => {
         if (this.options?.onMetadataChange) {
           this.options.onMetadataChange(data);
         }
@@ -60,7 +60,7 @@ class PrimerHeadlessUniversalCheckoutRawDataManager {
     }
 
     if (this.options?.onValidation) {
-      const sub = await this.addListener('onValidation', (data) => {
+      const sub = await this.addListener('onValidation', data => {
         if (this.options?.onValidation) {
           this.options.onValidation(data.isValid, data.errors);
         }
@@ -175,7 +175,7 @@ class PrimerHeadlessUniversalCheckoutRawDataManager {
   }
 
   removeAllListeners() {
-    eventTypes.forEach((eventType) => this.removeAllListenersForEvent(eventType));
+    eventTypes.forEach(eventType => this.removeAllListenersForEvent(eventType));
   }
 }
 

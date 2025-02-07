@@ -1,14 +1,10 @@
-import React, {useEffect, useState} from 'react';
-import {Button, ScrollView, Text, TextInput, View} from 'react-native';
-import {
-  createClientSession,
-  createPayment,
-  resumePayment,
-} from '../network/api';
-import {appPaymentParameters} from '../models/IClientSessionRequestBody';
-import type {IPayment} from '../models/IPayment';
-import {getPaymentHandlingStringVal} from '../network/Environment';
-import {ActivityIndicator} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Button, ScrollView, Text, TextInput, View } from 'react-native';
+import { createClientSession, createPayment, resumePayment } from '../network/api';
+import { appPaymentParameters } from '../models/IClientSessionRequestBody';
+import type { IPayment } from '../models/IPayment';
+import { getPaymentHandlingStringVal } from '../network/Environment';
+import { ActivityIndicator } from 'react-native';
 import {
   CheckoutAdditionalInfo,
   CheckoutData,
@@ -32,11 +28,10 @@ export default HeadlessCheckoutVaultScreen = (props: any) => {
   const [clientSession, setClientSession] = useState<null | any>(null);
 
   const [cvv, setCvv] = useState('');
-  const [vaultedPaymentMethods, setVaultedPaymentMethods] = useState<
-    undefined | VaultedPaymentMethod[]
-  >(undefined);
-  const [selectedVaultedPaymentMethod, setSelectedVaultedPaymentMethod] =
-    useState<undefined | VaultedPaymentMethod>(undefined);
+  const [vaultedPaymentMethods, setVaultedPaymentMethods] = useState<undefined | VaultedPaymentMethod[]>(undefined);
+  const [selectedVaultedPaymentMethod, setSelectedVaultedPaymentMethod] = useState<undefined | VaultedPaymentMethod>(
+    undefined
+  );
 
   const updateLogs = (str: string) => {
     console.log(str);
@@ -45,12 +40,10 @@ export default HeadlessCheckoutVaultScreen = (props: any) => {
     log = combinedLog;
   };
 
-  let vaultManager = new VaultManager();
+  const vaultManager = new VaultManager();
 
-  let settings: PrimerSettings = {
-    paymentHandling: getPaymentHandlingStringVal(
-      appPaymentParameters.paymentHandling,
-    ),
+  const settings: PrimerSettings = {
+    paymentHandling: getPaymentHandlingStringVal(appPaymentParameters.paymentHandling),
     paymentMethodOptions: {
       iOS: {
         urlScheme: 'merchant://primer.io',
@@ -65,105 +58,59 @@ export default HeadlessCheckoutVaultScreen = (props: any) => {
     apiVersion: '2.4',
     headlessUniversalCheckoutCallbacks: {
       onAvailablePaymentMethodsLoad: availablePaymentMethods => {
-        updateLogs(
-          `\nℹ️ onAvailablePaymentMethodsLoad\n${JSON.stringify(
-            availablePaymentMethods,
-            null,
-            2,
-          )}\n`,
-        );
+        updateLogs(`\nℹ️ onAvailablePaymentMethodsLoad\n${JSON.stringify(availablePaymentMethods, null, 2)}\n`);
         setIsLoading(false);
       },
       onPreparationStart: paymentMethodType => {
-        updateLogs(
-          `\nℹ️ onPreparationStart\npaymentMethodType: ${paymentMethodType}\n`,
-        );
+        updateLogs(`\nℹ️ onPreparationStart\npaymentMethodType: ${paymentMethodType}\n`);
       },
       onPaymentMethodShow: paymentMethodType => {
-        updateLogs(
-          `\nℹ️ onPaymentMethodShow\npaymentMethodType: ${paymentMethodType}\n`,
-        );
+        updateLogs(`\nℹ️ onPaymentMethodShow\npaymentMethodType: ${paymentMethodType}\n`);
       },
       onTokenizationStart: paymentMethodType => {
-        updateLogs(
-          `\nℹ️ onTokenizationStart\npaymentMethodType: ${paymentMethodType}\n`,
-        );
+        updateLogs(`\nℹ️ onTokenizationStart\npaymentMethodType: ${paymentMethodType}\n`);
       },
       onBeforeClientSessionUpdate: () => {
         updateLogs('\nℹ️ onBeforeClientSessionUpdate\n');
       },
       onClientSessionUpdate: updatedClientSession => {
-        updateLogs(
-          `\nℹ️ onClientSessionUpdate\nclientSession: ${JSON.stringify(
-            updatedClientSession,
-            null,
-            2,
-          )}\n`,
-        );
+        updateLogs(`\nℹ️ onClientSessionUpdate\nclientSession: ${JSON.stringify(updatedClientSession, null, 2)}\n`);
       },
       onCheckoutAdditionalInfo: additionalInfo => {
         merchantCheckoutAdditionalInfo = additionalInfo;
-        updateLogs(
-          `\nℹ️ onCheckoutPending\nadditionalInfo: ${JSON.stringify(
-            additionalInfo,
-            null,
-            2,
-          )}\n`,
-        );
+        updateLogs(`\nℹ️ onCheckoutPending\nadditionalInfo: ${JSON.stringify(additionalInfo, null, 2)}\n`);
         setIsLoading(false);
       },
       onCheckoutPending: checkoutAdditionalInfo => {
         merchantCheckoutAdditionalInfo = checkoutAdditionalInfo;
-        updateLogs(
-          `\n✅ onCheckoutPending\nadditionalInfo: ${JSON.stringify(
-            checkoutAdditionalInfo,
-            null,
-            2,
-          )}\n`,
-        );
+        updateLogs(`\n✅ onCheckoutPending\nadditionalInfo: ${JSON.stringify(checkoutAdditionalInfo, null, 2)}\n`);
         setIsLoading(false);
         navigateToResultScreen();
       },
       onCheckoutComplete: checkoutData => {
         merchantCheckoutData = checkoutData;
-        updateLogs(
-          `\n✅ onCheckoutComplete\ncheckoutData: ${JSON.stringify(
-            checkoutData,
-            null,
-            2,
-          )}\n`,
-        );
+        updateLogs(`\n✅ onCheckoutComplete\ncheckoutData: ${JSON.stringify(checkoutData, null, 2)}\n`);
         setIsLoading(false);
         navigateToResultScreen();
       },
       onTokenizationSuccess: async (paymentMethodTokenData, handler) => {
         updateLogs(
-          `\nℹ️ onTokenizationSuccess\npaymentMethodTokenData: ${JSON.stringify(
-            paymentMethodTokenData,
-            null,
-            2,
-          )}\n`,
+          `\nℹ️ onTokenizationSuccess\npaymentMethodTokenData: ${JSON.stringify(paymentMethodTokenData, null, 2)}\n`
         );
         setIsLoading(false);
 
         try {
-          const payment: IPayment = await createPayment(
-            paymentMethodTokenData.token,
-          );
+          const payment: IPayment = await createPayment(paymentMethodTokenData.token);
           merchantPayment = payment;
 
           if (payment.requiredAction && payment.requiredAction.clientToken) {
             merchantPaymentId = payment.id;
 
             if (payment.requiredAction.name === '3DS_AUTHENTICATION') {
-              updateLogs(
-                '\n⚠️ Make sure you have used a card number that supports 3DS, otherwise the SDK will hang.',
-              );
+              updateLogs('\n⚠️ Make sure you have used a card number that supports 3DS, otherwise the SDK will hang.');
             }
 
-            handler.continueWithNewClientToken(
-              payment.requiredAction.clientToken,
-            );
+            handler.continueWithNewClientToken(payment.requiredAction.clientToken);
           } else {
             setIsLoading(false);
             handler.complete();
@@ -184,19 +131,10 @@ export default HeadlessCheckoutVaultScreen = (props: any) => {
 
         try {
           if (merchantPaymentId) {
-            const payment: IPayment = await resumePayment(
-              merchantPaymentId,
-              resumeToken,
-            );
+            const payment: IPayment = await resumePayment(merchantPaymentId, resumeToken);
             merchantPayment = payment;
             handler.complete();
-            updateLogs(
-              `\n✅ Payment resumed\npayment: ${JSON.stringify(
-                payment,
-                null,
-                2,
-              )}`,
-            );
+            updateLogs(`\n✅ Payment resumed\npayment: ${JSON.stringify(payment, null, 2)}`);
             setIsLoading(false);
             navigateToResultScreen();
             merchantPaymentId = null;
@@ -207,9 +145,7 @@ export default HeadlessCheckoutVaultScreen = (props: any) => {
         } catch (err) {
           console.error(err);
           handler.complete();
-          updateLogs(
-            `\n🛑 Payment resume\nerror: ${JSON.stringify(err, null, 2)}`,
-          );
+          updateLogs(`\n🛑 Payment resume\nerror: ${JSON.stringify(err, null, 2)}`);
           setIsLoading(false);
 
           merchantPaymentId = null;
@@ -258,14 +194,10 @@ export default HeadlessCheckoutVaultScreen = (props: any) => {
 
   const fetchVaultedPaymentMethods = async (clientToken: string) => {
     try {
-      const result = await HeadlessUniversalCheckout.startWithClientToken(
-        clientToken,
-        settings,
-      );
+      const result = await HeadlessUniversalCheckout.startWithClientToken(clientToken, settings);
       if (result) {
         await vaultManager.configure();
-        const availablePaymentMethods =
-          await vaultManager.fetchVaultedPaymentMethods();
+        const availablePaymentMethods = await vaultManager.fetchVaultedPaymentMethods();
         setVaultedPaymentMethods(availablePaymentMethods);
       }
       setIsLoading(false);
@@ -281,16 +213,10 @@ export default HeadlessCheckoutVaultScreen = (props: any) => {
       if (!cvv) {
         await vaultManager.startPaymentFlow(selectedVaultedPaymentMethod.id);
       } else {
-        const data: VaultedPaymentMethodAdditionalData = {cvv: cvv};
-        const validationErrors: ValidationError[] = await vaultManager.validate(
-          selectedVaultedPaymentMethod.id,
-          data,
-        );
+        const data: VaultedPaymentMethodAdditionalData = { cvv: cvv };
+        const validationErrors: ValidationError[] = await vaultManager.validate(selectedVaultedPaymentMethod.id, data);
         if (validationErrors.length == 0) {
-          await vaultManager.startPaymentFlow(
-            selectedVaultedPaymentMethod.id,
-            data,
-          );
+          await vaultManager.startPaymentFlow(selectedVaultedPaymentMethod.id, data);
         } else {
           console.error(validationErrors[0]);
         }
@@ -345,7 +271,7 @@ export default HeadlessCheckoutVaultScreen = (props: any) => {
     } else {
       return vaultedPaymentMethods.map(item => {
         return (
-          <View style={{flexDirection: 'row'}}>
+          <View style={{ flexDirection: 'row' }}>
             <Text
               style={{
                 marginHorizontal: 20,
@@ -367,12 +293,12 @@ export default HeadlessCheckoutVaultScreen = (props: any) => {
 
   const getVaultedPaymentData = (item: any) => {
     const paymentMethodType = item?.paymentMethodType ?? '';
-    var suffix: string | null = null;
+    let suffix: string | null = null;
     switch (paymentMethodType) {
       case 'PAYMENT_CARD':
       case 'GOOGLE_PAY':
       case 'APPLE_PAY': {
-        let last4Digits = item.paymentInstrumentData.last4Digits;
+        const last4Digits = item.paymentInstrumentData.last4Digits;
         if (last4Digits !== undefined) {
           suffix = '••••' + last4Digits;
         }
@@ -383,16 +309,14 @@ export default HeadlessCheckoutVaultScreen = (props: any) => {
         break;
       }
       case 'KLARNA': {
-        const billingAddress =
-          item.paymentInstrumentData?.sessionData?.billingAddress;
+        const billingAddress = item.paymentInstrumentData?.sessionData?.billingAddress;
         suffix = billingAddress?.email ?? '';
         break;
       }
       case 'STRIPE_ACH': {
         const bankName = item.paymentInstrumentData?.bankName ?? '-';
         suffix = '(' + bankName + ')';
-        const last4Digits =
-          item.paymentInstrumentData?.accountNumberLast4Digits;
+        const last4Digits = item.paymentInstrumentData?.accountNumberLast4Digits;
         if (last4Digits !== undefined) {
           suffix += ' ••••' + last4Digits;
         }
@@ -452,7 +376,7 @@ export default HeadlessCheckoutVaultScreen = (props: any) => {
   };
 
   return (
-    <ScrollView style={{paddingHorizontal: 24, flex: 1}}>
+    <ScrollView style={{ paddingHorizontal: 24, flex: 1 }}>
       {renderVaultedPaymentMethods()}
       {renderVaultAdditionalData()}
       {renderLoadingOverlay()}

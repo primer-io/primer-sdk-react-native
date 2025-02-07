@@ -1,0 +1,11 @@
+# Ignore everything recursively
+*
+
+# But not the following
+!**/packages/sdk/src/**/*.ts
+!**/packages/sdk/src/**/*.tsx
+!**/packages/sdk/src/**/*.js
+!**/packages/sdk/src/**/*.jsx
+
+# Check subdirectories too
+!*/

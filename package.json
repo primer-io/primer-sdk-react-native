@@ -12,6 +12,8 @@
     "scripts": {
         "bootstrap": "yarn install",
         "pods": "cd packages/example/ios && pod-install --quiet",
+        "lint": "npx eslint --config eslint.config.mjs",
+        "lintAndFix": "npx eslint --config eslint.config.mjs --fix",
         "test": "yarn --cwd packages/sdk test",
         "test:unit:coverage:lcov": "yarn --cwd packages/sdk test && node scripts/aggregate-coverage.js && nyc report --reporter lcov",
         "postinstall": "cd packages/example/ && patch-package"

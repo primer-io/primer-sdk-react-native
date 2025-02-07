@@ -110,7 +110,7 @@ async function configureListeners(): Promise<void> {
       await RNPrimerHeadlessUniversalCheckout.setImplementedRNCallbacks(implementedRNCallbacks);
 
       if (implementedRNCallbacks.onAvailablePaymentMethodsLoad) {
-        RNPrimerHeadlessUniversalCheckout.addListener('onAvailablePaymentMethodsLoad', (data) => {
+        RNPrimerHeadlessUniversalCheckout.addListener('onAvailablePaymentMethodsLoad', data => {
           if (primerSettings?.headlessUniversalCheckoutCallbacks?.onAvailablePaymentMethodsLoad) {
             const availablePaymentMethods: IPrimerHeadlessUniversalCheckoutPaymentMethod[] =
               data.availablePaymentMethods || [];
@@ -122,7 +122,7 @@ async function configureListeners(): Promise<void> {
       }
 
       if (implementedRNCallbacks.onPreparationStart) {
-        RNPrimerHeadlessUniversalCheckout.addListener('onPreparationStart', (data) => {
+        RNPrimerHeadlessUniversalCheckout.addListener('onPreparationStart', data => {
           if (primerSettings?.headlessUniversalCheckoutCallbacks?.onPreparationStart) {
             primerSettings.headlessUniversalCheckoutCallbacks.onPreparationStart(data.paymentMethodType);
           } else {
@@ -142,7 +142,7 @@ async function configureListeners(): Promise<void> {
       }
 
       if (implementedRNCallbacks.onClientSessionUpdate) {
-        RNPrimerHeadlessUniversalCheckout.addListener('onClientSessionUpdate', (data) => {
+        RNPrimerHeadlessUniversalCheckout.addListener('onClientSessionUpdate', data => {
           if (primerSettings?.headlessUniversalCheckoutCallbacks?.onClientSessionUpdate) {
             const clientSession: PrimerClientSession = data.clientSession;
             primerSettings.headlessUniversalCheckoutCallbacks.onClientSessionUpdate(clientSession);
@@ -153,7 +153,7 @@ async function configureListeners(): Promise<void> {
       }
 
       if (implementedRNCallbacks.onBeforePaymentCreate) {
-        RNPrimerHeadlessUniversalCheckout.addListener('onBeforePaymentCreate', (data) => {
+        RNPrimerHeadlessUniversalCheckout.addListener('onBeforePaymentCreate', data => {
           if (primerSettings?.headlessUniversalCheckoutCallbacks?.onBeforePaymentCreate) {
             const checkoutPaymentMethodData: PrimerCheckoutPaymentMethodData = data;
             primerSettings.headlessUniversalCheckoutCallbacks.onBeforePaymentCreate(
@@ -167,7 +167,7 @@ async function configureListeners(): Promise<void> {
       }
 
       if (implementedRNCallbacks.onTokenizationStart) {
-        RNPrimerHeadlessUniversalCheckout.addListener('onTokenizationStart', (data) => {
+        RNPrimerHeadlessUniversalCheckout.addListener('onTokenizationStart', data => {
           if (primerSettings?.headlessUniversalCheckoutCallbacks?.onTokenizationStart) {
             primerSettings.headlessUniversalCheckoutCallbacks.onTokenizationStart(data.paymentMethodType);
           } else {
@@ -177,7 +177,7 @@ async function configureListeners(): Promise<void> {
       }
 
       if (implementedRNCallbacks.onPaymentMethodShow) {
-        RNPrimerHeadlessUniversalCheckout.addListener('onPaymentMethodShow', (data) => {
+        RNPrimerHeadlessUniversalCheckout.addListener('onPaymentMethodShow', data => {
           if (primerSettings?.headlessUniversalCheckoutCallbacks?.onPaymentMethodShow) {
             primerSettings.headlessUniversalCheckoutCallbacks.onPaymentMethodShow(data.paymentMethodType);
           } else {
@@ -187,7 +187,7 @@ async function configureListeners(): Promise<void> {
       }
 
       if (implementedRNCallbacks.onTokenizationSuccess) {
-        RNPrimerHeadlessUniversalCheckout.addListener('onTokenizationSuccess', (data) => {
+        RNPrimerHeadlessUniversalCheckout.addListener('onTokenizationSuccess', data => {
           if (primerSettings?.headlessUniversalCheckoutCallbacks?.onTokenizationSuccess) {
             const paymentMethodTokenData: PrimerPaymentMethodTokenData = data.paymentMethodTokenData;
             primerSettings.headlessUniversalCheckoutCallbacks.onTokenizationSuccess(
@@ -201,7 +201,7 @@ async function configureListeners(): Promise<void> {
       }
 
       if (implementedRNCallbacks.onCheckoutResume) {
-        RNPrimerHeadlessUniversalCheckout.addListener('onCheckoutResume', (data) => {
+        RNPrimerHeadlessUniversalCheckout.addListener('onCheckoutResume', data => {
           if (primerSettings?.headlessUniversalCheckoutCallbacks?.onCheckoutResume) {
             primerSettings.headlessUniversalCheckoutCallbacks.onCheckoutResume(data.resumeToken, resumeHandler);
           } else {
@@ -211,7 +211,7 @@ async function configureListeners(): Promise<void> {
       }
 
       if (implementedRNCallbacks.onCheckoutPending) {
-        RNPrimerHeadlessUniversalCheckout.addListener('onCheckoutPending', (data) => {
+        RNPrimerHeadlessUniversalCheckout.addListener('onCheckoutPending', data => {
           if (primerSettings?.headlessUniversalCheckoutCallbacks?.onCheckoutPending) {
             const checkoutAdditionalInfo: PrimerCheckoutAdditionalInfo = data;
             primerSettings.headlessUniversalCheckoutCallbacks.onCheckoutPending(checkoutAdditionalInfo);
@@ -222,7 +222,7 @@ async function configureListeners(): Promise<void> {
       }
 
       if (implementedRNCallbacks.onCheckoutAdditionalInfo) {
-        RNPrimerHeadlessUniversalCheckout.addListener('onCheckoutAdditionalInfo', (data) => {
+        RNPrimerHeadlessUniversalCheckout.addListener('onCheckoutAdditionalInfo', data => {
           if (primerSettings?.headlessUniversalCheckoutCallbacks?.onCheckoutAdditionalInfo) {
             const checkoutAdditionalInfo: PrimerCheckoutAdditionalInfo = data;
             primerSettings.headlessUniversalCheckoutCallbacks.onCheckoutAdditionalInfo(checkoutAdditionalInfo);
@@ -233,7 +233,7 @@ async function configureListeners(): Promise<void> {
       }
 
       if (implementedRNCallbacks.onCheckoutComplete) {
-        RNPrimerHeadlessUniversalCheckout.addListener('onCheckoutComplete', (data) => {
+        RNPrimerHeadlessUniversalCheckout.addListener('onCheckoutComplete', data => {
           if (primerSettings?.headlessUniversalCheckoutCallbacks?.onCheckoutComplete) {
             const checkoutData: PrimerCheckoutData = data;
             primerSettings.headlessUniversalCheckoutCallbacks.onCheckoutComplete(checkoutData);
@@ -244,7 +244,7 @@ async function configureListeners(): Promise<void> {
       }
 
       if (implementedRNCallbacks.onError) {
-        RNPrimerHeadlessUniversalCheckout.addListener('onError', (data) => {
+        RNPrimerHeadlessUniversalCheckout.addListener('onError', data => {
           if (primerSettings?.headlessUniversalCheckoutCallbacks?.onError) {
             if (data && data.error && data.error.errorId && primerSettings) {
               const errorId: string = data.error.errorId;

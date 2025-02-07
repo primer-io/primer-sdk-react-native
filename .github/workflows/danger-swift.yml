@@ -1,0 +1,29 @@
+name: Danger (Swift)
+
+on:
+  workflow_run:
+    workflows: ["Danger (JS)", "Danger (Kotlin)"]
+    types: [completed]
+  pull_request:
+    types:
+      - opened
+      - edited
+      - synchronize
+
+concurrency: 
+  group: ${{ github.ref }}-danger-swift
+  cancel-in-progress: true
+
+jobs:
+  danger-swift:
+    runs-on: ubuntu-latest
+    name: "Run Danger"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      
+      - name: Danger
+        uses: docker://ghcr.io/danger/danger-swift-with-swiftlint:3.15.0
+        with:
+            args: --id=swift --failOnErrors --no-publish-check --remove-previous-comments
+        env:
+          GITHUB_TOKEN: ${{ github.token }}

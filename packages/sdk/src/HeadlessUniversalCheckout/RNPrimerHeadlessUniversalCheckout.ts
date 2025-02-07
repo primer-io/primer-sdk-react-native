@@ -57,7 +57,7 @@ const RNPrimerHeadlessUniversalCheckout = {
   },
 
   removeAllListeners() {
-    eventTypes.forEach((eventType) => RNPrimerHeadlessUniversalCheckout.removeAllListenersForEvent(eventType));
+    eventTypes.forEach(eventType => RNPrimerHeadlessUniversalCheckout.removeAllListenersForEvent(eventType));
   },
 
   ///////////////////////////////////////////

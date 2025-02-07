@@ -138,7 +138,7 @@ async function configureListeners(): Promise<void> {
       await RNPrimer.setImplementedRNCallbacks(implementedRNCallbacks);
 
       if (implementedRNCallbacks.onCheckoutComplete) {
-        RNPrimer.addListener('onCheckoutComplete', (data) => {
+        RNPrimer.addListener('onCheckoutComplete', data => {
           if (primerSettings && primerSettings.onCheckoutComplete) {
             const checkoutData: PrimerCheckoutData = data;
             primerSettings.onCheckoutComplete(checkoutData);
@@ -147,7 +147,7 @@ async function configureListeners(): Promise<void> {
       }
 
       if (implementedRNCallbacks.onBeforePaymentCreate) {
-        RNPrimer.addListener('onBeforePaymentCreate', (data) => {
+        RNPrimer.addListener('onBeforePaymentCreate', data => {
           if (primerSettings && primerSettings.onBeforePaymentCreate) {
             const checkoutPaymentMethodData: PrimerCheckoutPaymentMethodData = data;
             primerSettings.onBeforePaymentCreate(checkoutPaymentMethodData, paymentCreationHandler);
@@ -156,7 +156,7 @@ async function configureListeners(): Promise<void> {
       }
 
       if (implementedRNCallbacks.onBeforeClientSessionUpdate) {
-        RNPrimer.addListener('onBeforeClientSessionUpdate', (_) => {
+        RNPrimer.addListener('onBeforeClientSessionUpdate', _ => {
           if (primerSettings && primerSettings.onBeforeClientSessionUpdate) {
             primerSettings.onBeforeClientSessionUpdate();
           }
@@ -164,7 +164,7 @@ async function configureListeners(): Promise<void> {
       }
 
       if (implementedRNCallbacks.onClientSessionUpdate) {
-        RNPrimer.addListener('onClientSessionUpdate', (data) => {
+        RNPrimer.addListener('onClientSessionUpdate', data => {
           if (primerSettings && primerSettings.onClientSessionUpdate) {
             const clientSession: PrimerClientSession = data;
             primerSettings.onClientSessionUpdate(clientSession);
@@ -173,7 +173,7 @@ async function configureListeners(): Promise<void> {
       }
 
       if (implementedRNCallbacks.onTokenizationSuccess) {
-        RNPrimer.addListener('onTokenizeSuccess', (data) => {
+        RNPrimer.addListener('onTokenizeSuccess', data => {
           if (primerSettings && primerSettings.onTokenizeSuccess) {
             const paymentMethodTokenData: PrimerPaymentMethodTokenData = data;
             primerSettings.onTokenizeSuccess(paymentMethodTokenData, tokenizationHandler);
@@ -182,7 +182,7 @@ async function configureListeners(): Promise<void> {
       }
 
       if (implementedRNCallbacks.onCheckoutResume) {
-        RNPrimer.addListener('onResumeSuccess', (data) => {
+        RNPrimer.addListener('onResumeSuccess', data => {
           if (primerSettings && primerSettings.onResumeSuccess && data.resumeToken) {
             primerSettings.onResumeSuccess(data.resumeToken, resumeHandler);
           }
@@ -190,7 +190,7 @@ async function configureListeners(): Promise<void> {
       }
 
       if (implementedRNCallbacks.onCheckoutPending) {
-        RNPrimer.addListener('onResumePending', (additionalInfo) => {
+        RNPrimer.addListener('onResumePending', additionalInfo => {
           if (primerSettings && primerSettings.onResumePending) {
             const checkoutAdditionalInfo: PrimerCheckoutAdditionalInfo = additionalInfo;
             primerSettings.onResumePending(checkoutAdditionalInfo);
@@ -201,7 +201,7 @@ async function configureListeners(): Promise<void> {
       }
 
       if (implementedRNCallbacks.onCheckoutAdditionalInfo) {
-        RNPrimer.addListener('onCheckoutReceivedAdditionalInfo', (additionalInfo) => {
+        RNPrimer.addListener('onCheckoutReceivedAdditionalInfo', additionalInfo => {
           if (primerSettings && primerSettings.onCheckoutReceivedAdditionalInfo) {
             const checkoutAdditionalInfo: PrimerCheckoutAdditionalInfo = additionalInfo;
             primerSettings.onCheckoutReceivedAdditionalInfo(checkoutAdditionalInfo);
@@ -212,7 +212,7 @@ async function configureListeners(): Promise<void> {
       }
 
       if (implementedRNCallbacks.onDismiss) {
-        RNPrimer.addListener('onDismiss', (_) => {
+        RNPrimer.addListener('onDismiss', _ => {
           if (primerSettings && primerSettings.onDismiss) {
             primerSettings.onDismiss();
           }
@@ -220,7 +220,7 @@ async function configureListeners(): Promise<void> {
       }
 
       if (implementedRNCallbacks.onError) {
-        RNPrimer.addListener('onError', (data) => {
+        RNPrimer.addListener('onError', data => {
           if (data && data.error && data.error.errorId && primerSettings && primerSettings.onError) {
             const errorId: string = data.error.errorId;
             const errorCode: string | undefined = data.error.errorCode;

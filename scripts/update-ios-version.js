@@ -8,5 +8,5 @@ const packageJsonVersion = require(`${rootDir}/../packages/sdk/package.json`).ve
 const versionFileContents = fs.readFileSync(versionFilePath).toString();
 
 // Update version
-const newVersionFileContents = versionFileContents.replace(/"\d+\.\d+\.\d+"/, `"${packageJsonVersion}"`)
+const newVersionFileContents = versionFileContents.replace(/"\d+\.\d+\.\d+"/, `"${packageJsonVersion}"`);
 fs.writeFileSync(versionFilePath, newVersionFileContents);

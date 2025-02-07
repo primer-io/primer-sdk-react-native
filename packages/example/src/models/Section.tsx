@@ -1,7 +1,7 @@
 import React from 'react';
-import {Text, useColorScheme, View} from 'react-native';
-import {Colors} from 'react-native/Libraries/NewAppScreen';
-import {styles} from '../styles';
+import { Text, useColorScheme, View } from 'react-native';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
+import { styles } from '../styles';
 
 export const Section: React.FC<{
   title: string;

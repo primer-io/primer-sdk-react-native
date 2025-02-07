@@ -1,8 +1,8 @@
 import * as React from 'react';
-import type {StyleProp, TextStyle, ViewStyle} from 'react-native';
-import {Text, View} from 'react-native';
+import type { StyleProp, TextStyle, ViewStyle } from 'react-native';
+import { Text, View } from 'react-native';
 
-import {styles} from '../styles';
+import { styles } from '../styles';
 
 export interface HeadingProps {
   style?: StyleProp<ViewStyle & TextStyle>;
@@ -18,13 +18,13 @@ const Heading = (props: HeadingProps) => {
 };
 
 export const Heading1 = (props: HeadingProps) => {
-  return <Heading title={props.title} style={{...styles.sectionTitle}} />;
+  return <Heading title={props.title} style={{ ...styles.sectionTitle }} />;
 };
 
 export const Heading2 = (props: HeadingProps) => {
-  return <Heading title={props.title} style={{...styles.heading2}} />;
+  return <Heading title={props.title} style={{ ...styles.heading2 }} />;
 };
 
 export const Heading3 = (props: HeadingProps) => {
-  return <Heading title={props.title} style={{...styles.heading3}} />;
+  return <Heading title={props.title} style={{ ...styles.heading3 }} />;
 };

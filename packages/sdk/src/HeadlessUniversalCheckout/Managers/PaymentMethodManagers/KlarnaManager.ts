@@ -106,37 +106,37 @@ export class PrimerHeadlessUniversalCheckoutKlarnaManager {
 
   private async configureListeners(props: KlarnaManagerProps): Promise<void> {
     if (props?.onStep) {
-      this.addListener('onStep', (data) => {
+      this.addListener('onStep', data => {
         props.onStep?.(data);
       });
     }
 
     if (props?.onInvalid) {
-      this.addListener('onInvalid', (data) => {
+      this.addListener('onInvalid', data => {
         props.onInvalid?.(data);
       });
     }
 
     if (props?.onError) {
-      this.addListener('onError', (data) => {
+      this.addListener('onError', data => {
         props.onError?.(data);
       });
     }
 
     if (props?.onValid) {
-      this.addListener('onValid', (data) => {
+      this.addListener('onValid', data => {
         props.onValid?.(data);
       });
     }
 
     if (props?.onValidating) {
-      this.addListener('onValidating', (data) => {
+      this.addListener('onValidating', data => {
         props.onValidating?.(data);
       });
     }
 
     if (props?.onValidationError) {
-      this.addListener('onValidationError', (data) => {
+      this.addListener('onValidationError', data => {
         props.onValidationError?.(data);
       });
     }
@@ -159,6 +159,6 @@ export class PrimerHeadlessUniversalCheckoutKlarnaManager {
   }
 
   removeAllListeners() {
-    eventTypes.forEach((eventType) => this.removeAllListenersForEvent(eventType));
+    eventTypes.forEach(eventType => this.removeAllListenersForEvent(eventType));
   }
 }

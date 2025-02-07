@@ -77,9 +77,7 @@ export function makePaymentHandlingFromStringVal(env: string): PaymentHandling {
   }
 }
 
-export function getPaymentHandlingStringVal(
-  env: PaymentHandling,
-): 'AUTO' | 'MANUAL' | undefined {
+export function getPaymentHandlingStringVal(env: PaymentHandling): 'AUTO' | 'MANUAL' | undefined {
   switch (env) {
     case PaymentHandling.Auto:
       return 'AUTO';

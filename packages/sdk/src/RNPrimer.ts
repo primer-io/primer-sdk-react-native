@@ -56,7 +56,7 @@ const RNPrimer = {
   },
 
   removeAllListeners() {
-    eventTypes.forEach((eventType) => RNPrimer.removeAllListenersForEvent(eventType));
+    eventTypes.forEach(eventType => RNPrimer.removeAllListenersForEvent(eventType));
   },
 
   ///////////////////////////////////////////

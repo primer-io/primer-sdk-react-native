@@ -1,7 +1,7 @@
-import {makeRandomString} from '../helpers/helpers';
-import {PaymentHandling} from '../network/Environment';
-import type {AppPaymentParameters} from '../screens/SettingsScreen';
-import {Environment} from './Environment';
+import { makeRandomString } from '../helpers/helpers';
+import { PaymentHandling } from '../network/Environment';
+import type { AppPaymentParameters } from '../screens/SettingsScreen';
+import { Environment } from './Environment';
 
 export interface IClientSessionRequestBody {
   customerId?: string;
@@ -55,7 +55,7 @@ export interface IClientSessionLineItem {
   itemId: string;
   description: string;
   discountAmount?: number;
-  productType?: String;
+  productType?: string;
 }
 
 export interface IClientSessionActionsRequestBody {
@@ -96,7 +96,7 @@ export interface IClientSessionPaymentMethodOptions {
   };
 }
 
-export let appPaymentParameters: AppPaymentParameters = {
+export const appPaymentParameters: AppPaymentParameters = {
   environment: Environment.Sandbox,
   paymentHandling: PaymentHandling.Auto,
   clientSessionRequestBody: {
