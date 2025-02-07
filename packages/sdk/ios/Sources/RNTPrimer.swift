@@ -557,7 +557,7 @@ extension RNTPrimer: PrimerDelegate {
     func primerDidFailWithError(
         _ error: Error,
         data: PrimerCheckoutData?,
-        decisionHandler: @escaping ((PrimerErrorDecision) -> Void)\
+        decisionHandler: @escaping ((PrimerErrorDecision) -> Void)
     ) {
         if self.implementedRNCallbacks?.isOnErrorImplemented == true {
             // Set up the callback that will be called by **handleErrorMessage** when the RN
