@@ -191,12 +191,19 @@ extension PrimerSettings {
               case "latest":
                   apiVersion = PrimerApiVersion.latest
               default:
-                  throw RNTNativeError(errorId: "native-ios", errorDescription: "The value of the 'apiVersion' string is invalid.", recoverySuggestion: "Provide a valid 'apiVersion' string")
+                  throw RNTNativeError(
+                  errorId: "native-ios",
+                  errorDescription: "The value of the 'apiVersion' string is invalid.",
+                  recoverySuggestion: "Provide a valid 'apiVersion' string"
+                  )
               }
             }
 
             var threeDsOptions: PrimerThreeDsOptions?
-            if let rnThreeDsAppRequestorUrlStr = (((settingsJson["paymentMethodOptions"] as? [String: Any])?["threeDsOptions"] as? [String: Any])?["iOS"] as? [String: Any])?["threeDsAppRequestorUrl"] as? String {
+            if let paymentMethodOptions = settingsJson["paymentMethodOptions"] as? [String: Any],
+               let threeDsOptionsDict = paymentMethodOptions["threeDsOptions"] as? [String: Any],
+               let iOSOptions = threeDsOptionsDict["iOS"] as? [String: Any],
+               let rnThreeDsAppRequestorUrlStr = iOSOptions["threeDsAppRequestorUrl"] as? String {
                 threeDsOptions = PrimerThreeDsOptions(threeDsAppRequestorUrl: rnThreeDsAppRequestorUrlStr)
             }
 
@@ -210,7 +217,9 @@ extension PrimerSettings {
                         } else if let merchantName = mandateDataMap["merchantName"] {
                             mandateData = .templateMandate(merchantName: merchantName)
                         } else {
-                            PrimerLogging.shared.logger.warn(message: "Found mandate data but no resource key or merchant name - check your stripe config")
+                            PrimerLogging.shared.logger.warn(
+                              message: "Found mandate data but no resource key or merchant name - check your stripe config"
+                            )
                         }
                     } else {
                         PrimerLogging.shared.logger.warn(message: "Found stripe options but no mandate data - check your stripe config")
