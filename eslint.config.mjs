@@ -7,9 +7,10 @@ import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended'
 
 export default tseslint.config(
     {
-        ignores: ["**/node_modules/", "**/libs/**", "**/packages/example/**", "**/scripts/"],
-        files: ["**/packages/sdk/src/**/*.ts", "**/packages/sdk/src/**/*.tsx"],
-        extends: [eslint.configs.recommended],
+        ignores: ["**/node_modules/", "**/lib/", "**/packages/example/", "**/scripts/", "**/report-scripts/", ".prettierrc.js", "**/*.mjs", "**/babel.config.js", "packages/sdk/index.js", "**/jest.config.js"],
+    },
+    eslint.configs.recommended,
+    {
         plugins: {
             '@typescript-eslint': tseslint.plugin,
         },
@@ -17,13 +18,13 @@ export default tseslint.config(
             parser: tseslint.parser,
             parserOptions: {
                 projectService: true,
-                tsconfigRootDir: import.meta.dirname,
             },
         },
+        files: ["**/packages/sdk/src/**/*.ts", "**/packages/sdk/src/**/*.tsx"],
         rules: {
             '@typescript-eslint/no-shadow': 'error',
-            'no-undef': 'off',
             '@typescript-eslint/no-unused-vars': ['error', { "argsIgnorePattern": "^_" }],
+            'no-undef': 'off',
             'no-unused-vars': 'off',
             'no-async-promise-executor': 'off'
         },
@@ -32,6 +33,7 @@ export default tseslint.config(
         name: 'eslint-plugin-react-native',
         plugins: {
             'react-native': fixupPluginRules({
+                // @ts-ignore
                 rules: eslintReactNative.rules,
             }),
         },
@@ -39,5 +41,5 @@ export default tseslint.config(
             ...eslintReactNative.configs.all.rules,
         },
     },
-    eslintPluginPrettierRecommended
+    eslintPluginPrettierRecommended,
 );
