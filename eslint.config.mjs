@@ -7,7 +7,7 @@ import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended'
 
 export default tseslint.config(
     {
-        ignores: ["**/node_modules/", "**/lib/", "packages/example/**", "scripts/"],
+        ignores: ["**/node_modules/", "**/libs/**", "**/packages/example/**", "**/scripts/"],
         files: ["**/packages/sdk/src/**/*.ts", "**/packages/sdk/src/**/*.tsx"],
         extends: [eslint.configs.recommended],
         plugins: {
