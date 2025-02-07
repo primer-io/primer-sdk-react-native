@@ -176,49 +176,54 @@ extension PrimerSettings {
         debugOptions = PrimerDebugOptions(is3DSSanityCheckEnabled: rnIs3DSSanityCheckEnabled)
       }
 
-      var clientSessionCachingEnabled: Bool?
-      if let clientSessionCachingEnabledValue =
-        (settingsJson["clientSessionCachingEnabled"] as? Bool) {
-        clientSessionCachingEnabled = clientSessionCachingEnabledValue
-      }
-
-      var threeDsOptions: PrimerThreeDsOptions?
-      if let rnThreeDsAppRequestorUrlStr =
-        (((settingsJson["paymentMethodOptions"]
-        as? [String: Any])?["threeDsOptions"]
-        as? [String: Any])?["iOS"]
-        as? [String: Any])?["threeDsAppRequestorUrl"]
-        as? String {
-        threeDsOptions = PrimerThreeDsOptions(threeDsAppRequestorUrl: rnThreeDsAppRequestorUrlStr)
-      }
-
-      var stripeOptions: PrimerStripeOptions?
-      if let stripeOptionsMap =
-        ((settingsJson["paymentMethodOptions"] as? [String: Any])?["stripeOptions"]
-          as? [String: Any]) {
-        if let publishableKey = stripeOptionsMap["publishableKey"] as? String {
-          var mandateData: PrimerStripeOptions.MandateData?
-          if let mandateDataMap = stripeOptionsMap["mandateData"] as? [String: String] {
-            if let fullMandateText = mandateDataMap["fullMandateText"] {
-              mandateData = .fullMandate(text: fullMandateText)
-            } else if let merchantName = mandateDataMap["merchantName"] {
-              mandateData = .templateMandate(merchantName: merchantName)
-            } else {
-              PrimerLogging.shared.logger.warn(
-                message:
-                  "Found mandate data but no resource key or merchant name - check your stripe config"
-              )
+            var clientSessionCachingEnabled: Bool?
+            if let clientSessionCachingEnabledValue = (settingsJson["clientSessionCachingEnabled"] as? Bool) {
+                clientSessionCachingEnabled = clientSessionCachingEnabledValue
             }
-          } else {
-            PrimerLogging.shared.logger.warn(
-              message: "Found stripe options but no mandate data - check your stripe config")
-          }
-          stripeOptions = .init(
-            publishableKey: publishableKey,
-            mandateData: mandateData
-          )
-        }
-      }
+
+            var apiVersion: PrimerApiVersion?
+            if let apiVersionValue = (settingsJson["apiVersion"] as? String) {
+              switch (apiVersionValue) {
+              case "2.3":
+                apiVersion = PrimerApiVersion.V2_3
+                break
+              case "2.4":
+                apiVersion = PrimerApiVersion.V2_4
+                break
+              case "latest":
+                apiVersion = PrimerApiVersion.latest
+                break
+              default:
+                throw RNTNativeError(errorId: "native-ios", errorDescription: "The value of the 'apiVersion' string is invalid.", recoverySuggestion: "Provide a valid 'apiVersion' string")
+              }
+            }
+
+            var threeDsOptions: PrimerThreeDsOptions?
+            if let rnThreeDsAppRequestorUrlStr = (((settingsJson["paymentMethodOptions"] as? [String: Any])?["threeDsOptions"] as? [String: Any])?["iOS"] as? [String: Any])?["threeDsAppRequestorUrl"] as? String {
+                threeDsOptions = PrimerThreeDsOptions(threeDsAppRequestorUrl: rnThreeDsAppRequestorUrlStr)
+            }
+
+            var stripeOptions: PrimerStripeOptions?
+            if let stripeOptionsMap = ((settingsJson["paymentMethodOptions"] as? [String: Any])?["stripeOptions"] as? [String: Any]) {
+                if let publishableKey = stripeOptionsMap["publishableKey"] as? String {
+                    var mandateData: PrimerStripeOptions.MandateData?
+                    if let mandateDataMap = stripeOptionsMap["mandateData"] as? [String: String] {
+                        if let fullMandateText = mandateDataMap["fullMandateText"] {
+                            mandateData = .fullMandate(text: fullMandateText)
+                        } else if let merchantName = mandateDataMap["merchantName"] {
+                            mandateData = .templateMandate(merchantName: merchantName)
+                        } else {
+                            PrimerLogging.shared.logger.warn(message: "Found mandate data but no resource key or merchant name - check your stripe config")
+                        }
+                    } else {
+                        PrimerLogging.shared.logger.warn(message: "Found stripe options but no mandate data - check your stripe config")
+                    }
+                    stripeOptions = .init(
+                        publishableKey: publishableKey,
+                        mandateData: mandateData
+                    )
+                }
+            }
 
       let paymentMethodOptions = PrimerPaymentMethodOptions(
         urlScheme: rnUrlScheme,
@@ -233,7 +238,9 @@ extension PrimerSettings {
         paymentMethodOptions: paymentMethodOptions,
         uiOptions: uiOptions,
         debugOptions: debugOptions,
-        clientSessionCachingEnabled: clientSessionCachingEnabled ?? false)
+        clientSessionCachingEnabled: clientSessionCachingEnabled ?? false,
+        apiVersion: apiVersion ?? .latest
+        )
     }
   }
   // swiftlint:enable function_body_length

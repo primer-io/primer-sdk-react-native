@@ -101,6 +101,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
       is3DSSanityCheckEnabled: false,
     },
     clientSessionCachingEnabled: true,
+    apiVersion: '2.4',
     headlessUniversalCheckoutCallbacks: {
       onAvailablePaymentMethodsLoad: availablePaymentMethods => {
         updateLogs(`\nℹ️ onAvailablePaymentMethodsLoad\n${JSON.stringify(availablePaymentMethods, null, 2)}\n`);

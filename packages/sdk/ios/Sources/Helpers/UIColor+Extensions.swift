@@ -20,7 +20,7 @@ extension UIColor {
     var alphaValue = Float(1.0)
 
     if components.count >= 4 {
-      a = Float(components[3])
+      alphaValue = Float(components[3])
     }
 
     if alpha {

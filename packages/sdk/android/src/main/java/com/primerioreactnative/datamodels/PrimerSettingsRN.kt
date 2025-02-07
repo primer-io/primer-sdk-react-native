@@ -5,6 +5,7 @@ import com.primerioreactnative.extensions.toLocale
 import com.primerioreactnative.extensions.toPrimerDebugOptions
 import com.primerioreactnative.extensions.toPrimerPaymentMethodOptions
 import com.primerioreactnative.extensions.toPrimerUIOptions
+import io.primer.android.core.data.datasource.PrimerApiVersion
 import io.primer.android.data.settings.GooglePayButtonStyle
 import io.primer.android.data.settings.PrimerPaymentHandling
 import io.primer.android.data.settings.PrimerSettings
@@ -22,6 +23,7 @@ data class PrimerSettingsRN(
     var uiOptions: PrimerUIOptionsRN = PrimerUIOptionsRN(),
     var debugOptions: PrimerDebugOptionsRN = PrimerDebugOptionsRN(),
     var clientSessionCachingEnabled: Boolean = false,
+    var apiVersion: String = PrimerApiVersion.LATEST.name
 )
 
 @Serializable
@@ -202,4 +204,10 @@ fun PrimerSettingsRN.toPrimerSettings(context: Context) =
         uiOptions = uiOptions.toPrimerUIOptions(),
         debugOptions = debugOptions.toPrimerDebugOptions(),
         clientSessionCachingEnabled = clientSessionCachingEnabled,
+        apiVersion = when (apiVersion) {
+            "2.3" -> PrimerApiVersion.V2_3
+            "2.4" -> PrimerApiVersion.V2_4
+            "latest" -> PrimerApiVersion.LATEST
+            else -> error("'$apiVersion' is not supported.")
+        }
     )
