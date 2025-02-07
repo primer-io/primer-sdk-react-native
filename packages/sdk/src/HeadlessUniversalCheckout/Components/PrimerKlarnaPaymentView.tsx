@@ -1,5 +1,3 @@
-import { requireNativeComponent } from "react-native";
+import { requireNativeComponent } from 'react-native';
 
-export const PrimerKlarnaPaymentView = requireNativeComponent<{}>(
-    'PrimerKlarnaPaymentView'
-);
+export const PrimerKlarnaPaymentView = requireNativeComponent<{}>('PrimerKlarnaPaymentView');

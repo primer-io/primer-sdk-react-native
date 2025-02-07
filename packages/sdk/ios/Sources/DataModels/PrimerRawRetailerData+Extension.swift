@@ -22,8 +22,7 @@ extension PrimerRetailerData {
                 return nil
             }
 
-            if let retailerId = dict["id"]
-            {
+            if let retailerId = dict["id"] {
                 self.init(
                     id: retailerId)
             } else {

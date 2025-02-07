@@ -10,19 +10,15 @@ type EventType =
   | 'onAvailablePaymentMethodsLoad'
   | 'onTokenizationStart'
   | 'onTokenizationSuccess'
-
   | 'onCheckoutResume'
   | 'onCheckoutPending'
   | 'onCheckoutAdditionalInfo'
-
   | 'onError'
   | 'onCheckoutComplete'
   | 'onBeforeClientSessionUpdate'
-
   | 'onClientSessionUpdate'
   | 'onBeforePaymentCreate'
   | 'onPreparationStart'
-
   | 'onPaymentMethodShow';
 
 const eventTypes: EventType[] = [
@@ -42,7 +38,7 @@ const eventTypes: EventType[] = [
   'onBeforePaymentCreate',
   'onPreparationStart',
 
-  'onPaymentMethodShow'
+  'onPaymentMethodShow',
 ];
 
 const RNPrimerHeadlessUniversalCheckout = {
@@ -118,7 +114,7 @@ const RNPrimerHeadlessUniversalCheckout = {
   handlePaymentCreationAbort: (errorMessage: string | null): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {
-        await PrimerHeadlessUniversalCheckout.handlePaymentCreationAbort(errorMessage || "");
+        await PrimerHeadlessUniversalCheckout.handlePaymentCreationAbort(errorMessage || '');
         resolve();
       } catch (err) {
         reject(err);

@@ -1,8 +1,7 @@
 package com.primerioreactnative.datamodels.ach
 
-import kotlinx.serialization.Serializable
 import com.primerioreactnative.datamodels.NamedComponentStep
-import com.primerioreactnative.datamodels.PrimerIssuingBankRN
+import kotlinx.serialization.Serializable
 
 @Serializable
 internal sealed interface AchUserDetailsStepRN : NamedComponentStep {
@@ -15,7 +14,7 @@ internal sealed interface AchUserDetailsStepRN : NamedComponentStep {
     data class UserDetailsRetrievedRN(
         val firstName: String,
         val lastName: String,
-        val emailAddress: String
+        val emailAddress: String,
     ) : AchUserDetailsStepRN {
         override val stepName: String = "userDetailsRetrieved"
     }

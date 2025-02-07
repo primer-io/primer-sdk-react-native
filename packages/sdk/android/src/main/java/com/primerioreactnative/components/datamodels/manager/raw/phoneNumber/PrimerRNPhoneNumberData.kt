@@ -5,10 +5,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 internal data class PrimerRNPhoneNumberData(
-  val phoneNumber: String? = null,
+    val phoneNumber: String? = null,
 ) {
-  fun toPrimerPhoneNumberData() =
-    PrimerPhoneNumberData(
-      phoneNumber.orEmpty()
-    )
+    fun toPrimerPhoneNumberData() =
+        PrimerPhoneNumberData(
+            phoneNumber.orEmpty(),
+        )
 }

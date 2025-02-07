@@ -246,4 +246,4 @@ var countries = [
   'ZW',
 ] as const;
 
-export type PrimerCountryCode = typeof countries[number];
+export type PrimerCountryCode = (typeof countries)[number];

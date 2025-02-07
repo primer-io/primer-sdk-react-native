@@ -1,7 +1,7 @@
-import { PrimerVaultedPaymentMethod } from "./PrimerVaultedPaymentMethod";
+import { PrimerVaultedPaymentMethod } from './PrimerVaultedPaymentMethod';
 
 export type PrimerVaultedPaymentMethodResult = IPrimerVaultedPaymentMethodResult;
 
 export interface IPrimerVaultedPaymentMethodResult {
-    paymentMethods: PrimerVaultedPaymentMethod[];
+  paymentMethods: PrimerVaultedPaymentMethod[];
 }

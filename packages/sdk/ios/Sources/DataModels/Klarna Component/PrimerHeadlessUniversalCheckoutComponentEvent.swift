@@ -7,8 +7,10 @@
 
 import Foundation
 
+// swiftlint:disable type_name
 @objc
 enum PrimerHeadlessUniversalCheckoutComponentEvent: Int, CaseIterable {
+    // swiftlint:enable type_name
 
     case onStep
     case onError
@@ -16,7 +18,7 @@ enum PrimerHeadlessUniversalCheckoutComponentEvent: Int, CaseIterable {
     case onInvalid
     case onValidating
     case onValidationError
-    
+
     var stringValue: String {
         switch self {
         case .onStep:

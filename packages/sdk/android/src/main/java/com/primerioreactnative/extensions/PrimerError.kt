@@ -1,7 +1,7 @@
 package com.primerioreactnative.extensions
 
-import io.primer.android.domain.error.models.PrimerError
 import com.primerioreactnative.datamodels.PrimerErrorRN
+import io.primer.android.domain.error.models.PrimerError
 
 fun PrimerError.toPrimerErrorRN(): PrimerErrorRN =
     PrimerErrorRN(
@@ -9,5 +9,5 @@ fun PrimerError.toPrimerErrorRN(): PrimerErrorRN =
         errorCode = errorCode,
         description = description,
         diagnosticsId = diagnosticsId,
-        recoverySuggestion = recoverySuggestion
+        recoverySuggestion = recoverySuggestion,
     )

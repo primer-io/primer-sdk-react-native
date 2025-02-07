@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { Alert, Image, TouchableOpacity, View } from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {Alert, Image, TouchableOpacity, View} from 'react-native';
 import {
   createClientSession,
   createPayment,
   resumePayment,
 } from '../network/api';
-import { appPaymentParameters } from '../models/IClientSessionRequestBody';
-import type { IPayment } from '../models/IPayment';
-import { getPaymentHandlingStringVal } from '../network/Environment';
-import { ActivityIndicator } from 'react-native';
+import {appPaymentParameters} from '../models/IClientSessionRequestBody';
+import type {IPayment} from '../models/IPayment';
+import {getPaymentHandlingStringVal} from '../network/Environment';
+import {ActivityIndicator} from 'react-native';
 import {
   AssetsManager,
   CheckoutAdditionalInfo,
@@ -20,12 +20,12 @@ import {
   PrimerSettings,
   PrimerGooglePayButtonConstants,
   Resource,
-  SessionIntent
+  SessionIntent,
 } from '@primer-io/react-native';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
-import { showAchMandateAlert } from './AchMandateAlert';
-import { STRIPE_ACH_PUBLISHABLE_KEY } from '../Keys';
-import { PrimerPaymentMethodAsset } from '@primer-io/react-native/lib/typescript/models/PrimerPaymentMethodResource';
+import {showAchMandateAlert} from './AchMandateAlert';
+import {STRIPE_ACH_PUBLISHABLE_KEY} from '../Keys';
+import {PrimerPaymentMethodAsset} from '@primer-io/react-native/lib/typescript/models/PrimerPaymentMethodResource';
 
 let log: string = '';
 let merchantPaymentId: string | null = null;
@@ -34,7 +34,9 @@ let merchantCheckoutAdditionalInfo: CheckoutAdditionalInfo | null = null;
 let merchantPayment: IPayment | null = null;
 let merchantPrimerError: Error | unknown | null = null;
 
-const selectImplementationType = (paymentMethod: PaymentMethod): Promise<string> => {
+const selectImplementationType = (
+  paymentMethod: PaymentMethod,
+): Promise<string> => {
   return new Promise((resolve, reject) => {
     const buttons: any[] = [];
 
@@ -66,9 +68,14 @@ const selectImplementationType = (paymentMethod: PaymentMethod): Promise<string>
 export const HeadlessCheckoutScreen = (props: any) => {
   const [isLoading, setIsLoading] = useState(true);
   const [clientSession, setClientSession] = useState<null | any>(null);
-  const [paymentMethods, setPaymentMethods] = useState<undefined | PaymentMethod[]>(undefined);
-  const [paymentMethodsResources, setPaymentMethodsResources] = useState<undefined | Resource[]>(undefined);
-  const [selectedSessionIntent, setSelectedSessionIntent] = useState<SessionIntent>(SessionIntent.CHECKOUT);
+  const [paymentMethods, setPaymentMethods] = useState<
+    undefined | PaymentMethod[]
+  >(undefined);
+  const [paymentMethodsResources, setPaymentMethodsResources] = useState<
+    undefined | Resource[]
+  >(undefined);
+  const [selectedSessionIntent, setSelectedSessionIntent] =
+    useState<SessionIntent>(SessionIntent.CHECKOUT);
 
   const updateLogs = (str: string) => {
     console.log(str);
@@ -88,23 +95,23 @@ export const HeadlessCheckoutScreen = (props: any) => {
       stripeOptions: {
         publishableKey: STRIPE_ACH_PUBLISHABLE_KEY,
         mandateData: {
-          merchantName: "My Merchant Name"
-        }
+          merchantName: 'My Merchant Name',
+        },
       },
       googlePayOptions: {
         isCaptureBillingAddressEnabled: true,
         isExistingPaymentMethodRequired: false,
-        shippingAddressParameters: { phoneNumberRequired: true },
+        shippingAddressParameters: {phoneNumberRequired: true},
         requireShippingMethod: false,
         emailAddressRequired: true,
         buttonOptions: {
           buttonTheme: PrimerGooglePayButtonConstants.Themes.Light,
-          buttonType: PrimerGooglePayButtonConstants.Types.Checkout
-        }
+          buttonType: PrimerGooglePayButtonConstants.Types.Checkout,
+        },
       },
     },
     debugOptions: {
-      is3DSSanityCheckEnabled: false
+      is3DSSanityCheckEnabled: false,
     },
     clientSessionCachingEnabled: true,
     apiVersion: '2.4',
@@ -135,12 +142,12 @@ export const HeadlessCheckoutScreen = (props: any) => {
         );
       },
       onBeforeClientSessionUpdate: () => {
-        updateLogs(`\nℹ️ onBeforeClientSessionUpdate\n`);
+        updateLogs('\nℹ️ onBeforeClientSessionUpdate\n');
       },
-      onClientSessionUpdate: clientSession => {
+      onClientSessionUpdate: updatedClientSession => {
         updateLogs(
           `\nℹ️ onClientSessionUpdate\nclientSession: ${JSON.stringify(
-            clientSession,
+            updatedClientSession,
             null,
             2,
           )}\n`,
@@ -167,7 +174,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
         );
         setIsLoading(false);
         switch (merchantCheckoutAdditionalInfo.additionalInfoName) {
-          case "DisplayStripeAchMandateAdditionalInfo":
+          case 'DisplayStripeAchMandateAdditionalInfo':
             showAchMandateAlert();
             break;
         }
@@ -295,6 +302,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
     };
   }
 
+  /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
     createClientSessionIfNeeded()
       .then(session => {
@@ -306,6 +314,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
         console.error(err);
       });
   }, []);
+  /* eslint-enable react-hooks/exhaustive-deps */
 
   const createClientSessionIfNeeded = (): Promise<any> => {
     return new Promise(async (resolve, reject) => {
@@ -375,7 +384,9 @@ export const HeadlessCheckoutScreen = (props: any) => {
       if (paymentMethod.paymentMethodManagerCategories.length === 1) {
         pay(paymentMethod, paymentMethod.paymentMethodManagerCategories[0]);
       } else {
-        const selectedImplementationType = await selectImplementationType(paymentMethod);
+        const selectedImplementationType = await selectImplementationType(
+          paymentMethod,
+        );
         pay(paymentMethod, selectedImplementationType);
       }
     } catch (err) {
@@ -401,7 +412,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
         await createClientSessionIfNeeded();
         const nativeUIManager = new NativeUIManager();
         await nativeUIManager.configure(paymentMethod.paymentMethodType);
-        console.log("Payment session intent is " + selectedSessionIntent)
+        console.log('Payment session intent is ' + selectedSessionIntent);
         await nativeUIManager.showPaymentMethod(SessionIntent.CHECKOUT);
       } else if (implementationType === 'COMPONENT_WITH_REDIRECT') {
         await createClientSessionIfNeeded();
@@ -438,12 +449,19 @@ export const HeadlessCheckoutScreen = (props: any) => {
             paymentMethodType: paymentMethod.paymentMethodType,
           });
         }
-      } else if (implementationType === "STRIPE_ACH" && paymentMethod.paymentMethodType === "STRIPE_ACH") {
+      } else if (
+        implementationType === 'STRIPE_ACH' &&
+        paymentMethod.paymentMethodType === 'STRIPE_ACH'
+      ) {
         props.navigation.navigate('HeadlessCheckoutStripeAchScreen');
-      } else if (implementationType === "KLARNA" && paymentMethod.paymentMethodType === "KLARNA") {
-        props.navigation.navigate('Klarna', { paymentSessionIntent: selectedSessionIntent });
-      }
-      else {
+      } else if (
+        implementationType === 'KLARNA' &&
+        paymentMethod.paymentMethodType === 'KLARNA'
+      ) {
+        props.navigation.navigate('Klarna', {
+          paymentSessionIntent: selectedSessionIntent,
+        });
+      } else {
         Alert.alert(
           'Warning!',
           `${implementationType} is not supported on Headless Universal Checkout yet.`,
@@ -451,7 +469,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
             {
               text: 'Cancel',
               style: 'cancel',
-              onPress: () => { },
+              onPress: () => {},
             },
           ],
           {
@@ -467,15 +485,16 @@ export const HeadlessCheckoutScreen = (props: any) => {
   };
 
   const renderSessionIntentSegmentedControl = () => {
-    const values = [SessionIntent.CHECKOUT, SessionIntent.VAULT]
+    const values = [SessionIntent.CHECKOUT, SessionIntent.VAULT];
     return (
-      <View style={{
-        marginVertical: 20,
-      }}>
+      <View
+        style={{
+          marginVertical: 20,
+        }}>
         <SegmentedControl
           values={values}
           selectedIndex={values.indexOf(selectedSessionIntent)}
-          onChange={(event) => {
+          onChange={event => {
             const selectedIndex = event.nativeEvent.selectedSegmentIndex;
             setSelectedSessionIntent(values[selectedIndex]);
           }}
@@ -493,8 +512,9 @@ export const HeadlessCheckoutScreen = (props: any) => {
         {paymentMethodsResources.map(paymentMethodResource => {
           const testId = `button-${paymentMethodResource.paymentMethodType
             .toLowerCase()
-            .replace('_', '-')}`
-          const isNativeView = typeof paymentMethodResource.nativeViewName === "string";
+            .replace('_', '-')}`;
+          const isNativeView =
+            typeof paymentMethodResource.nativeViewName === 'string';
           return isNativeView ? (
             <TouchableOpacity
               testID={testId}
@@ -510,7 +530,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
                   marginHorizontal: 20,
                   marginVertical: 8,
                   justifyContent: 'center',
-                  alignItems: 'center'
+                  alignItems: 'center',
                 }}
               />
             </TouchableOpacity>
@@ -522,8 +542,10 @@ export const HeadlessCheckoutScreen = (props: any) => {
                 marginVertical: 8,
                 height: 50,
                 backgroundColor:
-                  (paymentMethodResource as PrimerPaymentMethodAsset).paymentMethodBackgroundColor.colored ||
-                  (paymentMethodResource as PrimerPaymentMethodAsset).paymentMethodBackgroundColor.light,
+                  (paymentMethodResource as PrimerPaymentMethodAsset)
+                    .paymentMethodBackgroundColor.colored ||
+                  (paymentMethodResource as PrimerPaymentMethodAsset)
+                    .paymentMethodBackgroundColor.light,
                 justifyContent: 'center',
                 alignItems: 'center',
                 borderRadius: 4,
@@ -535,11 +557,13 @@ export const HeadlessCheckoutScreen = (props: any) => {
               }}
               testID={testId}>
               <Image
-                style={{ height: 36, width: '100%', resizeMode: 'contain' }}
+                style={{height: 36, width: '100%', resizeMode: 'contain'}}
                 source={{
                   uri:
-                    (paymentMethodResource as PrimerPaymentMethodAsset).paymentMethodLogo.colored ||
-                    (paymentMethodResource as PrimerPaymentMethodAsset).paymentMethodLogo.light,
+                    (paymentMethodResource as PrimerPaymentMethodAsset)
+                      .paymentMethodLogo.colored ||
+                    (paymentMethodResource as PrimerPaymentMethodAsset)
+                      .paymentMethodLogo.light,
                 }}
               />
             </TouchableOpacity>
@@ -573,7 +597,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
   };
 
   return (
-    <View style={{ paddingHorizontal: 24, flex: 1 }}>
+    <View style={{paddingHorizontal: 24, flex: 1}}>
       {renderSessionIntentSegmentedControl()}
       {renderPaymentMethodsUI()}
       {renderLoadingOverlay()}

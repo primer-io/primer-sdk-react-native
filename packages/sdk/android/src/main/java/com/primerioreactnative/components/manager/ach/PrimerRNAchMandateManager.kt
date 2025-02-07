@@ -11,7 +11,7 @@ import com.primerioreactnative.utils.errorTo
 import kotlinx.coroutines.launch
 
 class PrimerRNAchMandateManager(
-        private val reactContext: ReactApplicationContext,
+    private val reactContext: ReactApplicationContext,
 ) : ReactContextBaseJavaModule(reactContext) {
     override fun getName() = "RNTAchMandateManager"
 
@@ -19,15 +19,19 @@ class PrimerRNAchMandateManager(
     fun acceptMandate(promise: Promise) {
         executeMandateAction(promise, PrimerRNAchMandateManager.Companion.acceptMandate, UNITIALIZED_ACCEPT_MANDATE)
     }
-    
+
     @ReactMethod
     fun declineMandate(promise: Promise) {
         executeMandateAction(promise, PrimerRNAchMandateManager.Companion.declineMandate, UNITIALIZED_DECLINE_MANDATE)
     }
-    
-    private fun executeMandateAction(promise: Promise, action: (suspend () -> Unit)?, error: String) {
+
+    private fun executeMandateAction(
+        promise: Promise,
+        action: (suspend () -> Unit)?,
+        error: String,
+    ) {
         val lifecycleScope = getLifecycleScopeOrNull()
-    
+
         if (lifecycleScope == null) {
             val exception = ErrorTypeRN.NativeBridgeFailed errorTo UNSUPPORTED_ACTIVITY_ERROR
             promise.reject(exception.errorId, exception.description)
@@ -44,27 +48,26 @@ class PrimerRNAchMandateManager(
         }
     }
 
-    private fun getLifecycleScopeOrNull() =
-            (reactContext.currentActivity as? LifecycleOwner)?.lifecycleScope
+    private fun getLifecycleScopeOrNull() = (reactContext.currentActivity as? LifecycleOwner)?.lifecycleScope
 
     companion object {
         var acceptMandate: (suspend () -> Unit)? = null
         var declineMandate: (suspend () -> Unit)? = null
 
         val UNSUPPORTED_ACTIVITY_ERROR =
-                """
-                Unsupported activity type.
-                Make sure your root activity extends LifecycleOwner.
-        """.trimIndent()
+            """
+      Unsupported activity type.
+      Make sure your root activity extends LifecycleOwner.
+            """.trimIndent()
 
         val UNITIALIZED_ACCEPT_MANDATE =
-                """
-                Unitialized 'acceptMandate' property.
-        """.trimIndent()
+            """
+      Unitialized 'acceptMandate' property.
+            """.trimIndent()
 
         val UNITIALIZED_DECLINE_MANDATE =
-                """
-                Unitialized 'declineMandate' property.
-        """.trimIndent()
+            """
+      Unitialized 'declineMandate' property.
+            """.trimIndent()
     }
 }

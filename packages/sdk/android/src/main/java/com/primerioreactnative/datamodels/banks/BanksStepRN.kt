@@ -1,8 +1,8 @@
 package com.primerioreactnative.datamodels.banks
 
-import kotlinx.serialization.Serializable
 import com.primerioreactnative.datamodels.NamedComponentStep
 import com.primerioreactnative.datamodels.PrimerIssuingBankRN
+import kotlinx.serialization.Serializable
 
 @Serializable
 internal sealed interface BanksStepRN : NamedComponentStep {
@@ -13,7 +13,7 @@ internal sealed interface BanksStepRN : NamedComponentStep {
 
     @Serializable
     data class BanksRetrievedRN(
-        val banks: List<PrimerIssuingBankRN>
+        val banks: List<PrimerIssuingBankRN>,
     ) : BanksStepRN {
         override val stepName: String = "banksRetrieved"
     }

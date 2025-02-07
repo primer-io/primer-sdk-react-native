@@ -1,13 +1,13 @@
 // import type { PrimerCheckoutData } from '../models/PrimerCheckoutData';
 // import type { PrimerCheckoutPaymentMethodData } from '../models/PrimerCheckoutPaymentMethodData';
-// import type { 
-//   PrimerTokenizationHandler, 
-//   PrimerResumeHandler, 
-//   PrimerPaymentCreationHandler, 
+// import type {
+//   PrimerTokenizationHandler,
+//   PrimerResumeHandler,
+//   PrimerPaymentCreationHandler,
 //   PrimerErrorHandler
 // } from '../models/PrimerInterfaces';
 // import type { PrimerClientSession } from '../models/PrimerClientSession';
-// import type { PrimerPaymentMethodTokenData } from '../models/PrimerPaymentMethodTokenData'; 
+// import type { PrimerPaymentMethodTokenData } from '../models/PrimerPaymentMethodTokenData';
 // import type { PrimerError } from '../models/PrimerError';
 
 // export interface PrimerHeadlessUniversalCheckoutStartResponse {

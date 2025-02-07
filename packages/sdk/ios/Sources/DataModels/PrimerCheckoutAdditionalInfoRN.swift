@@ -8,7 +8,6 @@
 import Foundation
 import PrimerSDK
 
-
 protocol PrimerCheckoutAdditionalInfoRN: Encodable {
     var additionalInfoName: String { get }
 }
@@ -18,7 +17,7 @@ class MultibancoCheckoutAdditionalInfoRN: PrimerCheckoutAdditionalInfoRN {
     let reference: String?
     let entity: String?
     let additionalInfoName: String = "MultibancoCheckoutAdditionalInfo"
-    
+
     init(expiresAt: String?, reference: String?, entity: String?) {
         self.expiresAt = expiresAt
         self.reference = reference
@@ -33,11 +32,11 @@ class PromptPayCheckoutAdditionalInfoRN: PrimerCheckoutQRCodeInfoRN {
     let qrCodeUrl: String?
     let qrCodeBase64: String?
     var additionalInfoName: String = "PromptPayCheckoutAdditionalInfo"
-    
+
     init(expiresAt: String, qrCodeUrl: String?, qrCodeBase64: String?) {
-         self.expiresAt = expiresAt
-         self.qrCodeUrl = qrCodeUrl
-         self.qrCodeBase64 = qrCodeBase64
+        self.expiresAt = expiresAt
+        self.qrCodeUrl = qrCodeUrl
+        self.qrCodeBase64 = qrCodeBase64
     }
 }
 
@@ -48,7 +47,7 @@ class XenditCheckoutVoucherAdditionalInfoRN: PrimerCheckoutVoucherInfoRN {
     let couponCode: String
     let retailerName: String?
     var additionalInfoName: String = "XenditCheckoutVoucherAdditionalInfo"
-    
+
     init(expiresAt: String, couponCode: String, retailerName: String?) {
         self.expiresAt = expiresAt
         self.couponCode = couponCode

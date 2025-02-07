@@ -39,4 +39,3 @@ extension BanksCollectableData {
         return FilterRN(text: text)
     }
 }
-

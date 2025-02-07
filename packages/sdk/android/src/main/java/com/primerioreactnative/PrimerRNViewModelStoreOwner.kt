@@ -1,9 +1,8 @@
 package com.primerioreactnative
 
-import android.util.Log
-import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.ViewModelStoreOwner
 
 class PrimerRNViewModelStoreOwner : ViewModelStoreOwner {
-  override val viewModelStore: ViewModelStore = ViewModelStore()
+    override val viewModelStore: ViewModelStore = ViewModelStore()
 }

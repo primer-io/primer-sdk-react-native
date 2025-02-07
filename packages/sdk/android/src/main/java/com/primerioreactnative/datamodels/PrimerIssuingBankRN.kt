@@ -7,5 +7,5 @@ internal data class PrimerIssuingBankRN(
     val id: String,
     val name: String,
     val disabled: Boolean,
-    val iconUrl: String
+    val iconUrl: String,
 )

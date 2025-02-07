@@ -15,7 +15,7 @@ protocol KlarnaCollectableDataRN {
 class KlarnaPaymentOptionsRN: KlarnaCollectableDataRN, Encodable {
     var validatableDataName: String = "klarnaPaymentOptions"
     var paymentCategory: KlarnaPaymentCategoryRN
-    
+
     init(paymentCategory: KlarnaPaymentCategory) {
         self.paymentCategory = paymentCategory.toKlarnaPaymentCategoryRN()
     }
@@ -29,7 +29,7 @@ extension KlarnaCollectableData {
     func toKlarnaPaymentOptionsRN(category: KlarnaPaymentCategory) -> KlarnaPaymentOptionsRN {
         return KlarnaPaymentOptionsRN(paymentCategory: category)
     }
-    
+
     func toFinalizePaymentRN() -> FinalizePaymentRN {
         return FinalizePaymentRN()
     }

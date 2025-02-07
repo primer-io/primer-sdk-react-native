@@ -1,4 +1,4 @@
 export interface IClientSession {
-    clientToken: string;
-    clientTokenExpirationDate: string;
+  clientToken: string;
+  clientTokenExpirationDate: string;
 }

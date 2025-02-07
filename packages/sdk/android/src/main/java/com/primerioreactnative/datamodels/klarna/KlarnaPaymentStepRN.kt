@@ -1,30 +1,30 @@
 package com.primerioreactnative.datamodels.klarna
 
-import kotlinx.serialization.Serializable
 import com.primerioreactnative.datamodels.NamedComponentStep
+import kotlinx.serialization.Serializable
 
 @Serializable
 internal sealed interface KlarnaPaymentStepRN : NamedComponentStep {
     @Serializable
     data class PaymentSessionCreatedRN(
-        val paymentCategories: List<KlarnaPaymentCategoryRN>
+        val paymentCategories: List<KlarnaPaymentCategoryRN>,
     ) : KlarnaPaymentStepRN {
         override val stepName: String = "paymentSessionCreated"
     }
 
-    @Serializable 
+    @Serializable
     class PaymentViewLoadedRN : KlarnaPaymentStepRN {
         override val stepName: String = "paymentViewLoaded"
     }
 
-    @Serializable 
+    @Serializable
     data class PaymentSessionAuthorizedRN(
-        val isFinalized: Boolean
+        val isFinalized: Boolean,
     ) : KlarnaPaymentStepRN {
         override val stepName: String = "paymentSessionAuthorized"
     }
 
-    @Serializable 
+    @Serializable
     class PaymentSessionFinalizedRN : KlarnaPaymentStepRN {
         override val stepName: String = "paymentSessionFinalized"
     }

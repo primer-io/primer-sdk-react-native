@@ -1,4 +1,4 @@
-import type { PrimerSettings } from "./PrimerSettings";
+import type { PrimerSettings } from './PrimerSettings';
 
 export interface IPrimer {
   configure(settings: PrimerSettings): Promise<void>;

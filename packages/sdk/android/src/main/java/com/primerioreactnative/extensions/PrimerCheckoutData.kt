@@ -4,4 +4,4 @@ import com.primerioreactnative.datamodels.PrimerCheckoutDataRN
 import io.primer.android.domain.PrimerCheckoutData
 
 internal fun PrimerCheckoutData.toPrimerCheckoutDataRN() =
-  PrimerCheckoutDataRN(payment.toPrimerPaymentRN(), additionalInfo?.toCheckoutAdditionalInfoRN())
+    PrimerCheckoutDataRN(payment.toPrimerPaymentRN(), additionalInfo?.toCheckoutAdditionalInfoRN())

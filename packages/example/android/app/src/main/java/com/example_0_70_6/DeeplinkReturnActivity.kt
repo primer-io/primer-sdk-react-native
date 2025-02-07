@@ -6,11 +6,11 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 
 class DeeplinkReturnActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Log.i(DeeplinkReturnActivity::class.simpleName, "Starting MainActivity")
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
-        finish()
-    }
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    Log.i(DeeplinkReturnActivity::class.simpleName, "Starting MainActivity")
+    val intent = Intent(this, MainActivity::class.java)
+    startActivity(intent)
+    finish()
+  }
 }

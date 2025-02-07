@@ -8,5 +8,5 @@ internal fun KlarnaPaymentCategoryRN.toKlarnaPaymentCategory() =
         identifier = identifier,
         name = name,
         descriptiveAssetUrl = descriptiveAssetUrl,
-        standardAssetUrl = standardAssetUrl
+        standardAssetUrl = standardAssetUrl,
     )

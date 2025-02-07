@@ -34,7 +34,7 @@ struct PrimerValidationErrorRN: Encodable {
     var errorId: String?
     var description: String?
     var diagnosticsId: String?
-    
+
     init(errorId: String? = nil,
          description: String? = nil,
          diagnosticsId: String? = nil

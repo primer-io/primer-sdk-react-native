@@ -10,5 +10,5 @@ internal fun AchUserDetailsStep.UserDetailsRetrieved.toUserDetailsRetrievedRN() 
     AchUserDetailsStepRN.UserDetailsRetrievedRN(
         firstName = firstName,
         lastName = lastName,
-        emailAddress = emailAddress
+        emailAddress = emailAddress,
     )

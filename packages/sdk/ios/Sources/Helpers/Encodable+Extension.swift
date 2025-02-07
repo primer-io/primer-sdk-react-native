@@ -23,7 +23,11 @@ extension Decodable {
     /// - Returns: An initialized object conforming to the Decodable protocol.
     static func from(jsonString: String) throws -> Self {
         guard let data = jsonString.data(using: .utf8) else {
-            throw NSError(domain: "String could not be converted to UTF-8 data.", code: 0, userInfo: [NSLocalizedDescriptionKey: "String could not be converted to UTF-8 data."])
+            throw NSError(
+                domain: "String could not be converted to UTF-8 data.",
+                code: 0,
+                userInfo: [NSLocalizedDescriptionKey: "String could not be converted to UTF-8 data."]
+            )
         }
         return try JSONDecoder().decode(Self.self, from: data)
     }

@@ -5,8 +5,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class PrimerRNVaultedPaymentMethodAdditionalData(
-  val cvv: String
+    val cvv: String,
 )
 
 internal fun PrimerRNVaultedPaymentMethodAdditionalData.toPrimerVaultedCardAdditionalData() =
-  PrimerVaultedCardAdditionalData(cvv)
+    PrimerVaultedCardAdditionalData(
+        cvv,
+    )

@@ -13,7 +13,7 @@ class NativeViewContainer(private val context: ThemedReactContext) : FrameLayout
                 ?: run {
                     Log.e(
                         "NativeViewContainer",
-                        "Unable to find parent of NativeViewContainer."
+                        "Unable to find parent of NativeViewContainer.",
                     )
                 }
         }
@@ -25,11 +25,12 @@ class NativeViewContainer(private val context: ThemedReactContext) : FrameLayout
         post(mLayoutRunnable)
     }
 
-    private val mLayoutRunnable = Runnable {
-        measure(
-            MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
-            MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY)
-        )
-        layout(left, top, right, bottom)
-    }
+    private val mLayoutRunnable =
+        Runnable {
+            measure(
+                MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY),
+            )
+            layout(left, top, right, bottom)
+        }
 }

@@ -1,51 +1,51 @@
 export enum Environment {
-    Dev = 0,
-    Sandbox,
-    Staging,
-    Production,
+  Dev = 0,
+  Sandbox,
+  Staging,
+  Production,
 }
 
 export function getEnvironmentStringVal(env: Environment): string {
-    switch (env) {
+  switch (env) {
     case Environment.Dev:
-        return "dev"
+      return 'dev';
     case Environment.Sandbox:
-        return "sandbox"
+      return 'sandbox';
     case Environment.Staging:
-        return "staging"
+      return 'staging';
     case Environment.Production:
-        return "production"
+      return 'production';
     default:
-            return "unknown"
-    }
+      return 'unknown';
+  }
 }
 
 export function makeEnvironmentFromStringVal(env: string): Environment {
-    switch (env) {
-    case "dev":
-        return Environment.Dev;
-    case "sandbox":
-        return Environment.Sandbox;
-    case "Staging":
-        return Environment.Staging;
-    case "production":
-        return Environment.Production;
+  switch (env) {
+    case 'dev':
+      return Environment.Dev;
+    case 'sandbox':
+      return Environment.Sandbox;
+    case 'Staging':
+      return Environment.Staging;
+    case 'production':
+      return Environment.Production;
     default:
-        throw new Error("Failed to create environment.");
-    }
+      throw new Error('Failed to create environment.');
+  }
 }
 
 export function makeEnvironmentFromIntVal(env: number): Environment {
-    switch (env) {
+  switch (env) {
     case 0:
-        return Environment.Dev;
+      return Environment.Dev;
     case 1:
-        return Environment.Sandbox;
+      return Environment.Sandbox;
     case 2:
-        return Environment.Staging;
+      return Environment.Staging;
     case 3:
-        return Environment.Production;
+      return Environment.Production;
     default:
-        throw new Error("Failed to create environment.");
-    }
+      throw new Error('Failed to create environment.');
+  }
 }

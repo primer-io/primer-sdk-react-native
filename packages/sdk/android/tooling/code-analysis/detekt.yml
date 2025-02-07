@@ -1,0 +1,68 @@
+build:
+  maxIssues: 10
+style:
+  MaxLineLength:
+    excludes: [ '**/test/**', '**/*.Test.kt', '**/*.Spec.kt' ]
+    excludeCommentStatements: true
+    maxLineLength: 120
+complexity:
+  LongMethod:
+    excludes: [ '**/test/**', '**/*.Test.kt', '**/*.Spec.kt' ]
+  LargeClass:
+    excludes: [ '**/test/**', '**/*.Test.kt', '**/*.Spec.kt' ]
+formatting:
+  android: true
+  autoCorrect: true
+  TrailingCommaOnCallSite:
+    active: true
+    autoCorrect: true
+    useTrailingCommaOnCallSite: true
+  TrailingCommaOnDeclarationSite:
+    active: true
+    autoCorrect: true
+    useTrailingCommaOnDeclarationSite: true
+  ArgumentListWrapping:
+    active: true
+    autoCorrect: true
+    indentSize: 4
+    maxLineLength: 120
+  ContextReceiverMapping:
+    active: true
+    autoCorrect: true
+    maxLineLength: 120
+    indentSize: 4
+  FunctionReturnTypeSpacing:
+    active: true
+    autoCorrect: true
+    maxLineLength: 120
+  FunctionSignature:
+    active: false
+    autoCorrect: true
+  MaximumLineLength:
+    active: true
+    maxLineLength: 120
+    ignoreBackTickedIdentifier: true
+  ParameterListSpacing:
+    active: true
+    autoCorrect: true
+    maxLineLength: 120
+  ParameterListWrapping:
+    active: true
+    autoCorrect: true
+    maxLineLength: 120
+    indentSize: 4
+  ParameterWrapping:
+    active: true
+    autoCorrect: true
+    indentSize: 4
+    maxLineLength: 120
+  PropertyWrapping:
+    active: true
+    autoCorrect: true
+    indentSize: 4
+    maxLineLength: 120
+  Wrapping:
+    active: true
+    autoCorrect: true
+    indentSize: 4
+    maxLineLength: 120
