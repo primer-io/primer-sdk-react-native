@@ -183,18 +183,15 @@ extension PrimerSettings {
 
             var apiVersion: PrimerApiVersion?
             if let apiVersionValue = (settingsJson["apiVersion"] as? String) {
-              switch (apiVersionValue) {
+              switch apiVersionValue {
               case "2.3":
-                apiVersion = PrimerApiVersion.V2_3
-                break
+                  apiVersion = PrimerApiVersion.V2_3
               case "2.4":
-                apiVersion = PrimerApiVersion.V2_4
-                break
+                  apiVersion = PrimerApiVersion.V2_4
               case "latest":
-                apiVersion = PrimerApiVersion.latest
-                break
+                  apiVersion = PrimerApiVersion.latest
               default:
-                throw RNTNativeError(errorId: "native-ios", errorDescription: "The value of the 'apiVersion' string is invalid.", recoverySuggestion: "Provide a valid 'apiVersion' string")
+                  throw RNTNativeError(errorId: "native-ios", errorDescription: "The value of the 'apiVersion' string is invalid.", recoverySuggestion: "Provide a valid 'apiVersion' string")
               }
             }
 
