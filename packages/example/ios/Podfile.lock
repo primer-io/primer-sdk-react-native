@@ -11,7 +11,7 @@ PODS:
     - ReactCommon/turbomodule/core (= 0.72.0)
   - fmt (6.2.1)
   - glog (0.3.5)
-  - primer-io-react-native (2.29.0):
+  - primer-io-react-native (2.30.0):
     - PrimerSDK (= 2.35.0)
     - React-Core
   - Primer3DS (2.4.2)
@@ -554,13 +554,13 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  boost: 0a937fbcfdd646fca221c4f1d9750d7ccfdfc2dc
+  boost: 64032b9e9b938fda23325e68a3771f0fabf414dc
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   FBLazyVector: bb17efca94c43508cbe54fb0a35e36df30da5213
   FBReactNativeSpec: 6e7e74b1ed7f0a1a469a82a67521b33285f5fef3
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
-  primer-io-react-native: 984302425a91b5f593f6027c5bbe21ec6b7c6486
+  primer-io-react-native: f3a17e0a526eff04b9e3ea6aaa8779d0195dd124
   Primer3DS: 41159e5287ff47018b7b8415f13621d11be666a2
   PrimerIPay88MYSDK: 436ee0be7e2c97e4e81456ccddee20175e9e3c4d
   PrimerKlarnaSDK: 564105170cc7b467bf95c31851813ea41c468f8b
