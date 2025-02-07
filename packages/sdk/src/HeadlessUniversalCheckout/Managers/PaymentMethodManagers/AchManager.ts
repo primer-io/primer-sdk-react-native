@@ -136,9 +136,8 @@ export class PrimerHeadlessUniversalCheckoutAchManager {
   // HELPERS
   ///////////////////////////////////////////
 
-  async addListener(eventType: EventType, listener: (...args: any[]) => any): Promise<EmitterSubscription> {
-    return eventEmitter.addListener(eventType, listener);
-  }
+  async addListener(eventType: EventType, listener: (...args: any[]) => any): Promise<EmitterSubscription> {return eventEmitter.addListener(eventType, listener);
+}
 
   removeListener(subscription: EmitterSubscription): void {
     return subscription.remove();
