@@ -201,7 +201,7 @@ interface IPrimerThreeDsOptions {
   };
   android?: {
     threeDsAppRequestorUrl?: string;
-  };
+  }
 }
 
 //----------------------------------------
