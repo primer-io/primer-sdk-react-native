@@ -1,10 +1,10 @@
 import * as React from 'react';
-import {View, Text, TouchableOpacity} from 'react-native';
-import {styles} from '../styles';
+import { View, Text, TouchableOpacity } from 'react-native';
+import { styles } from '../styles';
 
 const Button = () => {
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <TouchableOpacity
         style={{
           ...styles.button,
@@ -12,7 +12,7 @@ const Button = () => {
           marginVertical: 5,
           backgroundColor: 'black',
         }}>
-        <Text style={{...styles.buttonText, color: 'white'}}>Apple Pay</Text>
+        <Text style={{ ...styles.buttonText, color: 'white' }}>Apple Pay</Text>
       </TouchableOpacity>
     </View>
   );

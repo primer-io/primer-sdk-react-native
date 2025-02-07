@@ -1,12 +1,12 @@
 import * as React from 'react';
-import {View, Text, useColorScheme, TouchableOpacity} from 'react-native';
-import {Colors} from 'react-native/Libraries/NewAppScreen';
-import {styles} from '../styles';
-import {appPaymentParameters} from '../models/IClientSessionRequestBody';
-import type {IClientSession} from '../models/IClientSession';
-import type {IPayment} from '../models/IPayment';
-import {getPaymentHandlingStringVal} from '../network/Environment';
-import {createClientSession, createPayment, resumePayment} from '../network/api';
+import { View, Text, useColorScheme, TouchableOpacity } from 'react-native';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
+import { styles } from '../styles';
+import { appPaymentParameters } from '../models/IClientSessionRequestBody';
+import type { IClientSession } from '../models/IClientSession';
+import type { IPayment } from '../models/IPayment';
+import { getPaymentHandlingStringVal } from '../network/Environment';
+import { createClientSession, createPayment, resumePayment } from '../network/api';
 import {
   CheckoutAdditionalInfo,
   CheckoutData,
@@ -21,7 +21,7 @@ import {
   ResumeHandler,
   TokenizationHandler,
 } from '@primer-io/react-native';
-import {STRIPE_ACH_PUBLISHABLE_KEY} from '../Keys';
+import { STRIPE_ACH_PUBLISHABLE_KEY } from '../Keys';
 
 let clientToken: string | null = null;
 let paymentId: string | null = null;
@@ -55,13 +55,13 @@ const CheckoutScreen = (props: any) => {
   };
 
   const onBeforeClientSessionUpdate = () => {
-    updateLogs({event: 'onBeforeClientSessionUpdate'});
+    updateLogs({ event: 'onBeforeClientSessionUpdate' });
     setIsLoading(true);
     setLoadingMessage('onBeforeClientSessionUpdate');
   };
 
   const onClientSessionUpdate = (clientSession: ClientSession) => {
-    updateLogs({event: 'onClientSessionUpdate', value: clientSession});
+    updateLogs({ event: 'onClientSessionUpdate', value: clientSession });
     setLoadingMessage('onClientSessionUpdate');
   };
 
@@ -71,7 +71,7 @@ const CheckoutScreen = (props: any) => {
   ) => {
     updateLogs({
       event: 'onBeforePaymentCreate',
-      value: {checkoutPaymentMethodData: checkoutPaymentMethodData},
+      value: { checkoutPaymentMethodData: checkoutPaymentMethodData },
     });
     handler.continuePaymentCreation();
     setLoadingMessage('onBeforePaymentCreate');
@@ -80,7 +80,7 @@ const CheckoutScreen = (props: any) => {
   const onCheckoutComplete = (checkoutData: CheckoutData) => {
     updateLogs({
       event: 'onCheckoutComplete',
-      value: {checkoutData: checkoutData},
+      value: { checkoutData: checkoutData },
     });
     merchantCheckoutData = checkoutData;
 
@@ -102,7 +102,7 @@ const CheckoutScreen = (props: any) => {
   ) => {
     updateLogs({
       event: 'onTokenizeSuccess',
-      value: {paymentMethodTokenData: paymentMethodTokenData},
+      value: { paymentMethodTokenData: paymentMethodTokenData },
     });
 
     try {
@@ -150,7 +150,7 @@ const CheckoutScreen = (props: any) => {
   };
 
   const onResumeSuccess = async (resumeToken: string, handler: ResumeHandler) => {
-    updateLogs({event: 'onResumeSuccess', value: {resumeToken: resumeToken}});
+    updateLogs({ event: 'onResumeSuccess', value: { resumeToken: resumeToken } });
 
     try {
       if (paymentId) {
@@ -194,14 +194,14 @@ const CheckoutScreen = (props: any) => {
   const onResumePending = async (additionalInfo: CheckoutAdditionalInfo) => {
     updateLogs({
       event: 'onResumePending',
-      value: {additionalInfo: additionalInfo},
+      value: { additionalInfo: additionalInfo },
     });
   };
 
   const onCheckoutReceivedAdditionalInfo = async (additionalInfo: CheckoutAdditionalInfo) => {
     updateLogs({
       event: 'onCheckoutReceivedAdditionalInfo',
-      value: {additionalInfo: additionalInfo},
+      value: { additionalInfo: additionalInfo },
     });
   };
 
@@ -211,7 +211,7 @@ const CheckoutScreen = (props: any) => {
 
     updateLogs({
       event: 'onError',
-      value: {error: error, checkoutData: checkoutData},
+      value: { error: error, checkoutData: checkoutData },
     });
     handler?.showErrorMessage('My RN message');
     setLoadingMessage(undefined);
@@ -227,7 +227,7 @@ const CheckoutScreen = (props: any) => {
   };
 
   const onDismiss = () => {
-    updateLogs({event: 'onDismiss'});
+    updateLogs({ event: 'onDismiss' });
     clientToken = null;
     setLoadingMessage(undefined);
     setIsLoading(false);
@@ -257,7 +257,7 @@ const CheckoutScreen = (props: any) => {
       googlePayOptions: {
         isCaptureBillingAddressEnabled: true,
         isExistingPaymentMethodRequired: false,
-        shippingAddressParameters: {phoneNumberRequired: true},
+        shippingAddressParameters: { phoneNumberRequired: true },
         requireShippingMethod: false,
         emailAddressRequired: true,
       },
@@ -416,7 +416,7 @@ const CheckoutScreen = (props: any) => {
 
   return (
     <View style={backgroundStyle}>
-      <View style={{flex: 1}} />
+      <View style={{ flex: 1 }} />
       <TouchableOpacity
         style={{
           ...styles.button,
@@ -425,7 +425,7 @@ const CheckoutScreen = (props: any) => {
           backgroundColor: 'black',
         }}
         onPress={onVaultManagerButtonTapped}>
-        <Text style={{...styles.buttonText, color: 'white'}}>Vault Manager</Text>
+        <Text style={{ ...styles.buttonText, color: 'white' }}>Vault Manager</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={{
@@ -436,7 +436,7 @@ const CheckoutScreen = (props: any) => {
           backgroundColor: 'black',
         }}
         onPress={onUniversalCheckoutButtonTapped}>
-        <Text style={{...styles.buttonText, color: 'white'}}>Universal Checkout</Text>
+        <Text style={{ ...styles.buttonText, color: 'white' }}>Universal Checkout</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={{
@@ -446,7 +446,7 @@ const CheckoutScreen = (props: any) => {
           backgroundColor: 'black',
         }}
         onPress={onApplePayButtonTapped}>
-        <Text style={{...styles.buttonText, color: 'white'}}>Apple Pay</Text>
+        <Text style={{ ...styles.buttonText, color: 'white' }}>Apple Pay</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -457,7 +457,7 @@ const CheckoutScreen = (props: any) => {
           backgroundColor: 'black',
         }}
         onPress={onGooglePayButtonTapped}>
-        <Text style={{...styles.buttonText, color: 'white'}}>Google Pay</Text>
+        <Text style={{ ...styles.buttonText, color: 'white' }}>Google Pay</Text>
       </TouchableOpacity>
     </View>
   );

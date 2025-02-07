@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from 'react';
-import {Text, TouchableOpacity, View, Image} from 'react-native';
-import {ActivityIndicator} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Text, TouchableOpacity, View, Image } from 'react-native';
+import { ActivityIndicator } from 'react-native';
 import {
   ComponentWithRedirectManager,
   ComponentWithRedirectManagerProps,
@@ -131,7 +131,7 @@ const HeadlessCheckoutWithRedirect = (props: any) => {
   );
 };
 
-const Search = ({search, onSearch}: any) => {
+const Search = ({ search, onSearch }: any) => {
   return (
     <TextField
       title="Choose your bank"
@@ -155,7 +155,7 @@ const Search = ({search, onSearch}: any) => {
   );
 };
 
-const Loader = ({isLoading}: {isLoading: boolean}) => {
+const Loader = ({ isLoading }: { isLoading: boolean }) => {
   if (!isLoading) {
     return null;
   }
@@ -226,11 +226,11 @@ const Bank = ({
         borderColor: '#f5f5f5',
         opacity: isValidating && isValidating !== item.id ? 0.8 : 1,
       }}>
-      <Image source={{uri: item.iconUrl ?? item.iconUrlStr}} style={{width: 30, height: 30}} />
+      <Image source={{ uri: item.iconUrl ?? item.iconUrlStr }} style={{ width: 30, height: 30 }} />
 
-      <Text style={{paddingLeft: 10}}>{item.name}</Text>
+      <Text style={{ paddingLeft: 10 }}>{item.name}</Text>
 
-      {item.id === isValidating && <ActivityIndicator style={{position: 'absolute', right: 10}} size="small" />}
+      {item.id === isValidating && <ActivityIndicator style={{ position: 'absolute', right: 10 }} size="small" />}
     </TouchableOpacity>
   );
 };

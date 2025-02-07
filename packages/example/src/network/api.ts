@@ -1,13 +1,13 @@
 import axios from 'axios';
-import {getEnvironmentStringVal} from './Environment';
-import {appPaymentParameters, IClientSessionActionsRequestBody} from '../models/IClientSessionRequestBody';
-import type {IPayment} from '../models/IPayment';
-import {APIVersion, getAPIVersionStringVal} from './APIVersion';
-import {customApiKey, customClientToken} from '../screens/SettingsScreen';
+import { getEnvironmentStringVal } from './Environment';
+import { appPaymentParameters, IClientSessionActionsRequestBody } from '../models/IClientSessionRequestBody';
+import type { IPayment } from '../models/IPayment';
+import { APIVersion, getAPIVersionStringVal } from './APIVersion';
+import { customApiKey, customClientToken } from '../screens/SettingsScreen';
 
 const baseUrl = 'https://us-central1-primerdemo-8741b.cloudfunctions.net/api';
 
-const staticHeaders: {[key: string]: string} = {
+const staticHeaders: { [key: string]: string } = {
   'Content-Type': 'application/json',
   //@ts-ignore
   'environment': getEnvironmentStringVal(appPaymentParameters.environment),
@@ -15,7 +15,7 @@ const staticHeaders: {[key: string]: string} = {
 
 export const createClientSession = async () => {
   const url = baseUrl + '/client-session';
-  const headers: {[key: string]: string} = {
+  const headers: { [key: string]: string } = {
     ...staticHeaders,
     //@ts-ignore
     'X-Api-Version': getAPIVersionStringVal(APIVersion.v7),
@@ -27,7 +27,7 @@ export const createClientSession = async () => {
   }
 
   if (customClientToken) {
-    return {clientToken: customClientToken};
+    return { clientToken: customClientToken };
   }
 
   try {
@@ -38,7 +38,7 @@ export const createClientSession = async () => {
     console.log('BODY:');
     console.log(appPaymentParameters.clientSessionRequestBody);
     //@ts-ignore
-    const response = await axios.post(url, appPaymentParameters.clientSessionRequestBody, {headers: headers});
+    const response = await axios.post(url, appPaymentParameters.clientSessionRequestBody, { headers: headers });
     console.log('\n\n');
     console.log(`RESPONSE:\n [${response.status}] ${url}`);
     console.log('BODY:');
@@ -61,7 +61,7 @@ export const createClientSession = async () => {
 
 export const setClientSessionActions = async (body: IClientSessionActionsRequestBody) => {
   const url = baseUrl + '/client-session/actions';
-  const headers: {[key: string]: string} = {
+  const headers: { [key: string]: string } = {
     ...staticHeaders,
     'X-Api-Version': '2.2',
   };
@@ -78,7 +78,7 @@ export const setClientSessionActions = async (body: IClientSessionActionsRequest
     console.log('BODY:');
     console.log(body);
     //@ts-ignore
-    const response = await axios.post(url, body, {headers: headers});
+    const response = await axios.post(url, body, { headers: headers });
     console.log('\n\n');
     console.log(`RESPONSE:\n [${response.status}] ${url}`);
     console.log('BODY:');
@@ -102,7 +102,7 @@ export const setClientSessionActions = async (body: IClientSessionActionsRequest
 
 export const createPayment = async (paymentMethodToken: string) => {
   const url = baseUrl + '/payments';
-  const headers: {[key: string]: string} = {
+  const headers: { [key: string]: string } = {
     ...staticHeaders,
     'X-Api-Version': '2021-09-27',
   };
@@ -111,7 +111,7 @@ export const createPayment = async (paymentMethodToken: string) => {
     headers['X-Api-Key'] = customApiKey;
   }
 
-  const body = {paymentMethodToken: paymentMethodToken};
+  const body = { paymentMethodToken: paymentMethodToken };
   try {
     console.log('\n\n');
     console.log(`REQUEST:\n ${url}`);
@@ -120,7 +120,7 @@ export const createPayment = async (paymentMethodToken: string) => {
     console.log('BODY:');
     console.log(body);
     //@ts-ignore
-    const response = await axios.post(url, body, {headers: headers});
+    const response = await axios.post(url, body, { headers: headers });
     console.log('\n\n');
     console.log(`RESPONSE:\n [${response.status}] ${url}`);
     console.log('BODY:');
@@ -144,7 +144,7 @@ export const createPayment = async (paymentMethodToken: string) => {
 
 export const resumePayment = async (paymentId: string, resumeToken: string) => {
   const url = baseUrl + `/payments/${paymentId}/resume`;
-  const headers: {[key: string]: string} = {
+  const headers: { [key: string]: string } = {
     ...staticHeaders,
     'X-Api-Version': '2021-09-27',
   };
@@ -153,7 +153,7 @@ export const resumePayment = async (paymentId: string, resumeToken: string) => {
     headers['X-Api-Key'] = customApiKey;
   }
 
-  const body = {resumeToken: resumeToken};
+  const body = { resumeToken: resumeToken };
 
   try {
     console.log('\n\n');
@@ -163,7 +163,7 @@ export const resumePayment = async (paymentId: string, resumeToken: string) => {
     console.log('BODY:');
     console.log(body);
     //@ts-ignore
-    const response = await axios.post(url, body, {headers: headers});
+    const response = await axios.post(url, body, { headers: headers });
     console.log('\n\n');
     console.log(`RESPONSE:\n [${response.status}] ${url}`);
     console.log('BODY:');

@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import {Text, View, Button, StyleSheet} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Text, View, Button, StyleSheet } from 'react-native';
 import {
   AchManager,
   StripeAchUserDetailsComponent,
@@ -145,7 +145,7 @@ const HeadlessCheckoutStripeAchScreen = (props: any) => {
         flex: 1,
         backgroundColor: 'white',
       }}>
-      <Text style={{fontSize: 18, fontWeight: 'bold', paddingBottom: 8}}>Stripe ACH session</Text>
+      <Text style={{ fontSize: 18, fontWeight: 'bold', paddingBottom: 8 }}>Stripe ACH session</Text>
 
       <TextFieldWithError
         title="First name"
@@ -206,7 +206,7 @@ const TextFieldWithError = ({
         value={value}
         onChangeText={onChangeText}
       />
-      {error ? <Text style={{color: 'red', marginTop: 4, marginHorizontal: 10}}>{error}</Text> : null}
+      {error ? <Text style={{ color: 'red', marginTop: 4, marginHorizontal: 10 }}>{error}</Text> : null}
     </View>
   );
 };

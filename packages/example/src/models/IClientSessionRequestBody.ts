@@ -1,7 +1,7 @@
-import {makeRandomString} from '../helpers/helpers';
-import {PaymentHandling} from '../network/Environment';
-import type {AppPaymentParameters} from '../screens/SettingsScreen';
-import {Environment} from './Environment';
+import { makeRandomString } from '../helpers/helpers';
+import { PaymentHandling } from '../network/Environment';
+import type { AppPaymentParameters } from '../screens/SettingsScreen';
+import { Environment } from './Environment';
 
 export interface IClientSessionRequestBody {
   customerId?: string;

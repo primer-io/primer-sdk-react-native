@@ -1,7 +1,7 @@
 import * as React from 'react';
-import {ScrollView, Text, TouchableOpacity, useColorScheme, View} from 'react-native';
-import {Colors} from 'react-native/Libraries/NewAppScreen';
-import {styles} from '../styles';
+import { ScrollView, Text, TouchableOpacity, useColorScheme, View } from 'react-native';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
+import { styles } from '../styles';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import {
   Environment,
@@ -19,10 +19,10 @@ import {
   IClientSessionPaymentMethodOptions,
   IClientSessionRequestBody,
 } from '../models/IClientSessionRequestBody';
-import {useState} from 'react';
-import {Switch} from 'react-native';
+import { useState } from 'react';
+import { Switch } from 'react-native';
 import TextField from '../components/TextField';
-import type {NewLineItemScreenProps} from './NewLineItemSreen';
+import type { NewLineItemScreenProps } from './NewLineItemSreen';
 
 export interface AppPaymentParameters {
   environment: Environment;
@@ -61,7 +61,7 @@ export function makeCheckoutVaultingTypeFromIntVal(env: number): CheckoutVaultin
 }
 
 // @ts-ignore
-const SettingsScreen = ({navigation}) => {
+const SettingsScreen = ({ navigation }) => {
   const isDarkMode = useColorScheme() === 'dark';
   const [environment, setEnvironment] = React.useState<Environment>(Environment.Sandbox);
   const [apiKey, setApiKey] = React.useState<string | undefined>(customApiKey);
@@ -172,11 +172,11 @@ const SettingsScreen = ({navigation}) => {
 
   const renderEnvironmentSection = () => {
     return (
-      <View style={{marginTop: 12, marginBottom: 8}}>
-        <Text style={{...styles.heading1}}>Environment</Text>
+      <View style={{ marginTop: 12, marginBottom: 8 }}>
+        <Text style={{ ...styles.heading1 }}>Environment</Text>
         <SegmentedControl
           testID="Enviroment"
-          style={{marginTop: 6}}
+          style={{ marginTop: 6 }}
           values={['Dev', 'Sandbox', 'Staging', 'Production']}
           selectedIndex={environment}
           onChange={event => {
@@ -188,7 +188,7 @@ const SettingsScreen = ({navigation}) => {
         <TextField
           title="API Key"
           testID="ApiKey"
-          style={{marginVertical: 8}}
+          style={{ marginVertical: 8 }}
           value={apiKey}
           placeholder={'Set API key'}
           onChangeText={text => {
@@ -198,7 +198,7 @@ const SettingsScreen = ({navigation}) => {
         />
         <TextField
           title="Client token"
-          style={{marginVertical: 8}}
+          style={{ marginVertical: 8 }}
           value={clientToken}
           placeholder={'Set client token'}
           onChangeText={text => {
@@ -206,10 +206,10 @@ const SettingsScreen = ({navigation}) => {
           }}
         />
 
-        <Text style={{marginVertical: 8, ...styles.heading1}}>Checkout vaulting</Text>
+        <Text style={{ marginVertical: 8, ...styles.heading1 }}>Checkout vaulting</Text>
         <SegmentedControl
           testID="CheckoutVaulting"
-          style={{marginTop: 6, height: 56}}
+          style={{ marginTop: 6, height: 56 }}
           values={['No vaulting', 'Vault on success', 'Vault on agreement']}
           selectedIndex={checkoutVaultingType}
           onChange={event => {
@@ -224,10 +224,10 @@ const SettingsScreen = ({navigation}) => {
 
   const renderPaymentHandlingSection = () => {
     return (
-      <View style={{marginTop: 12, marginBottom: 8}}>
-        <Text style={{...styles.heading1}}>Payment Handling</Text>
+      <View style={{ marginTop: 12, marginBottom: 8 }}>
+        <Text style={{ ...styles.heading1 }}>Payment Handling</Text>
         <SegmentedControl
-          style={{marginTop: 6}}
+          style={{ marginTop: 6 }}
           values={['Auto', 'Manual']}
           selectedIndex={paymentHandling}
           onChange={event => {
@@ -250,7 +250,7 @@ const SettingsScreen = ({navigation}) => {
           alignItems: 'center',
           justifyContent: 'left',
         }}>
-        <Text style={{...styles.heading1}}>Enable Recapture CVV</Text>
+        <Text style={{ ...styles.heading1 }}>Enable Recapture CVV</Text>
         <Switch onValueChange={setCaptureVaultedCardCvv} value={captureVaultedCardCvv} />
       </View>
     );
@@ -258,13 +258,13 @@ const SettingsScreen = ({navigation}) => {
 
   const renderOrderSection = () => {
     return (
-      <View style={{marginTop: 12, marginBottom: 8}}>
-        <Text style={{...styles.heading1}}>Order</Text>
+      <View style={{ marginTop: 12, marginBottom: 8 }}>
+        <Text style={{ ...styles.heading1 }}>Order</Text>
 
-        <View style={{marginTop: 8, marginBottom: 4}}>
+        <View style={{ marginTop: 8, marginBottom: 4 }}>
           <TextField
             title="Currency"
-            style={{marginVertical: 8}}
+            style={{ marginVertical: 8 }}
             value={currency}
             placeholder={'Set currency'}
             onChangeText={text => {
@@ -274,7 +274,7 @@ const SettingsScreen = ({navigation}) => {
 
           <TextField
             title="Country Code"
-            style={{marginVertical: 8}}
+            style={{ marginVertical: 8 }}
             value={countryCode}
             placeholder={'Set country code'}
             onChangeText={text => {
@@ -285,7 +285,7 @@ const SettingsScreen = ({navigation}) => {
 
         {renderLineItems()}
 
-        <View style={{marginTop: 8, marginBottom: 4}}>
+        <View style={{ marginTop: 8, marginBottom: 4 }}>
           <TextField
             title="Order ID"
             value={orderId}
@@ -300,10 +300,10 @@ const SettingsScreen = ({navigation}) => {
 
   const renderLineItems = () => {
     return (
-      <View style={{marginTop: 8, marginBottom: 4}}>
-        <View style={{flex: 1, flexDirection: 'row', marginBottom: 4}}>
-          <Text style={{...styles.heading2}}>Line Items</Text>
-          <View style={{flexGrow: 1}} />
+      <View style={{ marginTop: 8, marginBottom: 4 }}>
+        <View style={{ flex: 1, flexDirection: 'row', marginBottom: 4 }}>
+          <Text style={{ ...styles.heading2 }}>Line Items</Text>
+          <View style={{ flexGrow: 1 }} />
           <TouchableOpacity
             onPress={() => {
               const newLineItemsScreenProps: NewLineItemScreenProps = {
@@ -316,7 +316,7 @@ const SettingsScreen = ({navigation}) => {
 
               navigation.navigate('NewLineItem', newLineItemsScreenProps);
             }}>
-            <Text style={{color: 'blue'}}>+Add Line Item</Text>
+            <Text style={{ color: 'blue' }}>+Add Line Item</Text>
           </TouchableOpacity>
         </View>
         {lineItems.map((item, index) => {
@@ -353,14 +353,14 @@ const SettingsScreen = ({navigation}) => {
               <Text>
                 {item.description} {`x${item.quantity}`}
               </Text>
-              <View style={{flexGrow: 1}} />
+              <View style={{ flexGrow: 1 }} />
               <Text>{item.amount}</Text>
             </TouchableOpacity>
           );
         })}
-        <View style={{flex: 1, flexDirection: 'row', marginVertical: 4}}>
-          <Text style={{fontWeight: '600'}}>Total</Text>
-          <View style={{flexGrow: 1}} />
+        <View style={{ flex: 1, flexDirection: 'row', marginVertical: 4 }}>
+          <Text style={{ fontWeight: '600' }}>Total</Text>
+          <View style={{ flexGrow: 1 }} />
           <Text
             style={{
               fontWeight: '600',
@@ -374,7 +374,7 @@ const SettingsScreen = ({navigation}) => {
 
   const renderRequiredSettings = () => {
     return (
-      <View style={{marginTop: 32, marginBottom: 12}}>
+      <View style={{ marginTop: 32, marginBottom: 12 }}>
         <Text
           style={[
             styles.sectionTitle,
@@ -407,10 +407,10 @@ const SettingsScreen = ({navigation}) => {
 
   const renderSurchargeSection = () => {
     return (
-      <View style={{marginTop: 12, marginBottom: 8}}>
-        <View style={{flex: 1, flexDirection: 'row'}}>
-          <Text style={{...styles.heading1, marginBottom: 4}}>Surcharge</Text>
-          <View style={{flex: 1}} />
+      <View style={{ marginTop: 12, marginBottom: 8 }}>
+        <View style={{ flex: 1, flexDirection: 'row' }}>
+          <Text style={{ ...styles.heading1, marginBottom: 4 }}>Surcharge</Text>
+          <View style={{ flex: 1 }} />
           <Switch
             value={isSurchargeApplied}
             onValueChange={val => {
@@ -422,7 +422,7 @@ const SettingsScreen = ({navigation}) => {
           <View>
             <TextField
               title="Apple Pay Surcharge"
-              style={{marginVertical: 4}}
+              style={{ marginVertical: 4 }}
               value={applePaySurcharge === undefined ? undefined : `${applePaySurcharge}`}
               placeholder={'Set Apple Pay surcharge'}
               onChangeText={text => {
@@ -436,7 +436,7 @@ const SettingsScreen = ({navigation}) => {
             />
             <TextField
               title="Google Pay Surcharge"
-              style={{marginVertical: 4}}
+              style={{ marginVertical: 4 }}
               value={googlePaySurcharge === undefined ? undefined : `${googlePaySurcharge}`}
               placeholder={'Set Google Pay surcharge'}
               onChangeText={text => {
@@ -450,7 +450,7 @@ const SettingsScreen = ({navigation}) => {
             />
             <TextField
               title="Adyen Giropay Surcharge"
-              style={{marginVertical: 4}}
+              style={{ marginVertical: 4 }}
               value={adyenGiropaySurcharge === undefined ? undefined : `${adyenGiropaySurcharge}`}
               placeholder={'Set Adyen Giropay surcharge'}
               onChangeText={text => {
@@ -464,7 +464,7 @@ const SettingsScreen = ({navigation}) => {
             />
             <TextField
               title="Adyen IDeal Surcharge"
-              style={{marginVertical: 4}}
+              style={{ marginVertical: 4 }}
               value={adyenIdealSurcharge === undefined ? undefined : `${adyenIdealSurcharge}`}
               placeholder={'Set Adyen IDeal surcharge'}
               onChangeText={text => {
@@ -478,7 +478,7 @@ const SettingsScreen = ({navigation}) => {
             />
             <TextField
               title="Adyen Sofort Surcharge"
-              style={{marginVertical: 4}}
+              style={{ marginVertical: 4 }}
               value={adyenSofortSurcharge === undefined ? undefined : `${adyenSofortSurcharge}`}
               placeholder={'Set Adyen Sofort surcharge'}
               onChangeText={text => {
@@ -492,7 +492,7 @@ const SettingsScreen = ({navigation}) => {
             />
             <TextField
               title="VISA Surcharge"
-              style={{marginVertical: 4}}
+              style={{ marginVertical: 4 }}
               value={visaSurcharge === undefined ? undefined : `${visaSurcharge}`}
               placeholder={'Set VISA surcharge'}
               onChangeText={text => {
@@ -506,7 +506,7 @@ const SettingsScreen = ({navigation}) => {
             />
             <TextField
               title="MasterCard Surcharge"
-              style={{marginVertical: 4}}
+              style={{ marginVertical: 4 }}
               value={masterCardSurcharge === undefined ? undefined : `${masterCardSurcharge}`}
               placeholder={'Set MasterCard surcharge'}
               onChangeText={text => {
@@ -526,10 +526,10 @@ const SettingsScreen = ({navigation}) => {
 
   const renderCustomerSection = () => {
     return (
-      <View style={{marginTop: 12, marginBottom: 8}}>
-        <View style={{flex: 1, flexDirection: 'row'}}>
-          <Text style={{...styles.heading1, marginBottom: 4}}>Customer</Text>
-          <View style={{flex: 1}} />
+      <View style={{ marginTop: 12, marginBottom: 8 }}>
+        <View style={{ flex: 1, flexDirection: 'row' }}>
+          <Text style={{ ...styles.heading1, marginBottom: 4 }}>Customer</Text>
+          <View style={{ flex: 1 }} />
           <Switch
             value={isCustomerApplied}
             onValueChange={val => {
@@ -542,7 +542,7 @@ const SettingsScreen = ({navigation}) => {
           <View>
             <TextField
               title="ID"
-              style={{marginVertical: 4}}
+              style={{ marginVertical: 4 }}
               value={customerId}
               placeholder={'Set a unique ID for your customer'}
               onChangeText={text => {
@@ -551,7 +551,7 @@ const SettingsScreen = ({navigation}) => {
             />
             <TextField
               title="First Name"
-              style={{marginVertical: 4}}
+              style={{ marginVertical: 4 }}
               value={firstName}
               placeholder={"Set your customer's first name"}
               onChangeText={text => {
@@ -560,7 +560,7 @@ const SettingsScreen = ({navigation}) => {
             />
             <TextField
               title="Last Name"
-              style={{marginVertical: 4}}
+              style={{ marginVertical: 4 }}
               value={lastName}
               placeholder={"Set your customer's last name"}
               onChangeText={text => {
@@ -569,7 +569,7 @@ const SettingsScreen = ({navigation}) => {
             />
             <TextField
               title="Email"
-              style={{marginVertical: 4}}
+              style={{ marginVertical: 4 }}
               value={email}
               placeholder={"Set your customer's email"}
               onChangeText={text => {
@@ -578,7 +578,7 @@ const SettingsScreen = ({navigation}) => {
             />
             <TextField
               title="Mobile Number"
-              style={{marginVertical: 4}}
+              style={{ marginVertical: 4 }}
               value={phoneNumber}
               placeholder={"Set your customer's mobile number"}
               onChangeText={text => {
@@ -587,7 +587,7 @@ const SettingsScreen = ({navigation}) => {
             />
             <TextField
               title="National Document ID"
-              style={{marginVertical: 4}}
+              style={{ marginVertical: 4 }}
               value={nationalDocumentId}
               placeholder={"Set your customer's national doc ID"}
               onChangeText={text => {
@@ -595,10 +595,10 @@ const SettingsScreen = ({navigation}) => {
               }}
             />
 
-            <View style={{marginTop: 8}}>
-              <View style={{flex: 1, flexDirection: 'row'}}>
-                <Text style={{...styles.heading1, marginBottom: 4}}>Address</Text>
-                <View style={{flex: 1}} />
+            <View style={{ marginTop: 8 }}>
+              <View style={{ flex: 1, flexDirection: 'row' }}>
+                <Text style={{ ...styles.heading1, marginBottom: 4 }}>Address</Text>
+                <View style={{ flex: 1 }} />
                 <Switch
                   value={isAddressApplied}
                   onValueChange={val => {
@@ -610,7 +610,7 @@ const SettingsScreen = ({navigation}) => {
                 <View>
                   <TextField
                     title="Line 1"
-                    style={{marginVertical: 4}}
+                    style={{ marginVertical: 4 }}
                     value={addressLine1}
                     placeholder={"Set your customer's address line 1"}
                     onChangeText={text => {
@@ -619,7 +619,7 @@ const SettingsScreen = ({navigation}) => {
                   />
                   <TextField
                     title="Line 2"
-                    style={{marginVertical: 4}}
+                    style={{ marginVertical: 4 }}
                     value={addressLine2}
                     placeholder={"Set your customer's address line 2"}
                     onChangeText={text => {
@@ -628,7 +628,7 @@ const SettingsScreen = ({navigation}) => {
                   />
                   <TextField
                     title="Postal Code"
-                    style={{marginVertical: 4}}
+                    style={{ marginVertical: 4 }}
                     value={postalCode}
                     placeholder={"Set your customer's postal code"}
                     onChangeText={text => {
@@ -637,7 +637,7 @@ const SettingsScreen = ({navigation}) => {
                   />
                   <TextField
                     title="City"
-                    style={{marginVertical: 4}}
+                    style={{ marginVertical: 4 }}
                     value={city}
                     placeholder={"Set your customer's city"}
                     onChangeText={text => {
@@ -646,7 +646,7 @@ const SettingsScreen = ({navigation}) => {
                   />
                   <TextField
                     title="State"
-                    style={{marginVertical: 4}}
+                    style={{ marginVertical: 4 }}
                     value={state}
                     placeholder={"Set your customer's state"}
                     onChangeText={text => {
@@ -655,7 +655,7 @@ const SettingsScreen = ({navigation}) => {
                   />
                   <TextField
                     title="Country Code"
-                    style={{marginVertical: 4}}
+                    style={{ marginVertical: 4 }}
                     value={customerAddressCountryCode}
                     placeholder={"Set your customer's country code"}
                     onChangeText={text => {
@@ -673,8 +673,8 @@ const SettingsScreen = ({navigation}) => {
 
   const renderMerchantSection = () => {
     return (
-      <View style={{marginTop: 12, marginBottom: 8}}>
-        <Text style={{...styles.heading1}}>Merchant Name</Text>
+      <View style={{ marginTop: 12, marginBottom: 8 }}>
+        <Text style={{ ...styles.heading1 }}>Merchant Name</Text>
         <TextField
           value={merchantName}
           placeholder={'Set merchant name that is presented on Apple Pay'}
@@ -688,7 +688,7 @@ const SettingsScreen = ({navigation}) => {
 
   const renderOptionalSettings = () => {
     return (
-      <View style={{marginTop: 32, marginBottom: 12}}>
+      <View style={{ marginTop: 32, marginBottom: 12 }}>
         <Text
           style={[
             styles.sectionTitle,
@@ -731,7 +731,7 @@ const SettingsScreen = ({navigation}) => {
             console.log(appPaymentParameters);
             navigation.navigate('Checkout');
           }}>
-          <Text style={{...styles.buttonText, color: 'white'}}>Primer SDK</Text>
+          <Text style={{ ...styles.buttonText, color: 'white' }}>Primer SDK</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -746,7 +746,7 @@ const SettingsScreen = ({navigation}) => {
             console.log(appPaymentParameters);
             navigation.navigate('HUC');
           }}>
-          <Text style={{...styles.buttonText, color: 'white'}}>Headless Universal Checkout</Text>
+          <Text style={{ ...styles.buttonText, color: 'white' }}>Headless Universal Checkout</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -760,7 +760,7 @@ const SettingsScreen = ({navigation}) => {
             console.log(appPaymentParameters);
             navigation.navigate('HUCVault');
           }}>
-          <Text style={{...styles.buttonText, color: 'white'}}>Headless Universal Checkout Vault</Text>
+          <Text style={{ ...styles.buttonText, color: 'white' }}>Headless Universal Checkout Vault</Text>
         </TouchableOpacity>
       </View>
     );
@@ -768,10 +768,10 @@ const SettingsScreen = ({navigation}) => {
 
   const renderBillingOptionsSection = () => {
     return (
-      <View style={{marginTop: 12, marginBottom: 8}}>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <Text style={{...styles.heading1, marginBottom: 4}}>Billing Options</Text>
-          <View style={{flex: 1}} />
+      <View style={{ marginTop: 12, marginBottom: 8 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Text style={{ ...styles.heading1, marginBottom: 4 }}>Billing Options</Text>
+          <View style={{ flex: 1 }} />
           <Switch
             value={isBillingOptionsApplied}
             onValueChange={val => {
@@ -782,10 +782,10 @@ const SettingsScreen = ({navigation}) => {
 
         {!isBillingOptionsApplied ? null : (
           <View>
-            <Text style={{...styles.heading2, marginVertical: 4}}>Billing Contact Fields</Text>
-            <View style={{marginVertical: 4}}>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <Text style={{flex: 1}}>Name</Text>
+            <Text style={{ ...styles.heading2, marginVertical: 4 }}>Billing Contact Fields</Text>
+            <View style={{ marginVertical: 4 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={{ flex: 1 }}>Name</Text>
                 <Switch
                   value={requiredBillingContactFields.includes('name')}
                   onValueChange={val => {
@@ -797,8 +797,8 @@ const SettingsScreen = ({navigation}) => {
                   }}
                 />
               </View>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <Text style={{flex: 1}}>Email Address</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={{ flex: 1 }}>Email Address</Text>
                 <Switch
                   value={requiredBillingContactFields.includes('emailAddress')}
                   onValueChange={val => {
@@ -812,8 +812,8 @@ const SettingsScreen = ({navigation}) => {
                   }}
                 />
               </View>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <Text style={{flex: 1}}>Phone Number</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={{ flex: 1 }}>Phone Number</Text>
                 <Switch
                   value={requiredBillingContactFields.includes('phoneNumber')}
                   onValueChange={val => {
@@ -827,8 +827,8 @@ const SettingsScreen = ({navigation}) => {
                   }}
                 />
               </View>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <Text style={{flex: 1}}>Postal Address</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={{ flex: 1 }}>Postal Address</Text>
                 <Switch
                   value={requiredBillingContactFields.includes('postalAddress')}
                   onValueChange={val => {
@@ -851,10 +851,10 @@ const SettingsScreen = ({navigation}) => {
 
   const renderShippingOptionsSection = () => {
     return (
-      <View style={{marginTop: 12, marginBottom: 8}}>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <Text style={{...styles.heading1, marginBottom: 4}}>Shipping Options</Text>
-          <View style={{flex: 1}} />
+      <View style={{ marginTop: 12, marginBottom: 8 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Text style={{ ...styles.heading1, marginBottom: 4 }}>Shipping Options</Text>
+          <View style={{ flex: 1 }} />
           <Switch
             value={isShippingOptionsApplied}
             onValueChange={val => {
@@ -871,7 +871,7 @@ const SettingsScreen = ({navigation}) => {
                 alignItems: 'center',
                 marginVertical: 4,
               }}>
-              <Text style={{flex: 1}}>Require Shipping Method</Text>
+              <Text style={{ flex: 1 }}>Require Shipping Method</Text>
               <Switch
                 value={requireShippingMethod}
                 onValueChange={val => {
@@ -879,10 +879,10 @@ const SettingsScreen = ({navigation}) => {
                 }}
               />
             </View>
-            <Text style={{...styles.heading2, marginVertical: 4}}>Shipping Contact Fields</Text>
-            <View style={{marginVertical: 4}}>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <Text style={{flex: 1}}>Name</Text>
+            <Text style={{ ...styles.heading2, marginVertical: 4 }}>Shipping Contact Fields</Text>
+            <View style={{ marginVertical: 4 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={{ flex: 1 }}>Name</Text>
                 <Switch
                   value={shippingContactFields.includes('name')}
                   onValueChange={val => {
@@ -894,8 +894,8 @@ const SettingsScreen = ({navigation}) => {
                   }}
                 />
               </View>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <Text style={{flex: 1}}>Email Address</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={{ flex: 1 }}>Email Address</Text>
                 <Switch
                   value={shippingContactFields.includes('emailAddress')}
                   onValueChange={val => {
@@ -907,8 +907,8 @@ const SettingsScreen = ({navigation}) => {
                   }}
                 />
               </View>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <Text style={{flex: 1}}>Phone Number</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={{ flex: 1 }}>Phone Number</Text>
                 <Switch
                   value={shippingContactFields.includes('phoneNumber')}
                   onValueChange={val => {
@@ -920,8 +920,8 @@ const SettingsScreen = ({navigation}) => {
                   }}
                 />
               </View>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <Text style={{flex: 1}}>Postal Address</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={{ flex: 1 }}>Postal Address</Text>
                 <Switch
                   value={shippingContactFields.includes('postalAddress')}
                   onValueChange={val => {
@@ -998,7 +998,9 @@ const SettingsScreen = ({navigation}) => {
     const currentPaymentMethod: IClientSessionPaymentMethod = {
       ...currentClientSessionRequestBody.paymentMethod,
     };
-    let currentPaymentMethodOptions: IClientSessionPaymentMethodOptions | undefined = {...currentPaymentMethod.options};
+    let currentPaymentMethodOptions: IClientSessionPaymentMethodOptions | undefined = {
+      ...currentPaymentMethod.options,
+    };
 
     if (isSurchargeApplied) {
       if (applePaySurcharge) {
@@ -1080,7 +1082,7 @@ const SettingsScreen = ({navigation}) => {
         {renderRequiredSettings()}
         {renderOptionalSettings()}
 
-        <View style={{marginVertical: 5}} />
+        <View style={{ marginVertical: 5 }} />
 
         {renderActions()}
       </View>

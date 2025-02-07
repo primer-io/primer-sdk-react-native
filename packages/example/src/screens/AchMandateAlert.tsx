@@ -1,5 +1,5 @@
-import {AchMandateManager} from '@primer-io/react-native';
-import {Alert} from 'react-native';
+import { AchMandateManager } from '@primer-io/react-native';
+import { Alert } from 'react-native';
 
 export async function showAchMandateAlert() {
   const achMandateManager = new AchMandateManager();

@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import {Text, TouchableOpacity, View, StyleSheet, Button} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Text, TouchableOpacity, View, StyleSheet, Button } from 'react-native';
 import {
   KlarnaManager,
   KlarnaComponent,
@@ -114,7 +114,7 @@ const HeadlessCheckoutKlarnaScreen = (props: any) => {
         flex: 1,
         backgroundColor: 'white',
       }}>
-      <Text style={{fontSize: 18, fontWeight: 'bold', paddingBottom: 8}}>Klarna session</Text>
+      <Text style={{ fontSize: 18, fontWeight: 'bold', paddingBottom: 8 }}>Klarna session</Text>
 
       <PaymentCategories
         selectedPaymentCategoryIdentifier={selectedPaymentCategoryIdentifier}
@@ -133,7 +133,7 @@ const HeadlessCheckoutKlarnaScreen = (props: any) => {
         />
       </View>
 
-      {isAuthorizationVisible && <PrimerKlarnaPaymentView style={{minHeight: 250}} />}
+      {isAuthorizationVisible && <PrimerKlarnaPaymentView style={{ minHeight: 250 }} />}
 
       <View style={styles.button}>
         {isAuthorizationVisible && <Button onPress={() => onSubmit()} title="Continue" />}
@@ -165,7 +165,7 @@ const PaymentCategories = ({
   );
 };
 
-const RadioButton = ({text, isChecked, onPress}: {text: string; isChecked: boolean; onPress: () => void}) => {
+const RadioButton = ({ text, isChecked, onPress }: { text: string; isChecked: boolean; onPress: () => void }) => {
   return (
     <TouchableOpacity style={styles.radioButton} onPress={() => onPress()}>
       <View style={[styles.radioCircle, isChecked && styles.checkedRadioCircle]} />

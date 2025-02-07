@@ -1,9 +1,9 @@
 import * as React from 'react';
-import {View, Text, TouchableOpacity} from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import TextField from '../components/TextField';
-import {makeRandomString} from '../helpers/helpers';
-import type {IClientSessionLineItem} from '../models/IClientSessionRequestBody';
-import {styles} from '../styles';
+import { makeRandomString } from '../helpers/helpers';
+import type { IClientSessionLineItem } from '../models/IClientSessionRequestBody';
+import { styles } from '../styles';
 
 export interface NewLineItemScreenProps {
   lineItem?: IClientSessionLineItem;
@@ -36,7 +36,7 @@ const NewLineItemScreen = (props: any) => {
       }}>
       <TextField
         title="Name"
-        style={{marginBottom: 10}}
+        style={{ marginBottom: 10 }}
         value={name}
         onChangeText={text => {
           setName(text);
@@ -44,7 +44,7 @@ const NewLineItemScreen = (props: any) => {
       />
       <TextField
         title="Quantity"
-        style={{marginVertical: 10}}
+        style={{ marginVertical: 10 }}
         value={quantity === undefined ? undefined : `${quantity}`}
         keyboardType={'numeric'}
         onChangeText={text => {
@@ -58,7 +58,7 @@ const NewLineItemScreen = (props: any) => {
       />
       <TextField
         title="Unit Price"
-        style={{marginVertical: 10}}
+        style={{ marginVertical: 10 }}
         value={unitPrice === undefined ? undefined : `${unitPrice}`}
         keyboardType={'numeric'}
         onChangeText={text => {
@@ -114,12 +114,12 @@ const NewLineItemScreen = (props: any) => {
             }
           }
         }}>
-        <Text style={{...styles.buttonText, color: 'white'}}>{isEditing ? 'Edit Line Item' : 'Add Line Item'}</Text>
+        <Text style={{ ...styles.buttonText, color: 'white' }}>{isEditing ? 'Edit Line Item' : 'Add Line Item'}</Text>
       </TouchableOpacity>
 
       {newLineItemScreenProps?.lineItem === undefined ? null : (
         <TouchableOpacity
-          style={{...styles.button, marginBottom: 20, backgroundColor: 'red'}}
+          style={{ ...styles.button, marginBottom: 20, backgroundColor: 'red' }}
           onPress={() => {
             if (newLineItemScreenProps.onRemoveLineItem && newLineItemScreenProps.lineItem) {
               newLineItemScreenProps.onRemoveLineItem(newLineItemScreenProps.lineItem);
@@ -127,7 +127,7 @@ const NewLineItemScreen = (props: any) => {
 
             props.navigation.goBack();
           }}>
-          <Text style={{...styles.buttonText, color: 'white'}}>Remove Line Item</Text>
+          <Text style={{ ...styles.buttonText, color: 'white' }}>Remove Line Item</Text>
         </TouchableOpacity>
       )}
     </View>

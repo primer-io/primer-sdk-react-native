@@ -1,7 +1,7 @@
 import * as React from 'react';
-import {ScrollView, Text, useColorScheme, View} from 'react-native';
+import { ScrollView, Text, useColorScheme, View } from 'react-native';
 
-import {Colors} from 'react-native/Libraries/NewAppScreen';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 const ResultScreen = (props: any) => {
   const isDarkMode = useColorScheme() === 'dark';

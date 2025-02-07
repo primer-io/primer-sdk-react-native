@@ -1,10 +1,10 @@
-import React, {useEffect, useState} from 'react';
-import {Button, ScrollView, Text, TextInput, View} from 'react-native';
-import {createClientSession, createPayment, resumePayment} from '../network/api';
-import {appPaymentParameters} from '../models/IClientSessionRequestBody';
-import type {IPayment} from '../models/IPayment';
-import {getPaymentHandlingStringVal} from '../network/Environment';
-import {ActivityIndicator} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Button, ScrollView, Text, TextInput, View } from 'react-native';
+import { createClientSession, createPayment, resumePayment } from '../network/api';
+import { appPaymentParameters } from '../models/IClientSessionRequestBody';
+import type { IPayment } from '../models/IPayment';
+import { getPaymentHandlingStringVal } from '../network/Environment';
+import { ActivityIndicator } from 'react-native';
 import {
   CheckoutAdditionalInfo,
   CheckoutData,
@@ -213,7 +213,7 @@ export default HeadlessCheckoutVaultScreen = (props: any) => {
       if (!cvv) {
         await vaultManager.startPaymentFlow(selectedVaultedPaymentMethod.id);
       } else {
-        const data: VaultedPaymentMethodAdditionalData = {cvv: cvv};
+        const data: VaultedPaymentMethodAdditionalData = { cvv: cvv };
         const validationErrors: ValidationError[] = await vaultManager.validate(selectedVaultedPaymentMethod.id, data);
         if (validationErrors.length == 0) {
           await vaultManager.startPaymentFlow(selectedVaultedPaymentMethod.id, data);
@@ -271,7 +271,7 @@ export default HeadlessCheckoutVaultScreen = (props: any) => {
     } else {
       return vaultedPaymentMethods.map(item => {
         return (
-          <View style={{flexDirection: 'row'}}>
+          <View style={{ flexDirection: 'row' }}>
             <Text
               style={{
                 marginHorizontal: 20,
@@ -376,7 +376,7 @@ export default HeadlessCheckoutVaultScreen = (props: any) => {
   };
 
   return (
-    <ScrollView style={{paddingHorizontal: 24, flex: 1}}>
+    <ScrollView style={{ paddingHorizontal: 24, flex: 1 }}>
       {renderVaultedPaymentMethods()}
       {renderVaultAdditionalData()}
       {renderLoadingOverlay()}

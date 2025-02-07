@@ -1,9 +1,9 @@
-import React, {useEffect, useState} from 'react';
-import {Text, TouchableOpacity, View, ScrollView} from 'react-native';
-import {ActivityIndicator} from 'react-native';
-import {InputElementType, CardData, RawDataManager} from '@primer-io/react-native';
+import React, { useEffect, useState } from 'react';
+import { Text, TouchableOpacity, View, ScrollView } from 'react-native';
+import { ActivityIndicator } from 'react-native';
+import { InputElementType, CardData, RawDataManager } from '@primer-io/react-native';
 import TextField from '../components/TextField';
-import {styles} from '../styles';
+import { styles } from '../styles';
 
 export interface RawCardDataScreenProps {
   navigation: any;
@@ -98,7 +98,7 @@ const RawCardDataScreen = (props: any) => {
               return (
                 <TextField
                   key={'CARD_NUMBER'}
-                  style={{marginVertical: 8}}
+                  style={{ marginVertical: 8 }}
                   title="Card Number"
                   value={cardNumber}
                   keyboardType={'numeric'}
@@ -112,7 +112,7 @@ const RawCardDataScreen = (props: any) => {
               return (
                 <TextField
                   key={'EXPIRY_DATE'}
-                  style={{marginVertical: 8}}
+                  style={{ marginVertical: 8 }}
                   title="Expiry Date"
                   value={expiryDate}
                   keyboardType={'default'}
@@ -126,7 +126,7 @@ const RawCardDataScreen = (props: any) => {
               return (
                 <TextField
                   key={'CVV'}
-                  style={{marginVertical: 8}}
+                  style={{ marginVertical: 8 }}
                   title="CVV"
                   value={cvv}
                   keyboardType={'numeric'}
@@ -140,7 +140,7 @@ const RawCardDataScreen = (props: any) => {
               return (
                 <TextField
                   key={'CARDHOLDER_NAME'}
-                  style={{marginVertical: 8}}
+                  style={{ marginVertical: 8 }}
                   title="Cardholder name"
                   value={cardholderName}
                   keyboardType={'default'}
@@ -203,7 +203,7 @@ const RawCardDataScreen = (props: any) => {
             pay();
           }
         }}>
-        <Text style={{...styles.buttonText, color: 'white'}}>Pay</Text>
+        <Text style={{ ...styles.buttonText, color: 'white' }}>Pay</Text>
       </TouchableOpacity>
     );
   };
@@ -211,12 +211,12 @@ const RawCardDataScreen = (props: any) => {
   const renderEvents = () => {
     return (
       <ScrollView>
-        <View style={{backgroundColor: 'lightgray'}}>
-          <Text style={{height: 50}} testID="headless-metadata-event">
+        <View style={{ backgroundColor: 'lightgray' }}>
+          <Text style={{ height: 50 }} testID="headless-metadata-event">
             {metadataLog}
           </Text>
         </View>
-        <View style={{backgroundColor: 'lightgray', marginTop: 16}}>
+        <View style={{ backgroundColor: 'lightgray', marginTop: 16 }}>
           <Text testID="headless-validation-event">{validationLog}</Text>
         </View>
       </ScrollView>
@@ -224,7 +224,7 @@ const RawCardDataScreen = (props: any) => {
   };
 
   return (
-    <View style={{paddingHorizontal: 24, flex: 1}}>
+    <View style={{ paddingHorizontal: 24, flex: 1 }}>
       {renderInputs()}
       {renderPayButton()}
       {renderEvents()}

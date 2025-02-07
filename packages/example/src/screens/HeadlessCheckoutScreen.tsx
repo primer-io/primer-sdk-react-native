@@ -1,10 +1,10 @@
-import React, {useEffect, useState} from 'react';
-import {Alert, Image, TouchableOpacity, View} from 'react-native';
-import {createClientSession, createPayment, resumePayment} from '../network/api';
-import {appPaymentParameters} from '../models/IClientSessionRequestBody';
-import type {IPayment} from '../models/IPayment';
-import {getPaymentHandlingStringVal} from '../network/Environment';
-import {ActivityIndicator} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Alert, Image, TouchableOpacity, View } from 'react-native';
+import { createClientSession, createPayment, resumePayment } from '../network/api';
+import { appPaymentParameters } from '../models/IClientSessionRequestBody';
+import type { IPayment } from '../models/IPayment';
+import { getPaymentHandlingStringVal } from '../network/Environment';
+import { ActivityIndicator } from 'react-native';
 import {
   AssetsManager,
   CheckoutAdditionalInfo,
@@ -19,9 +19,9 @@ import {
   SessionIntent,
 } from '@primer-io/react-native';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
-import {showAchMandateAlert} from './AchMandateAlert';
-import {STRIPE_ACH_PUBLISHABLE_KEY} from '../Keys';
-import {PrimerPaymentMethodAsset} from '@primer-io/react-native/lib/typescript/models/PrimerPaymentMethodResource';
+import { showAchMandateAlert } from './AchMandateAlert';
+import { STRIPE_ACH_PUBLISHABLE_KEY } from '../Keys';
+import { PrimerPaymentMethodAsset } from '@primer-io/react-native/lib/typescript/models/PrimerPaymentMethodResource';
 
 let log: string = '';
 let merchantPaymentId: string | null = null;
@@ -88,7 +88,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
       googlePayOptions: {
         isCaptureBillingAddressEnabled: true,
         isExistingPaymentMethodRequired: false,
-        shippingAddressParameters: {phoneNumberRequired: true},
+        shippingAddressParameters: { phoneNumberRequired: true },
         requireShippingMethod: false,
         emailAddressRequired: true,
         buttonOptions: {
@@ -440,7 +440,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
               }}
               testID={testId}>
               <Image
-                style={{height: 36, width: '100%', resizeMode: 'contain'}}
+                style={{ height: 36, width: '100%', resizeMode: 'contain' }}
                 source={{
                   uri:
                     (paymentMethodResource as PrimerPaymentMethodAsset).paymentMethodLogo.colored ||
@@ -478,7 +478,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
   };
 
   return (
-    <View style={{paddingHorizontal: 24, flex: 1}}>
+    <View style={{ paddingHorizontal: 24, flex: 1 }}>
       {renderSessionIntentSegmentedControl()}
       {renderPaymentMethodsUI()}
       {renderLoadingOverlay()}

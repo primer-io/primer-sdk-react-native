@@ -1,10 +1,10 @@
 import React from 'react';
-import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SettingsScreen from './screens/SettingsScreen';
 import CheckoutScreen from './screens/CheckoutScreen';
 import ResultScreen from './screens/ResultScreen';
-import {HeadlessCheckoutScreen} from './screens/HeadlessCheckoutScreen';
+import { HeadlessCheckoutScreen } from './screens/HeadlessCheckoutScreen';
 import NewLineItemScreen from './screens/NewLineItemSreen';
 import RawCardDataScreen from './screens/RawCardDataScreen';
 import RawPhoneNumberDataScreen from './screens/RawPhoneNumberScreen';
@@ -14,7 +14,7 @@ import HeadlessCheckoutVaultScreen from './screens/HeadlessCheckoutVaultScreen';
 import HeadlessCheckoutKlarnaScreen from './screens/HeadlessCheckoutKlarnaScreen';
 import HeadlessCheckoutWithRedirect from './screens/HeadlessCheckoutWithRedirect';
 import HeadlessCheckoutStripeAchScreen from './screens/HeadlessCheckoutStripeAchScreen';
-import {LogBox} from 'react-native';
+import { LogBox } from 'react-native';
 
 const Stack = createNativeStackNavigator();
 
