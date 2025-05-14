@@ -167,7 +167,11 @@ extension PrimerSettings {
             }
             return nil
           }(),
-          theme: theme)
+          theme: theme,
+          cardFormUIOptions: {
+            payButtonAddNewCard: true
+          }
+          )
       }
 
       var debugOptions: PrimerDebugOptions?
@@ -181,7 +185,7 @@ extension PrimerSettings {
         (settingsJson["clientSessionCachingEnabled"] as? Bool) {
         clientSessionCachingEnabled = clientSessionCachingEnabledValue
       }
-      
+
       var apiVersion: PrimerApiVersion?
       if let apiVersionValue = (settingsJson["apiVersion"] as? String) {
         switch (apiVersionValue) {

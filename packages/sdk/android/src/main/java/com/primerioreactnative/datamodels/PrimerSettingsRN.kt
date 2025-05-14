@@ -54,6 +54,7 @@ data class PrimerUIOptionsRN(
     var isErrorScreenEnabled: Boolean = true,
     var dismissalMechanism: List<String>? = listOf("gestures"),
     var theme: PrimerThemeRN = PrimerThemeRN(),
+    var cardFormUIOptions: PrimerCardFormUIOptionsRN = PrimerCardFormUIOptionsRN(),
 )
 
 @Serializable
@@ -122,6 +123,11 @@ data class ColorRN(
 ) {
     fun toHexStrColor() = String.format(COLOR_FORMAT, alpha, red, green, blue)
 }
+
+@Serializable
+data class PrimerCardFormUIOptionsRN(
+    var payButtonAddNewCard: Boolean = true,
+)
 
 @Serializable
 data class PrimerDebugOptionsRN(val is3DSSanityCheckEnabled: Boolean = true)

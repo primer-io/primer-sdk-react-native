@@ -336,6 +336,9 @@ const CheckoutScreen = (props: any) => {
         //     }
         // }
       },
+      cardFormUIOptions: {
+        payButtonAddNewCard: true,
+      },
     },
     debugOptions: {
       is3DSSanityCheckEnabled: false,
