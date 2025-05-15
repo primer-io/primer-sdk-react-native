@@ -1,6 +1,6 @@
 //
 //  RNTRedirectManager.swift
-//  example_0_70_6
+//  primer-io-react-native
 //
 //  Created by Faisal Iqbal on 15.12.2023.
 //

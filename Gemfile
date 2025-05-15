@@ -4,7 +4,6 @@ source "https://rubygems.org"
 ruby ">= 2.7.0"
 
 gem "fastlane"
-gem "cocoapods"
 
 plugins_path = File.join(File.dirname(__FILE__), 'fastlane', 'PluginFile')
 eval_gemfile(plugins_path) if File.exist?(plugins_path)

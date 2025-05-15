@@ -2,15 +2,12 @@
  * Sample React Native App
  * https://github.com/facebook/react-native
  *
- * Generated with the TypeScript template
- * https://github.com/react-native-community/react-native-template-typescript
- *
  * @format
  */
 
-import React, {type PropsWithChildren} from 'react';
+import React from 'react';
+import type {PropsWithChildren} from 'react';
 import {
-  SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -27,11 +24,11 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
-const Section: React.FC<
-  PropsWithChildren<{
-    title: string;
-  }>
-> = ({children, title}) => {
+type SectionProps = PropsWithChildren<{
+  title: string;
+}>;
+
+function Section({children, title}: SectionProps): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
   return (
     <View style={styles.sectionContainer}>
@@ -55,28 +52,42 @@ const Section: React.FC<
       </Text>
     </View>
   );
-};
+}
 
-const App = () => {
+function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
+  /*
+   * To keep the template simple and small we're adding padding to prevent view
+   * from rendering under the System UI.
+   * For bigger apps the recommendation is to use `react-native-safe-area-context`:
+   * https://github.com/AppAndFlow/react-native-safe-area-context
+   *
+   * You can read more about it here:
+   * https://github.com/react-native-community/discussions-and-proposals/discussions/827
+   */
+  const safePadding = '5%';
+
   return (
-    <SafeAreaView style={backgroundStyle}>
+    <View style={backgroundStyle}>
       <StatusBar
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
       />
       <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
         style={backgroundStyle}>
-        <Header />
+        <View style={{paddingRight: safePadding}}>
+          <Header/>
+        </View>
         <View
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
+            paddingHorizontal: safePadding,
+            paddingBottom: safePadding,
           }}>
           <Section title="Step One">
             Edit <Text style={styles.highlight}>App.tsx</Text> to change this
@@ -94,9 +105,9 @@ const App = () => {
           <LearnMoreLinks />
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   sectionContainer: {

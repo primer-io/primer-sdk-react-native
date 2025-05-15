@@ -49,9 +49,9 @@ Remember to add tests for your change if possible. Run the unit tests by:
 yarn test
 ```
 
-To edit the Objective-C files, open `example/ios/example_0_70_6.xcworkspace` in XCode and find the source files at `Pods > Development Pods > @primer-io/react-native`.
+To edit the Objective-C files, open `packages/example/ios/Example.xcworkspace` in XCode and find the source files at `Pods > Development Pods > @primer-io/react-native`.
 
-To edit the Kotlin files, open `example/android` in Android studio and find the source files at `primerioreactnative` under `Android`.
+To edit the Kotlin files, open `packages/example/android` in Android studio and find the source files at `primerioreactnative` under `Android`.
 
 ### Commit message convention
 

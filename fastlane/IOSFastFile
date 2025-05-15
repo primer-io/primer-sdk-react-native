@@ -10,12 +10,12 @@ github_run_id = ENV["GITHUB_RUN_ID"]
 github_run_number = ENV["GITHUB_RUN_NUMBER"]
 
 # Xcode
-app_workspace = "packages/example/ios/example_0_70_6.xcworkspace"
-app_xcode_proj = "packages/example/ios/example_0_70_6.xcodeproj"
-app_scheme = "example_0_70_6"
+app_workspace = "packages/example/ios/Example.xcworkspace"
+app_xcode_proj = "packages/example/ios/Example.xcodeproj"
+app_scheme = "Example"
 
 # Packages
-app_output_path = "/var/tmp/Primer.io_ReactNativeExample.xcarchive/Products/Applications/example_0_70_6.app"
+app_output_path = "/var/tmp/Primer.io_ReactNativeExample.xcarchive/Products/Applications/Example.app"
 app_output_archive_path = "/var/tmp/Primer.io_ReactNativeExample.xcarchive"
 
 # Utils
@@ -34,7 +34,7 @@ platform :ios do
     common_pre_build_action
 
     run_tests(workspace: app_workspace,
-              scheme: "example_0_70_6Tests",
+              scheme: "ExampleTests",
               destination: "platform=iOS Simulator,name=iPhone 14 Pro",
               xcargs: "EXCLUDED_ARCHS[sdk=iphonesimulator*]=arm64",
               result_bundle: true,
