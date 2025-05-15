@@ -6,18 +6,16 @@
             "packages/*"
         ],
         "nohoist": [
-            "**/react*"
+          "**/react*",
+          "**/react*/**",
+          "**/@react-native*",
+          "**/@react-native*/**"
         ]
     },
     "scripts": {
         "bootstrap": "yarn install",
         "pods": "cd packages/example/ios && pod-install --quiet",
         "test": "yarn --cwd packages/sdk test",
-        "test:unit:coverage:lcov": "yarn --cwd packages/sdk test && node scripts/aggregate-coverage.js && nyc report --reporter lcov",
-        "postinstall": "cd packages/example/ && patch-package"
-    },
-    "dependencies": {
-        "patch-package": "^8.0.0",
-        "postinstall-postinstall": "^2.1.0"
+        "test:unit:coverage:lcov": "yarn --cwd packages/sdk test && node scripts/aggregate-coverage.js && nyc report --reporter lcov"
     }
 }
