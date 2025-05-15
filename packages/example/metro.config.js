@@ -1,11 +1,37 @@
-const {getDefaultConfig, mergeConfig} = require('@react-native/metro-config');
+const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
+const path = require('path');
+const blacklist = require('metro-config/src/defaults/exclusionList');
+const escape = require('escape-string-regexp');
+const pak = require('../sdk/package.json');
+
+const root = path.resolve(__dirname, '../..');
+
+const modules = Object.keys({
+  ...pak.peerDependencies,
+});
 
 /**
  * Metro configuration
- * https://reactnative.dev/docs/metro
+ * https://facebook.github.io/metro/docs/configuration
  *
- * @type {import('@react-native/metro-config').MetroConfig}
+ * @type {import('metro-config').MetroConfig}
  */
-const config = {};
+const config = {
+  projectRoot: __dirname,
+  watchFolders: [root],
+
+  // Ensure only one version of peerDependencies is loaded
+  resolver: {
+    blacklistRE: blacklist(
+      modules.map(
+        m => new RegExp(`^${escape(path.join(root, 'node_modules', m))}\\/.*$`),
+      ),
+    ),
+    extraNodeModules: modules.reduce((acc, name) => {
+      acc[name] = path.join(__dirname, 'node_modules', name);
+      return acc;
+    }, {}),
+  },
+};
 
 module.exports = mergeConfig(getDefaultConfig(__dirname), config);
