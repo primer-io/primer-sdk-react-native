@@ -145,6 +145,13 @@ extension PrimerSettings {
           let rnTheme = try JSONDecoder().decode(PrimerThemeRN.self, from: rnThemeData)
           theme = rnTheme.asPrimerTheme()
         }
+        
+        var cardFormUIOptions: PrimerCardFormUIOptions?
+        if let rnCardFormUIOptions = rnUIOptions["cardFormUIOptions"] as? [String: Any] {
+            let rnCardFormUIOptionsData = try (JSONSerialization.data(withJSONObject: rnCardFormUIOptions))
+            let rnCardFormUIOptions = try JSONDecoder().decode(PrimerCardFormUIOptionsRN.self, from: rnCardFormUIOptionsData)
+            cardFormUIOptions = rnCardFormUIOptions.asPrimerCardFormUIOptions()
+        }
 
         uiOptions = PrimerUIOptions(
           isInitScreenEnabled: rnUIOptions["isInitScreenEnabled"] as? Bool,
@@ -167,7 +174,9 @@ extension PrimerSettings {
             }
             return nil
           }(),
-          theme: theme)
+          cardFormUIOptions: cardFormUIOptions,
+          theme: theme
+          )
       }
 
       var debugOptions: PrimerDebugOptions?
@@ -181,7 +190,7 @@ extension PrimerSettings {
         (settingsJson["clientSessionCachingEnabled"] as? Bool) {
         clientSessionCachingEnabled = clientSessionCachingEnabledValue
       }
-      
+
       var apiVersion: PrimerApiVersion?
       if let apiVersionValue = (settingsJson["apiVersion"] as? String) {
         switch (apiVersionValue) {

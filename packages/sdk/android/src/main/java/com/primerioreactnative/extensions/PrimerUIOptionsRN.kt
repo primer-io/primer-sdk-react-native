@@ -2,6 +2,7 @@ package com.primerioreactnative.extensions
 
 import com.primerioreactnative.datamodels.PrimerUIOptionsRN
 import io.primer.android.data.settings.DismissalMechanism
+import io.primer.android.ui.settings.PrimerCardFormUIOptions
 import io.primer.android.ui.settings.PrimerUIOptions
 
 @OptIn(kotlin.ExperimentalStdlibApi::class)
@@ -19,5 +20,6 @@ internal fun PrimerUIOptionsRN.toPrimerUIOptions() =
                 }
             }
         }.toList().takeIf { it.isNotEmpty() } ?: listOf(DismissalMechanism.GESTURES),
-        theme.toPrimerTheme()
+        theme.toPrimerTheme(),
+        cardFormUIOptions.toPrimerCardFormUIOptions()
     )
