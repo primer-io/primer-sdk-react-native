@@ -174,8 +174,8 @@ extension PrimerSettings {
             }
             return nil
           }(),
-          theme: theme,
-          cardFormUIOptions: cardFormUIOptions
+          cardFormUIOptions: cardFormUIOptions,
+          theme: theme
           )
       }
 
