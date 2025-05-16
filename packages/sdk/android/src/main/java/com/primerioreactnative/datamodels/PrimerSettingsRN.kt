@@ -9,6 +9,7 @@ import io.primer.android.core.data.datasource.PrimerApiVersion
 import io.primer.android.data.settings.GooglePayButtonStyle
 import io.primer.android.data.settings.PrimerPaymentHandling
 import io.primer.android.data.settings.PrimerSettings
+import io.primer.android.ui.settings.PrimerCardFormUIOptions
 import io.primer.android.ui.settings.PrimerTheme
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -126,8 +127,14 @@ data class ColorRN(
 
 @Serializable
 data class PrimerCardFormUIOptionsRN(
-    var payButtonAddNewCard: Boolean = true,
-)
+    var payButtonAddNewCard: Boolean = true
+) {
+    fun toPrimerCardFormUIOptions(): PrimerCardFormUIOptions {
+        return PrimerCardFormUIOptions(
+            payButtonAddNewCard = payButtonAddNewCard
+        )
+    }
+}
 
 @Serializable
 data class PrimerDebugOptionsRN(val is3DSSanityCheckEnabled: Boolean = true)

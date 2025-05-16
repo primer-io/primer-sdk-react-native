@@ -145,6 +145,13 @@ extension PrimerSettings {
           let rnTheme = try JSONDecoder().decode(PrimerThemeRN.self, from: rnThemeData)
           theme = rnTheme.asPrimerTheme()
         }
+        
+        var cardFormUIOptions: PrimerCardFormUIOptions?
+        if let rnCardFormUIOptions = rnUIOptions["cardFormUIOptions"] as? [String: Any] {
+            let rnCardFormUIOptionsData = try (JSONSerialization.data(withJSONObject: rnCardFormUIOptions))
+            let rnCardFormUIOptions = try JSONDecoder().decode(PrimerCardFormUIOptionsRN.self, from: rnCardFormUIOptionsData)
+            cardFormUIOptions = rnCardFormUIOptions.asPrimerCardFormUIOptions()
+        }
 
         uiOptions = PrimerUIOptions(
           isInitScreenEnabled: rnUIOptions["isInitScreenEnabled"] as? Bool,
@@ -168,9 +175,7 @@ extension PrimerSettings {
             return nil
           }(),
           theme: theme,
-          cardFormUIOptions: {
-            payButtonAddNewCard: true
-          }
+          cardFormUIOptions: cardFormUIOptions
           )
       }
 
