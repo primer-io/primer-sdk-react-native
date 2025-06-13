@@ -12,14 +12,14 @@ PODS:
   - fmt (6.2.1)
   - glog (0.3.5)
   - primer-io-react-native (2.32.2):
-    - PrimerSDK (= 2.37.0)
+    - PrimerSDK (= 2.38.2)
     - React-Core
   - Primer3DS (2.4.3)
   - PrimerIPay88MYSDK (0.1.7)
   - PrimerKlarnaSDK (1.1.1)
-  - PrimerSDK (2.37.0):
-    - PrimerSDK/Core (= 2.37.0)
-  - PrimerSDK/Core (2.37.0)
+  - PrimerSDK (2.38.2):
+    - PrimerSDK/Core (= 2.38.2)
+  - PrimerSDK/Core (2.38.2)
   - PrimerStripeSDK (1.0.0)
   - RCT-Folly (2021.07.22.00):
     - boost
@@ -400,7 +400,7 @@ PODS:
     - React-jsi (= 0.72.0)
     - React-logger (= 0.72.0)
     - React-perflogger (= 0.72.0)
-  - RNScreens (3.31.1):
+  - RNScreens (3.33.0):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - React-RCTImage
@@ -560,11 +560,11 @@ SPEC CHECKSUMS:
   FBReactNativeSpec: 6e7e74b1ed7f0a1a469a82a67521b33285f5fef3
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
-  primer-io-react-native: 8ed379b65332b9117fbcd467530f3ebd238fa2cf
+  primer-io-react-native: 3c05399a0611394a100f601f8b5fa679fc462f9b
   Primer3DS: 735d81b81d81d67a5fadef8a193074d60bf87e99
   PrimerIPay88MYSDK: 436ee0be7e2c97e4e81456ccddee20175e9e3c4d
   PrimerKlarnaSDK: 564105170cc7b467bf95c31851813ea41c468f8b
-  PrimerSDK: dd73fc5f93316fbf77c29d6e9899c95f1a995149
+  PrimerSDK: 7af175852c083c4e26d2fde68b2ed8ee3fc3130e
   PrimerStripeSDK: c37d4e7c1b5256d67d4890c4cc4b38ddc9427489
   RCT-Folly: 8dc08ca5a393b48b1c523ab6220dfdcc0fe000ad
   RCTRequired: 656ef0536dd60a9740961ade6a64ba0cb0572d2b
@@ -600,7 +600,7 @@ SPEC CHECKSUMS:
   React-runtimescheduler: 8a0c6a86483c945de0e2c251ea70d9cc4bf4c48e
   React-utils: 2db8c09b02121a1fdbe6cc1522ae766439a2f27c
   ReactCommon: eab2561b28e817cc15ce5c894469d916c62b89e1
-  RNScreens: 448026fcd1beb88770b0a67a871a3d1bf9cdde0a
+  RNScreens: 5d7c5153dc226d487c9b65a96aebab026bbd8d83
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   Yoga: 1d6727ed193122f6adaf435c3de1a768326ff83b
 
