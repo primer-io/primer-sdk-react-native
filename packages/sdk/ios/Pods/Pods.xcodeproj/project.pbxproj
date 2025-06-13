@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		AF51EDBE29DA4974A438B7E1C5B38168 /* Pods-ReactNative-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 21494CACF6F2E013D9CB5866F5B70547 /* Pods-ReactNative-dummy.m */; };
+		EAA82327EE7629CA802A238F0DC59B9D /* Pods-ReactNative-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 21494CACF6F2E013D9CB5866F5B70547 /* Pods-ReactNative-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -21,7 +21,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		6B81E220A5B41DC123E8852A343C4B5D /* Frameworks */ = {
+		D4ED3A920EB8C47DA5CA5D38633C5457 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -80,7 +80,7 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		94D913853E7BB9C072C3E94EA0AC4F7B /* Headers */ = {
+		677651E04C1EAFFD55608E3BD580794D /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -92,11 +92,11 @@
 /* Begin PBXNativeTarget section */
 		596E717FE57719548E74A692D33C9E22 /* Pods-ReactNative */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 81D287D16B111870D57BDB5290B140F3 /* Build configuration list for PBXNativeTarget "Pods-ReactNative" */;
+			buildConfigurationList = F24F8A3C4571C34602E58D736B534F68 /* Build configuration list for PBXNativeTarget "Pods-ReactNative" */;
 			buildPhases = (
-				94D913853E7BB9C072C3E94EA0AC4F7B /* Headers */,
-				DD2126477155EA88B2BB9D4FE18AD20F /* Sources */,
-				6B81E220A5B41DC123E8852A343C4B5D /* Frameworks */,
+				677651E04C1EAFFD55608E3BD580794D /* Headers */,
+				A23A1D13EC3B41E1E1702D0D8FF63A87 /* Sources */,
+				D4ED3A920EB8C47DA5CA5D38633C5457 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -113,8 +113,8 @@
 		BFDFE7DC352907FC980B868725387E98 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1500;
-				LastUpgradeCheck = 1500;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
 			};
 			buildConfigurationList = 4821239608C13582E20E6DA73FD5F1F9 /* Build configuration list for PBXProject "Pods" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -125,6 +125,8 @@
 				en,
 			);
 			mainGroup = CF1408CF629C7361332E53B88F7BD30C;
+			minimizedProjectReferenceProxies = 0;
+			preferredProjectObjectVersion = 77;
 			productRefGroup = CB20B21090D4AD0B23B383165FD7FC35 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -135,62 +137,17 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		DD2126477155EA88B2BB9D4FE18AD20F /* Sources */ = {
+		A23A1D13EC3B41E1E1702D0D8FF63A87 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AF51EDBE29DA4974A438B7E1C5B38168 /* Pods-ReactNative-dummy.m in Sources */,
+				EAA82327EE7629CA802A238F0DC59B9D /* Pods-ReactNative-dummy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		11F75A457AFABF4E2091DD13855D8455 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2C33F1119B4C5BFECC9324C0F764B631 /* Pods-ReactNative.debug.xcconfig */;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				MACH_O_TYPE = staticlib;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PODS_ROOT = "$(SRCROOT)";
-				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		23CA96C2C18780AB87596551DB8B3060 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2F8BD7D813BBFC9A1ECFDC65BFA4EB65 /* Pods-ReactNative.release.xcconfig */;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				MACH_O_TYPE = staticlib;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PODS_ROOT = "$(SRCROOT)";
-				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 		8DE5143C03248BB6CD542DE3963D6F3A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -319,6 +276,55 @@
 			};
 			name = Release;
 		};
+		A2D63CC0E48C14C948F2DC7DC9555A08 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2F8BD7D813BBFC9A1ECFDC65BFA4EB65 /* Pods-ReactNative.release.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				ENABLE_MODULE_VERIFIER = NO;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				MACH_O_TYPE = staticlib;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		D3D4DC4D657B5BDF53681C6E78395743 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2C33F1119B4C5BFECC9324C0F764B631 /* Pods-ReactNative.debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				ENABLE_MODULE_VERIFIER = NO;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				MACH_O_TYPE = staticlib;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -331,11 +337,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		81D287D16B111870D57BDB5290B140F3 /* Build configuration list for PBXNativeTarget "Pods-ReactNative" */ = {
+		F24F8A3C4571C34602E58D736B534F68 /* Build configuration list for PBXNativeTarget "Pods-ReactNative" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				11F75A457AFABF4E2091DD13855D8455 /* Debug */,
-				23CA96C2C18780AB87596551DB8B3060 /* Release */,
+				D3D4DC4D657B5BDF53681C6E78395743 /* Debug */,
+				A2D63CC0E48C14C948F2DC7DC9555A08 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
