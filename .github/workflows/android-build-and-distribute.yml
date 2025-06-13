@@ -43,6 +43,9 @@ jobs:
         run: |
           echo "export const STRIPE_ACH_PUBLISHABLE_KEY = '${{ secrets.STRIPE_PUBLISHABLE_KEY }}'" > packages/example/src/Keys.ts
 
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@8379f6a1328ee0e06e2bb424dadb7b159856a326 # v4.4.0
+
       - name: Distribute the React Native Android app on Appetize and upload to BrowserStack 🚀
         run: bundle exec fastlane android appetize_build_and_upload
         env:
