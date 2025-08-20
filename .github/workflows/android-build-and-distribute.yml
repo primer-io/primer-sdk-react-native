@@ -43,7 +43,7 @@ jobs:
         run: |
           echo "export const STRIPE_ACH_PUBLISHABLE_KEY = '${{ secrets.STRIPE_PUBLISHABLE_KEY }}'" > packages/example/src/Keys.ts
 
-      - name: Distribute the React Native Android app on Appetize and upload to BrowserStack 🚀
+      - name: Distribute the React Native Android app on Appetize 🚀
         run: bundle exec fastlane android appetize_build_and_upload
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
@@ -51,14 +51,6 @@ jobs:
           APPETIZE_API_TOKEN: ${{ secrets.APPETIZE_API_TOKEN }}
           BROWSERSTACK_USERNAME: ${{secrets.BROWSERSTACK_USERNAME}}
           BROWSERSTACK_ACCESS_KEY: ${{secrets.BROWSERSTACK_ACCESS_KEY}}
-
-      - name: Save Browserstack ID
-        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
-        id: save_browserstack_id_step
-        with:
-          name: browserstack_id
-          path: /var/tmp/browserstack_id.txt
-          if-no-files-found: error
 
       - uses: peter-evans/find-comment@3eae4d37986fb5a8592848f6a574fdf654e61f9e # v3.1.0
         if: ${{ success() }}

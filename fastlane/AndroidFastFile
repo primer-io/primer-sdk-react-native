@@ -75,13 +75,6 @@ platform :android do
             timeout: 300
         )
        update_deployment_url(lane_context[SharedValues::APPETIZE_APP_URL])
-
-       upload_to_browserstack_app_automate(
-         browserstack_username: ENV["BROWSERSTACK_USERNAME"],
-         browserstack_access_key: ENV["BROWSERSTACK_ACCESS_KEY"]
-       )
-
-       save_browserstack_id(browserstack_id: ENV['BROWSERSTACK_APP_ID'])
     end
 
     lane :run_unit_tests_coverage do
