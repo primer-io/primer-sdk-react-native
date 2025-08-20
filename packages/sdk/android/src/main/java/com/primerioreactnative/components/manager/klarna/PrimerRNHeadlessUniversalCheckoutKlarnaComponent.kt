@@ -256,7 +256,7 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaComponent(
                 Json.encodeToString(paymentCategory.toHashMap() as Map<String, String>),
             )
 
-        val activity = currentActivity
+        val activity = reactContext.currentActivity
 
         if (activity == null) {
             val exception = ErrorTypeRN.NativeBridgeFailed errorTo MISSING_ACTIVITY_ERROR
