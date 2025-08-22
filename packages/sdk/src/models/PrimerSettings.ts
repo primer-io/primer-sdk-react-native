@@ -178,11 +178,14 @@ interface IPrimerKlarnaOptions {
 
 //----------------------------------------
 
+export type PrimerAppearanceMode = 'SYSTEM' | 'LIGHT' | 'DARK';
+
 interface IPrimerUIOptions {
   isInitScreenEnabled?: boolean;
   isSuccessScreenEnabled?: boolean;
   isErrorScreenEnabled?: boolean;
   dismissalMechanism?: DismissalMechanism[];
+  appearanceMode?: PrimerAppearanceMode;
   theme?: IPrimerTheme;
   cardFormUIOptions?: IPrimerCardFormUIOptions;
 }

@@ -8,6 +8,7 @@ import {
 import {appPaymentParameters} from '../models/IClientSessionRequestBody';
 import type {IPayment} from '../models/IPayment';
 import {getPaymentHandlingStringVal} from '../network/Environment';
+import {customAppearanceMode} from './SettingsScreen';
 import {ActivityIndicator} from 'react-native';
 import {
   CheckoutAdditionalInfo,
@@ -58,6 +59,9 @@ export default HeadlessCheckoutVaultScreen = (props: any) => {
       android: {
         redirectScheme: 'primer',
       },
+    },
+    uiOptions: {
+      appearanceMode: customAppearanceMode,
     },
     debugOptions: {
       is3DSSanityCheckEnabled: false,
