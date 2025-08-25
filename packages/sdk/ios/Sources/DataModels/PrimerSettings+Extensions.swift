@@ -145,14 +145,14 @@ extension PrimerSettings {
           let rnTheme = try JSONDecoder().decode(PrimerThemeRN.self, from: rnThemeData)
           theme = rnTheme.asPrimerTheme()
         }
-        
+
         var cardFormUIOptions: PrimerCardFormUIOptions?
         if let rnCardFormUIOptions = rnUIOptions["cardFormUIOptions"] as? [String: Any] {
             let rnCardFormUIOptionsData = try (JSONSerialization.data(withJSONObject: rnCardFormUIOptions))
             let rnCardFormUIOptions = try JSONDecoder().decode(PrimerCardFormUIOptionsRN.self, from: rnCardFormUIOptionsData)
             cardFormUIOptions = rnCardFormUIOptions.asPrimerCardFormUIOptions()
         }
-        
+
         var appearanceMode: PrimerSDK.PrimerAppearanceMode?
         if let rnAppearanceMode = rnUIOptions["appearanceMode"] as? String {
           switch rnAppearanceMode {
@@ -208,18 +208,17 @@ extension PrimerSettings {
 
       var apiVersion: PrimerApiVersion?
       if let apiVersionValue = (settingsJson["apiVersion"] as? String) {
-        switch (apiVersionValue) {
+        switch apiVersionValue {
         case "2.3":
           apiVersion = PrimerApiVersion.V2_3
-          break
         case "2.4":
           apiVersion = PrimerApiVersion.V2_4
-          break
         case "latest":
           apiVersion = PrimerApiVersion.latest
-          break
         default:
-          throw RNTNativeError(errorId: "native-ios", errorDescription: "The value of the 'apiVersion' string is invalid.", recoverySuggestion: "Provide a valid 'apiVersion' string")
+          throw RNTNativeError(errorId: "native-ios",
+                               errorDescription: "The value of the 'apiVersion' string is invalid.",
+                               recoverySuggestion: "Provide a valid 'apiVersion' string")
         }
       }
 
