@@ -153,7 +153,7 @@ extension PrimerSettings {
             cardFormUIOptions = rnCardFormUIOptions.asPrimerCardFormUIOptions()
         }
         
-        var appearanceMode: PrimerAppearanceMode?
+        var appearanceMode: PrimerSDK.PrimerAppearanceMode?
         if let rnAppearanceMode = rnUIOptions["appearanceMode"] as? String {
           switch rnAppearanceMode {
           case "LIGHT":

@@ -162,14 +162,15 @@ class RNTPrimer: RCTEventEmitter {
             PrimerSDK.Primer.shared.showPaymentMethod(
                 paymentMethod,
                 intent: primerIntent,
-                clientToken: clientToken
-            ) { err in
-                if let err = err {
-                    rejecter(err.rnError["errorId"]!, err.rnError["description"], err)
-                } else {
-                    resolver(nil)
+                clientToken: clientToken,
+                completion: { err in
+                    if let err = err {
+                        rejecter(err.rnError["errorId"]!, err.rnError["description"], err)
+                    } else {
+                        resolver(nil)
+                    }
                 }
-            }
+            )
         }
     }
 
