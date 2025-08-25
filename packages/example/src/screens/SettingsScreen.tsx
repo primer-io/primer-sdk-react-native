@@ -46,6 +46,7 @@ export interface AppPaymentParameters {
 
 export let customApiKey: string | undefined;
 export let customClientToken: string | undefined;
+export let customAppearanceMode: 'SYSTEM' | 'LIGHT' | 'DARK' = 'SYSTEM';
 
 enum CheckoutVaultingType {
   NONE,
@@ -80,6 +81,9 @@ const SettingsScreen = ({navigation}) => {
   );
   const [paymentHandling, setPaymentHandling] = React.useState<PaymentHandling>(
     PaymentHandling.Auto,
+  );
+  const [appearanceMode, setAppearanceMode] = React.useState<'SYSTEM' | 'LIGHT' | 'DARK'>(
+    customAppearanceMode,
   );
   const [lineItems, setLineItems] = React.useState<IClientSessionLineItem[]>(
     appPaymentParameters.clientSessionRequestBody.order?.lineItems || [],
@@ -301,6 +305,29 @@ const SettingsScreen = ({navigation}) => {
     );
   };
 
+  const renderAppearanceModeSection = () => {
+    return (
+      <View style={{marginTop: 12, marginBottom: 8}}>
+        <Text style={{...styles.heading1}}>Appearance Mode</Text>
+        <Text style={{...styles.sectionDescription, marginVertical: 4}}>
+          Control SDK appearance independently of system settings
+        </Text>
+        <SegmentedControl
+          style={{marginTop: 6}}
+          values={['System', 'Light', 'Dark']}
+          selectedIndex={appearanceMode === 'SYSTEM' ? 0 : appearanceMode === 'LIGHT' ? 1 : 2}
+          onChange={event => {
+            const selectedIndex = event.nativeEvent.selectedSegmentIndex;
+            const modes: ('SYSTEM' | 'LIGHT' | 'DARK')[] = ['SYSTEM', 'LIGHT', 'DARK'];
+            const selectedMode = modes[selectedIndex];
+            setAppearanceMode(selectedMode);
+            customAppearanceMode = selectedMode;
+          }}
+        />
+      </View>
+    );
+  };
+
   const renderRecaptureCvvSection = () => {
     return (
       <View
@@ -461,6 +488,8 @@ const SettingsScreen = ({navigation}) => {
         {renderEnvironmentSection()}
 
         {renderPaymentHandlingSection()}
+
+        {renderAppearanceModeSection()}
 
         {renderRecaptureCvvSection()}
 

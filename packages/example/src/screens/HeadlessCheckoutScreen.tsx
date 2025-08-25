@@ -8,6 +8,7 @@ import {
 import {appPaymentParameters} from '../models/IClientSessionRequestBody';
 import type {IPayment} from '../models/IPayment';
 import {getPaymentHandlingStringVal} from '../network/Environment';
+import {customAppearanceMode} from './SettingsScreen';
 import {ActivityIndicator} from 'react-native';
 import {
   AssetsManager,
@@ -109,6 +110,9 @@ export const HeadlessCheckoutScreen = (props: any) => {
           buttonType: PrimerGooglePayButtonConstants.Types.Checkout,
         },
       },
+    },
+    uiOptions: {
+      appearanceMode: customAppearanceMode,
     },
     debugOptions: {
       is3DSSanityCheckEnabled: false,

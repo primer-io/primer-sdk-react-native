@@ -6,6 +6,7 @@ import {appPaymentParameters} from '../models/IClientSessionRequestBody';
 import type {IClientSession} from '../models/IClientSession';
 import type {IPayment} from '../models/IPayment';
 import {getPaymentHandlingStringVal} from '../network/Environment';
+import {customAppearanceMode} from './SettingsScreen';
 import {
   createClientSession,
   createPayment,
@@ -305,6 +306,7 @@ const CheckoutScreen = (props: any) => {
       isSuccessScreenEnabled: true,
       isErrorScreenEnabled: true,
       dismissalMechanism: ['gestures', 'closeButton'],
+      appearanceMode: customAppearanceMode,
       theme: {
         // 👇 Uncomment to try theming drop-in checkout
         // colors: {

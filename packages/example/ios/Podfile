@@ -45,7 +45,7 @@ target 'example_0_70_6' do
   )
 
   pod 'primer-io-react-native', :path => '../../sdk'
-  pod 'PrimerSDK'
+  pod 'PrimerSDK', :path => '/Users/boris/primer-sdk-ios'
   pod 'Primer3DS'
   pod 'PrimerIPay88MYSDK'
   pod 'PrimerKlarnaSDK', '1.1.1'

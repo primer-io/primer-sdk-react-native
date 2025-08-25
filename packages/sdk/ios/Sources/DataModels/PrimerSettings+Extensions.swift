@@ -152,6 +152,20 @@ extension PrimerSettings {
             let rnCardFormUIOptions = try JSONDecoder().decode(PrimerCardFormUIOptionsRN.self, from: rnCardFormUIOptionsData)
             cardFormUIOptions = rnCardFormUIOptions.asPrimerCardFormUIOptions()
         }
+        
+        var appearanceMode: PrimerAppearanceMode?
+        if let rnAppearanceMode = rnUIOptions["appearanceMode"] as? String {
+          switch rnAppearanceMode {
+          case "LIGHT":
+            appearanceMode = .light
+          case "DARK":
+            appearanceMode = .dark
+          case "SYSTEM":
+            appearanceMode = .system
+          default:
+            appearanceMode = nil
+          }
+        }
 
         uiOptions = PrimerUIOptions(
           isInitScreenEnabled: rnUIOptions["isInitScreenEnabled"] as? Bool,
@@ -175,6 +189,7 @@ extension PrimerSettings {
             return nil
           }(),
           cardFormUIOptions: cardFormUIOptions,
+          appearanceMode: appearanceMode,
           theme: theme
           )
       }
