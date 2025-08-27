@@ -12,7 +12,7 @@ import PrimerSDK
 class ErrorExtensionTests: XCTestCase {
 
     func testRNErrorForPrimerValidationError() {
-        let error = PrimerValidationError.invalidCardnumber(message: "Invalid card number", userInfo: ["key": "value"], diagnosticsId: "12345")
+        let error = PrimerValidationError.invalidCardnumber(message: "Invalid card number", diagnosticsId: "12345")
 
         let expected: [String: String] = [
             "description": "[invalid-card-number] Invalid card number",
@@ -25,7 +25,7 @@ class ErrorExtensionTests: XCTestCase {
     }
 
     func testRNErrorForPrimerError() {
-        let error = PrimerError.unknown(userInfo: ["test1": "test2"], diagnosticsId: "diagnosticsId123")
+        let error = PrimerError.unknown(diagnosticsId: "diagnosticsId123")
 
         let expected: [String: String] = [
             "description": "[unknown] Something went wrong (diagnosticsId: diagnosticsId123)",
