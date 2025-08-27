@@ -12,14 +12,14 @@ PODS:
   - fmt (6.2.1)
   - glog (0.3.5)
   - primer-io-react-native (2.34.1):
-    - PrimerSDK (= 2.39.2)
+    - PrimerSDK (= 2.40.0)
     - React-Core
   - Primer3DS (2.4.4)
   - PrimerIPay88MYSDK (0.1.7)
   - PrimerKlarnaSDK (1.1.1)
-  - PrimerSDK (2.39.2):
-    - PrimerSDK/Core (= 2.39.2)
-  - PrimerSDK/Core (2.39.2)
+  - PrimerSDK (2.40.0):
+    - PrimerSDK/Core (= 2.40.0)
+  - PrimerSDK/Core (2.40.0)
   - PrimerStripeSDK (1.0.0)
   - RCT-Folly (2021.07.22.00):
     - boost
@@ -417,7 +417,7 @@ DEPENDENCIES:
   - Primer3DS
   - PrimerIPay88MYSDK
   - PrimerKlarnaSDK (= 1.1.1)
-  - PrimerSDK (from `/Users/boris/primer-sdk-ios`)
+  - PrimerSDK
   - PrimerStripeSDK (= 1.0.0)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
@@ -463,6 +463,7 @@ SPEC REPOS:
     - Primer3DS
     - PrimerIPay88MYSDK
     - PrimerKlarnaSDK
+    - PrimerSDK
     - PrimerStripeSDK
     - SocketRocket
 
@@ -479,8 +480,6 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
   primer-io-react-native:
     :path: "../../sdk"
-  PrimerSDK:
-    :path: "/Users/boris/primer-sdk-ios"
   RCT-Folly:
     :podspec: "../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTRequired:
@@ -561,11 +560,11 @@ SPEC CHECKSUMS:
   FBReactNativeSpec: 6e7e74b1ed7f0a1a469a82a67521b33285f5fef3
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
-  primer-io-react-native: aba25c9c278d4f11e3b0ac58545fd059331e1233
+  primer-io-react-native: db5e276004a57bd7c4e139633d30eb3bf8f4c685
   Primer3DS: 4ef5bcb529bc538d223419a266290ac35db2b4d5
   PrimerIPay88MYSDK: 436ee0be7e2c97e4e81456ccddee20175e9e3c4d
   PrimerKlarnaSDK: 564105170cc7b467bf95c31851813ea41c468f8b
-  PrimerSDK: 0895f668c97b0581a3a6024b19e6a950f2f57da7
+  PrimerSDK: 7757da25df495530d2da62752627728ae87fe3a0
   PrimerStripeSDK: c37d4e7c1b5256d67d4890c4cc4b38ddc9427489
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
   RCTRequired: 656ef0536dd60a9740961ade6a64ba0cb0572d2b
@@ -605,6 +604,6 @@ SPEC CHECKSUMS:
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   Yoga: 1d6727ed193122f6adaf435c3de1a768326ff83b
 
-PODFILE CHECKSUM: 033562ab3d71415090e1177fdcf7f1ddb7832961
+PODFILE CHECKSUM: 731dc7a0b3d8b08a2c4397e64edb33a49c08112d
 
 COCOAPODS: 1.16.2
