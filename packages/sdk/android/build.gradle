@@ -182,7 +182,7 @@ dependencies {
   api 'com.facebook.react:react-native:+'
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
   implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3"
-  implementation 'io.primer:android:2.41.0'
+  implementation 'io.primer:android:2.42.0'
   testImplementation 'io.mockk:mockk:1.14.2'
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
