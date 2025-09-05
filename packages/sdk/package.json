@@ -53,6 +53,7 @@
     "@tsconfig/react-native": "^3.0.0",
     "@types/jest": "^26.0.0",
     "@types/react": "^19.0.0",
+    "@types/react-native": "0.72.2",
     "commitlint": "^11.0.0",
     "eslint": "^7.0.0",
     "eslint-config-prettier": "^7.0.0",
