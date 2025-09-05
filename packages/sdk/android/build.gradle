@@ -1,7 +1,7 @@
 buildscript {
   // Buildscript is evaluated before everything else so we can't use getExtOrDefault
   def kotlin_version = rootProject.ext.has('kotlinVersion') ? rootProject.ext.get('kotlinVersion') : project.properties['ReactNative_kotlinVersion']
-  def kover_version = '0.7.6'
+  def kover_version = '0.9.1'
   repositories {
     google()
     mavenCentral()
