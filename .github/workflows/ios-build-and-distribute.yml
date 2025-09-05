@@ -85,7 +85,7 @@ jobs:
 
       - name: Create main.jsbundle
         run: |
-          yarn --cwd packages/example build:ios
+          yarn --cwd packages/example build:ios:dev
 
       - name: Distribute the React Native iOS app on Appetize 🚀
         run: |

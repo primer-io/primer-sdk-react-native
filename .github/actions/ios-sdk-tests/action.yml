@@ -65,7 +65,7 @@ runs:
     - name: Create main.jsbundle
       shell: bash
       run: |
-        yarn --cwd packages/example build:ios
+        yarn --cwd packages/example build:ios:dev
 
     - name: Test SDK bridge
       shell: bash
