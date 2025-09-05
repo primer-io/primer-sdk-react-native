@@ -63,7 +63,7 @@ jobs:
 
   run-unit-tests-ios:
     name: Run iOS unit tests
-    runs-on: macos-13-large
+    runs-on: macos-14-xlarge
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
