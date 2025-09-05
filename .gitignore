@@ -3,7 +3,7 @@
 .DS_Store
 
 # iOS
-ios/Pods
+**/Pods/
 
 # XDE
 .expo/
@@ -40,10 +40,9 @@ local.properties
 android.iml
 *.hprof
 
-# Cocoapods
-#
+# Ruby / CocoaPods
 example/ios/Pods
-
+/vendor/bundle/
 # node.js
 #
 node_modules/
@@ -56,7 +55,7 @@ buck-out/
 \.buckd/
 android/app/libs
 android/keystores/debug.keystore
-
+.kotlin/
 # Expo
 .expo/*
 
@@ -71,8 +70,15 @@ lib/
 **/coverage.json
 .nyc_output/
 
-
 fastlane/*.json
 
 # Secrets
 Keys.ts
+
+# Yarn
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions

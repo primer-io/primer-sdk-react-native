@@ -367,6 +367,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
       // updateLogs(`\nℹ️ Available payment methods:\n${JSON.stringify(availablePaymentMethods, null, 2)}`);
       const assetsManager = new AssetsManager();
       const resources = await assetsManager.getPaymentMethodResources();
+      console.log(resources);
       setPaymentMethodsResources(resources);
     } catch (err) {
       console.error(err);
@@ -508,6 +509,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
   };
 
   const renderPaymentMethodsUI = () => {
+    console.log(paymentMethodsResources);
     if (!paymentMethodsResources) {
       return null;
     }
