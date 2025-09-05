@@ -4,7 +4,7 @@ on: pull_request
 jobs:
 
   build-and-upload-to-appetize:
-    runs-on: macos-14-xlarge
+    runs-on: macos-13-large
     timeout-minutes: 30
     name: Build and upload app to Appetize 🚀
     steps:
