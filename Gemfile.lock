@@ -303,6 +303,7 @@ GEM
     zeitwerk (2.6.18)
 
 PLATFORMS
+  arm64-darwin-22
   universal-darwin-24
   x86_64-darwin-20
   x86_64-linux
