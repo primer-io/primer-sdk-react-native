@@ -1,5 +1,6 @@
 package com.primerioreactnative.components.manager.asset
 
+import android.util.Log
 import androidx.core.content.ContextCompat
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
