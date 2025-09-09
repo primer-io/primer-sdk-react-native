@@ -248,8 +248,8 @@ class PrimerRN(private val reactContext: ReactApplicationContext, private val js
         name: String,
         data: JSONObject?,
     ) {
-        val params = prepareData(data)
-        reactApplicationContext.getJSModule(
+      val params = prepareData(data)
+      reactContext.getJSModule(
             DeviceEventManagerModule.RCTDeviceEventEmitter::class.java,
         ).emit(name, params)
     }

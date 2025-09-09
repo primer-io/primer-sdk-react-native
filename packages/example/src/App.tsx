@@ -1,5 +1,9 @@
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
+import {
+  SafeAreaProvider,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import SettingsScreen from './screens/SettingsScreen';
 import CheckoutScreen from './screens/CheckoutScreen';
@@ -24,38 +28,40 @@ LogBox.ignoreLogs([
 
 const App = () => {
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Settings" component={SettingsScreen} />
-        <Stack.Screen name="NewLineItem" component={NewLineItemScreen} />
-        <Stack.Screen name="Checkout" component={CheckoutScreen} />
-        <Stack.Screen name="HUC" component={HeadlessCheckoutScreen} />
-        <Stack.Screen name="HUCVault" component={HeadlessCheckoutVaultScreen} />
-        <Stack.Screen name="Result" component={ResultScreen} />
-        <Stack.Screen name="RawCardData" component={RawCardDataScreen} />
-        <Stack.Screen
-          name="RawPhoneNumberData"
-          component={RawPhoneNumberDataScreen}
-        />
-        <Stack.Screen
-          name="RawAdyenBancontactCard"
-          component={RawAdyenBancontactCardScreen}
-        />
-        <Stack.Screen
-          name="RawRetailOutlet"
-          component={RawRetailOutletScreen}
-        />
-        <Stack.Screen name="Klarna" component={HeadlessCheckoutKlarnaScreen} />
-        <Stack.Screen
-          name="HeadlessCheckoutWithRedirect"
-          component={HeadlessCheckoutWithRedirect}
-        />
-        <Stack.Screen
-          name="HeadlessCheckoutStripeAchScreen"
-          component={HeadlessCheckoutStripeAchScreen}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <SafeAreaProvider>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen name="Settings" component={SettingsScreen} />
+          <Stack.Screen name="NewLineItem" component={NewLineItemScreen} />
+          <Stack.Screen name="Checkout" component={CheckoutScreen} />
+          <Stack.Screen name="HUC" component={HeadlessCheckoutScreen} />
+          <Stack.Screen name="HUCVault" component={HeadlessCheckoutVaultScreen} />
+          <Stack.Screen name="Result" component={ResultScreen} />
+          <Stack.Screen name="RawCardData" component={RawCardDataScreen} />
+          <Stack.Screen
+            name="RawPhoneNumberData"
+            component={RawPhoneNumberDataScreen}
+          />
+          <Stack.Screen
+            name="RawAdyenBancontactCard"
+            component={RawAdyenBancontactCardScreen}
+          />
+          <Stack.Screen
+            name="RawRetailOutlet"
+            component={RawRetailOutletScreen}
+          />
+          <Stack.Screen name="Klarna" component={HeadlessCheckoutKlarnaScreen} />
+          <Stack.Screen
+            name="HeadlessCheckoutWithRedirect"
+            component={HeadlessCheckoutWithRedirect}
+          />
+          <Stack.Screen
+            name="HeadlessCheckoutStripeAchScreen"
+            component={HeadlessCheckoutStripeAchScreen}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 };
 
