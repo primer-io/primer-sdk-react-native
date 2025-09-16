@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">example</string>
+
+    <string name="stripe_ach_full_mandate_text">Would you like to accept this mandate?</string> 
+</resources>

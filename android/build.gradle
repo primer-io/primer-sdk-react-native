@@ -1,0 +1,136 @@
+buildscript {
+  // Buildscript is evaluated before everything else so we can't use getExtOrDefault
+  def kotlin_version = rootProject.ext.has('kotlinVersion') ? rootProject.ext.get('kotlinVersion') : project.properties['ReactNative_kotlinVersion']
+  def kover_version = '0.9.1'
+  repositories {
+    google()
+    mavenCentral()
+    mavenLocal()
+    maven {
+      url "https://plugins.gradle.org/m2/"
+    }
+  }
+
+  dependencies {
+    classpath 'com.android.tools.build:gradle:8.13.0'
+    // noinspection DifferentKotlinGradleVersion
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
+    classpath "org.jetbrains.kotlinx:kover-gradle-plugin:$kover_version"
+    classpath "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.8"
+  }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: "com.facebook.react"
+apply plugin: 'kotlinx-serialization'
+apply plugin: 'io.gitlab.arturbosch.detekt'
+apply from: "./config/coverage-scripts/kover.gradle"
+
+def getExtOrDefault(name) {
+  return rootProject.ext.has(name) ? rootProject.ext.get(name) : project.properties['ReactNative_' + name]
+}
+
+def getExtOrIntegerDefault(name) {
+  return rootProject.ext.has(name) ? rootProject.ext.get(name) : (project.properties['ReactNative_' + name]).toInteger()
+}
+
+java {
+  toolchain {
+    languageVersion.set(JavaLanguageVersion.of(17))
+  }
+}
+
+android {
+  group 'io.primer'
+  namespace "com.primerioreactnative"
+  compileSdkVersion getExtOrIntegerDefault('compileSdkVersion')
+  defaultConfig {
+    minSdkVersion 21
+    targetSdkVersion getExtOrIntegerDefault('targetSdkVersion')
+
+    testInstrumentationRunnerArguments runnerBuilder: 'de.mannodermaus.junit5.AndroidJUnit5Builder'
+    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+  }
+
+  buildFeatures {
+    buildConfig true
+  }
+
+  buildTypes {
+    debug {
+      consumerProguardFiles 'consumer-rules.pro'
+    }
+    release {
+      consumerProguardFiles 'consumer-rules.pro'
+      minifyEnabled false
+    }
+  }
+  lintOptions {
+    disable 'GradleCompatible'
+  }
+  kotlinOptions {
+    freeCompilerArgs += '-Xjvm-default=all'
+  }
+  testOptions {
+    execution = 'ANDROIDX_TEST_ORCHESTRATOR'
+
+    unitTests.all {
+      useJUnitPlatform()
+    }
+  }
+
+  sourceSets {
+    main {
+      java.srcDirs += [
+        "generated/java",
+        "generated/jni"
+      ]
+    }
+  }
+}
+
+repositories {
+  mavenLocal()
+  mavenCentral()
+  google()
+}
+
+detekt {
+    buildUponDefaultConfig = true
+    def defaultConfig = file("$rootDir/tooling/code-analysis/detekt.yml")
+
+    if (defaultConfig.exists()) {
+      config.setFrom(files(defaultConfig))
+    }
+
+    debug = true
+    parallel = true
+    disableDefaultRuleSets = false
+
+    ignoredBuildTypes = ["debug"]
+
+    reports {
+        html.required.set(true)
+        xml.required.set(false)
+        txt.required.set(true)
+        sarif.required.set(true)
+    }
+}
+
+def kotlin_version = getExtOrDefault('kotlinVersion')
+
+dependencies {
+  detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.8")
+  // noinspection GradleDynamicVersion
+  implementation 'com.facebook.react:react-native:+'
+  implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+  implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3"
+  implementation 'io.primer:android:2.42.2'
+  testImplementation 'io.mockk:mockk:1.14.2'
+  testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
+  testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
+  testImplementation 'org.junit.jupiter:junit-jupiter-params:5.10.2'
+  testImplementation 'de.mannodermaus.junit5:android-test-runner:1.3.0'
+}

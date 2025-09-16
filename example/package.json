@@ -1,0 +1,67 @@
+{
+  "name": "@primer-io/react-native-example-0_70_6",
+  "description": "Example app for @primer-io/react-native",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "start": "react-native start",
+    "test": "jest",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "build:ios:dev": "npx react-native bundle --entry-file='../sdk/index.js' --bundle-output='./ios/main.jsbundle' --dev=true --platform='ios' --assets-dest='./ios'",
+    "build:ios:release": "npx react-native bundle --entry-file='../sdk/index.js' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios'",
+    "build:android:dev": " npx react-native bundle --platform android --dev true --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res && npx react-native run-android",
+    "build:android:release": "npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res && npx react-native run-android"
+  },
+  "dependencies": {
+    "@react-native-segmented-control/segmented-control": "^2.4.0",
+    "@react-native/new-app-screen": "0.81.1",
+    "@react-navigation/native": "^6.1.1",
+    "@react-navigation/native-stack": "^6.9.6",
+    "add": "^2.0.6",
+    "axios": "^1.2.1",
+    "babel-preset-react-native": "^4.0.1",
+    "react": "19.1.0",
+    "react-native": "0.81.1",
+    "react-native-loading-spinner-overlay": "^3.0.1",
+    "react-native-safe-area-context": "^5.6.1",
+    "react-native-safe-area-view": "^1.1.1",
+    "react-native-screens": "4.16.0",
+    "slack-message-builder": "^1.2.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@babel/preset-env": "^7.25.3",
+    "@babel/runtime": "^7.25.0",
+    "@react-native-community/cli": "20.0.0",
+    "@react-native-community/cli-platform-android": "20.0.0",
+    "@react-native-community/cli-platform-ios": "20.0.0",
+    "@react-native/babel-preset": "0.81.1",
+    "@react-native/eslint-config": "0.81.1",
+    "@react-native/metro-config": "0.81.1",
+    "@react-native/typescript-config": "0.81.1",
+    "@types/jest": "^29.5.13",
+    "@types/react": "^19.1.0",
+    "@types/react-test-renderer": "^19.1.0",
+    "eslint": "^8.19.0",
+    "eslint-plugin-prettier": "5.2.1",
+    "jest": "^29.6.3",
+    "prettier": "2.8.8",
+    "react-test-renderer": "19.1.0"
+  },
+  "jest": {
+    "preset": "react-native",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
