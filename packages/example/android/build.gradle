@@ -26,8 +26,7 @@ buildscript {
         reactNativeDir = rootProject.file("../../../node_modules/react-native/")
         codegenDir = rootProject.file("../../../node_modules/@react-native/codegen/")
         cliFile = rootProject.file("../../../node_modules/react-native/cli.js")
-        hermesCommand = rootProject.file("../../../node_modules/react-native/sdks/hermesc").path
-        println(rootProject.file("../../../node_modules/react-native/sdks/hermesc").path)
+        hermesCommand = rootProject.file("../../../node_modules/react-native/sdks/hermesc/linux64-bin/hermesc").path
       }
     }
   }
