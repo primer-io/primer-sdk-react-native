@@ -1,6 +1,5 @@
 import * as React from 'react';
 import {View, Text, useColorScheme, TouchableOpacity} from 'react-native';
-import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {styles} from '../styles';
 import {appPaymentParameters} from '../models/IClientSessionRequestBody';
 import type {IClientSession} from '../models/IClientSession';
@@ -51,7 +50,7 @@ const CheckoutScreen = (props: any) => {
   const [, setError] = React.useState<Error | null>(null);
 
   const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+    backgroundColor: isDarkMode ? '#000000' : '#FFFFFFF',
   };
 
   const updateLogs = (log: Log) => {

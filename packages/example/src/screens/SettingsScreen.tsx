@@ -6,7 +6,6 @@ import {
   useColorScheme,
   View,
 } from 'react-native';
-import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {styles} from '../styles';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import {
@@ -228,7 +227,7 @@ const SettingsScreen = ({navigation}) => {
   );
 
   const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.black : Colors.white,
+    backgroundColor: isDarkMode ? '#000000' : '#FFFFFF',
   };
 
   const renderEnvironmentSection = () => {
