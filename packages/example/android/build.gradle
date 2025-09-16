@@ -19,6 +19,16 @@ buildscript {
     classpath("com.facebook.react:react-native-gradle-plugin")
     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
   }
+
+  allprojects {
+    project.pluginManager.withPlugin("com.facebook.react") {
+      react {
+        reactNativeDir = rootProject.file("../../../node_modules/react-native/")
+        codegenDir = rootProject.file("../../../node_modules/@react-native/codegen/")
+        cliFile = rootProject.file("../../../node_modules/react-native/cli.js")
+      }
+    }
+  }
 }
 
 plugins {

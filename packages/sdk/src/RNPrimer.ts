@@ -1,9 +1,9 @@
-import { NativeEventEmitter, NativeModules, EmitterSubscription } from 'react-native';
+import { EmitterSubscription } from 'react-native';
 import type { PrimerSettings } from './models/PrimerSettings';
 import { EventSubscription } from 'react-native';
+import  NativeRTNPrimer  from './specs/NativePrimer';
+import NativePrimer from './specs/NativePrimer';
 
-const { NativePrimer } = NativeModules;
-const eventEmitter = new NativeEventEmitter(NativePrimer);
 
 type EventType =
   | 'onCheckoutComplete'
@@ -43,16 +43,19 @@ const RNPrimer = {
   // Event Emitter
   ///////////////////////////////////////////
 
-  addListener(eventType: EventType, listener: (...args: any[]) => any): EventSubscription {
-    return eventEmitter.addListener(eventType, listener);
+  addListener(eventType: EventType, listener: (data: any) => void): void {
+    // return NativePrimer?.onEventSent((emittedEvent) => {
+    //   if (emittedEvent.key === eventType) {
+    //     listener(emittedEvent.value); 
+    //   }
+    // });
   },
-
   removeListener(subscription: EmitterSubscription) {
     subscription.remove();
   },
 
   removeAllListenersForEvent(eventType: EventType) {
-    eventEmitter.removeAllListeners(eventType);
+   // TODO NativePrimer.removeListeners(eventType);
   },
 
   removeAllListeners() {
@@ -84,7 +87,7 @@ const RNPrimer = {
     });
   },
 
-  showVaultManager: (clientToken: string | undefined): Promise<void> => {
+  showVaultManager: (clientToken: string): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {
         await NativePrimer.showVaultManagerWithClientToken(clientToken);
@@ -98,7 +101,7 @@ const RNPrimer = {
   showPaymentMethod: (paymentMethod: string, intent: string, clientToken: string): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {
-        await NativePrimer.showPaymentMethod(paymentMethod, intent, clientToken);
+        // TODO await NativePrimer.showPaymentMethod(paymentMethod, intent, clientToken);
         resolve();
       } catch (err) {
         reject(err);
@@ -207,7 +210,7 @@ const RNPrimer = {
   handlePaymentCreationAbort: (errorMessage: string | null): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {
-        await NativePrimer.handlePaymentCreationAbort(errorMessage || '');
+        await NativeRTNPrimer.handlePaymentCreationAbort(errorMessage || '');
         resolve();
       } catch (err) {
         reject(err);
@@ -227,7 +230,6 @@ const RNPrimer = {
   },
 
   // Error Handler
-
   showErrorMessage: (errorMessage: string | null): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {
@@ -242,7 +244,7 @@ const RNPrimer = {
   handleSuccess: (): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {
-        await NativePrimer.handleSuccess();
+        // TODO await NativePrimer.handleSuccess();
         resolve();
       } catch (err) {
         reject(err);
@@ -251,7 +253,6 @@ const RNPrimer = {
   },
 
   // HELPERS
-
   setImplementedRNCallbacks: (implementedRNCallbacks: any): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {

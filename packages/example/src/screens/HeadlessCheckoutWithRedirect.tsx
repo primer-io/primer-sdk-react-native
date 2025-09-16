@@ -241,7 +241,7 @@ const Bank = ({
         opacity: isValidating && isValidating !== item.id ? 0.8 : 1,
       }}>
       <Image
-        source={{uri: item.iconUrl ?? item.iconUrlStr}}
+        source={{uri: item.iconUrl ?? item.iconUrl}}
         style={{width: 30, height: 30}}
       />
 

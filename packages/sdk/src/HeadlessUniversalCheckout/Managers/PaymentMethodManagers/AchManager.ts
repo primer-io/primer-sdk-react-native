@@ -4,11 +4,11 @@ import {
   PrimerInvalidComponentData,
   PrimerValidComponentData,
   PrimerValidatingComponentData,
-} from 'src/models/PrimerComponentDataValidation';
-import { PrimerError } from 'src/models/PrimerError';
+} from '../../../models/PrimerComponentDataValidation';
+import { PrimerError } from '../../../models/PrimerError';
 import { EventType, eventTypes } from './Utils/EventType';
-import { AchStep } from 'src/models/ach/AchSteps';
-import { AchValidatableData } from 'src/models/ach/AchCollectableData';
+import { AchStep } from '../../../models/ach/AchSteps';
+import { AchValidatableData } from '../../../models/ach/AchCollectableData';
 
 const { RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent } = NativeModules;
 

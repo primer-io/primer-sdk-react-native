@@ -4,12 +4,12 @@ import {
   PrimerInvalidComponentData,
   PrimerValidComponentData,
   PrimerValidatingComponentData,
-} from 'src/models/PrimerComponentDataValidation';
-import { PrimerError } from 'src/models/PrimerError';
-import { KlarnaPaymentOptions, KlarnaPaymentValidatableData } from 'src/models/klarna/KlarnaPaymentCollectableData';
-import { KlarnaPaymentStep } from 'src/models/klarna/KlarnaPaymentSteps';
+} from '../../../models/PrimerComponentDataValidation';
+import { PrimerError } from '../../../models/PrimerError';
+import { KlarnaPaymentOptions, KlarnaPaymentValidatableData } from '../../../models/klarna/KlarnaPaymentCollectableData';
+import { KlarnaPaymentStep } from '../../../models/klarna/KlarnaPaymentSteps';
 import { EventType, eventTypes } from './Utils/EventType';
-import { PrimerSessionIntent } from 'src/models/PrimerSessionIntent';
+import { PrimerSessionIntent } from '../../../models/PrimerSessionIntent';
 
 const { RNTPrimerHeadlessUniversalCheckoutKlarnaComponent } = NativeModules;
 

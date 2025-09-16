@@ -1,9 +1,9 @@
 import { NativeModules } from 'react-native';
-import { PrimerValidationError as ValidationError } from 'src/models/PrimerValidationError';
-import { PrimerVaultedPaymentMethod as VaultedPaymentMethod } from 'src/models/PrimerVaultedPaymentMethod';
-import { PrimerVaultedPaymentMethodAdditionalData as VaultedPaymentMethodAdditionalData } from 'src/models/PrimerVaultedPaymentMethodAdditionalData';
-import { PrimerVaultedPaymentMethodResult } from 'src/models/PrimerVaultedPaymentMethodResult';
-import { PrimerValidationErrorResult } from 'src/models/PrimerValidationErrorResult';
+import { PrimerValidationError as ValidationError } from '../../models/PrimerValidationError';
+import { PrimerVaultedPaymentMethod as VaultedPaymentMethod } from '../../models/PrimerVaultedPaymentMethod';
+import { PrimerVaultedPaymentMethodAdditionalData as VaultedPaymentMethodAdditionalData } from '../../models/PrimerVaultedPaymentMethodAdditionalData';
+import { PrimerVaultedPaymentMethodResult } from '../../models/PrimerVaultedPaymentMethodResult';
+import { PrimerValidationErrorResult } from '../../models/PrimerValidationErrorResult';
 
 const { RNPrimerHeadlessUniversalCheckoutVaultManager } = NativeModules;
 

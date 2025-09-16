@@ -50,6 +50,7 @@
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^11.0.0",
+    "@react-native-community/cli": "20.0.0",
     "@react-native-community/eslint-config": "^2.0.0",
     "@release-it/conventional-changelog": "^5.1.1",
     "@tsconfig/react-native": "^3.0.0",
@@ -62,13 +63,14 @@
     "eslint-plugin-prettier": "5.2.1",
     "husky": "^4.2.5",
     "jest": "^29.7.0",
+    "nyc": "^15.1.0",
     "pod-install": "^0.1.0",
     "prettier": "3.4.2",
-    "react-native-builder-bob": "^0.20.1",
+    "react-native": "0.81.1",
+    "react-native-builder-bob": "^0.40.13",
     "react-test-renderer": "19.1.0",
-    "typescript": "^5.8.3",
     "ts-jest": "^29.1.2",
-    "nyc": "^15.1.0"
+    "typescript": "^5.8.3"
   },
   "peerDependencies": {
     "react": ">=16.8.0",
@@ -124,6 +126,19 @@
     "trailingComma": "es5",
     "useTabs": false,
     "printWidth": 120
+  },
+  "codegenConfig": {
+    "name": "NativePrimerSpec",
+    "type": "modules",
+    "jsSrcsDir": "src/specs",
+    "outputDir": {
+      "ios": "ios/generated",
+      "android": "android/generated"
+    },
+    "includesGeneratedCode": true,
+    "android": {
+      "javaPackageName": "com.primerioreactnative"
+    }
   },
   "react-native-builder-bob": {
     "source": "src",

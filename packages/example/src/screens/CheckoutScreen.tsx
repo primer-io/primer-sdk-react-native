@@ -382,6 +382,7 @@ const CheckoutScreen = (props: any) => {
       setIsLoading(true);
       const clientSession: IClientSession = await createClientSession();
       clientToken = clientSession.clientToken;
+
       await Primer.configure(settings);
       await Primer.showUniversalCheckout(clientToken);
     } catch (err) {

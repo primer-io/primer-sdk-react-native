@@ -1,4 +1,4 @@
-package com.example_0_70_6
+package com.example
 
 import android.content.Intent
 import android.os.Bundle

@@ -6,12 +6,12 @@ import type { PrimerSettings } from '../models/PrimerSettings';
 import type { PrimerClientSession } from '../models/PrimerClientSession';
 import { PrimerError } from '../models/PrimerError';
 import type { PrimerPaymentMethodTokenData } from '../models/PrimerPaymentMethodTokenData';
-import type { PrimerImplementedRNCallbacks } from 'src/models/PrimerImplementedRNCallbacks';
+import type { PrimerImplementedRNCallbacks } from '../models/PrimerImplementedRNCallbacks';
 import type { IPrimerHeadlessUniversalCheckoutPaymentMethod } from '../models/PrimerHeadlessUniversalCheckoutPaymentMethod';
 import type {
   PrimerHeadlessUniversalCheckoutResumeHandler,
   PrimerPaymentCreationHandler,
-} from 'src/models/PrimerHandlers';
+} from '../models/PrimerHandlers';
 
 ///////////////////////////////////////////
 // DECISION HANDLERS

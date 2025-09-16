@@ -1,4 +1,4 @@
-package com.example_0_70_6
+package com.example
 
 import android.app.Application
 import com.facebook.react.PackageList
@@ -10,6 +10,7 @@ import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 import com.facebook.react.defaults.DefaultReactNativeHost
 import com.primerioreactnative.ReactNativePackage
 import com.facebook.react.ReactNativeApplicationEntryPoint.loadReactNative
+import com.primerioreactnative.ReactNativeTurboPackage
 
 class MainApplication : Application(), ReactApplication {
 
@@ -19,6 +20,7 @@ class MainApplication : Application(), ReactApplication {
         PackageList(this).packages.apply {
           // Packages that cannot be auto linked yet can be added manually here, for example:
           add(ReactNativePackage())
+          add(ReactNativeTurboPackage())
         }
 
       override fun getJSMainModuleName(): String = "index"

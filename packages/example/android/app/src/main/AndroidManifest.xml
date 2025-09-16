@@ -12,6 +12,7 @@
     android:roundIcon="@mipmap/ic_launcher_round"
     android:supportsRtl="true"
     android:theme="@style/AppTheme"
+    android:usesCleartextTraffic="true"
     tools:replace="android:allowBackup">
     <activity
       android:name=".MainActivity"
@@ -26,7 +27,7 @@
       </intent-filter>
     </activity>
     <activity
-      android:name="com.example_0_70_6.DeeplinkReturnActivity"
+      android:name="com.example.DeeplinkReturnActivity"
       android:exported="true"
       android:launchMode="singleTop">
       <intent-filter>

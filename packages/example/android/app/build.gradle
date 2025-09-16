@@ -9,8 +9,7 @@ react {
   // root = file("../../")
   //   The folder where the react-native NPM package is. Default is ../../node_modules/react-native
   // reactNativeDir = file("../../node_modules/react-native")
-  //   The folder where the react-native Codegen package is. Default is ../../node_modules/@react-native/codegen
-  // codegenDir = file("../../node_modules/@react-native/codegen")
+  //   The folder where the react-native Codegen package is. Default is ../../node_modules/@react-native/codegen/.codegenDir = file("../../../../node_modules/@react-native/codegen")
   //   The cli.js file which is the React Native CLI entrypoint. Default is ../../node_modules/react-native/cli.js
   // cliFile = file("../../node_modules/react-native/cli.js")
   /* Variants */
@@ -77,14 +76,14 @@ android {
   buildToolsVersion rootProject.ext.buildToolsVersion
   compileSdk rootProject.ext.compileSdkVersion
 
-  namespace "com.example_0_70_6"
+  namespace "com.example"
 
   buildFeatures {
     buildConfig true
   }
 
   defaultConfig {
-    applicationId "com.example_0_70_6"
+    applicationId "com.example"
     minSdkVersion rootProject.ext.minSdkVersion
     targetSdkVersion rootProject.ext.targetSdkVersion
     versionCode 1
@@ -112,6 +111,11 @@ android {
       proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
     }
   }
+
+  packagingOptions {
+    pickFirst "**/libc++_shared.so"
+    pickFirst "**/libreact_featureflagsjni.so"
+  }
 }
 
 repositories {
@@ -132,8 +136,6 @@ dependencies {
   implementation "io.primer:klarna-android:1.2.0"
   implementation "io.primer:stripe-android:1.1.2"
 
-  implementation project(path: ':primerioreactnative')
-
   // The version of react-native is set by the React Native Gradle Plugin
   implementation("com.facebook.react:react-android")
   if (hermesEnabled.toBoolean()) {
@@ -141,11 +143,4 @@ dependencies {
   } else {
     implementation jscFlavor
   }
-}
-
-// Run this once to be able to run the application with BUCK
-// puts all compile dependencies into folder libs for BUCK to use
-task copyDownloadableDepsToLibs(type: Copy) {
-  from configurations.implementation
-  into 'libs'
 }

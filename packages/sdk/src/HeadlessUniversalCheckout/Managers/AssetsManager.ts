@@ -1,4 +1,4 @@
-import { Resource } from 'src';
+import { IPrimerPaymentMethodResource as Resource } from '../../models/PrimerPaymentMethodResource';
 import { IPrimerAsset as Asset } from '../../models/PrimerPaymentMethodResource';
 import { NativeModules } from 'react-native';
 

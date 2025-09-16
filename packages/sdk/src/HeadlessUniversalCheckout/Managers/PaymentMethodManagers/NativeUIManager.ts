@@ -1,5 +1,5 @@
 import { NativeModules } from 'react-native';
-import type { PrimerSessionIntent } from 'src/models/PrimerSessionIntent';
+import type { PrimerSessionIntent } from '../../../models/PrimerSessionIntent';
 
 const { RNTPrimerHeadlessUniversalPaymentMethodNativeUIManager } = NativeModules;
 

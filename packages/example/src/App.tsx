@@ -1,9 +1,5 @@
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import SettingsScreen from './screens/SettingsScreen';
 import CheckoutScreen from './screens/CheckoutScreen';
@@ -28,7 +24,6 @@ LogBox.ignoreLogs([
 
 const App = () => {
   return (
-    <SafeAreaProvider>
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen name="Settings" component={SettingsScreen} />
@@ -61,7 +56,6 @@ const App = () => {
           />
         </Stack.Navigator>
       </NavigationContainer>
-    </SafeAreaProvider>
   );
 };
 
