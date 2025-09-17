@@ -30,10 +30,6 @@ jobs:
         with:
           node-version: 20
 
-      - name: Set legacy-peer-deps for npm config
-        run: |
-          npm config set legacy-peer-deps true
-
       - name: Install packages
         run: |
           yarn install
@@ -41,7 +37,7 @@ jobs:
       - name: Create Keys.ts
         shell: bash
         run: |
-          echo "export const STRIPE_ACH_PUBLISHABLE_KEY = '${{ secrets.STRIPE_PUBLISHABLE_KEY }}'" > packages/example/src/Keys.ts
+          echo "export const STRIPE_ACH_PUBLISHABLE_KEY = '${{ secrets.STRIPE_PUBLISHABLE_KEY }}'" > example/src/Keys.ts
 
       - name: Distribute the React Native Android app on Appetize 🚀
         run: bundle exec fastlane android appetize_build_and_upload

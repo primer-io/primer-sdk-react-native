@@ -38,7 +38,7 @@
     "build": "bob build",
     "prepare": "bob build",
     "release": "release-it",
-    "example": "yarn workspace @primer-io/react-native-example-0_70_6",
+    "example": "yarn workspace @primer-io/react-native-example",
     "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build lib",
     "bootstrap": "yarn example && yarn && yarn pods"
   },
@@ -167,6 +167,7 @@
     "name": "NativePrimerSpec",
     "type": "modules",
     "jsSrcsDir": "src/specs",
+    "includeGeneratedCode": true,
     "android": {
       "javaPackageName": "com.primerioreactnative"
     }

@@ -10,12 +10,12 @@ github_run_id = ENV["GITHUB_RUN_ID"]
 github_run_number = ENV["GITHUB_RUN_NUMBER"]
 
 # Xcode
-app_workspace = "packages/example/ios/example_0_70_6.xcworkspace"
-app_xcode_proj = "packages/example/ios/example_0_70_6.xcodeproj"
-app_scheme = "example_0_70_6"
+app_workspace = "example/ios/example.xcworkspace"
+app_xcode_proj = "example/ios/example.xcodeproj"
+app_scheme = "example"
 
 # Packages
-app_output_path = "/var/tmp/Primer.io_ReactNativeExample.xcarchive/Products/Applications/example_0_70_6.app"
+app_output_path = "/var/tmp/Primer.io_ReactNativeExample.xcarchive/Products/Applications/example.app"
 app_output_archive_path = "/var/tmp/Primer.io_ReactNativeExample.xcarchive"
 
 # Utils

@@ -59,7 +59,7 @@ jobs:
       - uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
         with:
           name: coverage-file-android
-          path: packages/sdk/android/build/reports
+          path: android/build/reports
 
   run-unit-tests-ios:
     name: Run iOS unit tests
