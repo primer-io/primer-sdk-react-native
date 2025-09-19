@@ -304,7 +304,7 @@ enum PrimerEvents: Int, CaseIterable {
     // MARK: Helpers
 
     private func configure(settingsStr: String? = nil) throws {
-        try PrimerSDK.Primer.shared.configure(settings: PrimerSettings(settingsStr: settingsStr), delegate: self)
+      try PrimerSDK.Primer.shared.configure(settings: PrimerSettings(settingsStr: settingsStr), delegate: self)
     }
 
     private func detectImplemetedCallbacks() {
@@ -367,7 +367,7 @@ extension RNTPrimer: PrimerDelegate {
                 do {
                     let checkoutData = try JSONEncoder().encode(data)
                     let checkoutJson = try JSONSerialization.jsonObject(with: checkoutData, options: .allowFragments)
-                    self.eventDelegate?.sendEvent(withName: PrimerEvents.onCheckoutComplete.stringValue, body: checkoutJson)
+                    self.eventDelegate.sendEvent(withName: PrimerEvents.onCheckoutComplete.stringValue, body: checkoutJson)
                 } catch {
                     self.handleRNBridgeError(error, checkoutData: data, stopOnDebug: true)
                 }
@@ -390,7 +390,7 @@ extension RNTPrimer: PrimerDelegate {
                         with: checkoutAdditionalInfo,
                         options: .allowFragments
                     )
-                    self.eventDelegate?.sendEvent(
+                    self.eventDelegate.sendEvent(
                         withName: PrimerHeadlessUniversalCheckoutEvents.onCheckoutPending.stringValue,
                         body: checkoutAdditionalInfoJson
                     )
@@ -429,7 +429,7 @@ extension RNTPrimer: PrimerDelegate {
 
             DispatchQueue.main.async {
                 do {
-                    let checkoutPaymentmethodJson = try data
+                  let checkoutPaymentmethodJson = try data
                         .toPrimerCheckoutPaymentMethodDataRN()
                         .toJsonObject()
                   self.eventDelegate.sendEvent(
@@ -451,7 +451,7 @@ extension RNTPrimer: PrimerDelegate {
   public func primerClientSessionWillUpdate() {
         if self.implementedRNCallbacks?.isOnBeforeClientSessionUpdateImplemented == true {
             DispatchQueue.main.async {
-              self.eventDelegate?.sendEvent(withName: PrimerEvents.onBeforeClientSessionUpdate.stringValue, body: nil)
+              self.eventDelegate.sendEvent(withName: PrimerEvents.onBeforeClientSessionUpdate.stringValue, body: nil)
             }
         } else {
             // RN Dev hasn't implemented this callback, ignore.
@@ -464,7 +464,7 @@ extension RNTPrimer: PrimerDelegate {
                 let data = try JSONEncoder().encode(clientSession)
                 let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
                 DispatchQueue.main.async {
-                  self.eventDelegate?.sendEvent(withName: PrimerEvents.onClientSessionUpdate.stringValue, body: json)
+                  self.eventDelegate.sendEvent(withName: PrimerEvents.onClientSessionUpdate.stringValue, body: json)
                 }
             } catch {
                 self.handleRNBridgeError(error, checkoutData: nil, stopOnDebug: true)
@@ -495,7 +495,7 @@ extension RNTPrimer: PrimerDelegate {
                 let data = try JSONEncoder().encode(paymentMethodTokenData)
                 let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
                 DispatchQueue.main.async {
-                  self.eventDelegate?.sendEvent(withName: PrimerEvents.onTokenizeSuccess.stringValue, body: json)
+                  self.eventDelegate.sendEvent(withName: PrimerEvents.onTokenizeSuccess.stringValue, body: json)
                 }
             } catch {
                 self.handleRNBridgeError(error, checkoutData: nil, stopOnDebug: true)
@@ -522,7 +522,7 @@ extension RNTPrimer: PrimerDelegate {
             }
 
             DispatchQueue.main.async {
-              self.eventDelegate?.sendEvent(withName: PrimerEvents.onResumeSuccess.stringValue, body: ["resumeToken": resumeToken])
+              self.eventDelegate.sendEvent(withName: PrimerEvents.onResumeSuccess.stringValue, body: ["resumeToken": resumeToken])
             }
         } else {
             // RN dev hasn't opted in on listening the tokenization callback.
@@ -533,7 +533,7 @@ extension RNTPrimer: PrimerDelegate {
   public func primerDidDismiss() {
         if self.implementedRNCallbacks?.isOnDismissImplemented == true {
             DispatchQueue.main.async {
-              self.eventDelegate?.sendEvent(withName: PrimerEvents.onDismiss.stringValue, body: nil)
+              self.eventDelegate.sendEvent(withName: PrimerEvents.onDismiss.stringValue, body: nil)
             }
         } else {
             // RN dev hasn't opted in on listening SDK dismiss.
