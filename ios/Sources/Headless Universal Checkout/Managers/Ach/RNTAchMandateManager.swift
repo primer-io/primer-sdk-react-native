@@ -8,7 +8,6 @@
 import Foundation
 import React
 import PrimerSDK
-
 @objc(RNTAchMandateManager)
 class RNTAchMandateManager: NSObject, RCTBridgeModule {
     private let errorMessage = "Mandate delegate is not defined"

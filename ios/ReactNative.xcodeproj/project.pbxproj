@@ -15,6 +15,7 @@
 		1DEBE10026C2D88E004E3064 /* PrimerThemeRN.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DEBE0FF26C2D88E004E3064 /* PrimerThemeRN.swift */; };
 		1DEBE10226C2D8BA004E3064 /* PaymentInstrumentTokenRN.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DEBE10126C2D8BA004E3064 /* PaymentInstrumentTokenRN.swift */; };
 		8E3F8F3B3C2574B3E4202E53 /* libPods-ReactNative.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CD4026BA31061D2403A622C /* libPods-ReactNative.a */; };
+		A99517882E7AD0FC008DF05E /* RCTNativePrimer.m in Sources */ = {isa = PBXBuildFile; fileRef = A99517872E7AD0FC008DF05E /* RCTNativePrimer.m */; };
 		F4FF95D7245B92E800C19C63 /* UniversalCheckoutRN.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4FF95D6245B92E800C19C63 /* UniversalCheckoutRN.swift */; };
 /* End PBXBuildFile section */
 
@@ -41,6 +42,8 @@
 		1DEBE0FF26C2D88E004E3064 /* PrimerThemeRN.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerThemeRN.swift; sourceTree = "<group>"; };
 		1DEBE10126C2D8BA004E3064 /* PaymentInstrumentTokenRN.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentInstrumentTokenRN.swift; sourceTree = "<group>"; };
 		6F27A6DD8EDB5175DD0555AC /* Pods-ReactNative.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ReactNative.debug.xcconfig"; path = "Target Support Files/Pods-ReactNative/Pods-ReactNative.debug.xcconfig"; sourceTree = "<group>"; };
+		A99517862E7AD0FC008DF05E /* RCTNativePrimer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTNativePrimer.h; sourceTree = "<group>"; };
+		A99517872E7AD0FC008DF05E /* RCTNativePrimer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTNativePrimer.m; sourceTree = "<group>"; };
 		B3E7B5891CC2AC0600A0062D /* ReactNative.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ReactNative.m; sourceTree = "<group>"; };
 		F4FF95D5245B92E700C19C63 /* ReactNative-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ReactNative-Bridging-Header.h"; sourceTree = "<group>"; };
 		F4FF95D6245B92E800C19C63 /* UniversalCheckoutRN.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UniversalCheckoutRN.swift; sourceTree = "<group>"; };
@@ -98,6 +101,7 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				A99517852E7AD0AF008DF05E /* NativePrimer */,
 				1DEBE0F826C2D70C004E3064 /* DataModels */,
 				1DEBE0F626C2D594004E3064 /* PrimerRN.swift */,
 				F4FF95D6245B92E800C19C63 /* UniversalCheckoutRN.swift */,
@@ -107,6 +111,15 @@
 				38076040A533828516C55677 /* Pods */,
 				1D954B2391C2E372CF2A37CD /* Frameworks */,
 			);
+			sourceTree = "<group>";
+		};
+		A99517852E7AD0AF008DF05E /* NativePrimer */ = {
+			isa = PBXGroup;
+			children = (
+				A99517862E7AD0FC008DF05E /* RCTNativePrimer.h */,
+				A99517872E7AD0FC008DF05E /* RCTNativePrimer.m */,
+			);
+			path = NativePrimer;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -197,6 +210,7 @@
 				1DEBE0F726C2D594004E3064 /* PrimerRN.swift in Sources */,
 				1DEBE0FC26C2D859004E3064 /* PrimerExceptionRN.swift in Sources */,
 				1DEBE0FE26C2D875004E3064 /* PrimerSettingsRN.swift in Sources */,
+				A99517882E7AD0FC008DF05E /* RCTNativePrimer.m in Sources */,
 				1D14D92125C8DB0E00206A38 /* ReactNative.m in Sources */,
 				F4FF95D7245B92E800C19C63 /* UniversalCheckoutRN.swift in Sources */,
 				1DEBE10026C2D88E004E3064 /* PrimerThemeRN.swift in Sources */,

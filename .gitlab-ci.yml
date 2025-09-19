@@ -1,5 +1,5 @@
 variables:
-  NODE_VERSION: '18'
+  NODE_VERSION: '20'
 
 workflow:
   rules:
@@ -69,7 +69,6 @@ build-and-release:
       npm set //registry.npmjs.org/:_authToken $NPM_TOKEN
     # Build
     - |
-      cd ./packages/sdk
       yarn install
     # Publish
     - npm publish -tag ${DIST_TAG}

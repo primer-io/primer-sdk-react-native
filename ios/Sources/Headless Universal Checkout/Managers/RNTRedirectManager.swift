@@ -7,6 +7,7 @@
 
 import Foundation
 import PrimerSDK
+import React
 
 // swiftlint:disable type_name
 @objc(RNTPrimerHeadlessUniversalCheckoutBanksComponent)

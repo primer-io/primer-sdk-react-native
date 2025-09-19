@@ -9,7 +9,7 @@
     "start": "react-native start",
     "test": "jest",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "build:ios:dev": "npx react-native bundle --entry-file='../sdk/index.js' --bundle-output='./ios/main.jsbundle' --dev=true --platform='ios' --assets-dest='./ios'",
+    "build:ios:dev": "npx react-native bundle --entry-file='../src/index.tsx' --bundle-output='./ios/main.jsbundle' --dev=true --platform='ios' --assets-dest='./ios'",
     "build:ios:release": "npx react-native bundle --entry-file='../sdk/index.js' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios'",
     "build:android:dev": " npx react-native bundle --platform android --dev true --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res && npx react-native run-android",
     "build:android:release": "npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res && npx react-native run-android"

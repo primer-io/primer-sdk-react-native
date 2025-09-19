@@ -9,4 +9,4 @@ line_length:
   ignores_urls: true
 
 included:
-  - ../../sdk/ios/Sources
+  - ../../ios/Sources

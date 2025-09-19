@@ -8,6 +8,7 @@
 import Foundation
 import PrimerSDK
 import UIKit
+import React
 
 // swiftlint:disable file_length
 @objc
@@ -54,8 +55,7 @@ enum PrimerEvents: Int, CaseIterable {
 }
 
 // swiftlint:disable type_body_length
-@objc(NativePrimer)
-class RNTPrimer: RCTEventEmitter {
+@objc public class RNTPrimer: NSObject {
     // swiftlint:disable identifier_name
     var primerWillCreatePaymentWithDataDecisionHandler: ((_ errorMessage: String?) -> Void)?
     var primerDidTokenizePaymentMethodDecisionHandler: ((_ resumeToken: String?, _ errorMessage: String?) -> Void)?
@@ -66,9 +66,180 @@ class RNTPrimer: RCTEventEmitter {
 
     // MARK: - INITIALIZATION & REACT NATIVE SUPPORT
 
-    override class func requiresMainQueueSetup() -> Bool {
-        return true
-    }
+  private lazy var primerDelegate: PrimerDelegate = {
+          class InlinePrimerDelegate: NSObject, PrimerDelegate {
+              weak var parent: RNTPrimer?
+
+              func primerDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
+                  DispatchQueue.main.async {
+                      if self.parent?.implementedRNCallbacks?.isOnCheckoutCompleteImplemented == true {
+                          do {
+                              let checkoutData = try JSONEncoder().encode(data)
+                              let checkoutJson = try JSONSerialization.jsonObject(with: checkoutData, options: .allowFragments)
+                              self.parent?.eventDelegate?.sendEvent(withName: PrimerEvents.onCheckoutComplete.stringValue, body: checkoutJson)
+                          } catch {
+                              self.parent?.handleRNBridgeError(error, checkoutData: data, stopOnDebug: true)
+                          }
+                      } else {
+                          let err = RNTNativeError(
+                              errorId: "native-ios",
+                              errorDescription: "Callback [onCheckoutComplete] should be implemented.",
+                              recoverySuggestion: nil)
+                          self.parent?.handleRNBridgeError(err, checkoutData: data, stopOnDebug: false)
+                      }
+                  }
+              }
+
+              func primerDidEnterResumePendingWithPaymentAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?) {
+                  DispatchQueue.main.async {
+                      if self.parent?.implementedRNCallbacks?.isOnCheckoutResumeImplemented == true {
+                          do {
+                              let checkoutAdditionalInfo = try JSONEncoder().encode(additionalInfo)
+                              let checkoutAdditionalInfoJson = try JSONSerialization.jsonObject(
+                                  with: checkoutAdditionalInfo,
+                                  options: .allowFragments
+                              )
+                              self.parent?.eventDelegate?.sendEvent(
+                                  withName: PrimerHeadlessUniversalCheckoutEvents.onCheckoutPending.stringValue,
+                                  body: checkoutAdditionalInfoJson
+                              )
+                          } catch {
+                              let checkoutData = PrimerCheckoutData(payment: nil, additionalInfo: additionalInfo)
+                              self.parent?.handleRNBridgeError(error, checkoutData: checkoutData, stopOnDebug: true)
+                          }
+                      } else {
+                          let err = RNTNativeError(
+                              errorId: "native-ios",
+                              errorDescription: "Callback [onResumePending] should be implemented.",
+                              recoverySuggestion: nil)
+                          let checkoutData = PrimerCheckoutData(payment: nil, additionalInfo: additionalInfo)
+                          self.parent?.handleRNBridgeError(err, checkoutData: checkoutData, stopOnDebug: false)
+                      }
+                  }
+              }
+
+              func primerWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) {
+                  if self.parent?.implementedRNCallbacks?.isOnBeforePaymentCreateImplemented == true {
+                      self.parent?.primerWillCreatePaymentWithDataDecisionHandler = { errorMessage in
+                          DispatchQueue.main.async {
+                              if let errorMessage = errorMessage {
+                                  decisionHandler(.abortPaymentCreation(withErrorMessage: errorMessage.isEmpty ? nil : errorMessage))
+                              } else {
+                                  decisionHandler(.continuePaymentCreation())
+                              }
+                          }
+                      }
+
+                      DispatchQueue.main.async {
+                          do {
+                              let checkoutPaymentmethodJson = try data.toPrimerCheckoutPaymentMethodDataRN().toJsonObject()
+                              self.parent?.eventDelegate?.sendEvent(
+                                  withName: PrimerEvents.onBeforePaymentCreate.stringValue,
+                                  body: checkoutPaymentmethodJson
+                              )
+                          } catch {
+                              self.parent?.handleRNBridgeError(error, checkoutData: nil, stopOnDebug: true)
+                          }
+                      }
+                  } else {
+                      DispatchQueue.main.async {
+                          decisionHandler(.continuePaymentCreation())
+                      }
+                  }
+              }
+
+              func primerClientSessionWillUpdate() {
+                  if self.parent?.implementedRNCallbacks?.isOnBeforeClientSessionUpdateImplemented == true {
+                      DispatchQueue.main.async {
+                          self.parent?.eventDelegate?.sendEvent(withName: PrimerEvents.onBeforeClientSessionUpdate.stringValue, body: nil)
+                      }
+                  }
+              }
+
+              func primerClientSessionDidUpdate(_ clientSession: PrimerClientSession) {
+                  if self.parent?.implementedRNCallbacks?.isOnClientSessionUpdateImplemented == true {
+                      do {
+                          let data = try JSONEncoder().encode(clientSession)
+                          let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
+                          DispatchQueue.main.async {
+                              self.parent?.eventDelegate?.sendEvent(withName: PrimerEvents.onClientSessionUpdate.stringValue, body: json)
+                          }
+                      } catch {
+                          self.parent?.handleRNBridgeError(error, checkoutData: nil, stopOnDebug: true)
+                      }
+                  }
+              }
+
+              func primerDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
+                  if self.parent?.implementedRNCallbacks?.isOnTokenizationSuccessImplemented == true {
+                      self.parent?.primerDidTokenizePaymentMethodDecisionHandler = { (newClientToken, errorMessage) in
+                          DispatchQueue.main.async {
+                              if let errorMessage = errorMessage {
+                                  decisionHandler(.fail(withErrorMessage: errorMessage.isEmpty ? nil : errorMessage))
+                              } else if let newClientToken = newClientToken {
+                                  decisionHandler(.continueWithNewClientToken(newClientToken))
+                              } else {
+                                  decisionHandler(.succeed())
+                              }
+                          }
+                      }
+
+                      do {
+                          let data = try JSONEncoder().encode(paymentMethodTokenData)
+                          let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
+                          DispatchQueue.main.async {
+                              self.parent?.eventDelegate?.sendEvent(withName: PrimerEvents.onTokenizeSuccess.stringValue, body: json)
+                          }
+                      } catch {
+                          self.parent?.handleRNBridgeError(error, checkoutData: nil, stopOnDebug: true)
+                      }
+                  }
+              }
+
+              func primerDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
+                  if self.parent?.implementedRNCallbacks?.isOnCheckoutResumeImplemented == true {
+                      self.parent?.primerDidResumeWithDecisionHandler = { (resumeToken, errorMessage) in
+                          DispatchQueue.main.async {
+                              if let errorMessage = errorMessage {
+                                  decisionHandler(.fail(withErrorMessage: errorMessage.isEmpty ? nil : errorMessage))
+                              } else if let resumeToken = resumeToken {
+                                  decisionHandler(.continueWithNewClientToken(resumeToken))
+                              } else {
+                                  decisionHandler(.succeed())
+                              }
+                          }
+                      }
+
+                      DispatchQueue.main.async {
+                          self.parent?.eventDelegate?.sendEvent(withName: PrimerEvents.onResumeSuccess.stringValue, body: ["resumeToken": resumeToken])
+                      }
+                  }
+              }
+
+              func primerDidDismiss() {
+                  if self.parent?.implementedRNCallbacks?.isOnDismissImplemented == true {
+                      DispatchQueue.main.async {
+                          self.parent?.eventDelegate?.sendEvent(withName: PrimerEvents.onDismiss.stringValue, body: nil)
+                      }
+                  }
+              }
+
+              func primerDidFailWithError(_ error: Error, data: PrimerCheckoutData?, decisionHandler: @escaping ((PrimerErrorDecision) -> Void)) {
+                  if self.parent?.implementedRNCallbacks?.isOnErrorImplemented == true {
+                      self.parent?.primerDidFailWithErrorDecisionHandler = { errorMessage in
+                          DispatchQueue.main.async {
+                              decisionHandler(.fail(withErrorMessage: errorMessage.isEmpty ? nil : errorMessage))
+                          }
+                      }
+                      self.parent?.handleRNBridgeError(error, checkoutData: data, stopOnDebug: false)
+                  }
+              }
+          }
+
+          let delegate = InlinePrimerDelegate()
+          delegate.parent = self
+          return delegate
+      }()
 
     deinit {
         print("🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
@@ -76,12 +247,8 @@ class RNTPrimer: RCTEventEmitter {
 
     override init() {
         super.init()
-        Primer.shared.delegate = self
+        Primer.shared.delegate = primerDelegate
         Primer.shared.integrationOptions = PrimerIntegrationOptions(reactNativeVersion: PrimerReactNativeSDKVersion)
-    }
-
-    override func supportedEvents() -> [String]! {
-        return PrimerEvents.allCases.compactMap({ $0.stringValue })
     }
 
     // MARK: - SDK API
@@ -310,11 +477,11 @@ class RNTPrimer: RCTEventEmitter {
     // MARK: Helpers
 
     private func configure(settingsStr: String? = nil) throws {
-        try PrimerSDK.Primer.shared.configure(settings: PrimerSettings(settingsStr: settingsStr), delegate: self)
+        try PrimerSDK.Primer.shared.configure(settings: PrimerSettings(settingsStr: settingsStr), delegate: primerDelegate)
     }
 
     private func detectImplemetedCallbacks() {
-        sendEvent(withName: PrimerEvents.detectImplementedRNCallbacks.stringValue, body: nil)
+      self.eventDelegate?.sendEvent(withName: PrimerEvents.detectImplementedRNCallbacks.stringValue, body: nil)
     }
 
     @objc
@@ -323,7 +490,6 @@ class RNTPrimer: RCTEventEmitter {
         resolver: @escaping RCTPromiseResolveBlock,
         rejecter: @escaping RCTPromiseRejectBlock
     ) {
-        DispatchQueue.main.async {
             do {
                 guard let implementedRNCallbacksData = implementedRNCallbacksStr.data(using: .utf8) else {
                     let err = RNTNativeError(
@@ -339,13 +505,13 @@ class RNTPrimer: RCTEventEmitter {
                 )
                 resolver(nil)
             } catch {
-                self.primerDidFailWithError(error, data: nil) { _ in
-
-                }
+              handleRNBridgeError(error, checkoutData: nil, stopOnDebug: false)
                 rejecter(error.rnError["errorId"]!, error.rnError["description"], error)
             }
-        }
     }
+
+    // In RNTPrimer.swift, add this property
+    @objc public weak var eventDelegate: RCTNativePrimer?
 
     private func handleRNBridgeError(_ error: Error, checkoutData: PrimerCheckoutData?, stopOnDebug: Bool) {
         DispatchQueue.main.async {
@@ -359,8 +525,8 @@ class RNTPrimer: RCTEventEmitter {
                let json = try? JSONSerialization.jsonObject(with: data) {
                 body["checkoutData"] = json
             }
-            if self.bridge != nil {
-                self.sendEvent(withName: PrimerEvents.onError.stringValue, body: body)
+            if self.eventDelegate != nil {
+              self.eventDelegate?.sendEvent(withName: PrimerEvents.onError.stringValue, body: body)
             } else {
                 print("Bridge is not set")
             }
@@ -372,210 +538,4 @@ class RNTPrimer: RCTEventEmitter {
 
 // MARK: - PRIMER DELEGATE
 
-extension RNTPrimer: PrimerDelegate {
-
-    func primerDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
-        DispatchQueue.main.async {
-            if self.implementedRNCallbacks?.isOnCheckoutCompleteImplemented == true {
-                do {
-                    let checkoutData = try JSONEncoder().encode(data)
-                    let checkoutJson = try JSONSerialization.jsonObject(with: checkoutData, options: .allowFragments)
-                    self.sendEvent(withName: PrimerEvents.onCheckoutComplete.stringValue, body: checkoutJson)
-                } catch {
-                    self.handleRNBridgeError(error, checkoutData: data, stopOnDebug: true)
-                }
-            } else {
-                let err = RNTNativeError(
-                    errorId: "native-ios",
-                    errorDescription: "Callback [onCheckoutComplete] should be implemented.",
-                    recoverySuggestion: nil)
-                self.handleRNBridgeError(err, checkoutData: data, stopOnDebug: false)
-            }
-        }
-    }
-
-    func primerDidEnterResumePendingWithPaymentAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?) {
-        DispatchQueue.main.async {
-            if self.implementedRNCallbacks?.isOnCheckoutResumeImplemented == true {
-                do {
-                    let checkoutAdditionalInfo = try JSONEncoder().encode(additionalInfo)
-                    let checkoutAdditionalInfoJson = try JSONSerialization.jsonObject(
-                        with: checkoutAdditionalInfo,
-                        options: .allowFragments
-                    )
-                    self.sendEvent(
-                        withName: PrimerHeadlessUniversalCheckoutEvents.onCheckoutPending.stringValue,
-                        body: checkoutAdditionalInfoJson
-                    )
-                } catch {
-                    let checkoutData = PrimerCheckoutData(payment: nil, additionalInfo: additionalInfo)
-                    self.handleRNBridgeError(error, checkoutData: checkoutData, stopOnDebug: true)
-                }
-            } else {
-                let err = RNTNativeError(
-                    errorId: "native-ios",
-                    errorDescription: "Callback [onResumePending] should be implemented.",
-                    recoverySuggestion: nil)
-                let checkoutData = PrimerCheckoutData(payment: nil, additionalInfo: additionalInfo)
-                self.handleRNBridgeError(err, checkoutData: checkoutData, stopOnDebug: false)
-            }
-        }
-    }
-
-    func primerWillCreatePaymentWithData(
-        _ data: PrimerCheckoutPaymentMethodData,
-        decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void
-    ) {
-
-        if self.implementedRNCallbacks?.isOnBeforePaymentCreateImplemented == true {
-            self.primerWillCreatePaymentWithDataDecisionHandler = { errorMessage in
-                DispatchQueue.main.async {
-                    if let errorMessage = errorMessage {
-                        decisionHandler(
-                            .abortPaymentCreation(withErrorMessage: errorMessage.isEmpty ? nil : errorMessage)
-                        )
-                    } else {
-                        decisionHandler(.continuePaymentCreation())
-                    }
-                }
-            }
-
-            DispatchQueue.main.async {
-                do {
-                    let checkoutPaymentmethodJson = try data
-                        .toPrimerCheckoutPaymentMethodDataRN()
-                        .toJsonObject()
-                    self.sendEvent(
-                        withName: PrimerEvents.onBeforePaymentCreate.stringValue,
-                        body: checkoutPaymentmethodJson
-                    )
-                } catch {
-                    self.handleRNBridgeError(error, checkoutData: nil, stopOnDebug: true)
-                }
-            }
-        } else {
-            // RN Dev hasn't implemented this callback, send a decision to continue the flow.
-            DispatchQueue.main.async {
-                decisionHandler(.continuePaymentCreation())
-            }
-        }
-    }
-
-    func primerClientSessionWillUpdate() {
-        if self.implementedRNCallbacks?.isOnBeforeClientSessionUpdateImplemented == true {
-            DispatchQueue.main.async {
-                self.sendEvent(withName: PrimerEvents.onBeforeClientSessionUpdate.stringValue, body: nil)
-            }
-        } else {
-            // RN Dev hasn't implemented this callback, ignore.
-        }
-    }
-
-    func primerClientSessionDidUpdate(_ clientSession: PrimerClientSession) {
-        if self.implementedRNCallbacks?.isOnClientSessionUpdateImplemented == true {
-            do {
-                let data = try JSONEncoder().encode(clientSession)
-                let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
-                DispatchQueue.main.async {
-                    self.sendEvent(withName: PrimerEvents.onClientSessionUpdate.stringValue, body: json)
-                }
-            } catch {
-                self.handleRNBridgeError(error, checkoutData: nil, stopOnDebug: true)
-            }
-        } else {
-            // RN Dev hasn't implemented this callback, ignore.
-        }
-    }
-
-    func primerDidTokenizePaymentMethod(
-        _ paymentMethodTokenData: PrimerPaymentMethodTokenData,
-        decisionHandler: @escaping (PrimerResumeDecision) -> Void
-    ) {
-        if self.implementedRNCallbacks?.isOnTokenizationSuccessImplemented == true {
-            self.primerDidTokenizePaymentMethodDecisionHandler = { (newClientToken, errorMessage) in
-                DispatchQueue.main.async {
-                    if let errorMessage = errorMessage {
-                        decisionHandler(.fail(withErrorMessage: errorMessage.isEmpty ? nil : errorMessage))
-                    } else if let newClientToken = newClientToken {
-                        decisionHandler(.continueWithNewClientToken(newClientToken))
-                    } else {
-                        decisionHandler(.succeed())
-                    }
-                }
-            }
-
-            do {
-                let data = try JSONEncoder().encode(paymentMethodTokenData)
-                let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
-                DispatchQueue.main.async {
-                    self.sendEvent(withName: PrimerEvents.onTokenizeSuccess.stringValue, body: json)
-                }
-            } catch {
-                self.handleRNBridgeError(error, checkoutData: nil, stopOnDebug: true)
-            }
-        } else {
-            // RN dev hasn't opted in on listening the tokenization callback.
-            // Throw an error if it's the manual flow, ignore if it's the
-            // auto flow.
-        }
-    }
-
-    func primerDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
-        if self.implementedRNCallbacks?.isOnCheckoutResumeImplemented == true {
-            self.primerDidResumeWithDecisionHandler = { (resumeToken, errorMessage) in
-                DispatchQueue.main.async {
-                    if let errorMessage = errorMessage {
-                        decisionHandler(.fail(withErrorMessage: errorMessage.isEmpty ? nil : errorMessage))
-                    } else if let resumeToken = resumeToken {
-                        decisionHandler(.continueWithNewClientToken(resumeToken))
-                    } else {
-                        decisionHandler(.succeed())
-                    }
-                }
-            }
-
-            DispatchQueue.main.async {
-                self.sendEvent(withName: PrimerEvents.onResumeSuccess.stringValue, body: ["resumeToken": resumeToken])
-            }
-        } else {
-            // RN dev hasn't opted in on listening the tokenization callback.
-            // Throw an error if it's the manual flow.
-        }
-    }
-
-    func primerDidDismiss() {
-        if self.implementedRNCallbacks?.isOnDismissImplemented == true {
-            DispatchQueue.main.async {
-                self.sendEvent(withName: PrimerEvents.onDismiss.stringValue, body: nil)
-            }
-        } else {
-            // RN dev hasn't opted in on listening SDK dismiss.
-            // Ignore!
-        }
-    }
-
-    func primerDidFailWithError(
-        _ error: Error,
-        data: PrimerCheckoutData?,
-        decisionHandler: @escaping ((PrimerErrorDecision) -> Void)
-    ) {
-        if self.implementedRNCallbacks?.isOnErrorImplemented == true {
-            // Set up the callback that will be called by **handleErrorMessage** when the RN
-            // bridge invokes it.
-            self.primerDidFailWithErrorDecisionHandler = { errorMessage in
-                // Callback was called by **handleErrorMessage**.
-                DispatchQueue.main.async {
-                    decisionHandler(.fail(withErrorMessage: errorMessage.isEmpty ? nil : errorMessage))
-                }
-            }
-
-            // Send the error message to the RN bridge.
-            self.handleRNBridgeError(error, checkoutData: data, stopOnDebug: false)
-
-        } else {
-            // RN dev hasn't opted in on listening SDK dismiss.
-            // Ignore!
-        }
-    }
-}
 // swiftlint:enable file_length

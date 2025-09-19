@@ -8,6 +8,7 @@
 import Foundation
 import PrimerSDK
 import UIKit
+import React
 
 // swiftlint:disable type_name
 @objc(RNTPrimerHeadlessUniversalCheckoutKlarnaComponent)
@@ -41,8 +42,6 @@ class RNTPrimerHeadlessUniversalCheckoutKlarnaComponent: RCTEventEmitter {
     resolver: @escaping RCTPromiseResolveBlock,
     rejecter: @escaping RCTPromiseRejectBlock
   ) {
-    print("configure")
-
     do {
       guard
         let sessionIntent: PrimerSessionIntent = PrimerSessionIntent(rawValue: primerSessionIntent)

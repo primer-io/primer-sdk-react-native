@@ -1,3 +1,5 @@
+ENV['RCT_NEW_ARCH_ENABLED'] = '1'
+
 # Resolve react_native_pods.rb with node to allow for hoisting
 require Pod::Executable.execute_command('node', ['-p',
   'require.resolve(
@@ -23,7 +25,6 @@ target 'example_0_70_6' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  pod 'primer-io-react-native', :path => '../../sdk'
   pod 'PrimerSDK'
   pod 'Primer3DS'
   pod 'PrimerIPay88MYSDK'

@@ -1,7 +1,14 @@
-import { EmitterSubscription } from 'react-native';
 import type { PrimerSettings } from './models/PrimerSettings';
 import { EventSubscription } from 'react-native';
-import NativePrimer from './specs/NativePrimer';
+import NativePrimer from "../src/index";
+
+import { NativeEventEmitter, NativeModules } from 'react-native';
+
+// Create the event emitter instance for old architecture
+const nativeEventEmitter = new NativeEventEmitter(NativeModules.NativePrimer);
+
+// Subscriptions
+let subscriptions: EventSubscription[] = [];
 
 type EventType =
   | 'onCheckoutComplete'
@@ -41,23 +48,23 @@ const RNPrimer = {
   // Event Emitter
   ///////////////////////////////////////////
 
-  addListener(eventType: EventType, listener: (data: any) => void): EventSubscription {
-    return NativePrimer.onEvent((emittedEvent) => {
-      if (emittedEvent.eventType === eventType) {
-        listener(emittedEvent.data); 
-      }
-    });
+  addListener(eventType: EventType, listener: (data: any) => void) {
+    if (NativePrimer.onEvent) {
+      // New Architecture
+      subscriptions.push(
+        NativePrimer.onEvent((emittedEvent) => {
+          if (emittedEvent.eventType === eventType) {
+            listener(emittedEvent.data); 
+          }
+        }));
+    } else {
+      // Old Architecture - listen to individual events
+      subscriptions.push(nativeEventEmitter.addListener(eventType, listener));
+    }
   },
-  removeListener(subscription: EmitterSubscription) {
-    subscription.remove();
-  },
-
-  removeAllListenersForEvent(eventType: EventType) {
-   // TODO NativePrimer.removeListeners(eventType);
-  },
-
   removeAllListeners() {
-    eventTypes.forEach((eventType) => RNPrimer.removeAllListenersForEvent(eventType));
+    subscriptions.forEach(subscription => subscription.remove());
+    subscriptions = [];
   },
 
   ///////////////////////////////////////////
@@ -69,6 +76,7 @@ const RNPrimer = {
         await NativePrimer.configure(JSON.stringify(settings) || '');
         resolve();
       } catch (err) {
+        console.log(err);
         reject(err);
       }
     });

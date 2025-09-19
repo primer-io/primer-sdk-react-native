@@ -1,4 +1,5 @@
 import PrimerSDK
+import React
 
 // swiftlint:disable type_name
 @objc(RNPrimerHeadlessUniversalCheckoutVaultManager)

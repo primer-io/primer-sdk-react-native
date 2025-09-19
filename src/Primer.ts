@@ -269,7 +269,6 @@ export const Primer: IPrimer = {
         await configureListeners();
         await RNPrimer.showUniversalCheckout(clientToken);
       } catch (err) {
-        console.log(err);
         reject(err);
       }
     });

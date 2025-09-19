@@ -9,8 +9,34 @@ PODS:
     - hermes-engine/Pre-built (= 0.81.1)
   - hermes-engine/Pre-built (0.81.1)
   - primer-io-react-native (2.36.0):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
     - PrimerSDK (= 2.40.0)
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
     - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
   - Primer3DS (2.4.4)
   - PrimerIPay88MYSDK (0.1.7)
   - PrimerKlarnaSDK (1.1.1)
@@ -2422,7 +2448,7 @@ DEPENDENCIES:
   - fmt (from `../node_modules/react-native/third-party-podspecs/fmt.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - hermes-engine (from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
-  - primer-io-react-native (from `../../sdk`)
+  - primer-io-react-native (from `../..`)
   - Primer3DS
   - PrimerIPay88MYSDK
   - PrimerKlarnaSDK (= 1.1.1)
@@ -2524,7 +2550,7 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec"
     :tag: hermes-2025-07-07-RNv0.81.0-e0fc67142ec0763c6b6153ca2bf96df815539782
   primer-io-react-native:
-    :path: "../../sdk"
+    :path: "../.."
   RCT-Folly:
     :podspec: "../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTDeprecation:
@@ -2668,7 +2694,7 @@ SPEC CHECKSUMS:
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
   glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
   hermes-engine: 4f8246b1f6d79f625e0d99472d1f3a71da4d28ca
-  primer-io-react-native: 34ed43bde780847ac220321a9e1c5863de933c15
+  primer-io-react-native: 7e591c7379399cb57385f5d2ede66dacc06030aa
   Primer3DS: 4ef5bcb529bc538d223419a266290ac35db2b4d5
   PrimerIPay88MYSDK: 436ee0be7e2c97e4e81456ccddee20175e9e3c4d
   PrimerKlarnaSDK: 564105170cc7b467bf95c31851813ea41c468f8b
@@ -2743,6 +2769,6 @@ SPEC CHECKSUMS:
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: 11c9686a21e2cd82a094a723649d9f4507200fb0
 
-PODFILE CHECKSUM: 9706089258d896be286000d75513c5c6257d0d7f
+PODFILE CHECKSUM: 6f3ff89591348bb8e4082b63f0c1d02d3bd6e652
 
 COCOAPODS: 1.16.2

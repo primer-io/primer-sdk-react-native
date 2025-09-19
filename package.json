@@ -32,7 +32,6 @@
     "!**/.*"
   ],
   "scripts": {
-    "test": "jest",
     "typescript": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
     "build": "bob build",
@@ -40,7 +39,9 @@
     "release": "release-it",
     "example": "yarn workspace @primer-io/react-native-example",
     "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build lib",
-    "bootstrap": "yarn example && yarn && yarn pods"
+    "bootstrap": "yarn example && yarn && yarn pods",
+    "test": "yarn test",
+    "test:unit:coverage:lcov": "yarn test && node scripts/aggregate-coverage.js && nyc report --reporter lcov"
   },
   "keywords": [
     "react-native",
@@ -167,9 +168,13 @@
     "name": "NativePrimerSpec",
     "type": "modules",
     "jsSrcsDir": "src/specs",
-    "includeGeneratedCode": true,
     "android": {
       "javaPackageName": "com.primerioreactnative"
+    },
+    "ios": {
+      "modulesProvider": {
+        "NativePrimer": "RCTNativePrimer"
+      }
     }
   }
 }

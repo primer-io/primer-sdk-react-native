@@ -8,6 +8,7 @@
 import Foundation
 import PrimerSDK
 import UIKit
+import React
 
 // swiftlint:disable type_name
 @objc(RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent)

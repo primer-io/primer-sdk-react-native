@@ -40,4 +40,5 @@ export interface Spec extends TurboModule {
   readonly onEvent: CodegenTypes.EventEmitter<EmittedEvent>;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('Primer');
+// module name (NativePrimer) must be same in RCTNativePrimer.mm when exporting
+export default TurboModuleRegistry.getEnforcing<Spec>('NativePrimer');

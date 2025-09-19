@@ -45,7 +45,7 @@ jobs:
       - name: Create Keys.ts
         shell: bash
         run: |
-          echo "export const STRIPE_ACH_PUBLISHABLE_KEY = '${{ secrets.STRIPE_PUBLISHABLE_KEY }}'" > packages/example/src/Keys.ts
+          echo "export const STRIPE_ACH_PUBLISHABLE_KEY = '${{ secrets.STRIPE_PUBLISHABLE_KEY }}'" > example/src/Keys.ts
 
       - name: Get npm cache directory
         id: npm-cache-dir
@@ -68,7 +68,7 @@ jobs:
         uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf # v4.2.2
         with:
           path: |
-            packages/example/ios/Pods
+            example/ios/Pods
             ~/Library/Caches/CocoaPods
             ~/.cocoapods
           key: ${{ runner.os }}-pods-${{ hashFiles('*/Podfile.lock', '*/*/Podfile.lock') }}
@@ -81,11 +81,11 @@ jobs:
 
       - name: pod install
         run: |
-          yarn pods
+          yarn bootstrap
 
       - name: Create main.jsbundle
         run: |
-          yarn --cwd packages/example build:ios:dev
+          yarn example build:ios:dev
 
       - name: Distribute the React Native iOS app on Appetize 🚀
         run: |

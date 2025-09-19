@@ -141,3 +141,7 @@ import { BanksLoading, BanksRetrieved, BanksStep } from './models/banks/BanksSte
 export type { BanksLoading, BanksRetrieved, BanksStep };
 import { NamedComponentValidatableData } from './models/NamedComponentValidatableData';
 export type { NamedComponentValidatableData };
+
+// must be exported in order to support the old architecture
+const nativeModule = require("./specs/NativePrimer").default;
+export default nativeModule;
