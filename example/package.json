@@ -9,10 +9,11 @@
     "start": "react-native start",
     "test": "jest",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "pods": "cd ios && pod install",
     "build:ios:dev": "npx react-native bundle --entry-file='../src/index.tsx' --bundle-output='./ios/main.jsbundle' --dev=true --platform='ios' --assets-dest='./ios'",
-    "build:ios:release": "npx react-native bundle --entry-file='../sdk/index.js' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios'",
-    "build:android:dev": " npx react-native bundle --platform android --dev true --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res && npx react-native run-android",
-    "build:android:release": "npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res && npx react-native run-android"
+    "build:ios:release": "npx react-native bundle --entry-file='../src/index.tsx' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios' --assets-dest='./ios'",
+    "build:android:dev": "npx react-native bundle --platform android --dev true --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res && npx react-native run-android --active-arch-only",
+    "build:android:release": "npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res && npx react-native run-android --active-arch-only"
   },
   "dependencies": {
     "@react-native-segmented-control/segmented-control": "^2.4.0",
@@ -27,8 +28,7 @@
     "react-native-loading-spinner-overlay": "^3.0.1",
     "react-native-safe-area-context": "^5.6.1",
     "react-native-safe-area-view": "^1.1.1",
-    "react-native-screens": "4.16.0",
-    "slack-message-builder": "^1.2.1"
+    "react-native-screens": "4.16.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

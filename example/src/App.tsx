@@ -15,6 +15,10 @@ import HeadlessCheckoutKlarnaScreen from './screens/HeadlessCheckoutKlarnaScreen
 import HeadlessCheckoutWithRedirect from './screens/HeadlessCheckoutWithRedirect';
 import HeadlessCheckoutStripeAchScreen from './screens/HeadlessCheckoutStripeAchScreen';
 import {LogBox} from 'react-native';
+import {
+  SafeAreaProvider,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context';
 
 const Stack = createNativeStackNavigator();
 
@@ -24,6 +28,7 @@ LogBox.ignoreLogs([
 
 const App = () => {
   return (
+    <SafeAreaProvider>
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen name="Settings" component={SettingsScreen} />
@@ -56,6 +61,7 @@ const App = () => {
           />
         </Stack.Navigator>
       </NavigationContainer>
+    </SafeAreaProvider>
   );
 };
 

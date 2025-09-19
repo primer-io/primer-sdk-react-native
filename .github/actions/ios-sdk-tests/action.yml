@@ -60,7 +60,7 @@ runs:
     - name: pod install
       shell: bash
       run: |
-        yarn pods
+        yarn example pods
 
     - name: Create main.jsbundle
       shell: bash

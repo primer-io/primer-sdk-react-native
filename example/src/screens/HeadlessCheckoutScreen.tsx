@@ -26,7 +26,7 @@ import {
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import {showAchMandateAlert} from './AchMandateAlert';
 import {STRIPE_ACH_PUBLISHABLE_KEY} from '../Keys';
-import {PrimerPaymentMethodAsset} from '@primer-io/react-native/lib/typescript/models/PrimerPaymentMethodResource';
+import {PrimerPaymentMethodAsset} from '@primer-io/react-native';
 
 let log: string = '';
 let merchantPaymentId: string | null = null;
@@ -104,11 +104,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
         isExistingPaymentMethodRequired: false,
         shippingAddressParameters: {phoneNumberRequired: true},
         requireShippingMethod: false,
-        emailAddressRequired: true,
-        buttonOptions: {
-          buttonTheme: PrimerGooglePayButtonConstants.Themes.Light,
-          buttonType: PrimerGooglePayButtonConstants.Types.Checkout,
-        },
+        emailAddressRequired: true
       },
     },
     uiOptions: {

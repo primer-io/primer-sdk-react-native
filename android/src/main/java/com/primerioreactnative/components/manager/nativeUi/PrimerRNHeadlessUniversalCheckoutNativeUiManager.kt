@@ -64,7 +64,7 @@ internal class PrimerRNHeadlessUniversalCheckoutNativeUiManager(
                         " and providing a payment method type.",
                 )
             promise.reject(exception.errorId, exception.description)
-        } else if (PrimerSessionIntent.values()
+        } else if (PrimerSessionIntent.entries
                 .firstOrNull { intentStr.equals(it.name, true) } == null
         ) {
             val exception =

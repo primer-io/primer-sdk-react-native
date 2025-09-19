@@ -112,7 +112,7 @@ let primerSettings: PrimerSettings | undefined;
 async function configureListeners(): Promise<void> {
   return new Promise(async (resolve, reject) => {
     try {
-       RNPrimer.removeAllListeners();
+      RNPrimer.removeAllListeners();
 
       let implementedRNCallbacks: PrimerImplementedRNCallbacks = {
         onAvailablePaymentMethodsLoad: false,
@@ -268,6 +268,7 @@ export const Primer: IPrimer = {
       try {
         await configureListeners();
         await RNPrimer.showUniversalCheckout(clientToken);
+        resolve();
       } catch (err) {
         reject(err);
       }

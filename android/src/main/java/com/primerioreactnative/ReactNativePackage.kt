@@ -19,6 +19,7 @@ import com.primerioreactnative.components.manager.nativeUi.PrimerRNHeadlessUnive
 import com.primerioreactnative.components.manager.raw.PrimerRNHeadlessUniversalCheckoutRawManager
 import com.primerioreactnative.components.manager.vault.PrimerRNHeadlessUniversalCheckoutVaultManager
 import kotlinx.serialization.json.Json
+import java.com.primerioreactnative.NativePrimerModule
 
 class ReactNativePackage : ReactPackage {
   private val json = Json { ignoreUnknownKeys = true }
@@ -55,7 +56,7 @@ class ReactNativeTurboPackage : BaseReactPackage() {
   private val json = Json { ignoreUnknownKeys = true }
 
   override fun getModule(name: String, reactContext: ReactApplicationContext): NativeModule? =
-    if (name == NativePrimerModule.NAME) {
+    if (name == DefaultNativePrimerModule.NAME) {
       NativePrimerModule(reactContext, json)
     } else {
       null
@@ -63,11 +64,11 @@ class ReactNativeTurboPackage : BaseReactPackage() {
 
   override fun getReactModuleInfoProvider() = ReactModuleInfoProvider {
     mapOf(
-      NativePrimerModule.NAME to ReactModuleInfo(
-        name = NativePrimerModule.NAME,
-        className = NativePrimerModule.NAME,
+      DefaultNativePrimerModule.NAME to ReactModuleInfo(
+        name = DefaultNativePrimerModule.NAME,
+        className = DefaultNativePrimerModule.NAME,
         canOverrideExistingModule = false,
-        needsEagerInit = true,
+        needsEagerInit = false,
         isCxxModule = false,
         isTurboModule = true
       )

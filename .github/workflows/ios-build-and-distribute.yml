@@ -50,19 +50,18 @@ jobs:
         run: |
           echo "export const STRIPE_ACH_PUBLISHABLE_KEY = '${{ secrets.STRIPE_PUBLISHABLE_KEY }}'" > example/src/Keys.ts
 
-      - name: Get npm cache directory
-        id: npm-cache-dir
-        run: echo "dir=$(npm config get cache)" >> ${GITHUB_OUTPUT}
-
-      - name: Cache npm dependencies
+      - name: Cache Yarn dependencies
         uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf # v4.2.2
-        id: npm-cache
         with:
-          path: ${{ steps.npm-cache-dir.outputs.dir }}
-          key: ${{ runner.os }}-node-${{ hashFiles('*/package-lock.json', '*/*/package-lock.json') }}
+          path: |
+            .yarn/cache
+            .yarn/unplugged
+            .yarn/install-state.gz
+            node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock', '**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.os }}-node-
-
+            ${{ runner.os }}-yarn-
+      
       - name: Cache pods
         uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf # v4.2.2
         with:
@@ -70,7 +69,7 @@ jobs:
             example/ios/Pods
             ~/Library/Caches/CocoaPods
             ~/.cocoapods
-          key: ${{ runner.os }}-pods-${{ hashFiles('*/Podfile.lock', '*/*/Podfile.lock') }}
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
           restore-keys: |
             ${{ runner.os }}-pods-
 
@@ -84,7 +83,7 @@ jobs:
 
       - name: Create main.jsbundle
         run: |
-          yarn example build:ios:dev
+          yarn example build:ios:release
 
       - name: Distribute the React Native iOS app on Appetize 🚀
         run: |

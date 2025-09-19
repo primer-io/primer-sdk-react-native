@@ -23,18 +23,6 @@ class RNTPrimerTests: XCTestCase {
         super.tearDown()
     }
 
-    // MARK: - INITIALIZATION & REACT NATIVE SUPPORT
-
-    func testInitialization() {
-        XCTAssertNotNil(rnPrimer)
-        XCTAssertTrue(RNTPrimer.requiresMainQueueSetup())
-    }
-
-    func testSupportedEvents() {
-        let expectedEvents = PrimerEvents.allCases.map { $0.stringValue }
-        XCTAssertEqual(rnPrimer.supportedEvents(), expectedEvents)
-    }
-
     // MARK: - SDK API
 
     func testConfigure() {

@@ -4,11 +4,13 @@
 //
 
 #import "RCTNativePrimer.h"
+@protocol PrimerDelegate;
 #import "primer_io_react_native-Swift.h"
 
 #ifdef RCT_NEW_ARCH_ENABLED
 #import <NativePrimerSpec/NativePrimerSpec.h>
 #endif
+
 
 @interface RCTNativePrimer()
 @property (nonatomic, strong) RNTPrimer *primer;
@@ -106,6 +108,15 @@ RCT_EXPORT_METHOD(showVaultManagerWithClientToken:(NSString *)clientToken
     [self.primer showVaultManagerWithClientToken:clientToken resolver:resolve rejecter:reject];
 }
 
+RCT_EXPORT_METHOD(showPaymentMethod:(NSString *)paymentMethod
+                  intent:(NSString *)intent
+                  clientToken:(NSString *)clientToken
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
+    [self.primer showPaymentMethod:paymentMethod intent:intent clientToken:clientToken resolver:resolve rejecter:reject];
+}
+
+
 RCT_EXPORT_METHOD(dismiss:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject) {
     [self.primer dismiss];
@@ -171,6 +182,9 @@ RCT_EXPORT_METHOD(cleanUp:(RCTPromiseResolveBlock)resolve
 
 - (void)showVaultManagerWithClientToken:(nonnull NSString *)clientToken resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject { 
     [self.primer showVaultManagerWithClientToken:clientToken resolver:resolve rejecter:reject];
+}
+- (void)showPaymentMethod:(nonnull NSString *)paymentMethod intent:(nonnull NSString *)intent clientToken:(nonnull NSString *)clientToken resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject { 
+    [self.primer showPaymentMethod:paymentMethod intent:intent clientToken:clientToken resolver:resolve rejecter:reject];
 }
 
 #pragma mark - TurboModule

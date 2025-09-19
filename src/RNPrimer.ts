@@ -76,7 +76,6 @@ const RNPrimer = {
         await NativePrimer.configure(JSON.stringify(settings) || '');
         resolve();
       } catch (err) {
-        console.log(err);
         reject(err);
       }
     });
@@ -107,7 +106,7 @@ const RNPrimer = {
   showPaymentMethod: (paymentMethod: string, intent: string, clientToken: string): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {
-        // TODO await NativePrimer.showPaymentMethod(paymentMethod, intent, clientToken);
+        await NativePrimer.showPaymentMethod(paymentMethod, intent, clientToken);
         resolve();
       } catch (err) {
         reject(err);

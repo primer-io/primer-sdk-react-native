@@ -13,7 +13,7 @@ export interface Spec extends TurboModule {
   // Checkout methods
   showUniversalCheckoutWithClientToken(clientToken: string): Promise<void>;
   showVaultManagerWithClientToken(clientToken: string): Promise<void>;
-  
+  showPaymentMethod(paymentMethod: string, intent: string, clientToken: string): Promise<void>;
   // Cleanup
   dismiss(): Promise<void>;
   cleanUp(): Promise<void>;

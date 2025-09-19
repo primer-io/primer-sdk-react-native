@@ -39,7 +39,7 @@
     "release": "release-it",
     "example": "yarn workspace @primer-io/react-native-example",
     "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build lib",
-    "bootstrap": "yarn example && yarn && yarn pods",
+    "bootstrap": "yarn example pods",
     "test": "jest src/__tests__ --coverage",
     "test:unit:coverage:lcov": "yarn test && node scripts/aggregate-coverage.js && nyc report --reporter lcov"
   },
@@ -83,6 +83,7 @@
     "react-native": "0.81.1",
     "react-native-builder-bob": "^0.40.13",
     "react-test-renderer": "19.1.0",
+    "slack-message-builder": "^1.2.1",
     "ts-jest": "^29.1.2",
     "turbo": "^2.5.6",
     "typescript": "^5.9.2"

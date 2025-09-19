@@ -12,7 +12,7 @@ github_run_number = ENV["GITHUB_RUN_NUMBER"]
 # Xcode
 app_workspace = "example/ios/example_0_70_6.xcworkspace"
 app_xcode_proj = "example/ios/example_0_70_6.xcodeproj"
-app_scheme = "example"
+app_scheme = "example_0_70_6"
 
 # Packages
 app_output_path = "/var/tmp/Primer.io_ReactNativeExample.xcarchive/Products/Applications/example_0_70_6.app"
@@ -95,11 +95,11 @@ platform :ios do
       scheme: app_scheme,
       sdk: "iphonesimulator", # Appetize needs a simulator app
       workspace: app_workspace,
-      configuration: "Debug",
+      configuration: "Release",
       destination: "generic/platform=iOS Simulator",
       xcargs: "EXCLUDED_ARCHS[sdk=iphonesimulator*]=arm64",
       include_bitcode: false,
-      export_method: "development",
+      export_method: "ad-hoc",
       archive_path: app_output_archive_path,
       # Build speed optimisation
       skip_package_ipa: true,

@@ -42,7 +42,7 @@ target 'example_0_70_6' do
       installer,
       config[:reactNativePath],
       :mac_catalyst_enabled => false,
-      # :ccache_enabled => true
+      :ccache_enabled => true
     )
     
     # Fix for fmt library issue
