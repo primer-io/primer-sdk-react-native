@@ -40,7 +40,7 @@
     "example": "yarn workspace @primer-io/react-native-example",
     "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build lib",
     "bootstrap": "yarn example && yarn && yarn pods",
-    "test": "yarn test",
+    "test": "jest src/__tests__ --coverage",
     "test:unit:coverage:lcov": "yarn test && node scripts/aggregate-coverage.js && nyc report --reporter lcov"
   },
   "keywords": [

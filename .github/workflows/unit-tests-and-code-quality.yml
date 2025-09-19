@@ -12,8 +12,11 @@ jobs:
         with:
           cache: 'yarn'
 
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Install modules
-        run: yarn install --immutable
+        run: yarn
 
       - name: Run tests and generate lcov report
         run: yarn test:unit:coverage:lcov -- --maxWorkers=1
@@ -72,6 +75,9 @@ jobs:
         uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
         with:
           cache: 'yarn'
+
+      - name: Enable Corepack
+        run: corepack enable
 
       - name: Install modules
         run: yarn install --immutable
