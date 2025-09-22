@@ -70,6 +70,7 @@ build-and-release:
     # Build
     - |
       yarn install
+      yarn build
     # Publish
     - npm publish -tag ${DIST_TAG}
 

@@ -1,6 +1,6 @@
-import { NamedComponentValidatableData } from './NamedComponentValidatableData';
+import type { NamedComponentValidatableData } from './NamedComponentValidatableData';
 import { PrimerError } from './PrimerError';
-import { PrimerValidationError } from './PrimerValidationError';
+import type { PrimerValidationError } from './PrimerValidationError';
 
 export type PrimerValidatingComponentData<T extends NamedComponentValidatableData> = IPrimerValidatingComponentData<T>;
 export type PrimerValidComponentData<T extends NamedComponentValidatableData> = IPrimerValidComponentData<T>;

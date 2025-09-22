@@ -1,4 +1,4 @@
-import { NamedComponentValidatableData } from '../NamedComponentValidatableData';
+import type { NamedComponentValidatableData } from '../NamedComponentValidatableData';
 
 export type AchValidatableData = AchUserDetailsValidatableData;
 

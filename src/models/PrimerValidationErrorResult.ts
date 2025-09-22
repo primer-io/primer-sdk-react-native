@@ -1,4 +1,4 @@
-import { PrimerValidationError } from './PrimerValidationError';
+import type { PrimerValidationError } from './PrimerValidationError';
 
 export type PrimerValidationErrorResult = IPrimerValidationErrorResult;
 

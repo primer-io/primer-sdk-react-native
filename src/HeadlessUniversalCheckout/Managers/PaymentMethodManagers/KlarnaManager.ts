@@ -1,14 +1,16 @@
-import { NativeEventEmitter, NativeModules, EmitterSubscription } from 'react-native';
-import {
+import { NativeEventEmitter, NativeModules } from 'react-native';
+import type { EmitterSubscription } from 'react-native';
+import type {
   PrimerComponentDataValidationError,
   PrimerInvalidComponentData,
   PrimerValidComponentData,
   PrimerValidatingComponentData,
 } from '../../../models/PrimerComponentDataValidation';
 import { PrimerError } from '../../../models/PrimerError';
-import { KlarnaPaymentOptions, KlarnaPaymentValidatableData } from '../../../models/klarna/KlarnaPaymentCollectableData';
-import { KlarnaPaymentStep } from '../../../models/klarna/KlarnaPaymentSteps';
-import { EventType, eventTypes } from './Utils/EventType';
+import type { KlarnaPaymentOptions, KlarnaPaymentValidatableData } from '../../../models/klarna/KlarnaPaymentCollectableData';
+import type { KlarnaPaymentStep } from '../../../models/klarna/KlarnaPaymentSteps';
+import { eventTypes } from './Utils/EventType';
+import type { EventType } from './Utils/EventType';
 import { PrimerSessionIntent } from '../../../models/PrimerSessionIntent';
 
 const { RNTPrimerHeadlessUniversalCheckoutKlarnaComponent } = NativeModules;

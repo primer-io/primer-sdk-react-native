@@ -1,5 +1,5 @@
-import { NamedComponentStep } from './../NamedComponentStep';
-import { KlarnaPaymentCategory } from './KlarnaPaymentCategory';
+import type { NamedComponentStep } from './../NamedComponentStep';
+import type { KlarnaPaymentCategory } from './KlarnaPaymentCategory';
 
 export type KlarnaPaymentStep =
   | PaymentSessionCreated

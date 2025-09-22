@@ -1,5 +1,5 @@
 import type { PrimerSettings } from './models/PrimerSettings';
-import { EventSubscription } from 'react-native';
+import type { EventSubscription } from 'react-native';
 import NativePrimer from "../src/index";
 
 import { NativeEventEmitter, NativeModules } from 'react-native';
@@ -29,20 +29,6 @@ export interface IPrimerError {
   recoverySuggestion?: string;
 }
 
-const eventTypes: EventType[] = [
-  'onCheckoutComplete',
-  'onBeforeClientSessionUpdate',
-  'onClientSessionUpdate',
-  'onBeforePaymentCreate',
-  'onError',
-  'onDismiss',
-  'onTokenizeSuccess',
-  'onResumeSuccess',
-  'onCheckoutReceivedAdditionalInfo',
-  'onResumePending',
-  'detectImplementedRNCallbacks',
-];
-
 const RNPrimer = {
   ///////////////////////////////////////////
   // Event Emitter
@@ -52,7 +38,7 @@ const RNPrimer = {
     if (NativePrimer.onEvent) {
       // New Architecture
       subscriptions.push(
-        NativePrimer.onEvent((emittedEvent) => {
+        NativePrimer.onEvent((emittedEvent: any) => {
           if (emittedEvent.eventType === eventType) {
             listener(emittedEvent.data); 
           }

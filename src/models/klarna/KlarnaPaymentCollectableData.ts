@@ -1,5 +1,5 @@
-import { NamedComponentValidatableData } from '../NamedComponentValidatableData';
-import { KlarnaPaymentCategory } from './KlarnaPaymentCategory';
+import type { NamedComponentValidatableData } from '../NamedComponentValidatableData';
+import type { KlarnaPaymentCategory } from './KlarnaPaymentCategory';
 
 export type KlarnaPaymentValidatableData = KlarnaPaymentOptions | KlarnaPaymentFinalization;
 

@@ -1,5 +1,5 @@
-import { IssuingBank } from '../IssuingBank';
-import { NamedComponentStep } from '../NamedComponentStep';
+import type { IssuingBank } from '../IssuingBank';
+import type { NamedComponentStep } from '../NamedComponentStep';
 
 export type BanksStep = BanksLoading | BanksRetrieved;
 

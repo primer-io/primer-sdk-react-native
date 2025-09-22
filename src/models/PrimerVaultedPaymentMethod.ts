@@ -1,4 +1,4 @@
-import { IPrimerPaymentInstrumentData, IPrimerThreeDSAuthenticationData } from './PrimerPaymentMethodTokenData';
+import type { IPrimerPaymentInstrumentData, IPrimerThreeDSAuthenticationData } from './PrimerPaymentMethodTokenData';
 
 export type PrimerVaultedPaymentMethod = IPrimerVaultedPaymentMethod;
 

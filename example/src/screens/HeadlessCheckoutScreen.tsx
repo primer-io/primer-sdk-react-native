@@ -19,7 +19,6 @@ import {
   NativeUIManager,
   PaymentMethod,
   PrimerSettings,
-  PrimerGooglePayButtonConstants,
   Resource,
   SessionIntent,
 } from '@primer-io/react-native';
@@ -102,7 +101,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
       googlePayOptions: {
         isCaptureBillingAddressEnabled: true,
         isExistingPaymentMethodRequired: false,
-        shippingAddressParameters: {phoneNumberRequired: true},
+        shippingAddressParameters: {isPhoneNumberRequired: true},
         requireShippingMethod: false,
         emailAddressRequired: true
       },

@@ -1,14 +1,16 @@
-import { NativeEventEmitter, NativeModules, EmitterSubscription } from 'react-native';
-import { BanksValidatableData } from '../../../models/banks/BanksCollectableData';
-import {
+import { NativeEventEmitter, NativeModules } from 'react-native';
+import type { EmitterSubscription } from 'react-native';
+import type { BanksValidatableData } from '../../../models/banks/BanksCollectableData';
+import type {
   PrimerComponentDataValidationError,
   PrimerInvalidComponentData,
   PrimerValidComponentData,
   PrimerValidatingComponentData,
 } from '../../../models/PrimerComponentDataValidation';
 import { PrimerError } from '../../../models/PrimerError';
-import { BanksStep } from '../../../models/banks/BanksSteps';
-import { EventType, eventTypes } from './Utils/EventType';
+import type { BanksStep } from '../../../models/banks/BanksSteps';
+import { eventTypes } from './Utils/EventType';
+import type { EventType } from './Utils/EventType';
 
 const { RNTPrimerHeadlessUniversalCheckoutBanksComponent } = NativeModules;
 

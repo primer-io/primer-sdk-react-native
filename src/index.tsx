@@ -57,8 +57,11 @@ export type { IPrimerValidationError as ValidationError } from './models/PrimerV
 
 import PrimerHeadlessUniversalCheckoutVaultManager from './HeadlessUniversalCheckout/Managers/VaultManager';
 export { PrimerHeadlessUniversalCheckoutVaultManager as VaultManager };
+
 import {
   PrimerHeadlessUniversalCheckoutKlarnaManager,
+} from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/KlarnaManager';
+import type {
   KlarnaComponent,
   KlarnaManagerProps,
 } from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/KlarnaManager';
@@ -66,11 +69,11 @@ import {
 export { PrimerHeadlessUniversalCheckoutKlarnaManager as KlarnaManager };
 export type { KlarnaComponent, KlarnaManagerProps };
 
-import { NamedComponentStep } from './models/NamedComponentStep';
+import type { NamedComponentStep } from './models/NamedComponentStep';
 export type { NamedComponentStep };
-import { KlarnaPaymentCategory } from './models/klarna/KlarnaPaymentCategory';
-export type{ KlarnaPaymentCategory };
-import {
+import type { KlarnaPaymentCategory } from './models/klarna/KlarnaPaymentCategory';
+export type { KlarnaPaymentCategory };
+import type {
   PrimerValidComponentData,
   PrimerValidatingComponentData,
   PrimerInvalidComponentData,
@@ -82,13 +85,13 @@ export type {
   PrimerInvalidComponentData,
   PrimerComponentDataValidationError,
 };
-import {
+import type {
   KlarnaPaymentOptions,
   KlarnaPaymentFinalization,
   KlarnaPaymentValidatableData,
 } from './models/klarna/KlarnaPaymentCollectableData';
 export type { KlarnaPaymentOptions, KlarnaPaymentFinalization, KlarnaPaymentValidatableData };
-import {
+import type {
   PaymentSessionCreated,
   PaymentSessionAuthorized,
   PaymentSessionFinalized,
@@ -110,16 +113,17 @@ import { PrimerGooglePayButtonConstants } from './HeadlessUniversalCheckout/Comp
 export { PrimerGooglePayButtonConstants };
 import { PrimerGooglePayButton } from './HeadlessUniversalCheckout/Components/PrimerGooglePayButton';
 export { PrimerGooglePayButton };
-import { UserDetailsRetrieved, UserDetailsCollected, AchStep } from './models/ach/AchSteps';
+import type { UserDetailsRetrieved, UserDetailsCollected, AchStep } from './models/ach/AchSteps';
 export type { UserDetailsRetrieved as CollectUserDetails, UserDetailsCollected, AchStep };
-import { AchFirstName, AchLastName, AchEmailAddress, AchValidatableData } from './models/ach/AchCollectableData';
+import type { AchFirstName, AchLastName, AchEmailAddress, AchValidatableData } from './models/ach/AchCollectableData';
 export type { AchFirstName, AchLastName, AchEmailAddress, AchValidatableData };
 import {
   PrimerHeadlessUniversalCheckoutAchManager,
+} from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/AchManager';
+import type {
   StripeAchUserDetailsComponent,
   AchManagerProps,
 } from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/AchManager';
-
 
 import { PrimerHeadlessUniversalCheckoutAchMandateManager } from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/AchMandateManager';
 export { PrimerHeadlessUniversalCheckoutAchMandateManager as AchMandateManager };
@@ -128,18 +132,20 @@ export type { StripeAchUserDetailsComponent, AchManagerProps };
 
 import {
   PrimerHeadlessUniversalCheckoutComponentWithRedirectManager,
+} from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/ComponentWithRedirectManager';
+import type {
   BanksComponent,
   ComponentWithRedirectManagerProps,
 } from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/ComponentWithRedirectManager';
 export { PrimerHeadlessUniversalCheckoutComponentWithRedirectManager as ComponentWithRedirectManager };
 export type { BanksComponent, ComponentWithRedirectManagerProps };
-import { IssuingBank } from './models/IssuingBank';
+import type { IssuingBank } from './models/IssuingBank';
 export type { IssuingBank };
-import { BankId, BankListFilter, BanksValidatableData } from './models/banks/BanksCollectableData';
+import type { BankId, BankListFilter, BanksValidatableData } from './models/banks/BanksCollectableData';
 export type { BankId, BankListFilter, BanksValidatableData };
-import { BanksLoading, BanksRetrieved, BanksStep } from './models/banks/BanksSteps';
+import type { BanksLoading, BanksRetrieved, BanksStep } from './models/banks/BanksSteps';
 export type { BanksLoading, BanksRetrieved, BanksStep };
-import { NamedComponentValidatableData } from './models/NamedComponentValidatableData';
+import type { NamedComponentValidatableData } from './models/NamedComponentValidatableData';
 export type { NamedComponentValidatableData };
 
 // must be exported in order to support the old architecture

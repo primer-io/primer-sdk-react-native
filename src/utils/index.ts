@@ -19,9 +19,9 @@ export function toRgbColor(hex: string): RgbaColor | null {
 
   // convert hex string to decimal
   return {
-    red: parseInt(r, 16),
-    green: parseInt(g, 16),
-    blue: parseInt(b, 16),
+    red: parseInt(r || '0', 16),
+    green: parseInt(g || '0', 16),
+    blue: parseInt(b || '0', 16),
     alpha: 1,
   };
 }

@@ -3,7 +3,7 @@ import {Text, TouchableOpacity, View, ScrollView} from 'react-native';
 import {ActivityIndicator} from 'react-native';
 import {
   InputElementType,
-  BancontactCardRedirectData,
+  BancontactCardData,
   RawDataManager,
 } from '@primer-io/react-native';
 import TextField from '../components/TextField';
@@ -67,7 +67,7 @@ const RawAdyenBancontactCardScreen = (props: any) => {
     tmpExpiryDate: string | null,
     tmpCardholderName: string | null,
   ) => {
-    let rawData: BancontactCardRedirectData = {
+    let rawData: BancontactCardData = {
       cardNumber: cardNumber || '',
       expiryDate: expiryDate || '',
       cardholderName: cardholderName || '',

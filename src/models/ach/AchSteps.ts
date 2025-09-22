@@ -1,4 +1,4 @@
-import { NamedComponentStep } from '../NamedComponentStep';
+import type { NamedComponentStep } from '../NamedComponentStep';
 
 export type AchStep = AchUserDetailsStep;
 

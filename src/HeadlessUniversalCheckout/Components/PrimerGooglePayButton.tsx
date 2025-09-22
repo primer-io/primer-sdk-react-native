@@ -1,4 +1,5 @@
-import { requireNativeComponent, ViewProps } from 'react-native';
+import { requireNativeComponent } from 'react-native';
+import type { ViewProps } from 'react-native';
 
 interface PrimerGooglePayButtonProps extends ViewProps {}
 

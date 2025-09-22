@@ -1,4 +1,5 @@
-import { GestureResponderEvent, StyleSheet, TouchableOpacity, ViewStyle, NativeModules } from 'react-native';
+import { StyleSheet, TouchableOpacity, NativeModules } from 'react-native';
+import type { GestureResponderEvent, ViewStyle } from 'react-native';
 import { PrimerGooglePayButton } from './PrimerGooglePayButton';
 import React from 'react';
 

@@ -1,14 +1,16 @@
-import { NativeEventEmitter, NativeModules, EmitterSubscription } from 'react-native';
-import {
+import { NativeEventEmitter, NativeModules } from 'react-native';
+import type { EmitterSubscription } from 'react-native';
+import type {
   PrimerComponentDataValidationError,
   PrimerInvalidComponentData,
   PrimerValidComponentData,
   PrimerValidatingComponentData,
 } from '../../../models/PrimerComponentDataValidation';
 import { PrimerError } from '../../../models/PrimerError';
-import { EventType, eventTypes } from './Utils/EventType';
-import { AchStep } from '../../../models/ach/AchSteps';
-import { AchValidatableData } from '../../../models/ach/AchCollectableData';
+import { eventTypes } from './Utils/EventType';
+import type { EventType } from './Utils/EventType';
+import type { AchStep } from '../../../models/ach/AchSteps';
+import type { AchValidatableData } from '../../../models/ach/AchCollectableData';
 
 const { RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent } = NativeModules;
 

@@ -1,8 +1,9 @@
-{
-  "extends": "@react-native/typescript-config/tsconfig.json",
-  "compilerOptions": {
-    "skipLibCheck": true,
-    "include": ["**/*.ts", "**/*.tsx"],
-    "exclude": ["**/node_modules", "**/Pods"]
-  }
-}
+// example/tsconfig.json
+   {
+    "extends": "@react-native/typescript-config/tsconfig.json",
+     "compilerOptions": {
+       "paths": {
+          "@primer-io/react-native": ["../src/index.tsx"]
+       }
+     }
+   }

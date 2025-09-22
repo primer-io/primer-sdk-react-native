@@ -1,6 +1,6 @@
-import { NativeEventEmitter, NativeModules, EmitterSubscription } from 'react-native';
+import { NativeEventEmitter, NativeModules } from 'react-native';
+import type { EmitterSubscription, EventSubscription } from 'react-native';
 import type { PrimerSettings } from '../models/PrimerSettings';
-import { EventSubscription } from 'react-native';
 
 const { PrimerHeadlessUniversalCheckout } = NativeModules;
 
