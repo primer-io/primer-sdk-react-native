@@ -209,8 +209,6 @@ extension PrimerSettings {
       var apiVersion: PrimerApiVersion?
       if let apiVersionValue = (settingsJson["apiVersion"] as? String) {
         switch apiVersionValue {
-        case "2.3":
-          apiVersion = PrimerApiVersion.V2_3
         case "2.4":
           apiVersion = PrimerApiVersion.V2_4
         case "latest":
