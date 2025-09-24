@@ -9,14 +9,14 @@ PODS:
     - hermes-engine/Pre-built (= 0.81.1)
   - hermes-engine/Pre-built (0.81.1)
   - primer-io-react-native (2.36.0):
-    - PrimerSDK (= 2.40.0)
+    - PrimerSDK (= 2.41.1)
     - React-Core
-  - Primer3DS (2.4.4)
+  - Primer3DS (2.5.0)
   - PrimerIPay88MYSDK (0.1.7)
   - PrimerKlarnaSDK (1.1.1)
-  - PrimerSDK (2.40.0):
-    - PrimerSDK/Core (= 2.40.0)
-  - PrimerSDK/Core (2.40.0)
+  - PrimerSDK (2.41.1):
+    - PrimerSDK/Core (= 2.41.1)
+  - PrimerSDK/Core (2.41.1)
   - PrimerStripeSDK (1.0.0)
   - RCT-Folly (2024.11.18.00):
     - boost
@@ -2668,11 +2668,11 @@ SPEC CHECKSUMS:
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
   glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
   hermes-engine: 4f8246b1f6d79f625e0d99472d1f3a71da4d28ca
-  primer-io-react-native: 34ed43bde780847ac220321a9e1c5863de933c15
-  Primer3DS: 4ef5bcb529bc538d223419a266290ac35db2b4d5
+  primer-io-react-native: 5e663b824d5739418cd6ca58606c9f94247c50bd
+  Primer3DS: 8fa0143a9f806eb016f3e780e72569fa149cc267
   PrimerIPay88MYSDK: 436ee0be7e2c97e4e81456ccddee20175e9e3c4d
   PrimerKlarnaSDK: 564105170cc7b467bf95c31851813ea41c468f8b
-  PrimerSDK: 7757da25df495530d2da62752627728ae87fe3a0
+  PrimerSDK: 8c771df1cf9cbfc834f3df65aeb0d939086e6a30
   PrimerStripeSDK: c37d4e7c1b5256d67d4890c4cc4b38ddc9427489
   RCT-Folly: 846fda9475e61ec7bcbf8a3fe81edfcaeb090669
   RCTDeprecation: c4b9e2fd0ab200e3af72b013ed6113187c607077
@@ -2745,4 +2745,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 9706089258d896be286000d75513c5c6257d0d7f
 
-COCOAPODS: 1.16.2
+COCOAPODS: 1.15.2
