@@ -8,7 +8,7 @@ PODS:
   - hermes-engine (0.81.1):
     - hermes-engine/Pre-built (= 0.81.1)
   - hermes-engine/Pre-built (0.81.1)
-  - primer-io-react-native (2.36.0):
+  - primer-io-react-native (2.37.0):
     - PrimerSDK (= 2.41.1)
     - React-Core
   - Primer3DS (2.5.0)
@@ -2668,7 +2668,7 @@ SPEC CHECKSUMS:
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
   glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
   hermes-engine: 4f8246b1f6d79f625e0d99472d1f3a71da4d28ca
-  primer-io-react-native: 5e663b824d5739418cd6ca58606c9f94247c50bd
+  primer-io-react-native: deaee35faaa56c0fd62e4d3955e365a2050db388
   Primer3DS: 8fa0143a9f806eb016f3e780e72569fa149cc267
   PrimerIPay88MYSDK: 436ee0be7e2c97e4e81456ccddee20175e9e3c4d
   PrimerKlarnaSDK: 564105170cc7b467bf95c31851813ea41c468f8b
