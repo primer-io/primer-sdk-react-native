@@ -1,5 +1,5 @@
 variables:
-  NODE_VERSION: '18'
+  NODE_VERSION: '20'
 
 workflow:
   rules:
