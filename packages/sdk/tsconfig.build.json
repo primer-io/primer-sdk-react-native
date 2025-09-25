@@ -1,12 +1,31 @@
 {
   "extends": "@react-native/typescript-config",
   "compilerOptions": {
+    "target": "es2017",
+    "lib": ["es6"],
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "jsx": "react-native",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noImplicitUseStrict": false,
+    "noStrictGenericChecks": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "paths": {
       "src": ["./src"],
       "src/*": ["./src/*"]
     }
   },
-  "include": ["**/*.ts", "**/*.tsx"],
-  "exclude": ["**/node_modules", "**/Pods"]
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": ["**/node_modules", "**/Pods", "**/__tests__"]
 }
