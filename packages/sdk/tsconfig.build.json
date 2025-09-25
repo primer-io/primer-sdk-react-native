@@ -1,5 +1,4 @@
 {
-  "extends": "@react-native/typescript-config",
   "compilerOptions": {
     "target": "es2017",
     "lib": ["es6"],
