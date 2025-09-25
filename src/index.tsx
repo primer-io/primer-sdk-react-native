@@ -43,54 +43,34 @@ export type {
 } from './models/PrimerPaymentMethodResource';
 export { PrimerHeadlessUniversalCheckout as HeadlessUniversalCheckout } from './HeadlessUniversalCheckout/PrimerHeadlessUniversalCheckout';
 export type { IPrimerHeadlessUniversalCheckoutPaymentMethod as PaymentMethod } from './models/PrimerHeadlessUniversalCheckoutPaymentMethod';
-import PrimerHeadlessUniversalCheckoutAssetsManager from './HeadlessUniversalCheckout/Managers/AssetsManager';
-export { PrimerHeadlessUniversalCheckoutAssetsManager as AssetsManager };
-import PrimerHeadlessUniversalCheckoutPaymentMethodNativeUIManager from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/NativeUIManager';
-export { PrimerHeadlessUniversalCheckoutPaymentMethodNativeUIManager as NativeUIManager };
-import PrimerHeadlessUniversalCheckoutRawDataManager from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/RawDataManager';
-export { PrimerHeadlessUniversalCheckoutRawDataManager as RawDataManager };
+export { default as AssetsManager } from './HeadlessUniversalCheckout/Managers/AssetsManager';
+export { default as NativeUIManager } from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/NativeUIManager';
+export { default as RawDataManager } from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/RawDataManager';
 export type { IPrimerVaultedPaymentMethod as VaultedPaymentMethod } from './models/PrimerVaultedPaymentMethod';
 
 export type { IPrimerVaultedPaymentMethodAdditonalData as VaultedPaymentMethodAdditionalData } from './models/PrimerVaultedPaymentMethodAdditionalData';
 
 export type { IPrimerValidationError as ValidationError } from './models/PrimerValidationError';
 
-import PrimerHeadlessUniversalCheckoutVaultManager from './HeadlessUniversalCheckout/Managers/VaultManager';
-export { PrimerHeadlessUniversalCheckoutVaultManager as VaultManager };
-
-import {
-  PrimerHeadlessUniversalCheckoutKlarnaManager,
-} from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/KlarnaManager';
-import type {
+export { default as VaultManager } from './HeadlessUniversalCheckout/Managers/VaultManager';
+export { PrimerHeadlessUniversalCheckoutKlarnaManager as KlarnaManager } from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/KlarnaManager';
+export type {
   KlarnaComponent,
   KlarnaManagerProps,
 } from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/KlarnaManager';
-
-export { PrimerHeadlessUniversalCheckoutKlarnaManager as KlarnaManager };
-export type { KlarnaComponent, KlarnaManagerProps };
-
-import type { NamedComponentStep } from './models/NamedComponentStep';
-export type { NamedComponentStep };
-import type { KlarnaPaymentCategory } from './models/klarna/KlarnaPaymentCategory';
-export type { KlarnaPaymentCategory };
-import type {
+export type { NamedComponentStep } from './models/NamedComponentStep';
+export type { KlarnaPaymentCategory } from './models/klarna/KlarnaPaymentCategory';
+export type {
   PrimerValidComponentData,
   PrimerValidatingComponentData,
   PrimerInvalidComponentData,
   PrimerComponentDataValidationError,
 } from './models/PrimerComponentDataValidation';
 export type {
-  PrimerValidComponentData,
-  PrimerValidatingComponentData,
-  PrimerInvalidComponentData,
-  PrimerComponentDataValidationError,
-};
-import type {
   KlarnaPaymentOptions,
   KlarnaPaymentFinalization,
   KlarnaPaymentValidatableData,
 } from './models/klarna/KlarnaPaymentCollectableData';
-export type { KlarnaPaymentOptions, KlarnaPaymentFinalization, KlarnaPaymentValidatableData };
 import type {
   PaymentSessionCreated,
   PaymentSessionAuthorized,

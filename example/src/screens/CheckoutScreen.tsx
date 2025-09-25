@@ -276,7 +276,7 @@ const CheckoutScreen = (props: any) => {
       googlePayOptions: {
         isCaptureBillingAddressEnabled: true,
         isExistingPaymentMethodRequired: false,
-        shippingAddressParameters: {phoneNumberRequired: true},
+        shippingAddressParameters: {isPhoneNumberRequired: true},
         requireShippingMethod: false,
         emailAddressRequired: true,
       },
