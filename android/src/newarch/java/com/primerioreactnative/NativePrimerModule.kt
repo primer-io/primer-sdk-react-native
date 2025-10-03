@@ -15,8 +15,8 @@ class NativePrimerModule(private val reactContext: ReactApplicationContext, priv
       json = json,
       eventSender = { name, params ->
         val eventData = Arguments.createMap().apply {
-          putString("eventType", name)
-          putMap("data", params)
+          putString(EVENT_TYPE_KEY, name)
+          putMap(DATA_KEY, params)
         }
         emitOnEvent(eventData)
       }
@@ -24,21 +24,21 @@ class NativePrimerModule(private val reactContext: ReactApplicationContext, priv
   }
 
   override fun configure(settings: String?, promise: Promise) {
-    implementation.configure(settings, promise)
+    implementation.configure(settingsStr = settings, promise = promise)
   }
 
   override fun showUniversalCheckoutWithClientToken(
     clientToken: String,
     promise: Promise
   ) {
-    implementation.showUniversalCheckoutWithClientToken(clientToken, promise)
+    implementation.showUniversalCheckoutWithClientToken(clientToken = clientToken, promise = promise)
   }
 
   override fun showVaultManagerWithClientToken(
     clientToken: String,
     promise: Promise
   ) {
-    implementation.showVaultManagerWithClientToken(clientToken, promise)
+    implementation.showVaultManagerWithClientToken(clientToken = clientToken, promise = promise)
   }
 
   override fun showPaymentMethod(
@@ -47,7 +47,12 @@ class NativePrimerModule(private val reactContext: ReactApplicationContext, priv
     clientToken: String,
     promise: Promise
   ) {
-    implementation.showPaymentMethod(paymentMethod, intent, clientToken, promise)
+    implementation.showPaymentMethod(
+      paymentMethod = paymentMethod,
+      intent = intent,
+      clientToken = clientToken,
+      promise = promise
+    )
   }
 
   override fun dismiss(promise: Promise) {
@@ -55,56 +60,60 @@ class NativePrimerModule(private val reactContext: ReactApplicationContext, priv
   }
 
   override fun cleanUp(promise: Promise) {
-    implementation.cleanUp(promise)
+    implementation.cleanUp(promise = promise)
   }
 
   override fun handleTokenizationNewClientToken(
     newClientToken: String,
     promise: Promise
   ) {
-    implementation.handleTokenizationNewClientToken(newClientToken, promise)
-
+    implementation.handleTokenizationNewClientToken(newClientToken = newClientToken, promise = promise)
   }
 
   override fun handleTokenizationSuccess(promise: Promise) {
-    implementation.handleTokenizationSuccess(promise)
+    implementation.handleTokenizationSuccess(promise = promise)
   }
 
   override fun handleTokenizationFailure(errorMessage: String?, promise: Promise) {
-    implementation.handleTokenizationFailure(errorMessage, promise)
+    implementation.handleTokenizationFailure(errorMessage = errorMessage, promise = promise)
   }
 
   override fun handleResumeWithNewClientToken(
     newClientToken: String,
     promise: Promise
   ) {
-    implementation.handleResumeWithNewClientToken(newClientToken, promise)
+    implementation.handleResumeWithNewClientToken(newClientToken = newClientToken, promise = promise)
   }
 
   override fun handleResumeSuccess(promise: Promise) {
-    implementation.handleResumeSuccess(promise)
+    implementation.handleResumeSuccess(promise = promise)
   }
 
   override fun handleResumeFailure(errorMessage: String?, promise: Promise) {
-    implementation.handleResumeFailure(errorMessage, promise)
+    implementation.handleResumeFailure(errorMessage = errorMessage, promise = promise)
   }
 
   override fun handlePaymentCreationAbort(errorMessage: String?, promise: Promise) {
-    implementation.handlePaymentCreationAbort(errorMessage, promise)
+    implementation.handlePaymentCreationAbort(errorMessage = errorMessage, promise = promise)
   }
 
   override fun handlePaymentCreationContinue(promise: Promise) {
-    implementation.handlePaymentCreationContinue(promise)
+    implementation.handlePaymentCreationContinue(promise = promise)
   }
 
   override fun showErrorMessage(errorMessage: String?, promise: Promise) {
-    implementation.showErrorMessage(errorMessage, promise)
+    implementation.showErrorMessage(errorMessage = errorMessage, promise = promise)
   }
 
   override fun setImplementedRNCallbacks(
     implementedRNCallbacks: String,
     promise: Promise
   ) {
-    implementation.setImplementedRNCallbacks(implementedRNCallbacks, promise)
+    implementation.setImplementedRNCallbacks(implementedRNCallbacksStr = implementedRNCallbacks, promise = promise)
+  }
+
+  private companion object {
+    const val EVENT_TYPE_KEY = "eventType"
+    const val DATA_KEY = "data"
   }
 }

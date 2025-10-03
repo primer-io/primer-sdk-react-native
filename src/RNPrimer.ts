@@ -1,6 +1,6 @@
 import type { PrimerSettings } from './models/PrimerSettings';
 import type { EventSubscription } from 'react-native';
-import NativePrimer from "../src/index";
+import NativePrimer from "./specs/NativePrimer";
 
 import { NativeEventEmitter, NativeModules } from 'react-native';
 
@@ -225,17 +225,6 @@ const RNPrimer = {
     return new Promise(async (resolve, reject) => {
       try {
         await NativePrimer.showErrorMessage(errorMessage || '');
-        resolve();
-      } catch (err) {
-        reject(err);
-      }
-    });
-  },
-
-  handleSuccess: (): Promise<void> => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        await NativePrimer.handleSuccess();
         resolve();
       } catch (err) {
         reject(err);

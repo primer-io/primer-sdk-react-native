@@ -28,7 +28,7 @@ class NativePrimerModule(private val reactContext: ReactApplicationContext, priv
 
   @ReactMethod
   fun configure(settings: String?, promise: Promise) {
-    implementation.configure(settings, promise)
+    implementation.configure(settingsStr = settings, promise = promise)
   }
 
   @ReactMethod
@@ -36,7 +36,7 @@ class NativePrimerModule(private val reactContext: ReactApplicationContext, priv
     clientToken: String,
     promise: Promise
   ) {
-    implementation.showUniversalCheckoutWithClientToken(clientToken, promise)
+    implementation.showUniversalCheckoutWithClientToken(clientToken = clientToken, promise = promise)
   }
 
   @ReactMethod
@@ -44,7 +44,7 @@ class NativePrimerModule(private val reactContext: ReactApplicationContext, priv
     clientToken: String,
     promise: Promise
   ) {
-    implementation.showVaultManagerWithClientToken(clientToken, promise)
+    implementation.showVaultManagerWithClientToken(clientToken = clientToken, promise = promise)
   }
 
   @ReactMethod
@@ -54,17 +54,22 @@ class NativePrimerModule(private val reactContext: ReactApplicationContext, priv
     clientToken: String,
     promise: Promise
   ) {
-    implementation.showPaymentMethod(paymentMethod, intent, clientToken, promise)
+    implementation.showPaymentMethod(
+      paymentMethod = paymentMethod,
+      intent = intent,
+      clientToken = clientToken,
+      promise = promise
+    )
   }
 
   @ReactMethod
   fun dismiss(promise: Promise) {
-    implementation.dismiss(promise)
+    implementation.dismiss(promise = promise)
   }
 
   @ReactMethod
   fun cleanUp(promise: Promise) {
-    implementation.cleanUp(promise)
+    implementation.cleanUp(promise = promise)
   }
 
   @ReactMethod
@@ -72,18 +77,18 @@ class NativePrimerModule(private val reactContext: ReactApplicationContext, priv
     newClientToken: String,
     promise: Promise
   ) {
-    implementation.handleTokenizationNewClientToken(newClientToken, promise)
+    implementation.handleTokenizationNewClientToken(newClientToken = newClientToken, promise = promise)
 
   }
 
   @ReactMethod
   fun handleTokenizationSuccess(promise: Promise) {
-    implementation.handleTokenizationSuccess(promise)
+    implementation.handleTokenizationSuccess(promise = promise)
   }
 
   @ReactMethod
   fun handleTokenizationFailure(errorMessage: String?, promise: Promise) {
-    implementation.handleTokenizationFailure(errorMessage, promise)
+    implementation.handleTokenizationFailure(errorMessage = errorMessage, promise = promise)
   }
 
   @ReactMethod
@@ -91,32 +96,32 @@ class NativePrimerModule(private val reactContext: ReactApplicationContext, priv
     newClientToken: String,
     promise: Promise
   ) {
-    implementation.handleResumeWithNewClientToken(newClientToken, promise)
+    implementation.handleResumeWithNewClientToken(newClientToken = newClientToken, promise = promise)
   }
 
   @ReactMethod
   fun handleResumeSuccess(promise: Promise) {
-    implementation.handleResumeSuccess(promise)
+    implementation.handleResumeSuccess(promise = promise)
   }
 
   @ReactMethod
   fun handleResumeFailure(errorMessage: String?, promise: Promise) {
-    implementation.handleResumeFailure(errorMessage, promise)
+    implementation.handleResumeFailure(errorMessage = errorMessage, promise =  promise)
   }
 
   @ReactMethod
   fun handlePaymentCreationAbort(errorMessage: String?, promise: Promise) {
-    implementation.handlePaymentCreationAbort(errorMessage, promise)
+    implementation.handlePaymentCreationAbort(errorMessage = errorMessage, promise = promise)
   }
 
   @ReactMethod
   fun handlePaymentCreationContinue(promise: Promise) {
-    implementation.handlePaymentCreationContinue(promise)
+    implementation.handlePaymentCreationContinue(promise = promise)
   }
 
   @ReactMethod
   fun showErrorMessage(errorMessage: String?, promise: Promise) {
-    implementation.showErrorMessage(errorMessage, promise)
+    implementation.showErrorMessage(errorMessage = errorMessage, promise =  promise)
   }
 
   @ReactMethod
@@ -124,6 +129,6 @@ class NativePrimerModule(private val reactContext: ReactApplicationContext, priv
     implementedRNCallbacks: String,
     promise: Promise
   ) {
-    implementation.setImplementedRNCallbacks(implementedRNCallbacks, promise)
+    implementation.setImplementedRNCallbacks(implementedRNCallbacksStr = implementedRNCallbacks, promise = promise)
   }
 }
