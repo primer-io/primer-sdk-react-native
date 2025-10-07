@@ -18,6 +18,9 @@ jobs:
         with:
           java-version: 17
           distribution: 'corretto'
+      
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@017a9effdb900e5b5b2fddfb590a105619dca3c3 # v4.4.2
 
       - uses: actions/checkout@1d96c772d19495a3b5c517cd2bc0cb401ea0529f # v4.1.3
 
@@ -29,10 +32,22 @@ jobs:
       - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
         with:
           node-version: 20
+          cache: 'yarn'
 
-      - name: Set legacy-peer-deps for npm config
-        run: |
-          npm config set legacy-peer-deps true
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Cache Yarn dependencies
+        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf # v4.2.2
+        with:
+          path: |
+            .yarn/cache
+            .yarn/unplugged
+            .yarn/install-state.gz
+            node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock', '**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
 
       - name: Install packages
         run: |
@@ -41,7 +56,7 @@ jobs:
       - name: Create Keys.ts
         shell: bash
         run: |
-          echo "export const STRIPE_ACH_PUBLISHABLE_KEY = '${{ secrets.STRIPE_PUBLISHABLE_KEY }}'" > packages/example/src/Keys.ts
+          echo "export const STRIPE_ACH_PUBLISHABLE_KEY = '${{ secrets.STRIPE_PUBLISHABLE_KEY }}'" > example/src/Keys.ts
 
       - name: Distribute the React Native Android app on Appetize 🚀
         run: bundle exec fastlane android appetize_build_and_upload

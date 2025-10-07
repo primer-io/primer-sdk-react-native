@@ -1,19 +1,181 @@
 {
-    "name": "@primer-io/react-native-monorepo",
-    "private": true,
-    "workspaces": {
-        "packages": [
-            "packages/*"
-        ],
-        "nohoist": [
-            "**/react*"
-        ]
+  "name": "@primer-io/react-native",
+  "version": "2.37.1",
+  "description": "Primer SDK for RN",
+  "main": "./lib/module/index.js",
+  "types": "./lib/typescript/src/index.d.ts",
+  "exports": {
+    ".": {
+      "source": "./src/index.tsx",
+      "types": "./lib/typescript/src/index.d.ts",
+      "default": "./lib/module/index.js"
     },
-    "scripts": {
-        "bootstrap": "yarn install",
-        "pods": "cd packages/example/ios && pod-install --quiet",
-        "test": "yarn --cwd packages/sdk test",
-        "test:unit:coverage:lcov": "yarn --cwd packages/sdk test && node scripts/aggregate-coverage.js && nyc report --reporter lcov"
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "lib",
+    "android",
+    "ios",
+    "cpp",
+    "*.podspec",
+    "react-native.config.js",
+    "!ios/build",
+    "!android/build",
+    "!android/gradle",
+    "!android/gradlew",
+    "!android/gradlew.bat",
+    "!android/local.properties",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__",
+    "!**/.*"
+  ],
+  "scripts": {
+    "typescript": "tsc --noEmit",
+    "lint": "eslint \"**/*.{js,ts,tsx}\"",
+    "build": "bob build",
+    "prepare": "bob build",
+    "release": "release-it",
+    "example": "yarn workspace @primer-io/react-native-example",
+    "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build lib",
+    "bootstrap": "yarn example pods",
+    "test": "jest src/__tests__ --coverage",
+    "test:unit:coverage:lcov": "yarn test && node scripts/aggregate-coverage.js && nyc report --reporter lcov"
+  },
+  "keywords": [
+    "react-native",
+    "ios",
+    "android",
+    "checkout",
+    "payment",
+    "payments"
+  ],
+  "repository": "https://github.com/primer-io/primer-sdk-react-native",
+  "author": "Primer API Ltd <developers@primer.io>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/primer-io/primer-sdk-react-native/issues"
+  },
+  "homepage": "https://github.com/primer-io/primer-sdk-react-native#readme",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
+  "devDependencies": {
+    "@commitlint/config-conventional": "^19.8.1",
+    "@react-native-community/cli": "20.0.0",
+    "@react-native-community/eslint-config": "^2.0.0",
+    "@release-it/conventional-changelog": "^5.1.1",
+    "@tsconfig/react-native": "^3.0.0",
+    "@types/jest": "^29.5.14",
+    "@types/react": "^19.1.0",
+    "commitlint": "^19.8.1",
+    "del-cli": "^6.0.0",
+    "eslint": "^9.35.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "jest": "^29.7.0",
+    "nyc": "^15.1.0",
+    "pod-install": "^0.1.0",
+    "prettier": "3.6.2",
+    "react": "19.1.0",
+    "react-native": "0.81.1",
+    "react-native-builder-bob": "^0.40.13",
+    "react-test-renderer": "19.1.0",
+    "slack-message-builder": "^1.2.1",
+    "ts-jest": "^29.1.2",
+    "turbo": "^2.5.6",
+    "typescript": "^5.9.2"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "react-native": ">=0.68.0"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "workspaces": [
+    "example"
+  ],
+  "packageManager": "yarn@3.6.1",
+  "release-it": {
+    "git": {
+      "commitMessage": "chore: release ${version}",
+      "tagName": "v${version}"
     },
-    "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+    "npm": {
+      "publish": true
+    },
+    "github": {
+      "release": true
+    },
+    "plugins": {
+      "@release-it/conventional-changelog": {
+        "preset": "angular"
+      }
+    }
+  },
+  "eslintConfig": {
+    "root": true,
+    "extends": [
+      "@react-native-community",
+      "prettier"
+    ],
+    "rules": {
+      "prettier/prettier": [
+        "error",
+        {
+          "quoteProps": "consistent",
+          "singleQuote": true,
+          "tabWidth": 2,
+          "trailingComma": "es5",
+          "useTabs": false
+        }
+      ]
+    }
+  },
+  "eslintIgnore": [
+    "node_modules/",
+    "lib/"
+  ],
+  "prettier": {
+    "quoteProps": "consistent",
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "es5",
+    "useTabs": false,
+    "printWidth": 120
+  },
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      [
+        "module",
+        {
+          "esm": true
+        }
+      ],
+      [
+        "typescript",
+        {
+          "project": "tsconfig.build.json"
+        }
+      ]
+    ]
+  },
+  "codegenConfig": {
+    "name": "NativePrimerSpec",
+    "type": "modules",
+    "jsSrcsDir": "src/specs",
+    "android": {
+      "javaPackageName": "com.primerioreactnative"
+    },
+    "ios": {
+      "modulesProvider": {
+        "NativePrimer": "RCTNativePrimer"
+      }
+    }
+  }
 }
