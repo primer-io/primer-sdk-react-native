@@ -13,68 +13,28 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 # Available Actions
 
-## iOS
+## Android
 
-### ios tests
+### android ≈
 
 ```sh
-[bundle exec] fastlane ios tests
+[bundle exec] fastlane android ≈
 ```
 
 
-
-### ios ui_tests
-
-```sh
-[bundle exec] fastlane ios ui_tests
-```
-
-
-
-### ios danger_check
-
-```sh
-[bundle exec] fastlane ios danger_check
-```
-
-
-
-### ios qa_release
-
-```sh
-[bundle exec] fastlane ios qa_release
-```
-
-
-
-### ios appetize_build_and_upload
-
-```sh
-[bundle exec] fastlane ios appetize_build_and_upload
-```
-
-This action builds the app and uplads it to Appetize
 
 ----
 
 
-## Android
+## iOS
 
-### android appetize_build_and_upload
-
-```sh
-[bundle exec] fastlane android appetize_build_and_upload
-```
-
-
-
-### android run_unit_tests_coverage
+### ios preview
 
 ```sh
-[bundle exec] fastlane android run_unit_tests_coverage
+[bundle exec] fastlane ios preview
 ```
 
-
+This action builds the app and uplads it to Appetize
 
 ----
 

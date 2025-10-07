@@ -10,8 +10,8 @@ github_run_id = ENV["GITHUB_RUN_ID"]
 github_run_number = ENV["GITHUB_RUN_NUMBER"]
 
 # Xcode
-app_workspace = "example/ios/example_0_70_6.xcworkspace"
-app_xcode_proj = "example/ios/example_0_70_6.xcodeproj"
+app_workspace = "packages/example/ios/example_0_70_6.xcworkspace"
+app_xcode_proj = "packages/example/ios/example_0_70_6.xcodeproj"
 app_scheme = "example_0_70_6"
 
 # Packages
@@ -95,11 +95,11 @@ platform :ios do
       scheme: app_scheme,
       sdk: "iphonesimulator", # Appetize needs a simulator app
       workspace: app_workspace,
-      configuration: "Release",
+      configuration: "Debug",
       destination: "generic/platform=iOS Simulator",
       xcargs: "EXCLUDED_ARCHS[sdk=iphonesimulator*]=arm64",
       include_bitcode: false,
-      export_method: "ad-hoc",
+      export_method: "development",
       archive_path: app_output_archive_path,
       # Build speed optimisation
       skip_package_ipa: true,

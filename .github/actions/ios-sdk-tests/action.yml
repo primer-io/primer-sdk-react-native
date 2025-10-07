@@ -60,12 +60,12 @@ runs:
     - name: pod install
       shell: bash
       run: |
-        yarn example pods
+        yarn pods
 
     - name: Create main.jsbundle
       shell: bash
       run: |
-        yarn build:ios:dev
+        yarn --cwd packages/example build:ios:dev
 
     - name: Test SDK bridge
       shell: bash
