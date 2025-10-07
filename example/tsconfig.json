@@ -1,9 +1,0 @@
-// example/tsconfig.json
-   {
-    "extends": "@react-native/typescript-config/tsconfig.json",
-     "compilerOptions": {
-       "paths": {
-          "@primer-io/react-native": ["../src/index.tsx"]
-       }
-     }
-   }
