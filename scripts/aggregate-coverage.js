@@ -2,8 +2,6 @@ const fs = require('fs');
 const path = require('path');
 
 const REPORTS_DIR_NAME = '.nyc_output';
-const PACKAGES_DIR_NAME = 'packages';
-const PACKAGE_PATH = path.resolve(process.cwd(), PACKAGES_DIR_NAME);
 const REPORTS_DIR_PATH = path.resolve(process.cwd(), REPORTS_DIR_NAME);
 
 // Function to create a temporary directory if it doesn't exist
@@ -42,7 +40,7 @@ function findCoverageFolders(directory, maxDepth = 5, currentDepth = 0) {
 
 // Function to generate reports by copying coverage files to a temporary directory
 function generateReports() {
-  const coverageFolders = findCoverageFolders(PACKAGE_PATH);
+  const coverageFolders = findCoverageFolders("./");
   console.log(coverageFolders);
 
   coverageFolders.forEach((coverageFolder) => {
