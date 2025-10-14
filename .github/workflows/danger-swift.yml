@@ -1,0 +1,42 @@
+name: Danger (Swift)
+
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - synchronize
+
+concurrency:
+  group: ${{ github.ref }}-danger-swift
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  danger-swift:
+    runs-on: ubuntu-latest
+    name: "Run Danger"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Debug Environment
+        run: |
+          echo "Current directory: $(pwd)"
+          echo "Files in current directory:"
+          ls -la
+          echo "Checking for Dangerfile.swift:"
+          ls -la Dangerfile.swift || echo "Dangerfile.swift not found"
+          echo "Checking for ios/.swiftlint.yml:"
+          ls -la ios/.swiftlint.yml || echo "ios/.swiftlint.yml not found"
+          echo "iOS directory contents:"
+          ls -la ios/ || echo "ios directory not found"
+
+      - name: Danger
+        uses: docker://ghcr.io/danger/danger-swift-with-swiftlint:3.15.0
+        with:
+          args: --id=swift --failOnErrors --no-publish-check --remove-previous-comments --verbose
+        env:
+          GITHUB_TOKEN: ${{ github.token }}

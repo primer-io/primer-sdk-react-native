@@ -1,6 +1,10 @@
 ---
 name: iOS
-on: pull_request
+on:
+  workflow_run:
+    workflows: ["Danger (JS)", "Danger (Kotlin)", "Danger (Swift)"]
+    types: [completed]
+
 jobs:
 
   build-and-upload-to-appetize:
