@@ -8,7 +8,7 @@ PODS:
   - hermes-engine (0.81.1):
     - hermes-engine/Pre-built (= 0.81.1)
   - hermes-engine/Pre-built (0.81.1)
-  - primer-io-react-native (2.37.1):
+  - primer-io-react-native (2.38.0):
     - PrimerSDK (= 2.42.0)
     - React-Core
   - Primer3DS (2.5.0)
