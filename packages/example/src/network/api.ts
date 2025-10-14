@@ -6,7 +6,10 @@ import {
 } from '../models/IClientSessionRequestBody';
 import type {IPayment} from '../models/IPayment';
 import {APIVersion, getAPIVersionStringVal} from './APIVersion';
-import {customApiKey, customClientToken} from '../screens/SettingsScreen';
+import {
+  customApiKey,
+  getCustomClientToken,
+} from '../screens/SettingsScreen';
 
 const baseUrl = 'https://us-central1-primerdemo-8741b.cloudfunctions.net/api';
 
@@ -29,8 +32,9 @@ export const createClientSession = async () => {
     headers['X-Api-Key'] = customApiKey;
   }
 
-  if (customClientToken) {
-    return {clientToken: customClientToken};
+  const overriddenClientToken = getCustomClientToken();
+  if (overriddenClientToken) {
+    return {clientToken: overriddenClientToken};
   }
 
   try {

@@ -44,7 +44,12 @@ export interface AppPaymentParameters {
 }
 
 export let customApiKey: string | undefined;
-export let customClientToken: string | undefined;
+let customClientToken: string | undefined;
+export const getCustomClientToken = (): string | undefined =>
+  customClientToken;
+export const setCustomClientToken = (token?: string) => {
+  customClientToken = token;
+};
 export let customAppearanceMode: 'SYSTEM' | 'LIGHT' | 'DARK' = 'SYSTEM';
 
 enum CheckoutVaultingType {
@@ -76,7 +81,7 @@ const SettingsScreen = ({navigation}) => {
   );
   const [apiKey, setApiKey] = React.useState<string | undefined>(customApiKey);
   const [clientToken, setClientToken] = React.useState<string | undefined>(
-    undefined,
+    getCustomClientToken(),
   );
   const [paymentHandling, setPaymentHandling] = React.useState<PaymentHandling>(
     PaymentHandling.Auto,
@@ -263,6 +268,7 @@ const SettingsScreen = ({navigation}) => {
           placeholder={'Set client token'}
           onChangeText={text => {
             setClientToken(text);
+            setCustomClientToken(text);
           }}
         />
 
