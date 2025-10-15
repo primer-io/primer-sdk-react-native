@@ -223,4 +223,3 @@ fun PrimerSettingsRN.toPrimerSettings(context: Context) =
             else -> error("'$apiVersion' is not supported.")
         }
     )
-
