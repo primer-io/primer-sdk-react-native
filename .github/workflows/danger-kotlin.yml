@@ -112,5 +112,5 @@ jobs:
             -e GITHUB_HEAD_REF="${{ github.head_ref }}" \
             -e GITHUB_BASE_REF="${{ github.base_ref }}" \
             --entrypoint danger-kotlin \
-            ghcr.io/danger/danger-kotlin:1.3.3 \
-            ci --id=kt --failOnErrors --no-publish-check --remove-previous-comments --verbose
+            ghcr.io/danger/danger-kotlin@sha256:a07b86ca87061d963ce08112aa058259c351020fb6d9925e086701a80fda8201 \
+            ci --id=kt --failOnErrors --no-publish-check --remove-previous-comments --verbose #1.3.3
