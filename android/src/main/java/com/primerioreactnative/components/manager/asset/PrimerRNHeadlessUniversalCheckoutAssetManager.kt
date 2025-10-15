@@ -188,7 +188,7 @@ internal class PrimerRNHeadlessUniversalCheckoutAssetManager(
             val paymentMethodResource =
                 PrimerHeadlessUniversalCheckoutAssetsManager.getPaymentMethodResource(
                     reactContext,
-                    paymentMethodTypeStr
+                    paymentMethodTypeStr,
                 )
             promise.resolve(
                 JSONObject(

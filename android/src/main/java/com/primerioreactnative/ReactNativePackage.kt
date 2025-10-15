@@ -70,8 +70,8 @@ class ReactNativeTurboPackage : BaseReactPackage() {
                 canOverrideExistingModule = false,
                 needsEagerInit = false,
                 isCxxModule = false,
-                isTurboModule = true
-            )
+                isTurboModule = true,
+            ),
         )
     }
 }

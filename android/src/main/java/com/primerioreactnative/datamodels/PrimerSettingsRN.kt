@@ -24,7 +24,7 @@ data class PrimerSettingsRN(
     var uiOptions: PrimerUIOptionsRN = PrimerUIOptionsRN(),
     var debugOptions: PrimerDebugOptionsRN = PrimerDebugOptionsRN(),
     var clientSessionCachingEnabled: Boolean = false,
-    var apiVersion: String = PrimerApiVersion.LATEST.name
+    var apiVersion: String = PrimerApiVersion.LATEST.name,
 )
 
 @Serializable
@@ -127,11 +127,11 @@ data class ColorRN(
 
 @Serializable
 data class PrimerCardFormUIOptionsRN(
-    var payButtonAddNewCard: Boolean = true
+    var payButtonAddNewCard: Boolean = true,
 ) {
     fun toPrimerCardFormUIOptions(): PrimerCardFormUIOptions {
         return PrimerCardFormUIOptions(
-            payButtonAddNewCard = payButtonAddNewCard
+            payButtonAddNewCard = payButtonAddNewCard,
         )
     }
 }
@@ -221,5 +221,5 @@ fun PrimerSettingsRN.toPrimerSettings(context: Context) =
             "2.4" -> PrimerApiVersion.V2_4
             "latest" -> PrimerApiVersion.LATEST
             else -> error("'$apiVersion' is not supported.")
-        }
+        },
     )

@@ -25,7 +25,7 @@ import org.json.JSONObject
 internal open class DefaultNativePrimerModule(
     private val reactContext: ReactApplicationContext,
     private val json: Json,
-    private val eventSender: (String, WritableMap) -> Unit
+    private val eventSender: (String, WritableMap) -> Unit,
 ) {
     private val mListener = PrimerRNEventListener()
 
@@ -79,7 +79,7 @@ internal open class DefaultNativePrimerModule(
         try {
             Primer.instance.showUniversalCheckout(
                 reactContext.applicationContext,
-                clientToken
+                clientToken,
             )
             promise.resolve(null)
         } catch (expected: Exception) {
@@ -96,7 +96,7 @@ internal open class DefaultNativePrimerModule(
         try {
             Primer.instance.showVaultManager(
                 reactContext.applicationContext,
-                clientToken
+                clientToken,
             )
             promise.resolve(null)
         } catch (expected: Exception) {
@@ -129,7 +129,7 @@ internal open class DefaultNativePrimerModule(
                     paymentMethod,
                     PrimerSessionIntent.entries.first {
                         intent.equals(it.name, ignoreCase = true)
-                    }
+                    },
                 )
                 promise.resolve(null)
             }

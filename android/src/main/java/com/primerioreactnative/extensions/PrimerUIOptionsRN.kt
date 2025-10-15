@@ -20,5 +20,5 @@ internal fun PrimerUIOptionsRN.toPrimerUIOptions() =
             }
         }.toList().takeIf { it.isNotEmpty() } ?: listOf(DismissalMechanism.GESTURES),
         theme.toPrimerTheme(),
-        cardFormUIOptions.toPrimerCardFormUIOptions()
+        cardFormUIOptions.toPrimerCardFormUIOptions(),
     )
