@@ -1,6 +1,6 @@
 import type { PrimerSettings } from './models/PrimerSettings';
 import type { EventSubscription } from 'react-native';
-import NativePrimer from "./specs/NativePrimer";
+import NativePrimer from './specs/NativePrimer';
 
 import { NativeEventEmitter, NativeModules } from 'react-native';
 
@@ -40,16 +40,17 @@ const RNPrimer = {
       subscriptions.push(
         NativePrimer.onEvent((emittedEvent: any) => {
           if (emittedEvent.eventType === eventType) {
-            listener(emittedEvent.data); 
+            listener(emittedEvent.data);
           }
-        }));
+        })
+      );
     } else {
       // Old Architecture - listen to individual events
       subscriptions.push(nativeEventEmitter.addListener(eventType, listener));
     }
   },
   removeAllListeners() {
-    subscriptions.forEach(subscription => subscription.remove());
+    subscriptions.forEach((subscription) => subscription.remove());
     subscriptions = [];
   },
 

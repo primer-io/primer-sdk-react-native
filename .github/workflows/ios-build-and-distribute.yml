@@ -1,8 +1,9 @@
 ---
 name: iOS
 on:
+  workflow_dispatch:
   workflow_run:
-    workflows: ["Danger (Kotlin)", "Danger (Swift)"]
+    workflows: ["Danger (JS)", "Danger (Kotlin)", "Danger (Swift)"]
     types: [completed]
 
 jobs:

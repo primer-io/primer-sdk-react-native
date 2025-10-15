@@ -7,7 +7,10 @@ import type {
   PrimerValidatingComponentData,
 } from '../../../models/PrimerComponentDataValidation';
 import { PrimerError } from '../../../models/PrimerError';
-import type { KlarnaPaymentOptions, KlarnaPaymentValidatableData } from '../../../models/klarna/KlarnaPaymentCollectableData';
+import type {
+  KlarnaPaymentOptions,
+  KlarnaPaymentValidatableData,
+} from '../../../models/klarna/KlarnaPaymentCollectableData';
 import type { KlarnaPaymentStep } from '../../../models/klarna/KlarnaPaymentSteps';
 import { eventTypes } from './Utils/EventType';
 import type { EventType } from './Utils/EventType';

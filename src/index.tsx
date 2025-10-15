@@ -97,9 +97,7 @@ import type { UserDetailsRetrieved, UserDetailsCollected, AchStep } from './mode
 export type { UserDetailsRetrieved as CollectUserDetails, UserDetailsCollected, AchStep };
 import type { AchFirstName, AchLastName, AchEmailAddress, AchValidatableData } from './models/ach/AchCollectableData';
 export type { AchFirstName, AchLastName, AchEmailAddress, AchValidatableData };
-import {
-  PrimerHeadlessUniversalCheckoutAchManager,
-} from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/AchManager';
+import { PrimerHeadlessUniversalCheckoutAchManager } from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/AchManager';
 import type {
   StripeAchUserDetailsComponent,
   AchManagerProps,
@@ -110,9 +108,7 @@ export { PrimerHeadlessUniversalCheckoutAchMandateManager as AchMandateManager }
 export { PrimerHeadlessUniversalCheckoutAchManager as AchManager };
 export type { StripeAchUserDetailsComponent, AchManagerProps };
 
-import {
-  PrimerHeadlessUniversalCheckoutComponentWithRedirectManager,
-} from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/ComponentWithRedirectManager';
+import { PrimerHeadlessUniversalCheckoutComponentWithRedirectManager } from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/ComponentWithRedirectManager';
 import type {
   BanksComponent,
   ComponentWithRedirectManagerProps,
@@ -129,5 +125,5 @@ import type { NamedComponentValidatableData } from './models/NamedComponentValid
 export type { NamedComponentValidatableData };
 
 // must be exported in order to support the old architecture
-const nativeModule = require("./specs/NativePrimer").default;
+const nativeModule = require('./specs/NativePrimer').default;
 export default nativeModule;
