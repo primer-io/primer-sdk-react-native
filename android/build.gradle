@@ -124,7 +124,7 @@ detekt {
 
   reports {
     html.required.set(true)
-    xml.required.set(false)
+    xml.required.set(true)
     txt.required.set(true)
     sarif.required.set(true)
   }
