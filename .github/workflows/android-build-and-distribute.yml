@@ -2,7 +2,7 @@ name: Android
 
 on:
   workflow_run:
-    workflows: ["Danger (JS)", "Danger (Kotlin)", "Danger (Swift)"]
+    workflows: ["Danger (Kotlin)", "Danger (Swift)"]
     types: [completed]
 
 jobs:
