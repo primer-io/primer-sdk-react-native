@@ -1,0 +1,50 @@
+name: Danger (JS)
+
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - synchronize
+
+concurrency:
+  group: ${{ github.ref }}-danger-js
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  danger-js:
+    runs-on: ubuntu-latest
+    name: "Run Danger JS"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        with:
+          node-version: 20
+
+      - name: Install Dependencies
+        run: yarn install
+
+      - name: Debug Environment
+        run: |
+          echo "Node version: $(node --version)"
+          echo "NPM version: $(npm --version)"
+          echo "Yarn version: $(yarn --version)"
+          echo "Current directory: $(pwd)"
+          echo "Files in current directory:"
+          ls -la
+          echo "Checking for dangerfile.ts:"
+          ls -la dangerfile.ts || echo "dangerfile.ts not found"
+          echo "Checking for eslint.config.mjs:"
+          ls -la eslint.config.mjs || echo "eslint.config.mjs not found"
+
+      - name: Run Danger JS
+        run: npx danger ci --id js --dangerfile dangerfile.ts --failOnErrors --removePreviousComments --verbose
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEBUG: '*'

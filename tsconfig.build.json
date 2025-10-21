@@ -1,0 +1,4 @@
+{
+  "extends": "./tsconfig",
+  "exclude": ["example", "lib", "dangerfile.ts", "Dangerfile.df.kts", "Dangerfile.swift"]
+}
