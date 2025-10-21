@@ -189,7 +189,7 @@ const RNPrimer = {
   handleResumeFailure: (errorMessage: string | null): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {
-        await NativePrimer.handleTokenizationFailure(errorMessage || '');
+        await NativePrimer.handleResumeFailure(errorMessage || '');
         resolve();
       } catch (err) {
         reject(err);
