@@ -74,9 +74,10 @@ class PrimerSdkPackage : BaseReactPackage() {
                 reactContext,
             )
 
-            PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent.NAME -> PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent(
-                reactContext,
-            )
+            PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent.NAME ->
+                PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent(
+                    reactContext,
+                )
 
             PrimerRNAchMandateManager.NAME -> PrimerRNAchMandateManager(reactContext)
             PrimerRNHeadlessUniversalCheckoutBanksComponent.NAME -> PrimerRNHeadlessUniversalCheckoutBanksComponent(
