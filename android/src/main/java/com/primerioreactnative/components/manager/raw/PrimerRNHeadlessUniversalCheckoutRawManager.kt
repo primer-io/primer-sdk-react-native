@@ -6,6 +6,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.WritableMap
+import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.primerioreactnative.Keys
 import com.primerioreactnative.components.datamodels.core.PrimerRawPaymentMethodType
@@ -33,6 +34,7 @@ import org.json.JSONObject
 
 @Suppress("TooManyFunctions")
 @ExperimentalPrimerApi
+@ReactModule(name = PrimerRNHeadlessUniversalCheckoutRawManager.NAME)
 internal class PrimerRNHeadlessUniversalCheckoutRawManager(
     reactContext: ReactApplicationContext,
     private val json: Json,
@@ -45,7 +47,7 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
         listener.sendEvent = { eventName, paramsJson -> sendEvent(eventName, paramsJson) }
     }
 
-    override fun getName() = "RNTPrimerHeadlessUniversalCheckoutRawDataManager"
+    override fun getName() = NAME
 
     @ReactMethod
     fun configure(
@@ -221,11 +223,13 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
         sendEvent(PrimerHeadlessUniversalCheckoutEvent.ON_ERROR.eventName, params)
     }
 
-    private companion object {
-        const val UNINITIALIZED_ERROR =
+    companion object {
+        private const val UNINITIALIZED_ERROR =
             """
         The RawDataManager has not been initialized.
         Make sure you have initialized the `RawDataManager' first.
       """
+
+        const val NAME = "RNTPrimerHeadlessUniversalCheckoutRawDataManager"
     }
 }

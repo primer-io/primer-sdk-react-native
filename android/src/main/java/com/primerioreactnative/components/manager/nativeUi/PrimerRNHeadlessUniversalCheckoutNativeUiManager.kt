@@ -4,6 +4,7 @@ import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.module.annotations.ReactModule
 import com.primerioreactnative.datamodels.ErrorTypeRN
 import com.primerioreactnative.datamodels.PrimerErrorRN
 import com.primerioreactnative.utils.errorTo
@@ -16,13 +17,14 @@ import io.primer.android.core.ExperimentalPrimerApi
 import io.primer.android.domain.exception.UnsupportedPaymentIntentException
 
 @ExperimentalPrimerApi
+@ReactModule(name = PrimerRNHeadlessUniversalCheckoutNativeUiManager.NAME)
 internal class PrimerRNHeadlessUniversalCheckoutNativeUiManager(
     private val reactContext: ReactApplicationContext,
 ) : ReactContextBaseJavaModule(reactContext) {
     private lateinit var nativeUiManager: PrimerHeadlessUniversalCheckoutNativeUiManagerInterface
     private var paymentMethodTypeStr: String? = null
 
-    override fun getName() = "RNTPrimerHeadlessUniversalPaymentMethodNativeUIManager"
+    override fun getName() = NAME
 
     @ReactMethod
     fun configure(
@@ -90,5 +92,9 @@ internal class PrimerRNHeadlessUniversalCheckoutNativeUiManager(
                 promise.reject(exception.errorId, exception.description, e)
             }
         }
+    }
+
+    companion object {
+        const val NAME = "RNTPrimerHeadlessUniversalPaymentMethodNativeUIManager"
     }
 }

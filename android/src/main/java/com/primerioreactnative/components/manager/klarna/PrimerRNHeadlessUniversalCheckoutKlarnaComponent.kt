@@ -8,6 +8,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.primerioreactnative.PrimerRNViewModelStoreOwner
 import com.primerioreactnative.components.events.PrimerHeadlessUniversalCheckoutComponentEvent
@@ -45,10 +46,11 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 @Suppress("TooManyFunctions")
+@ReactModule(name = PrimerRNHeadlessUniversalCheckoutKlarnaComponent.NAME)
 class PrimerRNHeadlessUniversalCheckoutKlarnaComponent(
     private val reactContext: ReactApplicationContext,
 ) : ReactContextBaseJavaModule(reactContext) {
-    override fun getName(): String = "RNTPrimerHeadlessUniversalCheckoutKlarnaComponent"
+    override fun getName(): String = NAME
 
     private var job: Job? = null
     private var viewModelStoreOwner: ViewModelStoreOwner? = null
@@ -314,17 +316,19 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaComponent(
         promise.resolve(null)
     }
 
-    private companion object {
-        const val UNINITIALIZED_ERROR =
+    companion object {
+        private const val UNINITIALIZED_ERROR =
             """
             The KlarnaComponent has not been initialized.
             Make sure you have initialized the `KlarnaComponent` first.
             """
-        const val MISSING_ACTIVITY_ERROR =
+        private const val MISSING_ACTIVITY_ERROR =
             """
             Could not retrieve running activity from context.
             """
 
-        val json by lazy { Json { encodeDefaults = true } }
+        private val json by lazy { Json { encodeDefaults = true } }
+
+        const val NAME = "RNTPrimerHeadlessUniversalCheckoutKlarnaComponent"
     }
 }

@@ -21,9 +21,15 @@ buildscript {
   }
 }
 
+def isNewArchitectureEnabled() {
+  return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
+}
+
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: "com.facebook.react"
+if (isNewArchitectureEnabled()) {
+  apply plugin: "com.facebook.react"
+}
 apply plugin: 'kotlinx-serialization'
 apply plugin: 'io.gitlab.arturbosch.detekt'
 apply from: "./config/coverage-scripts/kover.gradle"
@@ -34,10 +40,6 @@ def getExtOrDefault(name) {
 
 def getExtOrIntegerDefault(name) {
   return rootProject.ext.has(name) ? rootProject.ext.get(name) : (project.properties['ReactNative_' + name]).toInteger()
-}
-
-def isNewArchitectureEnabled() {
-  return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
 }
 
 java {
@@ -86,18 +88,11 @@ android {
     }
   }
 
-  sourceSets {
-    main {
-      java.srcDirs += [
-        "generated/java",
-        "generated/jni"
-      ]
-
-      if (isNewArchitectureEnabled()) {
-        java.srcDirs += ['src/newarch']
-      } else {
-        java.srcDirs += ['src/oldarch']
-      }
+  sourceSets.main {
+    if (isNewArchitectureEnabled()) {
+      java.srcDirs += ['src/newarch']
+    } else {
+      java.srcDirs += ['src/oldarch']
     }
   }
 }

@@ -7,6 +7,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.WritableMap
+import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.primerioreactnative.components.events.PrimerHeadlessUniversalCheckoutEvent
 import com.primerioreactnative.datamodels.ErrorTypeRN
@@ -26,6 +27,7 @@ import org.json.JSONObject
 
 @Suppress("TooManyFunctions")
 @ExperimentalPrimerApi
+@ReactModule(name = PrimerRNHeadlessUniversalCheckout.NAME)
 class PrimerRNHeadlessUniversalCheckout(
     private val reactContext: ReactApplicationContext,
     private val json: Json,
@@ -193,7 +195,8 @@ class PrimerRNHeadlessUniversalCheckout(
         return data.toWritableMap()
     }
 
-    private companion object {
+    companion object {
         const val TAG = "PrimerHUC"
+        const val NAME = "PrimerHeadlessUniversalCheckout"
     }
 }

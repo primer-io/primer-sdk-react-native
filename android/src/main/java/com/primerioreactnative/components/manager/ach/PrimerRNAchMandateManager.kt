@@ -6,14 +6,16 @@ import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.module.annotations.ReactModule
 import com.primerioreactnative.datamodels.ErrorTypeRN
 import com.primerioreactnative.utils.errorTo
 import kotlinx.coroutines.launch
 
+@ReactModule(name = PrimerRNAchMandateManager.NAME)
 class PrimerRNAchMandateManager(
     private val reactContext: ReactApplicationContext,
 ) : ReactContextBaseJavaModule(reactContext) {
-    override fun getName() = "RNTAchMandateManager"
+    override fun getName() = NAME
 
     @ReactMethod
     fun acceptMandate(promise: Promise) {
@@ -69,5 +71,6 @@ class PrimerRNAchMandateManager(
             """
       Unitialized 'declineMandate' property.
             """.trimIndent()
+        const val NAME = "RNTAchMandateManager"
     }
 }

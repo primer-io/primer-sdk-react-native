@@ -4,6 +4,7 @@ import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.module.annotations.ReactModule
 import com.primerioreactnative.components.datamodels.manager.vault.PrimerRNValidationErrors
 import com.primerioreactnative.components.datamodels.manager.vault.PrimerRNVaultedPaymentMethodAdditionalData
 import com.primerioreactnative.components.datamodels.manager.vault.PrimerRNVaultedPaymentMethods
@@ -23,6 +24,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
 
+@ReactModule(name = PrimerRNHeadlessUniversalCheckoutVaultManager.NAME)
 class PrimerRNHeadlessUniversalCheckoutVaultManager(
     reactContext: ReactApplicationContext,
     private val json: Json,
@@ -30,7 +32,7 @@ class PrimerRNHeadlessUniversalCheckoutVaultManager(
     private val vaultScope = CoroutineScope(SupervisorJob())
     private lateinit var nativeVaultManager: PrimerHeadlessUniversalCheckoutVaultManagerInterface
 
-    override fun getName() = "RNPrimerHeadlessUniversalCheckoutVaultManager"
+    override fun getName() = NAME
 
     @ReactMethod
     fun configure(promise: Promise) {
@@ -167,5 +169,9 @@ class PrimerRNHeadlessUniversalCheckoutVaultManager(
                 )
             }
         }
+    }
+
+    companion object {
+        const val NAME = "RNPrimerHeadlessUniversalCheckoutVaultManager"
     }
 }

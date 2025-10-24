@@ -7,6 +7,7 @@ import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.primerioreactnative.PrimerRNViewModelStoreOwner
 import com.primerioreactnative.components.events.PrimerHeadlessUniversalCheckoutComponentEvent
@@ -38,10 +39,11 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 @Suppress("TooManyFunctions")
+@ReactModule(name = PrimerRNHeadlessUniversalCheckoutBanksComponent.NAME)
 class PrimerRNHeadlessUniversalCheckoutBanksComponent(
     private val reactContext: ReactApplicationContext,
 ) : ReactContextBaseJavaModule(reactContext) {
-    override fun getName() = "RNTPrimerHeadlessUniversalCheckoutBanksComponent"
+    override fun getName() = NAME
 
     private var job: Job? = null
     private var banksComponent: BanksComponent? = null
@@ -255,13 +257,14 @@ class PrimerRNHeadlessUniversalCheckoutBanksComponent(
         promise.resolve(null)
     }
 
-    private companion object {
-        const val UNINITIALIZED_ERROR =
+    companion object {
+        private const val UNINITIALIZED_ERROR =
             """
         The BanksComponent has not been initialized.
         Make sure you have initialized the `BanksComponent` first.
       """
 
-        val json = Json { encodeDefaults = true }
+        private val json = Json { encodeDefaults = true }
+        const val NAME = "RNTPrimerHeadlessUniversalCheckoutBanksComponent"
     }
 }
