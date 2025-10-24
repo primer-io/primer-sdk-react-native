@@ -50,44 +50,41 @@ class PrimerSdkPackage : BaseReactPackage() {
     )
 
     override fun getModule(name: String, reactContext: ReactApplicationContext): NativeModule? =
-        if (name == DefaultNativePrimerModule.NAME) {
-            NativePrimerModule(reactContext, json)
-        } else {
-            when (name) {
-                PrimerRNHeadlessUniversalCheckout.NAME -> PrimerRNHeadlessUniversalCheckout(reactContext, json)
-                PrimerRNHeadlessUniversalCheckoutRawManager.NAME -> PrimerRNHeadlessUniversalCheckoutRawManager(
-                    reactContext,
-                    json,
-                )
+        when (name) {
+            DefaultNativePrimerModule.NAME -> NativePrimerModule(reactContext, json)
+            PrimerRNHeadlessUniversalCheckout.NAME -> PrimerRNHeadlessUniversalCheckout(reactContext, json)
+            PrimerRNHeadlessUniversalCheckoutRawManager.NAME -> PrimerRNHeadlessUniversalCheckoutRawManager(
+                reactContext,
+                json,
+            )
 
-                PrimerRNHeadlessUniversalCheckoutNativeUiManager.NAME -> PrimerRNHeadlessUniversalCheckoutNativeUiManager(
-                    reactContext,
-                )
+            PrimerRNHeadlessUniversalCheckoutNativeUiManager.NAME -> PrimerRNHeadlessUniversalCheckoutNativeUiManager(
+                reactContext,
+            )
 
-                PrimerRNHeadlessUniversalCheckoutAssetManager.NAME -> PrimerRNHeadlessUniversalCheckoutAssetManager(
-                    reactContext,
-                )
-                PrimerRNHeadlessUniversalCheckoutVaultManager.NAME -> PrimerRNHeadlessUniversalCheckoutVaultManager(
-                    reactContext,
-                    json,
-                )
+            PrimerRNHeadlessUniversalCheckoutAssetManager.NAME -> PrimerRNHeadlessUniversalCheckoutAssetManager(
+                reactContext,
+            )
+            PrimerRNHeadlessUniversalCheckoutVaultManager.NAME -> PrimerRNHeadlessUniversalCheckoutVaultManager(
+                reactContext,
+                json,
+            )
 
-                PrimerRNHeadlessUniversalCheckoutKlarnaComponent.NAME -> PrimerRNHeadlessUniversalCheckoutKlarnaComponent(
-                    reactContext,
-                )
+            PrimerRNHeadlessUniversalCheckoutKlarnaComponent.NAME -> PrimerRNHeadlessUniversalCheckoutKlarnaComponent(
+                reactContext,
+            )
 
-                PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent.NAME -> PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent(
-                    reactContext,
-                )
+            PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent.NAME -> PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent(
+                reactContext,
+            )
 
-                PrimerRNAchMandateManager.NAME -> PrimerRNAchMandateManager(reactContext)
-                PrimerRNHeadlessUniversalCheckoutBanksComponent.NAME -> PrimerRNHeadlessUniversalCheckoutBanksComponent(
-                    reactContext,
-                )
+            PrimerRNAchMandateManager.NAME -> PrimerRNAchMandateManager(reactContext)
+            PrimerRNHeadlessUniversalCheckoutBanksComponent.NAME -> PrimerRNHeadlessUniversalCheckoutBanksComponent(
+                reactContext,
+            )
 
-                PrimerGooglePayButtonConstantsModule.NAME -> PrimerGooglePayButtonConstantsModule(reactContext)
-                else -> null
-            }
+            PrimerGooglePayButtonConstantsModule.NAME -> PrimerGooglePayButtonConstantsModule(reactContext)
+            else -> null
         }
 
     override fun getReactModuleInfoProvider() = ReactModuleInfoProvider {
