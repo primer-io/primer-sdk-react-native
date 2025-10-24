@@ -8,6 +8,7 @@ import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.primerioreactnative.PrimerRNViewModelStoreOwner
 import com.primerioreactnative.components.events.PrimerHeadlessUniversalCheckoutComponentEvent
@@ -37,10 +38,11 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 @Suppress("TooManyFunctions")
+@ReactModule(name = PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent.NAME)
 class PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent(
     private val reactContext: ReactApplicationContext,
 ) : ReactContextBaseJavaModule(reactContext) {
-    override fun getName() = "RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent"
+    override fun getName() = NAME
 
     private var job: Job? = null
     private var viewModelStoreOwner: ViewModelStoreOwner? = null
@@ -277,11 +279,13 @@ class PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent(
     }
 
     companion object {
-        const val INITIALIZATION_ERROR = """
+        private val json = Json { encodeDefaults = true }
+
+        private const val INITIALIZATION_ERROR = """
       An error occurred during component initialization.
     """
 
-        const val UNINITIALIZED_ERROR =
+        private const val UNINITIALIZED_ERROR =
             """
         The component has not been initialized.
         Make sure you have initialized the `component` first.
@@ -293,6 +297,6 @@ class PrimerRNHeadlessUniversalCheckoutStripeAchUserDetailsComponent(
         Make sure your root activity extends ComponentActivity.
       """
 
-        val json = Json { encodeDefaults = true }
+        const val NAME = "RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent"
     }
 }

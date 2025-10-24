@@ -1,13 +1,14 @@
-package java.com.primerioreactnative
+package com.primerioreactnative
 
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.modules.core.DeviceEventManagerModule
-import com.primerioreactnative.DefaultNativePrimerModule
 import kotlinx.serialization.json.Json
 
+@ReactModule(name = DefaultNativePrimerModule.NAME)
 class NativePrimerModule(private val reactContext: ReactApplicationContext, private val json: Json) :
   ReactContextBaseJavaModule(reactContext) {
   private val implementation by lazy {

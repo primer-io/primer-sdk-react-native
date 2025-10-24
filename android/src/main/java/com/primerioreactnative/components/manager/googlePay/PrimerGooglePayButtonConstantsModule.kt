@@ -2,6 +2,7 @@ package com.primerioreactnative.components.manager.googlePay
 
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
+import com.facebook.react.module.annotations.ReactModule
 import com.google.android.gms.wallet.button.ButtonConstants
 
 internal object PrimerGooglePayButtonOptionsMapping {
@@ -24,6 +25,7 @@ internal object PrimerGooglePayButtonOptionsMapping {
     }
 }
 
+@ReactModule(name = PrimerGooglePayButtonConstantsModule.NAME)
 class PrimerGooglePayButtonConstantsModule(reactContext: ReactApplicationContext) :
     ReactContextBaseJavaModule(reactContext) {
     override fun getConstants(): Map<String, Any> = PrimerGooglePayButtonOptionsMapping.getOptions()
@@ -31,6 +33,6 @@ class PrimerGooglePayButtonConstantsModule(reactContext: ReactApplicationContext
     override fun getName() = NAME
 
     companion object {
-        private const val NAME = "PrimerGooglePayButtonConstants"
+        const val NAME = "PrimerGooglePayButtonConstants"
     }
 }
