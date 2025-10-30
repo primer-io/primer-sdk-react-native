@@ -4,8 +4,7 @@
 //
 
 #import "RCTNativePrimer.h"
-@protocol PrimerDelegate;
-#import "primer_io_react_native-Swift.h"
+#import "PrimerSwiftInterop.h"
 
 #ifdef RCT_NEW_ARCH_ENABLED
 #import <NativePrimerSpec/NativePrimerSpec.h>
