@@ -14,6 +14,7 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/primer-io/primer-sdk-react-native.git", :tag => "#{s.version}" }
 
   s.source_files = "ios/**/*.{h,m,mm,swift}"
+  s.private_header_files = ['ios/PrimerSwiftInterop.h' ]
 
   s.dependency "React-Core"
   s.dependency "PrimerSDK", "2.42.0"
