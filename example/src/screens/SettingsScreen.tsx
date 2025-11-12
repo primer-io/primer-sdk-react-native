@@ -893,6 +893,44 @@ const SettingsScreen = ({navigation}) => {
             Headless Universal Checkout Vault
           </Text>
         </TouchableOpacity>
+
+        <TouchableOpacity
+          testID="ComponentsPrebuiltCardForm"
+          style={{
+            ...styles.button,
+            marginVertical: 5,
+            backgroundColor: '#0066FF',
+          }}
+          onPress={() => {
+            updateAppPaymentParameters();
+            console.log(appPaymentParameters);
+            navigation.navigate('ComponentsPrebuiltCardForm', {
+              clientToken: customClientToken,
+            });
+          }}>
+          <Text style={{...styles.buttonText, color: 'white'}}>
+            Components API: Pre-built
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          testID="ComponentsCustomCardForm"
+          style={{
+            ...styles.button,
+            marginVertical: 5,
+            backgroundColor: '#0066FF',
+          }}
+          onPress={() => {
+            updateAppPaymentParameters();
+            console.log(appPaymentParameters);
+            navigation.navigate('ComponentsCustomCardForm', {
+              clientToken: customClientToken,
+            });
+          }}>
+          <Text style={{...styles.buttonText, color: 'white'}}>
+            Components API: Custom UI
+          </Text>
+        </TouchableOpacity>
       </View>
     );
   };
