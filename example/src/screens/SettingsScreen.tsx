@@ -931,6 +931,25 @@ const SettingsScreen = ({navigation}) => {
             Components API: Custom UI
           </Text>
         </TouchableOpacity>
+
+        <TouchableOpacity
+          testID="ComponentsCyberpunkCardForm"
+          style={{
+            ...styles.button,
+            marginVertical: 5,
+            backgroundColor: '#00FFFF',
+          }}
+          onPress={() => {
+            updateAppPaymentParameters();
+            console.log(appPaymentParameters);
+            navigation.navigate('ComponentsCyberpunkCardForm', {
+              clientToken: customClientToken,
+            });
+          }}>
+          <Text style={{...styles.buttonText, color: '#0A0A1E'}}>
+            Components API: Cyberpunk UI
+          </Text>
+        </TouchableOpacity>
       </View>
     );
   };
