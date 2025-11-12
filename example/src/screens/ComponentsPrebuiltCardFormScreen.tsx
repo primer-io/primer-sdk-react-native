@@ -1,71 +1,111 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Alert } from 'react-native';
+import { View, Text, StyleSheet, Alert, ScrollView } from 'react-native';
 import {
   PrimerCheckoutProvider,
   CardForm,
+  PaymentMethodList,
+  PaymentSummary,
 } from '@primer-io/react-native';
-import {appPaymentParameters} from '../models/IClientSessionRequestBody';
-
-/**
- * Helper to calculate total amount from line items
- */
-function calculateTotalAmount(): number {
-  const lineItems = appPaymentParameters.clientSessionRequestBody.order?.lineItems || [];
-  return lineItems
-    .map(item => item.amount * item.quantity)
-    .reduce((prev, next) => prev + next, 0);
-}
-
-/**
- * Format amount for display (amount is in cents)
- */
-function formatAmount(amountInCents: number, currencyCode: string = 'EUR'): string {
-  const amount = amountInCents / 100;
-  const currencySymbol = currencyCode === 'USD' ? '$' : currencyCode === 'GBP' ? '£' : '€';
-  return `${currencySymbol}${amount.toFixed(2)}`;
-}
+import type { PaymentMethodItemType } from '@primer-io/react-native';
+import { appPaymentParameters } from '../models/IClientSessionRequestBody';
 
 /**
  * Example screen demonstrating pre-built CardForm component
  * This shows the simplest integration approach with minimal code
  */
 function PrebuiltCardFormContent() {
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethodItemType | null>(null);
   const [isValid, setIsValid] = useState(false);
 
-  const totalAmount = calculateTotalAmount();
+  // Calculate total from line items
+  const totalAmount = appPaymentParameters.clientSessionRequestBody.order?.lineItems?.reduce(
+    (sum, item) => sum + item.amount * item.quantity,
+    0
+  ) || 0;
   const currencyCode = appPaymentParameters.clientSessionRequestBody.currencyCode || 'EUR';
-  const formattedAmount = formatAmount(totalAmount, currencyCode);
+
+  const handlePaymentMethodPress = (method: PaymentMethodItemType) => {
+    if (method.type === 'PAYMENT_CARD') {
+      setSelectedPaymentMethod(method);
+    } else {
+      Alert.alert(
+        'Coming Soon!',
+        `${method.name} payment method will be available soon.`,
+        [{ text: 'OK' }]
+      );
+    }
+  };
+
+  const handleBackToList = () => {
+    setSelectedPaymentMethod(null);
+    setIsValid(false);
+  };
+
+  const theme = {
+    primaryColor: '#0066FF',
+    errorColor: '#FF3B30',
+    borderRadius: 8,
+    fontSize: 16,
+    fieldSpacing: 16,
+  };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Pre-built Card Form</Text>
+    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+      <Text style={styles.title}>Pre-built Components</Text>
       <Text style={styles.subtitle}>
-        Using the CardForm component with built-in UI
+        Payment Method List + Card Form Integration
       </Text>
 
-      <CardForm
-        showCardholderName
-        onValidationChange={setIsValid}
+      {/* Payment Summary */}
+      <PaymentSummary
+        amount={totalAmount}
+        currencyCode={currencyCode}
         theme={{
-          primaryColor: '#0066FF',
-          errorColor: '#FF3B30',
-          borderRadius: 8,
-          fontSize: 16,
-          fieldSpacing: 16,
+          ...theme,
+          backgroundColor: '#F9FAFB',
         }}
-        submitButtonText={`Pay ${formattedAmount}`}
-        testID="card-form"
+        style={styles.summary}
       />
 
-      {/* Status indicator */}
-      {__DEV__ && (
-        <View style={styles.statusContainer}>
-          <Text style={styles.statusText}>
-            Form Status: {isValid ? '✅ Valid' : '⚠️ Invalid'}
-          </Text>
-        </View>
+      {/* Show Payment Method List or Card Form */}
+      {!selectedPaymentMethod ? (
+        <>
+          <Text style={styles.sectionTitle}>Select Payment Method</Text>
+          <PaymentMethodList
+            onPaymentMethodPress={handlePaymentMethodPress}
+            showCardFirst={true}
+            showComingSoonBadge={true}
+            theme={theme}
+            testID="payment-method-list"
+          />
+        </>
+      ) : (
+        <>
+          <View style={styles.backButtonContainer}>
+            <Text style={styles.backButton} onPress={handleBackToList}>
+              ← Back to payment methods
+            </Text>
+          </View>
+
+          <Text style={styles.sectionTitle}>Card Details</Text>
+          <CardForm
+            showCardholderName
+            onValidationChange={setIsValid}
+            theme={theme}
+            testID="card-form"
+          />
+
+          {/* Status indicator */}
+          {__DEV__ && (
+            <View style={styles.statusContainer}>
+              <Text style={styles.statusText}>
+                Form Status: {isValid ? '✅ Valid' : '⚠️ Invalid'}
+              </Text>
+            </View>
+          )}
+        </>
       )}
-    </View>
+    </ScrollView>
   );
 }
 
@@ -100,8 +140,10 @@ export default function ComponentsPrebuiltCardFormScreen(props: any) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 24,
     backgroundColor: '#FFFFFF',
+  },
+  contentContainer: {
+    padding: 24,
   },
   title: {
     fontSize: 24,
@@ -113,6 +155,23 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666666',
     marginBottom: 24,
+  },
+  summary: {
+    marginBottom: 24,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 16,
+    color: '#000000',
+  },
+  backButtonContainer: {
+    marginBottom: 16,
+  },
+  backButton: {
+    fontSize: 16,
+    color: '#0066FF',
+    fontWeight: '600',
   },
   statusContainer: {
     marginTop: 24,

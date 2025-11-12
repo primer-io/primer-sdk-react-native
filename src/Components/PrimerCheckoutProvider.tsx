@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
 import { PrimerHeadlessUniversalCheckout } from '../HeadlessUniversalCheckout/PrimerHeadlessUniversalCheckout';
+import AssetsManager from '../HeadlessUniversalCheckout/Managers/AssetsManager';
 import { PrimerCheckoutContext } from './internal/PrimerCheckoutContext';
 import type {
   PrimerCheckoutProviderProps,
@@ -7,6 +8,10 @@ import type {
 } from '../models/components/PrimerCheckoutProviderTypes';
 import type { IPrimerHeadlessUniversalCheckoutPaymentMethod } from '../models/PrimerHeadlessUniversalCheckoutPaymentMethod';
 import type { PrimerSettings } from '../models/PrimerSettings';
+import type {
+  PrimerPaymentMethodAsset,
+  PrimerPaymentMethodNativeView,
+} from '../models/PrimerPaymentMethodResource';
 
 /**
  * Provider component for Primer Components API
@@ -39,7 +44,12 @@ export function PrimerCheckoutProvider(props: PrimerCheckoutProviderProps) {
   const [availablePaymentMethods, setAvailablePaymentMethods] = useState<
     IPrimerHeadlessUniversalCheckoutPaymentMethod[]
   >([]);
+  const [paymentMethodResources, setPaymentMethodResources] = useState<
+    (PrimerPaymentMethodAsset | PrimerPaymentMethodNativeView)[]
+  >([]);
+  const [isLoadingResources, setIsLoadingResources] = useState(false);
   const [initError, setInitError] = useState<Error | null>(null);
+  const [clientSession, setClientSession] = useState<any>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -49,6 +59,14 @@ export function PrimerCheckoutProvider(props: PrimerCheckoutProviderProps) {
         // Build settings with headless callbacks
         const headlessSettings: PrimerSettings = {
           ...settings,
+          onClientSessionUpdate: (clientSessionData) => {
+            // Capture client session data for context
+            if (isMounted) {
+              setClientSession(clientSessionData);
+            }
+            // Also call original callback if exists
+            settings?.onClientSessionUpdate?.(clientSessionData);
+          },
           headlessUniversalCheckoutCallbacks: {
             // Merge existing callbacks with provider callbacks
             ...settings?.headlessUniversalCheckoutCallbacks,
@@ -104,6 +122,23 @@ export function PrimerCheckoutProvider(props: PrimerCheckoutProviderProps) {
         if (isMounted) {
           setAvailablePaymentMethods(paymentMethods);
           setIsReady(true);
+
+          // Fetch payment method resources eagerly
+          setIsLoadingResources(true);
+          try {
+            const assetsManager = new AssetsManager();
+            const resources = await assetsManager.getPaymentMethodResources();
+            if (isMounted) {
+              setPaymentMethodResources(resources as (PrimerPaymentMethodAsset | PrimerPaymentMethodNativeView)[]);
+            }
+          } catch (resourceErr) {
+            console.error('Failed to fetch payment method resources:', resourceErr);
+            // Don't treat this as a fatal error - continue with empty resources
+          } finally {
+            if (isMounted) {
+              setIsLoadingResources(false);
+            }
+          }
         }
       } catch (err) {
         console.error('Failed to initialize Primer Checkout:', err);
@@ -129,10 +164,13 @@ export function PrimerCheckoutProvider(props: PrimerCheckoutProviderProps) {
     () => ({
       isReady,
       availablePaymentMethods,
+      paymentMethodResources,
+      isLoadingResources,
       clientToken,
       settings,
+      clientSession,
     }),
-    [isReady, availablePaymentMethods, clientToken, settings]
+    [isReady, availablePaymentMethods, paymentMethodResources, isLoadingResources, clientToken, settings, clientSession]
   );
 
   // Show error if initialization failed

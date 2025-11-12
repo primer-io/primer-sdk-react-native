@@ -23,6 +23,9 @@ export { PrimerCheckoutProvider } from './Components/PrimerCheckoutProvider';
 export { CardForm } from './Components/CardForm';
 export { CardNetworkIcon } from './Components/CardNetworkIcon';
 export type { CardNetworkIconProps } from './Components/CardNetworkIcon';
+export { PaymentMethodList } from './Components/PaymentMethodList';
+export { PaymentMethodItem } from './Components/PaymentMethodItem';
+export { PaymentSummary } from './Components/PaymentSummary';
 
 // Individual Input Components
 export {
@@ -39,7 +42,7 @@ export type {
 } from './Components/inputs';
 
 // Hooks
-export { useCardForm, usePrimerCheckout } from './Components/hooks';
+export { useCardForm, usePrimerCheckout, usePaymentMethodList } from './Components/hooks';
 
 // Types
 export type {
@@ -59,6 +62,17 @@ export type {
 } from './models/components/CardFormTypes';
 
 export type { InputTheme } from './models/components/InputTheme';
+
+export type {
+  PaymentMethodItem as PaymentMethodItemType,
+  PaymentMethodListTheme,
+  PaymentMethodListProps,
+  PaymentMethodItemProps,
+  PaymentSummaryTheme,
+  PaymentSummaryProps,
+  UsePaymentMethodListOptions,
+  UsePaymentMethodListReturn,
+} from './models/components/PaymentMethodListTypes';
 
 // ========================================
 // Headless Universal Checkout

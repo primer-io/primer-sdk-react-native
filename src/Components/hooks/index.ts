@@ -5,3 +5,4 @@
 
 export { useCardForm } from './useCardForm';
 export { usePrimerCheckout } from './usePrimerCheckout';
+export { usePaymentMethodList } from './usePaymentMethodList';

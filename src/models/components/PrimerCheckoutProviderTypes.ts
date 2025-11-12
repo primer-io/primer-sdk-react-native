@@ -4,11 +4,16 @@ import type { PrimerCheckoutData } from '../PrimerCheckoutData';
 import type { PrimerCheckoutPaymentMethodData } from '../PrimerCheckoutPaymentMethodData';
 import type { PrimerPaymentMethodTokenData } from '../PrimerPaymentMethodTokenData';
 import type { PrimerError } from '../PrimerError';
+import type { PrimerClientSession } from '../PrimerClientSession';
 import type { IPrimerHeadlessUniversalCheckoutPaymentMethod } from '../PrimerHeadlessUniversalCheckoutPaymentMethod';
 import type {
   PrimerPaymentCreationHandler,
   PrimerHeadlessUniversalCheckoutResumeHandler,
 } from '../PrimerHandlers';
+import type {
+  PrimerPaymentMethodAsset,
+  PrimerPaymentMethodNativeView,
+} from '../PrimerPaymentMethodResource';
 
 /**
  * Props for PrimerCheckoutProvider component
@@ -72,6 +77,17 @@ export interface PrimerCheckoutContextValue {
   availablePaymentMethods: IPrimerHeadlessUniversalCheckoutPaymentMethod[];
 
   /**
+   * Payment method resources with display information (logos, names, colors)
+   * Fetched eagerly when SDK initializes
+   */
+  paymentMethodResources: (PrimerPaymentMethodAsset | PrimerPaymentMethodNativeView)[];
+
+  /**
+   * Whether payment method resources are still loading
+   */
+  isLoadingResources: boolean;
+
+  /**
    * The client token used to initialize the SDK
    */
   clientToken: string;
@@ -80,4 +96,10 @@ export interface PrimerCheckoutContextValue {
    * The settings passed to the provider
    */
   settings?: PrimerSettings;
+
+  /**
+   * The client session data containing payment amount and details
+   * Updated when the SDK receives client session information
+   */
+  clientSession: PrimerClientSession | null;
 }

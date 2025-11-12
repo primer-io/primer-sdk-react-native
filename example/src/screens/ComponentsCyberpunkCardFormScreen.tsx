@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -17,34 +17,23 @@ import {
   ExpiryDateInput,
   CVVInput,
   CardholderNameInput,
+  PaymentMethodList,
+  PaymentSummary,
 } from '@primer-io/react-native';
+import type { PaymentMethodItemType } from '@primer-io/react-native';
 import {appPaymentParameters} from '../models/IClientSessionRequestBody';
 
-/**
- * Helper to calculate total amount from line items
- */
-function calculateTotalAmount(): number {
-  const lineItems = appPaymentParameters.clientSessionRequestBody.order?.lineItems || [];
-  return lineItems
-    .map(item => item.amount * item.quantity)
-    .reduce((prev, next) => prev + next, 0);
-}
-
-/**
- * Format amount for display (amount is in cents)
- */
-function formatAmount(amountInCents: number, currencyCode: string = 'EUR'): string {
-  const amount = amountInCents / 100;
-  const currencySymbol = currencyCode === 'USD' ? '$' : currencyCode === 'GBP' ? '£' : '€';
-  return `${currencySymbol}${amount.toFixed(2)}`;
-}
-
 function CyberpunkCardFormContent() {
-  const totalAmount = calculateTotalAmount();
-  const currencyCode = appPaymentParameters.clientSessionRequestBody.currencyCode || 'EUR';
-  const formattedAmount = formatAmount(totalAmount, currencyCode);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethodItemType | null>(null);
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const scanlineAnim = useRef(new Animated.Value(0)).current;
+
+  // Calculate total from line items
+  const totalAmount = appPaymentParameters.clientSessionRequestBody.order?.lineItems?.reduce(
+    (sum, item) => sum + item.amount * item.quantity,
+    0
+  ) || 0;
+  const currencyCode = appPaymentParameters.clientSessionRequestBody.currencyCode || 'EUR';
 
   const cardForm = useCardForm({
     collectCardholderName: true,
@@ -125,10 +114,39 @@ function CyberpunkCardFormContent() {
   const handleSubmit = async () => {
     try {
       await cardForm.submit();
-      Alert.alert('Success', 'Payment executed successfully!');
+      Alert.alert('[ SUCCESS ]', 'Payment executed successfully!');
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to execute payment');
+      Alert.alert('[ ERROR ]', error.message || 'Failed to execute payment');
     }
+  };
+
+  const handlePaymentMethodPress = (method: PaymentMethodItemType) => {
+    if (method.type === 'PAYMENT_CARD') {
+      setSelectedPaymentMethod(method);
+    } else {
+      Alert.alert(
+        '[ COMING SOON ]',
+        `${method.name} payment method will be available in future updates.`,
+        [{ text: '[ OK ]' }]
+      );
+    }
+  };
+
+  const handleBackToList = () => {
+    setSelectedPaymentMethod(null);
+  };
+
+  // Cyberpunk theme for payment methods
+  const cyberpunkTheme = {
+    primaryColor: '#00FFFF',
+    backgroundColor: 'rgba(10, 10, 30, 0.9)',
+    textColor: '#00FFFF',
+    borderColor: '#00FFFF',
+    borderWidth: 2,
+    borderRadius: 4,
+    itemSpacing: 16,
+    badgeBackgroundColor: '#FF00FF',
+    badgeTextColor: '#000000',
   };
 
   return (
@@ -160,6 +178,52 @@ function CyberpunkCardFormContent() {
           <Text style={styles.statusText}>SYSTEM ONLINE</Text>
         </View>
       </View>
+
+      {/* Payment Summary with Cyberpunk Theme */}
+      <View style={styles.summaryContainer}>
+        <PaymentSummary
+          amount={totalAmount}
+          currencyCode={currencyCode}
+          theme={{
+            primaryColor: '#00FFFF',
+            backgroundColor: 'rgba(10, 10, 30, 0.9)',
+            textColor: '#00FFFF',
+            secondaryTextColor: 'rgba(0, 255, 255, 0.7)',
+            borderColor: '#00FFFF',
+            borderWidth: 2,
+            borderRadius: 4,
+          }}
+          style={styles.summary}
+          label="[ TRANSACTION AMOUNT ]"
+        />
+      </View>
+
+      {/* Conditional Rendering: Payment Method List or Card Form */}
+      {!selectedPaymentMethod ? (
+        <>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>{'> SELECT_PAYMENT_METHOD'}</Text>
+          </View>
+          <PaymentMethodList
+            onPaymentMethodPress={handlePaymentMethodPress}
+            showCardFirst={true}
+            showComingSoonBadge={true}
+            theme={cyberpunkTheme}
+            testID="payment-method-list"
+          />
+        </>
+      ) : (
+        <>
+          {/* Back Button */}
+          <TouchableOpacity
+            onPress={handleBackToList}
+            style={styles.backButton}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.backButtonText}>
+              {'<< RETURN_TO_PAYMENT_METHODS'}
+            </Text>
+          </TouchableOpacity>
 
       {/* Digital Card Display */}
       <Animated.View
@@ -297,7 +361,7 @@ function CyberpunkCardFormContent() {
             <Text style={styles.executeButtonText}>
               {cardForm.isSubmitting
                 ? '[ PROCESSING... ]'
-                : `[ EXECUTE PAYMENT • ${formattedAmount} ]`}
+                : '[ EXECUTE PAYMENT ]'}
             </Text>
             {cardForm.isValid && !cardForm.isSubmitting && (
               <View style={styles.blinkingCursor}>
@@ -307,6 +371,8 @@ function CyberpunkCardFormContent() {
           </View>
         </LinearGradient>
       </TouchableOpacity>
+        </>
+      )}
 
       {/* Footer */}
       <View style={styles.footer}>
@@ -378,6 +444,44 @@ const styles = StyleSheet.create({
   },
   header: {
     marginBottom: 24,
+  },
+  summaryContainer: {
+    marginBottom: 24,
+  },
+  summary: {
+    shadowColor: '#00FFFF',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+  },
+  sectionHeader: {
+    backgroundColor: 'rgba(0, 255, 255, 0.1)',
+    padding: 12,
+    borderWidth: 2,
+    borderColor: '#00FFFF',
+    borderRadius: 4,
+    marginBottom: 16,
+  },
+  sectionTitle: {
+    fontSize: 14,
+    color: '#00FFFF',
+    fontFamily: Platform.select({ ios: 'Courier', android: 'monospace' }),
+    fontWeight: '700',
+  },
+  backButton: {
+    marginBottom: 20,
+    padding: 12,
+    borderWidth: 2,
+    borderColor: '#FF00FF',
+    borderRadius: 4,
+    backgroundColor: 'rgba(255, 0, 255, 0.1)',
+  },
+  backButtonText: {
+    fontSize: 14,
+    color: '#FF00FF',
+    fontFamily: Platform.select({ ios: 'Courier', android: 'monospace' }),
+    fontWeight: '700',
+    textAlign: 'center',
   },
   headerTitle: {
     fontSize: 20,
