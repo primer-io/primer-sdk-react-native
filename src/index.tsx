@@ -1,3 +1,6 @@
+// ========================================
+// DropIn / Universal Checkout
+// ========================================
 export { Primer } from './Primer';
 export type { PrimerSettings, PrimerApiVersion } from './models/PrimerSettings';
 export { PrimerInputElementType as InputElementType } from './models/PrimerInputElementType';
@@ -8,6 +11,40 @@ export type {
   PrimerResumeHandler as ResumeHandler,
   PrimerErrorHandler as ErrorHandler,
 } from './models/PrimerHandlers';
+
+// ========================================
+// Components API (React-idiomatic)
+// ========================================
+
+// Provider
+export { PrimerCheckoutProvider } from './Components/PrimerCheckoutProvider';
+
+// Components
+export { CardForm } from './Components/CardForm';
+
+// Hooks
+export { useCardForm, usePrimerCheckout } from './Components/hooks';
+
+// Types
+export type {
+  PrimerCheckoutProviderProps,
+  PrimerCheckoutContextValue,
+} from './models/components/PrimerCheckoutProviderTypes';
+
+export type {
+  UseCardFormOptions,
+  UseCardFormReturn,
+  CardFormProps,
+  CardFormErrors,
+  CardFormTheme,
+  CardMetadata,
+  CardFormField,
+  CardFormState,
+} from './models/components/CardFormTypes';
+
+// ========================================
+// Headless Universal Checkout
+// ========================================
 export type { PrimerPaymentMethodTokenData } from './models/PrimerPaymentMethodTokenData';
 export type {
   PrimerClientSession as ClientSession,
@@ -41,6 +78,7 @@ export type {
   PrimerPaymentMethodNativeView as NativeViewResource,
   IPrimerAsset as AssetResourceColors,
 } from './models/PrimerPaymentMethodResource';
+// Headless Checkout Core
 export { PrimerHeadlessUniversalCheckout as HeadlessUniversalCheckout } from './HeadlessUniversalCheckout/PrimerHeadlessUniversalCheckout';
 export type { IPrimerHeadlessUniversalCheckoutPaymentMethod as PaymentMethod } from './models/PrimerHeadlessUniversalCheckoutPaymentMethod';
 export { default as AssetsManager } from './HeadlessUniversalCheckout/Managers/AssetsManager';
