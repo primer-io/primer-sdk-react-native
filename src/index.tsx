@@ -21,6 +21,22 @@ export { PrimerCheckoutProvider } from './Components/PrimerCheckoutProvider';
 
 // Components
 export { CardForm } from './Components/CardForm';
+export { CardNetworkIcon } from './Components/CardNetworkIcon';
+export type { CardNetworkIconProps } from './Components/CardNetworkIcon';
+
+// Individual Input Components
+export {
+  CardNumberInput,
+  ExpiryDateInput,
+  CVVInput,
+  CardholderNameInput,
+} from './Components/inputs';
+export type {
+  CardNumberInputProps,
+  ExpiryDateInputProps,
+  CVVInputProps,
+  CardholderNameInputProps,
+} from './Components/inputs';
 
 // Hooks
 export { useCardForm, usePrimerCheckout } from './Components/hooks';
@@ -41,6 +57,8 @@ export type {
   CardFormField,
   CardFormState,
 } from './models/components/CardFormTypes';
+
+export type { InputTheme } from './models/components/InputTheme';
 
 // ========================================
 // Headless Universal Checkout

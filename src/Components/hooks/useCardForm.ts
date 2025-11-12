@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { usePrimerCheckout } from './usePrimerCheckout';
 import { useRawDataManagerBridge } from '../internal/useRawDataManagerBridge';
 import type {
@@ -91,6 +91,17 @@ export function useCardForm(options?: UseCardFormOptions): UseCardFormReturn {
   const [errors, setErrors] = useState<CardFormErrors>({});
   const [metadata, setMetadata] = useState<CardMetadata | null>(null);
 
+  // Loading state
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Touched state - track which fields have been interacted with
+  const [touched, setTouched] = useState<Record<string, boolean>>({
+    cardNumber: false,
+    expiryDate: false,
+    cvv: false,
+    cardholderName: false,
+  });
+
   // Memoize callbacks to prevent infinite re-initialization
   const handleMetadataChange = useCallback((data: any) => {
     setMetadata(data);
@@ -125,9 +136,10 @@ export function useCardForm(options?: UseCardFormOptions): UseCardFormReturn {
       return;
     }
 
+    // Strip spaces from card number, but keep slash in expiry date
     const cardData: PrimerCardData = {
-      cardNumber,
-      expiryDate,
+      cardNumber: cardNumber.replace(/\s/g, ''), // Remove spaces
+      expiryDate: expiryDate, // Keep MM/YY format with slash
       cvv,
     };
 
@@ -152,21 +164,31 @@ export function useCardForm(options?: UseCardFormOptions): UseCardFormReturn {
       throw new Error('Cannot submit invalid card form');
     }
 
-    // Ensure data is set immediately before submitting
-    const cardData: PrimerCardData = {
-      cardNumber,
-      expiryDate,
-      cvv,
-    };
+    try {
+      setIsSubmitting(true);
 
-    // Only include cardholder name if option is enabled
-    if (options?.collectCardholderName) {
-      cardData.cardholderName = cardholderName;
+      // Ensure data is set immediately before submitting
+      // Strip spaces from card number, but keep slash in expiry date
+      const cardData: PrimerCardData = {
+        cardNumber: cardNumber.replace(/\s/g, ''), // Remove spaces
+        expiryDate: expiryDate, // Keep MM/YY format with slash
+        cvv,
+      };
+
+      // Only include cardholder name if option is enabled
+      if (options?.collectCardholderName) {
+        cardData.cardholderName = cardholderName;
+      }
+
+      // Set the data and wait for it to complete before submitting
+      await manager.setRawData(cardData);
+      await manager.submit();
+    } catch (error) {
+      setIsSubmitting(false);
+      throw error;
     }
-
-    // Set the data and wait for it to complete before submitting
-    await manager.setRawData(cardData);
-    await manager.submit();
+    // Note: We don't set isSubmitting to false on success because
+    // the form should remain in loading state until onCheckoutComplete is called
   }, [manager, isValid, cardNumber, expiryDate, cvv, cardholderName, options?.collectCardholderName]);
 
   // Reset action
@@ -178,6 +200,74 @@ export function useCardForm(options?: UseCardFormOptions): UseCardFormReturn {
     setIsValid(false);
     setErrors({});
     setMetadata(null);
+    setIsSubmitting(false);
+    setTouched({
+      cardNumber: false,
+      expiryDate: false,
+      cvv: false,
+      cardholderName: false,
+    });
+  }, []);
+
+  // Mark a field as touched
+  const markFieldTouched = useCallback((field: 'cardNumber' | 'expiryDate' | 'cvv' | 'cardholderName') => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+  }, []);
+
+  // Compute visible errors (only show errors for touched fields)
+  const visibleErrors: CardFormErrors = useMemo(() => {
+    const visible: CardFormErrors = {};
+    if (touched.cardNumber && errors.cardNumber) {
+      visible.cardNumber = errors.cardNumber;
+    }
+    if (touched.expiryDate && errors.expiryDate) {
+      visible.expiryDate = errors.expiryDate;
+    }
+    if (touched.cvv && errors.cvv) {
+      visible.cvv = errors.cvv;
+    }
+    if (touched.cardholderName && errors.cardholderName) {
+      visible.cardholderName = errors.cardholderName;
+    }
+    return visible;
+  }, [touched, errors]);
+
+  // Format card number with spaces (groups of 4)
+  const updateCardNumber = useCallback((value: string) => {
+    // Remove all non-digits
+    const digits = value.replace(/\D/g, '');
+
+    // Limit to 16 digits
+    const limitedDigits = digits.slice(0, 16);
+
+    // Add spaces every 4 digits
+    const formatted = limitedDigits.replace(/(\d{4})(?=\d)/g, '$1 ');
+
+    setCardNumber(formatted);
+  }, []);
+
+  // Format expiry date as MM/YY
+  const updateExpiryDate = useCallback((value: string) => {
+    // Remove all non-digits
+    const digits = value.replace(/\D/g, '');
+
+    // Limit to 4 digits (MMYY)
+    const limitedDigits = digits.slice(0, 4);
+
+    // Add slash after MM
+    let formatted = limitedDigits;
+    if (limitedDigits.length >= 2) {
+      formatted = limitedDigits.slice(0, 2) + '/' + limitedDigits.slice(2);
+    }
+
+    setExpiryDate(formatted);
+  }, []);
+
+  // Format CVV (numbers only)
+  const updateCVV = useCallback((value: string) => {
+    // Remove all non-digits and limit to 4
+    const digits = value.replace(/\D/g, '').slice(0, 4);
+    setCvv(digits);
   }, []);
 
   return {
@@ -189,15 +279,21 @@ export function useCardForm(options?: UseCardFormOptions): UseCardFormReturn {
 
     // Validation state
     isValid,
-    errors,
+    errors: visibleErrors, // Only show errors for touched fields
     metadata,
     requiredFields,
 
+    // Loading state
+    isSubmitting,
+
     // Field updaters
-    updateCardNumber: setCardNumber,
-    updateExpiryDate: setExpiryDate,
-    updateCVV: setCvv,
+    updateCardNumber,
+    updateExpiryDate,
+    updateCVV,
     updateCardholderName: setCardholderName,
+
+    // Touch handlers
+    markFieldTouched,
 
     // Actions
     submit,

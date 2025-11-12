@@ -70,6 +70,11 @@ export interface UseCardFormReturn {
    */
   requiredFields: PrimerInputElementType[];
 
+  /**
+   * Whether the form is currently submitting
+   */
+  isSubmitting: boolean;
+
   // Field updaters
   /**
    * Update card number field
@@ -90,6 +95,11 @@ export interface UseCardFormReturn {
    * Update cardholder name field
    */
   updateCardholderName: (value: string) => void;
+
+  /**
+   * Mark a field as touched (to show validation errors)
+   */
+  markFieldTouched: (field: 'cardNumber' | 'expiryDate' | 'cvv' | 'cardholderName') => void;
 
   // Actions
   /**
