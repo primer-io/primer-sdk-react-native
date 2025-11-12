@@ -166,6 +166,10 @@ const cardForm = useCardForm({
 
 Card number input with automatic network detection and icon display.
 
+#### Connected Mode (Recommended)
+
+The simplest and most idiomatic way to use the component:
+
 ```tsx
 import { CardNumberInput, useCardForm } from '@primer-io/react-native';
 
@@ -174,11 +178,8 @@ function CustomForm() {
 
   return (
     <CardNumberInput
-      value={cardForm.cardNumber}
-      onChangeText={cardForm.updateCardNumber}
-      onBlur={() => cardForm.markFieldTouched('cardNumber')}
-      error={cardForm.errors.cardNumber}
-      cardNetwork={cardForm.metadata?.cardNetwork}
+      cardForm={cardForm}
+      field="cardNumber"
       theme={{
         primaryColor: '#0066FF',
         errorColor: '#FF3B30',
@@ -189,31 +190,63 @@ function CustomForm() {
 }
 ```
 
-**Props:**
+**Connected Mode Props:**
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `value` | `string` | - | Current value |
-| `onChangeText` | `(value: string) => void` | - | Change handler |
-| `onBlur` | `() => void` | - | Blur handler |
-| `onFocus` | `() => void` | - | Focus handler |
-| `error` | `string` | - | Error message to display |
-| `cardNetwork` | `string` | - | Detected card network (e.g., "VISA") |
-| `showCardNetworkIcon` | `boolean` | `true` | Show network icon |
-| `isFocused` | `boolean` | `false` | Focused state |
-| `placeholder` | `string` | `"1234 5678 9012 3456"` | Placeholder text |
-| `label` | `string` | `"Card Number"` | Label text |
-| `showLabel` | `boolean` | `true` | Show label |
-| `theme` | `InputTheme` | - | Theme configuration |
-| `style` | `StyleProp<ViewStyle>` | - | Container style |
-| `inputStyle` | `StyleProp<TextStyle>` | - | Input style |
-| `labelStyle` | `StyleProp<TextStyle>` | - | Label style |
-| `errorStyle` | `StyleProp<TextStyle>` | - | Error text style |
-| `testID` | `string` | `"card-number-input"` | Test ID |
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `cardForm` | `UseCardFormReturn` | Yes | The cardForm object from useCardForm |
+| `field` | `'cardNumber'` | Yes | Field identifier |
+| `theme` | `InputTheme` | No | Theme configuration |
+| `style` | `StyleProp<ViewStyle>` | No | Container style |
+| `placeholder` | `string` | No | Placeholder text (default: "1234 5678 9012 3456") |
+| `label` | `string` | No | Label text (default: "Card Number") |
+| `showLabel` | `boolean` | No | Show label (default: true) |
+| `showCardNetworkIcon` | `boolean` | No | Show network icon (default: true) |
+| `labelStyle` | `StyleProp<TextStyle>` | No | Label style |
+| `inputStyle` | `StyleProp<TextStyle>` | No | Input style |
+| `errorStyle` | `StyleProp<TextStyle>` | No | Error text style |
+| `testID` | `string` | No | Test ID |
+
+**Key Benefits:**
+- Automatically wires up value, onChange, onBlur, error, focus state
+- No manual event handler boilerplate
+- Type-safe field binding
+- Focus state managed internally
+
+#### Manual Mode (Legacy)
+
+For advanced use cases where you need full control:
+
+```tsx
+<CardNumberInput
+  value={cardForm.cardNumber}
+  onChangeText={cardForm.updateCardNumber}
+  onBlur={() => cardForm.markFieldTouched('cardNumber')}
+  error={cardForm.errors.cardNumber}
+  cardNetwork={cardForm.metadata?.cardNetwork}
+  theme={{ primaryColor: '#0066FF' }}
+/>
+```
+
+**Manual Mode Props:**
+
+All props from Connected Mode, plus:
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `value` | `string` | Current value |
+| `onChangeText` | `(value: string) => void` | Change handler |
+| `onBlur` | `() => void` | Blur handler |
+| `onFocus` | `() => void` | Focus handler |
+| `error` | `string` | Error message to display |
+| `cardNetwork` | `string` | Detected card network (e.g., "VISA") |
+| `isFocused` | `boolean` | Focused state |
 
 ### ExpiryDateInput
 
 Expiry date input with automatic MM/YY formatting.
+
+#### Connected Mode (Recommended)
 
 ```tsx
 import { ExpiryDateInput, useCardForm } from '@primer-io/react-native';
@@ -223,21 +256,25 @@ function CustomForm() {
 
   return (
     <ExpiryDateInput
-      value={cardForm.expiryDate}
-      onChangeText={cardForm.updateExpiryDate}
-      onBlur={() => cardForm.markFieldTouched('expiryDate')}
-      error={cardForm.errors.expiryDate}
+      cardForm={cardForm}
+      field="expiryDate"
       theme={{ primaryColor: '#0066FF' }}
     />
   );
 }
 ```
 
-**Props:** Same as `CardNumberInput`, minus `cardNetwork` and `showCardNetworkIcon`.
+**Props:** Same as `CardNumberInput` Connected Mode, but:
+- `field` must be `'expiryDate'`
+- No `showCardNetworkIcon` prop
+- Default placeholder: `"MM/YY"`
+- Default label: `"Expiry Date"`
 
 ### CVVInput
 
 CVV input with secure text entry.
+
+#### Connected Mode (Recommended)
 
 ```tsx
 import { CVVInput, useCardForm } from '@primer-io/react-native';
@@ -247,21 +284,26 @@ function CustomForm() {
 
   return (
     <CVVInput
-      value={cardForm.cvv}
-      onChangeText={cardForm.updateCVV}
-      onBlur={() => cardForm.markFieldTouched('cvv')}
-      error={cardForm.errors.cvv}
+      cardForm={cardForm}
+      field="cvv"
       theme={{ primaryColor: '#0066FF' }}
     />
   );
 }
 ```
 
-**Props:** Same as `CardNumberInput`, minus `cardNetwork` and `showCardNetworkIcon`.
+**Props:** Same as `CardNumberInput` Connected Mode, but:
+- `field` must be `'cvv'`
+- No `showCardNetworkIcon` prop
+- Default placeholder: `"123"`
+- Default label: `"CVV"`
+- Automatically uses `secureTextEntry`
 
 ### CardholderNameInput
 
 Cardholder name input with proper capitalization.
+
+#### Connected Mode (Recommended)
 
 ```tsx
 import { CardholderNameInput, useCardForm } from '@primer-io/react-native';
@@ -271,17 +313,20 @@ function CustomForm() {
 
   return (
     <CardholderNameInput
-      value={cardForm.cardholderName}
-      onChangeText={cardForm.updateCardholderName}
-      onBlur={() => cardForm.markFieldTouched('cardholderName')}
-      error={cardForm.errors.cardholderName}
+      cardForm={cardForm}
+      field="cardholderName"
       theme={{ primaryColor: '#0066FF' }}
     />
   );
 }
 ```
 
-**Props:** Same as `CardNumberInput`, minus `cardNetwork` and `showCardNetworkIcon`.
+**Props:** Same as `CardNumberInput` Connected Mode, but:
+- `field` must be `'cardholderName'`
+- No `showCardNetworkIcon` prop
+- Default placeholder: `"John Doe"`
+- Default label: `"Cardholder Name"`
+- Automatically uses `autoCapitalize="words"`
 
 ---
 
@@ -387,7 +432,6 @@ import {
 } from '@primer-io/react-native';
 
 function PremiumCardCheckout() {
-  const [focusedField, setFocusedField] = useState<string | null>(null);
   const [showCardBack, setShowCardBack] = useState(false);
 
   const cardForm = useCardForm({
@@ -468,16 +512,8 @@ function PremiumCardCheckout() {
         <View style={styles.glassPanel}>
           {/* Card Number - Full Width */}
           <CardNumberInput
-            value={cardForm.cardNumber}
-            onChangeText={cardForm.updateCardNumber}
-            onFocus={() => setFocusedField('cardNumber')}
-            onBlur={() => {
-              setFocusedField(null);
-              cardForm.markFieldTouched('cardNumber');
-            }}
-            isFocused={focusedField === 'cardNumber'}
-            error={cardForm.errors.cardNumber}
-            cardNetwork={cardForm.metadata?.cardNetwork}
+            cardForm={cardForm}
+            field="cardNumber"
             theme={glassTheme}
             label="Card Number"
             style={styles.input}
@@ -486,34 +522,18 @@ function PremiumCardCheckout() {
           {/* Expiry and CVV Row */}
           <View style={styles.row}>
             <ExpiryDateInput
-              value={cardForm.expiryDate}
-              onChangeText={cardForm.updateExpiryDate}
-              onFocus={() => setFocusedField('expiryDate')}
-              onBlur={() => {
-                setFocusedField(null);
-                cardForm.markFieldTouched('expiryDate');
-              }}
-              isFocused={focusedField === 'expiryDate'}
-              error={cardForm.errors.expiryDate}
+              cardForm={cardForm}
+              field="expiryDate"
               theme={glassTheme}
               label="Expiry Date"
               style={styles.halfInput}
             />
 
             <CVVInput
-              value={cardForm.cvv}
-              onChangeText={cardForm.updateCVV}
-              onFocus={() => {
-                setFocusedField('cvv');
-                setShowCardBack(true);
-              }}
-              onBlur={() => {
-                setFocusedField(null);
-                setShowCardBack(false);
-                cardForm.markFieldTouched('cvv');
-              }}
-              isFocused={focusedField === 'cvv'}
-              error={cardForm.errors.cvv}
+              cardForm={cardForm}
+              field="cvv"
+              onFocus={() => setShowCardBack(true)}
+              onBlur={() => setShowCardBack(false)}
               theme={glassTheme}
               label="CVV"
               style={styles.halfInput}
@@ -522,15 +542,8 @@ function PremiumCardCheckout() {
 
           {/* Cardholder Name */}
           <CardholderNameInput
-            value={cardForm.cardholderName}
-            onChangeText={cardForm.updateCardholderName}
-            onFocus={() => setFocusedField('cardholderName')}
-            onBlur={() => {
-              setFocusedField(null);
-              cardForm.markFieldTouched('cardholderName');
-            }}
-            isFocused={focusedField === 'cardholderName'}
-            error={cardForm.errors.cardholderName}
+            cardForm={cardForm}
+            field="cardholderName"
             theme={glassTheme}
             label="Cardholder Name"
             style={styles.input}
@@ -765,28 +778,24 @@ function CompactCardForm() {
   return (
     <View style={styles.row}>
       <CardNumberInput
-        value={cardForm.cardNumber}
-        onChangeText={cardForm.updateCardNumber}
-        error={cardForm.errors.cardNumber}
-        cardNetwork={cardForm.metadata?.cardNetwork}
+        cardForm={cardForm}
+        field="cardNumber"
         showLabel={false}
         theme={compactTheme}
         style={styles.cardNumber}
       />
 
       <ExpiryDateInput
-        value={cardForm.expiryDate}
-        onChangeText={cardForm.updateExpiryDate}
-        error={cardForm.errors.expiryDate}
+        cardForm={cardForm}
+        field="expiryDate"
         showLabel={false}
         theme={compactTheme}
         style={styles.expiry}
       />
 
       <CVVInput
-        value={cardForm.cvv}
-        onChangeText={cardForm.updateCVV}
-        error={cardForm.errors.cvv}
+        cardForm={cardForm}
+        field="cvv"
         showLabel={false}
         theme={compactTheme}
         style={styles.cvv}
@@ -836,7 +845,6 @@ import {
 } from '@primer-io/react-native';
 
 function CyberpunkCardCheckout() {
-  const [focusedField, setFocusedField] = useState<string | null>(null);
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const scanlineAnim = useRef(new Animated.Value(0)).current;
 
@@ -1022,16 +1030,8 @@ function CyberpunkCardCheckout() {
 
         <View style={styles.inputGrid}>
           <CardNumberInput
-            value={cardForm.cardNumber}
-            onChangeText={cardForm.updateCardNumber}
-            onFocus={() => setFocusedField('cardNumber')}
-            onBlur={() => {
-              setFocusedField(null);
-              cardForm.markFieldTouched('cardNumber');
-            }}
-            isFocused={focusedField === 'cardNumber'}
-            error={cardForm.errors.cardNumber}
-            cardNetwork={cardForm.metadata?.cardNetwork}
+            cardForm={cardForm}
+            field="cardNumber"
             theme={neonTheme}
             label="[CARD_NUMBER]"
             style={styles.input}
@@ -1041,15 +1041,8 @@ function CyberpunkCardCheckout() {
 
           <View style={styles.row}>
             <ExpiryDateInput
-              value={cardForm.expiryDate}
-              onChangeText={cardForm.updateExpiryDate}
-              onFocus={() => setFocusedField('expiryDate')}
-              onBlur={() => {
-                setFocusedField(null);
-                cardForm.markFieldTouched('expiryDate');
-              }}
-              isFocused={focusedField === 'expiryDate'}
-              error={cardForm.errors.expiryDate}
+              cardForm={cardForm}
+              field="expiryDate"
               theme={neonTheme}
               label="[EXPIRY]"
               style={styles.halfInput}
@@ -1058,15 +1051,8 @@ function CyberpunkCardCheckout() {
             />
 
             <CVVInput
-              value={cardForm.cvv}
-              onChangeText={cardForm.updateCVV}
-              onFocus={() => setFocusedField('cvv')}
-              onBlur={() => {
-                setFocusedField(null);
-                cardForm.markFieldTouched('cvv');
-              }}
-              isFocused={focusedField === 'cvv'}
-              error={cardForm.errors.cvv}
+              cardForm={cardForm}
+              field="cvv"
               theme={neonTheme}
               label="[CVV]"
               style={styles.halfInput}
@@ -1076,15 +1062,8 @@ function CyberpunkCardCheckout() {
           </View>
 
           <CardholderNameInput
-            value={cardForm.cardholderName}
-            onChangeText={cardForm.updateCardholderName}
-            onFocus={() => setFocusedField('cardholderName')}
-            onBlur={() => {
-              setFocusedField(null);
-              cardForm.markFieldTouched('cardholderName');
-            }}
-            isFocused={focusedField === 'cardholderName'}
-            error={cardForm.errors.cardholderName}
+            cardForm={cardForm}
+            field="cardholderName"
             theme={neonTheme}
             label="[CARDHOLDER_NAME]"
             style={styles.input}
@@ -1417,9 +1396,8 @@ function NetworkDetectionExample() {
   return (
     <>
       <CardNumberInput
-        value={cardForm.cardNumber}
-        onChangeText={cardForm.updateCardNumber}
-        cardNetwork={cardForm.metadata?.cardNetwork}
+        cardForm={cardForm}
+        field="cardNumber"
       />
 
       {cardForm.metadata?.cardNetwork && (
@@ -1432,10 +1410,12 @@ function NetworkDetectionExample() {
 }
 ```
 
-### Example 5: Focus Management
+### Example 5: Auto-Advance Between Fields
+
+For advanced features like auto-advancing to the next field, you can use connected mode with custom `onChangeText`:
 
 ```tsx
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { TextInput } from 'react-native';
 import {
   useCardForm,
@@ -1449,62 +1429,42 @@ function AutoAdvanceForm() {
   const expiryRef = useRef<TextInput>(null);
   const cvvRef = useRef<TextInput>(null);
 
-  const [focusedField, setFocusedField] = useState<string | null>(null);
-
   return (
     <>
       <CardNumberInput
-        value={cardForm.cardNumber}
+        cardForm={cardForm}
+        field="cardNumber"
         onChangeText={(value) => {
           cardForm.updateCardNumber(value);
-          // Auto-advance when card number is complete
+          // Auto-advance when card number is complete (16 digits)
           if (value.replace(/\s/g, '').length === 16) {
             expiryRef.current?.focus();
           }
         }}
-        onFocus={() => setFocusedField('cardNumber')}
-        onBlur={() => {
-          setFocusedField(null);
-          cardForm.markFieldTouched('cardNumber');
-        }}
-        isFocused={focusedField === 'cardNumber'}
-        error={cardForm.errors.cardNumber}
-        cardNetwork={cardForm.metadata?.cardNetwork}
       />
 
       <ExpiryDateInput
-        value={cardForm.expiryDate}
+        cardForm={cardForm}
+        field="expiryDate"
         onChangeText={(value) => {
           cardForm.updateExpiryDate(value);
-          // Auto-advance when expiry is complete
+          // Auto-advance when expiry is complete (MM/YY = 5 chars)
           if (value.length === 5) {
             cvvRef.current?.focus();
           }
         }}
-        onFocus={() => setFocusedField('expiryDate')}
-        onBlur={() => {
-          setFocusedField(null);
-          cardForm.markFieldTouched('expiryDate');
-        }}
-        isFocused={focusedField === 'expiryDate'}
-        error={cardForm.errors.expiryDate}
       />
 
       <CVVInput
-        value={cardForm.cvv}
-        onChangeText={cardForm.updateCVV}
-        onFocus={() => setFocusedField('cvv')}
-        onBlur={() => {
-          setFocusedField(null);
-          cardForm.markFieldTouched('cvv');
-        }}
-        isFocused={focusedField === 'cvv'}
-        error={cardForm.errors.cvv}
+        cardForm={cardForm}
+        field="cvv"
       />
     </>
   );
 }
 ```
+
+**Note:** Connected mode handles all the wiring, but you can still override individual handlers like `onChangeText`, `onFocus`, or `onBlur` when you need custom behavior.
 
 ---
 

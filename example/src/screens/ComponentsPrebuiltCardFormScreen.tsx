@@ -4,6 +4,26 @@ import {
   PrimerCheckoutProvider,
   CardForm,
 } from '@primer-io/react-native';
+import {appPaymentParameters} from '../models/IClientSessionRequestBody';
+
+/**
+ * Helper to calculate total amount from line items
+ */
+function calculateTotalAmount(): number {
+  const lineItems = appPaymentParameters.clientSessionRequestBody.order?.lineItems || [];
+  return lineItems
+    .map(item => item.amount * item.quantity)
+    .reduce((prev, next) => prev + next, 0);
+}
+
+/**
+ * Format amount for display (amount is in cents)
+ */
+function formatAmount(amountInCents: number, currencyCode: string = 'EUR'): string {
+  const amount = amountInCents / 100;
+  const currencySymbol = currencyCode === 'USD' ? '$' : currencyCode === 'GBP' ? '£' : '€';
+  return `${currencySymbol}${amount.toFixed(2)}`;
+}
 
 /**
  * Example screen demonstrating pre-built CardForm component
@@ -11,6 +31,10 @@ import {
  */
 function PrebuiltCardFormContent() {
   const [isValid, setIsValid] = useState(false);
+
+  const totalAmount = calculateTotalAmount();
+  const currencyCode = appPaymentParameters.clientSessionRequestBody.currencyCode || 'EUR';
+  const formattedAmount = formatAmount(totalAmount, currencyCode);
 
   return (
     <View style={styles.container}>
@@ -29,7 +53,7 @@ function PrebuiltCardFormContent() {
           fontSize: 16,
           fieldSpacing: 16,
         }}
-        submitButtonText="Pay $99.99"
+        submitButtonText={`Pay ${formattedAmount}`}
         testID="card-form"
       />
 

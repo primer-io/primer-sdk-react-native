@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -18,9 +18,31 @@ import {
   CVVInput,
   CardholderNameInput,
 } from '@primer-io/react-native';
+import {appPaymentParameters} from '../models/IClientSessionRequestBody';
+
+/**
+ * Helper to calculate total amount from line items
+ */
+function calculateTotalAmount(): number {
+  const lineItems = appPaymentParameters.clientSessionRequestBody.order?.lineItems || [];
+  return lineItems
+    .map(item => item.amount * item.quantity)
+    .reduce((prev, next) => prev + next, 0);
+}
+
+/**
+ * Format amount for display (amount is in cents)
+ */
+function formatAmount(amountInCents: number, currencyCode: string = 'EUR'): string {
+  const amount = amountInCents / 100;
+  const currencySymbol = currencyCode === 'USD' ? '$' : currencyCode === 'GBP' ? '£' : '€';
+  return `${currencySymbol}${amount.toFixed(2)}`;
+}
 
 function CyberpunkCardFormContent() {
-  const [focusedField, setFocusedField] = useState<string | null>(null);
+  const totalAmount = calculateTotalAmount();
+  const currencyCode = appPaymentParameters.clientSessionRequestBody.currencyCode || 'EUR';
+  const formattedAmount = formatAmount(totalAmount, currencyCode);
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const scanlineAnim = useRef(new Animated.Value(0)).current;
 
@@ -212,16 +234,8 @@ function CyberpunkCardFormContent() {
 
         <View style={styles.inputGrid}>
           <CardNumberInput
-            value={cardForm.cardNumber}
-            onChangeText={cardForm.updateCardNumber}
-            onFocus={() => setFocusedField('cardNumber')}
-            onBlur={() => {
-              setFocusedField(null);
-              cardForm.markFieldTouched('cardNumber');
-            }}
-            isFocused={focusedField === 'cardNumber'}
-            error={cardForm.errors.cardNumber}
-            cardNetwork={cardForm.metadata?.cardNetwork}
+            cardForm={cardForm}
+            field="cardNumber"
             theme={neonTheme}
             label="[CARD_NUMBER]"
             style={styles.input}
@@ -231,15 +245,8 @@ function CyberpunkCardFormContent() {
 
           <View style={styles.row}>
             <ExpiryDateInput
-              value={cardForm.expiryDate}
-              onChangeText={cardForm.updateExpiryDate}
-              onFocus={() => setFocusedField('expiryDate')}
-              onBlur={() => {
-                setFocusedField(null);
-                cardForm.markFieldTouched('expiryDate');
-              }}
-              isFocused={focusedField === 'expiryDate'}
-              error={cardForm.errors.expiryDate}
+              cardForm={cardForm}
+              field="expiryDate"
               theme={neonTheme}
               label="[EXPIRY]"
               style={styles.halfInput}
@@ -248,15 +255,8 @@ function CyberpunkCardFormContent() {
             />
 
             <CVVInput
-              value={cardForm.cvv}
-              onChangeText={cardForm.updateCVV}
-              onFocus={() => setFocusedField('cvv')}
-              onBlur={() => {
-                setFocusedField(null);
-                cardForm.markFieldTouched('cvv');
-              }}
-              isFocused={focusedField === 'cvv'}
-              error={cardForm.errors.cvv}
+              cardForm={cardForm}
+              field="cvv"
               theme={neonTheme}
               label="[CVV]"
               style={styles.halfInput}
@@ -266,15 +266,8 @@ function CyberpunkCardFormContent() {
           </View>
 
           <CardholderNameInput
-            value={cardForm.cardholderName}
-            onChangeText={cardForm.updateCardholderName}
-            onFocus={() => setFocusedField('cardholderName')}
-            onBlur={() => {
-              setFocusedField(null);
-              cardForm.markFieldTouched('cardholderName');
-            }}
-            isFocused={focusedField === 'cardholderName'}
-            error={cardForm.errors.cardholderName}
+            cardForm={cardForm}
+            field="cardholderName"
             theme={neonTheme}
             label="[CARDHOLDER_NAME]"
             style={styles.input}
@@ -304,7 +297,7 @@ function CyberpunkCardFormContent() {
             <Text style={styles.executeButtonText}>
               {cardForm.isSubmitting
                 ? '[ PROCESSING... ]'
-                : '[ EXECUTE PAYMENT ]'}
+                : `[ EXECUTE PAYMENT • ${formattedAmount} ]`}
             </Text>
             {cardForm.isValid && !cardForm.isSubmitting && (
               <View style={styles.blinkingCursor}>

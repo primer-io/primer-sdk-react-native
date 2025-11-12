@@ -116,8 +116,6 @@ export function CardForm(props: CardFormProps) {
     }
   };
 
-  const [focusedField, setFocusedField] = React.useState<string | null>(null);
-
   const shouldShowField = (fieldType: PrimerInputElementType): boolean => {
     return cardForm.requiredFields.includes(fieldType);
   };
@@ -139,16 +137,8 @@ export function CardForm(props: CardFormProps) {
       {/* Card Number */}
       {shouldShowField(PrimerInputElementType.CARD_NUMBER) && (
         <CardNumberInput
-          value={cardForm.cardNumber}
-          onChangeText={cardForm.updateCardNumber}
-          onFocus={() => setFocusedField('cardNumber')}
-          onBlur={() => {
-            setFocusedField(null);
-            cardForm.markFieldTouched('cardNumber');
-          }}
-          error={cardForm.errors.cardNumber}
-          cardNetwork={cardForm.metadata?.cardNetwork}
-          isFocused={focusedField === 'cardNumber'}
+          cardForm={cardForm}
+          field="cardNumber"
           theme={theme}
           style={{ marginBottom: theme.fieldSpacing }}
         />
@@ -159,15 +149,8 @@ export function CardForm(props: CardFormProps) {
         {/* Expiry Date */}
         {shouldShowField(PrimerInputElementType.EXPIRY_DATE) && (
           <ExpiryDateInput
-            value={cardForm.expiryDate}
-            onChangeText={cardForm.updateExpiryDate}
-            onFocus={() => setFocusedField('expiryDate')}
-            onBlur={() => {
-              setFocusedField(null);
-              cardForm.markFieldTouched('expiryDate');
-            }}
-            error={cardForm.errors.expiryDate}
-            isFocused={focusedField === 'expiryDate'}
+            cardForm={cardForm}
+            field="expiryDate"
             theme={theme}
             style={styles.halfWidth}
           />
@@ -176,15 +159,8 @@ export function CardForm(props: CardFormProps) {
         {/* CVV */}
         {shouldShowField(PrimerInputElementType.CVV) && (
           <CVVInput
-            value={cardForm.cvv}
-            onChangeText={cardForm.updateCVV}
-            onFocus={() => setFocusedField('cvv')}
-            onBlur={() => {
-              setFocusedField(null);
-              cardForm.markFieldTouched('cvv');
-            }}
-            error={cardForm.errors.cvv}
-            isFocused={focusedField === 'cvv'}
+            cardForm={cardForm}
+            field="cvv"
             theme={theme}
             style={[styles.halfWidth, { marginLeft: 12 }]}
           />
@@ -194,15 +170,8 @@ export function CardForm(props: CardFormProps) {
       {/* Cardholder Name */}
       {showCardholderName && shouldShowField(PrimerInputElementType.CARDHOLDER_NAME) && (
         <CardholderNameInput
-          value={cardForm.cardholderName}
-          onChangeText={cardForm.updateCardholderName}
-          onFocus={() => setFocusedField('cardholderName')}
-          onBlur={() => {
-            setFocusedField(null);
-            cardForm.markFieldTouched('cardholderName');
-          }}
-          error={cardForm.errors.cardholderName}
-          isFocused={focusedField === 'cardholderName'}
+          cardForm={cardForm}
+          field="cardholderName"
           theme={theme}
           style={{ marginBottom: theme.fieldSpacing }}
         />

@@ -1,7 +1,8 @@
+import { useState } from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
-import type { BaseInputProps } from '../../models/components/InputTheme';
+import type { BaseInputProps, ConnectedInputProps } from '../../models/components/InputTheme';
 
-export interface CardholderNameInputProps extends BaseInputProps {}
+export interface CardholderNameInputProps extends BaseInputProps, ConnectedInputProps {}
 
 const defaultTheme = {
   primaryColor: '#0066FF',
@@ -36,12 +37,14 @@ const defaultTheme = {
  */
 export function CardholderNameInput(props: CardholderNameInputProps) {
   const {
-    value,
-    onChangeText,
-    onBlur,
-    onFocus,
-    error,
-    isFocused = false,
+    cardForm,
+    field,
+    value: valueProp,
+    onChangeText: onChangeTextProp,
+    onBlur: onBlurProp,
+    onFocus: onFocusProp,
+    error: errorProp,
+    isFocused: isFocusedProp,
     placeholder = 'John Doe',
     label = 'Cardholder Name',
     showLabel = true,
@@ -52,6 +55,32 @@ export function CardholderNameInput(props: CardholderNameInputProps) {
     errorStyle,
     testID = 'cardholder-name-input',
   } = props;
+
+  const [internalFocused, setInternalFocused] = useState(false);
+  const isConnected = cardForm && field;
+
+  const value = isConnected ? cardForm[field] : (valueProp ?? '');
+  const error = isConnected ? cardForm.errors[field] : errorProp;
+  const isFocused = isConnected ? internalFocused : (isFocusedProp ?? false);
+
+  const onChangeText = isConnected
+    ? (field === 'cardholderName' ? cardForm.updateCardholderName : () => {})
+    : (onChangeTextProp ?? (() => {}));
+
+  const onFocus = isConnected
+    ? () => {
+        setInternalFocused(true);
+        onFocusProp?.();
+      }
+    : onFocusProp;
+
+  const onBlur = isConnected
+    ? () => {
+        setInternalFocused(false);
+        cardForm.markFieldTouched(field);
+        onBlurProp?.();
+      }
+    : onBlurProp;
 
   const theme = {
     primaryColor: customTheme?.primaryColor ?? defaultTheme.primaryColor,

@@ -1,7 +1,8 @@
+import { useState } from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
-import type { BaseInputProps } from '../../models/components/InputTheme';
+import type { BaseInputProps, ConnectedInputProps } from '../../models/components/InputTheme';
 
-export interface ExpiryDateInputProps extends BaseInputProps {}
+export interface ExpiryDateInputProps extends BaseInputProps, ConnectedInputProps {}
 
 const defaultTheme = {
   primaryColor: '#0066FF',
@@ -22,26 +23,31 @@ const defaultTheme = {
  * A pre-styled input field for card expiry dates with automatic formatting.
  *
  * @example
+ * Connected mode (recommended):
  * ```tsx
- * const cardForm = useCardForm();
+ * <ExpiryDateInput cardForm={cardForm} field="expiryDate" />
+ * ```
  *
+ * Manual mode:
+ * ```tsx
  * <ExpiryDateInput
  *   value={cardForm.expiryDate}
  *   onChangeText={cardForm.updateExpiryDate}
  *   onBlur={() => cardForm.markFieldTouched('expiryDate')}
  *   error={cardForm.errors.expiryDate}
- *   theme={{ primaryColor: '#0066FF' }}
  * />
  * ```
  */
 export function ExpiryDateInput(props: ExpiryDateInputProps) {
   const {
-    value,
-    onChangeText,
-    onBlur,
-    onFocus,
-    error,
-    isFocused = false,
+    cardForm,
+    field,
+    value: valueProp,
+    onChangeText: onChangeTextProp,
+    onBlur: onBlurProp,
+    onFocus: onFocusProp,
+    error: errorProp,
+    isFocused: isFocusedProp,
     placeholder = 'MM/YY',
     label = 'Expiry Date',
     showLabel = true,
@@ -52,6 +58,32 @@ export function ExpiryDateInput(props: ExpiryDateInputProps) {
     errorStyle,
     testID = 'expiry-date-input',
   } = props;
+
+  const [internalFocused, setInternalFocused] = useState(false);
+  const isConnected = cardForm && field;
+
+  const value = isConnected ? cardForm[field] : (valueProp ?? '');
+  const error = isConnected ? cardForm.errors[field] : errorProp;
+  const isFocused = isConnected ? internalFocused : (isFocusedProp ?? false);
+
+  const onChangeText = isConnected
+    ? (field === 'expiryDate' ? cardForm.updateExpiryDate : () => {})
+    : (onChangeTextProp ?? (() => {}));
+
+  const onFocus = isConnected
+    ? () => {
+        setInternalFocused(true);
+        onFocusProp?.();
+      }
+    : onFocusProp;
+
+  const onBlur = isConnected
+    ? () => {
+        setInternalFocused(false);
+        cardForm.markFieldTouched(field);
+        onBlurProp?.();
+      }
+    : onBlurProp;
 
   const theme = {
     primaryColor: customTheme?.primaryColor ?? defaultTheme.primaryColor,

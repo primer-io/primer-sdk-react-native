@@ -13,12 +13,36 @@ import {
   useCardForm,
   InputElementType,
 } from '@primer-io/react-native';
+import {appPaymentParameters} from '../models/IClientSessionRequestBody';
+
+/**
+ * Helper to calculate total amount from line items
+ */
+function calculateTotalAmount(): number {
+  const lineItems = appPaymentParameters.clientSessionRequestBody.order?.lineItems || [];
+  return lineItems
+    .map(item => item.amount * item.quantity)
+    .reduce((prev, next) => prev + next, 0);
+}
+
+/**
+ * Format amount for display (amount is in cents)
+ */
+function formatAmount(amountInCents: number, currencyCode: string = 'EUR'): string {
+  const amount = amountInCents / 100;
+  const currencySymbol = currencyCode === 'USD' ? '$' : currencyCode === 'GBP' ? '£' : '€';
+  return `${currencySymbol}${amount.toFixed(2)}`;
+}
 
 /**
  * Example screen demonstrating custom card form UI using useCardForm hook
  * This shows the flexible, hook-based approach for full UI control
  */
 function CustomCardFormContent() {
+  const totalAmount = calculateTotalAmount();
+  const currencyCode = appPaymentParameters.clientSessionRequestBody.currencyCode || 'EUR';
+  const formattedAmount = formatAmount(totalAmount, currencyCode);
+
   const cardForm = useCardForm({
     onValidationChange: (isValid, errors) => {
       console.log('Validation changed:', { isValid, errors });
@@ -152,7 +176,7 @@ function CustomCardFormContent() {
         onPress={handleSubmit}
         testID="submit-button"
       >
-        <Text style={styles.payButtonText}>Pay $99.99</Text>
+        <Text style={styles.payButtonText}>Pay {formattedAmount}</Text>
       </TouchableOpacity>
 
       {/* Debug Info */}

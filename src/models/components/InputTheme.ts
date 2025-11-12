@@ -1,4 +1,5 @@
 import type { StyleProp, ViewStyle, TextStyle } from 'react-native';
+import type { UseCardFormReturn } from './CardFormTypes';
 
 /**
  * Theme configuration for card input components
@@ -81,18 +82,35 @@ export interface InputTheme {
 }
 
 /**
+ * Props for connected mode (using cardForm prop)
+ */
+export interface ConnectedInputProps {
+  /**
+   * The cardForm object from useCardForm hook.
+   * When provided, the component will automatically wire itself up.
+   */
+  cardForm?: UseCardFormReturn;
+
+  /**
+   * The field name this input represents.
+   * Required when using cardForm prop.
+   */
+  field?: 'cardNumber' | 'expiryDate' | 'cvv' | 'cardholderName';
+}
+
+/**
  * Props common to all card input components
  */
 export interface BaseInputProps {
   /**
    * Current input value
    */
-  value: string;
+  value?: string;
 
   /**
    * Called when the input value changes
    */
-  onChangeText: (value: string) => void;
+  onChangeText?: (value: string) => void;
 
   /**
    * Called when the input loses focus

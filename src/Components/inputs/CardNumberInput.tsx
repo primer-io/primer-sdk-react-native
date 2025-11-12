@@ -1,8 +1,9 @@
+import { useState } from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 import { CardNetworkIcon } from '../CardNetworkIcon';
-import type { BaseInputProps } from '../../models/components/InputTheme';
+import type { BaseInputProps, ConnectedInputProps } from '../../models/components/InputTheme';
 
-export interface CardNumberInputProps extends BaseInputProps {
+export interface CardNumberInputProps extends BaseInputProps, ConnectedInputProps {
   /**
    * Detected card network (e.g., "VISA", "MASTERCARD")
    */
@@ -35,9 +36,14 @@ const defaultTheme = {
  * and icon display.
  *
  * @example
+ * Connected mode (recommended):
  * ```tsx
  * const cardForm = useCardForm();
+ * <CardNumberInput cardForm={cardForm} field="cardNumber" theme={theme} />
+ * ```
  *
+ * Manual mode (verbose):
+ * ```tsx
  * <CardNumberInput
  *   value={cardForm.cardNumber}
  *   onChangeText={cardForm.updateCardNumber}
@@ -50,13 +56,18 @@ const defaultTheme = {
  */
 export function CardNumberInput(props: CardNumberInputProps) {
   const {
-    value,
-    onChangeText,
-    onBlur,
-    onFocus,
-    error,
-    cardNetwork,
-    isFocused = false,
+    // Connected mode
+    cardForm,
+    field,
+    // Manual mode
+    value: valueProp,
+    onChangeText: onChangeTextProp,
+    onBlur: onBlurProp,
+    onFocus: onFocusProp,
+    error: errorProp,
+    cardNetwork: cardNetworkProp,
+    isFocused: isFocusedProp,
+    // Common props
     placeholder = '1234 5678 9012 3456',
     label = 'Card Number',
     showLabel = true,
@@ -68,6 +79,38 @@ export function CardNumberInput(props: CardNumberInputProps) {
     errorStyle,
     testID = 'card-number-input',
   } = props;
+
+  // Internal focus state for connected mode
+  const [internalFocused, setInternalFocused] = useState(false);
+
+  // Determine if we're in connected mode
+  const isConnected = cardForm && field;
+
+  // Get values from cardForm or props
+  const value = isConnected ? cardForm[field] : (valueProp ?? '');
+  const error = isConnected ? cardForm.errors[field] : errorProp;
+  const cardNetwork = isConnected ? cardForm.metadata?.cardNetwork : cardNetworkProp;
+  const isFocused = isConnected ? internalFocused : (isFocusedProp ?? false);
+
+  // Get handlers
+  const onChangeText = isConnected
+    ? (field === 'cardNumber' ? cardForm.updateCardNumber : () => {})
+    : (onChangeTextProp ?? (() => {}));
+
+  const onFocus = isConnected
+    ? () => {
+        setInternalFocused(true);
+        onFocusProp?.();
+      }
+    : onFocusProp;
+
+  const onBlur = isConnected
+    ? () => {
+        setInternalFocused(false);
+        cardForm.markFieldTouched(field);
+        onBlurProp?.();
+      }
+    : onBlurProp;
 
   const theme = {
     primaryColor: customTheme?.primaryColor ?? defaultTheme.primaryColor,
