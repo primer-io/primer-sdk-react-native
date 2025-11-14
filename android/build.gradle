@@ -53,7 +53,7 @@ android {
   namespace "com.primerioreactnative"
   compileSdkVersion getExtOrIntegerDefault('compileSdkVersion')
   defaultConfig {
-    minSdkVersion 21
+    minSdkVersion 23
     targetSdkVersion getExtOrIntegerDefault('targetSdkVersion')
     buildConfigField("boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString())
 
@@ -133,7 +133,7 @@ dependencies {
   implementation 'com.facebook.react:react-native:+'
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
   implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3"
-  implementation 'io.primer:android:2.44.1'
+  implementation 'io.primer:android:2.45.0'
   testImplementation 'io.mockk:mockk:1.14.2'
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'

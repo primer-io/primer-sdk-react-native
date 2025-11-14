@@ -35,7 +35,7 @@ platform :ios do
 
     run_tests(workspace: app_workspace,
               scheme: "example_0_70_6Tests",
-              destination: "platform=iOS Simulator,name=iPhone 16 Pro",
+              destination: "platform=iOS Simulator,name=iPhone 16 Pro,OS=18.6",
               xcargs: "EXCLUDED_ARCHS[sdk=iphonesimulator*]=arm64",
               result_bundle: true,
               code_coverage: true,
@@ -119,7 +119,7 @@ platform :ios do
     )
 
     # Find public key of appetize
-    uri = URI('https://sdk-demo.primer.io/api/mobile/ios_rn/preview_' + "#{pr_number}_#{github_run_id}_#{github_run_number}")
+    uri = URI('https://sdk-demo.primer.io/api/mobile/ios/preview_' + "#{pr_number}_#{github_run_id}_#{github_run_number}")
     public_key = Net::HTTP.get(uri)
     puts "public_key: " + public_key
 
