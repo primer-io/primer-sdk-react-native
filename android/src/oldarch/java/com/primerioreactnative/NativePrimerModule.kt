@@ -132,4 +132,10 @@ class NativePrimerModule(private val reactContext: ReactApplicationContext, priv
   ) {
     implementation.setImplementedRNCallbacks(implementedRNCallbacksStr = implementedRNCallbacks, promise = promise)
   }
+
+  @ReactMethod
+  fun addListener(eventName: String?) = Unit
+
+  @ReactMethod
+  fun removeListeners(count: Int?) = Unit
 }

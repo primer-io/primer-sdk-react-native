@@ -51,7 +51,7 @@ fun PrimerGooglePayButtonOptionsRN.toPrimerGooglePayButtonOptions() =
         buttonTheme = buttonTheme ?: ButtonConstants.ButtonTheme.DARK,
     )
 
-fun PrimerKlarnaOptionsRN.toPrimerKlarnaOptions() = PrimerKlarnaOptions(recurringPaymentDescription, webViewTitle)
+fun PrimerKlarnaOptionsRN.toPrimerKlarnaOptions() = PrimerKlarnaOptions(recurringPaymentDescription, returnIntentUrl)
 
 fun PrimerThreeDsOptionsRN.toPrimerThreeDsOptions() =
     PrimerThreeDsOptions(

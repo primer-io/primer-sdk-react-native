@@ -112,6 +112,10 @@ class NativePrimerModule(private val reactContext: ReactApplicationContext, priv
     implementation.setImplementedRNCallbacks(implementedRNCallbacksStr = implementedRNCallbacks, promise = promise)
   }
 
+  override fun addListener(eventName: String?) = Unit
+
+  override fun removeListeners(count: Double?) = Unit
+
   private companion object {
     const val EVENT_TYPE_KEY = "eventType"
     const val DATA_KEY = "data"
