@@ -37,8 +37,8 @@ export interface Spec extends TurboModule {
   setImplementedRNCallbacks(implementedRNCallbacks: string): Promise<void>;
 
   // Backward compat
-  addListener(eventName?: string): void
-  removeListeners(count?: number): void
+  addListener(eventName?: string): void;
+  removeListeners(count?: number): void;
 
   readonly onEvent: CodegenTypes.EventEmitter<EmittedEvent>;
 }
