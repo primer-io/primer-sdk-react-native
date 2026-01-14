@@ -35,7 +35,7 @@ platform :ios do
 
     run_tests(workspace: app_workspace,
               scheme: "example_0_70_6Tests",
-              destination: "platform=iOS Simulator,name=iPhone 16 Pro,OS=18.6",
+              destination: "platform=iOS Simulator,name=iPhone 17 Pro,OS=26.2",
               xcargs: "EXCLUDED_ARCHS[sdk=iphonesimulator*]=arm64",
               result_bundle: true,
               code_coverage: true,
