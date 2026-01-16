@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
   s.private_header_files = ['ios/PrimerSwiftInterop.h' ]
 
   s.dependency "React-Core"
-  s.dependency "PrimerSDK", "2.43.1"
+  s.dependency "PrimerSDK", "2.44.0"
 
   s.pod_target_xcconfig = {
     "SWIFT_ENABLE_EXPLICIT_MODULES" => "NO"
