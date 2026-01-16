@@ -24,7 +24,7 @@ data class PrimerSettingsRN(
     var uiOptions: PrimerUIOptionsRN = PrimerUIOptionsRN(),
     var debugOptions: PrimerDebugOptionsRN = PrimerDebugOptionsRN(),
     var clientSessionCachingEnabled: Boolean = false,
-    var apiVersion: String = PrimerApiVersion.LATEST.name,
+    var apiVersion: String = "latest",
 )
 
 @Serializable
@@ -40,7 +40,6 @@ data class PrimerPaymentMethodOptionsRN(
     var cardPaymentOptions: PrimerCardPaymentOptionsRN = PrimerCardPaymentOptionsRN(),
     var googlePayOptions: PrimerGooglePayOptionsRN = PrimerGooglePayOptionsRN(),
     var klarnaOptions: PrimerKlarnaOptionsRN = PrimerKlarnaOptionsRN(),
-    var apayaOptions: PrimerApayaOptionsRN = PrimerApayaOptionsRN(),
     var threeDsOptions: PrimerThreeDsOptionsRN = PrimerThreeDsOptionsRN(),
     var stripeOptions: PrimerStripeOptionsRN = PrimerStripeOptionsRN(),
 )
@@ -186,8 +185,7 @@ data class PrimerGooglePayButtonOptionsRN(
 @Serializable
 data class PrimerKlarnaOptionsRN(
     var recurringPaymentDescription: String? = null,
-    @Deprecated("This property is deprecated and will be removed in future release.")
-    var webViewTitle: String? = null,
+    var returnIntentUrl: String? = null,
 )
 
 @Serializable
@@ -202,12 +200,6 @@ data class PrimerStripeOptionsRN(
         val merchantName: String? = null,
     )
 }
-
-@Serializable
-@Deprecated("This class is deprecated and will be removed in future release.")
-data class PrimerApayaOptionsRN(
-    var webViewTitle: String? = null,
-)
 
 fun PrimerSettingsRN.toPrimerSettings(context: Context) =
     PrimerSettings(

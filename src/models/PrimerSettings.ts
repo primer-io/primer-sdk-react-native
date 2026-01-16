@@ -174,6 +174,7 @@ interface IPrimerGoogleShippingAddressParameters {
 interface IPrimerKlarnaOptions {
   recurringPaymentDescription?: string;
   webViewTitle?: string;
+  returnIntentUrl?: string;
 }
 
 //----------------------------------------

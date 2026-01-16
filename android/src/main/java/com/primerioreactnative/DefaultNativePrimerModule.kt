@@ -78,7 +78,7 @@ internal open class DefaultNativePrimerModule(
     ) {
         try {
             Primer.instance.showUniversalCheckout(
-                reactContext.applicationContext,
+                reactContext,
                 clientToken,
             )
             promise.resolve(null)
@@ -95,7 +95,7 @@ internal open class DefaultNativePrimerModule(
     ) {
         try {
             Primer.instance.showVaultManager(
-                reactContext.applicationContext,
+                reactContext,
                 clientToken,
             )
             promise.resolve(null)
@@ -124,7 +124,7 @@ internal open class DefaultNativePrimerModule(
                 promise.reject(exception.errorId, exception.description)
             } else {
                 Primer.instance.showPaymentMethod(
-                    reactContext.applicationContext,
+                    reactContext,
                     clientToken,
                     paymentMethod,
                     PrimerSessionIntent.entries.first {

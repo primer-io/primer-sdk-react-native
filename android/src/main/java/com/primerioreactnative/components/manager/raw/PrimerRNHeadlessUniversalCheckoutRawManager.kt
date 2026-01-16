@@ -187,10 +187,10 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
     }
 
     @ReactMethod
-    fun addListener(eventName: String?) = Unit
+    fun addListener(@Suppress("unused") eventName: String?) = Unit
 
     @ReactMethod
-    fun removeListeners(count: Int?) = Unit
+    fun removeListeners(@Suppress("unused") count: Double?) = Unit
 
     private fun sendEvent(
         name: String,
