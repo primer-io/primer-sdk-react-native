@@ -1,2 +1,2 @@
 // swiftlint:disable:next identifier_name
-public let PrimerReactNativeSDKVersion = "2.42.0"
+public let PrimerReactNativeSDKVersion = "2.43.0"
