@@ -69,7 +69,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          yarn install --immutable-fallback-to-lockfile
+          yarn install --immutable
 
       - name: pod install
         run: |
