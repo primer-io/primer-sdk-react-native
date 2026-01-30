@@ -11,6 +11,8 @@ jobs:
       fail-fast: false
       matrix:
         rn-version: [0.78.2, 0.79.6, 0.80.1, 0.81.5, 0.83.1]
+    env:
+      RCT_NEW_ARCH_ENABLED: 0
 
     steps:
       - name: Cancel previous jobs
