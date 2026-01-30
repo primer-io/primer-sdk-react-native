@@ -69,7 +69,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          yarn install --immutable
+          YARN_ENABLE_IMMUTABLE_INSTALLS=false yarn install
 
       - name: pod install
         run: |
