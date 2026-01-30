@@ -68,7 +68,8 @@ jobs:
           rm -rf node_modules example/node_modules yarn.lock example/yarn.lock
 
       - name: Install dependencies
-        run: yarn
+        run: |
+          yarn install --immutable-fallback-to-lockfile
 
       - name: pod install
         run: |
