@@ -10,9 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        rn-version: [0.78.2, 0.79.6, 0.80.1, 0.81.5, 0.83.1]
-    env:
-      RCT_NEW_ARCH_ENABLED: 0
+        rn-version: [0.78.2, 0.79.6, 0.80.1, 0.81.1, 0.83.1]
 
     steps:
       - name: Cancel previous jobs
@@ -63,51 +61,50 @@ jobs:
           jq ".dependencies[\"react-native\"] = \"${{ matrix.rn-version }}\"" example/package.json > tmp.json
           mv tmp.json example/package.json
 
-      - name: Clean node_modules & lockfiles
+      - name: Clean workspace
         run: |
           rm -rf node_modules example/node_modules yarn.lock example/yarn.lock
+          rm -rf example/ios/Pods example/ios/Podfile.lock example/ios/build
 
       - name: Install dependencies
         run: |
           YARN_ENABLE_IMMUTABLE_INSTALLS=false yarn install
 
-      - name: pod install
-        run: |
-          yarn bootstrap
-
-      - name: Compile without patch
-        id: build_no_patch
+      - name: pod install without patch
+        id: compile_no_patch
         continue-on-error: true
         run: |
-          yarn example build:ios:release
-          bundle exec fastlane ios build_app_only
-        env:
-          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-          MATCH_GIT_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
-          FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
-          FASTLANE_SESSION: ${{ secrets.FASTLANE_SESSION }}
-          MATCH_KEYCHAIN_NAME: ${{ secrets.MATCH_KEYCHAIN_NAME }}
-          MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
-          APPETIZE_API_TOKEN: ${{ secrets.APPETIZE_API_TOKEN }}
-          SOURCE_BRANCH: ${{ github.head_ref }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
+          yarn bootstrap
 
       - name: Detect TurboModule error
         id: detect_error
         run: |
-          if grep -q "UnsupportedModulePropertyParserError" <<< "${{ steps.build_no_patch.outcome }}"; then
+          if grep -q "UnsupportedModulePropertyParserError" <<< "${{ steps.compile_no_patch.outcome }}"; then
             echo "needs_patch=true" >> $GITHUB_OUTPUT
           else
             echo "needs_patch=false" >> $GITHUB_OUTPUT
           fi
 
       - name: Apply TurboModule patch
-        if: steps.build_no_patch.outcome == 'failure'
+        if: steps.compile_no_patch.outcome == 'failure'
         run: |
-          patch -p0 < patches/turbomodule-codegen-fix.patch
+          patch -p1 < example/patches/turbomodule-codegen-fix.patch
 
-      - name: Compile with patch
-        if: steps.build_no_patch.outcome == 'failure'
+      - name: Clean workspace
+        run: |
+          rm -rf node_modules example/node_modules yarn.lock example/yarn.lock
+          rm -rf example/ios/Pods example/ios/Podfile.lock example/ios/build
+
+      - name: Install dependencies
+        run: |
+          YARN_ENABLE_IMMUTABLE_INSTALLS=false yarn install
+
+      - name: pod install with patch
+        id: compile_patch
+        run: |
+          yarn bootstrap
+
+      - name: Build
         run: |
           yarn example build:ios:release
           bundle exec fastlane ios build_app_only
