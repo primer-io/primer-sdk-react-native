@@ -57,13 +57,18 @@ jobs:
         run: |
           echo "export const STRIPE_ACH_PUBLISHABLE_KEY = '${{ secrets.STRIPE_PUBLISHABLE_KEY }}'" > example/src/Keys.ts
 
+      - name: Override React Native version
+        run: |
+          echo "Overriding React Native version to ${{ matrix.rn-version }}"
+          jq ".dependencies[\"react-native\"] = \"${{ matrix.rn-version }}\"" example/package.json > tmp.json
+          mv tmp.json example/package.json
+
+      - name: Clean node_modules & lockfiles
+        run: |
+          rm -rf node_modules example/node_modules yarn.lock example/yarn.lock
+
       - name: Install dependencies
         run: yarn
-
-      - name: Install React Native ${{ matrix.rn-version }}
-        run: |
-          yarn remove react-native
-          yarn add react-native@${{ matrix.rn-version }}
 
       - name: pod install
         run: |
