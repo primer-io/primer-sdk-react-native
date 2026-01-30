@@ -1,0 +1,20 @@
+--- a/node_modules/@primer-io/react-native/src/specs/NativePrimer.ts
++++ b/node_modules/@primer-io/react-native/src/specs/NativePrimer.ts
+@@ -1,4 +1,4 @@
+-import type { TurboModule, CodegenTypes } from 'react-native';
++import type { TurboModule } from 'react-native';
+ import { TurboModuleRegistry } from 'react-native';
+ 
+ export type EmittedEvent = {
+@@ -40,7 +40,9 @@ export interface Spec extends TurboModule {
+   addListener(eventName?: string): void;
+   removeListeners(count?: number): void;
+ 
+-  readonly onEvent: CodegenTypes.EventEmitter<EmittedEvent>;
++  onEvent(
++    callback: (event: EmittedEvent) => void
++  ): void;
+ }
+ 
+ // module name (NativePrimer) must be same in RCTNativePrimer.mm when exporting
+ 
