@@ -35,19 +35,7 @@ const RNPrimer = {
   ///////////////////////////////////////////
 
   addListener(eventType: EventType, listener: (data: any) => void) {
-    if (NativePrimer.onEvent) {
-      // New Architecture
-      subscriptions.push(
-        NativePrimer.onEvent((emittedEvent: any) => {
-          if (emittedEvent.eventType === eventType) {
-            listener(emittedEvent.data);
-          }
-        })
-      );
-    } else {
-      // Old Architecture - listen to individual events
-      subscriptions.push(nativeEventEmitter.addListener(eventType, listener));
-    }
+    subscriptions.push(nativeEventEmitter.addListener(eventType, listener));
   },
   removeAllListeners() {
     subscriptions.forEach((subscription) => subscription.remove());

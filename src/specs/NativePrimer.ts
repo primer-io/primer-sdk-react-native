@@ -1,6 +1,5 @@
-import type { TurboModule, CodegenTypes } from 'react-native';
+import type { TurboModule } from 'react-native';
 import { TurboModuleRegistry } from 'react-native';
-import type { UnsafeObject } from 'react-native/Libraries/Types/CodegenTypes';
 
 export interface Spec extends TurboModule {
   configure(settings?: string): Promise<void>;
@@ -35,8 +34,6 @@ export interface Spec extends TurboModule {
   // Backward compat
   addListener(eventName?: string): void;
   removeListeners(count?: number): void;
-
-  readonly onEvent: CodegenTypes.EventEmitter<UnsafeObject<any>>;
 }
 
 // module name (NativePrimer) must be same in RCTNativePrimer.mm when exporting

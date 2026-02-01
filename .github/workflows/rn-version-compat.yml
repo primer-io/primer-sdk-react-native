@@ -1,16 +1,16 @@
-name: TurboModule Patch Verification
+name: RN Compat Build
 
 on:
   pull_request:
 
 jobs:
-  turbomodule-patch-check:
+  rn-compat-build-ios:
     runs-on: macos-26-xlarge
     timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
-        rn-version: [0.78.2, 0.79.6, 0.80.1, 0.81.1, 0.83.1]
+        rn-version: [0.78.2, 0.79.6, 0.80.1, 0.81.1, 0.82.1, 0.83.1]
 
     steps:
       - name: Cancel previous jobs
@@ -70,37 +70,7 @@ jobs:
         run: |
           YARN_ENABLE_IMMUTABLE_INSTALLS=false yarn install
 
-      - name: pod install without patch
-        id: compile_no_patch
-        continue-on-error: true
-        run: |
-          yarn bootstrap
-
-      - name: Detect TurboModule error
-        id: detect_error
-        run: |
-          if grep -q "UnsupportedModulePropertyParserError" <<< "${{ steps.compile_no_patch.outcome }}"; then
-            echo "needs_patch=true" >> $GITHUB_OUTPUT
-          else
-            echo "needs_patch=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Apply TurboModule patch
-        if: steps.compile_no_patch.outcome == 'failure'
-        run: |
-          patch -p1 < example/patches/turbomodule-codegen-fix.patch
-
-      - name: Clean workspace
-        run: |
-          rm -rf node_modules example/node_modules yarn.lock example/yarn.lock
-          rm -rf example/ios/Pods example/ios/Podfile.lock example/ios/build
-
-      - name: Install dependencies
-        run: |
-          YARN_ENABLE_IMMUTABLE_INSTALLS=false yarn install
-
-      - name: pod install with patch
-        id: compile_patch
+      - name: pod install
         run: |
           yarn bootstrap
 
@@ -115,18 +85,84 @@ jobs:
           FASTLANE_SESSION: ${{ secrets.FASTLANE_SESSION }}
           MATCH_KEYCHAIN_NAME: ${{ secrets.MATCH_KEYCHAIN_NAME }}
           MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
-          APPETIZE_API_TOKEN: ${{ secrets.APPETIZE_API_TOKEN }}
           SOURCE_BRANCH: ${{ github.head_ref }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
 
-      - name: Report result
-        run: |
-          if [[ "${{ steps.build_no_patch.outcome }}" == "success" ]]; then
-            RESULT="✅ Works without patch"
-          else
-            RESULT="🩹 Requires patch"
-          fi
+  rn-compat-build-android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        rn-version: [0.78.2, 0.79.6, 0.80.1, 0.81.1, 0.82.1, 0.83.1]
 
-          echo "| RN Version | Result |" >> $GITHUB_STEP_SUMMARY
-          echo "|-----------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| ${{ matrix.rn-version }} | $RESULT |" >> $GITHUB_STEP_SUMMARY
+    steps:
+      - name: Cancel previous jobs
+        uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # v0.12.1
+        with:
+          access_token: ${{ github.token }}
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@99b8673ff64fbf99d8d325f52d9a5bdedb8483e9 # v4.2.1
+        with:
+          java-version: 17
+          distribution: 'corretto'
+      
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@017a9effdb900e5b5b2fddfb590a105619dca3c3 # v4.4.2
+
+      - uses: actions/checkout@1d96c772d19495a3b5c517cd2bc0cb401ea0529f # v4.1.3
+
+      - uses: ruby/setup-ruby@4a9ddd6f338a97768b8006bf671dfbad383215f4 # v1.207.0
+        with:
+          ruby-version: "3.2"
+          bundler-cache: true
+
+      - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        with:
+          node-version: 20
+          cache: 'yarn'
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Cache Yarn dependencies
+        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf # v4.2.2
+        with:
+          path: |
+            .yarn/cache
+            .yarn/unplugged
+            .yarn/install-state.gz
+            node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock', '**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install packages
+        run: |
+          yarn install
+
+      - name: Create Keys.ts
+        shell: bash
+        run: |
+          echo "export const STRIPE_ACH_PUBLISHABLE_KEY = '${{ secrets.STRIPE_PUBLISHABLE_KEY }}'" > example/src/Keys.ts
+
+      - name: Override React Native version
+        run: |
+          echo "Overriding React Native version to ${{ matrix.rn-version }}"
+          jq ".dependencies[\"react-native\"] = \"${{ matrix.rn-version }}\"" example/package.json > tmp.json
+          mv tmp.json example/package.json
+
+      - name: Clean workspace
+        run: |
+          rm -rf node_modules example/node_modules yarn.lock example/yarn.lock
+
+      - name: Install dependencies
+        run: |
+          YARN_ENABLE_IMMUTABLE_INSTALLS=false yarn install
+
+
+      - name: Build
+        run: |
+          yarn example build:android:release
+          ./gradlew assembleRelease
