@@ -126,4 +126,4 @@ jobs:
       - name: Build Android
         working-directory: CompatTestApp/android
         run: |
-          ./gradlew assembleRelease
+         ./gradlew generateCodegenArtifactsFromSchema --no-build-cache && ./gradlew assembleRelease
