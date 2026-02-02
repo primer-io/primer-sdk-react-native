@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        rn-version: [0.78.2, 0.79.6, 0.80.1, 0.81.1, 0.82.1, 0.83.1]
+        rn-version: [0.79.6, 0.80.1, 0.81.1, 0.82.1, 0.83.1]
 
     steps:
       - name: Cancel previous jobs
@@ -94,7 +94,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        rn-version: [0.78.2, 0.79.6, 0.80.1, 0.81.1, 0.82.1, 0.83.1]
+        rn-version: [0.79.6, 0.80.1, 0.81.1, 0.82.1, 0.83.1]
 
     steps:
       - name: Cancel previous jobs
