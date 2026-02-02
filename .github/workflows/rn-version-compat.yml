@@ -165,4 +165,4 @@ jobs:
       - name: Build
         run: |
           yarn example build:android:release
-          ./gradlew assembleRelease
+          cd android && ./gradlew assembleRelease
