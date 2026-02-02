@@ -197,11 +197,7 @@ RCT_EXPORT_METHOD(cleanUp:(RCTPromiseResolveBlock)resolve
 #pragma mark - Event Emitting
 
 - (void)sendEventWithName:(NSString *)eventName body:(NSDictionary * _Nullable)body {
-#ifdef RCT_NEW_ARCH_ENABLED
-    [self emitOnEvent:@{@"eventType": eventName, @"data": body ?: @{}}];
-#else
     [super sendEventWithName:eventName body:body];
-#endif
 }
 
 - (NSArray<NSString *> *)supportedEvents {

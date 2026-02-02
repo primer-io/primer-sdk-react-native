@@ -6,13 +6,13 @@
 //
 
 #import <React/RCTBridgeModule.h>
+#import <React/RCTEventEmitter.h>
 
 #ifdef RCT_NEW_ARCH_ENABLED
 #import <NativePrimerSpec/NativePrimerSpec.h>
 
-@interface RCTNativePrimer: NativePrimerSpecBase <RCTBridgeModule, NativePrimerSpec>
+@interface RCTNativePrimer: RCTEventEmitter <RCTBridgeModule, NativePrimerSpec>
 #else
-#import <React/RCTEventEmitter.h>
 
 @interface RCTNativePrimer: RCTEventEmitter <RCTBridgeModule>
 #endif
