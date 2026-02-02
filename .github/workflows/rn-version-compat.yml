@@ -20,73 +20,45 @@ jobs:
 
       - name: Git Checkout
         uses: actions/checkout@1d96c772d19495a3b5c517cd2bc0cb401ea0529f # v4.1.3
+        with:
+          path: primer-sdk
 
       - name: Select Xcode Version
         uses: maxim-lobanov/setup-xcode@60606e260d2fc5762a71e64e74b2174e8ea3c8bd # v1.6.0
         with:
           xcode-version: latest-stable
 
-      - name: Install SSH key
-        uses: shimataro/ssh-key-action@d4fffb50872869abe2d9a9098a6d9c5aa7d16be4 # v2.7.0
-        with:
-          key: ${{ secrets.SSH_KEY }}
-          name: id_rsa_github_actions
-          known_hosts: unnecessary
-
-      - uses: webfactory/ssh-agent@dc588b651fe13675774614f8e6a936a468676387 # 0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_KEY }}
-
-      - uses: ruby/setup-ruby@44511735964dcb71245e7e55f72539531f7bc0eb # v1.257.0
-        with:
-          ruby-version: "2.7"
-          bundler-cache: true
-
       - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
         with:
           node-version: 20
-          cache: 'yarn'
 
       - name: Enable Corepack
         run: corepack enable
 
-      - name: Create Keys.ts
-        shell: bash
+      - name: Create fresh React Native app
         run: |
-          echo "export const STRIPE_ACH_PUBLISHABLE_KEY = '${{ secrets.STRIPE_PUBLISHABLE_KEY }}'" > example/src/Keys.ts
+          npx @react-native-community/cli@latest init CompatTestApp --version ${{ matrix.rn-version }} --skip-git-init --skip-install --pm yarn
 
-      - name: Override React Native version
+      - name: Add library dependency
+        working-directory: CompatTestApp
         run: |
-          echo "Overriding React Native version to ${{ matrix.rn-version }}"
-          jq ".dependencies[\"react-native\"] = \"${{ matrix.rn-version }}\"" example/package.json > tmp.json
-          mv tmp.json example/package.json
+          yarn add ../primer-sdk
 
-      - name: Clean workspace
+      - name: Install CocoaPods dependencies
+        working-directory: CompatTestApp/ios
         run: |
-          rm -rf node_modules example/node_modules yarn.lock example/yarn.lock
-          rm -rf example/ios/Pods example/ios/Podfile.lock example/ios/build
+          pod install
 
-      - name: Install dependencies
+      - name: Build iOS
+        working-directory: CompatTestApp/ios
         run: |
-          YARN_ENABLE_IMMUTABLE_INSTALLS=false yarn install
-
-      - name: pod install
-        run: |
-          yarn bootstrap
-
-      - name: Build
-        run: |
-          yarn example build:ios:release
-          bundle exec fastlane ios build_app_only
-        env:
-          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-          MATCH_GIT_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
-          FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
-          FASTLANE_SESSION: ${{ secrets.FASTLANE_SESSION }}
-          MATCH_KEYCHAIN_NAME: ${{ secrets.MATCH_KEYCHAIN_NAME }}
-          MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
-          SOURCE_BRANCH: ${{ github.head_ref }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
+          xcodebuild -workspace CompatTestApp.xcworkspace \
+            -scheme CompatTestApp \
+            -configuration Release \
+            -sdk iphonesimulator \
+            -destination 'platform=iOS Simulator,name=iPhone 16' \
+            build \
+            CODE_SIGNING_ALLOWED=NO
 
   rn-compat-build-android:
     runs-on: ubuntu-latest
@@ -107,62 +79,31 @@ jobs:
         with:
           java-version: 17
           distribution: 'corretto'
-      
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@017a9effdb900e5b5b2fddfb590a105619dca3c3 # v4.4.2
 
       - uses: actions/checkout@1d96c772d19495a3b5c517cd2bc0cb401ea0529f # v4.1.3
-
-      - uses: ruby/setup-ruby@4a9ddd6f338a97768b8006bf671dfbad383215f4 # v1.207.0
         with:
-          ruby-version: "3.2"
-          bundler-cache: true
+          path: primer-sdk
 
       - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
         with:
           node-version: 20
-          cache: 'yarn'
 
       - name: Enable Corepack
         run: corepack enable
 
-      - name: Cache Yarn dependencies
-        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf # v4.2.2
-        with:
-          path: |
-            .yarn/cache
-            .yarn/unplugged
-            .yarn/install-state.gz
-            node_modules
-          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock', '**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-
-      - name: Install packages
+      - name: Create fresh React Native app
         run: |
-          yarn install
+          npx @react-native-community/cli@latest init CompatTestApp --version ${{ matrix.rn-version }} --skip-git-init --skip-install --pm yarn
 
-      - name: Create Keys.ts
-        shell: bash
+      - name: Add library dependency
+        working-directory: CompatTestApp
         run: |
-          echo "export const STRIPE_ACH_PUBLISHABLE_KEY = '${{ secrets.STRIPE_PUBLISHABLE_KEY }}'" > example/src/Keys.ts
+          yarn add ../primer-sdk
 
-      - name: Override React Native version
+      - name: Build Android
+        working-directory: CompatTestApp/android
         run: |
-          echo "Overriding React Native version to ${{ matrix.rn-version }}"
-          jq ".dependencies[\"react-native\"] = \"${{ matrix.rn-version }}\"" example/package.json > tmp.json
-          mv tmp.json example/package.json
-
-      - name: Clean workspace
-        run: |
-          rm -rf node_modules example/node_modules yarn.lock example/yarn.lock
-
-      - name: Install dependencies
-        run: |
-          YARN_ENABLE_IMMUTABLE_INSTALLS=false yarn install
-
-
-      - name: Build
-        run: |
-          yarn example build:android:release
-          cd example/android && ./gradlew assembleRelease
+          ./gradlew assembleRelease
