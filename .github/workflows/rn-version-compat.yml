@@ -104,6 +104,6 @@ jobs:
           yarn add ../primer-sdk
 
       - name: Build Android
-        working-directory: CompatTestApp/android
+        working-directory: CompatTestApp/example/android
         run: |
           ./gradlew assembleRelease
