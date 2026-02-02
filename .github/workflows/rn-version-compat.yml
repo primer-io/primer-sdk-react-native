@@ -77,10 +77,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - rn-version: 0.79.7
-            cli-version: 18
-          - rn-version: 0.80.2
-            cli-version: 19
           - rn-version: 0.81.1
             cli-version: 20
           - rn-version: 0.82.1
