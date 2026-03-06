@@ -46,6 +46,12 @@ export type { IPrimerHeadlessUniversalCheckoutPaymentMethod as PaymentMethod } f
 export { default as AssetsManager } from './HeadlessUniversalCheckout/Managers/AssetsManager';
 export { default as NativeUIManager } from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/NativeUIManager';
 export { default as RawDataManager } from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/RawDataManager';
+export type { RawDataManagerProps } from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/RawDataManager';
+export type {
+  PrimerBinData as BinData,
+  PrimerCardNetwork as CardNetwork,
+  PrimerBinDataStatus as BinDataStatus,
+} from './models/PrimerBinData';
 export type { IPrimerVaultedPaymentMethod as VaultedPaymentMethod } from './models/PrimerVaultedPaymentMethod';
 
 export type { IPrimerVaultedPaymentMethodAdditonalData as VaultedPaymentMethodAdditionalData } from './models/PrimerVaultedPaymentMethodAdditionalData';

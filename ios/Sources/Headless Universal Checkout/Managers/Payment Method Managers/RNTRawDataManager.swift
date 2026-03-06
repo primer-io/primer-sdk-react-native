@@ -16,6 +16,7 @@ enum PrimerHeadlessUniversalCheckoutRawDataManagerEvents: Int, CaseIterable {
 
   case onMetadataChange = 0
   case onValidation
+  case onBinDataChange
 
   var stringValue: String {
     switch self {
@@ -23,6 +24,8 @@ enum PrimerHeadlessUniversalCheckoutRawDataManagerEvents: Int, CaseIterable {
       return "onMetadataChange"
     case .onValidation:
       return "onValidation"
+    case .onBinDataChange:
+      return "onBinDataChange"
     }
   }
 }
@@ -199,6 +202,60 @@ extension RNTPrimerHeadlessUniversalCheckoutRawDataManager:
       self.sendEvent(
         withName: PrimerHeadlessUniversalCheckoutRawDataManagerEvents.onValidation.stringValue,
         body: body)
+    }
+  }
+
+  func primerRawDataManager(
+    _ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+    didReceiveBinData binData: PrimerBinData
+  ) {
+    DispatchQueue.main.async {
+      let body = self.serializeBinData(binData)
+      self.sendEvent(
+        withName: PrimerHeadlessUniversalCheckoutRawDataManagerEvents.onBinDataChange.stringValue,
+        body: body)
+    }
+  }
+
+  // MARK: - BIN Data Serialization
+
+  private func serializeBinData(_ binData: PrimerBinData) -> [String: Any] {
+    var body: [String: Any] = [:]
+    // NSNull() bridges to JS `null` rather than `undefined`, preserving key presence in the JSON
+    body["preferred"] = binData.preferred.map { serializeCardNetwork($0) } ?? NSNull()
+    body["alternatives"] = binData.alternatives.map { serializeCardNetwork($0) }
+    body["status"] = serializeBinDataStatus(binData.status)
+    body["firstDigits"] = binData.firstDigits ?? NSNull()
+    return body
+  }
+
+  private func serializeCardNetwork(_ network: PrimerCardNetwork) -> [String: Any] {
+    var dict: [String: Any] = [:]
+    dict["displayName"] = network.displayName
+    dict["network"] = network.network.rawValue
+    // `allowed` is iOS-specific — computed from merchant-allowed networks configuration
+    dict["allowed"] = network.allowed
+    dict["issuerCountryCode"] = network.issuerCountryCode ?? NSNull()
+    dict["issuerName"] = network.issuerName ?? NSNull()
+    dict["accountFundingType"] = network.accountFundingType ?? NSNull()
+    dict["prepaidReloadableIndicator"] = network.prepaidReloadableIndicator ?? NSNull()
+    dict["productUsageType"] = network.productUsageType ?? NSNull()
+    dict["productCode"] = network.productCode ?? NSNull()
+    dict["productName"] = network.productName ?? NSNull()
+    dict["issuerCurrencyCode"] = network.issuerCurrencyCode ?? NSNull()
+    dict["regionalRestriction"] = network.regionalRestriction ?? NSNull()
+    dict["accountNumberType"] = network.accountNumberType ?? NSNull()
+    return dict
+  }
+
+  private func serializeBinDataStatus(_ status: PrimerBinDataStatus) -> String {
+    switch status {
+    case .partial:
+      return "PARTIAL"
+    case .complete:
+      return "COMPLETE"
+    @unknown default:
+      return "PARTIAL"
     }
   }
 
