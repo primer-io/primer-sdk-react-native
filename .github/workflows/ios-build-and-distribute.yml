@@ -121,7 +121,9 @@ jobs:
       - name: Create Slack Success Summary Report
         if: ${{ success() && github.event.pull_request.base.ref == 'master'  }}
         run: |
-          node report-scripts/appetize-success-report-script.js createAppetizeSummaryReport ${{ github.head_ref || github.ref_name }} 'RN iOS'
+          node report-scripts/appetize-success-report-script.js createAppetizeSummaryReport "$SOURCE_BRANCH" 'RN iOS'
+        env:
+          SOURCE_BRANCH: ${{ github.head_ref || github.ref_name }}
 
       - name: Slack Success Notification
         if: ${{ success() && github.event.pull_request.base.ref == 'master' }}
@@ -135,7 +137,9 @@ jobs:
       - name: Create Slack Failure Summary Report
         if: ${{ failure() && github.event.pull_request.base.ref == 'master' }}
         run: |
-          node report-scripts/appetize-failure-report-script.js createAppetizeSummaryReport ${{ github.head_ref || github.ref_name }} 'RN iOS'
+          node report-scripts/appetize-failure-report-script.js createAppetizeSummaryReport "$SOURCE_BRANCH" 'RN iOS'
+        env:
+          SOURCE_BRANCH: ${{ github.head_ref || github.ref_name }}
 
       - name: Slack Notification
         if: ${{ failure() && github.event.pull_request.base.ref == 'master' }}
