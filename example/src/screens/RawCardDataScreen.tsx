@@ -29,6 +29,7 @@ const RawCardDataScreen = (props: any) => {
   const [cardholderName, setCardholderName] = useState<string | undefined>('');
   const [metadataLog, setMetadataLog] = useState<string>('');
   const [validationLog, setValidationLog] = useState<string>('');
+  const [binDataLog, setBinDataLog] = useState<string>('');
 
   /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
@@ -56,6 +57,11 @@ const RawCardDataScreen = (props: any) => {
         console.log(log);
         setValidationLog(log);
         setIsCardFormValid(isVallid);
+      },
+      onBinDataChange: binData => {
+        const log = `\nonBinDataChange: ${JSON.stringify(binData, null, 2)}\n`;
+        console.log(log);
+        setBinDataLog(log);
       },
     });
     setRequiredInputElementTypes(
@@ -226,6 +232,9 @@ const RawCardDataScreen = (props: any) => {
         </View>
         <View style={{backgroundColor: 'lightgray', marginTop: 16}}>
           <Text testID="headless-validation-event">{validationLog}</Text>
+        </View>
+        <View style={{backgroundColor: 'lightgray', marginTop: 16}}>
+          <Text testID="headless-bindata-event">{binDataLog}</Text>
         </View>
       </ScrollView>
     );
