@@ -175,8 +175,7 @@ class RNTPrimerHeadlessUniversalCheckoutRawDataManager: RCTEventEmitter {
 
 }
 
-extension RNTPrimerHeadlessUniversalCheckoutRawDataManager:
-  PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
+extension RNTPrimerHeadlessUniversalCheckoutRawDataManager: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
 
   func primerRawDataManager(
     _ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
