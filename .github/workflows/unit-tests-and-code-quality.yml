@@ -1,5 +1,9 @@
 name: Unit Tests and Code Quality
 on: push
+
+permissions:
+  contents: read
+
 jobs:
   run-unit-tests:
     name: Run RN unit tests
