@@ -65,10 +65,10 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManagerListener :
             sendEvent?.invoke(
                 PrimerHeadlessUniversalCheckoutRawDataManagerEvent.ON_BIN_DATA_CHANGED.eventName,
                 JSONObject().apply {
-                    put("preferred", binData.preferred?.toJsonObject())
+                    put("preferred", binData.preferred?.toJsonObject() ?: JSONObject.NULL)
                     put("alternatives", JSONArray(binData.alternatives.map { it.toJsonObject() }))
                     put("status", binData.status.name)
-                    put("firstDigits", binData.firstDigits)
+                    put("firstDigits", binData.firstDigits ?: JSONObject.NULL)
                 },
             )
         }
