@@ -4,18 +4,20 @@ import type { EmitterSubscription, EventSubscription } from 'react-native';
 import type { PrimerInitializationData } from '../../../models/PrimerInitializationData';
 import { PrimerError } from '../../../models/PrimerError';
 import type { PrimerInputElementType } from '../../../models/PrimerInputElementType';
+import type { PrimerBinData } from '../../../models/PrimerBinData';
 
 const { RNTPrimerHeadlessUniversalCheckoutRawDataManager } = NativeModules;
 const eventEmitter = new NativeEventEmitter(RNTPrimerHeadlessUniversalCheckoutRawDataManager);
 
-type EventType = 'onMetadataChange' | 'onValidation';
+type EventType = 'onMetadataChange' | 'onValidation' | 'onBinDataChange';
 
-const eventTypes: EventType[] = ['onMetadataChange', 'onValidation'];
+const eventTypes: EventType[] = ['onMetadataChange', 'onValidation', 'onBinDataChange'];
 
 export interface RawDataManagerProps {
   paymentMethodType: string;
   onMetadataChange?: (metadata: any) => void;
   onValidation?: (isValid: boolean, errors: PrimerError[] | undefined) => void;
+  onBinDataChange?: (binData: PrimerBinData) => void;
 }
 
 class PrimerHeadlessUniversalCheckoutRawDataManager {
@@ -64,6 +66,15 @@ class PrimerHeadlessUniversalCheckoutRawDataManager {
       const sub = await this.addListener('onValidation', (data) => {
         if (this.options?.onValidation) {
           this.options.onValidation(data.isValid, data.errors);
+        }
+      });
+      this.subscriptions.push(sub);
+    }
+
+    if (this.options?.onBinDataChange) {
+      const sub = await this.addListener('onBinDataChange', (data) => {
+        if (this.options?.onBinDataChange) {
+          this.options.onBinDataChange(data);
         }
       });
       this.subscriptions.push(sub);

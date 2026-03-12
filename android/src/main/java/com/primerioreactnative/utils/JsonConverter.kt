@@ -23,6 +23,7 @@ internal fun convertJsonToMap(jsonObject: JSONObject): WritableMap {
         when (val value = jsonObject[key]) {
             is JSONObject -> map.putMap(key, convertJsonToMap(value))
             is JSONArray -> map.putArray(key, convertJsonToArray(value))
+            JSONObject.NULL -> map.putNull(key)
             is Boolean -> map.putBoolean(key, value)
             is Int -> map.putInt(key, value)
             is Double -> map.putDouble(key, value)
@@ -40,6 +41,7 @@ internal fun convertJsonToArray(jsonArray: JSONArray): WritableArray {
         when (val value = jsonArray[i]) {
             is JSONObject -> array.pushMap(convertJsonToMap(value))
             is JSONArray -> array.pushArray(convertJsonToArray(value))
+            JSONObject.NULL -> array.pushNull()
             is Boolean -> array.pushBoolean(value)
             is Int -> array.pushInt(value)
             is Double -> array.pushDouble(value)
