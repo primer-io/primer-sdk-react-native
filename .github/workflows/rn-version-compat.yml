@@ -3,6 +3,10 @@ name: RN Compat Build
 on:
   pull_request:
 
+permissions:
+  contents: read
+  actions: write
+
 jobs:
   rn-compat-build-ios:
     runs-on: macos-26-xlarge
