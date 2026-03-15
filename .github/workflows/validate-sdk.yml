@@ -44,6 +44,9 @@ jobs:
         run: |
           yarn
 
+      - name: TypeScript check
+        run: yarn typescript
+
       - name: Build SDK
         run: yarn build
 
