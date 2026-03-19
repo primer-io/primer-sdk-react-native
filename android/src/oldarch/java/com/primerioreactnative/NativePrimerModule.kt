@@ -134,6 +134,16 @@ class NativePrimerModule(private val reactContext: ReactApplicationContext, priv
   }
 
   @ReactMethod
+  fun getDeviceInfo(promise: Promise) {
+    implementation.getDeviceInfo(promise = promise)
+  }
+
+  @ReactMethod
+  fun generateUUID(promise: Promise) {
+    implementation.generateUUID(promise = promise)
+  }
+
+  @ReactMethod
   fun addListener(eventName: String?) = Unit
 
   @ReactMethod

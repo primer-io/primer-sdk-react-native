@@ -89,6 +89,16 @@ RCT_EXPORT_METHOD(setImplementedRNCallbacks:(NSString *)implementedRNCallbacks
     [self.primer setImplementedRNCallbacks:implementedRNCallbacks resolver:resolve rejecter:reject];
 }
 
+RCT_EXPORT_METHOD(getDeviceInfo:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
+    [self.primer getDeviceInfoWithResolver:resolve rejecter:reject];
+}
+
+RCT_EXPORT_METHOD(generateUUID:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
+    [self.primer generateUUIDWithResolver:resolve rejecter:reject];
+}
+
 RCT_EXPORT_METHOD(showErrorMessage:(NSString *)errorMessage
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
@@ -167,8 +177,16 @@ RCT_EXPORT_METHOD(cleanUp:(RCTPromiseResolveBlock)resolve
     [self.primer handleTokenizationSuccess:resolve rejecter:reject];
 }
 
-- (void)setImplementedRNCallbacks:(nonnull NSString *)implementedRNCallbacks resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject { 
+- (void)setImplementedRNCallbacks:(nonnull NSString *)implementedRNCallbacks resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject {
     [self.primer setImplementedRNCallbacks:implementedRNCallbacks resolver:resolve rejecter:reject];
+}
+
+- (void)getDeviceInfo:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject {
+    [self.primer getDeviceInfoWithResolver:resolve rejecter:reject];
+}
+
+- (void)generateUUID:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject {
+    [self.primer generateUUIDWithResolver:resolve rejecter:reject];
 }
 
 - (void)showErrorMessage:(nonnull NSString *)errorMessage resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject { 

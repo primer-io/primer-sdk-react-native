@@ -7,6 +7,7 @@
 
 import Foundation
 import PrimerSDK
+import SystemConfiguration
 import UIKit
 import React
 
@@ -309,6 +310,78 @@ enum PrimerEvents: Int, CaseIterable {
 
     private func detectImplemetedCallbacks() {
       eventDelegate.sendEvent(withName: PrimerEvents.detectImplementedRNCallbacks.stringValue, body: nil)
+    }
+
+    @objc
+    public func generateUUID(
+        resolver: @escaping RCTPromiseResolveBlock,
+        rejecter: @escaping RCTPromiseRejectBlock
+    ) {
+        resolver(UUID().uuidString.lowercased())
+    }
+
+    @objc
+    public func getDeviceInfo(
+        resolver: @escaping RCTPromiseResolveBlock,
+        rejecter: @escaping RCTPromiseRejectBlock
+    ) {
+        DispatchQueue.main.async {
+            var info: [String: String] = [:]
+
+            let bundle = Bundle.main
+            info["appName"] = bundle.object(forInfoDictionaryKey: "CFBundleName") as? String ?? ""
+            info["appVersion"] = bundle.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? ""
+            info["appId"] = bundle.bundleIdentifier ?? ""
+            info["deviceModel"] = UIDevice.current.model
+            info["deviceType"] = Self.getDeviceType()
+            info["networkType"] = Self.getNetworkType()
+
+            if let data = try? JSONSerialization.data(withJSONObject: info),
+               let jsonStr = String(data: data, encoding: .utf8) {
+                resolver(jsonStr)
+            } else {
+                resolver("{}")
+            }
+        }
+    }
+
+    private static func getDeviceType() -> String {
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            return "tablet"
+        }
+        return "phone"
+    }
+
+    private static func getNetworkType() -> String {
+        var zeroAddress = sockaddr_in()
+        zeroAddress.sin_len = UInt8(MemoryLayout.size(ofValue: zeroAddress))
+        zeroAddress.sin_family = sa_family_t(AF_INET)
+
+        guard let reachability = withUnsafePointer(to: &zeroAddress, {
+            $0.withMemoryRebound(to: sockaddr.self, capacity: 1) {
+                SCNetworkReachabilityCreateWithAddress(nil, $0)
+            }
+        }) else {
+            return "NONE"
+        }
+
+        var flags = SCNetworkReachabilityFlags()
+        if !SCNetworkReachabilityGetFlags(reachability, &flags) {
+            return "NONE"
+        }
+
+        let isReachable = flags.contains(.reachable)
+        let needsConnection = flags.contains(.connectionRequired)
+
+        if !isReachable || needsConnection {
+            return "NONE"
+        }
+
+        if flags.contains(.isWWAN) {
+            return "CELLULAR"
+        }
+
+        return "WIFI"
     }
 
     @objc

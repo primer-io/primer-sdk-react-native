@@ -221,6 +221,29 @@ const RNPrimer = {
     });
   },
 
+  // Device info
+  getDeviceInfo: (): Promise<string> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const result = await NativePrimer.getDeviceInfo();
+        resolve(result);
+      } catch (err) {
+        reject(err);
+      }
+    });
+  },
+
+  generateUUID: (): Promise<string> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const result = await NativePrimer.generateUUID();
+        resolve(result);
+      } catch (err) {
+        reject(err);
+      }
+    });
+  },
+
   // HELPERS
   setImplementedRNCallbacks: (implementedRNCallbacks: any): Promise<void> => {
     return new Promise(async (resolve, reject) => {
