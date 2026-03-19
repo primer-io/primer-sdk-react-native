@@ -1,5 +1,8 @@
 package com.primerioreactnative
 
+import android.content.res.Configuration
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.util.Log
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
@@ -221,6 +224,30 @@ internal open class DefaultNativePrimerModule(
     }
     // endregion
 
+    fun generateUUID(promise: Promise) {
+        promise.resolve(java.util.UUID.randomUUID().toString())
+    }
+
+    fun getDeviceInfo(promise: Promise) {
+        try {
+            val context = reactContext
+            val pm = context.packageManager
+            val appInfo = context.applicationInfo
+            val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+            val info = JSONObject()
+            info.put("appName", pm.getApplicationLabel(appInfo).toString())
+            info.put("appVersion", packageInfo.versionName ?: "")
+            info.put("appId", context.packageName)
+            info.put("deviceModel", android.os.Build.MODEL)
+            info.put("deviceType", getDeviceType())
+            info.put("networkType", getNetworkType())
+            promise.resolve(info.toString())
+        } catch (e: Exception) {
+            Log.w("PrimerRN", "Failed to get device info", e)
+            promise.resolve("{}")
+        }
+    }
+
     fun setImplementedRNCallbacks(
         implementedRNCallbacksStr: String,
         promise: Promise,
@@ -235,6 +262,30 @@ internal open class DefaultNativePrimerModule(
                 ErrorTypeRN.NativeBridgeFailed errorTo "Implemented callbacks $implementedRNCallbacksStr is not valid."
             onError(exception)
             promise.reject(exception.errorId, exception.description, expected)
+        }
+    }
+
+    private fun getDeviceType(): String {
+        val screenLayout = reactContext.resources.configuration.screenLayout
+        val isTablet = (screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_LARGE
+        return if (isTablet) "tablet" else "phone"
+    }
+
+    @Suppress("MissingPermission")
+    private fun getNetworkType(): String {
+        return try {
+            val cm = reactContext.getSystemService(android.content.Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+                ?: return "NONE"
+            val network = cm.activeNetwork ?: return "NONE"
+            val caps = cm.getNetworkCapabilities(network) ?: return "NONE"
+            when {
+                caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> "WIFI"
+                caps.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> "CELLULAR"
+                caps.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> "ETHERNET"
+                else -> "OTHER"
+            }
+        } catch (e: Exception) {
+            "NONE"
         }
     }
 

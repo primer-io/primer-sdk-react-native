@@ -31,6 +31,10 @@ export interface Spec extends TurboModule {
 
   setImplementedRNCallbacks(implementedRNCallbacks: string): Promise<void>;
 
+  // Device info
+  getDeviceInfo(): Promise<string>;
+  generateUUID(): Promise<string>;
+
   // Backward compat
   addListener(eventName?: string): void;
   removeListeners(count?: number): void;

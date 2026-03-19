@@ -110,6 +110,14 @@ class NativePrimerModule(private val reactContext: ReactApplicationContext, priv
     implementation.setImplementedRNCallbacks(implementedRNCallbacksStr = implementedRNCallbacks, promise = promise)
   }
 
+  override fun getDeviceInfo(promise: Promise) {
+    implementation.getDeviceInfo(promise = promise)
+  }
+
+  override fun generateUUID(promise: Promise) {
+    implementation.generateUUID(promise = promise)
+  }
+
   override fun addListener(eventName: String?) = Unit
 
   override fun removeListeners(count: Double?) = Unit
