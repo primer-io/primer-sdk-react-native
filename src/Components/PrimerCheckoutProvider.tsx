@@ -12,7 +12,6 @@ const initialState: PrimerCheckoutContextValue = {
   error: null,
   clientSession: null,
   availablePaymentMethods: [],
-  localeData: undefined,
 };
 
 export function PrimerCheckoutProvider({
@@ -140,7 +139,6 @@ export function PrimerCheckoutProvider({
           ...prev,
           isReady: true,
           availablePaymentMethods: methods,
-          localeData: settingsRef.current?.localeData,
         }));
       }
     }

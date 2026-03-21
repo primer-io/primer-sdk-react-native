@@ -17,7 +17,7 @@ afterEach(() => {
 
 describe('resolveLocale', () => {
   describe('device locale detection', () => {
-    it('detects device locale when no override provided', () => {
+    it('detects device locale', () => {
       mockDeviceLocale('fr-FR');
       const result = resolveLocale();
       expect(result.locale).toBe('fr');
@@ -56,48 +56,18 @@ describe('resolveLocale', () => {
       expect(result.source).toBe('device');
     });
 
-    it('falls back to en when base language is not supported', () => {
+    it('resolves regional variant with exact match when available', () => {
       mockDeviceLocale('zh-CN');
+      const result = resolveLocale();
+      expect(result.locale).toBe('zh-CN');
+      expect(result.source).toBe('device');
+    });
+
+    it('falls back to en when base language is not supported', () => {
+      mockDeviceLocale('xx-YY');
       const result = resolveLocale();
       expect(result.locale).toBe('en');
       expect(result.source).toBe('fallback');
-    });
-  });
-
-  describe('locale override', () => {
-    it('uses localeCode override when provided', () => {
-      mockDeviceLocale('en-US');
-      const result = resolveLocale({ localeCode: 'es-ES' });
-      expect(result.locale).toBe('es');
-      expect(result.source).toBe('override');
-    });
-
-    it('uses languageCode override when localeCode not provided', () => {
-      mockDeviceLocale('en-US');
-      const result = resolveLocale({ languageCode: 'de' });
-      expect(result.locale).toBe('de');
-      expect(result.source).toBe('override');
-    });
-
-    it('localeCode takes precedence over languageCode', () => {
-      mockDeviceLocale('en-US');
-      const result = resolveLocale({ localeCode: 'fr-FR', languageCode: 'de' });
-      expect(result.locale).toBe('fr');
-      expect(result.source).toBe('override');
-    });
-
-    it('falls back to device locale when override locale is unsupported', () => {
-      mockDeviceLocale('fr-FR');
-      const result = resolveLocale({ localeCode: 'xx-XX' });
-      expect(result.locale).toBe('fr');
-      expect(result.source).toBe('device');
-    });
-
-    it('reverts to device locale when override is undefined', () => {
-      mockDeviceLocale('ja');
-      const result = resolveLocale(undefined);
-      expect(result.locale).toBe('ja');
-      expect(result.source).toBe('device');
     });
   });
 });
