@@ -2,7 +2,8 @@ import { useMemo } from 'react';
 import type { TranslationParams } from './types';
 import { resolveLocale } from './locale-resolver';
 import { translate } from './translate';
-import { formatCurrency as formatCurrencyUtil, formatDate as formatDateUtil } from './formatting';
+import { formatCurrency as formatCurrencyUtil } from '../currency';
+import { formatDate as formatDateUtil } from '../utils/formatting';
 
 export interface LocalizationResult {
   t: (key: string, params?: TranslationParams) => string;
