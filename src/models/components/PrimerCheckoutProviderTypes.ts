@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import type { PrimerSettings } from '../PrimerSettings';
+import type { PrimerSettings, IPrimerLocaleData } from '../PrimerSettings';
 import type { PrimerError } from '../PrimerError';
 import type { PrimerClientSession } from '../PrimerClientSession';
 import type { PrimerCheckoutData } from '../PrimerCheckoutData';
@@ -29,4 +29,5 @@ export interface PrimerCheckoutContextValue {
   error: PrimerError | null;
   clientSession: PrimerClientSession | null;
   availablePaymentMethods: IPrimerHeadlessUniversalCheckoutPaymentMethod[];
+  localeData?: IPrimerLocaleData;
 }

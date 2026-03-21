@@ -75,7 +75,7 @@ interface IPrimerSettings {
 
 //----------------------------------------
 
-interface IPrimerLocaleData {
+export interface IPrimerLocaleData {
   languageCode?: string;
   localeCode?: string;
 }
