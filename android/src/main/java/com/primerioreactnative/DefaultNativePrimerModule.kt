@@ -242,7 +242,10 @@ internal open class DefaultNativePrimerModule(
             info.put("deviceType", getDeviceType())
             info.put("networkType", getNetworkType())
             promise.resolve(info.toString())
-        } catch (e: Exception) {
+        } catch (e: android.content.pm.PackageManager.NameNotFoundException) {
+            Log.w("PrimerRN", "Failed to get device info", e)
+            promise.resolve("{}")
+        } catch (e: org.json.JSONException) {
             Log.w("PrimerRN", "Failed to get device info", e)
             promise.resolve("{}")
         }
@@ -275,16 +278,16 @@ internal open class DefaultNativePrimerModule(
     private fun getNetworkType(): String {
         return try {
             val cm = reactContext.getSystemService(android.content.Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
-                ?: return "NONE"
-            val network = cm.activeNetwork ?: return "NONE"
-            val caps = cm.getNetworkCapabilities(network) ?: return "NONE"
+            val caps = cm?.activeNetwork?.let { cm.getNetworkCapabilities(it) }
             when {
+                caps == null -> "NONE"
                 caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> "WIFI"
                 caps.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> "CELLULAR"
                 caps.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> "ETHERNET"
                 else -> "OTHER"
             }
-        } catch (e: Exception) {
+        } catch (e: SecurityException) {
+            Log.w("PrimerRN", "Failed to get network type", e)
             "NONE"
         }
     }

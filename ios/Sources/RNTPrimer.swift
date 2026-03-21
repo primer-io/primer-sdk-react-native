@@ -440,7 +440,10 @@ extension RNTPrimer: PrimerDelegate {
                 do {
                     let checkoutData = try JSONEncoder().encode(data)
                     let checkoutJson = try JSONSerialization.jsonObject(with: checkoutData, options: .allowFragments)
-                    self.eventDelegate.sendEvent(withName: PrimerEvents.onCheckoutComplete.stringValue, body: checkoutJson)
+                    self.eventDelegate.sendEvent(
+                        withName: PrimerEvents.onCheckoutComplete.stringValue,
+                        body: checkoutJson
+                    )
                 } catch {
                     self.handleRNBridgeError(error, checkoutData: data, stopOnDebug: true)
                 }
@@ -595,7 +598,10 @@ extension RNTPrimer: PrimerDelegate {
             }
 
             DispatchQueue.main.async {
-              self.eventDelegate.sendEvent(withName: PrimerEvents.onResumeSuccess.stringValue, body: ["resumeToken": resumeToken])
+              self.eventDelegate.sendEvent(
+                  withName: PrimerEvents.onResumeSuccess.stringValue,
+                  body: ["resumeToken": resumeToken]
+              )
             }
         } else {
             // RN dev hasn't opted in on listening the tokenization callback.
