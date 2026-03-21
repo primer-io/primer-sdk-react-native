@@ -10,6 +10,8 @@ export function interpolate(template: string, params?: TranslationParams): strin
   if (!params) return template;
   return template.replace(PLACEHOLDER_REGEX, (match, key: string) => {
     const value = params[key];
-    return value !== undefined ? String(value) : match;
+    if (value !== undefined) return String(value);
+    console.warn(`[Primer] Missing interpolation param "${key}" in template "${template}"`);
+    return match;
   });
 }

@@ -34,6 +34,13 @@ describe('translate', () => {
   it('handles interpolation in non-English locale', () => {
     expect(translate('primer_common_button_pay_amount', 'fr', { param1: '50,00 €' })).toBe('Payer 50,00 €');
   });
+
+  it('falls back to English when key exists in en but not in locale', () => {
+    // primer_qr_code_scan_instruction exists in en but not in fr
+    const result = translate('primer_qr_code_scan_instruction', 'fr');
+    expect(result).toBe('Scan to pay or take a screenshot');
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('primer_qr_code_scan_instruction'));
+  });
 });
 
 describe('accessibility string localization', () => {
