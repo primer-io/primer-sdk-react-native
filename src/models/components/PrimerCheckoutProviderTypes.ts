@@ -7,10 +7,12 @@ import type { PrimerCheckoutPaymentMethodData } from '../PrimerCheckoutPaymentMe
 import type { PrimerPaymentMethodTokenData } from '../PrimerPaymentMethodTokenData';
 import type { PrimerHeadlessUniversalCheckoutResumeHandler, PrimerPaymentCreationHandler } from '../PrimerHandlers';
 import type { IPrimerHeadlessUniversalCheckoutPaymentMethod } from '../PrimerHeadlessUniversalCheckoutPaymentMethod';
+import type { PrimerThemeOverride } from '../../Components/internal/theme/types';
 
 export interface PrimerCheckoutProviderProps {
   clientToken: string;
   settings?: PrimerSettings;
+  theme?: PrimerThemeOverride;
   onCheckoutComplete?: (checkoutData: PrimerCheckoutData) => void;
   onTokenizationSuccess?: (
     paymentMethodTokenData: PrimerPaymentMethodTokenData,
