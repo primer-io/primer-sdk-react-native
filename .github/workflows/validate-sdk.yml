@@ -1,6 +1,11 @@
 ---
 name: Validate SDK
 on: pull_request
+
+permissions:
+  contents: read
+  actions: write
+
 jobs:
 
   validate:
