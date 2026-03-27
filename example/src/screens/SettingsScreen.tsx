@@ -7,6 +7,7 @@ import {
   View,
 } from 'react-native';
 import {styles} from '../styles';
+import {NavigationDemoModal} from './NavigationDemoScreen';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import {
   Environment,
@@ -76,6 +77,7 @@ export function makeCheckoutVaultingTypeFromIntVal(
 // @ts-ignore
 const SettingsScreen = ({navigation}) => {
   const isDarkMode = useColorScheme() === 'dark';
+  const [navDemoVisible, setNavDemoVisible] = React.useState(false);
   const [environment, setEnvironment] = React.useState<Environment>(
     Environment.Sandbox,
   );
@@ -893,6 +895,18 @@ const SettingsScreen = ({navigation}) => {
             Headless Universal Checkout Vault
           </Text>
         </TouchableOpacity>
+
+        <TouchableOpacity
+          style={{
+            ...styles.button,
+            marginVertical: 5,
+            backgroundColor: '#007AFF',
+          }}
+          onPress={() => setNavDemoVisible(true)}>
+          <Text style={{...styles.buttonText, color: 'white'}}>
+            Navigation Demo
+          </Text>
+        </TouchableOpacity>
       </View>
     );
   };
@@ -1276,22 +1290,28 @@ const SettingsScreen = ({navigation}) => {
   };
 
   return (
-    <ScrollView
-      contentInsetAdjustmentBehavior="automatic"
-      style={backgroundStyle}>
-      {/* <Header /> */}
-      <View
-        style={{
-          marginHorizontal: 24,
-        }}>
-        {renderRequiredSettings()}
-        {renderOptionalSettings()}
+    <>
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        style={backgroundStyle}>
+        {/* <Header /> */}
+        <View
+          style={{
+            marginHorizontal: 24,
+          }}>
+          {renderRequiredSettings()}
+          {renderOptionalSettings()}
 
-        <View style={{marginVertical: 5}} />
+          <View style={{marginVertical: 5}} />
 
-        {renderActions()}
-      </View>
-    </ScrollView>
+          {renderActions()}
+        </View>
+      </ScrollView>
+      <NavigationDemoModal
+        visible={navDemoVisible}
+        onClose={() => setNavDemoVisible(false)}
+      />
+    </>
   );
 };
 
