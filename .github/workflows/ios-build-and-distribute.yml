@@ -11,7 +11,7 @@ permissions:
 jobs:
 
   build-and-upload-to-appetize:
-    runs-on: macos-26-xlarge
+    runs-on: macos-26-large
     timeout-minutes: 30
     name: Build and upload app to Appetize 🚀
     steps:

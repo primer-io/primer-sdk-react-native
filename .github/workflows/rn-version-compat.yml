@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   rn-compat-build-ios:
-    runs-on: macos-26-xlarge
+    runs-on: macos-26-large
     timeout-minutes: 30
     strategy:
       fail-fast: false
