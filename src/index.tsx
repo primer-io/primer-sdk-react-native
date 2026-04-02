@@ -130,6 +130,10 @@ export type { BanksLoading, BanksRetrieved, BanksStep };
 import type { NamedComponentValidatableData } from './models/NamedComponentValidatableData';
 export type { NamedComponentValidatableData };
 
+export { PrimerCheckoutProvider } from './Components';
+export { usePrimerCheckout } from './Components';
+export type { PrimerCheckoutProviderProps, PrimerCheckoutContextValue } from './Components';
+
 // must be exported in order to support the old architecture
 const nativeModule = require('./specs/NativePrimer').default;
 export default nativeModule;
