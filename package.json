@@ -153,6 +153,9 @@
       ]
     ]
   },
+  "jest": {
+    "testPathIgnorePatterns": ["/node_modules/", "/lib/"]
+  },
   "codegenConfig": {
     "name": "NativePrimerSpec",
     "type": "modules",

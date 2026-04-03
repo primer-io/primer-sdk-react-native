@@ -78,6 +78,8 @@ export function CheckoutSheet({
   const prevVisibleRef = useRef(visible);
   useEffect(() => {
     if (visible && !prevVisibleRef.current) {
+      setHeightRatioState(DEFAULT_HEIGHT_RATIO);
+      heightOffsetValue.setValue(screenHeight * (1 - DEFAULT_HEIGHT_RATIO));
       setModalVisible(true);
     } else if (!visible && prevVisibleRef.current && modalVisible) {
       animateOut();
@@ -100,12 +102,19 @@ export function CheckoutSheet({
     onRequestDismiss?.();
   }, [onRequestDismiss]);
 
-  const sheetHeightContextValue = useMemo<SheetHeightContextValue>(
+  const stableActions = useMemo(
     () => ({
-      setHeight: (h: number) => setHeightRatioState(h / screenHeight),
       setHeightRatio: (ratio: number) => setHeightRatioState(Math.max(MIN_HEIGHT_RATIO, Math.min(1, ratio))),
+      resetHeight: () => setHeightRatioState(DEFAULT_HEIGHT_RATIO),
     }),
-    [screenHeight]
+    []
+  );
+
+  const setHeight = useCallback((h: number) => setHeightRatioState(h / screenHeight), [screenHeight]);
+
+  const sheetHeightContextValue = useMemo<SheetHeightContextValue>(
+    () => ({ setHeight, ...stableActions }),
+    [setHeight, stableActions]
   );
 
   // Show/hide: slide the entire sheet from below the screen to its resting position

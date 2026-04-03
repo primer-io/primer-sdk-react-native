@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import type { TextStyle } from 'react-native';
 
-import { CheckoutSheet, useSheetHeight } from '../../../src/Components/internal/checkout-sheet';
+import { CheckoutSheet } from '../../../src/Components/internal/checkout-sheet';
 import {
     CheckoutRoute,
     NavigationContainer,
@@ -12,6 +12,11 @@ import {
     useRoute,
 } from '../../../src/Components/internal/navigation';
 import { useTheme } from '../../../src/Components/internal/theme';
+import {
+    LoadingScreen as RealLoadingScreen,
+    SuccessScreen as RealSuccessScreen,
+    ErrorScreen as RealErrorScreen,
+} from '../../../src/Components/internal/screens';
 
 // --- Sample Screens ---
 
@@ -77,62 +82,29 @@ function ProcessingScreen() {
         <Text style={demoStyles.description}>Processing payment...</Text>
         <DemoButton
           title="Simulate Success"
-          onPress={() =>
-            replace(CheckoutRoute.success, {
-              checkoutData: { orderId: '12345' },
-            })
-          }
+          onPress={() => {
+            replace(CheckoutRoute.loading);
+            setTimeout(() => {
+              replace(CheckoutRoute.success, {
+                checkoutData: { orderId: '12345' },
+              });
+            }, 2000);
+          }}
         />
         <DemoButton
           title="Simulate Error"
-          onPress={() =>
-            replace(CheckoutRoute.error, {
-              error: {
-                errorId: 'test-error',
-                description: 'Payment declined',
-              } as any,
-            })
-          }
+          onPress={() => {
+            replace(CheckoutRoute.loading);
+            setTimeout(() => {
+              replace(CheckoutRoute.error, {
+                error: {
+                  errorId: 'test-error',
+                  description: 'Payment declined',
+                } as any,
+              });
+            }, 2000);
+          }}
         />
-      </View>
-    </View>
-  );
-}
-
-function SuccessScreen() {
-  const demoStyles = useDemoStyles();
-  const { popToRoot } = useNavigation();
-  const { params } = useRoute<CheckoutRoute.success>();
-  const { setHeightRatio } = useSheetHeight();
-
-  return (
-    <View style={demoStyles.screen}>
-      <NavigationHeader title="Success" />
-      <View style={demoStyles.content}>
-        <Text style={demoStyles.title}>Payment Successful!</Text>
-        <Text style={demoStyles.description}>
-          {JSON.stringify(params.checkoutData)}
-        </Text>
-        <DemoButton title="Shrink Sheet (50%)" onPress={() => setHeightRatio(0.5)} />
-        <DemoButton title="Expand Sheet (92%)" onPress={() => setHeightRatio(0.92)} />
-        <DemoButton title="Back to Start" onPress={popToRoot} />
-      </View>
-    </View>
-  );
-}
-
-function ErrorScreen() {
-  const demoStyles = useDemoStyles();
-  const { popToRoot } = useNavigation();
-  const { params } = useRoute<CheckoutRoute.error>();
-
-  return (
-    <View style={demoStyles.screen}>
-      <NavigationHeader title="Error" />
-      <View style={demoStyles.content}>
-        <Text style={demoStyles.title}>Payment Failed</Text>
-        <Text style={demoStyles.description}>{params.error.description}</Text>
-        <DemoButton title="Try Again" onPress={popToRoot} />
       </View>
     </View>
   );
@@ -237,32 +209,20 @@ function DeleteConfirmationScreen() {
   );
 }
 
-function PlaceholderScreen() {
-  const demoStyles = useDemoStyles();
-  return (
-    <View style={demoStyles.screen}>
-      <NavigationHeader title="Placeholder" />
-      <View style={demoStyles.content}>
-        <Text style={demoStyles.description}>Placeholder screen</Text>
-      </View>
-    </View>
-  );
-}
-
 // --- Screen Map ---
 
 const screenMap: Partial<Record<CheckoutRoute, React.ComponentType>> = {
   [CheckoutRoute.methodSelection]: MethodSelectionScreen,
   [CheckoutRoute.cardForm]: CardFormScreen,
   [CheckoutRoute.processing]: ProcessingScreen,
-  [CheckoutRoute.success]: SuccessScreen,
-  [CheckoutRoute.error]: ErrorScreen,
+  [CheckoutRoute.success]: RealSuccessScreen,
+  [CheckoutRoute.error]: RealErrorScreen,
   [CheckoutRoute.vaultedMethods]: VaultedMethodsScreen,
   [CheckoutRoute.countrySelector]: CountrySelectorScreen,
   [CheckoutRoute.cvvRecapture]: CvvRecaptureScreen,
   [CheckoutRoute.deleteConfirmation]: DeleteConfirmationScreen,
-  [CheckoutRoute.splash]: PlaceholderScreen,
-  [CheckoutRoute.loading]: PlaceholderScreen,
+  [CheckoutRoute.splash]: RealLoadingScreen,
+  [CheckoutRoute.loading]: RealLoadingScreen,
 };
 
 // --- Demo Button ---
