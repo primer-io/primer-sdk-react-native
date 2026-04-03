@@ -1,9 +1,13 @@
 import type { ResolvedLocale } from './types';
 import { hasLocale } from './strings';
 
+function normalizeLocale(locale: string): string {
+  return locale.replace(/_/g, '-');
+}
+
 function getDeviceLocale(): string | null {
   try {
-    return Intl.DateTimeFormat().resolvedOptions().locale;
+    return normalizeLocale(Intl.DateTimeFormat().resolvedOptions().locale);
   } catch (error) {
     console.warn('[Primer] Failed to detect device locale, falling back to "en"', error);
     return null;

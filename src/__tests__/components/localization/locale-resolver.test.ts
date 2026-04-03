@@ -36,6 +36,13 @@ describe('resolveLocale', () => {
     expect(result.source).toBe('device');
   });
 
+  it('normalizes underscore locale format from Android', () => {
+    mockDeviceLocale('pt_BR');
+    const result = resolveLocale();
+    expect(result.locale).toBe('pt-BR');
+    expect(result.source).toBe('device');
+  });
+
   it('falls back to en when device locale is unsupported', () => {
     mockDeviceLocale('xx-XX');
     const result = resolveLocale();
