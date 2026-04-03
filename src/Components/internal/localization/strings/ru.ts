@@ -79,10 +79,10 @@ const ru: TranslationMap = {
   accessibility_screen_success: 'Платеж выполнен успешно',
   accessibility_vault_delete_payment_method: 'Удалить этот способ оплаты',
   accessibility_vaulted_ach: 'Банковский счет {{param1}}',
-  accessibility_vaulted_ach_full: 'Банковский счет {{param1}}, оканчивающийся на {{param1}}',
+  accessibility_vaulted_ach_full: 'Банковский счет {{param1}}, оканчивающийся на {{param2}}',
   accessibility_vaulted_card_full:
     'Карта {{param1}}, оканчивающаяся на {{param1}}, срок действия {{param1}}, {{param1}}',
-  accessibility_vaulted_card_no_name: 'Карта {{param1}}, оканчивающаяся на {{param1}}, срок действия {{param1}}',
+  accessibility_vaulted_card_no_name: 'Карта {{param1}}, оканчивающаяся на {{param2}}, срок действия {{param3}}',
   accessibility_vaulted_klarna: 'Klarna',
   accessibility_vaulted_klarna_email: 'Klarna, {{param1}}',
   accessibility_vaulted_payment_method: 'Сохраненный способ оплаты: {{param1}}',

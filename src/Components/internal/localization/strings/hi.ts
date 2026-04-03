@@ -80,10 +80,10 @@ const hi: TranslationMap = {
   accessibility_screen_success: 'भुगतान सफल',
   accessibility_vault_delete_payment_method: 'इस भुगतान विधि को हटाएं',
   accessibility_vaulted_ach: '{{param1}} बैंक खाता',
-  accessibility_vaulted_ach_full: '{{param1}} बैंक खाता {{param1}} में समाप्त होता है',
+  accessibility_vaulted_ach_full: '{{param1}} बैंक खाता {{param2}} में समाप्त होता है',
   accessibility_vaulted_card_full:
     '{{param1}} कार्ड {{param1}} में समाप्त होता है, {{param1}} को समाप्त होगा, {{param1}}',
-  accessibility_vaulted_card_no_name: '{{param1}} कार्ड {{param1}} में समाप्त होता है, {{param1}} को समाप्त होगा',
+  accessibility_vaulted_card_no_name: '{{param1}} कार्ड {{param2}} में समाप्त होता है, {{param3}} को समाप्त होगा',
   accessibility_vaulted_klarna: 'Klarna',
   accessibility_vaulted_klarna_email: 'Klarna, {{param1}}',
   accessibility_vaulted_payment_method: 'सहेजी गई भुगतान विधि: {{param1}}',
