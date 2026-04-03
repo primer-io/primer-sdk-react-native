@@ -14,10 +14,6 @@ function extractBaseLanguage(locale: string): string {
   return locale.split('-')[0]!;
 }
 
-/**
- * Tries to find a supported locale from the given candidate.
- * Fallback chain: exact match → base language → null.
- */
 function findSupportedLocale(candidate: string): string | null {
   if (hasLocale(candidate)) return candidate;
   const base = extractBaseLanguage(candidate);
@@ -25,13 +21,7 @@ function findSupportedLocale(candidate: string): string | null {
   return null;
 }
 
-/**
- * Resolves the active locale from device detection.
- *
- * Resolution order:
- * 1. Device locale (via Intl.DateTimeFormat)
- * 2. Fallback to "en"
- */
+// Resolution: device locale → base language fallback → "en"
 export function resolveLocale(): ResolvedLocale {
   const deviceLocale = getDeviceLocale();
   if (deviceLocale) {

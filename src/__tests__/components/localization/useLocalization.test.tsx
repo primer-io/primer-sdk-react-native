@@ -3,7 +3,6 @@ import { createElement } from 'react';
 import renderer, { act } from 'react-test-renderer';
 import { useLocalization } from '../../../Components/internal/localization/useLocalization';
 
-// Capture hook results
 let hookResult: ReturnType<typeof useLocalization>;
 
 function TestComponent() {

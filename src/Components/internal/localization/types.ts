@@ -256,16 +256,11 @@ export type TranslationKey =
   | 'primer_web_redirect_button_continue'
   | 'primer_web_redirect_description';
 
-/** Parameters for string interpolation — keys map to {{placeholder}} tokens */
 export type TranslationParams = Record<string, string | number>;
 
-/** Result of locale resolution */
 export interface ResolvedLocale {
-  /** The locale code actually used (after fallback resolution) */
   locale: string;
-  /** How the locale was determined */
   source: 'device' | 'fallback';
 }
 
-/** A complete or partial set of translations for a single locale */
 export type TranslationMap = Partial<Record<TranslationKey, string>>;

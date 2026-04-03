@@ -7,12 +7,7 @@ export interface LocalizationResult {
   t: (key: TranslationKey, params?: TranslationParams) => string;
 }
 
-/**
- * React hook for checkout components to access localization.
- *
- * Resolves locale from device settings (matching native SDK behavior).
- * Provides t() for string lookup bound to the active locale.
- */
+// Resolves locale once from device settings (matching native SDK behavior)
 export function useLocalization(): LocalizationResult {
   return useMemo(() => {
     const { locale } = resolveLocale();

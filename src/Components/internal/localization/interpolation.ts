@@ -2,10 +2,6 @@ import type { TranslationParams } from './types';
 
 const PLACEHOLDER_REGEX = /\{\{(\w+)\}\}/g;
 
-/**
- * Replaces {{placeholder}} tokens in a string with values from params.
- * Unmatched placeholders are left as-is.
- */
 export function interpolate(template: string, params?: TranslationParams): string {
   if (!params) return template;
   return template.replace(PLACEHOLDER_REGEX, (match, key: string) => {
