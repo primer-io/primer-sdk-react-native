@@ -1,124 +1,67 @@
 import type { TranslationMap } from '../types';
-import ar from './ar';
-import az from './az';
-import bg from './bg';
-import bs from './bs';
-import ca from './ca';
-import cs from './cs';
-import da from './da';
-import de from './de';
-import el from './el';
-import en from './en';
-import es_AR from './es-AR';
-import es_MX from './es-MX';
-import es from './es';
-import et from './et';
-import fa from './fa';
-import fi from './fi';
-import fil from './fil';
-import fr from './fr';
-import he from './he';
-import hi from './hi';
-import hr from './hr';
-import hu from './hu';
-import hy from './hy';
-import id from './id';
-import it from './it';
-import ja from './ja';
-import ka from './ka';
-import kk from './kk';
-import ko from './ko';
-import ku from './ku';
-import ky from './ky';
-import lt from './lt';
-import lv from './lv';
-import mk from './mk';
-import ms from './ms';
-import nb from './nb';
-import nl_BE from './nl-BE';
-import nl from './nl';
-import pl from './pl';
-import pt_BR from './pt-BR';
-import pt from './pt';
-import ro from './ro';
-import ru from './ru';
-import sk from './sk';
-import sl from './sl';
-import sq from './sq';
-import sr from './sr';
-import sv from './sv';
-import th from './th';
-import tr from './tr';
-import uk from './uk';
-import ur_PK from './ur-PK';
-import uz from './uz';
-import vi from './vi';
-import zh_CN from './zh-CN';
-import zh_HK from './zh-HK';
-import zh_TW from './zh-TW';
 
-const stringRegistry: Record<string, TranslationMap> = {
-  ar,
-  az,
-  bg,
-  bs,
-  ca,
-  cs,
-  da,
-  de,
-  el,
-  en,
-  'es-AR': es_AR,
-  'es-MX': es_MX,
-  es,
-  et,
-  fa,
-  fi,
-  fil,
-  fr,
-  he,
-  hi,
-  hr,
-  hu,
-  hy,
-  id,
-  it,
-  ja,
-  ka,
-  kk,
-  ko,
-  ku,
-  ky,
-  lt,
-  lv,
-  mk,
-  ms,
-  nb,
-  'nl-BE': nl_BE,
-  nl,
-  pl,
-  'pt-BR': pt_BR,
-  pt,
-  ro,
-  ru,
-  sk,
-  sl,
-  sq,
-  sr,
-  sv,
-  th,
-  tr,
-  uk,
-  'ur-PK': ur_PK,
-  uz,
-  vi,
-  'zh-CN': zh_CN,
-  'zh-HK': zh_HK,
-  'zh-TW': zh_TW,
+const stringRegistry: Record<string, () => TranslationMap> = {
+  'ar': () => require('./ar.json'),
+  'az': () => require('./az.json'),
+  'bg': () => require('./bg.json'),
+  'bs': () => require('./bs.json'),
+  'ca': () => require('./ca.json'),
+  'cs': () => require('./cs.json'),
+  'da': () => require('./da.json'),
+  'de': () => require('./de.json'),
+  'el': () => require('./el.json'),
+  'en': () => require('./en.json'),
+  'es-AR': () => require('./es-AR.json'),
+  'es-MX': () => require('./es-MX.json'),
+  'es': () => require('./es.json'),
+  'et': () => require('./et.json'),
+  'fa': () => require('./fa.json'),
+  'fi': () => require('./fi.json'),
+  'fil': () => require('./fil.json'),
+  'fr': () => require('./fr.json'),
+  'he': () => require('./he.json'),
+  'hi': () => require('./hi.json'),
+  'hr': () => require('./hr.json'),
+  'hu': () => require('./hu.json'),
+  'hy': () => require('./hy.json'),
+  'id': () => require('./id.json'),
+  'it': () => require('./it.json'),
+  'ja': () => require('./ja.json'),
+  'ka': () => require('./ka.json'),
+  'kk': () => require('./kk.json'),
+  'ko': () => require('./ko.json'),
+  'ku': () => require('./ku.json'),
+  'ky': () => require('./ky.json'),
+  'lt': () => require('./lt.json'),
+  'lv': () => require('./lv.json'),
+  'mk': () => require('./mk.json'),
+  'ms': () => require('./ms.json'),
+  'nb': () => require('./nb.json'),
+  'nl-BE': () => require('./nl-BE.json'),
+  'nl': () => require('./nl.json'),
+  'pl': () => require('./pl.json'),
+  'pt-BR': () => require('./pt-BR.json'),
+  'pt': () => require('./pt.json'),
+  'ro': () => require('./ro.json'),
+  'ru': () => require('./ru.json'),
+  'sk': () => require('./sk.json'),
+  'sl': () => require('./sl.json'),
+  'sq': () => require('./sq.json'),
+  'sr': () => require('./sr.json'),
+  'sv': () => require('./sv.json'),
+  'th': () => require('./th.json'),
+  'tr': () => require('./tr.json'),
+  'uk': () => require('./uk.json'),
+  'ur-PK': () => require('./ur-PK.json'),
+  'uz': () => require('./uz.json'),
+  'vi': () => require('./vi.json'),
+  'zh-CN': () => require('./zh-CN.json'),
+  'zh-HK': () => require('./zh-HK.json'),
+  'zh-TW': () => require('./zh-TW.json'),
 };
 
 export function getTranslationMap(locale: string): TranslationMap | undefined {
-  return stringRegistry[locale];
+  return stringRegistry[locale]?.();
 }
 
 export function hasLocale(locale: string): boolean {

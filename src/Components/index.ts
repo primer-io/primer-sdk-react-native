@@ -5,4 +5,4 @@ export type {
   PrimerCheckoutProviderProps,
   PrimerCheckoutContextValue,
 } from '../models/components/PrimerCheckoutProviderTypes';
-export type { TranslationKey, TranslationParams } from './internal/localization';
+export type { TranslationParams } from './internal/localization';
