@@ -1,4 +1,4 @@
-import type { PrimerPaymentMethodAsset, PrimerPaymentMethodNativeView } from '../PrimerPaymentMethodResource';
+import type { IPrimerPaymentMethodResource } from '../PrimerPaymentMethodResource';
 import type { IPrimerHeadlessUniversalCheckoutPaymentMethod } from '../PrimerHeadlessUniversalCheckoutPaymentMethod';
 
 export interface PaymentMethodItem {
@@ -11,7 +11,7 @@ export interface PaymentMethodItem {
   categories: string[];
   intents: string[];
   surcharge?: number;
-  resource: PrimerPaymentMethodAsset | PrimerPaymentMethodNativeView;
+  resource?: IPrimerPaymentMethodResource;
   paymentMethod: IPrimerHeadlessUniversalCheckoutPaymentMethod;
 }
 

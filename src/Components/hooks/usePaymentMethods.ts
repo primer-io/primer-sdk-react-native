@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { usePrimerCheckout } from './usePrimerCheckout';
 import type { PrimerPaymentMethodAsset } from '../../models/PrimerPaymentMethodResource';
 import type {
@@ -14,11 +14,13 @@ export function usePaymentMethods(options: UsePaymentMethodsOptions = {}): UsePa
     usePrimerCheckout();
 
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethodItem | null>(null);
-  const [error, setError] = useState<Error | null>(null);
 
-  const paymentMethods = useMemo(() => {
+  const onLoadRef = useRef(onLoad);
+  onLoadRef.current = onLoad;
+
+  const { items: paymentMethods, error } = useMemo(() => {
     if (!isReady || isLoadingResources) {
-      return [];
+      return { items: [], error: null };
     }
 
     try {
@@ -37,7 +39,7 @@ export function usePaymentMethods(options: UsePaymentMethodsOptions = {}): UsePa
         }
       }
 
-      let items: PaymentMethodItem[] = availablePaymentMethods.map((method) => {
+      let result: PaymentMethodItem[] = availablePaymentMethods.map((method) => {
         const resource = resourceMap.get(method.paymentMethodType);
 
         let logo: string | undefined;
@@ -62,32 +64,31 @@ export function usePaymentMethods(options: UsePaymentMethodsOptions = {}): UsePa
           categories: [...method.paymentMethodManagerCategories],
           intents: [...method.supportedPrimerSessionIntents],
           surcharge: surchargeMap.get(method.paymentMethodType),
-          resource: resource!,
+          resource,
           paymentMethod: method,
         };
       });
 
       // Filter: include first, then exclude
       if (include && include.length > 0) {
-        items = items.filter((item) => include.includes(item.type));
+        result = result.filter((item) => include.includes(item.type));
       }
       if (exclude && exclude.length > 0) {
-        items = items.filter((item) => !exclude.includes(item.type));
+        result = result.filter((item) => !exclude.includes(item.type));
       }
 
       // Sort: PAYMENT_CARD first
       if (showCardFirst) {
-        items.sort((a, b) => {
+        result.sort((a, b) => {
           if (a.type === 'PAYMENT_CARD') return -1;
           if (b.type === 'PAYMENT_CARD') return 1;
           return 0;
         });
       }
 
-      return items;
+      return { items: result, error: null };
     } catch (err) {
-      setError(err as Error);
-      return [];
+      return { items: [], error: err as Error };
     }
   }, [
     availablePaymentMethods,
@@ -101,10 +102,10 @@ export function usePaymentMethods(options: UsePaymentMethodsOptions = {}): UsePa
   ]);
 
   useEffect(() => {
-    if (paymentMethods.length > 0 && onLoad) {
-      onLoad(paymentMethods);
+    if (paymentMethods.length > 0 && onLoadRef.current) {
+      onLoadRef.current(paymentMethods);
     }
-  }, [paymentMethods, onLoad]);
+  }, [paymentMethods]);
 
   const selectMethod = useCallback((method: PaymentMethodItem | null) => {
     setSelectedMethod(method);

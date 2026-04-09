@@ -94,7 +94,7 @@ describe('usePaymentMethods', () => {
     expect(result.current.paymentMethods).toHaveLength(3);
 
     // PAYMENT_CARD is first by default (showCardFirst)
-    const card = result.current.paymentMethods[0];
+    const card = result.current.paymentMethods[0]!;
     expect(card.type).toBe('PAYMENT_CARD');
     expect(card.name).toBe('Card');
     expect(card.logo).toBe('https://logo/PAYMENT_CARD');
@@ -106,7 +106,7 @@ describe('usePaymentMethods', () => {
   it('filters by include', () => {
     const { result } = renderHook(() => usePaymentMethods({ include: ['PAYPAL'] }), contextWrapper(readyContext));
     expect(result.current.paymentMethods).toHaveLength(1);
-    expect(result.current.paymentMethods[0].type).toBe('PAYPAL');
+    expect(result.current.paymentMethods[0]!.type).toBe('PAYPAL');
   });
 
   it('filters by exclude', () => {
@@ -121,12 +121,12 @@ describe('usePaymentMethods', () => {
       contextWrapper(readyContext)
     );
     expect(result.current.paymentMethods).toHaveLength(1);
-    expect(result.current.paymentMethods[0].type).toBe('PAYMENT_CARD');
+    expect(result.current.paymentMethods[0]!.type).toBe('PAYMENT_CARD');
   });
 
   it('sorts PAYMENT_CARD first by default', () => {
     const { result } = renderHook(() => usePaymentMethods(), contextWrapper(readyContext));
-    expect(result.current.paymentMethods[0].type).toBe('PAYMENT_CARD');
+    expect(result.current.paymentMethods[0]!.type).toBe('PAYMENT_CARD');
   });
 
   it('preserves API order when showCardFirst is false', () => {
@@ -145,6 +145,7 @@ describe('usePaymentMethods', () => {
     const paypal = result.current.paymentMethods.find((m) => m.type === 'PAYPAL');
     expect(paypal?.name).toBe('PAYPAL');
     expect(paypal?.logo).toBeUndefined();
+    expect(paypal?.resource).toBeUndefined();
   });
 
   it('silently ignores non-existent include types', () => {
