@@ -4,17 +4,22 @@ import { ThemeContext } from './internal/theme/ThemeContext';
 import { defaultDarkTokens, defaultLightTokens } from './internal/theme/tokens';
 import { mergeTokens } from './internal/theme/merge';
 import { PrimerHeadlessUniversalCheckout } from '../HeadlessUniversalCheckout/PrimerHeadlessUniversalCheckout';
+import PrimerHeadlessUniversalCheckoutAssetsManager from '../HeadlessUniversalCheckout/Managers/AssetsManager';
 import type { PrimerSettings } from '../models/PrimerSettings';
 import type {
   PrimerCheckoutProviderProps,
   PrimerCheckoutContextValue,
 } from '../models/components/PrimerCheckoutProviderTypes';
 
+const assetsManager = new PrimerHeadlessUniversalCheckoutAssetsManager();
+
 const initialState: PrimerCheckoutContextValue = {
   isReady: false,
   error: null,
   clientSession: null,
   availablePaymentMethods: [],
+  paymentMethodResources: [],
+  isLoadingResources: false,
 };
 
 export function PrimerCheckoutProvider({
@@ -146,7 +151,23 @@ export function PrimerCheckoutProvider({
           ...prev,
           isReady: true,
           availablePaymentMethods: methods,
+          isLoadingResources: true,
         }));
+      }
+
+      try {
+        const resources = await assetsManager.getPaymentMethodResources();
+        if (!cancelled) {
+          setState((prev) => ({
+            ...prev,
+            paymentMethodResources: resources,
+            isLoadingResources: false,
+          }));
+        }
+      } catch {
+        if (!cancelled) {
+          setState((prev) => ({ ...prev, isLoadingResources: false }));
+        }
       }
     }
 

@@ -105,3 +105,9 @@ Keys.ts
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+
+# AI
+.claude
+.specify
+specs/
