@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { PrimerCheckoutContext } from './internal/PrimerCheckoutContext';
 import { ThemeContext } from './internal/theme/ThemeContext';
 import { defaultDarkTokens, defaultLightTokens } from './internal/theme/tokens';
@@ -34,8 +34,8 @@ export function PrimerCheckoutProvider({
 }: PrimerCheckoutProviderProps) {
   const [state, setState] = useState<PrimerCheckoutContextValue>(initialState);
 
-  const [lightTokens] = useState(() => mergeTokens(defaultLightTokens, theme?.light));
-  const [darkTokens] = useState(() => mergeTokens(defaultDarkTokens, theme?.dark));
+  const lightTokens = useMemo(() => mergeTokens(defaultLightTokens, theme?.light), []); // intentionally empty: theme is mount-time immutable
+  const darkTokens = useMemo(() => mergeTokens(defaultDarkTokens, theme?.dark), []); // intentionally empty: theme is mount-time immutable
 
   // Keep refs for all callbacks and settings so the useEffect doesn't depend on them
   const settingsRef = useRef(settings);
