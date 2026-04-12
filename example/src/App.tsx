@@ -14,6 +14,7 @@ import HeadlessCheckoutVaultScreen from './screens/HeadlessCheckoutVaultScreen';
 import HeadlessCheckoutKlarnaScreen from './screens/HeadlessCheckoutKlarnaScreen';
 import HeadlessCheckoutWithRedirect from './screens/HeadlessCheckoutWithRedirect';
 import HeadlessCheckoutStripeAchScreen from './screens/HeadlessCheckoutStripeAchScreen';
+import LocalizationDebugScreen from './screens/LocalizationDebugScreen';
 import {LogBox} from 'react-native';
 import {
   SafeAreaProvider,
@@ -58,6 +59,10 @@ const App = () => {
           <Stack.Screen
             name="HeadlessCheckoutStripeAchScreen"
             component={HeadlessCheckoutStripeAchScreen}
+          />
+          <Stack.Screen
+            name="LocalizationDebug"
+            component={LocalizationDebugScreen}
           />
         </Stack.Navigator>
       </NavigationContainer>
