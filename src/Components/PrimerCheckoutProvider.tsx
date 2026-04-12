@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { PrimerCheckoutContext } from './internal/PrimerCheckoutContext';
+import { ThemeContext } from './internal/theme/ThemeContext';
+import { defaultDarkTokens, defaultLightTokens } from './internal/theme/tokens';
+import { mergeTokens } from './internal/theme/merge';
 import { PrimerHeadlessUniversalCheckout } from '../HeadlessUniversalCheckout/PrimerHeadlessUniversalCheckout';
 import type { PrimerSettings } from '../models/PrimerSettings';
 import type {
@@ -17,6 +20,7 @@ const initialState: PrimerCheckoutContextValue = {
 export function PrimerCheckoutProvider({
   clientToken,
   settings,
+  theme,
   onCheckoutComplete,
   onTokenizationSuccess,
   onBeforePaymentCreate,
@@ -24,6 +28,9 @@ export function PrimerCheckoutProvider({
   children,
 }: PrimerCheckoutProviderProps) {
   const [state, setState] = useState<PrimerCheckoutContextValue>(initialState);
+
+  const [lightTokens] = useState(() => mergeTokens(defaultLightTokens, theme?.light));
+  const [darkTokens] = useState(() => mergeTokens(defaultDarkTokens, theme?.dark));
 
   // Keep refs for all callbacks and settings so the useEffect doesn't depend on them
   const settingsRef = useRef(settings);
@@ -155,5 +162,9 @@ export function PrimerCheckoutProvider({
     };
   }, [clientToken]);
 
-  return <PrimerCheckoutContext.Provider value={state}>{children}</PrimerCheckoutContext.Provider>;
+  return (
+    <ThemeContext.Provider value={{ lightTokens, darkTokens }}>
+      <PrimerCheckoutContext.Provider value={state}>{children}</PrimerCheckoutContext.Provider>
+    </ThemeContext.Provider>
+  );
 }
