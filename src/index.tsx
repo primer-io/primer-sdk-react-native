@@ -134,6 +134,18 @@ export { PrimerCheckoutProvider } from './Components';
 export { usePrimerCheckout } from './Components';
 export type { PrimerCheckoutProviderProps, PrimerCheckoutContextValue } from './Components';
 
+export { useTheme } from './Components/internal/theme';
+export type {
+  PrimerTokens,
+  PrimerColorTokens,
+  PrimerSpacingTokens,
+  PrimerTypographyTokens,
+  PrimerTypographyStyle,
+  PrimerRadiusTokens,
+  PrimerBorderTokens,
+  PrimerThemeOverride,
+} from './Components/internal/theme';
+
 // must be exported in order to support the old architecture
 const nativeModule = require('./specs/NativePrimer').default;
 export default nativeModule;
