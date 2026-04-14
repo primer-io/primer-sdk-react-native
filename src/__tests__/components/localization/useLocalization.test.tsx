@@ -26,6 +26,6 @@ describe('useLocalization', () => {
     });
 
     expect(hookResult.t('primer_common_button_pay')).toBe('Pay');
-    expect(hookResult.t('primer_common_button_pay_amount', { param1: '$10' })).toBe('Pay $10');
+    expect(hookResult.t('primer_common_button_pay_amount', { amount: '$10' })).toBe('Pay $10');
   });
 });

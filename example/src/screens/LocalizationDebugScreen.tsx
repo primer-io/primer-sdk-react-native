@@ -35,7 +35,7 @@ const SAMPLE_ENTRIES: SampleEntry[] = [
   {key: 'primer_checkout_processing_title'},
   {key: 'primer_checkout_processing_subtitle'},
   {key: 'primer_common_button_pay'},
-  {key: 'primer_common_button_pay_amount', params: {param1: '$49.99'}},
+  {key: 'primer_common_button_pay_amount', params: {amount: '$49.99'}},
   {key: 'primer_common_button_cancel'},
   {key: 'primer_common_button_retry'},
   {key: 'primer_common_error_generic'},
@@ -48,10 +48,10 @@ const SAMPLE_ENTRIES: SampleEntry[] = [
   {key: 'primer_payment_selection_header'},
   {key: 'primer_country_title'},
   {key: 'primer_country_placeholder_search'},
-  {key: 'primer_vault_format_card_details', params: {param1: 'Visa', param2: '4242'}},
-  {key: 'primer_vault_format_expires', params: {param1: '12', param2: '28'}},
-  {key: 'primer_vault_format_masked', params: {param1: '4242'}},
-  {key: 'primer_web_redirect_button_continue', params: {param1: 'PayPal'}},
+  {key: 'primer_vault_format_card_details', params: {cardNetwork: 'Visa', last4: '4242'}},
+  {key: 'primer_vault_format_expires', params: {month: '12', year: '28'}},
+  {key: 'primer_vault_format_masked', params: {last4: '4242'}},
+  {key: 'primer_web_redirect_button_continue', params: {paymentMethodName: 'PayPal'}},
 ];
 
 const LocalizationDebugScreen = () => {
