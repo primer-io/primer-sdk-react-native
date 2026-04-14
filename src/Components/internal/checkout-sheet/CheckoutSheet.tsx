@@ -102,7 +102,7 @@ export function CheckoutSheet({
 
   const sheetHeightContextValue = useMemo<SheetHeightContextValue>(
     () => ({
-      setHeight: (h: number) => setHeightRatioState(h / screenHeight),
+      setHeight: (h: number) => setHeightRatioState(Math.max(MIN_HEIGHT_RATIO, Math.min(1, h / screenHeight))),
       setHeightRatio: (ratio: number) => setHeightRatioState(Math.max(MIN_HEIGHT_RATIO, Math.min(1, ratio))),
     }),
     [screenHeight]

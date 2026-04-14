@@ -21,12 +21,14 @@ export function NavigationProvider<R extends CheckoutRoute>({
   initialParams,
   children,
 }: NavigationProviderProps<R>) {
-  const initialState: NavigationState = {
-    stack: [{ route: initialRoute, params: initialParams as RouteParamMap[CheckoutRoute], key: generateKey() }],
-    isAnimating: false,
-  };
-
-  const [state, dispatch] = useReducer(navigationReducer, initialState);
+  const [state, dispatch] = useReducer(
+    navigationReducer,
+    undefined,
+    (): NavigationState => ({
+      stack: [{ route: initialRoute, params: initialParams as RouteParamMap[CheckoutRoute], key: generateKey() }],
+      isAnimating: false,
+    })
+  );
   const stateRef = useRef(state);
   stateRef.current = state;
 
