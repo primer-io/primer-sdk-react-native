@@ -10,3 +10,7 @@ export type {
   UsePaymentMethodsOptions,
   UsePaymentMethodsReturn,
 } from '../models/components/PaymentMethodTypes';
+export { PrimerPaymentMethodList } from './PrimerPaymentMethodList';
+export type { PrimerPaymentMethodListProps } from '../models/components/PrimerPaymentMethodListTypes';
+export { PrimerCheckoutSheet } from './PrimerCheckoutSheet';
+export type { PrimerCheckoutSheetProps } from './PrimerCheckoutSheet';

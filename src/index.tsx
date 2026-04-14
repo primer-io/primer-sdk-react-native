@@ -135,6 +135,10 @@ export { usePrimerCheckout } from './Components';
 export { usePaymentMethods } from './Components';
 export type { PrimerCheckoutProviderProps, PrimerCheckoutContextValue } from './Components';
 export type { PaymentMethodItem, UsePaymentMethodsOptions, UsePaymentMethodsReturn } from './Components';
+export { PrimerPaymentMethodList } from './Components';
+export type { PrimerPaymentMethodListProps } from './Components';
+export { PrimerCheckoutSheet } from './Components';
+export type { PrimerCheckoutSheetProps } from './Components';
 
 export { useTheme } from './Components/internal/theme';
 export type {

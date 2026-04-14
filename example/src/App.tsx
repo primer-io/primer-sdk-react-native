@@ -14,6 +14,7 @@ import HeadlessCheckoutVaultScreen from './screens/HeadlessCheckoutVaultScreen';
 import HeadlessCheckoutKlarnaScreen from './screens/HeadlessCheckoutKlarnaScreen';
 import HeadlessCheckoutWithRedirect from './screens/HeadlessCheckoutWithRedirect';
 import HeadlessCheckoutStripeAchScreen from './screens/HeadlessCheckoutStripeAchScreen';
+import {CheckoutComponentsListScreen} from './screens/CheckoutComponentsListScreen';
 import {LogBox} from 'react-native';
 import {
   SafeAreaProvider,
@@ -49,6 +50,11 @@ const App = () => {
           <Stack.Screen
             name="RawRetailOutlet"
             component={RawRetailOutletScreen}
+          />
+          <Stack.Screen
+            name="CheckoutComponentsList"
+            component={CheckoutComponentsListScreen}
+            options={{title: 'Checkout Components'}}
           />
           <Stack.Screen name="Klarna" component={HeadlessCheckoutKlarnaScreen} />
           <Stack.Screen
