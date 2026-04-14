@@ -40,6 +40,8 @@ export function PrimerPaymentMethodList({
     setIsExpanded((prev) => !prev);
   }, []);
 
+  const Separator = useCallback(() => <View style={styles.separator} />, [styles.separator]);
+
   // Loading state
   if (isLoading) {
     return (
@@ -64,7 +66,7 @@ export function PrimerPaymentMethodList({
         data={visibleMethods}
         keyExtractor={(item) => item.type}
         renderItem={({ item }) => <PaymentMethodButton item={item} onPress={() => handlePress(item)} />}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
+        ItemSeparatorComponent={Separator}
         scrollEnabled={false}
       />
       {shouldCollapse && (
