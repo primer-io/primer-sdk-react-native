@@ -12,7 +12,12 @@ import {
   PrimerCheckoutProvider,
   PrimerCheckoutSheet,
 } from '@primer-io/react-native';
+import type {PrimerSettings} from '@primer-io/react-native';
 import {createClientSession} from '../network/api';
+import {appPaymentParameters} from '../models/IClientSessionRequestBody';
+import {customAppearanceMode} from './SettingsScreen';
+import {getPaymentHandlingStringVal} from '../network/Environment';
+import {STRIPE_ACH_PUBLISHABLE_KEY} from '../Keys';
 
 interface Example {
   id: string;
@@ -46,6 +51,45 @@ export function CheckoutComponentsListScreen() {
     }
   };
 
+  let settings: PrimerSettings = {
+    paymentHandling: getPaymentHandlingStringVal(
+      appPaymentParameters.paymentHandling,
+    ),
+    paymentMethodOptions: {
+      iOS: {
+        urlScheme: 'merchant://primer.io',
+      },
+      stripeOptions: {
+        publishableKey: STRIPE_ACH_PUBLISHABLE_KEY,
+        mandateData: {
+          merchantName: 'My Merchant Name',
+        },
+      },
+      googlePayOptions: {
+        isCaptureBillingAddressEnabled: true,
+        isExistingPaymentMethodRequired: false,
+        shippingAddressParameters: {isPhoneNumberRequired: true},
+        requireShippingMethod: false,
+        emailAddressRequired: true,
+      },
+    },
+    uiOptions: {
+      appearanceMode: customAppearanceMode,
+    },
+    debugOptions: {
+      is3DSSanityCheckEnabled: false,
+    },
+    clientSessionCachingEnabled: true,
+    apiVersion: '2.4',
+  };
+
+  if (appPaymentParameters.merchantName) {
+    settings.paymentMethodOptions!.applePayOptions = {
+      merchantIdentifier: 'merchant.checkout.team',
+      merchantName: appPaymentParameters.merchantName,
+    };
+  }
+
   return (
     <>
       <ScrollView style={componentStyles.container}>
@@ -69,7 +113,17 @@ export function CheckoutComponentsListScreen() {
         })}
       </ScrollView>
       {checkoutToken !== null && (
-        <PrimerCheckoutProvider clientToken={checkoutToken}>
+        <PrimerCheckoutProvider
+          clientToken={checkoutToken}
+          settings={settings}
+          onCheckoutComplete={checkoutData => {
+            console.log('Checkout complete:', checkoutData);
+            setSheetVisible(false);
+          }}
+          onError={error => {
+            console.error('Checkout error:', error);
+            Alert.alert('Checkout Error', error.errorId ?? 'Unknown error');
+          }}>
           <PrimerCheckoutSheet
             visible={sheetVisible}
             onRequestDismiss={() => setSheetVisible(false)}

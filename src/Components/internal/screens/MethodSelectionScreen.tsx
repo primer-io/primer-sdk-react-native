@@ -44,7 +44,7 @@ export function MethodSelectionScreen() {
       <NavigationHeader title="Pay" rightAction={{ label: 'Cancel', onPress: onCancel }} />
       <View style={styles.content}>
         <Text style={styles.sectionTitle}>Choose payment method</Text>
-        <PrimerPaymentMethodList onSelect={handleSelect} />
+        <PrimerPaymentMethodList data={paymentMethods} onSelect={handleSelect} />
       </View>
     </View>
   );

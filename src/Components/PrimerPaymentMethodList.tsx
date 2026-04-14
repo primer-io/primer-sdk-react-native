@@ -9,6 +9,7 @@ import type { PaymentMethodItem } from '../models/components/PaymentMethodTypes'
 import type { PrimerPaymentMethodListProps } from '../models/components/PrimerPaymentMethodListTypes';
 
 export function PrimerPaymentMethodList({
+  data,
   include,
   exclude,
   showCardFirst,
@@ -21,12 +22,18 @@ export function PrimerPaymentMethodList({
   const styles = useMemo(() => createStyles(tokens), [tokens]);
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const { paymentMethods, isLoading } = usePaymentMethods({
-    include,
-    exclude,
-    showCardFirst,
-    onLoad,
-  });
+  const hook = usePaymentMethods(
+    data != null
+      ? {}
+      : {
+          include,
+          exclude,
+          showCardFirst,
+          onLoad,
+        }
+  );
+  const paymentMethods = data ?? hook.paymentMethods;
+  const isLoading = data != null ? false : hook.isLoading;
 
   const handlePress = useCallback(
     (item: PaymentMethodItem) => {
