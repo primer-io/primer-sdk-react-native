@@ -28,11 +28,11 @@ describe('translate', () => {
   });
 
   it('supports interpolation with params', () => {
-    expect(translate('primer_common_button_pay_amount', 'en', { param1: '$50.00' })).toBe('Pay $50.00');
+    expect(translate('primer_common_button_pay_amount', 'en', { amount: '$50.00' })).toBe('Pay $50.00');
   });
 
   it('handles interpolation in non-English locale', () => {
-    expect(translate('primer_common_button_pay_amount', 'fr', { param1: '50,00 €' })).toBe('Payer 50,00 €');
+    expect(translate('primer_common_button_pay_amount', 'fr', { amount: '50,00 €' })).toBe('Payer 50,00 €');
   });
 
   it('falls back to English when key exists in en but not in locale', () => {
