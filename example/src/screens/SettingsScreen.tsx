@@ -849,6 +849,18 @@ const SettingsScreen = ({navigation}) => {
     return (
       <View>
         <TouchableOpacity
+          style={{
+            ...styles.button,
+            marginVertical: 5,
+            backgroundColor: '#5856D6',
+          }}
+          onPress={() => navigation.navigate('LocalizationDebug')}>
+          <Text style={{...styles.buttonText, color: 'white'}}>
+            Localization Debug
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
           testID="PrimerSDK"
           style={{
             ...styles.button,
