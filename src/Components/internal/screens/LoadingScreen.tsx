@@ -8,7 +8,15 @@ import { STATUS_SCREEN_ICON_SIZE, BOTTOM_SAFE_AREA } from './constants';
 const SPINNER_SCALE = 1.1;
 const SHEET_HEIGHT = 280;
 
-export function LoadingScreen() {
+export interface LoadingScreenProps {
+  title?: string;
+  subtitle?: string;
+}
+
+export function LoadingScreen({
+  title = 'Loading',
+  subtitle = 'This may take a few seconds.',
+}: LoadingScreenProps = {}) {
   const tokens = useTheme();
   useStatusScreenHeight(SHEET_HEIGHT);
 
@@ -32,8 +40,8 @@ export function LoadingScreen() {
             />
           </View>
         }
-        title="Loading"
-        subtitle="This may take a few seconds."
+        title={title}
+        subtitle={subtitle}
       />
     </View>
     /* eslint-enable react-native/no-inline-styles */
