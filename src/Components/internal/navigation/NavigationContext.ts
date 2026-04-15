@@ -1,0 +1,21 @@
+import { createContext } from 'react';
+import type { NavigationState, CheckoutRoute, RouteParamMap, RouteEntry } from './types';
+
+export interface NavigationContextValue {
+  state: NavigationState;
+  push: <R extends CheckoutRoute>(
+    route: R,
+    ...args: RouteParamMap[R] extends undefined ? [] : [RouteParamMap[R]]
+  ) => void;
+  pop: () => void;
+  replace: <R extends CheckoutRoute>(
+    route: R,
+    ...args: RouteParamMap[R] extends undefined ? [] : [RouteParamMap[R]]
+  ) => void;
+  popToRoot: () => void;
+  setAnimating: (isAnimating: boolean) => void;
+}
+
+export const NavigationContext = createContext<NavigationContextValue | null>(null);
+
+export const RouteEntryContext = createContext<RouteEntry | null>(null);
