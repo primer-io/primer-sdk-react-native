@@ -5,3 +5,7 @@ export { usePaymentMethods } from './hooks/usePaymentMethods';
 export type { PrimerCheckoutProviderProps, PrimerCheckoutContextValue } from './types/PrimerCheckoutProviderTypes';
 export type { TranslationParams } from './internal/localization';
 export type { PaymentMethodItem, UsePaymentMethodsOptions, UsePaymentMethodsReturn } from './types/PaymentMethodTypes';
+export { PrimerPaymentMethodList } from './PrimerPaymentMethodList';
+export type { PrimerPaymentMethodListProps } from './types/PrimerPaymentMethodListTypes';
+export { PrimerCheckoutSheet } from './PrimerCheckoutSheet';
+export type { PrimerCheckoutSheetProps } from './PrimerCheckoutSheet';

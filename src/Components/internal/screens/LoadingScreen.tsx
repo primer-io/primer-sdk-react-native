@@ -11,7 +11,12 @@ import { useBottomSafeArea } from './useBottomSafeArea';
 const SPINNER_SCALE = 1.1;
 const CONTENT_HEIGHT = 246;
 
-export function LoadingScreen() {
+export interface LoadingScreenProps {
+  title?: string;
+  subtitle?: string;
+}
+
+export function LoadingScreen({ title: overrideTitle, subtitle: overrideSubtitle }: LoadingScreenProps = {}) {
   const tokens = useTheme();
   const { t } = useLocalization();
   const { route, params } = useRoute<CheckoutRoute.splash | CheckoutRoute.loading>();
@@ -25,8 +30,8 @@ export function LoadingScreen() {
   const defaultSubtitleKey =
     route === CheckoutRoute.splash ? 'primer_checkout_splash_subtitle' : 'primer_checkout_loading_subtitle';
 
-  const title = params?.title ?? t(defaultTitleKey);
-  const subtitle = params?.subtitle ?? t(defaultSubtitleKey);
+  const title = overrideTitle ?? params?.title ?? t(defaultTitleKey);
+  const subtitle = overrideSubtitle ?? params?.subtitle ?? t(defaultSubtitleKey);
 
   return (
     /* eslint-disable react-native/no-inline-styles -- screen-level layout with fixed height and icon sizing */
