@@ -1,5 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Easing, Modal, StyleSheet, TouchableWithoutFeedback, View, useWindowDimensions } from 'react-native';
+import {
+  Animated,
+  Easing,
+  Modal,
+  PanResponder,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  View,
+  useWindowDimensions,
+} from 'react-native';
 import { useTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
 import { SheetHeightContext } from './SheetHeightContext';
@@ -7,14 +16,19 @@ import type { SheetHeightContextValue } from './SheetHeightContext';
 import type { CheckoutSheetProps } from './types';
 
 const ANIMATION_DURATION = 300;
+const SWIPE_DISMISS_DURATION = 200;
 const DEFAULT_HEIGHT_RATIO = 0.92;
 const MIN_HEIGHT_RATIO = 0.1;
+const SWIPE_DISMISS_DISTANCE_RATIO = 0.25;
+const SWIPE_DISMISS_VELOCITY = 0.5;
 
 export function CheckoutSheet({
   visible,
   onDismiss,
   onRequestDismiss,
   dismissOnBackdropPress = true,
+  dismissOnSwipeDown = true,
+  showDragHandle,
   children,
 }: CheckoutSheetProps) {
   const tokens = useTheme();
@@ -29,10 +43,13 @@ export function CheckoutSheet({
   // Height offset: translateY to push the sheet down so only the desired height is visible.
   // 0 = full screen, (screenHeight - sheetHeight) = shows only sheetHeight from the bottom.
   const heightOffsetValue = useRef(new Animated.Value(screenHeight * (1 - DEFAULT_HEIGHT_RATIO))).current;
+  // Drag offset: tracks finger position during a swipe-down gesture.
+  const dragValue = useRef(new Animated.Value(0)).current;
   const isMountedRef = useRef(true);
 
   const sheetHeight = screenHeight * heightRatio;
   const heightOffset = screenHeight - sheetHeight;
+  const shouldRenderDragHandle = showDragHandle ?? dismissOnSwipeDown;
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -69,10 +86,36 @@ export function CheckoutSheet({
     }).start(({ finished }) => {
       if (finished && isMountedRef.current) {
         setModalVisible(false);
+        dragValue.setValue(0);
         onDismiss?.();
       }
     });
-  }, [showAnimValue, onDismiss]);
+  }, [showAnimValue, dragValue, onDismiss]);
+
+  const springDragBack = useCallback(() => {
+    Animated.spring(dragValue, {
+      toValue: 0,
+      useNativeDriver: true,
+      bounciness: 0,
+    }).start();
+  }, [dragValue]);
+
+  const dismissBySwipe = useCallback(() => {
+    Animated.timing(dragValue, {
+      toValue: sheetHeight,
+      duration: SWIPE_DISMISS_DURATION,
+      easing: Easing.in(Easing.cubic),
+      useNativeDriver: true,
+    }).start(({ finished }) => {
+      if (finished && isMountedRef.current) {
+        setModalVisible(false);
+        dragValue.setValue(0);
+        showAnimValue.setValue(0);
+        onDismiss?.();
+        onRequestDismiss?.();
+      }
+    });
+  }, [dragValue, sheetHeight, showAnimValue, onDismiss, onRequestDismiss]);
 
   // Handle visible prop changes
   const prevVisibleRef = useRef(visible);
@@ -100,6 +143,27 @@ export function CheckoutSheet({
     onRequestDismiss?.();
   }, [onRequestDismiss]);
 
+  const panResponder = useMemo(
+    () =>
+      PanResponder.create({
+        onStartShouldSetPanResponder: () => dismissOnSwipeDown,
+        onMoveShouldSetPanResponder: (_, g) => dismissOnSwipeDown && g.dy > 2 && Math.abs(g.dy) > Math.abs(g.dx),
+        onPanResponderMove: (_, g) => {
+          dragValue.setValue(Math.max(0, g.dy));
+        },
+        onPanResponderRelease: (_, g) => {
+          const dismissed = g.dy > sheetHeight * SWIPE_DISMISS_DISTANCE_RATIO || g.vy > SWIPE_DISMISS_VELOCITY;
+          if (dismissed) {
+            dismissBySwipe();
+          } else {
+            springDragBack();
+          }
+        },
+        onPanResponderTerminate: () => springDragBack(),
+      }),
+    [dismissOnSwipeDown, sheetHeight, dragValue, dismissBySwipe, springDragBack]
+  );
+
   const sheetHeightContextValue = useMemo<SheetHeightContextValue>(
     () => ({
       setHeight: (h: number) => setHeightRatioState(Math.max(MIN_HEIGHT_RATIO, Math.min(1, h / screenHeight))),
@@ -114,10 +178,18 @@ export function CheckoutSheet({
     outputRange: [screenHeight, 0],
   });
 
-  // Combined translateY: show animation + height offset
-  const translateY = Animated.add(showTranslateY, heightOffsetValue);
+  // Combined translateY: show animation + height offset + drag offset
+  const translateY = Animated.add(Animated.add(showTranslateY, heightOffsetValue), dragValue);
 
-  const backdropOpacity = showAnimValue;
+  // Backdrop fades with both the show animation and the drag progress
+  const backdropOpacity = Animated.multiply(
+    showAnimValue,
+    dragValue.interpolate({
+      inputRange: [0, sheetHeight],
+      outputRange: [1, 0],
+      extrapolate: 'clamp',
+    })
+  );
 
   if (!modalVisible) {
     return null;
@@ -139,6 +211,11 @@ export function CheckoutSheet({
 
         <Animated.View style={[styles.sheetContainer, { transform: [{ translateY }] }]} pointerEvents="box-none">
           <View style={styles.sheetContent}>
+            {shouldRenderDragHandle && (
+              <View style={styles.dragHandleArea} {...panResponder.panHandlers}>
+                <View style={styles.dragHandle} />
+              </View>
+            )}
             <SheetHeightContext.Provider value={sheetHeightContextValue}>
               <View style={styles.childrenContainer}>{children}</View>
             </SheetHeightContext.Provider>
@@ -160,6 +237,19 @@ function createStyles(tokens: PrimerTokens) {
     },
     childrenContainer: {
       flex: 1,
+    },
+    dragHandle: {
+      backgroundColor: colors.textSecondary,
+      borderRadius: 2,
+      height: 4,
+      opacity: 0.3,
+      width: 40,
+    },
+    dragHandleArea: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingBottom: 4,
+      paddingTop: 12,
     },
     fullScreen: {
       flex: 1,
