@@ -29,11 +29,16 @@ const EXAMPLES: Example[] = [
   {
     id: 'default',
     title: 'Default',
-    description: 'Basic checkout flow with payment method list',
+    description: 'Drop-in checkout sheet with payment method list',
+  },
+  {
+    id: 'custom',
+    title: 'Custom Payment List',
+    description: 'Custom UI using usePaymentMethods() hook',
   },
 ];
 
-export function CheckoutComponentsListScreen() {
+export function CheckoutComponentsListScreen({navigation}: any) {
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [checkoutToken, setCheckoutToken] = useState<string | null>(null);
   const [sheetVisible, setSheetVisible] = useState(false);
@@ -42,8 +47,14 @@ export function CheckoutComponentsListScreen() {
     setLoadingId(example.id);
     try {
       const response = await createClientSession();
-      setCheckoutToken(response.clientToken);
-      setSheetVisible(true);
+      if (example.id === 'custom') {
+        navigation.navigate('CustomPaymentMethodList', {
+          clientToken: response.clientToken,
+        });
+      } else {
+        setCheckoutToken(response.clientToken);
+        setSheetVisible(true);
+      }
     } catch (error) {
       Alert.alert('Error', String(error));
     } finally {
