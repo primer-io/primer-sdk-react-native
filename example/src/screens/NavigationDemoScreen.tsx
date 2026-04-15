@@ -2,16 +2,17 @@ import React, { useMemo } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import type { TextStyle } from 'react-native';
 
-import { CheckoutSheet, useSheetHeight } from '../../../src/Components/internal/checkout-sheet';
 import {
-    CheckoutRoute,
-    NavigationContainer,
-    NavigationHeader,
-    NavigationProvider,
-    useNavigation,
-    useRoute,
-} from '../../../src/Components/internal/navigation';
-import { useTheme } from '../../../src/Components/internal/theme';
+  CheckoutRoute,
+  CheckoutSheet,
+  NavigationContainer,
+  NavigationHeader,
+  NavigationProvider,
+  useNavigation,
+  useRoute,
+  useSheetHeight,
+  useTheme,
+} from '@primer-io/react-native';
 
 // --- Sample Screens ---
 
@@ -79,7 +80,7 @@ function ProcessingScreen() {
           title="Simulate Success"
           onPress={() =>
             replace(CheckoutRoute.success, {
-              checkoutData: { orderId: '12345' },
+              checkoutData: { payment: { orderId: '12345' } },
             })
           }
         />

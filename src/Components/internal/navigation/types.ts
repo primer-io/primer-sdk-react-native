@@ -1,3 +1,4 @@
+import type { PrimerCheckoutData } from '../../../models/PrimerCheckoutData';
 import type { PrimerError } from '../../../models/PrimerError';
 
 export enum CheckoutRoute {
@@ -20,7 +21,7 @@ export type RouteParamMap = {
   [CheckoutRoute.methodSelection]: undefined;
   [CheckoutRoute.cardForm]: { paymentMethodType: string };
   [CheckoutRoute.processing]: undefined;
-  [CheckoutRoute.success]: { checkoutData?: unknown };
+  [CheckoutRoute.success]: { checkoutData?: PrimerCheckoutData };
   [CheckoutRoute.error]: { error: PrimerError };
   [CheckoutRoute.countrySelector]: { selectedCountryCode?: string };
   [CheckoutRoute.vaultedMethods]: undefined;

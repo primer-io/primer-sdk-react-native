@@ -7,9 +7,8 @@ import {
   View,
   StyleSheet,
 } from 'react-native';
-import {translate} from '../../../src/Components/internal/localization/translate';
-import {hasLocale} from '../../../src/Components/internal/localization/strings';
-import type {TranslationParams} from '../../../src/Components/internal/localization/types';
+import {hasLocale, translate} from '@primer-io/react-native';
+import type {TranslationParams} from '@primer-io/react-native';
 
 interface SampleEntry {
   key: string;
