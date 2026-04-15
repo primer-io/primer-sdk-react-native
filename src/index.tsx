@@ -134,6 +134,9 @@ export { PrimerCheckoutProvider } from './Components';
 export { usePrimerCheckout } from './Components';
 export type { PrimerCheckoutProviderProps, PrimerCheckoutContextValue } from './Components';
 
+export { useLocalization, translate, hasLocale } from './Components/internal/localization';
+export type { TranslationParams, LocalizationResult } from './Components/internal/localization';
+
 export { useTheme } from './Components/internal/theme';
 export type {
   PrimerTokens,
@@ -145,6 +148,25 @@ export type {
   PrimerBorderTokens,
   PrimerThemeOverride,
 } from './Components/internal/theme';
+
+export { CheckoutSheet, useSheetHeight } from './Components/internal/checkout-sheet';
+export type { CheckoutSheetProps, SheetHeightContextValue } from './Components/internal/checkout-sheet';
+
+export {
+  CheckoutRoute,
+  NavigationContainer,
+  NavigationHeader,
+  NavigationProvider,
+  useNavigation,
+  useRoute,
+} from './Components/internal/navigation';
+export type {
+  NavigationHeaderAction,
+  NavigationHeaderProps,
+  NavigationState,
+  RouteEntry,
+  RouteParamMap,
+} from './Components/internal/navigation';
 
 // must be exported in order to support the old architecture
 const nativeModule = require('./specs/NativePrimer').default;
