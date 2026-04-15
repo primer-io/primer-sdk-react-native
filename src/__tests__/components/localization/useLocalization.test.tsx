@@ -11,16 +11,7 @@ function TestComponent() {
 }
 
 describe('useLocalization', () => {
-  it('returns t function', () => {
-    act(() => {
-      renderer.create(createElement(TestComponent));
-    });
-
-    expect(hookResult).toBeDefined();
-    expect(typeof hookResult.t).toBe('function');
-  });
-
-  it('t() returns translated string', () => {
+  it('t() resolves translations with interpolation', () => {
     act(() => {
       renderer.create(createElement(TestComponent));
     });
