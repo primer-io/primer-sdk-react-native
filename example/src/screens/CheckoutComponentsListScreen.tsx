@@ -13,6 +13,7 @@ import {
   PrimerCheckoutSheet,
 } from '@primer-io/react-native';
 import type {PrimerSettings} from '@primer-io/react-native';
+import {useNavigation} from '@react-navigation/native';
 import {createClientSession} from '../network/api';
 import {appPaymentParameters} from '../models/IClientSessionRequestBody';
 import {customAppearanceMode} from './SettingsScreen';
@@ -31,9 +32,15 @@ const EXAMPLES: Example[] = [
     title: 'Default',
     description: 'Basic checkout flow with payment method list',
   },
+  {
+    id: 'cardForm',
+    title: 'Card Form',
+    description: 'Custom card form using useCardForm() + input components',
+  },
 ];
 
 export function CheckoutComponentsListScreen() {
+  const navigation = useNavigation<any>();
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [checkoutToken, setCheckoutToken] = useState<string | null>(null);
   const [sheetVisible, setSheetVisible] = useState(false);
@@ -42,8 +49,14 @@ export function CheckoutComponentsListScreen() {
     setLoadingId(example.id);
     try {
       const response = await createClientSession();
-      setCheckoutToken(response.clientToken);
-      setSheetVisible(true);
+      if (example.id === 'cardForm') {
+        navigation.navigate('CustomCardForm', {
+          clientToken: response.clientToken,
+        });
+      } else {
+        setCheckoutToken(response.clientToken);
+        setSheetVisible(true);
+      }
     } catch (error) {
       Alert.alert('Error', String(error));
     } finally {

@@ -16,6 +16,7 @@ import HeadlessCheckoutWithRedirect from './screens/HeadlessCheckoutWithRedirect
 import HeadlessCheckoutStripeAchScreen from './screens/HeadlessCheckoutStripeAchScreen';
 import LocalizationDebugScreen from './screens/LocalizationDebugScreen';
 import {CheckoutComponentsListScreen} from './screens/CheckoutComponentsListScreen';
+import {CustomCardFormScreen} from './screens/CustomCardFormScreen';
 import {LogBox} from 'react-native';
 import {
   SafeAreaProvider,
@@ -56,6 +57,11 @@ const App = () => {
             name="CheckoutComponentsList"
             component={CheckoutComponentsListScreen}
             options={{title: 'Checkout Components'}}
+          />
+          <Stack.Screen
+            name="CustomCardForm"
+            component={CustomCardFormScreen}
+            options={{title: 'Card Form'}}
           />
           <Stack.Screen name="Klarna" component={HeadlessCheckoutKlarnaScreen} />
           <Stack.Screen
