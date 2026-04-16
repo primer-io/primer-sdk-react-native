@@ -168,6 +168,7 @@
   "primer_checkout_error_subtitle": "Tekkis võrguprobleem.",
   "primer_checkout_error_title": "Makse nurjus",
   "primer_checkout_loading_indicator": "Laadimine",
+  "primer_checkout_loading_subtitle": "See võib võtta mõne sekundi.",
   "primer_checkout_processing_subtitle": "Palun oota...",
   "primer_checkout_processing_title": "Makse töötlemine",
   "primer_checkout_scope_unavailable": "Maksevormi ulatus pole saadaval",

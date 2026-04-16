@@ -168,6 +168,7 @@
   "primer_checkout_error_subtitle": "एक नेटवर्क समस्या थी।",
   "primer_checkout_error_title": "भुगतान विफल",
   "primer_checkout_loading_indicator": "लोड हो रहा है",
+  "primer_checkout_loading_subtitle": "इसमें कुछ सेकंड लग सकते हैं।",
   "primer_checkout_processing_subtitle": "कृपया प्रतीक्षा करें...",
   "primer_checkout_processing_title": "आपका भुगतान संसाधित हो रहा है",
   "primer_checkout_scope_unavailable": "चेकआउट स्कोप उपलब्ध नहीं है",

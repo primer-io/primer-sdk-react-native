@@ -168,6 +168,7 @@
   "primer_checkout_error_subtitle": "Hálózati probléma merült fel.",
   "primer_checkout_error_title": "Sikertelen fizetés",
   "primer_checkout_loading_indicator": "Betöltés",
+  "primer_checkout_loading_subtitle": "Ez eltarthat néhány másodpercig.",
   "primer_checkout_processing_subtitle": "Kérjük, várjon...",
   "primer_checkout_processing_title": "Fizetés feldolgozása",
   "primer_checkout_scope_unavailable": "Pénztár nem elérhető",

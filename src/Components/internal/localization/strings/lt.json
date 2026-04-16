@@ -168,6 +168,7 @@
   "primer_checkout_error_subtitle": "Įvyko tinklo problema.",
   "primer_checkout_error_title": "Mokėjimas nepavyko",
   "primer_checkout_loading_indicator": "Įkeliama",
+  "primer_checkout_loading_subtitle": "Tai gali užtrukti kelias sekundes.",
   "primer_checkout_processing_subtitle": "Prašome palaukti...",
   "primer_checkout_processing_title": "Apdorojamas jūsų mokėjimas",
   "primer_checkout_scope_unavailable": "Atsiskaitymo sritis nepasiekiama",

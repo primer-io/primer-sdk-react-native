@@ -168,6 +168,7 @@
   "primer_checkout_error_subtitle": "Vyskytol sa problém so sieťou.",
   "primer_checkout_error_title": "Platba zlyhala",
   "primer_checkout_loading_indicator": "Načítava sa",
+  "primer_checkout_loading_subtitle": "Môže to trvať niekoľko sekúnd.",
   "primer_checkout_processing_subtitle": "Prosím čakajte...",
   "primer_checkout_processing_title": "Spracúvanie vašej platby",
   "primer_checkout_scope_unavailable": "Checkout scope nie je dostupný",

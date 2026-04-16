@@ -35,7 +35,7 @@ export function NavigationProvider<R extends CheckoutRoute>({
   const push = useCallback(
     <Route extends CheckoutRoute>(
       route: Route,
-      ...args: RouteParamMap[Route] extends undefined ? [] : [RouteParamMap[Route]]
+      ...args: undefined extends RouteParamMap[Route] ? [RouteParamMap[Route]?] : [RouteParamMap[Route]]
     ) => {
       if (stateRef.current.isAnimating) return;
       const params = (args[0] ?? undefined) as RouteParamMap[CheckoutRoute];
@@ -52,7 +52,7 @@ export function NavigationProvider<R extends CheckoutRoute>({
   const replace = useCallback(
     <Route extends CheckoutRoute>(
       route: Route,
-      ...args: RouteParamMap[Route] extends undefined ? [] : [RouteParamMap[Route]]
+      ...args: undefined extends RouteParamMap[Route] ? [RouteParamMap[Route]?] : [RouteParamMap[Route]]
     ) => {
       if (stateRef.current.isAnimating) return;
       const params = (args[0] ?? undefined) as RouteParamMap[CheckoutRoute];

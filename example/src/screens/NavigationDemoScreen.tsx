@@ -20,7 +20,7 @@ import {
 
 function MethodSelectionScreen() {
   const demoStyles = useDemoStyles();
-  const { push } = useNavigation();
+  const { push, replace } = useNavigation();
 
   return (
     <View style={demoStyles.screen}>
@@ -42,6 +42,13 @@ function MethodSelectionScreen() {
           onPress={() =>
             push(CheckoutRoute.countrySelector, { selectedCountryCode: 'US' })
           }
+        />
+        <DemoButton
+          title="Show Splash (2s)"
+          onPress={() => {
+            replace(CheckoutRoute.splash);
+            setTimeout(() => replace(CheckoutRoute.methodSelection), 2000);
+          }}
         />
       </View>
     </View>

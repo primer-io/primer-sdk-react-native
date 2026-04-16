@@ -168,6 +168,7 @@
   "primer_checkout_error_subtitle": "Възникна проблем с мрежата.",
   "primer_checkout_error_title": "Плащането не успя",
   "primer_checkout_loading_indicator": "Зареждане",
+  "primer_checkout_loading_subtitle": "Това може да отнеме няколко секунди.",
   "primer_checkout_processing_subtitle": "Моля, изчакайте...",
   "primer_checkout_processing_title": "Обработване на вашето плащане",
   "primer_checkout_scope_unavailable": "Обхватът на плащането не е наличен",
