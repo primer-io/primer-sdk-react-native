@@ -3,18 +3,22 @@ import { ActivityIndicator, View } from 'react-native';
 import { useTheme } from '../theme';
 import { StatusScreenLayout } from './StatusScreenLayout';
 import { useStatusScreenHeight } from './useStatusScreenHeight';
-import { STATUS_SCREEN_ICON_SIZE, BOTTOM_SAFE_AREA } from './constants';
+import { STATUS_SCREEN_ICON_SIZE } from './constants';
+import { useBottomSafeArea } from './useBottomSafeArea';
 
 const SPINNER_SCALE = 1.1;
-const SHEET_HEIGHT = 280;
+const CONTENT_HEIGHT = 246;
 
 export function LoadingScreen() {
   const tokens = useTheme();
-  useStatusScreenHeight(SHEET_HEIGHT);
+  const rawBottomInset = useBottomSafeArea();
+  const bottomInset = Math.max(rawBottomInset, tokens.spacing.large);
+  const sheetHeight = CONTENT_HEIGHT + bottomInset;
+  useStatusScreenHeight(sheetHeight);
 
   return (
     /* eslint-disable react-native/no-inline-styles -- screen-level layout with fixed height and icon sizing */
-    <View style={{ height: SHEET_HEIGHT, justifyContent: 'center', paddingBottom: BOTTOM_SAFE_AREA }}>
+    <View style={{ height: sheetHeight, justifyContent: 'center', paddingBottom: bottomInset }}>
       <StatusScreenLayout
         icon={
           <View
