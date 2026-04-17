@@ -5,6 +5,7 @@ import type { UseCardFormReturn } from './CardFormTypes';
 export interface PrimerTextInputTheme {
   primaryColor?: string;
   errorColor?: string;
+  errorTextColor?: string;
   textColor?: string;
   labelColor?: string;
   placeholderColor?: string;
@@ -14,6 +15,7 @@ export interface PrimerTextInputTheme {
   disabledBorderColor?: string;
   borderWidth?: number;
   focusedBorderWidth?: number;
+  errorBorderWidth?: number;
   borderRadius?: number;
   fontSize?: number;
   labelFontSize?: number;
@@ -40,12 +42,20 @@ export interface PrimerTextInputProps {
   placeholder?: string;
   error?: string;
   trailingContent?: ReactNode;
+  onSelectionChange?: TextInputProps['onSelectionChange'];
+  selectionColor?: string;
   theme?: PrimerTextInputTheme;
   style?: StyleProp<ViewStyle>;
   inputStyle?: StyleProp<TextStyle>;
   labelStyle?: StyleProp<TextStyle>;
   errorStyle?: StyleProp<TextStyle>;
   testID?: string;
+}
+
+export interface PrimerTextInputRef {
+  setCaret: (start: number, end?: number) => void;
+  focus: () => void;
+  blur: () => void;
 }
 
 export interface CardInputBaseProps {

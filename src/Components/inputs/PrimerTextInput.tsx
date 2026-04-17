@@ -1,16 +1,20 @@
-/* eslint-disable react-native/no-unused-styles */
-import { useState, useMemo } from 'react';
-import { View, TextInput, Text, StyleSheet, type TextStyle } from 'react-native';
+import { forwardRef, useImperativeHandle, useMemo, useRef, useState, type ComponentRef } from 'react';
+import { Image, Platform, StyleSheet, Text, TextInput, View, type TextStyle } from 'react-native';
 import { useTheme } from '../internal/theme';
-import type { PrimerTextInputProps, PrimerTextInputTheme } from '../../models/components/CardInputTypes';
+import { FIELD_HEIGHT, LINE_HEIGHT_RATIO, TRAILING_ICON_MARGIN, TRAILING_ICON_SIZE } from './dimensions';
+import type {
+  PrimerTextInputProps,
+  PrimerTextInputRef,
+  PrimerTextInputTheme,
+} from '../../models/components/CardInputTypes';
 import type { PrimerTokens } from '../internal/theme/types';
 
-const DEFAULT_FIELD_HEIGHT = 44;
-const LINE_HEIGHT_RATIO = 1.25;
+const errorIconSource = require('../../assets/images/ic-error.png');
 
 function resolveTheme(tokens: PrimerTokens, override?: PrimerTextInputTheme) {
   const borderWidth = override?.borderWidth ?? tokens.borders.input;
   const focusedBorderWidth = Math.max(override?.focusedBorderWidth ?? tokens.borders.strong, borderWidth);
+  const errorBorderWidth = Math.max(override?.errorBorderWidth ?? tokens.borders.strong, borderWidth);
   return {
     backgroundColor: override?.backgroundColor ?? tokens.colors.background,
     borderColor: override?.borderColor ?? tokens.colors.border,
@@ -18,13 +22,15 @@ function resolveTheme(tokens: PrimerTokens, override?: PrimerTextInputTheme) {
     borderWidth,
     disabledBackgroundColor: override?.disabledBackgroundColor ?? tokens.colors.surface,
     disabledBorderColor: override?.disabledBorderColor ?? tokens.colors.borderDisabled,
+    errorBorderWidth,
     errorColor: override?.errorColor ?? tokens.colors.borderError,
     errorFontSize: override?.errorFontSize ?? tokens.typography.bodySmall.fontSize,
-    fieldHeight: override?.fieldHeight ?? DEFAULT_FIELD_HEIGHT,
+    errorTextColor: override?.errorTextColor ?? tokens.colors.textNegative,
+    fieldHeight: override?.fieldHeight ?? FIELD_HEIGHT,
     focusedBorderWidth,
     fontFamily: override?.fontFamily ?? tokens.typography.fontFamily,
     fontSize: override?.fontSize ?? tokens.typography.bodyLarge.fontSize,
-    labelColor: override?.labelColor ?? tokens.colors.textSecondary,
+    labelColor: override?.labelColor ?? tokens.colors.textPrimary,
     labelFontSize: override?.labelFontSize ?? tokens.typography.bodySmall.fontSize,
     placeholderColor: override?.placeholderColor ?? tokens.colors.textPlaceholder,
     primaryColor: override?.primaryColor ?? tokens.colors.borderFocused,
@@ -32,39 +38,75 @@ function resolveTheme(tokens: PrimerTokens, override?: PrimerTextInputTheme) {
   };
 }
 
-export function PrimerTextInput({
-  value,
-  onChangeText,
-  onBlur,
-  onFocus,
-  editable = true,
-  keyboardType,
-  maxLength,
-  secureTextEntry = false,
-  autoComplete,
-  autoCapitalize = 'none',
-  label,
-  showLabel = true,
-  placeholder,
-  error,
-  trailingContent,
-  theme: themeOverride,
-  style,
-  inputStyle,
-  labelStyle,
-  errorStyle,
-  testID,
-}: PrimerTextInputProps) {
+export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputProps>(function PrimerTextInput(
+  {
+    value,
+    onChangeText,
+    onBlur,
+    onFocus,
+    editable = true,
+    keyboardType,
+    maxLength,
+    secureTextEntry = false,
+    autoComplete,
+    autoCapitalize = 'none',
+    label,
+    showLabel = true,
+    placeholder,
+    error,
+    trailingContent,
+    onSelectionChange,
+    selectionColor,
+    theme: themeOverride,
+    style,
+    inputStyle,
+    labelStyle,
+    errorStyle,
+    testID,
+  },
+  ref
+) {
   const tokens = useTheme();
   const resolved = useMemo(() => resolveTheme(tokens, themeOverride), [tokens, themeOverride]);
   const [isFocused, setIsFocused] = useState(false);
+  const inputRef = useRef<ComponentRef<typeof TextInput>>(null);
 
-  const currentBorderWidth = isFocused ? resolved.focusedBorderWidth : resolved.borderWidth;
+  useImperativeHandle(
+    ref,
+    () => ({
+      setCaret(start: number, end?: number) {
+        const selection = { start, end: end ?? start };
+        const apply = () => inputRef.current?.setNativeProps({ selection });
+        // Web SDK hit the same race on Android with setSelectionRange — defer a tick.
+        if (Platform.OS === 'android') {
+          setTimeout(apply, 0);
+        } else {
+          apply();
+        }
+      },
+      focus() {
+        inputRef.current?.focus();
+      },
+      blur() {
+        inputRef.current?.blur();
+      },
+    }),
+    []
+  );
+
+  // Hide the error UI while this field is being edited — state still lives in
+  // cardForm, so it snaps back on blur if still invalid.
+  const hasError = error != null && !isFocused;
+  const currentBorderWidth = hasError
+    ? resolved.errorBorderWidth
+    : isFocused
+      ? resolved.focusedBorderWidth
+      : resolved.borderWidth;
   const borderWidthDiff = currentBorderWidth - resolved.borderWidth;
 
   const borderColor = !editable
     ? resolved.disabledBorderColor
-    : error
+    : hasError
       ? resolved.errorColor
       : isFocused
         ? resolved.primaryColor
@@ -75,10 +117,15 @@ export function PrimerTextInput({
       StyleSheet.create({
         container: {},
         error: {
-          color: resolved.errorColor,
+          color: resolved.errorTextColor,
           fontFamily: resolved.fontFamily,
           fontSize: resolved.errorFontSize,
           marginTop: tokens.spacing.xsmall,
+        },
+        errorIcon: {
+          height: TRAILING_ICON_SIZE,
+          marginLeft: TRAILING_ICON_MARGIN,
+          width: TRAILING_ICON_SIZE,
         },
         input: {
           color: editable ? resolved.textColor : tokens.colors.textDisabled,
@@ -124,6 +171,7 @@ export function PrimerTextInput({
       {showLabel && label != null && <Text style={[styles.label, labelStyle]}>{label}</Text>}
       <View style={styles.inputContainer}>
         <TextInput
+          ref={inputRef}
           style={[styles.input, inputStyle] as TextStyle[]}
           value={value}
           onChangeText={onChangeText}
@@ -137,15 +185,26 @@ export function PrimerTextInput({
           autoCapitalize={autoCapitalize}
           placeholder={placeholder}
           placeholderTextColor={resolved.placeholderColor}
+          onSelectionChange={onSelectionChange}
+          selectionColor={selectionColor ?? resolved.primaryColor}
           testID={testID ? `${testID}-input` : undefined}
         />
-        {trailingContent}
+        {hasError ? (
+          <Image
+            source={errorIconSource}
+            style={styles.errorIcon}
+            resizeMode="contain"
+            testID={testID ? `${testID}-error-icon` : undefined}
+          />
+        ) : (
+          trailingContent
+        )}
       </View>
-      {error != null && (
+      {hasError && (
         <Text style={[styles.error, errorStyle]} testID={testID ? `${testID}-error` : undefined}>
           {error}
         </Text>
       )}
     </View>
   );
-}
+});

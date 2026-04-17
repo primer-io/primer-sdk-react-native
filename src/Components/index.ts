@@ -27,6 +27,7 @@ export { PrimerTextInput, CardNumberInput, ExpiryDateInput, CVVInput, Cardholder
 export type {
   PrimerTextInputTheme,
   PrimerTextInputProps,
+  PrimerTextInputRef,
   CardInputTheme,
   CardInputBaseProps,
   CardNumberInputProps,

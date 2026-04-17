@@ -42,7 +42,7 @@ export interface UseCardFormReturn {
   /** Mark a field as touched (show errors after blur) */
   markFieldTouched: (field: CardFormField) => void;
 
-  /** Trigger tokenization. No-op if invalid or already submitting */
+  /** Trigger tokenization. No-op if invalid or already submitting. */
   submit: () => Promise<void>;
   /** Whether submission is in progress */
   isSubmitting: boolean;

@@ -85,9 +85,9 @@ export function useCardForm(options: UseCardFormOptions = {}): UseCardFormReturn
   });
 
   // Debounced sync to native
-  const debouncedRef = useRef<
-    DebouncedFunction<(data: { cardNumber: string; expiryDate: string; cvv: string; cardholderName?: string }) => void>
-  >(null as any);
+  const debouncedRef = useRef<DebouncedFunction<
+    (data: { cardNumber: string; expiryDate: string; cvv: string; cardholderName?: string }) => void
+  > | null>(null);
   useEffect(() => {
     debouncedRef.current = debounce(
       (data: { cardNumber: string; expiryDate: string; cvv: string; cardholderName?: string }) => {
@@ -154,21 +154,31 @@ export function useCardForm(options: UseCardFormOptions = {}): UseCardFormReturn
     [syncToNative]
   );
 
-  // Touch tracking
+  // Touch tracking: commit only if the field blurs with content. Tapping in/out
+  // of an empty field does not commit it.
   const markFieldTouched = useCallback((field: CardFormField) => {
+    if (fieldsRef.current[field].length === 0) return;
     setTouched((prev) => (prev[field] ? prev : { ...prev, [field]: true }));
   }, []);
 
-  // Visible errors (only for touched fields)
+  // Visible errors: committed (touched && has content) AND native reports an
+  // error. Matches iOS Checkout Components — empty fields never shout;
+  // required-ness is communicated by the disabled Pay button.
   const errors = useMemo(() => {
+    const values: Record<CardFormField, string> = {
+      cardNumber,
+      expiryDate,
+      cvv,
+      cardholderName,
+    };
     const visible: CardFormErrors = {};
     for (const field of Object.keys(allErrors) as CardFormField[]) {
-      if (touched[field]) {
+      if (touched[field] && values[field].length > 0) {
         visible[field] = allErrors[field];
       }
     }
     return visible;
-  }, [allErrors, touched]);
+  }, [allErrors, touched, cardNumber, expiryDate, cvv, cardholderName]);
 
   // Submit
   const isSubmittingRef = useRef(false);
