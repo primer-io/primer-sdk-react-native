@@ -15,7 +15,6 @@ export function CVVInput({ cardForm, placeholder, label, ...rest }: CVVInputProp
     <PrimerTextInput
       value={cardForm.cvv}
       onChangeText={cardForm.updateCVV}
-      error={cardForm.errors.cvv}
       onBlur={() => cardForm.markFieldTouched('cvv')}
       keyboardType="number-pad"
       maxLength={4}

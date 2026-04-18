@@ -1,7 +1,7 @@
 import { forwardRef, useImperativeHandle, useMemo, useRef, useState, type ComponentRef } from 'react';
-import { Image, Platform, StyleSheet, Text, TextInput, View, type TextStyle } from 'react-native';
+import { Platform, StyleSheet, Text, TextInput, View, type TextStyle } from 'react-native';
 import { useTheme } from '../internal/theme';
-import { FIELD_HEIGHT, LINE_HEIGHT_RATIO, TRAILING_ICON_MARGIN, TRAILING_ICON_SIZE } from './dimensions';
+import { FIELD_HEIGHT, LINE_HEIGHT_RATIO } from './dimensions';
 import type {
   PrimerTextInputProps,
   PrimerTextInputRef,
@@ -9,12 +9,9 @@ import type {
 } from '../../models/components/CardInputTypes';
 import type { PrimerTokens } from '../internal/theme/types';
 
-const errorIconSource = require('../../assets/images/ic-error.png');
-
 function resolveTheme(tokens: PrimerTokens, override?: PrimerTextInputTheme) {
   const borderWidth = override?.borderWidth ?? tokens.borders.input;
   const focusedBorderWidth = Math.max(override?.focusedBorderWidth ?? tokens.borders.strong, borderWidth);
-  const errorBorderWidth = Math.max(override?.errorBorderWidth ?? tokens.borders.strong, borderWidth);
   return {
     backgroundColor: override?.backgroundColor ?? tokens.colors.background,
     borderColor: override?.borderColor ?? tokens.colors.border,
@@ -22,10 +19,6 @@ function resolveTheme(tokens: PrimerTokens, override?: PrimerTextInputTheme) {
     borderWidth,
     disabledBackgroundColor: override?.disabledBackgroundColor ?? tokens.colors.surface,
     disabledBorderColor: override?.disabledBorderColor ?? tokens.colors.borderDisabled,
-    errorBorderWidth,
-    errorColor: override?.errorColor ?? tokens.colors.borderError,
-    errorFontSize: override?.errorFontSize ?? tokens.typography.bodySmall.fontSize,
-    errorTextColor: override?.errorTextColor ?? tokens.colors.textNegative,
     fieldHeight: override?.fieldHeight ?? FIELD_HEIGHT,
     focusedBorderWidth,
     fontFamily: override?.fontFamily ?? tokens.typography.fontFamily,
@@ -53,7 +46,6 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
     label,
     showLabel = true,
     placeholder,
-    error,
     trailingContent,
     onSelectionChange,
     selectionColor,
@@ -61,7 +53,6 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
     style,
     inputStyle,
     labelStyle,
-    errorStyle,
     testID,
   },
   ref
@@ -94,39 +85,19 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
     []
   );
 
-  // Hide the error UI while this field is being edited — state still lives in
-  // cardForm, so it snaps back on blur if still invalid.
-  const hasError = error != null && !isFocused;
-  const currentBorderWidth = hasError
-    ? resolved.errorBorderWidth
-    : isFocused
-      ? resolved.focusedBorderWidth
-      : resolved.borderWidth;
+  const currentBorderWidth = isFocused ? resolved.focusedBorderWidth : resolved.borderWidth;
   const borderWidthDiff = currentBorderWidth - resolved.borderWidth;
 
   const borderColor = !editable
     ? resolved.disabledBorderColor
-    : hasError
-      ? resolved.errorColor
-      : isFocused
-        ? resolved.primaryColor
-        : resolved.borderColor;
+    : isFocused
+      ? resolved.primaryColor
+      : resolved.borderColor;
 
   const styles = useMemo(
     () =>
       StyleSheet.create({
         container: {},
-        error: {
-          color: resolved.errorTextColor,
-          fontFamily: resolved.fontFamily,
-          fontSize: resolved.errorFontSize,
-          marginTop: tokens.spacing.xsmall,
-        },
-        errorIcon: {
-          height: TRAILING_ICON_SIZE,
-          marginLeft: TRAILING_ICON_MARGIN,
-          width: TRAILING_ICON_SIZE,
-        },
         input: {
           color: editable ? resolved.textColor : tokens.colors.textDisabled,
           flex: 1,
@@ -189,22 +160,8 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
           selectionColor={selectionColor ?? resolved.primaryColor}
           testID={testID ? `${testID}-input` : undefined}
         />
-        {hasError ? (
-          <Image
-            source={errorIconSource}
-            style={styles.errorIcon}
-            resizeMode="contain"
-            testID={testID ? `${testID}-error-icon` : undefined}
-          />
-        ) : (
-          trailingContent
-        )}
+        {trailingContent}
       </View>
-      {hasError && (
-        <Text style={[styles.error, errorStyle]} testID={testID ? `${testID}-error` : undefined}>
-          {error}
-        </Text>
-      )}
     </View>
   );
 });

@@ -4,8 +4,6 @@ import type { UseCardFormReturn } from './CardFormTypes';
 
 export interface PrimerTextInputTheme {
   primaryColor?: string;
-  errorColor?: string;
-  errorTextColor?: string;
   textColor?: string;
   labelColor?: string;
   placeholderColor?: string;
@@ -15,11 +13,9 @@ export interface PrimerTextInputTheme {
   disabledBorderColor?: string;
   borderWidth?: number;
   focusedBorderWidth?: number;
-  errorBorderWidth?: number;
   borderRadius?: number;
   fontSize?: number;
   labelFontSize?: number;
-  errorFontSize?: number;
   fontFamily?: string;
   fieldHeight?: number;
 }
@@ -40,7 +36,6 @@ export interface PrimerTextInputProps {
   label?: string;
   showLabel?: boolean;
   placeholder?: string;
-  error?: string;
   trailingContent?: ReactNode;
   onSelectionChange?: TextInputProps['onSelectionChange'];
   selectionColor?: string;
@@ -48,7 +43,6 @@ export interface PrimerTextInputProps {
   style?: StyleProp<ViewStyle>;
   inputStyle?: StyleProp<TextStyle>;
   labelStyle?: StyleProp<TextStyle>;
-  errorStyle?: StyleProp<TextStyle>;
   testID?: string;
 }
 
@@ -67,13 +61,10 @@ export interface CardInputBaseProps {
   style?: StyleProp<ViewStyle>;
   inputStyle?: StyleProp<TextStyle>;
   labelStyle?: StyleProp<TextStyle>;
-  errorStyle?: StyleProp<TextStyle>;
   testID?: string;
 }
 
-export interface CardNumberInputProps extends CardInputBaseProps {
-  showCardNetworkIcon?: boolean;
-}
+export type CardNumberInputProps = CardInputBaseProps;
 
 export type ExpiryDateInputProps = CardInputBaseProps;
 

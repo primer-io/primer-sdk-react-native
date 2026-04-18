@@ -11,7 +11,6 @@ export function CardholderNameInput({ cardForm, placeholder, label, ...rest }: C
     <PrimerTextInput
       value={cardForm.cardholderName}
       onChangeText={cardForm.updateCardholderName}
-      error={cardForm.errors.cardholderName}
       onBlur={() => cardForm.markFieldTouched('cardholderName')}
       autoComplete="name"
       autoCapitalize="words"

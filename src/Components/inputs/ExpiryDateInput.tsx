@@ -56,7 +56,6 @@ export function ExpiryDateInput({ cardForm, placeholder, label, ...rest }: Expir
       ref={inputRef}
       value={cardForm.expiryDate}
       onChangeText={handleChangeText}
-      error={cardForm.errors.expiryDate}
       onBlur={() => cardForm.markFieldTouched('expiryDate')}
       keyboardType="number-pad"
       maxLength={5}

@@ -39,9 +39,8 @@ class RNTPrimerHeadlessUniversalCheckoutAssetsManager: RCTEventEmitter {
             }
 
             guard
-                let cardImage = PrimerSDK.PrimerHeadlessUniversalCheckout.AssetsManager
-                    .getCardNetworkAsset(for: cardNetwork)?
-                    .cardImage
+                let cardNetworkImage = try PrimerSDK.PrimerHeadlessUniversalCheckout.AssetsManager
+                    .getCardNetworkImage(for: cardNetwork)
             else {
                 let err = RNTNativeError(
                     errorId: "native-ios",
@@ -50,7 +49,7 @@ class RNTPrimerHeadlessUniversalCheckoutAssetsManager: RCTEventEmitter {
                 throw err
             }
 
-            let localUrl = try cardImage.store(withName: cardNetwork.rawValue)
+            let localUrl = try cardNetworkImage.store(withName: cardNetwork.rawValue)
             resolver(["cardNetworkImageURL": localUrl.absoluteString])
 
         } catch {
