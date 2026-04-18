@@ -23,3 +23,15 @@ export { PrimerPaymentMethodList } from './PrimerPaymentMethodList';
 export type { PrimerPaymentMethodListProps } from '../models/components/PrimerPaymentMethodListTypes';
 export { PrimerCheckoutSheet } from './PrimerCheckoutSheet';
 export type { PrimerCheckoutSheetProps } from './PrimerCheckoutSheet';
+export { PrimerTextInput, CardNumberInput, ExpiryDateInput, CVVInput, CardholderNameInput } from './inputs';
+export type {
+  PrimerTextInputTheme,
+  PrimerTextInputProps,
+  PrimerTextInputRef,
+  CardInputTheme,
+  CardInputBaseProps,
+  CardNumberInputProps,
+  ExpiryDateInputProps,
+  CVVInputProps,
+  CardholderNameInputProps,
+} from '../models/components/CardInputTypes';

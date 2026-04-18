@@ -85,9 +85,9 @@ export function useCardForm(options: UseCardFormOptions = {}): UseCardFormReturn
   });
 
   // Debounced sync to native
-  const debouncedRef = useRef<
-    DebouncedFunction<(data: { cardNumber: string; expiryDate: string; cvv: string; cardholderName?: string }) => void>
-  >(null as any);
+  const debouncedRef = useRef<DebouncedFunction<
+    (data: { cardNumber: string; expiryDate: string; cvv: string; cardholderName?: string }) => void
+  > | null>(null);
   useEffect(() => {
     debouncedRef.current = debounce(
       (data: { cardNumber: string; expiryDate: string; cvv: string; cardholderName?: string }) => {
