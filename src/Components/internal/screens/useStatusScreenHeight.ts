@@ -2,10 +2,9 @@ import { useEffect } from 'react';
 import { useSheetHeight } from '../checkout-sheet';
 
 export function useStatusScreenHeight(height: number) {
-  const { setHeight, resetHeight } = useSheetHeight();
+  const { setHeight } = useSheetHeight();
 
   useEffect(() => {
     setHeight(height);
-    return resetHeight;
-  }, [height, setHeight, resetHeight]);
+  }, [height, setHeight]);
 }

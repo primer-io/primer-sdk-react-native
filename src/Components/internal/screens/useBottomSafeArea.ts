@@ -5,9 +5,17 @@ export function useBottomSafeArea(): number {
   const [bottomInset, setBottomInset] = useState(0);
 
   useEffect(() => {
+    let mounted = true;
     NativePrimerViewUtils?.getBottomSafeAreaInset()
-      .then(setBottomInset)
-      .catch(() => {});
+      .then((value) => {
+        if (mounted) setBottomInset(value);
+      })
+      .catch((e) => {
+        if (__DEV__) console.warn('getBottomSafeAreaInset failed', e);
+      });
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   return bottomInset;
