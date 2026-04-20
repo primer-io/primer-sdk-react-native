@@ -1,4 +1,4 @@
-import type { IPrimerPaymentMethodResource } from '../../models/PrimerPaymentMethodResource';
+import type { PrimerPaymentMethodAsset, PrimerPaymentMethodNativeView } from '../../models/PrimerPaymentMethodResource';
 import type { IPrimerHeadlessUniversalCheckoutPaymentMethod } from '../../models/PrimerHeadlessUniversalCheckoutPaymentMethod';
 
 export interface PaymentMethodItem {
@@ -11,7 +11,7 @@ export interface PaymentMethodItem {
   categories: string[];
   intents: string[];
   surcharge?: number;
-  resource?: IPrimerPaymentMethodResource;
+  resource?: PrimerPaymentMethodAsset | PrimerPaymentMethodNativeView;
   paymentMethod: IPrimerHeadlessUniversalCheckoutPaymentMethod;
 }
 
@@ -26,6 +26,7 @@ export interface UsePaymentMethodsReturn {
   paymentMethods: PaymentMethodItem[];
   isLoading: boolean;
   error: Error | null;
+  resourcesError: Error | null;
   selectedMethod: PaymentMethodItem | null;
   selectMethod: (method: PaymentMethodItem | null) => void;
   clearSelection: () => void;

@@ -1,4 +1,4 @@
-import { createElement, type ReactNode } from 'react';
+import { createElement, useState, type ReactNode } from 'react';
 // @ts-expect-error -- react-test-renderer has no types for React 19
 import { act, create } from 'react-test-renderer';
 import { PrimerCheckoutContext } from '../../Components/internal/PrimerCheckoutContext';
@@ -6,6 +6,7 @@ import { usePaymentMethods } from '../../Components/hooks/usePaymentMethods';
 import type { PrimerCheckoutContextValue } from '../../Components/types/PrimerCheckoutProviderTypes';
 import type { IPrimerHeadlessUniversalCheckoutPaymentMethod } from '../../models/PrimerHeadlessUniversalCheckoutPaymentMethod';
 import type { PrimerPaymentMethodAsset } from '../../models/PrimerPaymentMethodResource';
+import type { UsePaymentMethodsReturn } from '../../Components/types/PaymentMethodTypes';
 
 // @ts-expect-error -- React 19 concurrent act environment
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
@@ -59,6 +60,7 @@ const readyContext: PrimerCheckoutContextValue = {
     makeResource('APPLE_PAY', 'Apple Pay'),
   ],
   isLoadingResources: false,
+  resourcesError: null,
 };
 
 describe('usePaymentMethods', () => {
@@ -154,5 +156,92 @@ describe('usePaymentMethods', () => {
       contextWrapper(readyContext)
     );
     expect(result.current.paymentMethods).toHaveLength(0);
+  });
+
+  it('passes resourcesError through from context', () => {
+    const err = new Error('assets fetch failed');
+    const ctx: PrimerCheckoutContextValue = { ...readyContext, resourcesError: err };
+    const { result } = renderHook(() => usePaymentMethods(), contextWrapper(ctx));
+    expect(result.current.resourcesError).toBe(err);
+  });
+
+  it('selectMethod stores selection; selectedMethod resolves to current item', () => {
+    const { result } = renderHook(() => usePaymentMethods(), contextWrapper(readyContext));
+    const paypal = result.current.paymentMethods.find((m) => m.type === 'PAYPAL')!;
+
+    act(() => {
+      result.current.selectMethod(paypal);
+    });
+    expect(result.current.selectedMethod?.type).toBe('PAYPAL');
+
+    act(() => {
+      result.current.clearSelection();
+    });
+    expect(result.current.selectedMethod).toBeNull();
+  });
+
+  it('selection survives context rebuild (tracks by type, not reference)', () => {
+    let hookResult: UsePaymentMethodsReturn = null as unknown as UsePaymentMethodsReturn;
+    let setCtx: (next: PrimerCheckoutContextValue) => void = () => {};
+
+    function Host() {
+      const [ctx, setState] = useState(readyContext);
+      setCtx = setState;
+      return createElement(PrimerCheckoutContext.Provider, { value: ctx }, createElement(Inner));
+    }
+    function Inner() {
+      hookResult = usePaymentMethods();
+      return null;
+    }
+
+    act(() => {
+      create(createElement(Host));
+    });
+
+    const originalPaypal = hookResult.paymentMethods.find((m) => m.type === 'PAYPAL')!;
+    act(() => {
+      hookResult.selectMethod(originalPaypal);
+    });
+    expect(hookResult.selectedMethod).toBe(originalPaypal);
+
+    // Rebuild context with new array references — forces useMemo to rebuild paymentMethods
+    act(() => {
+      setCtx({ ...readyContext, paymentMethodResources: [...readyContext.paymentMethodResources] });
+    });
+
+    // Selection still valid, but now points to the freshly built item
+    expect(hookResult.selectedMethod?.type).toBe('PAYPAL');
+    expect(hookResult.selectedMethod).not.toBe(originalPaypal);
+  });
+
+  it('selectedMethod becomes null when selection is filtered out', () => {
+    let hookResult: UsePaymentMethodsReturn = null as unknown as UsePaymentMethodsReturn;
+    let setExclude: (next: string[]) => void = () => {};
+
+    function Host() {
+      const [exclude, setState] = useState<string[]>([]);
+      setExclude = setState;
+      return createElement(PrimerCheckoutContext.Provider, { value: readyContext }, createElement(Inner, { exclude }));
+    }
+    function Inner({ exclude }: { exclude: string[] }) {
+      hookResult = usePaymentMethods({ exclude });
+      return null;
+    }
+
+    act(() => {
+      create(createElement(Host));
+    });
+
+    const paypal = hookResult.paymentMethods.find((m) => m.type === 'PAYPAL')!;
+    act(() => {
+      hookResult.selectMethod(paypal);
+    });
+    expect(hookResult.selectedMethod?.type).toBe('PAYPAL');
+
+    act(() => {
+      setExclude(['PAYPAL']);
+    });
+
+    expect(hookResult.selectedMethod).toBeNull();
   });
 });

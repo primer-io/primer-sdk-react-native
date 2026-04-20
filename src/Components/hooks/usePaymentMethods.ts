@@ -1,15 +1,20 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { usePrimerCheckout } from './usePrimerCheckout';
-import type { PrimerPaymentMethodAsset } from '../../models/PrimerPaymentMethodResource';
 import type { PaymentMethodItem, UsePaymentMethodsOptions, UsePaymentMethodsReturn } from '../types/PaymentMethodTypes';
 
 export function usePaymentMethods(options: UsePaymentMethodsOptions = {}): UsePaymentMethodsReturn {
   const { include, exclude, showCardFirst = true, onLoad } = options;
 
-  const { availablePaymentMethods, paymentMethodResources, isLoadingResources, isReady, clientSession } =
-    usePrimerCheckout();
+  const {
+    availablePaymentMethods,
+    paymentMethodResources,
+    isLoadingResources,
+    resourcesError,
+    isReady,
+    clientSession,
+  } = usePrimerCheckout();
 
-  const [selectedMethod, setSelectedMethod] = useState<PaymentMethodItem | null>(null);
+  const [selectedType, setSelectedType] = useState<string | null>(null);
 
   const onLoadRef = useRef(onLoad);
   onLoadRef.current = onLoad;
@@ -44,9 +49,8 @@ export function usePaymentMethods(options: UsePaymentMethodsOptions = {}): UsePa
         let backgroundColor: string | undefined;
 
         if (resource && 'paymentMethodLogo' in resource) {
-          const asset = resource as PrimerPaymentMethodAsset;
-          logo = asset.paymentMethodLogo.colored ?? asset.paymentMethodLogo.light;
-          backgroundColor = asset.paymentMethodBackgroundColor?.colored;
+          logo = resource.paymentMethodLogo.colored ?? resource.paymentMethodLogo.light;
+          backgroundColor = resource.paymentMethodBackgroundColor?.colored;
         }
 
         const isNativeView =
@@ -101,18 +105,24 @@ export function usePaymentMethods(options: UsePaymentMethodsOptions = {}): UsePa
     }
   }, [isLoading, paymentMethods]);
 
+  const selectedMethod = useMemo(
+    () => paymentMethods.find((m) => m.type === selectedType) ?? null,
+    [paymentMethods, selectedType]
+  );
+
   const selectMethod = useCallback((method: PaymentMethodItem | null) => {
-    setSelectedMethod(method);
+    setSelectedType(method?.type ?? null);
   }, []);
 
   const clearSelection = useCallback(() => {
-    setSelectedMethod(null);
+    setSelectedType(null);
   }, []);
 
   return {
     paymentMethods,
     isLoading,
     error,
+    resourcesError,
     selectedMethod,
     selectMethod,
     clearSelection,

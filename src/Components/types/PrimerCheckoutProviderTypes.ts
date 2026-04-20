@@ -10,7 +10,7 @@ import type {
   PrimerPaymentCreationHandler,
 } from '../../models/PrimerHandlers';
 import type { IPrimerHeadlessUniversalCheckoutPaymentMethod } from '../../models/PrimerHeadlessUniversalCheckoutPaymentMethod';
-import type { IPrimerPaymentMethodResource } from '../../models/PrimerPaymentMethodResource';
+import type { PrimerPaymentMethodAsset, PrimerPaymentMethodNativeView } from '../../models/PrimerPaymentMethodResource';
 import type { PrimerThemeOverride } from '../internal/theme/types';
 
 export interface PrimerCheckoutProviderProps {
@@ -35,6 +35,7 @@ export interface PrimerCheckoutContextValue {
   error: PrimerError | null;
   clientSession: PrimerClientSession | null;
   availablePaymentMethods: IPrimerHeadlessUniversalCheckoutPaymentMethod[];
-  paymentMethodResources: IPrimerPaymentMethodResource[];
+  paymentMethodResources: Array<PrimerPaymentMethodAsset | PrimerPaymentMethodNativeView>;
   isLoadingResources: boolean;
+  resourcesError: Error | null;
 }

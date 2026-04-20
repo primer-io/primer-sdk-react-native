@@ -8,8 +8,6 @@ import PrimerHeadlessUniversalCheckoutAssetsManager from '../HeadlessUniversalCh
 import type { PrimerSettings } from '../models/PrimerSettings';
 import type { PrimerCheckoutProviderProps, PrimerCheckoutContextValue } from './types/PrimerCheckoutProviderTypes';
 
-const assetsManager = new PrimerHeadlessUniversalCheckoutAssetsManager();
-
 const initialState: PrimerCheckoutContextValue = {
   isReady: false,
   error: null,
@@ -17,6 +15,7 @@ const initialState: PrimerCheckoutContextValue = {
   availablePaymentMethods: [],
   paymentMethodResources: [],
   isLoadingResources: false,
+  resourcesError: null,
 };
 
 export function PrimerCheckoutProvider({
@@ -33,6 +32,8 @@ export function PrimerCheckoutProvider({
 
   const [lightTokens] = useState(() => mergeTokens(defaultLightTokens, theme?.light));
   const [darkTokens] = useState(() => mergeTokens(defaultDarkTokens, theme?.dark));
+
+  const [assetsManager] = useState(() => new PrimerHeadlessUniversalCheckoutAssetsManager());
 
   // Keep refs for all callbacks and settings so the useEffect doesn't depend on them
   const settingsRef = useRef(settings);
@@ -148,7 +149,9 @@ export function PrimerCheckoutProvider({
           ...prev,
           isReady: true,
           availablePaymentMethods: methods,
+          paymentMethodResources: [],
           isLoadingResources: true,
+          resourcesError: null,
         }));
       }
 
@@ -162,9 +165,12 @@ export function PrimerCheckoutProvider({
           }));
         }
       } catch (err) {
-        console.warn('[Primer] Failed to load payment method resources', err);
         if (!cancelled) {
-          setState((prev) => ({ ...prev, isLoadingResources: false }));
+          setState((prev) => ({
+            ...prev,
+            isLoadingResources: false,
+            resourcesError: err as Error,
+          }));
         }
       }
     }
