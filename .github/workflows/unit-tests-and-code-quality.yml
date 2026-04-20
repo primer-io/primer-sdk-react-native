@@ -1,11 +1,17 @@
 name: Unit Tests and Code Quality
-on: push
+on:
+  pull_request:
+    types: [opened, ready_for_review, synchronize, reopened]
+  push:
+    branches:
+      - master
 
 permissions:
   contents: read
 
 jobs:
   run-unit-tests:
+    if: github.event_name == 'push' || github.event.pull_request.draft == false
     name: Run RN unit tests
     runs-on: ubuntu-latest
     steps:
@@ -31,6 +37,7 @@ jobs:
           path: coverage
 
   run-unit-tests-android:
+    if: github.event_name == 'push' || github.event.pull_request.draft == false
     name: Run Android unit tests
     runs-on: ubuntu-latest
     steps:
@@ -86,6 +93,7 @@ jobs:
           path: android/build/reports
 
   run-unit-tests-ios:
+    if: github.event_name == 'push' || github.event.pull_request.draft == false
     name: Run iOS unit tests
     runs-on: macos-26-xlarge
     timeout-minutes: 35
@@ -145,6 +153,7 @@ jobs:
           path: sonar-coverage.xml
 
   sonarcloud:
+    if: github.event_name == 'push' || github.event.pull_request.draft == false
     needs:
       - run-unit-tests
       - run-unit-tests-android

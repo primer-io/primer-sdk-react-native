@@ -1,6 +1,8 @@
 ---
 name: Validate SDK
-on: pull_request
+on:
+  pull_request:
+    types: [opened, ready_for_review, synchronize, reopened]
 
 permissions:
   contents: read
@@ -9,6 +11,7 @@ permissions:
 jobs:
 
   validate:
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     name: Validate SDK
     steps:

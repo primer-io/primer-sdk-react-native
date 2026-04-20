@@ -6,6 +6,8 @@ on:
       - opened
       - edited
       - synchronize
+      - ready_for_review
+      - reopened
 
 concurrency:
   group: ${{ github.ref }}-danger-swift
@@ -17,6 +19,7 @@ permissions:
 
 jobs:
   danger-swift:
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     name: "Run Danger"
     steps:

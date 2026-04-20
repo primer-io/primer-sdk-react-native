@@ -1,7 +1,8 @@
 ---
 name: iOS
 on:
-  pull_request
+  pull_request:
+    types: [opened, ready_for_review, synchronize, reopened]
 
 permissions:
   contents: read
@@ -11,6 +12,7 @@ permissions:
 jobs:
 
   build-and-upload-to-appetize:
+    if: github.event.pull_request.draft == false
     runs-on: macos-26-xlarge
     timeout-minutes: 30
     name: Build and upload app to Appetize 🚀
