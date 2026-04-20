@@ -5,12 +5,12 @@ export interface NavigationContextValue {
   state: NavigationState;
   push: <R extends CheckoutRoute>(
     route: R,
-    ...args: RouteParamMap[R] extends undefined ? [] : [RouteParamMap[R]]
+    ...args: undefined extends RouteParamMap[R] ? [RouteParamMap[R]?] : [RouteParamMap[R]]
   ) => void;
   pop: () => void;
   replace: <R extends CheckoutRoute>(
     route: R,
-    ...args: RouteParamMap[R] extends undefined ? [] : [RouteParamMap[R]]
+    ...args: undefined extends RouteParamMap[R] ? [RouteParamMap[R]?] : [RouteParamMap[R]]
   ) => void;
   popToRoot: () => void;
   setAnimating: (isAnimating: boolean) => void;

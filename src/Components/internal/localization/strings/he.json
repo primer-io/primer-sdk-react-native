@@ -168,6 +168,7 @@
   "primer_checkout_error_subtitle": "אירעה בעיית רשת.",
   "primer_checkout_error_title": "התשלום נכשל",
   "primer_checkout_loading_indicator": "טוען",
+  "primer_checkout_loading_subtitle": "פעולה זו עשויה להימשך מספר שניות.",
   "primer_checkout_processing_subtitle": "אנא המתן...",
   "primer_checkout_processing_title": "מעבד את התשלום שלך",
   "primer_checkout_scope_unavailable": "אזור תשלום אינו זמין",

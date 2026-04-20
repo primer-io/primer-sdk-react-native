@@ -168,6 +168,7 @@
   "primer_checkout_error_subtitle": "Ցանցային խնդիր է ծագել։",
   "primer_checkout_error_title": "Վճարումը չհաջողվեց",
   "primer_checkout_loading_indicator": "Ներբեռնվում է",
+  "primer_checkout_loading_subtitle": "Սա կարող է տևել մի քանի վայրկյան։",
   "primer_checkout_processing_subtitle": "Խնդրում ենք սպասել...",
   "primer_checkout_processing_title": "Ձեր վճարումը մշակվում է",
   "primer_checkout_scope_unavailable": "Վճարման դաշտը հասանելի չէ",

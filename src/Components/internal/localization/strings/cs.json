@@ -168,6 +168,7 @@
   "primer_checkout_error_subtitle": "Došlo k chybě sítě.",
   "primer_checkout_error_title": "Platba selhala",
   "primer_checkout_loading_indicator": "Načítání",
+  "primer_checkout_loading_subtitle": "Může to trvat několik sekund.",
   "primer_checkout_processing_subtitle": "Prosím čekejte...",
   "primer_checkout_processing_title": "Zpracovává se vaše platba",
   "primer_checkout_scope_unavailable": "Checkout scope není k dispozici",
