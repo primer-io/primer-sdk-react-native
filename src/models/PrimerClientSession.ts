@@ -8,6 +8,19 @@ interface IPrimerClientSession {
   lineItems?: IPrimerLineItem[];
   orderDetails?: IPrimerOrder;
   customer?: IPrimerCustomer;
+  paymentMethodOptions?: Record<string, IPrimerClientSessionPaymentMethodOption>;
+}
+
+export type PrimerClientSessionPaymentMethodOption = IPrimerClientSessionPaymentMethodOption;
+
+interface IPrimerClientSessionPaymentMethodOption {
+  surcharge?: IPrimerClientSessionSurcharge;
+}
+
+export type PrimerClientSessionSurcharge = IPrimerClientSessionSurcharge;
+
+interface IPrimerClientSessionSurcharge {
+  amount?: number;
 }
 
 export type PrimerLineItem = IPrimerLineItem;

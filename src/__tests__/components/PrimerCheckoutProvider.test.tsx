@@ -28,7 +28,7 @@ import { createElement } from 'react';
 import renderer, { act } from 'react-test-renderer';
 import { PrimerCheckoutProvider } from '../../Components/PrimerCheckoutProvider';
 import { usePrimerCheckout } from '../../Components/hooks/usePrimerCheckout';
-import type { PrimerCheckoutContextValue } from '../../models/components/PrimerCheckoutProviderTypes';
+import type { PrimerCheckoutContextValue } from '../../Components/types/PrimerCheckoutProviderTypes';
 
 const rnMock = require('react-native');
 const nativeModule = rnMock.NativeModules.PrimerHeadlessUniversalCheckout;
