@@ -168,6 +168,7 @@
   "primer_checkout_error_subtitle": "Đã xảy ra sự cố mạng.",
   "primer_checkout_error_title": "Thanh toán thất bại",
   "primer_checkout_loading_indicator": "Đang tải",
+  "primer_checkout_loading_subtitle": "Quá trình này có thể mất vài giây.",
   "primer_checkout_processing_subtitle": "Vui lòng đợi...",
   "primer_checkout_processing_title": "Đang xử lý thanh toán của bạn",
   "primer_checkout_scope_unavailable": "Phạm vi thanh toán không khả dụng",

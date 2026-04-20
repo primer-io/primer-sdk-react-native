@@ -168,6 +168,7 @@
   "primer_checkout_error_subtitle": "წარმოიშვა ქსელის პრობლემა.",
   "primer_checkout_error_title": "გადახდა ვერ შესრულდა",
   "primer_checkout_loading_indicator": "იტვირთება",
+  "primer_checkout_loading_subtitle": "შეიძლება რამდენიმე წამი დასჭირდეს.",
   "primer_checkout_processing_subtitle": "გთხოვთ დაელოდოთ...",
   "primer_checkout_processing_title": "მუშავდება თქვენი გადახდა",
   "primer_checkout_scope_unavailable": "გადახდის სესია არ არის ხელმისაწვდომი",

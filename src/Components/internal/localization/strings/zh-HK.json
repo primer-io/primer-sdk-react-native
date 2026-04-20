@@ -168,6 +168,7 @@
   "primer_checkout_error_subtitle": "發生網絡問題。",
   "primer_checkout_error_title": "付款失敗",
   "primer_checkout_loading_indicator": "載入中",
+  "primer_checkout_loading_subtitle": "這可能需要幾秒鐘。",
   "primer_checkout_processing_subtitle": "請稍候...",
   "primer_checkout_processing_title": "正在處理您的付款",
   "primer_checkout_scope_unavailable": "結帳範圍不可用",

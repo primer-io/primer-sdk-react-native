@@ -168,6 +168,7 @@
   "primer_checkout_error_subtitle": "حدثت مشكلة في الشبكة.",
   "primer_checkout_error_title": "فشلت عملية الدفع",
   "primer_checkout_loading_indicator": "جاري التحميل",
+  "primer_checkout_loading_subtitle": "قد يستغرق هذا بضع ثوانٍ.",
   "primer_checkout_processing_subtitle": "يرجى الانتظار...",
   "primer_checkout_processing_title": "جاري معالجة عملية الدفع",
   "primer_checkout_scope_unavailable": "عملية الدفع غير متاحة",

@@ -121,6 +121,8 @@ export function CheckoutSheet({
   const prevVisibleRef = useRef(visible);
   useEffect(() => {
     if (visible && !prevVisibleRef.current) {
+      setHeightRatioState(DEFAULT_HEIGHT_RATIO);
+      heightOffsetValue.setValue(screenHeight * (1 - DEFAULT_HEIGHT_RATIO));
       setModalVisible(true);
     } else if (!visible && prevVisibleRef.current && modalVisible) {
       animateOut();
@@ -168,6 +170,7 @@ export function CheckoutSheet({
     () => ({
       setHeight: (h: number) => setHeightRatioState(Math.max(MIN_HEIGHT_RATIO, Math.min(1, h / screenHeight))),
       setHeightRatio: (ratio: number) => setHeightRatioState(Math.max(MIN_HEIGHT_RATIO, Math.min(1, ratio))),
+      resetHeight: () => setHeightRatioState(DEFAULT_HEIGHT_RATIO),
     }),
     [screenHeight]
   );

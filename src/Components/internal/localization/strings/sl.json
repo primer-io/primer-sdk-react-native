@@ -168,6 +168,7 @@
   "primer_checkout_error_subtitle": "Prišlo je do težave z omrežjem.",
   "primer_checkout_error_title": "Plačilo ni uspelo",
   "primer_checkout_loading_indicator": "Nalaganje",
+  "primer_checkout_loading_subtitle": "To lahko traja nekaj sekund.",
   "primer_checkout_processing_subtitle": "Počakajte...",
   "primer_checkout_processing_title": "Obdelava vašega plačila",
   "primer_checkout_scope_unavailable": "Obseg blagajne ni na voljo",
