@@ -168,6 +168,7 @@
   "primer_checkout_error_subtitle": "Се појави проблем со мрежата.",
   "primer_checkout_error_title": "Плаќањето не успеа",
   "primer_checkout_loading_indicator": "Се вчитува",
+  "primer_checkout_loading_subtitle": "Ова може да потрае неколку секунди.",
   "primer_checkout_processing_subtitle": "Ве молиме почекајте...",
   "primer_checkout_processing_title": "Се обработува вашето плаќање",
   "primer_checkout_scope_unavailable": "Опсегот на наплата не е достапен",

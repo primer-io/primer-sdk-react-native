@@ -168,6 +168,7 @@
   "primer_checkout_error_subtitle": "Terjadi masalah jaringan.",
   "primer_checkout_error_title": "Pembayaran gagal",
   "primer_checkout_loading_indicator": "Memuat",
+  "primer_checkout_loading_subtitle": "Ini mungkin memerlukan beberapa detik.",
   "primer_checkout_processing_subtitle": "Harap tunggu...",
   "primer_checkout_processing_title": "Memproses pembayaran Anda",
   "primer_checkout_scope_unavailable": "Cakupan checkout tidak tersedia",

@@ -168,6 +168,7 @@
   "primer_checkout_error_subtitle": "Verkko-ongelma tapahtui.",
   "primer_checkout_error_title": "Maksu epäonnistui",
   "primer_checkout_loading_indicator": "Ladataan",
+  "primer_checkout_loading_subtitle": "Tämä voi kestää muutaman sekunnin.",
   "primer_checkout_processing_subtitle": "Odota hetki...",
   "primer_checkout_processing_title": "Käsitellään maksuasi",
   "primer_checkout_scope_unavailable": "Kassanäkymä ei ole saatavilla",

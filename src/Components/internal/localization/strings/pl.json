@@ -168,6 +168,7 @@
   "primer_checkout_error_subtitle": "Wystąpił problem z połączeniem.",
   "primer_checkout_error_title": "Płatność nie powiodła się",
   "primer_checkout_loading_indicator": "Ładowanie",
+  "primer_checkout_loading_subtitle": "To może potrwać kilka sekund.",
   "primer_checkout_processing_subtitle": "Proszę czekać...",
   "primer_checkout_processing_title": "Przetwarzanie płatności",
   "primer_checkout_scope_unavailable": "Zakres płatności niedostępny",

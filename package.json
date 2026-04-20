@@ -162,7 +162,8 @@
     },
     "ios": {
       "modulesProvider": {
-        "NativePrimer": "RCTNativePrimer"
+        "NativePrimer": "RCTNativePrimer",
+        "PrimerViewUtils": "RCTPrimerViewUtils"
       }
     }
   }
