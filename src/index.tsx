@@ -168,6 +168,9 @@ export type {
   RouteParamMap,
 } from './Components/internal/navigation';
 
+export { LoadingScreen, SuccessScreen, ErrorScreen, StatusScreenLayout } from './Components/internal/screens';
+export type { StatusScreenLayoutProps } from './Components/internal/screens';
+
 // must be exported in order to support the old architecture
 const nativeModule = require('./specs/NativePrimer').default;
 export default nativeModule;

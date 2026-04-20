@@ -168,6 +168,7 @@
   "primer_checkout_error_subtitle": "네트워크 문제가 발생했습니다.",
   "primer_checkout_error_title": "결제 실패",
   "primer_checkout_loading_indicator": "로딩 중",
+  "primer_checkout_loading_subtitle": "몇 초 정도 걸릴 수 있습니다.",
   "primer_checkout_processing_subtitle": "잠시만 기다려 주세요...",
   "primer_checkout_processing_title": "결제를 처리하는 중입니다",
   "primer_checkout_scope_unavailable": "체크아웃 스코프를 사용할 수 없습니다",

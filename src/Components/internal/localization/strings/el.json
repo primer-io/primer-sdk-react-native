@@ -168,6 +168,7 @@
   "primer_checkout_error_subtitle": "Υπήρξε πρόβλημα δικτύου.",
   "primer_checkout_error_title": "Η πληρωμή απέτυχε",
   "primer_checkout_loading_indicator": "Φόρτωση",
+  "primer_checkout_loading_subtitle": "Αυτό μπορεί να διαρκέσει μερικά δευτερόλεπτα.",
   "primer_checkout_processing_subtitle": "Παρακαλώ περιμένετε...",
   "primer_checkout_processing_title": "Επεξεργασία της πληρωμής σας",
   "primer_checkout_scope_unavailable": "Το πεδίο ολοκλήρωσης αγοράς δεν είναι διαθέσιμο",

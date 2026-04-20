@@ -168,6 +168,7 @@
   "primer_checkout_error_subtitle": "Hi ha hagut un problema de xarxa.",
   "primer_checkout_error_title": "El pagament ha fallat",
   "primer_checkout_loading_indicator": "Carregant",
+  "primer_checkout_loading_subtitle": "Això pot trigar uns segons.",
   "primer_checkout_processing_subtitle": "Si us plau, espereu...",
   "primer_checkout_processing_title": "Processant el vostre pagament",
   "primer_checkout_scope_unavailable": "Àmbit de pagament no disponible",

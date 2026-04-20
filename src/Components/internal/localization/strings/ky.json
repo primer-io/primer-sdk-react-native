@@ -168,6 +168,7 @@
   "primer_checkout_error_subtitle": "Тармак маселеси пайда болду.",
   "primer_checkout_error_title": "Төлөм ишке ашпады",
   "primer_checkout_loading_indicator": "Жүктөлүүдө",
+  "primer_checkout_loading_subtitle": "Бул бир нече секунд алышы мүмкүн.",
   "primer_checkout_processing_subtitle": "Күтө туруңуз...",
   "primer_checkout_processing_title": "Төлөмүңүз иштетилүүдө",
   "primer_checkout_scope_unavailable": "Төлөм чөйрөсү жеткиликсиз",

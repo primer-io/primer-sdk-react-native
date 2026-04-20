@@ -182,6 +182,7 @@
   "primer_checkout_error_subtitle": "There was a network issue.",
   "primer_checkout_error_title": "Payment failed",
   "primer_checkout_loading_indicator": "Loading",
+  "primer_checkout_loading_subtitle": "This may take a few seconds.",
   "primer_checkout_processing_subtitle": "Please wait...",
   "primer_checkout_processing_title": "Processing your payment",
   "primer_checkout_scope_unavailable": "Checkout scope not available",

@@ -168,6 +168,7 @@
   "primer_checkout_error_subtitle": "Houve um problema de rede.",
   "primer_checkout_error_title": "Falha no pagamento",
   "primer_checkout_loading_indicator": "Carregando",
+  "primer_checkout_loading_subtitle": "Isso pode levar alguns segundos.",
   "primer_checkout_processing_subtitle": "Por favor, aguarde...",
   "primer_checkout_processing_title": "Processando seu pagamento",
   "primer_checkout_scope_unavailable": "Checkout não disponível",

@@ -5,6 +5,8 @@ export interface SheetHeightContextValue {
   setHeight: (height: number) => void;
   /** Set sheet height as a fraction of screen height (0-1). */
   setHeightRatio: (ratio: number) => void;
+  /** Reset sheet height to default. */
+  resetHeight: () => void;
 }
 
 export const SheetHeightContext = createContext<SheetHeightContextValue | null>(null);

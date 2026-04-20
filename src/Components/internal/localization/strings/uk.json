@@ -168,6 +168,7 @@
   "primer_checkout_error_subtitle": "Виникла проблема з мережею.",
   "primer_checkout_error_title": "Платіж не вдався",
   "primer_checkout_loading_indicator": "Завантаження",
+  "primer_checkout_loading_subtitle": "Це може зайняти кілька секунд.",
   "primer_checkout_processing_subtitle": "Будь ласка, зачекайте...",
   "primer_checkout_processing_title": "Обробка вашого платежу",
   "primer_checkout_scope_unavailable": "Область оформлення замовлення недоступна",

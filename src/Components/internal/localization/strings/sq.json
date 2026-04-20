@@ -168,6 +168,7 @@
   "primer_checkout_error_subtitle": "Pati një problem me rrjetin.",
   "primer_checkout_error_title": "Pagesa dështoi",
   "primer_checkout_loading_indicator": "Po ngarkohet",
+  "primer_checkout_loading_subtitle": "Kjo mund të zgjasë disa sekonda.",
   "primer_checkout_processing_subtitle": "Ju lutem prisni...",
   "primer_checkout_processing_title": "Po përpunohet pagesa juaj",
   "primer_checkout_scope_unavailable": "Hapësira e pagesës nuk është e disponueshme",

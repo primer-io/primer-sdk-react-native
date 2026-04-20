@@ -168,6 +168,7 @@
   "primer_checkout_error_subtitle": "Radās tīkla problēma.",
   "primer_checkout_error_title": "Maksājums neizdevās",
   "primer_checkout_loading_indicator": "Notiek ielāde",
+  "primer_checkout_loading_subtitle": "Tas var aizņemt dažas sekundes.",
   "primer_checkout_processing_subtitle": "Lūdzu, uzgaidiet...",
   "primer_checkout_processing_title": "Jūsu maksājums tiek apstrādāts",
   "primer_checkout_scope_unavailable": "Norēķinu apjoms nav pieejams",

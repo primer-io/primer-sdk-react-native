@@ -168,6 +168,7 @@
   "primer_checkout_error_subtitle": "May problema sa network.",
   "primer_checkout_error_title": "Nabigo ang pagbabayad",
   "primer_checkout_loading_indicator": "Nilo-load",
+  "primer_checkout_loading_subtitle": "Maaari itong tumagal ng ilang segundo.",
   "primer_checkout_processing_subtitle": "Mangyaring maghintay...",
   "primer_checkout_processing_title": "Pinoproseso ang iyong pagbabayad",
   "primer_checkout_scope_unavailable": "Hindi available ang checkout scope",

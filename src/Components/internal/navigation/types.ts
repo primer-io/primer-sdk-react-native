@@ -16,13 +16,13 @@ export enum CheckoutRoute {
 }
 
 export type RouteParamMap = {
-  [CheckoutRoute.splash]: undefined;
-  [CheckoutRoute.loading]: undefined;
+  [CheckoutRoute.splash]: { title?: string; subtitle?: string } | undefined;
+  [CheckoutRoute.loading]: { title?: string; subtitle?: string } | undefined;
   [CheckoutRoute.methodSelection]: undefined;
   [CheckoutRoute.cardForm]: { paymentMethodType: string };
   [CheckoutRoute.processing]: undefined;
-  [CheckoutRoute.success]: { checkoutData?: PrimerCheckoutData };
-  [CheckoutRoute.error]: { error: PrimerError };
+  [CheckoutRoute.success]: { checkoutData?: PrimerCheckoutData; title?: string; subtitle?: string } | undefined;
+  [CheckoutRoute.error]: { error?: PrimerError; title?: string; subtitle?: string } | undefined;
   [CheckoutRoute.countrySelector]: { selectedCountryCode?: string };
   [CheckoutRoute.vaultedMethods]: undefined;
   [CheckoutRoute.deleteConfirmation]: { paymentMethodId: string };

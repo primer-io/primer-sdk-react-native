@@ -168,6 +168,7 @@
   "primer_checkout_error_subtitle": "Der opstod et netværksproblem.",
   "primer_checkout_error_title": "Betaling mislykkedes",
   "primer_checkout_loading_indicator": "Indlæser",
+  "primer_checkout_loading_subtitle": "Dette kan tage et par sekunder.",
   "primer_checkout_processing_subtitle": "Vent venligst...",
   "primer_checkout_processing_title": "Behandler din betaling",
   "primer_checkout_scope_unavailable": "Checkout-område ikke tilgængeligt",

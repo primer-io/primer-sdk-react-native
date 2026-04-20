@@ -168,6 +168,7 @@
   "primer_checkout_error_subtitle": "Bir ağ sorunu oluştu.",
   "primer_checkout_error_title": "Ödeme başarısız",
   "primer_checkout_loading_indicator": "Yükleniyor",
+  "primer_checkout_loading_subtitle": "Bu birkaç saniye sürebilir.",
   "primer_checkout_processing_subtitle": "Lütfen bekleyin...",
   "primer_checkout_processing_title": "Ödemeniz işleniyor",
   "primer_checkout_scope_unavailable": "Ödeme kapsamı mevcut değil",

@@ -168,6 +168,7 @@
   "primer_checkout_error_subtitle": "A apărut o problemă de rețea.",
   "primer_checkout_error_title": "Plata a eșuat",
   "primer_checkout_loading_indicator": "Se încarcă",
+  "primer_checkout_loading_subtitle": "Aceasta poate dura câteva secunde.",
   "primer_checkout_processing_subtitle": "Vă rugăm așteptați...",
   "primer_checkout_processing_title": "Se procesează plata dumneavoastră",
   "primer_checkout_scope_unavailable": "Domeniul de checkout nu este disponibil",

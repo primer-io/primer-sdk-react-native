@@ -168,6 +168,7 @@
   "primer_checkout_error_subtitle": "ネットワークの問題が発生しました。",
   "primer_checkout_error_title": "お支払いに失敗しました",
   "primer_checkout_loading_indicator": "読み込み中",
+  "primer_checkout_loading_subtitle": "数秒かかる場合があります。",
   "primer_checkout_processing_subtitle": "お待ちください...",
   "primer_checkout_processing_title": "お支払いを処理しています",
   "primer_checkout_scope_unavailable": "チェックアウトスコープが利用できません",

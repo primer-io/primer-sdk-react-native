@@ -168,6 +168,7 @@
   "primer_checkout_error_subtitle": "出现网络问题。",
   "primer_checkout_error_title": "支付失败",
   "primer_checkout_loading_indicator": "正在加载",
+  "primer_checkout_loading_subtitle": "这可能需要几秒钟。",
   "primer_checkout_processing_subtitle": "请稍候...",
   "primer_checkout_processing_title": "正在处理您的支付",
   "primer_checkout_scope_unavailable": "收银台不可用",

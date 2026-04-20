@@ -168,6 +168,7 @@
   "primer_checkout_error_subtitle": "Желі қатесі орын алды.",
   "primer_checkout_error_title": "Төлем сәтсіз аяқталды",
   "primer_checkout_loading_indicator": "Жүктелуде",
+  "primer_checkout_loading_subtitle": "Бұл бірнеше секунд алуы мүмкін.",
   "primer_checkout_processing_subtitle": "Күте тұрыңыз...",
   "primer_checkout_processing_title": "Төлеміңіз өңделуде",
   "primer_checkout_scope_unavailable": "Төлем жасау қолжетімді емес",

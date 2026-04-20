@@ -168,6 +168,7 @@
   "primer_checkout_error_subtitle": "Det oppstod et nettverksproblem.",
   "primer_checkout_error_title": "Betaling mislyktes",
   "primer_checkout_loading_indicator": "Laster",
+  "primer_checkout_loading_subtitle": "Dette kan ta noen sekunder.",
   "primer_checkout_processing_subtitle": "Vennligst vent...",
   "primer_checkout_processing_title": "Behandler din betaling",
   "primer_checkout_scope_unavailable": "Betalingsområde ikke tilgjengelig",

@@ -168,6 +168,7 @@
   "primer_checkout_error_subtitle": "Возникла проблема с сетью.",
   "primer_checkout_error_title": "Платеж не выполнен",
   "primer_checkout_loading_indicator": "Загрузка",
+  "primer_checkout_loading_subtitle": "Это может занять несколько секунд.",
   "primer_checkout_processing_subtitle": "Пожалуйста, подождите...",
   "primer_checkout_processing_title": "Обработка вашего платежа",
   "primer_checkout_scope_unavailable": "Область оформления заказа недоступна",

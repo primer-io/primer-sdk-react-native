@@ -168,6 +168,7 @@
   "primer_checkout_error_subtitle": "Terdapat masalah rangkaian.",
   "primer_checkout_error_title": "Pembayaran gagal",
   "primer_checkout_loading_indicator": "Memuatkan",
+  "primer_checkout_loading_subtitle": "Ini mungkin mengambil masa beberapa saat.",
   "primer_checkout_processing_subtitle": "Sila tunggu...",
   "primer_checkout_processing_title": "Memproses pembayaran anda",
   "primer_checkout_scope_unavailable": "Skop pembayaran tidak tersedia",

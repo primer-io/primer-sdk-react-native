@@ -168,6 +168,7 @@
   "primer_checkout_error_subtitle": "Det uppstod ett nätverksproblem.",
   "primer_checkout_error_title": "Betalningen misslyckades",
   "primer_checkout_loading_indicator": "Laddar",
+  "primer_checkout_loading_subtitle": "Det kan ta några sekunder.",
   "primer_checkout_processing_subtitle": "Vänligen vänta...",
   "primer_checkout_processing_title": "Behandlar din betalning",
   "primer_checkout_scope_unavailable": "Kassavy är inte tillgänglig",

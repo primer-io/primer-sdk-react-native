@@ -168,6 +168,7 @@
   "primer_checkout_error_subtitle": "Un problème s'est produit avec votre connexion Internet",
   "primer_checkout_error_title": "Le paiement a échoué",
   "primer_checkout_loading_indicator": "Chargement",
+  "primer_checkout_loading_subtitle": "Cela peut prendre quelques secondes.",
   "primer_checkout_processing_subtitle": "Veuillez patienter...",
   "primer_checkout_processing_title": "Paiement en cours",
   "primer_checkout_scope_unavailable": "Portée de paiement non disponible",

@@ -168,6 +168,7 @@
   "primer_checkout_error_subtitle": "Er was een netwerkprobleem.",
   "primer_checkout_error_title": "Betaling mislukt",
   "primer_checkout_loading_indicator": "Aaan het laden",
+  "primer_checkout_loading_subtitle": "Dit kan enkele seconden duren.",
   "primer_checkout_processing_subtitle": "Gelieve even te wachten...",
   "primer_checkout_processing_title": "Uw betaling wordt verwerkt",
   "primer_checkout_scope_unavailable": "Afrekening niet beschikbaar",

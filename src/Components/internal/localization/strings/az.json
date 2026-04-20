@@ -168,6 +168,7 @@
   "primer_checkout_error_subtitle": "Şəbəkə problemi yarandı.",
   "primer_checkout_error_title": "Ödəniş uğursuz oldu",
   "primer_checkout_loading_indicator": "Yüklənir",
+  "primer_checkout_loading_subtitle": "Bu bir neçə saniyə çəkə bilər.",
   "primer_checkout_processing_subtitle": "Zəhmət olmasa gözləyin...",
   "primer_checkout_processing_title": "Ödənişiniz işlənir",
   "primer_checkout_scope_unavailable": "Ödəniş əlçatan deyil",
