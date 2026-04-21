@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import { useColorScheme } from 'react-native';
 import { usePrimerCheckout } from './usePrimerCheckout';
 import { titleCaseFromType } from '../internal/utils/formatting';
 import { toError } from '../internal/utils/errors';
@@ -55,6 +56,7 @@ export function usePaymentMethods(options: UsePaymentMethodsOptions = {}): UsePa
   } = usePrimerCheckout();
 
   const [selectedType, setSelectedType] = useState<string | null>(null);
+  const colorScheme = useColorScheme();
 
   const onLoadRef = useRef(onLoad);
   onLoadRef.current = onLoad;
@@ -68,6 +70,8 @@ export function usePaymentMethods(options: UsePaymentMethodsOptions = {}): UsePa
       return { items: [], error: null };
     }
 
+    const isDark = colorScheme === 'dark';
+
     try {
       const resourceMap = new Map(paymentMethodResources.map((r) => [r.paymentMethodType, r]));
 
@@ -80,8 +84,15 @@ export function usePaymentMethods(options: UsePaymentMethodsOptions = {}): UsePa
         let backgroundColor: string | undefined;
 
         if (resource && 'paymentMethodLogo' in resource) {
-          logo = resource.paymentMethodLogo.colored ?? resource.paymentMethodLogo.light;
-          backgroundColor = resource.paymentMethodBackgroundColor?.colored;
+          // Prefer colored when available; otherwise pick by color scheme.
+          // Consumers wanting a different variant can read `resource.paymentMethodLogo` directly.
+          const asset = resource.paymentMethodLogo;
+          const themeVariant = isDark ? asset.dark : asset.light;
+          logo = asset.colored ?? themeVariant ?? asset.light ?? asset.dark;
+
+          const bg = resource.paymentMethodBackgroundColor;
+          const bgThemeVariant = isDark ? bg?.dark : bg?.light;
+          backgroundColor = bg?.colored ?? bgThemeVariant ?? bg?.light ?? bg?.dark;
         }
 
         return {
@@ -109,7 +120,7 @@ export function usePaymentMethods(options: UsePaymentMethodsOptions = {}): UsePa
     } catch (err) {
       return { items: [], error: toError(err) };
     }
-  }, [availablePaymentMethods, paymentMethodResources, isLoading, clientSession, include, exclude]);
+  }, [availablePaymentMethods, paymentMethodResources, isLoading, clientSession, include, exclude, colorScheme]);
 
   // Fires onLoad once per distinct set of payment-method types, after resources load.
   // Re-fires if the set of types changes (e.g. client-session update adds/removes a method).

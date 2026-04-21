@@ -11,7 +11,12 @@ import type { UsePaymentMethodsReturn } from '../../Components/types/PaymentMeth
 // @ts-expect-error -- React 19 concurrent act environment
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
-jest.mock('react-native', () => ({}), { virtual: true });
+let mockColorScheme: 'light' | 'dark' | null = 'light';
+jest.mock('react-native', () => ({ useColorScheme: () => mockColorScheme }), { virtual: true });
+
+beforeEach(() => {
+  mockColorScheme = 'light';
+});
 
 function renderHook<T>(hook: () => T, Wrapper?: (props: { children: ReactNode }) => ReactNode | null) {
   const result = { current: null as unknown as T };
@@ -42,6 +47,19 @@ function makeResource(type: string, name: string): PrimerPaymentMethodAsset {
     paymentMethodName: name,
     paymentMethodLogo: { colored: `https://logo/${type}` },
     paymentMethodBackgroundColor: { colored: '#000' },
+  };
+}
+
+function makeResourceWithVariants(
+  type: string,
+  name: string,
+  overrides: { colored?: string; light?: string; dark?: string }
+): PrimerPaymentMethodAsset {
+  return {
+    paymentMethodType: type,
+    paymentMethodName: name,
+    paymentMethodLogo: overrides,
+    paymentMethodBackgroundColor: overrides,
   };
 }
 
@@ -378,6 +396,53 @@ describe('usePaymentMethods', () => {
     const card = result.current.paymentMethods.find((m) => m.type === 'PAYMENT_CARD')!;
     expect(card.resource && 'paymentMethodLogo' in card.resource).toBe(true);
     expect(card.nativeViewName).toBeUndefined();
+  });
+
+  it('prefers colored logo when available regardless of color scheme', () => {
+    mockColorScheme = 'dark';
+    const ctx: PrimerCheckoutContextValue = {
+      ...readyContext,
+      availablePaymentMethods: [makeMethod('PAYPAL')],
+      paymentMethodResources: [
+        makeResourceWithVariants('PAYPAL', 'PayPal', { colored: 'c.png', light: 'l.png', dark: 'd.png' }),
+      ],
+    };
+    const { result } = renderHook(() => usePaymentMethods(), contextWrapper(ctx));
+    expect(result.current.paymentMethods[0]!.logo).toBe('c.png');
+  });
+
+  it('picks dark logo when color scheme is dark and colored is absent', () => {
+    mockColorScheme = 'dark';
+    const ctx: PrimerCheckoutContextValue = {
+      ...readyContext,
+      availablePaymentMethods: [makeMethod('PAYPAL')],
+      paymentMethodResources: [makeResourceWithVariants('PAYPAL', 'PayPal', { light: 'l.png', dark: 'd.png' })],
+    };
+    const { result } = renderHook(() => usePaymentMethods(), contextWrapper(ctx));
+    expect(result.current.paymentMethods[0]!.logo).toBe('d.png');
+  });
+
+  it('picks light logo when color scheme is light and colored is absent', () => {
+    mockColorScheme = 'light';
+    const ctx: PrimerCheckoutContextValue = {
+      ...readyContext,
+      availablePaymentMethods: [makeMethod('PAYPAL')],
+      paymentMethodResources: [makeResourceWithVariants('PAYPAL', 'PayPal', { light: 'l.png', dark: 'd.png' })],
+    };
+    const { result } = renderHook(() => usePaymentMethods(), contextWrapper(ctx));
+    expect(result.current.paymentMethods[0]!.logo).toBe('l.png');
+  });
+
+  it('falls back across variants when theme-matching variant is missing', () => {
+    mockColorScheme = 'dark';
+    const ctx: PrimerCheckoutContextValue = {
+      ...readyContext,
+      availablePaymentMethods: [makeMethod('PAYPAL')],
+      // dark mode, but only `light` is provided — should still return it rather than undefined
+      paymentMethodResources: [makeResourceWithVariants('PAYPAL', 'PayPal', { light: 'l.png' })],
+    };
+    const { result } = renderHook(() => usePaymentMethods(), contextWrapper(ctx));
+    expect(result.current.paymentMethods[0]!.logo).toBe('l.png');
   });
 
   it('fires onLoad once after initial load with the built list', () => {
