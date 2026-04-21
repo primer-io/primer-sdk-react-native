@@ -1,3 +1,4 @@
+import { NativeModules } from 'react-native';
 import type {
   IPrimerAsset as Asset,
   PrimerPaymentMethodAsset,
@@ -5,7 +6,6 @@ import type {
 } from '../../models/PrimerPaymentMethodResource';
 
 type Resource = PrimerPaymentMethodAsset | PrimerPaymentMethodNativeView;
-import { NativeModules } from 'react-native';
 
 const { RNTPrimerHeadlessUniversalCheckoutAssetsManager } = NativeModules;
 

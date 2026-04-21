@@ -5,7 +5,7 @@ import { PrimerCheckoutContext } from '../../Components/internal/PrimerCheckoutC
 import { usePaymentMethods } from '../../Components/hooks/usePaymentMethods';
 import type { PrimerCheckoutContextValue } from '../../Components/types/PrimerCheckoutProviderTypes';
 import type { IPrimerHeadlessUniversalCheckoutPaymentMethod } from '../../models/PrimerHeadlessUniversalCheckoutPaymentMethod';
-import type { PrimerPaymentMethodAsset } from '../../models/PrimerPaymentMethodResource';
+import type { PrimerPaymentMethodAsset, PrimerPaymentMethodNativeView } from '../../models/PrimerPaymentMethodResource';
 import type { UsePaymentMethodsReturn } from '../../Components/types/PaymentMethodTypes';
 
 // @ts-expect-error -- React 19 concurrent act environment
@@ -42,6 +42,14 @@ function makeResource(type: string, name: string): PrimerPaymentMethodAsset {
     paymentMethodName: name,
     paymentMethodLogo: { colored: `https://logo/${type}` },
     paymentMethodBackgroundColor: { colored: '#000' },
+  };
+}
+
+function makeNativeViewResource(type: string, name: string, nativeViewName: string): PrimerPaymentMethodNativeView {
+  return {
+    paymentMethodType: type,
+    paymentMethodName: name,
+    nativeViewName,
   };
 }
 
@@ -95,14 +103,17 @@ describe('usePaymentMethods', () => {
     expect(result.current.isLoading).toBe(false);
     expect(result.current.paymentMethods).toHaveLength(3);
 
-    // PAYMENT_CARD is first by default (showCardFirst)
-    const card = result.current.paymentMethods[0]!;
-    expect(card.type).toBe('PAYMENT_CARD');
+    const card = result.current.paymentMethods.find((m) => m.type === 'PAYMENT_CARD')!;
     expect(card.name).toBe('Card');
     expect(card.logo).toBe('https://logo/PAYMENT_CARD');
     expect(card.backgroundColor).toBe('#000');
     expect(card.categories).toEqual(['NATIVE_UI']);
     expect(card.intents).toEqual(['CHECKOUT']);
+  });
+
+  it('preserves API order (no implicit sort)', () => {
+    const { result } = renderHook(() => usePaymentMethods(), contextWrapper(readyContext));
+    expect(result.current.paymentMethods.map((m) => m.type)).toEqual(['PAYMENT_CARD', 'PAYPAL', 'APPLE_PAY']);
   });
 
   it('filters by include', () => {
@@ -126,16 +137,6 @@ describe('usePaymentMethods', () => {
     expect(result.current.paymentMethods[0]!.type).toBe('PAYMENT_CARD');
   });
 
-  it('sorts PAYMENT_CARD first by default', () => {
-    const { result } = renderHook(() => usePaymentMethods(), contextWrapper(readyContext));
-    expect(result.current.paymentMethods[0]!.type).toBe('PAYMENT_CARD');
-  });
-
-  it('preserves API order when showCardFirst is false', () => {
-    const { result } = renderHook(() => usePaymentMethods({ showCardFirst: false }), contextWrapper(readyContext));
-    expect(result.current.paymentMethods.map((m) => m.type)).toEqual(['PAYMENT_CARD', 'PAYPAL', 'APPLE_PAY']);
-  });
-
   it('handles methods without matching resources', () => {
     const ctx: PrimerCheckoutContextValue = {
       ...readyContext,
@@ -143,11 +144,15 @@ describe('usePaymentMethods', () => {
     };
     const { result } = renderHook(() => usePaymentMethods(), contextWrapper(ctx));
     expect(result.current.paymentMethods).toHaveLength(3);
-    // falls back to formatted type name
+    // falls back to title-cased type name
     const paypal = result.current.paymentMethods.find((m) => m.type === 'PAYPAL');
-    expect(paypal?.name).toBe('PAYPAL');
+    expect(paypal?.name).toBe('Paypal');
     expect(paypal?.logo).toBeUndefined();
     expect(paypal?.resource).toBeUndefined();
+
+    // Multi-word fallback: PAYMENT_CARD → "Payment Card"
+    const card = result.current.paymentMethods.find((m) => m.type === 'PAYMENT_CARD');
+    expect(card?.name).toBe('Payment Card');
   });
 
   it('silently ignores non-existent include types', () => {
@@ -243,5 +248,185 @@ describe('usePaymentMethods', () => {
     });
 
     expect(hookResult.selectedMethod).toBeNull();
+  });
+
+  it('clears selection permanently when filtered out (does not come back after un-exclude)', () => {
+    let hookResult: UsePaymentMethodsReturn = null as unknown as UsePaymentMethodsReturn;
+    let setExclude: (next: string[]) => void = () => {};
+
+    function Host() {
+      const [exclude, setState] = useState<string[]>([]);
+      setExclude = setState;
+      return createElement(PrimerCheckoutContext.Provider, { value: readyContext }, createElement(Inner, { exclude }));
+    }
+    function Inner({ exclude }: { exclude: string[] }) {
+      hookResult = usePaymentMethods({ exclude });
+      return null;
+    }
+
+    act(() => {
+      create(createElement(Host));
+    });
+
+    const paypal = hookResult.paymentMethods.find((m) => m.type === 'PAYPAL')!;
+    act(() => {
+      hookResult.selectMethod(paypal);
+    });
+    expect(hookResult.selectedMethod?.type).toBe('PAYPAL');
+
+    // Filter out the selection
+    act(() => {
+      setExclude(['PAYPAL']);
+    });
+    expect(hookResult.selectedMethod).toBeNull();
+
+    // Un-exclude — selection should stay cleared (not silently return)
+    act(() => {
+      setExclude([]);
+    });
+    expect(hookResult.selectedMethod).toBeNull();
+  });
+
+  it('maps non-card surcharges to kind=flat', () => {
+    const ctx: PrimerCheckoutContextValue = {
+      ...readyContext,
+      clientSession: {
+        paymentMethodOptions: {
+          PAYPAL: { surcharge: { amount: 99 } },
+          APPLE_PAY: { surcharge: { amount: 0 } },
+          PAYMENT_CARD: {},
+        },
+      } as unknown as PrimerCheckoutContextValue['clientSession'],
+    };
+    const { result } = renderHook(() => usePaymentMethods(), contextWrapper(ctx));
+    const byType = Object.fromEntries(result.current.paymentMethods.map((m) => [m.type, m]));
+    expect(byType.PAYPAL!.surcharge).toEqual({ kind: 'flat', amount: 99 });
+    expect(byType.APPLE_PAY!.surcharge).toEqual({ kind: 'flat', amount: 0 });
+    expect(byType.PAYMENT_CARD!.surcharge).toBeUndefined();
+  });
+
+  it('maps PAYMENT_CARD per-network surcharges to kind=perNetwork', () => {
+    const ctx: PrimerCheckoutContextValue = {
+      ...readyContext,
+      clientSession: {
+        paymentMethodOptions: {
+          PAYMENT_CARD: {
+            networks: {
+              VISA: { surcharge: { amount: 30 } },
+              MASTERCARD: { surcharge: { amount: 50 } },
+            },
+          },
+        },
+      } as unknown as PrimerCheckoutContextValue['clientSession'],
+    };
+    const { result } = renderHook(() => usePaymentMethods(), contextWrapper(ctx));
+    const card = result.current.paymentMethods.find((m) => m.type === 'PAYMENT_CARD')!;
+    expect(card.surcharge).toEqual({ kind: 'perNetwork', amounts: { VISA: 30, MASTERCARD: 50 } });
+  });
+
+  it('ignores top-level surcharge on PAYMENT_CARD (backend quirk — networks are authoritative)', () => {
+    const ctx: PrimerCheckoutContextValue = {
+      ...readyContext,
+      clientSession: {
+        paymentMethodOptions: {
+          PAYMENT_CARD: {
+            surcharge: { amount: 100 }, // should be ignored — PAYMENT_CARD uses networks
+            networks: { VISA: { surcharge: { amount: 30 } } },
+          },
+        },
+      } as unknown as PrimerCheckoutContextValue['clientSession'],
+    };
+    const { result } = renderHook(() => usePaymentMethods(), contextWrapper(ctx));
+    const card = result.current.paymentMethods.find((m) => m.type === 'PAYMENT_CARD')!;
+    expect(card.surcharge).toEqual({ kind: 'perNetwork', amounts: { VISA: 30 } });
+  });
+
+  it('ignores networks on non-card methods', () => {
+    const ctx: PrimerCheckoutContextValue = {
+      ...readyContext,
+      clientSession: {
+        paymentMethodOptions: {
+          PAYPAL: {
+            surcharge: { amount: 99 },
+            networks: { SOME_NETWORK: { surcharge: { amount: 5 } } },
+          },
+        },
+      } as unknown as PrimerCheckoutContextValue['clientSession'],
+    };
+    const { result } = renderHook(() => usePaymentMethods(), contextWrapper(ctx));
+    const paypal = result.current.paymentMethods.find((m) => m.type === 'PAYPAL')!;
+    expect(paypal.surcharge).toEqual({ kind: 'flat', amount: 99 });
+  });
+
+  it('exposes native-view resource on the discriminated union', () => {
+    const ctx: PrimerCheckoutContextValue = {
+      ...readyContext,
+      availablePaymentMethods: [makeMethod('IDEAL')],
+      paymentMethodResources: [makeNativeViewResource('IDEAL', 'iDEAL', 'IdealNativeView')],
+    };
+    const { result } = renderHook(() => usePaymentMethods(), contextWrapper(ctx));
+    const ideal = result.current.paymentMethods[0]!;
+    // Consumers discriminate via `resource` directly.
+    expect(ideal.resource && 'nativeViewName' in ideal.resource).toBe(true);
+    expect(ideal.nativeViewName).toBe('IdealNativeView');
+    expect(ideal.logo).toBeUndefined();
+    expect(ideal.backgroundColor).toBeUndefined();
+  });
+
+  it('exposes asset resource on the discriminated union', () => {
+    const { result } = renderHook(() => usePaymentMethods(), contextWrapper(readyContext));
+    const card = result.current.paymentMethods.find((m) => m.type === 'PAYMENT_CARD')!;
+    expect(card.resource && 'paymentMethodLogo' in card.resource).toBe(true);
+    expect(card.nativeViewName).toBeUndefined();
+  });
+
+  it('fires onLoad once after initial load with the built list', () => {
+    const onLoad = jest.fn();
+    renderHook(() => usePaymentMethods({ onLoad }), contextWrapper(readyContext));
+    expect(onLoad).toHaveBeenCalledTimes(1);
+    const calledWith = onLoad.mock.calls[0]![0];
+    expect(calledWith.map((m: { type: string }) => m.type).sort()).toEqual(['APPLE_PAY', 'PAYMENT_CARD', 'PAYPAL']);
+  });
+
+  it('does not fire onLoad while loading', () => {
+    const onLoad = jest.fn();
+    const ctx: PrimerCheckoutContextValue = { ...readyContext, isReady: false };
+    renderHook(() => usePaymentMethods({ onLoad }), contextWrapper(ctx));
+    expect(onLoad).not.toHaveBeenCalled();
+  });
+
+  it('re-fires onLoad when the set of payment method types changes', () => {
+    const onLoad = jest.fn();
+    let setCtx: (next: PrimerCheckoutContextValue) => void = () => {};
+
+    function Host() {
+      const [ctx, setState] = useState(readyContext);
+      setCtx = setState;
+      return createElement(PrimerCheckoutContext.Provider, { value: ctx }, createElement(Inner));
+    }
+    function Inner() {
+      usePaymentMethods({ onLoad });
+      return null;
+    }
+
+    act(() => {
+      create(createElement(Host));
+    });
+    expect(onLoad).toHaveBeenCalledTimes(1);
+
+    // Rebuild context with same types — should NOT re-fire
+    act(() => {
+      setCtx({ ...readyContext, paymentMethodResources: [...readyContext.paymentMethodResources] });
+    });
+    expect(onLoad).toHaveBeenCalledTimes(1);
+
+    // Change the set of types — SHOULD re-fire
+    act(() => {
+      setCtx({
+        ...readyContext,
+        availablePaymentMethods: [makeMethod('PAYMENT_CARD'), makeMethod('PAYPAL')],
+      });
+    });
+    expect(onLoad).toHaveBeenCalledTimes(2);
   });
 });

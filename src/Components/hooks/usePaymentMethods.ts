@@ -1,9 +1,49 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { usePrimerCheckout } from './usePrimerCheckout';
-import type { PaymentMethodItem, UsePaymentMethodsOptions, UsePaymentMethodsReturn } from '../types/PaymentMethodTypes';
+import { titleCaseFromType } from '../internal/utils/formatting';
+import { toError } from '../internal/utils/errors';
+import type { PrimerClientSessionPaymentMethodOption } from '../../models/PrimerClientSession';
+import type {
+  PaymentMethodItem,
+  PaymentMethodSurcharge,
+  UsePaymentMethodsOptions,
+  UsePaymentMethodsReturn,
+} from '../types/PaymentMethodTypes';
+
+const PAYMENT_CARD_TYPE = 'PAYMENT_CARD';
+
+// Mirrors Android's `PaymentMethodDataResponse.surcharges()` mapping:
+// PAYMENT_CARD → CardNetworksSurcharge; everything else → PaymentMethodSurcharge.
+function buildSurchargeMap(
+  paymentMethodOptions: Record<string, PrimerClientSessionPaymentMethodOption> | undefined
+): Map<string, PaymentMethodSurcharge> {
+  const result = new Map<string, PaymentMethodSurcharge>();
+  if (!paymentMethodOptions) return result;
+
+  for (const [methodType, methodOpts] of Object.entries(paymentMethodOptions)) {
+    if (methodType === PAYMENT_CARD_TYPE) {
+      const amounts: Record<string, number> = {};
+      for (const [network, networkOpts] of Object.entries(methodOpts?.networks ?? {})) {
+        const amount = networkOpts?.surcharge?.amount;
+        if (amount != null) {
+          amounts[network] = amount;
+        }
+      }
+      if (Object.keys(amounts).length > 0) {
+        result.set(methodType, { kind: 'perNetwork', amounts });
+      }
+    } else {
+      const amount = methodOpts?.surcharge?.amount;
+      if (amount != null) {
+        result.set(methodType, { kind: 'flat', amount });
+      }
+    }
+  }
+  return result;
+}
 
 export function usePaymentMethods(options: UsePaymentMethodsOptions = {}): UsePaymentMethodsReturn {
-  const { include, exclude, showCardFirst = true, onLoad } = options;
+  const { include, exclude, onLoad } = options;
 
   const {
     availablePaymentMethods,
@@ -19,7 +59,7 @@ export function usePaymentMethods(options: UsePaymentMethodsOptions = {}): UsePa
   const onLoadRef = useRef(onLoad);
   onLoadRef.current = onLoad;
 
-  const hasFiredLoadRef = useRef(false);
+  const lastFiredSignatureRef = useRef<string | null>(null);
 
   const isLoading = !isReady || isLoadingResources;
 
@@ -31,16 +71,7 @@ export function usePaymentMethods(options: UsePaymentMethodsOptions = {}): UsePa
     try {
       const resourceMap = new Map(paymentMethodResources.map((r) => [r.paymentMethodType, r]));
 
-      const surchargeMap = new Map<string, number>();
-      const paymentMethodOptions = clientSession?.paymentMethodOptions;
-      if (paymentMethodOptions) {
-        for (const [methodType, methodOpts] of Object.entries(paymentMethodOptions)) {
-          const amount = methodOpts?.surcharge?.amount;
-          if (amount != null) {
-            surchargeMap.set(methodType, amount);
-          }
-        }
-      }
+      const surchargeMap = buildSurchargeMap(clientSession?.paymentMethodOptions);
 
       let result: PaymentMethodItem[] = availablePaymentMethods.map((method) => {
         const resource = resourceMap.get(method.paymentMethodType);
@@ -53,15 +84,11 @@ export function usePaymentMethods(options: UsePaymentMethodsOptions = {}): UsePa
           backgroundColor = resource.paymentMethodBackgroundColor?.colored;
         }
 
-        const isNativeView =
-          resource != null && 'nativeViewName' in resource && typeof resource.nativeViewName === 'string';
-
         return {
           type: method.paymentMethodType,
-          name: resource?.paymentMethodName ?? method.paymentMethodType.replace(/_/g, ' '),
+          name: resource?.paymentMethodName ?? titleCaseFromType(method.paymentMethodType),
           logo,
           backgroundColor,
-          isNativeView,
           nativeViewName: resource?.nativeViewName,
           categories: [...method.paymentMethodManagerCategories],
           intents: [...method.supportedPrimerSessionIntents],
@@ -71,7 +98,6 @@ export function usePaymentMethods(options: UsePaymentMethodsOptions = {}): UsePa
         };
       });
 
-      // Filter: include first, then exclude
       if (include && include.length > 0) {
         result = result.filter((item) => include.includes(item.type));
       }
@@ -79,31 +105,36 @@ export function usePaymentMethods(options: UsePaymentMethodsOptions = {}): UsePa
         result = result.filter((item) => !exclude.includes(item.type));
       }
 
-      // Sort: PAYMENT_CARD first
-      if (showCardFirst) {
-        result.sort((a, b) => {
-          if (a.type === 'PAYMENT_CARD') return -1;
-          if (b.type === 'PAYMENT_CARD') return 1;
-          return 0;
-        });
-      }
-
       return { items: result, error: null };
     } catch (err) {
-      return { items: [], error: err as Error };
+      return { items: [], error: toError(err) };
     }
-  }, [availablePaymentMethods, paymentMethodResources, isLoading, clientSession, include, exclude, showCardFirst]);
+  }, [availablePaymentMethods, paymentMethodResources, isLoading, clientSession, include, exclude]);
 
+  // Fires onLoad once per distinct set of payment-method types, after resources load.
+  // Re-fires if the set of types changes (e.g. client-session update adds/removes a method).
   useEffect(() => {
     if (isLoading) {
-      hasFiredLoadRef.current = false;
+      lastFiredSignatureRef.current = null;
       return;
     }
-    if (!hasFiredLoadRef.current) {
-      hasFiredLoadRef.current = true;
+    const signature = paymentMethods
+      .map((m) => m.type)
+      .sort()
+      .join('|');
+    if (signature !== lastFiredSignatureRef.current) {
+      lastFiredSignatureRef.current = signature;
       onLoadRef.current?.(paymentMethods);
     }
   }, [isLoading, paymentMethods]);
+
+  // Clear selection if the selected type is no longer present (e.g. filtered out).
+  useEffect(() => {
+    if (isLoading) return;
+    if (selectedType != null && !paymentMethods.some((m) => m.type === selectedType)) {
+      setSelectedType(null);
+    }
+  }, [isLoading, selectedType, paymentMethods]);
 
   const selectedMethod = useMemo(
     () => paymentMethods.find((m) => m.type === selectedType) ?? null,

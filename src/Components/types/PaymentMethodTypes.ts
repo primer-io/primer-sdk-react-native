@@ -1,16 +1,22 @@
 import type { PrimerPaymentMethodAsset, PrimerPaymentMethodNativeView } from '../../models/PrimerPaymentMethodResource';
 import type { IPrimerHeadlessUniversalCheckoutPaymentMethod } from '../../models/PrimerHeadlessUniversalCheckoutPaymentMethod';
 
+// Mirrors the Android SDK's `Surcharge` sealed interface.
+// - `flat`: single amount on non-card methods (PAYPAL, APPLE_PAY, …)
+// - `perNetwork`: PAYMENT_CARD surcharge keyed by card network (VISA, MASTERCARD, …)
+export type PaymentMethodSurcharge =
+  | { kind: 'flat'; amount: number }
+  | { kind: 'perNetwork'; amounts: Record<string, number> };
+
 export interface PaymentMethodItem {
   type: string;
   name: string;
   logo?: string;
   backgroundColor?: string;
-  isNativeView: boolean;
   nativeViewName?: string;
   categories: string[];
   intents: string[];
-  surcharge?: number;
+  surcharge?: PaymentMethodSurcharge;
   resource?: PrimerPaymentMethodAsset | PrimerPaymentMethodNativeView;
   paymentMethod: IPrimerHeadlessUniversalCheckoutPaymentMethod;
 }
@@ -18,7 +24,6 @@ export interface PaymentMethodItem {
 export interface UsePaymentMethodsOptions {
   include?: string[];
   exclude?: string[];
-  showCardFirst?: boolean;
   onLoad?: (methods: PaymentMethodItem[]) => void;
 }
 
