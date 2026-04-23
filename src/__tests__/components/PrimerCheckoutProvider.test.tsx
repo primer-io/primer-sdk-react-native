@@ -28,7 +28,7 @@ import { createElement } from 'react';
 import renderer, { act } from 'react-test-renderer';
 import { PrimerCheckoutProvider } from '../../Components/PrimerCheckoutProvider';
 import { usePrimerCheckout } from '../../Components/hooks/usePrimerCheckout';
-import type { PrimerCheckoutContextValue } from '../../models/components/PrimerCheckoutProviderTypes';
+import type { PrimerCheckoutContextValue } from '../../Components/types/PrimerCheckoutProviderTypes';
 
 const rnMock = require('react-native');
 const nativeModule = rnMock.NativeModules.PrimerHeadlessUniversalCheckout;
@@ -196,6 +196,92 @@ describe('PrimerCheckoutProvider', () => {
 
     // Should still be 1 — callbacks are ref-stable
     expect(nativeModule.startWithClientToken).toHaveBeenCalledTimes(1);
+  });
+
+  it('clears isLoadingResources when no payment methods are configured', async () => {
+    // startWithClientToken resolves with an empty list — nothing to fetch.
+    nativeModule.startWithClientToken.mockResolvedValue({ availablePaymentMethods: [] });
+
+    let captured: PrimerCheckoutContextValue | undefined;
+
+    await act(async () => {
+      renderer.create(
+        createElement(
+          PrimerCheckoutProvider,
+          { clientToken: 'token-1' },
+          createElement(TestConsumer, {
+            onContext: (ctx: PrimerCheckoutContextValue) => {
+              captured = ctx;
+            },
+          })
+        )
+      );
+      await flushPromises();
+    });
+
+    // Should settle — not hang on isLoadingResources: true forever.
+    expect(captured!.isReady).toBe(true);
+    expect(captured!.availablePaymentMethods).toEqual([]);
+    expect(captured!.isLoadingResources).toBe(false);
+    expect(captured!.paymentMethodResources).toEqual([]);
+  });
+
+  it('sets isLoadingResources: true atomically when onAvailablePaymentMethodsLoad fires post-ready', async () => {
+    const captures: PrimerCheckoutContextValue[] = [];
+
+    await act(async () => {
+      renderer.create(
+        createElement(
+          PrimerCheckoutProvider,
+          { clientToken: 'token-1' },
+          createElement(TestConsumer, {
+            onContext: (ctx: PrimerCheckoutContextValue) => {
+              captures.push(ctx);
+            },
+          })
+        )
+      );
+      await flushPromises();
+    });
+
+    // Simulate native firing onAvailablePaymentMethodsLoad with a new list (e.g. after a
+    // client-session update). Assert no frame has the combination of new methods +
+    // previous resources + isLoadingResources: false (which would render stale data).
+    const listener = findListener('onAvailablePaymentMethodsLoad');
+    expect(listener).toBeDefined();
+
+    captures.length = 0;
+    await act(async () => {
+      listener!({
+        availablePaymentMethods: [
+          {
+            paymentMethodType: 'KLARNA',
+            paymentMethodManagerCategories: ['NATIVE_UI'],
+            supportedPrimerSessionIntents: ['CHECKOUT'],
+          },
+          {
+            paymentMethodType: 'PAYPAL',
+            paymentMethodManagerCategories: ['NATIVE_UI'],
+            supportedPrimerSessionIntents: ['CHECKOUT'],
+          },
+        ],
+      });
+    });
+
+    // Every captured frame where the new method list is present should have
+    // isLoadingResources: true — no stale-data window.
+    const framesWithNewList = captures.filter((c) =>
+      c.availablePaymentMethods.some((m) => m.paymentMethodType === 'KLARNA')
+    );
+    expect(framesWithNewList.length).toBeGreaterThan(0);
+    for (const frame of framesWithNewList) {
+      if (frame.isLoadingResources) continue; // fetch in flight — fine
+      // If loading is false, the resources must correspond to the new list
+      // (no stale state from before the list changed).
+      expect(frame.paymentMethodResources.length).toBeLessThanOrEqual(frame.availablePaymentMethods.length);
+    }
+    // And the first frame after the list change must be in the loading state.
+    expect(framesWithNewList[0]!.isLoadingResources).toBe(true);
   });
 });
 
