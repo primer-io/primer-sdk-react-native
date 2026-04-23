@@ -47,6 +47,7 @@ class PrimerSdkPackage : BaseReactPackage() {
     // New Architecture modules
     private val newArchModules: Array<Class<out NativeModule>> = arrayOf(
         NativePrimerModule::class.java,
+        PrimerViewUtilsModule::class.java,
     )
 
     override fun getModule(name: String, reactContext: ReactApplicationContext): NativeModule? =
@@ -85,6 +86,7 @@ class PrimerSdkPackage : BaseReactPackage() {
             )
 
             PrimerGooglePayButtonConstantsModule.NAME -> PrimerGooglePayButtonConstantsModule(reactContext)
+            PrimerViewUtilsModule.NAME -> PrimerViewUtilsModule(reactContext)
             else -> null
         }
 
