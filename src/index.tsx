@@ -132,7 +132,14 @@ export type { NamedComponentValidatableData };
 
 export { PrimerCheckoutProvider } from './Components';
 export { usePrimerCheckout } from './Components';
+export { usePaymentMethods } from './Components';
 export type { PrimerCheckoutProviderProps, PrimerCheckoutContextValue } from './Components';
+export type {
+  PaymentMethodItem,
+  PaymentMethodSurcharge,
+  UsePaymentMethodsOptions,
+  UsePaymentMethodsReturn,
+} from './Components';
 
 export { useLocalization, translate, hasLocale } from './Components/internal/localization';
 export type { TranslationParams, LocalizationResult } from './Components/internal/localization';
