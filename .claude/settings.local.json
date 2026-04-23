@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc:*)",
+      "mcp__figma__get_design_context",
+      "Bash(npx eslint:*)",
+      "Bash(npm test:*)",
+      "mcp__figma__get_screenshot",
+      "Bash(git ls-tree:*)",
+      "Bash(npx jest:*)",
+      "mcp__claude_ai_Atlassian__getJiraIssue",
+      "mcp__claude_ai_Atlassian__searchJiraIssuesUsingJql",
+      "Bash(npm run:*)"
+    ]
+  }
+}
