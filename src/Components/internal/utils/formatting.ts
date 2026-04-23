@@ -14,3 +14,19 @@ export function formatDate(date: Date, locale: string, options?: Intl.DateTimeFo
     return date.toISOString();
   }
 }
+
+/**
+ * Converts a SCREAMING_SNAKE_CASE payment method type to a human-readable label.
+ *
+ * Used as a fallback when a resource-provided `paymentMethodName` is unavailable.
+ *
+ * @example titleCaseFromType('PAYMENT_CARD') // 'Payment Card'
+ */
+export function titleCaseFromType(type: string): string {
+  return type
+    .toLowerCase()
+    .split(/[_\s]+/)
+    .filter(Boolean)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
+}

@@ -1,20 +1,24 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { PrimerCheckoutContext } from './internal/PrimerCheckoutContext';
 import { ThemeContext } from './internal/theme/ThemeContext';
 import { defaultDarkTokens, defaultLightTokens } from './internal/theme/tokens';
 import { mergeTokens } from './internal/theme/merge';
 import { PrimerHeadlessUniversalCheckout } from '../HeadlessUniversalCheckout/PrimerHeadlessUniversalCheckout';
+import PrimerHeadlessUniversalCheckoutAssetsManager from '../HeadlessUniversalCheckout/Managers/AssetsManager';
+import { toError } from './internal/utils/errors';
 import type { PrimerSettings } from '../models/PrimerSettings';
-import type {
-  PrimerCheckoutProviderProps,
-  PrimerCheckoutContextValue,
-} from '../models/components/PrimerCheckoutProviderTypes';
+import type { PrimerCheckoutProviderProps, PrimerCheckoutContextValue } from './types/PrimerCheckoutProviderTypes';
+
+const assetsManager = new PrimerHeadlessUniversalCheckoutAssetsManager();
 
 const initialState: PrimerCheckoutContextValue = {
   isReady: false,
   error: null,
   clientSession: null,
   availablePaymentMethods: [],
+  paymentMethodResources: [],
+  isLoadingResources: false,
+  resourcesError: null,
 };
 
 export function PrimerCheckoutProvider({
@@ -56,7 +60,15 @@ export function PrimerCheckoutProvider({
       // will hang the flow if defined but no handler is invoked.
       const callbacks: PrimerSettings['headlessUniversalCheckoutCallbacks'] = {
         onAvailablePaymentMethodsLoad: (availablePaymentMethods) => {
-          setState((prev) => ({ ...prev, availablePaymentMethods }));
+          // Flip isLoadingResources: true atomically with the new list so the hook
+          // doesn't render for one frame with new methods + stale resources.
+          // The fetch effect picks it up on the next tick via methodTypesSignature.
+          setState((prev) => ({
+            ...prev,
+            availablePaymentMethods,
+            isLoadingResources: true,
+            resourcesError: null,
+          }));
           settingsRef.current?.headlessUniversalCheckoutCallbacks?.onAvailablePaymentMethodsLoad?.(
             availablePaymentMethods
           );
@@ -142,10 +154,14 @@ export function PrimerCheckoutProvider({
       const methods = await PrimerHeadlessUniversalCheckout.startWithClientToken(clientToken, mergedSettings);
 
       if (!cancelled) {
+        // Seed isLoadingResources atomically with isReady so consumers don't see a
+        // brief "ready but no resources loading" window before the fetch effect runs.
         setState((prev) => ({
           ...prev,
           isReady: true,
           availablePaymentMethods: methods,
+          isLoadingResources: true,
+          resourcesError: null,
         }));
       }
     }
@@ -161,6 +177,56 @@ export function PrimerCheckoutProvider({
       PrimerHeadlessUniversalCheckout.cleanUp();
     };
   }, [clientToken]);
+
+  // Re-fetch payment method resources whenever the set of available method types changes.
+  const methodTypesSignature = useMemo(
+    () =>
+      state.availablePaymentMethods
+        .map((m) => m.paymentMethodType)
+        .sort()
+        .join('|'),
+    [state.availablePaymentMethods]
+  );
+
+  useEffect(() => {
+    if (!state.isReady) return;
+
+    // No methods configured → nothing to fetch. Clear the loading flag so
+    // consumers don't hang on `isLoading: true` forever (init sets it
+    // optimistically before we know the method list is empty).
+    if (state.availablePaymentMethods.length === 0) {
+      setState((prev) =>
+        prev.isLoadingResources || prev.paymentMethodResources.length > 0
+          ? { ...prev, paymentMethodResources: [], isLoadingResources: false }
+          : prev
+      );
+      return;
+    }
+
+    let cancelled = false;
+    setState((prev) =>
+      prev.isLoadingResources && prev.resourcesError === null
+        ? prev
+        : { ...prev, isLoadingResources: true, resourcesError: null }
+    );
+
+    assetsManager
+      .getPaymentMethodResources()
+      .then((resources) => {
+        if (!cancelled) {
+          setState((prev) => ({ ...prev, paymentMethodResources: resources, isLoadingResources: false }));
+        }
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setState((prev) => ({ ...prev, isLoadingResources: false, resourcesError: toError(err) }));
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [state.isReady, methodTypesSignature]);
 
   return (
     <ThemeContext.Provider value={{ lightTokens, darkTokens }}>
