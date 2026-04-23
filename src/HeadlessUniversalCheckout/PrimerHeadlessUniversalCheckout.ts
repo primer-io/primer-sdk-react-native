@@ -1,3 +1,4 @@
+import RNPrimer from '../RNPrimer';
 import RNPrimerHeadlessUniversalCheckout from './RNPrimerHeadlessUniversalCheckout';
 import type { PrimerCheckoutData } from '../models/PrimerCheckoutData';
 import type { PrimerCheckoutAdditionalInfo } from '../models/PrimerCheckoutAdditionalInfo';
@@ -293,6 +294,11 @@ class PrimerHeadlessUniversalCheckoutClass {
 
     return new Promise(async (resolve, reject) => {
       try {
+        // Enforce "one mode active at a time": tear down any drop-in JS subscriptions
+        // left over from a previous Primer.showUniversalCheckout session. On Android,
+        // both modules share RCTDeviceEventEmitter — stale drop-in listeners would
+        // fire duplicate consumer callbacks when headless events are emitted.
+        RNPrimer.removeAllListeners();
         await configureListeners();
         const res = await RNPrimerHeadlessUniversalCheckout.startWithClientToken(clientToken, settings);
 
@@ -316,6 +322,8 @@ class PrimerHeadlessUniversalCheckoutClass {
   }
 
   cleanUp(): Promise<void> {
+    RNPrimerHeadlessUniversalCheckout.removeAllListeners();
+    primerSettings = undefined;
     return RNPrimerHeadlessUniversalCheckout.cleanUp();
   }
 }
