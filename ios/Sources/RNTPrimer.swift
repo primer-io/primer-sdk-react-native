@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import PrimerSDK
+@_spi(PrimerInternal) import PrimerSDK
 import UIKit
 import React
 
@@ -63,6 +63,7 @@ enum PrimerEvents: Int, CaseIterable {
     var primerDidResumeWithDecisionHandler: ((_ resumeToken: String?, _ errorMessage: String?) -> Void)?
     var primerDidFailWithErrorDecisionHandler: ((_ errorMessage: String) -> Void)?
     var implementedRNCallbacks: ImplementedRNCallbacks?
+    private var analyticsLoggingBridge: ComponentsAnalyticsLoggingBridge?
 
     // MARK: - INITIALIZATION & REACT NATIVE SUPPORT
 
@@ -335,6 +336,58 @@ enum PrimerEvents: Int, CaseIterable {
             } catch {
               self.handleRNBridgeError(error, checkoutData: nil, stopOnDebug: false)
                 rejecter(error.rnError["errorId"]!, error.rnError["description"], error)
+            }
+        }
+    }
+
+    // MARK: - Analytics Bridge
+
+    @objc
+    public func trackAnalyticsEvent(
+        _ eventName: String,
+        metadata: String?,
+        resolver: @escaping RCTPromiseResolveBlock,
+        rejecter: @escaping RCTPromiseRejectBlock
+    ) {
+        DispatchQueue.main.async {
+            let metadataDict: [String: String]?
+            if let metadata = metadata,
+               let data = metadata.data(using: .utf8),
+               let dict = try? JSONSerialization.jsonObject(with: data) as? [String: String] {
+                metadataDict = dict
+            } else {
+                metadataDict = nil
+            }
+            Task { await self.analyticsLoggingBridge?.trackEvent(eventName, metadata: metadataDict) }
+            resolver(nil)
+        }
+    }
+
+    @objc
+    public func sendLog(
+        _ message: String,
+        event: String,
+        resolver: @escaping RCTPromiseResolveBlock,
+        rejecter: @escaping RCTPromiseRejectBlock
+    ) {
+        DispatchQueue.main.async {
+            Task { await self.analyticsLoggingBridge?.logInfo(message: message, event: event) }
+            resolver(nil)
+        }
+    }
+
+    @objc
+    public func setupAnalyticsLoggingBridge(
+        _ clientToken: String,
+        resolver: @escaping RCTPromiseResolveBlock,
+        rejecter: @escaping RCTPromiseRejectBlock
+    ) {
+        DispatchQueue.main.async {
+            let bridge = ComponentsAnalyticsLoggingBridge()
+            self.analyticsLoggingBridge = bridge
+            Task {
+                await bridge.setup(clientToken: clientToken)
+                resolver(nil)
             }
         }
     }

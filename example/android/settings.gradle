@@ -4,3 +4,18 @@ extensions.configure(com.facebook.react.ReactSettingsExtension){ ex -> ex.autoli
 rootProject.name = 'example'
 include ':app'
 includeBuild('../node_modules/@react-native/gradle-plugin')
+
+// Local Primer Android SDK — Gradle composite build.
+// Substitutes `io.primer:android` with the local SDK `:drop-in` project so you
+// can test unpublished SDK changes without running `publishToMavenLocal`.
+// Override the default path with `PRIMER_ANDROID_SDK_PATH` in gradle.properties.
+def primerAndroidSdkPath = providers.gradleProperty('PRIMER_ANDROID_SDK_PATH').getOrElse('../../../primer-sdk-android')
+def primerAndroidSdkDir = file(primerAndroidSdkPath)
+if (primerAndroidSdkDir.exists()) {
+    includeBuild(primerAndroidSdkDir) {
+        dependencySubstitution {
+            substitute module('io.primer:android') using project(':drop-in')
+            substitute module('io.primer:components-analytics') using project(':components-analytics')
+        }
+    }
+}
