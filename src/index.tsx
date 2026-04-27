@@ -146,6 +146,18 @@ export { PrimerPaymentMethodList } from './Components';
 export type { PrimerPaymentMethodListProps } from './Components';
 export { PrimerCheckoutSheet } from './Components';
 export type { PrimerCheckoutSheetProps } from './Components';
+export { PrimerTextInput, CardNumberInput, ExpiryDateInput, CVVInput, CardholderNameInput } from './Components';
+export type {
+  PrimerTextInputTheme,
+  PrimerTextInputProps,
+  PrimerTextInputRef,
+  CardInputTheme,
+  CardInputBaseProps,
+  CardNumberInputProps,
+  ExpiryDateInputProps,
+  CVVInputProps,
+  CardholderNameInputProps,
+} from './Components';
 
 export { useLocalization, translate, hasLocale } from './Components/internal/localization';
 export type { TranslationParams, LocalizationResult } from './Components/internal/localization';
