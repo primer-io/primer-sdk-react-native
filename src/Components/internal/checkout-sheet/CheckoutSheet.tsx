@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { HeightReleaseFn } from './SheetHeightContext';
 import {
   Animated,
   Easing,
@@ -36,14 +37,17 @@ export function CheckoutSheet({
   const styles = useMemo(() => createStyles(tokens), [tokens]);
 
   const [modalVisible, setModalVisible] = useState(false);
-  const [heightRatio, setHeightRatioState] = useState(DEFAULT_HEIGHT_RATIO);
+  // Token-keyed stack: latest entry wins. Per-token release prevents a stale screen's
+  // cleanup from clobbering the current screen's height request.
+  const [heightRequests, setHeightRequests] = useState<Array<{ token: number; ratio: number }>>([]);
+  const heightRatio =
+    heightRequests.length > 0 ? heightRequests[heightRequests.length - 1]!.ratio : DEFAULT_HEIGHT_RATIO;
+  const nextTokenRef = useRef(0);
 
-  // Show/hide animation: 0 = hidden (off-screen below), 1 = fully shown
+  // 0 = hidden (off-screen below), 1 = fully shown.
   const showAnimValue = useRef(new Animated.Value(0)).current;
-  // Height offset: translateY to push the sheet down so only the desired height is visible.
-  // 0 = full screen, (screenHeight - sheetHeight) = shows only sheetHeight from the bottom.
+  // translateY that pushes the sheet down so only `heightRatio` of the screen shows.
   const heightOffsetValue = useRef(new Animated.Value(screenHeight * (1 - DEFAULT_HEIGHT_RATIO))).current;
-  // Drag offset: tracks finger position during a swipe-down gesture.
   const dragValue = useRef(new Animated.Value(0)).current;
   const isMountedRef = useRef(true);
 
@@ -58,7 +62,6 @@ export function CheckoutSheet({
     };
   }, []);
 
-  // Animate height offset when heightRatio changes
   useEffect(() => {
     Animated.timing(heightOffsetValue, {
       toValue: heightOffset,
@@ -117,11 +120,10 @@ export function CheckoutSheet({
     });
   }, [dragValue, sheetHeight, showAnimValue, onDismiss, onRequestDismiss]);
 
-  // Handle visible prop changes (including initial mount with visible=true)
   const prevVisibleRef = useRef(false);
   useEffect(() => {
     if (visible && !prevVisibleRef.current) {
-      setHeightRatioState(DEFAULT_HEIGHT_RATIO);
+      setHeightRequests([]);
       heightOffsetValue.setValue(screenHeight * (1 - DEFAULT_HEIGHT_RATIO));
       setModalVisible(true);
     } else if (!visible && prevVisibleRef.current && modalVisible) {
@@ -166,25 +168,29 @@ export function CheckoutSheet({
     [dismissOnSwipeDown, sheetHeight, dragValue, dismissBySwipe, springDragBack]
   );
 
-  const sheetHeightContextValue = useMemo<SheetHeightContextValue>(
-    () => ({
-      setHeight: (h: number) => setHeightRatioState(Math.max(MIN_HEIGHT_RATIO, Math.min(1, h / screenHeight))),
-      setHeightRatio: (ratio: number) => setHeightRatioState(Math.max(MIN_HEIGHT_RATIO, Math.min(1, ratio))),
-      resetHeight: () => setHeightRatioState(DEFAULT_HEIGHT_RATIO),
-    }),
-    [screenHeight]
-  );
+  const sheetHeightContextValue = useMemo<SheetHeightContextValue>(() => {
+    const register = (ratio: number): HeightReleaseFn => {
+      const clamped = Math.max(MIN_HEIGHT_RATIO, Math.min(1, ratio));
+      const token = nextTokenRef.current++;
+      setHeightRequests((prev) => [...prev, { token, ratio: clamped }]);
+      return () => {
+        setHeightRequests((prev) => prev.filter((r) => r.token !== token));
+      };
+    };
+    return {
+      requestHeight: (h: number) => register(h / screenHeight),
+      requestHeightRatio: (r: number) => register(r),
+    };
+  }, [screenHeight]);
 
-  // Show/hide: slide the entire sheet from below the screen to its resting position
+  // Slide the entire sheet from below the screen to its resting position.
   const showTranslateY = showAnimValue.interpolate({
     inputRange: [0, 1],
     outputRange: [screenHeight, 0],
   });
 
-  // Combined translateY: show animation + height offset + drag offset
   const translateY = Animated.add(Animated.add(showTranslateY, heightOffsetValue), dragValue);
 
-  // Backdrop fades with both the show animation and the drag progress
   const backdropOpacity = Animated.multiply(
     showAnimValue,
     dragValue.interpolate({
