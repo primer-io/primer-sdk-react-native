@@ -11,6 +11,7 @@ import type { PrimerSettings } from '../models/PrimerSettings';
 import { PrimerError } from '../models/PrimerError';
 import type { PrimerCheckoutData } from '../models/PrimerCheckoutData';
 import type { PrimerRawData } from '../models/PrimerRawData';
+import type { PrimerAddress } from '../models/PrimerClientSession';
 import type { PrimerBinData } from '../models/PrimerBinData';
 import type { PrimerVaultedPaymentMethod } from '../models/PrimerVaultedPaymentMethod';
 import type {
@@ -537,6 +538,20 @@ export function PrimerCheckoutProvider({
     }
   }, []);
 
+  const setBillingAddress = useCallback(async (address: PrimerAddress) => {
+    const m = managerRef.current;
+    if (!m) {
+      console.warn(`${LOG} setBillingAddress: no manager (activeMethod=${stateRef.current.activeMethod})`);
+      return;
+    }
+    try {
+      await m.setBillingAddress(address);
+    } catch (err) {
+      console.warn(`${LOG} setBillingAddress failed ${fmt(err)}`);
+      throw err;
+    }
+  }, []);
+
   const submit = useCallback(async () => {
     const m = managerRef.current;
     if (!m) {
@@ -674,6 +689,7 @@ export function PrimerCheckoutProvider({
       vaultDisplayOverride: state.vaultDisplayOverride,
       setActiveMethod,
       setRawData,
+      setBillingAddress,
       submit,
       retry,
       clearPaymentOutcome,
@@ -685,6 +701,7 @@ export function PrimerCheckoutProvider({
       state,
       setActiveMethod,
       setRawData,
+      setBillingAddress,
       submit,
       retry,
       clearPaymentOutcome,

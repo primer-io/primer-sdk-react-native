@@ -8,7 +8,15 @@ interface IPrimerClientSession {
   lineItems?: IPrimerLineItem[];
   orderDetails?: IPrimerOrder;
   customer?: IPrimerCustomer;
+  checkoutModules?: IPrimerCheckoutModule[];
   paymentMethodOptions?: Record<string, IPrimerClientSessionPaymentMethodOption>;
+}
+
+export type PrimerCheckoutModule = IPrimerCheckoutModule;
+
+interface IPrimerCheckoutModule {
+  type: string;
+  options?: Record<string, boolean>;
 }
 
 export type PrimerClientSessionPaymentMethodOption = IPrimerClientSessionPaymentMethodOption;

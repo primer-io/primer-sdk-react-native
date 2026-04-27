@@ -265,6 +265,23 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
       self.sendEvent(
         withName: rnCallbackName,
         body: ["availablePaymentMethods": paymentMethods.compactMap({ $0.toJsonObject() })])
+
+      // The native SDK only fires `primerHeadlessUniversalCheckoutDidUpdateClientSession`
+      // on subsequent updates, never on initial load. Read the current session via
+      // `getClientSession()` and synthesize the update event so JS receives the initial
+      // session at startup.
+      if self.implementedRNCallbacks?.isOnClientSessionUpdateImplemented == true,
+         let initialClientSession = PrimerHeadlessUniversalCheckout.current.getClientSession() {
+        let updateCallbackName = PrimerHeadlessUniversalCheckoutEvents.onClientSessionUpdate.stringValue
+        do {
+          let json = try initialClientSession.toJsonObject()
+          self.sendEvent(
+            withName: updateCallbackName,
+            body: ["clientSession": json])
+        } catch {
+          self.handleRNBridgeError(error, checkoutData: nil, stopOnDebug: true)
+        }
+      }
     }
   }
 
