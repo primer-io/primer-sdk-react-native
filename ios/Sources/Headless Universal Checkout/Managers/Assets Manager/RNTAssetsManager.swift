@@ -23,24 +23,47 @@ class RNTPrimerHeadlessUniversalCheckoutAssetsManager: RCTEventEmitter {
     }
 
     @objc
+    func getCardNetworkTraits(
+        _ cardNetworkStr: String,
+        resolver: RCTPromiseResolveBlock,
+        rejecter _: RCTPromiseRejectBlock
+    ) {
+        // iOS returns nil for networks without validation (bancontact, cartesBancaires, eftpos, unknown).
+        // JS normalises null to DEFAULT_DESCRIPTOR.
+        guard
+            let traits = PrimerSDK.PrimerHeadlessUniversalCheckout.AssetsManager
+                .getCardNetworkTraits(cardNetworkString: cardNetworkStr)
+        else {
+            resolver(nil)
+            return
+        }
+
+        resolver([
+            "cardNetwork": traits.cardNetwork.rawValue,
+            "displayName": traits.displayName,
+            "panLengths": traits.panLengths,
+            "gapPattern": traits.gapPattern,
+            "cvvLength": traits.cvvLength,
+            "cvvLabel": traits.cvvLabel
+        ])
+    }
+
+    @objc
     func getCardNetworkImage(
         _ cardNetworkStr: String,
         resolver: RCTPromiseResolveBlock,
         rejecter: RCTPromiseRejectBlock
     ) {
         do {
-
-            guard let cardNetwork = CardNetwork(rawValue: cardNetworkStr) else {
-                let err = RNTNativeError(
-                    errorId: "native-ios",
-                    errorDescription: "Failed to find asset of \(cardNetworkStr).",
-                    recoverySuggestion: nil)
-                throw err
-            }
-
+            // Use the current `getCardNetworkAsset` API. The previous
+            // `getCardNetworkImage(for:)` is deprecated and looks up
+            // `"{rawValue}-logo-colored"` resources that the iOS SDK no longer
+            // ships, so it fails for every network. `getCardNetworkAsset`
+            // resolves `"{assetName}-card-icon-colored"` and wraps the
+            // result in `PrimerCardNetworkAsset.cardImage`.
             guard
-                let cardNetworkImage = try PrimerSDK.PrimerHeadlessUniversalCheckout.AssetsManager
-                    .getCardNetworkImage(for: cardNetwork)
+                let cardNetworkImage = PrimerSDK.PrimerHeadlessUniversalCheckout.AssetsManager
+                    .getCardNetworkAsset(cardNetworkString: cardNetworkStr)?.cardImage
             else {
                 let err = RNTNativeError(
                     errorId: "native-ios",
@@ -49,7 +72,7 @@ class RNTPrimerHeadlessUniversalCheckoutAssetsManager: RCTEventEmitter {
                 throw err
             }
 
-            let localUrl = try cardNetworkImage.store(withName: cardNetwork.rawValue)
+            let localUrl = try cardNetworkImage.store(withName: cardNetworkStr)
             resolver(["cardNetworkImageURL": localUrl.absoluteString])
 
         } catch {

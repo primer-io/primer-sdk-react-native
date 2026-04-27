@@ -1,16 +1,20 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { usePrimerCheckout } from './usePrimerCheckout';
+import { useCardNetwork } from './useCardNetwork';
 import { debounce, type DebouncedFunction } from '../../utils/debounce';
 import { fmt } from '../internal/debug';
+import { formatDigitsWithGaps, maxFormattedCardNumberLength, maxPanDigits } from '../internal/cardNetwork';
 import type { CardFormField, CardFormErrors, UseCardFormOptions, UseCardFormReturn } from '../types/CardFormTypes';
 
 const LOG = '[useCardForm]';
 const DEBOUNCE_MS = 150;
 const PAYMENT_METHOD_TYPE = 'PAYMENT_CARD';
 
-function formatCardNumber(value: string): string {
-  const digits = value.replace(/\D/g, '').slice(0, 16);
-  return digits.replace(/(\d{4})(?=\d)/g, '$1 ');
+function formatCardNumber(value: string, gapPattern: readonly number[], maxDigits: number): string {
+  const digits = value.replace(/\D/g, '').slice(0, maxDigits);
+  const out = formatDigitsWithGaps(digits, gapPattern);
+  console.log(`${LOG} formatCardNumber ${fmt({ raw: value, digits, gapPattern, maxDigits, out })}`);
+  return out;
 }
 
 function formatExpiryDate(value: string, previous: string): string {
@@ -125,9 +129,19 @@ export function useCardForm(options: UseCardFormOptions = {}): UseCardFormReturn
     debouncedRef.current?.(data);
   }, []);
 
+  // Descriptor resolves asynchronously (see useCardNetwork). Capture via a ref so
+  // updateCardNumber's useCallback dep array doesn't re-close over descriptor each
+  // render; the ref is refreshed below whenever descriptor changes.
+  const { descriptor } = useCardNetwork();
+  const descriptorRef = useRef(descriptor);
+  descriptorRef.current = descriptor;
+
   const updateCardNumber = useCallback(
     (value: string) => {
-      const formatted = formatCardNumber(value);
+      const d = descriptorRef.current;
+      const gap = d?.gapPattern ?? [4, 8, 12];
+      const max = d ? maxPanDigits(d) : 19;
+      const formatted = formatCardNumber(value, gap, max);
       setCardNumber(formatted);
       fieldsRef.current.cardNumber = formatted;
       syncToNative();
@@ -177,6 +191,26 @@ export function useCardForm(options: UseCardFormOptions = {}): UseCardFormReturn
     }
     return visible;
   }, [cardFormState.errors, touched]);
+
+  // Mid-typing re-format: when the detected network flips (e.g. first 4 digits
+  // resolve to AMEX), reformat what's already in the field so spacing matches the
+  // new gap pattern AND truncate if the new max is shorter (OTHER 19 → Amex 15).
+  useEffect(() => {
+    const currentDigits = fieldsRef.current.cardNumber.replace(/\D/g, '');
+    if (!currentDigits) return;
+    const maxDigits = maxPanDigits(descriptor);
+    const truncated = currentDigits.slice(0, maxDigits);
+    const reformatted = formatDigitsWithGaps(truncated, descriptor.gapPattern);
+    if (reformatted === fieldsRef.current.cardNumber) return;
+    console.log(
+      `${LOG} reformat on network change ${fmt({ before: fieldsRef.current.cardNumber, after: reformatted, gapPattern: descriptor.gapPattern, maxDigits })}`
+    );
+    fieldsRef.current.cardNumber = reformatted;
+    setCardNumber(reformatted);
+    // If truncation actually dropped digits, tell native so validation matches
+    // what the user sees.
+    if (truncated.length !== currentDigits.length) syncToNative();
+  }, [descriptor, syncToNative]);
 
   const isSubmittingRef = useRef(false);
   const submit = useCallback(async () => {
@@ -228,6 +262,8 @@ export function useCardForm(options: UseCardFormOptions = {}): UseCardFormReturn
     isSubmitting,
     requiredFields: cardFormState.requiredFields,
     binData: cardFormState.binData,
+    descriptor,
+    cardNumberMaxLength: maxFormattedCardNumberLength(descriptor),
     reset,
   };
 }
