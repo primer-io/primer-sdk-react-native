@@ -158,6 +158,7 @@ export type {
   CVVInputProps,
   CardholderNameInputProps,
 } from './Components';
+export { PrimerAnalytics } from './Components/analytics';
 
 export { useLocalization, translate, hasLocale } from './Components/internal/localization';
 export type { TranslationParams, LocalizationResult } from './Components/internal/localization';

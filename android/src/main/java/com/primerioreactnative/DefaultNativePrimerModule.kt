@@ -13,9 +13,11 @@ import com.primerioreactnative.datamodels.PrimerSettingsRN
 import com.primerioreactnative.datamodels.toPrimerSettings
 import com.primerioreactnative.utils.PrimerImplementedRNCallbacks
 import com.primerioreactnative.utils.errorTo
+import com.primerioreactnative.utils.toEventType
 import com.primerioreactnative.utils.toWritableMap
 import io.primer.android.Primer
 import io.primer.android.PrimerSessionIntent
+import io.primer.android.components.analytics.ComponentsAnalyticsLoggingBridge
 import io.primer.android.data.settings.PrimerSettings
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -27,6 +29,7 @@ internal open class DefaultNativePrimerModule(
     private val json: Json,
     private val eventSender: (String, WritableMap) -> Unit,
 ) {
+    private var analyticsLoggingBridge: ComponentsAnalyticsLoggingBridge? = null
     private val mListener = PrimerRNEventListener()
 
     init {
@@ -237,6 +240,50 @@ internal open class DefaultNativePrimerModule(
             promise.reject(exception.errorId, exception.description, expected)
         }
     }
+
+    // region analytics bridge
+    fun trackAnalyticsEvent(
+        eventName: String,
+        metadata: String?,
+        promise: Promise,
+    ) {
+        try {
+            val metadataMap: Map<String, String>? = metadata?.let {
+                json.decodeFromString<Map<String, String>>(it)
+            }
+            val eventType = toEventType(eventName, metadataMap) ?: return promise.resolve(null)
+            analyticsLoggingBridge?.sendEvent(eventType)
+            promise.resolve(null)
+        } catch (expected: Exception) {
+            promise.resolve(null)
+        }
+    }
+
+    fun sendLog(
+        message: String,
+        event: String,
+        promise: Promise,
+    ) {
+        try {
+            analyticsLoggingBridge?.sendInfoLog(message, event)
+            promise.resolve(null)
+        } catch (expected: Exception) {
+            promise.resolve(null)
+        }
+    }
+
+    fun setupAnalyticsLoggingBridge(
+        clientToken: String,
+        promise: Promise,
+    ) {
+        try {
+            analyticsLoggingBridge = ComponentsAnalyticsLoggingBridge.create()
+            promise.resolve(null)
+        } catch (expected: Exception) {
+            promise.reject("setup_failed", expected.message, expected)
+        }
+    }
+    // endregion
 
     private fun startSdk(settings: PrimerSettings) {
         Primer.instance.configure(settings, mListener)
