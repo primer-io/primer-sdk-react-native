@@ -7,6 +7,7 @@ import { useNavigation } from './internal/navigation/useNavigation';
 import { CheckoutRoute } from './internal/navigation/types';
 import { PrimerTextInput } from './inputs/PrimerTextInput';
 import { CountrySelectorRow } from './inputs/CountrySelectorRow';
+import { getCountryName } from './internal/countries';
 import type { PrimerBillingAddressFormProps } from './types/BillingAddressFormTypes';
 
 export function PrimerBillingAddressForm({
@@ -34,6 +35,7 @@ export function PrimerBillingAddressForm({
       {visibleFields.countryCode && (
         <CountrySelectorRow
           value={billingForm.countryCode}
+          displayName={getCountryName(billingForm.countryCode)}
           label={t('primer_card_form_label_country')}
           placeholder={t('primer_card_form_placeholder_country_code')}
           onPress={handleCountryPress}
