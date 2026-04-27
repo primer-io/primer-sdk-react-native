@@ -147,13 +147,30 @@ export type {
 } from './Components';
 export { useCardForm } from './Components';
 export type { UseCardFormOptions, UseCardFormReturn, CardFormErrors, CardFormField } from './Components';
+export { useBillingAddressForm } from './Components';
+export type {
+  UseBillingAddressFormOptions,
+  UseBillingAddressFormReturn,
+  BillingAddressFormErrors,
+  BillingAddressField,
+  PrimerBillingAddressFormProps,
+} from './Components';
 export { PrimerPaymentMethodList } from './Components';
 export type { PrimerPaymentMethodListProps } from './Components';
 export { PrimerCheckoutSheet } from './Components';
 export type { PrimerCheckoutSheetProps } from './Components';
 export { PrimerCardForm } from './Components';
 export type { PrimerCardFormProps } from './Components';
-export { PrimerTextInput, CardNumberInput, ExpiryDateInput, CVVInput, CardholderNameInput } from './Components';
+export { PrimerBillingAddressForm } from './Components';
+export {
+  PrimerTextInput,
+  CardNumberInput,
+  ExpiryDateInput,
+  CVVInput,
+  CardholderNameInput,
+  CountrySelectorRow,
+} from './Components';
+export type { CountrySelectorRowProps } from './Components';
 export type {
   PrimerTextInputTheme,
   PrimerTextInputProps,

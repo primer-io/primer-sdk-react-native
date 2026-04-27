@@ -12,6 +12,13 @@ data class PrimerClientSessionRN(
     val lineItems: List<PrimerLineItemRN>?,
     val orderDetails: PrimerOrderRN?,
     val customer: PrimerCustomerRN?,
+    val checkoutModules: List<PrimerCheckoutModuleRN>? = null,
+)
+
+@Serializable
+data class PrimerCheckoutModuleRN(
+    val type: String,
+    val options: Map<String, Boolean>?,
 )
 
 @Serializable
