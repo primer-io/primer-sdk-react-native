@@ -166,11 +166,45 @@ class RNTPrimerHeadlessUniversalCheckoutRawDataManager: RCTEventEmitter {
   }
 
   @objc
+  public func setBillingAddress(
+    _ billingAddressStr: String,
+    resolver: @escaping RCTPromiseResolveBlock,
+    rejecter: @escaping RCTPromiseRejectBlock
+  ) {
+    guard let rawDataManager = rawDataManager else {
+      let err = RNTNativeError(
+        errorId: "native-ios",
+        errorDescription: "The RawDataManager has not been initialized",
+        recoverySuggestion: "Make sure you have called initialized the `RawDataManager' first.")
+      rejecter(err.rnError["errorId"]!, err.rnError["description"], err)
+      return
+    }
+
+    guard let billingAddress = PrimerAddress(billingAddressStr: billingAddressStr) else {
+      let err = RNTNativeError(
+        errorId: "native-ios",
+        errorDescription: "Failed to decode billing address JSON.",
+        recoverySuggestion: "Make sure you're providing a valid billing address object.")
+      rejecter(err.rnError["errorId"]!, err.rnError["description"], err)
+      return
+    }
+
+    Task {
+      do {
+        try await rawDataManager.setBillingAddress(billingAddress)
+        resolver(nil)
+      } catch {
+        rejecter(error.rnError["errorId"]!, error.rnError["description"], error)
+      }
+    }
+  }
+
+  @objc
   public func cleanUp(
     _ resolver: RCTPromiseResolveBlock,
     rejecter: RCTPromiseRejectBlock
   ) {
-
+    resolver(nil)
   }
 
 }
