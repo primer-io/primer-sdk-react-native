@@ -8,6 +8,7 @@ import PrimerHeadlessUniversalCheckoutAssetsManager from '../HeadlessUniversalCh
 import PrimerHeadlessUniversalCheckoutRawDataManager from '../HeadlessUniversalCheckout/Managers/PaymentMethodManagers/RawDataManager';
 import type { PrimerSettings } from '../models/PrimerSettings';
 import { PrimerError } from '../models/PrimerError';
+import type { PrimerCheckoutData } from '../models/PrimerCheckoutData';
 import type { PrimerRawData } from '../models/PrimerRawData';
 import type { PrimerBinData } from '../models/PrimerBinData';
 import type {
@@ -57,6 +58,24 @@ const initialState: InternalState = {
   activeMethod: null,
   cardFormState: initialCardFormState,
 };
+
+/**
+ * Native `onCheckoutComplete` fires for every terminal checkout, including
+ * FAILED ones — so we inspect `payment.status` to pick the result screen.
+ */
+function buildPaymentOutcome(checkoutData: PrimerCheckoutData): PaymentOutcome {
+  const payment = checkoutData?.payment;
+  if (payment?.status !== 'FAILED') {
+    return { status: 'success', data: checkoutData };
+  }
+  const errorCode = payment.paymentFailureReason ?? 'payment-failed';
+  const description = payment.id ? `Payment ${payment.id} failed` : 'Payment failed';
+  return {
+    status: 'error',
+    error: new PrimerError('payment-failed', errorCode, description, undefined, undefined),
+    data: checkoutData,
+  };
+}
 
 /** Map native validation errors to per-field typed errors the UI can render. */
 function parseValidationErrors(errors: PrimerError[] | undefined): CardFormErrors {
@@ -166,9 +185,12 @@ export function PrimerCheckoutProvider({
         },
         // Always-subscribed so paymentOutcome fires regardless of merchant callbacks.
         onCheckoutComplete: (checkoutData) => {
+          // Native fires onCheckoutComplete for any finished checkout — including
+          // FAILED payments — so we have to read `payment.status` to decide which
+          // result screen to show. Backend statuses: SUCCESS | FAILED | PENDING.
           setState((prev) => ({
             ...prev,
-            paymentOutcome: { status: 'success', data: checkoutData },
+            paymentOutcome: buildPaymentOutcome(checkoutData),
           }));
           onCheckoutCompleteRef.current?.(checkoutData);
           settingsRef.current?.headlessUniversalCheckoutCallbacks?.onCheckoutComplete?.(checkoutData);
