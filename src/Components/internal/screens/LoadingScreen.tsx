@@ -14,16 +14,24 @@ const CONTENT_HEIGHT = 246;
 export function LoadingScreen() {
   const tokens = useTheme();
   const { t } = useLocalization();
-  const { route, params } = useRoute<CheckoutRoute.splash | CheckoutRoute.loading>();
+  const { route, params } = useRoute<CheckoutRoute.splash | CheckoutRoute.loading | CheckoutRoute.processing>();
   const rawBottomInset = useBottomSafeArea();
   const bottomInset = Math.max(rawBottomInset, tokens.spacing.large);
   const sheetHeight = CONTENT_HEIGHT + bottomInset;
   useStatusScreenHeight(sheetHeight);
 
   const defaultTitleKey =
-    route === CheckoutRoute.splash ? 'primer_checkout_splash_title' : 'primer_checkout_loading_indicator';
+    route === CheckoutRoute.splash
+      ? 'primer_checkout_splash_title'
+      : route === CheckoutRoute.processing
+        ? 'primer_checkout_processing_title'
+        : 'primer_checkout_loading_indicator';
   const defaultSubtitleKey =
-    route === CheckoutRoute.splash ? 'primer_checkout_splash_subtitle' : 'primer_checkout_loading_subtitle';
+    route === CheckoutRoute.splash
+      ? 'primer_checkout_splash_subtitle'
+      : route === CheckoutRoute.processing
+        ? 'primer_checkout_processing_subtitle'
+        : 'primer_checkout_loading_subtitle';
 
   const title = params?.title ?? t(defaultTitleKey);
   const subtitle = params?.subtitle ?? t(defaultSubtitleKey);

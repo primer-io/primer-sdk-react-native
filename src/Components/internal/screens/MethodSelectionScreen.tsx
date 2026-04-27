@@ -2,10 +2,13 @@ import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { usePaymentMethods } from '../../hooks/usePaymentMethods';
+import { usePrimerCheckout } from '../../hooks/usePrimerCheckout';
 import { PrimerPaymentMethodList } from '../../PrimerPaymentMethodList';
 import { useCheckoutFlow } from '../checkout-flow/CheckoutFlowContext';
 import { useLocalization } from '../localization';
 import { NavigationHeader } from '../navigation/NavigationHeader';
+import { CheckoutRoute } from '../navigation/types';
+import { useNavigation } from '../navigation/useNavigation';
 import { useTheme } from '../theme';
 import { PAYMENT_METHOD_BUTTON_HEIGHT } from '../ui/PaymentMethodButton';
 import { useBottomSafeArea } from './useBottomSafeArea';
@@ -15,12 +18,16 @@ import type { TextStyle } from 'react-native';
 import type { PrimerTokens } from '../theme';
 import type { PaymentMethodItem } from '../../types/PaymentMethodTypes';
 
+const LOG = '[MethodSelectionScreen]';
+
 export function MethodSelectionScreen() {
   const tokens = useTheme();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
   const { t } = useLocalization();
   const { onCancel } = useCheckoutFlow();
   const { paymentMethods } = usePaymentMethods();
+  const { push } = useNavigation();
+  const { setActiveMethod } = usePrimerCheckout();
 
   const methodCount = paymentMethods.length;
   const buttonGap = tokens.spacing.small;
@@ -43,8 +50,13 @@ export function MethodSelectionScreen() {
     tokens.spacing.xlarge;
   useStatusScreenHeight(sheetHeight);
 
-  const handleSelect = (_method: PaymentMethodItem) => {
-    // Payment form navigation to be wired when forms are implemented
+  const handleSelect = (method: PaymentMethodItem) => {
+    if (method.type === 'PAYMENT_CARD') {
+      setActiveMethod(method.type);
+      push(CheckoutRoute.cardForm, { paymentMethodType: method.type });
+      return;
+    }
+    console.warn(`${LOG} payment method ${method.type} not yet wired`);
   };
 
   return (
