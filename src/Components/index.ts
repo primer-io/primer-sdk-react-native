@@ -19,6 +19,13 @@ export { useCardForm } from './hooks/useCardForm';
 export type { UseCardFormOptions, UseCardFormReturn, CardFormErrors, CardFormField } from './types/CardFormTypes';
 export { PrimerPaymentMethodList } from './PrimerPaymentMethodList';
 export type { PrimerPaymentMethodListProps } from './types/PrimerPaymentMethodListTypes';
+export { PrimerVaultedPaymentMethod } from './PrimerVaultedPaymentMethod';
+export { useVaultedPaymentMethods } from './hooks/useVaultedPaymentMethods';
+export type {
+  VaultedPaymentMethodItem,
+  UseVaultedPaymentMethodsReturn,
+  PrimerVaultedPaymentMethodProps,
+} from './types/VaultedPaymentMethodTypes';
 export { PrimerCheckoutSheet } from './PrimerCheckoutSheet';
 export type { PrimerCheckoutSheetProps } from './PrimerCheckoutSheet';
 export { PrimerCardForm } from './PrimerCardForm';

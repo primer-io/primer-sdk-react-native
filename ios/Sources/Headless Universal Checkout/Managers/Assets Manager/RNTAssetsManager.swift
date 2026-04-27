@@ -29,18 +29,14 @@ class RNTPrimerHeadlessUniversalCheckoutAssetsManager: RCTEventEmitter {
         rejecter: RCTPromiseRejectBlock
     ) {
         do {
-
-            guard let cardNetwork = CardNetwork(rawValue: cardNetworkStr) else {
-                let err = RNTNativeError(
-                    errorId: "native-ios",
-                    errorDescription: "Failed to find asset of \(cardNetworkStr).",
-                    recoverySuggestion: nil)
-                throw err
-            }
-
+            // Use the non-deprecated getCardNetworkAsset API. The deprecated
+            // getCardNetworkImage(for:) concatenates rawValue uppercase with a lowercase
+            // bundle filename (e.g. "VISA-logo-colored" vs "visa-logo-colored.imageset"),
+            // which always misses on iOS's case-sensitive asset lookup.
             guard
-                let cardNetworkImage = try PrimerSDK.PrimerHeadlessUniversalCheckout.AssetsManager
-                    .getCardNetworkImage(for: cardNetwork)
+                let cardNetworkAsset = PrimerSDK.PrimerHeadlessUniversalCheckout.AssetsManager
+                    .getCardNetworkAsset(cardNetworkString: cardNetworkStr),
+                let cardNetworkImage = cardNetworkAsset.cardImage
             else {
                 let err = RNTNativeError(
                     errorId: "native-ios",
@@ -49,7 +45,7 @@ class RNTPrimerHeadlessUniversalCheckoutAssetsManager: RCTEventEmitter {
                 throw err
             }
 
-            let localUrl = try cardNetworkImage.store(withName: cardNetwork.rawValue)
+            let localUrl = try cardNetworkImage.store(withName: cardNetworkAsset.cardNetwork.rawValue)
             resolver(["cardNetworkImageURL": localUrl.absoluteString])
 
         } catch {

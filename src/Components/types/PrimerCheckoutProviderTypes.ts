@@ -14,6 +14,7 @@ import type {
 } from '../../models/PrimerHandlers';
 import type { IPrimerHeadlessUniversalCheckoutPaymentMethod } from '../../models/PrimerHeadlessUniversalCheckoutPaymentMethod';
 import type { PrimerPaymentMethodAsset, PrimerPaymentMethodNativeView } from '../../models/PrimerPaymentMethodResource';
+import type { PrimerVaultedPaymentMethod } from '../../models/PrimerVaultedPaymentMethod';
 import type { PrimerThemeOverride } from '../internal/theme/types';
 import type { CardFormErrors } from './CardFormTypes';
 
@@ -69,6 +70,13 @@ export interface PrimerCheckoutContextValue {
   /** Validation + metadata state from the active raw-data manager. */
   cardFormState: CardFormState;
 
+  // --- Vaulted payment methods ---
+  vaultedMethods: PrimerVaultedPaymentMethod[];
+  /** Brand-icon URIs keyed by vaulted-method id, resolved via AssetsManager at fetch time. */
+  vaultedIconUrisById: Record<string, string | undefined>;
+  isLoadingVaulted: boolean;
+  vaultedError: Error | null;
+
   // --- Actions ---
   /** Register/deregister the active payment method. Pass `null` to tear down. */
   setActiveMethod: (method: string | null) => void;
@@ -85,4 +93,6 @@ export interface PrimerCheckoutContextValue {
   retry: () => Promise<void>;
   /** Clear the last payment outcome (e.g., when leaving the error screen). */
   clearPaymentOutcome: () => void;
+  /** Start the payment flow for a vaulted payment method by id. */
+  payFromVault: (vaultedPaymentMethodId: string) => Promise<void>;
 }
