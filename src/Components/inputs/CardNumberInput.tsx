@@ -4,6 +4,7 @@ import { PrimerTextInput } from './PrimerTextInput';
 import { caretFromDigitIndex, countDigits, countDigitsBefore, targetDigitIndex } from './caret';
 import { PLACEHOLDER_ICON_HEIGHT, PLACEHOLDER_ICON_WIDTH, TRAILING_ICON_MARGIN } from './dimensions';
 import { useLocalization } from '../internal/localization';
+import { useCardNetwork } from '../hooks/useCardNetwork';
 import type { CardNumberInputProps, PrimerTextInputRef } from '../types/CardInputTypes';
 
 type SelectionChangeHandler = NonNullable<TextInputProps['onSelectionChange']>;
@@ -17,6 +18,7 @@ export const CardNumberInput = forwardRef<PrimerTextInputRef, CardNumberInputPro
   const { t } = useLocalization();
   const resolvedLabel = label ?? t('primer_card_form_label_number');
   const resolvedPlaceholder = placeholder ?? t('primer_card_form_placeholder_number');
+  const { iconSource } = useCardNetwork();
 
   const innerRef = useRef<PrimerTextInputRef>(null);
   const lastSelectionRef = useRef({ start: 0, end: 0 });
@@ -73,7 +75,7 @@ export const CardNumberInput = forwardRef<PrimerTextInputRef, CardNumberInputPro
       onChangeText={handleChangeText}
       onBlur={() => cardForm.markFieldTouched('cardNumber')}
       keyboardType="number-pad"
-      maxLength={19}
+      maxLength={cardForm.cardNumberMaxLength}
       autoComplete="cc-number"
       label={resolvedLabel}
       placeholder={resolvedPlaceholder}
@@ -81,10 +83,10 @@ export const CardNumberInput = forwardRef<PrimerTextInputRef, CardNumberInputPro
       onSelectionChange={handleSelectionChange}
       trailingContent={
         <Image
-          source={placeholderSource}
+          source={iconSource ?? placeholderSource}
           style={styles.placeholder}
           resizeMode="contain"
-          testID={rest.testID ? `${rest.testID}-placeholder-icon` : undefined}
+          testID={rest.testID ? `${rest.testID}-network-icon` : undefined}
         />
       }
       {...rest}

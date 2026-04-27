@@ -1,5 +1,6 @@
 import type { PrimerBinData } from '../../models/PrimerBinData';
 import type { PrimerInputElementType } from '../../models/PrimerInputElementType';
+import type { CardNetworkDescriptor } from '../internal/cardNetwork';
 
 export type CardFormField = 'cardNumber' | 'expiryDate' | 'cvv' | 'cardholderName';
 
@@ -45,6 +46,19 @@ export interface UseCardFormReturn {
 
   /** BIN / card network data from the native SDK. */
   binData: PrimerBinData | null;
+
+  /**
+   * Traits for the detected network (PAN lengths, gap pattern, CVV length/label).
+   * Falls back to default traits when the network is unknown or BIN hasn't resolved yet.
+   */
+  descriptor: CardNetworkDescriptor;
+
+  /**
+   * Max length for the card-number TextInput (digits + gaps) derived from the
+   * current network. Use this for `maxLength` on custom card-number inputs so
+   * users can't type past the longest valid formatted PAN for their card.
+   */
+  cardNumberMaxLength: number;
 
   /** Clear all fields and reset local state. */
   reset: () => void;

@@ -17,6 +17,9 @@ export type {
 } from './types/PaymentMethodTypes';
 export { useCardForm } from './hooks/useCardForm';
 export type { UseCardFormOptions, UseCardFormReturn, CardFormErrors, CardFormField } from './types/CardFormTypes';
+export { useCardNetwork } from './hooks/useCardNetwork';
+export type { UseCardNetworkReturn } from './hooks/useCardNetwork';
+export type { CardNetworkDescriptor, CardNetworkId, CardNetworkIconSource, CvvLabel } from './internal/cardNetwork';
 export { PrimerPaymentMethodList } from './PrimerPaymentMethodList';
 export type { PrimerPaymentMethodListProps } from './types/PrimerPaymentMethodListTypes';
 export { PrimerCheckoutSheet } from './PrimerCheckoutSheet';
