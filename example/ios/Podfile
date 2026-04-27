@@ -25,7 +25,9 @@ target 'example_0_70_6' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  pod 'PrimerSDK'
+  # Local Primer iOS SDK — point to local checkout instead of CocoaPods registry.
+  # Remove `:path` to go back to the published version.
+  pod 'PrimerSDK', :path => '../../../primer-sdk-ios'
   pod 'Primer3DS'
   pod 'PrimerIPay88MYSDK'
   pod 'PrimerKlarnaSDK', '1.1.1'

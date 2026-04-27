@@ -110,6 +110,18 @@ class NativePrimerModule(private val reactContext: ReactApplicationContext, priv
     implementation.setImplementedRNCallbacks(implementedRNCallbacksStr = implementedRNCallbacks, promise = promise)
   }
 
+  override fun trackAnalyticsEvent(eventName: String, metadata: String?, promise: Promise) {
+    implementation.trackAnalyticsEvent(eventName = eventName, metadata = metadata, promise = promise)
+  }
+
+  override fun sendLog(message: String, event: String, promise: Promise) {
+    implementation.sendLog(message = message, event = event, promise = promise)
+  }
+
+  override fun setupAnalyticsLoggingBridge(clientToken: String, promise: Promise) {
+    implementation.setupAnalyticsLoggingBridge(clientToken = clientToken, promise = promise)
+  }
+
   override fun addListener(eventName: String?) = Unit
 
   override fun removeListeners(count: Double?) = Unit

@@ -140,6 +140,7 @@ export type {
   UsePaymentMethodsOptions,
   UsePaymentMethodsReturn,
 } from './Components';
+export { PrimerAnalytics } from './Components/analytics';
 
 export { useLocalization, translate, hasLocale } from './Components/internal/localization';
 export type { TranslationParams, LocalizationResult } from './Components/internal/localization';
