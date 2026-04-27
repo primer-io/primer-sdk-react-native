@@ -23,6 +23,7 @@ import com.primerioreactnative.utils.errorTo
 import com.primerioreactnative.utils.toWritableMap
 import io.primer.android.completion.PrimerHeadlessUniversalCheckoutResumeDecisionHandler
 import io.primer.android.completion.PrimerPaymentCreationDecisionHandler
+import io.primer.android.components.PrimerHeadlessUniversalCheckout
 import io.primer.android.components.PrimerHeadlessUniversalCheckoutListener
 import io.primer.android.components.PrimerHeadlessUniversalCheckoutUiListener
 import io.primer.android.components.domain.core.models.PrimerHeadlessUniversalCheckoutPaymentMethod
@@ -76,6 +77,23 @@ class PrimerRNHeadlessUniversalCheckoutListener(
         successCallback?.resolve(
             availablePaymentMethods.toWritableMap(),
         )
+
+        // The native SDK only fires `onClientSessionUpdated` on subsequent updates, never on
+        // initial load. Read the current session via `getClientSession()` and synthesize the
+        // update event so JS receives the initial session at startup.
+        if (implementedRNCallbacks?.isOnClientSessionUpdateImplemented == true) {
+            PrimerHeadlessUniversalCheckout.current.getClientSession()?.let { initialClientSession ->
+                sendEvent?.invoke(
+                    PrimerHeadlessUniversalCheckoutEvent.ON_CLIENT_SESSION_UPDATE.eventName,
+                    JSONObject().apply {
+                        put(
+                            "clientSession",
+                            JSONObject(Json.encodeToString(initialClientSession.toPrimerClientSessionRN())),
+                        )
+                    },
+                )
+            }
+        }
     }
 
     override fun onPreparationStarted(paymentMethodType: String) {

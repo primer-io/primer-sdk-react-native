@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import type { PrimerSettings } from '../../models/PrimerSettings';
 import type { PrimerError } from '../../models/PrimerError';
-import type { PrimerClientSession } from '../../models/PrimerClientSession';
+import type { PrimerAddress, PrimerClientSession } from '../../models/PrimerClientSession';
 import type { PrimerCheckoutData } from '../../models/PrimerCheckoutData';
 import type { PrimerCheckoutPaymentMethodData } from '../../models/PrimerCheckoutPaymentMethodData';
 import type { PrimerPaymentMethodTokenData } from '../../models/PrimerPaymentMethodTokenData';
@@ -74,6 +74,11 @@ export interface PrimerCheckoutContextValue {
   setActiveMethod: (method: string | null) => void;
   /** Forward raw data to the active native manager. */
   setRawData: (data: PrimerRawData) => Promise<void>;
+  /**
+   * Forward a billing address to the active native manager. Dispatched as a separate
+   * client-session action, independent of raw card data, before submit.
+   */
+  setBillingAddress: (address: PrimerAddress) => Promise<void>;
   /** Fire the active manager's submit. First-attempt path. */
   submit: () => Promise<void>;
   /**

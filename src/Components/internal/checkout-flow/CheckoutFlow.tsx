@@ -10,6 +10,7 @@ import { MethodSelectionScreen } from '../screens/MethodSelectionScreen';
 import { CardFormScreen } from '../screens/CardFormScreen';
 import { ErrorScreen } from '../screens/ErrorScreen';
 import { SuccessScreen } from '../screens/SuccessScreen';
+import { CardFormStateProvider, BillingAddressFormStateProvider } from '../form-state';
 import { CheckoutFlowContext } from './CheckoutFlowContext';
 
 const SUCCESS_AUTO_DISMISS_MS = 5000;
@@ -108,7 +109,11 @@ export function CheckoutFlow({ onCancel }: CheckoutFlowProps = {}) {
       <NavigationProvider initialRoute={CheckoutRoute.splash}>
         <ReadinessTransitioner />
         <PaymentOutcomeTransitioner />
-        <NavigationContainer screenMap={screenMap} />
+        <CardFormStateProvider>
+          <BillingAddressFormStateProvider>
+            <NavigationContainer screenMap={screenMap} />
+          </BillingAddressFormStateProvider>
+        </CardFormStateProvider>
       </NavigationProvider>
     </CheckoutFlowContext.Provider>
   );

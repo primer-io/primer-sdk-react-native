@@ -10,6 +10,7 @@ import type { PrimerSettings } from '../models/PrimerSettings';
 import { PrimerError } from '../models/PrimerError';
 import type { PrimerCheckoutData } from '../models/PrimerCheckoutData';
 import type { PrimerRawData } from '../models/PrimerRawData';
+import type { PrimerAddress } from '../models/PrimerClientSession';
 import type { PrimerBinData } from '../models/PrimerBinData';
 import type {
   PrimerCheckoutProviderProps,
@@ -434,6 +435,20 @@ export function PrimerCheckoutProvider({
     }
   }, []);
 
+  const setBillingAddress = useCallback(async (address: PrimerAddress) => {
+    const m = managerRef.current;
+    if (!m) {
+      console.warn(`${LOG} setBillingAddress: no manager (activeMethod=${stateRef.current.activeMethod})`);
+      return;
+    }
+    try {
+      await m.setBillingAddress(address);
+    } catch (err) {
+      console.warn(`${LOG} setBillingAddress failed ${fmt(err)}`);
+      throw err;
+    }
+  }, []);
+
   const submit = useCallback(async () => {
     const m = managerRef.current;
     if (!m) {
@@ -491,11 +506,12 @@ export function PrimerCheckoutProvider({
       cardFormState: state.cardFormState,
       setActiveMethod,
       setRawData,
+      setBillingAddress,
       submit,
       retry,
       clearPaymentOutcome,
     }),
-    [state, setActiveMethod, setRawData, submit, retry, clearPaymentOutcome]
+    [state, setActiveMethod, setRawData, setBillingAddress, submit, retry, clearPaymentOutcome]
   );
 
   return (

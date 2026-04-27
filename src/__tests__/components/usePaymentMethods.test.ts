@@ -99,6 +99,7 @@ const readyContext: PrimerCheckoutContextValue = {
   },
   setActiveMethod: () => {},
   setRawData: async () => {},
+  setBillingAddress: async () => {},
   submit: async () => {},
   retry: async () => {},
   clearPaymentOutcome: () => {},
