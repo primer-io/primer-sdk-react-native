@@ -1,6 +1,6 @@
 {
   "name": "@primer-io/react-native",
-  "version": "2.42.2",
+  "version": "2.43.0",
   "description": "Primer SDK for RN",
   "main": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",
