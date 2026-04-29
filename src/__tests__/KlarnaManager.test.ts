@@ -28,9 +28,7 @@ import { PrimerHeadlessUniversalCheckoutKlarnaManager as KlarnaManager } from '.
 import { PrimerSessionIntent } from '../models/PrimerSessionIntent';
 
 describe('KlarnaManager', () => {
-  const mockNativeModule = (NativeModules as any)
-    .RNTPrimerHeadlessUniversalCheckoutKlarnaComponent;
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const mockNativeModule = (NativeModules as any).RNTPrimerHeadlessUniversalCheckoutKlarnaComponent;
   const mockAddListener = (require('react-native') as any).__mockAddListener;
 
   beforeEach(() => {
