@@ -91,6 +91,14 @@ const HeadlessCheckoutKlarnaScreen = (props: any) => {
       console.log('Starting Klarna payment component');
       klarnaComponent?.start();
     })();
+
+    // Tear the Klarna component down when leaving the screen so the next
+    // Klarna session in the same app run starts fresh (ESC-940).
+    return () => {
+      klarnaComponent
+        ?.cleanUp()
+        .catch((err) => console.warn('Klarna cleanUp failed', err));
+    };
   }, []);
   /* eslint-enable react-hooks/exhaustive-deps */
 

@@ -12,7 +12,6 @@ import type {
   KlarnaPaymentValidatableData,
 } from '../../../models/klarna/KlarnaPaymentCollectableData';
 import type { KlarnaPaymentStep } from '../../../models/klarna/KlarnaPaymentSteps';
-import { eventTypes } from './Utils/EventType';
 import type { EventType } from './Utils/EventType';
 import { PrimerSessionIntent } from '../../../models/PrimerSessionIntent';
 
@@ -70,9 +69,19 @@ export interface KlarnaComponent {
    * {@link handlePaymentOptionsChange}.
    */
   submit(): Promise<void>;
+
+  /**
+   * Tears down the underlying Klarna component and releases the JS event
+   * subscriptions registered by {@link KlarnaManager.provide}. Call this after
+   * a payment completes (or before initiating another) to allow consecutive
+   * Klarna payments within the same app session.
+   */
+  cleanUp(): Promise<void>;
 }
 
 export class PrimerHeadlessUniversalCheckoutKlarnaManager {
+  private subscriptions: EmitterSubscription[] = [];
+
   ///////////////////////////////////////////
   // Init
   ///////////////////////////////////////////
@@ -83,6 +92,9 @@ export class PrimerHeadlessUniversalCheckoutKlarnaManager {
   ///////////////////////////////////////////
 
   async provide(props: KlarnaManagerProps): Promise<KlarnaComponent> {
+    // Drain any subscriptions left over from a previous provide() on this instance,
+    // so consumers who skip explicit cleanUp don't accumulate duplicate listeners.
+    this.drainSubscriptions();
     await this.configureListeners(props);
 
     const klarnaComponent: KlarnaComponent = {
@@ -104,6 +116,10 @@ export class PrimerHeadlessUniversalCheckoutKlarnaManager {
       finalizePayment: async () => {
         RNTPrimerHeadlessUniversalCheckoutKlarnaComponent.onFinalizePayment();
       },
+      cleanUp: async () => {
+        await RNTPrimerHeadlessUniversalCheckoutKlarnaComponent.cleanUp();
+        this.drainSubscriptions();
+      },
     };
     await RNTPrimerHeadlessUniversalCheckoutKlarnaComponent.configure(props.primerSessionIntent);
     return klarnaComponent;
@@ -111,39 +127,45 @@ export class PrimerHeadlessUniversalCheckoutKlarnaManager {
 
   private async configureListeners(props: KlarnaManagerProps): Promise<void> {
     if (props?.onStep) {
-      this.addListener('onStep', (data) => {
+      const sub = await this.addListener('onStep', (data) => {
         props.onStep?.(data);
       });
+      this.subscriptions.push(sub);
     }
 
     if (props?.onInvalid) {
-      this.addListener('onInvalid', (data) => {
+      const sub = await this.addListener('onInvalid', (data) => {
         props.onInvalid?.(data);
       });
+      this.subscriptions.push(sub);
     }
 
     if (props?.onError) {
-      this.addListener('onError', (data) => {
+      const sub = await this.addListener('onError', (data) => {
         props.onError?.(data);
       });
+      this.subscriptions.push(sub);
     }
 
     if (props?.onValid) {
-      this.addListener('onValid', (data) => {
+      const sub = await this.addListener('onValid', (data) => {
         props.onValid?.(data);
       });
+      this.subscriptions.push(sub);
     }
 
     if (props?.onValidating) {
-      this.addListener('onValidating', (data) => {
+      const sub = await this.addListener('onValidating', (data) => {
         props.onValidating?.(data);
       });
+      this.subscriptions.push(sub);
     }
 
     if (props?.onValidationError) {
-      this.addListener('onValidationError', (data) => {
+      const sub = await this.addListener('onValidationError', (data) => {
         props.onValidationError?.(data);
       });
+      this.subscriptions.push(sub);
     }
   }
 
@@ -156,14 +178,24 @@ export class PrimerHeadlessUniversalCheckoutKlarnaManager {
   }
 
   removeListener(subscription: EmitterSubscription): void {
-    return subscription.remove();
+    subscription.remove();
+    this.subscriptions = this.subscriptions.filter((sub) => sub !== subscription);
   }
 
   removeAllListenersForEvent(eventType: EventType) {
     eventEmitter.removeAllListeners(eventType);
   }
 
+  // Routes through per-instance bookkeeping. Avoids the global-nuke approach
+  // (eventEmitter.removeAllListeners(eventName)) which on Android would also
+  // wipe other modules' listeners for overlapping event names like onError —
+  // those modules share the global RCTDeviceEventEmitter.
   removeAllListeners() {
-    eventTypes.forEach((eventType) => this.removeAllListenersForEvent(eventType));
+    this.drainSubscriptions();
+  }
+
+  private drainSubscriptions(): void {
+    this.subscriptions.forEach((subscription) => subscription.remove());
+    this.subscriptions = [];
   }
 }
