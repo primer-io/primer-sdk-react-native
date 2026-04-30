@@ -24,6 +24,7 @@ import com.primerioreactnative.utils.toWritableMap
 import io.primer.android.RetailOutletsList
 import io.primer.android.components.SdkUninitializedException
 import io.primer.android.components.domain.exception.UnsupportedPaymentMethodManagerException
+import io.primer.android.components.bridge.billingaddress.ComponentsBillingAddressBridge
 import io.primer.android.components.manager.raw.PrimerHeadlessUniversalCheckoutRawDataManager
 import io.primer.android.components.manager.raw.PrimerHeadlessUniversalCheckoutRawDataManagerInterface
 import io.primer.android.core.ExperimentalPrimerApi
@@ -216,7 +217,7 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
 
         scope.launch {
             try {
-                rawManager.setBillingAddress(address)
+                ComponentsBillingAddressBridge.create().setBillingAddress(address)
                 promise.resolve(null)
             } catch (e: IllegalArgumentException) {
                 val exception = ErrorTypeRN.InvalidRawData errorTo (e.message ?: "Invalid billing address.")
