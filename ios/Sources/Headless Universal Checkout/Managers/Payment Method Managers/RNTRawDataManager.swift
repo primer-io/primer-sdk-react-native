@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import PrimerSDK
+@_spi(PrimerInternal) import PrimerSDK
 import React
 
 // swiftlint:disable type_name
@@ -171,7 +171,7 @@ class RNTPrimerHeadlessUniversalCheckoutRawDataManager: RCTEventEmitter {
     resolver: @escaping RCTPromiseResolveBlock,
     rejecter: @escaping RCTPromiseRejectBlock
   ) {
-    guard let rawDataManager = rawDataManager else {
+    guard rawDataManager != nil else {
       let err = RNTNativeError(
         errorId: "native-ios",
         errorDescription: "The RawDataManager has not been initialized",
@@ -189,9 +189,18 @@ class RNTPrimerHeadlessUniversalCheckoutRawDataManager: RCTEventEmitter {
       return
     }
 
+    guard #available(iOS 15.0, *) else {
+      let err = RNTNativeError(
+        errorId: "native-ios",
+        errorDescription: "setBillingAddress requires iOS 15.0 or later.",
+        recoverySuggestion: "Update the deployment target or run on iOS 15+.")
+      rejecter(err.rnError["errorId"]!, err.rnError["description"], err)
+      return
+    }
+
     Task {
       do {
-        try await rawDataManager.setBillingAddress(billingAddress)
+        try await ComponentsBillingAddressBridge().setBillingAddress(billingAddress)
         resolver(nil)
       } catch {
         rejecter(error.rnError["errorId"]!, error.rnError["description"], error)
