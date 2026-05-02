@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import PrimerSDK
+@_spi(PrimerInternal) import PrimerSDK
 import React
 
 // swiftlint:disable file_length
@@ -268,18 +268,25 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
 
       // The native SDK only fires `primerHeadlessUniversalCheckoutDidUpdateClientSession`
       // on subsequent updates, never on initial load. Read the current session via
-      // `getClientSession()` and synthesize the update event so JS receives the initial
-      // session at startup.
+      // `ComponentsClientSessionBridge` and synthesize the update event so JS receives
+      // the initial session at startup. iOS < 15 has no bridge access; the JS-side
+      // `onClientSessionUpdate` callback then fires only on subsequent updates.
       if self.implementedRNCallbacks?.isOnClientSessionUpdateImplemented == true,
-         let initialClientSession = PrimerHeadlessUniversalCheckout.current.getClientSession() {
-        let updateCallbackName = PrimerHeadlessUniversalCheckoutEvents.onClientSessionUpdate.stringValue
-        do {
-          let json = try initialClientSession.toJsonObject()
-          self.sendEvent(
-            withName: updateCallbackName,
-            body: ["clientSession": json])
-        } catch {
-          self.handleRNBridgeError(error, checkoutData: nil, stopOnDebug: true)
+         #available(iOS 15.0, *) {
+        let bridge = ComponentsClientSessionBridge()
+        if let initialClientSession = bridge.getClientSession() {
+          let updateCallbackName = PrimerHeadlessUniversalCheckoutEvents.onClientSessionUpdate.stringValue
+          do {
+            let payload = try Self.makeClientSessionPayload(
+              clientSession: initialClientSession,
+              checkoutModules: bridge.getCheckoutModules()
+            )
+            self.sendEvent(
+              withName: updateCallbackName,
+              body: ["clientSession": payload])
+          } catch {
+            self.handleRNBridgeError(error, checkoutData: nil, stopOnDebug: true)
+          }
         }
       }
     }
@@ -547,16 +554,48 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
     DispatchQueue.main.async {
       if self.implementedRNCallbacks?.isOnClientSessionUpdateImplemented == true {
         do {
-          let json = try clientSession.toJsonObject()
+          // Augment the SDK-provided `clientSession` with `checkoutModules` from the
+          // bridge — these are not surfaced on the public `PrimerClientSession` type.
+          var checkoutModules: [ComponentsCheckoutModule]?
+          if #available(iOS 15.0, *) {
+            checkoutModules = ComponentsClientSessionBridge().getCheckoutModules()
+          }
+          let payload = try Self.makeClientSessionPayload(
+            clientSession: clientSession,
+            checkoutModules: checkoutModules
+          )
           self.sendEvent(
             withName: rnCallbackName,
-            body: ["clientSession": json])
+            body: ["clientSession": payload])
 
         } catch {
           self.handleRNBridgeError(error, checkoutData: nil, stopOnDebug: true)
         }
       }
     }
+  }
+
+  // Merges a `PrimerClientSession`'s JSON representation with `checkoutModules`
+  // surfaced by `ComponentsClientSessionBridge`. The bridge returns a value-typed
+  // `ComponentsCheckoutModule` parameter under SPI, so the parameter is `Any?` in
+  // the public signature to avoid leaking SPI types into call-site availability.
+  private static func makeClientSessionPayload(
+    clientSession: PrimerClientSession,
+    checkoutModules: Any?
+  ) throws -> [String: Any] {
+    let json = try clientSession.toJsonObject()
+    var dict = (json as? [String: Any]) ?? [:]
+
+    if #available(iOS 15.0, *), let modules = checkoutModules as? [ComponentsCheckoutModule] {
+      dict["checkoutModules"] = modules.map { module -> [String: Any] in
+        var moduleDict: [String: Any] = ["type": module.type]
+        if let options = module.options {
+          moduleDict["options"] = options
+        }
+        return moduleDict
+      }
+    }
+    return dict
   }
 
   // case onBeforePaymentCreate

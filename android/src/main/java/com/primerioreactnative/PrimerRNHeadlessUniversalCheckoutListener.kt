@@ -23,9 +23,9 @@ import com.primerioreactnative.utils.errorTo
 import com.primerioreactnative.utils.toWritableMap
 import io.primer.android.completion.PrimerHeadlessUniversalCheckoutResumeDecisionHandler
 import io.primer.android.completion.PrimerPaymentCreationDecisionHandler
-import io.primer.android.components.PrimerHeadlessUniversalCheckout
 import io.primer.android.components.PrimerHeadlessUniversalCheckoutListener
 import io.primer.android.components.PrimerHeadlessUniversalCheckoutUiListener
+import io.primer.android.components.bridge.clientsession.ComponentsClientSessionBridge
 import io.primer.android.components.domain.core.models.PrimerHeadlessUniversalCheckoutPaymentMethod
 import io.primer.android.domain.PrimerCheckoutData
 import io.primer.android.domain.action.models.PrimerClientSession
@@ -79,16 +79,23 @@ class PrimerRNHeadlessUniversalCheckoutListener(
         )
 
         // The native SDK only fires `onClientSessionUpdated` on subsequent updates, never on
-        // initial load. Read the current session via `getClientSession()` and synthesize the
-        // update event so JS receives the initial session at startup.
+        // initial load. Read the current session via `ComponentsClientSessionBridge` and
+        // synthesize the update event so JS receives the initial session at startup.
         if (implementedRNCallbacks?.isOnClientSessionUpdateImplemented == true) {
-            PrimerHeadlessUniversalCheckout.current.getClientSession()?.let { initialClientSession ->
+            val bridge = ComponentsClientSessionBridge.create()
+            bridge.getClientSession()?.let { initialClientSession ->
                 sendEvent?.invoke(
                     PrimerHeadlessUniversalCheckoutEvent.ON_CLIENT_SESSION_UPDATE.eventName,
                     JSONObject().apply {
                         put(
                             "clientSession",
-                            JSONObject(Json.encodeToString(initialClientSession.toPrimerClientSessionRN())),
+                            JSONObject(
+                                Json.encodeToString(
+                                    initialClientSession.toPrimerClientSessionRN(
+                                        bridge.getCheckoutModules(),
+                                    ),
+                                ),
+                            ),
                         )
                     },
                 )
@@ -189,12 +196,20 @@ class PrimerRNHeadlessUniversalCheckoutListener(
 
     override fun onClientSessionUpdated(clientSession: PrimerClientSession) {
         if (implementedRNCallbacks?.isOnClientSessionUpdateImplemented == true) {
+            // The SDK callback delivers `PrimerClientSession` without `checkoutModules`.
+            // Read those separately from the bridge so JS gets the same shape it gets
+            // from the synthesized initial event.
+            val checkoutModules = ComponentsClientSessionBridge.create().getCheckoutModules()
             sendEvent?.invoke(
                 PrimerHeadlessUniversalCheckoutEvent.ON_CLIENT_SESSION_UPDATE.eventName,
                 JSONObject().apply {
                     put(
                         "clientSession",
-                        JSONObject(Json.encodeToString(clientSession.toPrimerClientSessionRN())),
+                        JSONObject(
+                            Json.encodeToString(
+                                clientSession.toPrimerClientSessionRN(checkoutModules),
+                            ),
+                        ),
                     )
                 },
             )
