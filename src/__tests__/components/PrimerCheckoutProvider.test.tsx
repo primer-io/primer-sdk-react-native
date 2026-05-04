@@ -1,6 +1,11 @@
 // @ts-expect-error -- React 19 concurrent act environment
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
+jest.mock('../../specs/NativePrimer', () => ({
+  __esModule: true,
+  default: {},
+}));
+
 jest.mock(
   'react-native',
   () => {
