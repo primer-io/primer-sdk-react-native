@@ -117,8 +117,8 @@ export function CheckoutSheet({
     });
   }, [dragValue, sheetHeight, showAnimValue, onDismiss, onRequestDismiss]);
 
-  // Handle visible prop changes
-  const prevVisibleRef = useRef(visible);
+  // Handle visible prop changes (including initial mount with visible=true)
+  const prevVisibleRef = useRef(false);
   useEffect(() => {
     if (visible && !prevVisibleRef.current) {
       setHeightRatioState(DEFAULT_HEIGHT_RATIO);
@@ -128,7 +128,7 @@ export function CheckoutSheet({
       animateOut();
     }
     prevVisibleRef.current = visible;
-  }, [visible, modalVisible, animateOut]);
+  }, [visible, modalVisible, animateOut, heightOffsetValue, screenHeight]);
 
   const handleShow = useCallback(() => {
     showAnimValue.setValue(0);
