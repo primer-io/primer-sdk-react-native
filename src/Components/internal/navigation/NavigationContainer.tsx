@@ -1,5 +1,6 @@
-import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { View, Animated, StyleSheet, useWindowDimensions } from 'react-native';
+import type { ViewStyle } from 'react-native';
 import { NavigationContext, RouteEntryContext } from './NavigationContext';
 import { useTheme } from '../theme';
 import type { CheckoutRoute, RouteEntry } from './types';
@@ -26,10 +27,6 @@ export function NavigationContainer({ screenMap }: NavigationContainerProps) {
   }
 
   const tokens = useTheme();
-  const screenStyle = useMemo(
-    () => [styles.screen, { backgroundColor: tokens.colors.background }],
-    [tokens.colors.background]
-  );
   const { width } = useWindowDimensions();
   const { state } = context;
   const current = state.stack[state.stack.length - 1]!;
@@ -52,7 +49,6 @@ export function NavigationContainer({ screenMap }: NavigationContainerProps) {
       type = 'replace';
     }
 
-    // Set transition state synchronously so this render already shows both screens
     setTransition({ type, outgoingEntry: prevEntryRef.current });
     animValue.setValue(0);
     needsAnimationRef.current = true;
@@ -66,7 +62,6 @@ export function NavigationContainer({ screenMap }: NavigationContainerProps) {
     context.setAnimating(false);
   }, [context]);
 
-  // Start the animation after the render with both screens visible
   useEffect(() => {
     if (!needsAnimationRef.current) return;
     needsAnimationRef.current = false;
@@ -91,69 +86,84 @@ export function NavigationContainer({ screenMap }: NavigationContainerProps) {
     return null;
   }
 
-  const renderScreen = (Component: React.ComponentType, entry: RouteEntry) => (
-    <RouteEntryContext.Provider value={entry}>
-      <Component />
-    </RouteEntryContext.Provider>
-  );
+  // Always render the current screen inside a stable Animated.View wrapper keyed by its route.
+  // The outgoing screen is rendered as a sibling only during transitions. Consequence: the
+  // current screen's component instance is preserved across transition start/end — no remount,
+  // no useEffect re-runs caused by the container swapping tree shapes.
+  const bg = { backgroundColor: tokens.colors.background };
+  const currentZIndex = transition.type === 'pop' ? 1 : 2;
+  const outgoingZIndex = transition.type === 'pop' ? 2 : 1;
+  const showOutgoing = transition.type !== 'none' && !!OutgoingComponent && !!transition.outgoingEntry;
 
-  if (transition.type === 'none' || !OutgoingComponent || !transition.outgoingEntry) {
-    return <View style={styles.container}>{renderScreen(ScreenComponent, current)}</View>;
-  }
-
-  if (transition.type === 'replace') {
-    return (
-      <View style={styles.container}>
-        <Animated.View style={[screenStyle, { opacity: Animated.subtract(1, animValue) }]}>
-          {renderScreen(OutgoingComponent, transition.outgoingEntry)}
-        </Animated.View>
-        <Animated.View style={[screenStyle, { opacity: animValue }]}>
-          {renderScreen(ScreenComponent, current)}
-        </Animated.View>
-      </View>
-    );
-  }
-
-  if (transition.type === 'push') {
-    const outgoingTranslate = animValue.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0, -width * 0.3],
-    });
-    const incomingTranslate = animValue.interpolate({
-      inputRange: [0, 1],
-      outputRange: [width, 0],
-    });
-    return (
-      <View style={styles.container}>
-        <Animated.View style={[screenStyle, { transform: [{ translateX: outgoingTranslate }] }]}>
-          {renderScreen(OutgoingComponent, transition.outgoingEntry)}
-        </Animated.View>
-        <Animated.View style={[screenStyle, { transform: [{ translateX: incomingTranslate }] }]}>
-          {renderScreen(ScreenComponent, current)}
-        </Animated.View>
-      </View>
-    );
-  }
-
-  // Pop
-  const outgoingTranslate = animValue.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, width],
-  });
-  const incomingTranslate = animValue.interpolate({
-    inputRange: [0, 1],
-    outputRange: [-width * 0.3, 0],
-  });
   return (
     <View style={styles.container}>
-      <Animated.View style={[screenStyle, { transform: [{ translateX: incomingTranslate }] }]}>
-        {renderScreen(ScreenComponent, current)}
+      <Animated.View
+        key={`screen-${current.key}`}
+        style={[styles.screen, bg, { zIndex: currentZIndex }, renderCurrentAnim(transition.type, animValue, width)]}
+      >
+        <RouteEntryContext.Provider value={current}>
+          <ScreenComponent />
+        </RouteEntryContext.Provider>
       </Animated.View>
-      <Animated.View style={[screenStyle, { transform: [{ translateX: outgoingTranslate }] }]}>
-        {renderScreen(OutgoingComponent, transition.outgoingEntry)}
-      </Animated.View>
+      {showOutgoing && OutgoingComponent && transition.outgoingEntry && (
+        <Animated.View
+          key={`screen-${transition.outgoingEntry.key}`}
+          style={[styles.screen, bg, { zIndex: outgoingZIndex }, renderOutgoingAnim(transition.type, animValue, width)]}
+        >
+          <RouteEntryContext.Provider value={transition.outgoingEntry}>
+            <OutgoingComponent />
+          </RouteEntryContext.Provider>
+        </Animated.View>
+      )}
     </View>
   );
+}
+
+// Animated styles use the Animated.View's style prop type, which is wider than the
+// static StyleProp<ViewStyle>. Returning `Animated.WithAnimatedValue<ViewStyle>`
+// keeps full type safety without resorting to `any`.
+function renderCurrentAnim(
+  type: TransitionType,
+  animValue: Animated.Value,
+  width: number
+): Animated.WithAnimatedValue<ViewStyle> | null {
+  switch (type) {
+    case 'replace':
+      return { opacity: animValue };
+    case 'push':
+      return {
+        transform: [{ translateX: animValue.interpolate({ inputRange: [0, 1], outputRange: [width, 0] }) }],
+      };
+    case 'pop':
+      return {
+        transform: [{ translateX: animValue.interpolate({ inputRange: [0, 1], outputRange: [-width * 0.3, 0] }) }],
+      };
+    case 'none':
+    default:
+      return null;
+  }
+}
+
+function renderOutgoingAnim(
+  type: TransitionType,
+  animValue: Animated.Value,
+  width: number
+): Animated.WithAnimatedValue<ViewStyle> | null {
+  switch (type) {
+    case 'replace':
+      return { opacity: Animated.subtract(1, animValue) };
+    case 'push':
+      return {
+        transform: [{ translateX: animValue.interpolate({ inputRange: [0, 1], outputRange: [0, -width * 0.3] }) }],
+      };
+    case 'pop':
+      return {
+        transform: [{ translateX: animValue.interpolate({ inputRange: [0, 1], outputRange: [0, width] }) }],
+      };
+    case 'none':
+    default:
+      return null;
+  }
 }
 
 const styles = StyleSheet.create({

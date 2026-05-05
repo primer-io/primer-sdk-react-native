@@ -111,7 +111,6 @@ export function CheckoutComponentsListScreen() {
           settings={settings}
           onCheckoutComplete={checkoutData => {
             console.log('Checkout complete:', checkoutData);
-            setSheetVisible(false);
           }}
           onError={error => {
             console.error('Checkout error:', error);

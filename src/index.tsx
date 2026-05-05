@@ -133,7 +133,12 @@ export type { NamedComponentValidatableData };
 export { PrimerCheckoutProvider } from './Components';
 export { usePrimerCheckout } from './Components';
 export { usePaymentMethods } from './Components';
-export type { PrimerCheckoutProviderProps, PrimerCheckoutContextValue } from './Components';
+export type {
+  PrimerCheckoutProviderProps,
+  PrimerCheckoutContextValue,
+  PaymentOutcome,
+  CardFormState,
+} from './Components';
 export type {
   PaymentMethodItem,
   PaymentMethodSurcharge,
@@ -146,6 +151,8 @@ export { PrimerPaymentMethodList } from './Components';
 export type { PrimerPaymentMethodListProps } from './Components';
 export { PrimerCheckoutSheet } from './Components';
 export type { PrimerCheckoutSheetProps } from './Components';
+export { PrimerCardForm } from './Components';
+export type { PrimerCardFormProps } from './Components';
 export { PrimerTextInput, CardNumberInput, ExpiryDateInput, CVVInput, CardholderNameInput } from './Components';
 export type {
   PrimerTextInputTheme,
