@@ -3,7 +3,9 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { usePaymentMethods } from '../../hooks/usePaymentMethods';
 import { usePrimerCheckout } from '../../hooks/usePrimerCheckout';
+import { useVaultedPaymentMethods } from '../../hooks/useVaultedPaymentMethods';
 import { PrimerPaymentMethodList } from '../../PrimerPaymentMethodList';
+import { PrimerVaultedPaymentMethod } from '../../PrimerVaultedPaymentMethod';
 import { useCheckoutFlow } from '../checkout-flow/CheckoutFlowContext';
 import { useLocalization } from '../localization';
 import { NavigationHeader } from '../navigation/NavigationHeader';
@@ -20,6 +22,10 @@ import type { PaymentMethodItem } from '../../types/PaymentMethodTypes';
 
 const LOG = '[MethodSelectionScreen]';
 
+// Inner vault tile content height (cardholder line + brand row + inner gap).
+// Outer grey padding + tile padding are added into sheetHeight separately below.
+const VAULT_TILE_CONTENT_HEIGHT = 44;
+
 export function MethodSelectionScreen() {
   const tokens = useTheme();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
@@ -28,6 +34,7 @@ export function MethodSelectionScreen() {
   const { paymentMethods } = usePaymentMethods();
   const { push } = useNavigation();
   const { setActiveMethod } = usePrimerCheckout();
+  const { primaryMethod: primaryVaultedMethod } = useVaultedPaymentMethods();
 
   const methodCount = paymentMethods.length;
   const buttonGap = tokens.spacing.small;
@@ -39,10 +46,25 @@ export function MethodSelectionScreen() {
   //   + spacing.xlarge for the sheet's drag-handle area (not part of screen content).
   const headerArea = tokens.spacing.xxsmall * 2 + tokens.typography.titleXLarge.lineHeight;
   const titleArea = tokens.typography.titleLarge.lineHeight;
+  // Vault section = section title + content gap + outer padding*2 + tile padding*2 + tile content
+  //   + tile-to-button gap + Pay button (CheckoutButton: padding.medium*2 + titleLarge lineHeight)
+  //   + section-to-APM gap.
+  const vaultSectionHeight =
+    primaryVaultedMethod != null
+      ? titleArea +
+        tokens.spacing.medium +
+        tokens.spacing.small * 2 +
+        tokens.spacing.medium * 2 +
+        VAULT_TILE_CONTENT_HEIGHT +
+        tokens.spacing.small +
+        (tokens.spacing.medium * 2 + tokens.typography.titleLarge.lineHeight) +
+        tokens.spacing.medium
+      : 0;
   const sheetHeight =
     tokens.spacing.large +
     headerArea +
     tokens.spacing.xxlarge +
+    vaultSectionHeight +
     titleArea +
     tokens.spacing.medium +
     listHeight +
@@ -66,8 +88,16 @@ export function MethodSelectionScreen() {
         rightAction={{ label: t('primer_common_button_cancel'), onPress: onCancel }}
       />
       <View style={styles.content}>
-        <Text style={styles.sectionTitle}>{t('primer_payment_selection_header')}</Text>
-        <PrimerPaymentMethodList data={paymentMethods} onSelect={handleSelect} />
+        {primaryVaultedMethod != null && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>{t('primer_vault_section_title')}</Text>
+            <PrimerVaultedPaymentMethod />
+          </View>
+        )}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{t('primer_payment_selection_header')}</Text>
+          <PrimerPaymentMethodList data={paymentMethods} onSelect={handleSelect} />
+        </View>
       </View>
     </View>
   );
@@ -86,6 +116,9 @@ function createStyles(tokens: PrimerTokens) {
       gap: spacing.medium,
       paddingHorizontal: spacing.large,
       paddingTop: spacing.xxlarge,
+    },
+    section: {
+      gap: spacing.medium,
     },
     sectionTitle: {
       color: colors.textPrimary,

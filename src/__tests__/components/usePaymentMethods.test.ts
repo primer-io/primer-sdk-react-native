@@ -97,11 +97,16 @@ const readyContext: PrimerCheckoutContextValue = {
     metadata: null,
     requiredFields: [],
   },
+  vaultedMethods: [],
+  vaultedIconUrisById: {},
+  isLoadingVaulted: false,
+  vaultedError: null,
   setActiveMethod: () => {},
   setRawData: async () => {},
   submit: async () => {},
   retry: async () => {},
   clearPaymentOutcome: () => {},
+  payFromVault: async () => {},
 };
 
 describe('usePaymentMethods', () => {
