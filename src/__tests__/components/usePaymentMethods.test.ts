@@ -87,6 +87,21 @@ const readyContext: PrimerCheckoutContextValue = {
   ],
   isLoadingResources: false,
   resourcesError: null,
+  settings: undefined,
+  paymentOutcome: null,
+  activeMethod: null,
+  cardFormState: {
+    isValid: false,
+    errors: {},
+    binData: null,
+    metadata: null,
+    requiredFields: [],
+  },
+  setActiveMethod: () => {},
+  setRawData: async () => {},
+  submit: async () => {},
+  retry: async () => {},
+  clearPaymentOutcome: () => {},
 };
 
 describe('usePaymentMethods', () => {
@@ -158,7 +173,7 @@ describe('usePaymentMethods', () => {
   it('handles methods without matching resources', () => {
     const ctx: PrimerCheckoutContextValue = {
       ...readyContext,
-      paymentMethodResources: [], // no resources
+      paymentMethodResources: [],
     };
     const { result } = renderHook(() => usePaymentMethods(), contextWrapper(ctx));
     expect(result.current.paymentMethods).toHaveLength(3);

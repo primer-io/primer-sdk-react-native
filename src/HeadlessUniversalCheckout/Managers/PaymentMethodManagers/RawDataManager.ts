@@ -52,6 +52,14 @@ class PrimerHeadlessUniversalCheckoutRawDataManager {
   }
 
   async configureListeners(): Promise<void> {
+    // Drop previous subscriptions so calling configure() multiple times (e.g. the
+    // reconfigure-on-retry pattern in Checkout Components) doesn't stack duplicate
+    // event handlers on the shared module emitter.
+    for (const sub of this.subscriptions) {
+      sub.remove();
+    }
+    this.subscriptions = [];
+
     //@ts-ignore
     if (this.options?.onMetadataChange) {
       const sub = await this.addListener('onMetadataChange', (data) => {

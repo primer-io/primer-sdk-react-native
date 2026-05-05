@@ -2,7 +2,12 @@ export { PrimerCheckoutProvider } from './PrimerCheckoutProvider';
 export { usePrimerCheckout } from './hooks/usePrimerCheckout';
 export { useLocalization } from './internal/localization';
 export { usePaymentMethods } from './hooks/usePaymentMethods';
-export type { PrimerCheckoutProviderProps, PrimerCheckoutContextValue } from './types/PrimerCheckoutProviderTypes';
+export type {
+  PrimerCheckoutProviderProps,
+  PrimerCheckoutContextValue,
+  PaymentOutcome,
+  CardFormState,
+} from './types/PrimerCheckoutProviderTypes';
 export type { TranslationParams } from './internal/localization';
 export type {
   PaymentMethodItem,
@@ -10,6 +15,8 @@ export type {
   UsePaymentMethodsOptions,
   UsePaymentMethodsReturn,
 } from './types/PaymentMethodTypes';
+export { useCardForm } from './hooks/useCardForm';
+export type { UseCardFormOptions, UseCardFormReturn, CardFormErrors, CardFormField } from './types/CardFormTypes';
 export { PrimerPaymentMethodList } from './PrimerPaymentMethodList';
 export type { PrimerPaymentMethodListProps } from './types/PrimerPaymentMethodListTypes';
 export { PrimerCheckoutSheet } from './PrimerCheckoutSheet';

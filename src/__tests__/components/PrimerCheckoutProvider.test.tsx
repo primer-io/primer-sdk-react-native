@@ -88,12 +88,10 @@ describe('PrimerCheckoutProvider', () => {
       await flushPromises();
     });
 
-    // First render: not ready
     expect(captures[0]!.isReady).toBe(false);
     expect(captures[0]!.error).toBeNull();
     expect(captures[0]!.availablePaymentMethods).toEqual([]);
 
-    // After init: ready with payment methods
     const last = captures[captures.length - 1]!;
     expect(last.isReady).toBe(true);
     expect(last.availablePaymentMethods).toHaveLength(1);
@@ -199,7 +197,6 @@ describe('PrimerCheckoutProvider', () => {
       await flushPromises();
     });
 
-    // Should still be 1 — callbacks are ref-stable
     expect(nativeModule.startWithClientToken).toHaveBeenCalledTimes(1);
   });
 
@@ -365,7 +362,13 @@ describe('PrimerCheckoutProvider native event callbacks', () => {
     });
 
     expect(onError).toHaveBeenCalled();
-    expect(captured!.error).toBeTruthy();
+    // Post-init errors land in paymentOutcome; `error` is reserved for init failures.
+    expect(captured!.paymentOutcome).toEqual({
+      status: 'error',
+      error: expect.objectContaining({ errorId: 'err-1' }),
+      data: null,
+    });
+    expect(captured!.error).toBeNull();
   });
 
   it('updates clientSession in context on onClientSessionUpdate', async () => {
@@ -452,7 +455,6 @@ describe('PrimerCheckoutProvider native event callbacks', () => {
       await flushPromises();
     });
 
-    // Update callback prop without changing clientToken
     await act(async () => {
       root!.update(
         createElement(PrimerCheckoutProvider, { clientToken: 'token-1', onCheckoutComplete: onCheckoutComplete2 }, null)
@@ -460,10 +462,8 @@ describe('PrimerCheckoutProvider native event callbacks', () => {
       await flushPromises();
     });
 
-    // Still only 1 init call
     expect(nativeModule.startWithClientToken).toHaveBeenCalledTimes(1);
 
-    // Fire the event — should use the latest callback
     const listener = findListener('onCheckoutComplete');
     const checkoutData = { payment: { id: 'pay_456' } };
 
@@ -478,7 +478,6 @@ describe('PrimerCheckoutProvider native event callbacks', () => {
 
 describe('usePrimerCheckout', () => {
   it('throws when called outside React render cycle', () => {
-    // Calling a hook outside a component throws React's own invalid hook error
     expect(() => usePrimerCheckout()).toThrow();
   });
 });

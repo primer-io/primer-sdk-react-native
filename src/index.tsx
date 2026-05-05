@@ -140,6 +140,8 @@ export type {
   UsePaymentMethodsOptions,
   UsePaymentMethodsReturn,
 } from './Components';
+export { useCardForm } from './Components';
+export type { UseCardFormOptions, UseCardFormReturn, CardFormErrors, CardFormField } from './Components';
 export { PrimerPaymentMethodList } from './Components';
 export type { PrimerPaymentMethodListProps } from './Components';
 export { PrimerCheckoutSheet } from './Components';
