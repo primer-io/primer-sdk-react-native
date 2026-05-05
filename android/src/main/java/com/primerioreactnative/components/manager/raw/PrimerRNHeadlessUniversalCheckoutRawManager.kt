@@ -10,6 +10,7 @@ import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.primerioreactnative.Keys
 import com.primerioreactnative.components.datamodels.core.PrimerRawPaymentMethodType
+import com.primerioreactnative.components.datamodels.manager.raw.billingAddress.PrimerRNAddress
 import com.primerioreactnative.components.datamodels.manager.raw.card.PrimerRNCardData
 import com.primerioreactnative.components.datamodels.manager.raw.cardRedirect.PrimerRNBancontactCardData
 import com.primerioreactnative.components.datamodels.manager.raw.phoneNumber.PrimerRNPhoneNumberData
@@ -23,9 +24,15 @@ import com.primerioreactnative.utils.toWritableMap
 import io.primer.android.RetailOutletsList
 import io.primer.android.components.SdkUninitializedException
 import io.primer.android.components.domain.exception.UnsupportedPaymentMethodManagerException
+import io.primer.android.components.bridge.billingaddress.ComponentsBillingAddressBridge
 import io.primer.android.components.manager.raw.PrimerHeadlessUniversalCheckoutRawDataManager
 import io.primer.android.components.manager.raw.PrimerHeadlessUniversalCheckoutRawDataManagerInterface
 import io.primer.android.core.ExperimentalPrimerApi
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -42,6 +49,7 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
     private val listener = PrimerRNHeadlessUniversalCheckoutRawManagerListener()
     private lateinit var rawManager: PrimerHeadlessUniversalCheckoutRawDataManagerInterface
     private var paymentMethodTypeStr: String? = null
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     init {
         listener.sendEvent = { eventName, paramsJson -> sendEvent(eventName, paramsJson) }
@@ -175,6 +183,53 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
     }
 
     @ReactMethod
+    fun setBillingAddress(
+        billingAddressStr: String,
+        promise: Promise,
+    ) {
+        if (::rawManager.isInitialized.not()) {
+            val exception =
+                ErrorTypeRN.NativeBridgeFailed errorTo UNINITIALIZED_ERROR
+            promise.reject(exception.errorId, exception.description)
+            return
+        }
+
+        val rnAddress =
+            try {
+                json.decodeFromString<PrimerRNAddress>(billingAddressStr)
+            } catch (e: Exception) {
+                val exception =
+                    ErrorTypeRN.NativeBridgeFailed errorTo
+                        "Failed to decode billing address $billingAddressStr on Android. " +
+                        "Make sure you're providing a valid billing address object."
+                promise.reject(exception.errorId, exception.description, e)
+                return
+            }
+
+        val address =
+            try {
+                rnAddress.toPrimerAddress()
+            } catch (e: IllegalArgumentException) {
+                val exception = ErrorTypeRN.InvalidRawData errorTo (e.message ?: "Invalid billing address.")
+                promise.reject(exception.errorId, exception.description, e)
+                return
+            }
+
+        scope.launch {
+            try {
+                ComponentsBillingAddressBridge.create().setBillingAddress(address)
+                promise.resolve(null)
+            } catch (e: IllegalArgumentException) {
+                val exception = ErrorTypeRN.InvalidRawData errorTo (e.message ?: "Invalid billing address.")
+                promise.reject(exception.errorId, exception.description, e)
+            } catch (e: Exception) {
+                val exception = ErrorTypeRN.NativeBridgeFailed errorTo e.message.orEmpty()
+                promise.reject(exception.errorId, exception.description, e)
+            }
+        }
+    }
+
+    @ReactMethod
     fun cleanUp(promise: Promise) {
         if (::rawManager.isInitialized.not()) {
             val exception =
@@ -182,6 +237,7 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
             promise.reject(exception.errorId, exception.description)
         } else {
             rawManager.cleanup()
+            // `scope` is module-scoped; keep it alive across configure/cleanup cycles.
             promise.resolve(null)
         }
     }

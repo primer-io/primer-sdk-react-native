@@ -135,6 +135,7 @@ dependencies {
   implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3"
   implementation 'io.primer:android:2.49.0'
   implementation 'io.primer:components-analytics:3.0.0-beta.2'
+  implementation 'io.primer:components-bridge:3.0.0-beta.2'
   testImplementation 'io.mockk:mockk:1.14.2'
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
