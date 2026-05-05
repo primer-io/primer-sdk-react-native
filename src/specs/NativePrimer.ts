@@ -31,6 +31,11 @@ export interface Spec extends TurboModule {
 
   setImplementedRNCallbacks(implementedRNCallbacks: string): Promise<void>;
 
+  // Analytics bridge
+  setupAnalyticsLoggingBridge(clientToken: string): Promise<void>;
+  trackAnalyticsEvent(eventName: string, metadata?: string): Promise<void>;
+  sendLog(message: string, event: string): Promise<void>;
+
   // Backward compat
   addListener(eventName?: string): void;
   removeListeners(count?: number): void;
