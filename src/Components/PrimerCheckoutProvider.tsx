@@ -6,11 +6,13 @@ import { mergeTokens } from './internal/theme/merge';
 import { PrimerHeadlessUniversalCheckout } from '../HeadlessUniversalCheckout/PrimerHeadlessUniversalCheckout';
 import PrimerHeadlessUniversalCheckoutAssetsManager from '../HeadlessUniversalCheckout/Managers/AssetsManager';
 import PrimerHeadlessUniversalCheckoutRawDataManager from '../HeadlessUniversalCheckout/Managers/PaymentMethodManagers/RawDataManager';
+import PrimerHeadlessUniversalCheckoutVaultManager from '../HeadlessUniversalCheckout/Managers/VaultManager';
 import type { PrimerSettings } from '../models/PrimerSettings';
 import { PrimerError } from '../models/PrimerError';
 import type { PrimerCheckoutData } from '../models/PrimerCheckoutData';
 import type { PrimerRawData } from '../models/PrimerRawData';
 import type { PrimerBinData } from '../models/PrimerBinData';
+import type { PrimerVaultedPaymentMethod } from '../models/PrimerVaultedPaymentMethod';
 import type {
   PrimerCheckoutProviderProps,
   PrimerCheckoutContextValue,
@@ -44,6 +46,10 @@ interface InternalState {
   paymentOutcome: PaymentOutcome | null;
   activeMethod: string | null;
   cardFormState: CardFormState;
+  vaultedMethods: PrimerVaultedPaymentMethod[];
+  vaultedIconUrisById: Record<string, string | undefined>;
+  isLoadingVaulted: boolean;
+  vaultedError: Error | null;
 }
 
 const initialState: InternalState = {
@@ -57,6 +63,10 @@ const initialState: InternalState = {
   paymentOutcome: null,
   activeMethod: null,
   cardFormState: initialCardFormState,
+  vaultedMethods: [],
+  vaultedIconUrisById: {},
+  isLoadingVaulted: false,
+  vaultedError: null,
 };
 
 /**
@@ -131,6 +141,9 @@ export function PrimerCheckoutProvider({
   // Native manager. Lifecycle is driven by `state.activeMethod` — the method the user
   // picked on the selection screen — so it survives the card-form view mount/unmount.
   const managerRef = useRef<PrimerHeadlessUniversalCheckoutRawDataManager | null>(null);
+  // Vault manager is lazy — created on first vault fetch, reused across client-session updates,
+  // cleared on session teardown alongside `PrimerHeadlessUniversalCheckout.cleanUp()`.
+  const vaultManagerRef = useRef<PrimerHeadlessUniversalCheckoutVaultManager | null>(null);
   // Stashed so `retry()` can re-submit without needing the view to re-enter the form.
   // Compensates for an iOS native bug (see TODO in `retry`), not a JS-side concern.
   const lastRawDataRef = useRef<PrimerRawData | null>(null);
@@ -285,6 +298,8 @@ export function PrimerCheckoutProvider({
 
     return () => {
       cancelled = true;
+      // Vault manager is tied to the native session — let the next session recreate it.
+      vaultManagerRef.current = null;
       PrimerHeadlessUniversalCheckout.cleanUp();
     };
   }, [clientToken]);
@@ -342,6 +357,77 @@ export function PrimerCheckoutProvider({
       cancelled = true;
     };
   }, [state.isReady, methodTypesSignature]);
+
+  // -----------------------------------------------------------------------
+  // Vaulted payment methods — lazy-configured after `isReady`, re-fetched on
+  // every client-session update. Brand-icon URIs are resolved at fetch time so
+  // the row can render synchronously.
+  // -----------------------------------------------------------------------
+  useEffect(() => {
+    // Key on `isReady` only. Native's `onClientSessionUpdate` only fires on session
+    // *mutation*, not on initial load, so waiting for `clientSession` would hang forever
+    // in the common case.
+    if (!state.isReady) return;
+
+    let cancelled = false;
+    setState((prev) =>
+      prev.isLoadingVaulted && prev.vaultedError === null
+        ? prev
+        : { ...prev, isLoadingVaulted: true, vaultedError: null }
+    );
+
+    (async () => {
+      try {
+        if (!vaultManagerRef.current) {
+          const vm = new PrimerHeadlessUniversalCheckoutVaultManager();
+          await vm.configure();
+          if (cancelled) return;
+          vaultManagerRef.current = vm;
+        }
+        const methods = await vaultManagerRef.current.fetchVaultedPaymentMethods();
+        if (cancelled) return;
+        console.log(`${LOG} vault fetched ${methods.length} method(s)`);
+
+        const iconEntries = await Promise.all(
+          methods.map(async (m) => {
+            const network = m.paymentInstrumentData?.network;
+            if (!network) return [m.id, undefined] as const;
+            try {
+              const uri = await assetsManager.getCardNetworkImageURL(network);
+              return [m.id, uri] as const;
+            } catch (iconErr) {
+              console.warn(`${LOG} vault icon resolve failed for ${network} ${fmt(iconErr)}`);
+              return [m.id, undefined] as const;
+            }
+          })
+        );
+        if (cancelled) return;
+
+        const iconMap: Record<string, string | undefined> = {};
+        for (const [id, uri] of iconEntries) iconMap[id] = uri;
+
+        setState((prev) => ({
+          ...prev,
+          vaultedMethods: methods,
+          vaultedIconUrisById: iconMap,
+          isLoadingVaulted: false,
+        }));
+      } catch (err) {
+        console.warn(`${LOG} vault fetch failed ${fmt(err)}`);
+        if (!cancelled) {
+          setState((prev) => ({
+            ...prev,
+            isLoadingVaulted: false,
+            vaultedError: toError(err),
+          }));
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [state.isReady, state.clientSession]);
 
   // -----------------------------------------------------------------------
   // Raw-data manager lifecycle.
@@ -501,6 +587,29 @@ export function PrimerCheckoutProvider({
     setState((prev) => (prev.paymentOutcome === null ? prev : { ...prev, paymentOutcome: null }));
   }, []);
 
+  const payFromVault = useCallback(async (vaultedPaymentMethodId: string) => {
+    const vm = vaultManagerRef.current;
+    if (!vm) {
+      console.warn(`${LOG} payFromVault: vault manager not configured`);
+      return;
+    }
+    console.log(`${LOG} payFromVault id=${vaultedPaymentMethodId}`);
+    // Clear any stale outcome so PaymentOutcomeTransitioner re-fires for this attempt.
+    setState((prev) => (prev.paymentOutcome === null ? prev : { ...prev, paymentOutcome: null }));
+    try {
+      await vm.startPaymentFlow(vaultedPaymentMethodId);
+      // Outcome arrives through the shared onCheckoutComplete/onError callbacks.
+    } catch (err) {
+      console.error(`${LOG} payFromVault failed ${fmt(err)}`);
+      // Surface as an error outcome so the transitioner routes to the error screen.
+      const primerError = err as PrimerError;
+      setState((prev) => ({
+        ...prev,
+        paymentOutcome: { status: 'error', error: primerError, data: null },
+      }));
+    }
+  }, []);
+
   const contextValue = useMemo<PrimerCheckoutContextValue>(
     () => ({
       isReady: state.isReady,
@@ -514,13 +623,18 @@ export function PrimerCheckoutProvider({
       paymentOutcome: state.paymentOutcome,
       activeMethod: state.activeMethod,
       cardFormState: state.cardFormState,
+      vaultedMethods: state.vaultedMethods,
+      vaultedIconUrisById: state.vaultedIconUrisById,
+      isLoadingVaulted: state.isLoadingVaulted,
+      vaultedError: state.vaultedError,
       setActiveMethod,
       setRawData,
       submit,
       retry,
       clearPaymentOutcome,
+      payFromVault,
     }),
-    [state, setActiveMethod, setRawData, submit, retry, clearPaymentOutcome]
+    [state, setActiveMethod, setRawData, submit, retry, clearPaymentOutcome, payFromVault]
   );
 
   return (
