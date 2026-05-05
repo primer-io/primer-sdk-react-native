@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, type StyleProp, type ViewStyle } from 'react-native';
 import { useTheme } from '../internal/theme';
 import type { PrimerTokens } from '../internal/theme';
+import { flagEmoji } from '../internal/flags';
 import { FIELD_HEIGHT, LINE_HEIGHT_RATIO } from './dimensions';
 
 export interface CountrySelectorRowProps {
@@ -38,6 +39,7 @@ export function CountrySelectorRow({
 
   const hasValue = !!value;
   const text = hasValue ? (displayName ?? value) : placeholder;
+  const flag = hasValue ? flagEmoji(value) : '';
 
   return (
     <View style={[styles.container, style]} testID={testID}>
@@ -53,6 +55,11 @@ export function CountrySelectorRow({
         accessibilityValue={{ text: hasValue ? text : '' }}
         testID={testID ? `${testID}-row` : undefined}
       >
+        {flag !== '' && (
+          <Text style={styles.flag} accessibilityElementsHidden>
+            {flag}
+          </Text>
+        )}
         <Text
           style={[styles.value, !hasValue && styles.placeholder]}
           numberOfLines={1}
@@ -79,6 +86,11 @@ function createStyles(tokens: PrimerTokens) {
       marginLeft: spacing.small,
     },
     container: {},
+    flag: {
+      fontSize: typography.bodyLarge.fontSize + 4,
+      marginRight: spacing.small,
+      minWidth: 28,
+    },
     label: {
       color: colors.textPrimary,
       fontFamily: typography.fontFamily,
