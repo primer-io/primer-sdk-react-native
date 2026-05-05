@@ -1,24 +1,15 @@
-import React, {useState} from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {
-  PrimerCheckoutProvider,
-  PrimerCheckoutSheet,
-} from '@primer-io/react-native';
-import type {PrimerSettings} from '@primer-io/react-native';
-import {createClientSession} from '../network/api';
-import {appPaymentParameters} from '../models/IClientSessionRequestBody';
-import {customAppearanceMode} from './SettingsScreen';
-import {getPaymentHandlingStringVal} from '../network/Environment';
-import {STRIPE_ACH_PUBLISHABLE_KEY} from '../Keys';
+import React, { useState } from 'react';
+import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import { PrimerCheckoutProvider, PrimerCheckoutSheet } from '@primer-io/react-native';
+
+import { STRIPE_ACH_PUBLISHABLE_KEY } from '../Keys';
+import { appPaymentParameters } from '../models/IClientSessionRequestBody';
+import { createClientSession } from '../network/api';
+import { getPaymentHandlingStringVal } from '../network/Environment';
+import { customAppearanceMode } from './SettingsScreen';
+
+import type { PrimerSettings } from '@primer-io/react-native';
 interface Example {
   id: string;
   title: string;
@@ -68,7 +59,7 @@ export function CheckoutComponentsListScreen() {
       googlePayOptions: {
         isCaptureBillingAddressEnabled: true,
         isExistingPaymentMethodRequired: false,
-        shippingAddressParameters: {isPhoneNumberRequired: true},
+        shippingAddressParameters: { isPhoneNumberRequired: true },
         requireShippingMethod: false,
         emailAddressRequired: true,
       },
@@ -87,6 +78,7 @@ export function CheckoutComponentsListScreen() {
     settings.paymentMethodOptions!.applePayOptions = {
       merchantIdentifier: 'merchant.checkout.team',
       merchantName: appPaymentParameters.merchantName,
+      isCaptureBillingAddressEnabled: false,
     };
   }
 
@@ -100,7 +92,8 @@ export function CheckoutComponentsListScreen() {
               key={example.id}
               style={componentStyles.item}
               onPress={() => handleOpen(example)}
-              disabled={loadingId !== null}>
+              disabled={loadingId !== null}
+            >
               <View style={componentStyles.itemContent}>
                 <Text style={componentStyles.itemTitle}>{example.title}</Text>
                 <Text style={componentStyles.itemDescription}>
@@ -123,7 +116,8 @@ export function CheckoutComponentsListScreen() {
           onError={error => {
             console.error('Checkout error:', error);
             Alert.alert('Checkout Error', error.errorId ?? 'Unknown error');
-          }}>
+          }}
+        >
           <PrimerCheckoutSheet
             visible={sheetVisible}
             onRequestDismiss={() => setSheetVisible(false)}
