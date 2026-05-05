@@ -64,6 +64,7 @@ export function PrimerCardForm({
             returnKeyType="next"
             onSubmitEditing={() => nameRef.current?.focus()}
             testID={`${testID}-cvv`}
+            label={cardForm.descriptor.cvvLabel}
           />
         </View>
       </View>

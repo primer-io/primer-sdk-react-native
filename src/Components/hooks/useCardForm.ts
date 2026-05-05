@@ -1,17 +1,21 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { usePrimerCheckout } from './usePrimerCheckout';
+import { useCardNetwork } from './useCardNetwork';
 import { debounce, type DebouncedFunction } from '../../utils/debounce';
 import { fmt } from '../internal/debug';
 import { PrimerError } from '../../models/PrimerError';
+import { formatDigitsWithGaps, maxFormattedCardNumberLength, maxPanDigits } from '../internal/cardFormat';
 import type { CardFormField, CardFormErrors, UseCardFormOptions, UseCardFormReturn } from '../types/CardFormTypes';
 
 const LOG = '[useCardForm]';
 const DEBOUNCE_MS = 150;
 const PAYMENT_METHOD_TYPE = 'PAYMENT_CARD';
 
-function formatCardNumber(value: string): string {
-  const digits = value.replace(/\D/g, '').slice(0, 16);
-  return digits.replace(/(\d{4})(?=\d)/g, '$1 ');
+function formatCardNumber(value: string, gapPattern: readonly number[], maxDigits: number): string {
+  const digits = value.replace(/\D/g, '').slice(0, maxDigits);
+  const out = formatDigitsWithGaps(digits, gapPattern);
+  console.log(`${LOG} formatCardNumber ${fmt({ raw: value, digits, gapPattern, maxDigits, out })}`);
+  return out;
 }
 
 function formatExpiryDate(value: string, previous: string): string {
@@ -25,8 +29,8 @@ function formatExpiryDate(value: string, previous: string): string {
   return digits;
 }
 
-function formatCVV(value: string): string {
-  return value.replace(/\D/g, '').slice(0, 4);
+function formatCVV(value: string, maxDigits: 3 | 4): string {
+  return value.replace(/\D/g, '').slice(0, maxDigits);
 }
 
 function stripCardNumberForNative(formatted: string): string {
@@ -66,12 +70,19 @@ export function useCardForm(options: UseCardFormOptions = {}): UseCardFormReturn
   const [cvv, setCVV] = useState('');
   const [cardholderName, setCardholderName] = useState('');
 
-  const [touched, setTouched] = useState<Record<CardFormField, boolean>>({
+  const [hasBeenFocused, setHasBeenFocused] = useState<Record<CardFormField, boolean>>({
     cardNumber: false,
     expiryDate: false,
     cvv: false,
     cardholderName: false,
   });
+  const [hasBeenBlurred, setHasBeenBlurred] = useState<Record<CardFormField, boolean>>({
+    cardNumber: false,
+    expiryDate: false,
+    cvv: false,
+    cardholderName: false,
+  });
+  const [submitAttempted, setSubmitAttempted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onValidationChangeRef = useRef(onValidationChange);
@@ -126,9 +137,19 @@ export function useCardForm(options: UseCardFormOptions = {}): UseCardFormReturn
     debouncedRef.current?.(data);
   }, []);
 
+  // Descriptor resolves asynchronously (see useCardNetwork). Capture via a ref so
+  // updateCardNumber's useCallback dep array doesn't re-close over descriptor each
+  // render; the ref is refreshed below whenever descriptor changes.
+  const { descriptor } = useCardNetwork();
+  const descriptorRef = useRef(descriptor);
+  descriptorRef.current = descriptor;
+
   const updateCardNumber = useCallback(
     (value: string) => {
-      const formatted = formatCardNumber(value);
+      const d = descriptorRef.current;
+      const gap = d?.gapPattern ?? [4, 8, 12];
+      const max = d ? maxPanDigits(d) : 19;
+      const formatted = formatCardNumber(value, gap, max);
       setCardNumber(formatted);
       fieldsRef.current.cardNumber = formatted;
       syncToNative();
@@ -148,7 +169,7 @@ export function useCardForm(options: UseCardFormOptions = {}): UseCardFormReturn
 
   const updateCVV = useCallback(
     (value: string) => {
-      const formatted = formatCVV(value);
+      const formatted = formatCVV(value, descriptorRef.current.cvvLength);
       setCVV(formatted);
       fieldsRef.current.cvv = formatted;
       syncToNative();
@@ -165,22 +186,55 @@ export function useCardForm(options: UseCardFormOptions = {}): UseCardFormReturn
     [syncToNative]
   );
 
-  const markFieldTouched = useCallback((field: CardFormField) => {
-    setTouched((prev) => (prev[field] ? prev : { ...prev, [field]: true }));
+  // Re-arm: focusing a previously-blurred field clears its blur flag so its error
+  // disappears until the user blurs again. A submit attempt overrides this gate
+  // so the user can't hide errors by tapping a field after a failed submit.
+  const markFieldFocused = useCallback((field: CardFormField) => {
+    setHasBeenFocused((prev) => (prev[field] ? prev : { ...prev, [field]: true }));
+    setHasBeenBlurred((prev) => (!prev[field] ? prev : { ...prev, [field]: false }));
+  }, []);
+
+  const markFieldBlurred = useCallback((field: CardFormField) => {
+    setHasBeenBlurred((prev) => (prev[field] ? prev : { ...prev, [field]: true }));
+  }, []);
+
+  const markSubmitAttempted = useCallback(() => {
+    setSubmitAttempted(true);
   }, []);
 
   const errors = useMemo(() => {
     const visible: CardFormErrors = {};
     for (const field of Object.keys(cardFormState.errors) as CardFormField[]) {
-      if (touched[field]) {
-        visible[field] = cardFormState.errors[field];
-      }
+      const show = submitAttempted || (hasBeenFocused[field] && hasBeenBlurred[field]);
+      if (show) visible[field] = cardFormState.errors[field];
     }
     return visible;
-  }, [cardFormState.errors, touched]);
+  }, [cardFormState.errors, hasBeenFocused, hasBeenBlurred, submitAttempted]);
+
+  // Mid-typing re-format: when the detected network flips (e.g. first 4 digits
+  // resolve to AMEX), reformat what's already in the field so spacing matches the
+  // new gap pattern AND truncate if the new max is shorter (OTHER 19 → Amex 15).
+  useEffect(() => {
+    const currentDigits = fieldsRef.current.cardNumber.replace(/\D/g, '');
+    if (!currentDigits) return;
+    const maxDigits = maxPanDigits(descriptor);
+    const truncated = currentDigits.slice(0, maxDigits);
+    const reformatted = formatDigitsWithGaps(truncated, descriptor.gapPattern);
+    if (reformatted === fieldsRef.current.cardNumber) return;
+    console.log(
+      `${LOG} reformat on network change ${fmt({ before: fieldsRef.current.cardNumber, after: reformatted, gapPattern: descriptor.gapPattern, maxDigits })}`
+    );
+    fieldsRef.current.cardNumber = reformatted;
+    setCardNumber(reformatted);
+    // If truncation actually dropped digits, tell native so validation matches
+    // what the user sees.
+    if (truncated.length !== currentDigits.length) syncToNative();
+  }, [descriptor, syncToNative]);
 
   const isSubmittingRef = useRef(false);
   const submit = useCallback(async () => {
+    // Flip submit-attempted before any guard returns so a failed submit reveals every error.
+    setSubmitAttempted(true);
     if (!isReady || activeMethod !== PAYMENT_METHOD_TYPE) {
       console.warn(`${LOG} submit: not ready ${fmt({ isReady, activeMethod })}`);
       return;
@@ -205,7 +259,9 @@ export function useCardForm(options: UseCardFormOptions = {}): UseCardFormReturn
     setExpiryDate('');
     setCVV('');
     setCardholderName('');
-    setTouched({ cardNumber: false, expiryDate: false, cvv: false, cardholderName: false });
+    setHasBeenFocused({ cardNumber: false, expiryDate: false, cvv: false, cardholderName: false });
+    setHasBeenBlurred({ cardNumber: false, expiryDate: false, cvv: false, cardholderName: false });
+    setSubmitAttempted(false);
     setIsSubmitting(false);
     isSubmittingRef.current = false;
     fieldsRef.current = { cardNumber: '', expiryDate: '', cvv: '', cardholderName: '' };
@@ -224,11 +280,16 @@ export function useCardForm(options: UseCardFormOptions = {}): UseCardFormReturn
     updateCardholderName,
     isValid: cardFormState.isValid,
     errors,
-    markFieldTouched,
+    markFieldFocused,
+    markFieldBlurred,
+    markSubmitAttempted,
     submit,
     isSubmitting,
+    submitAttempted,
     requiredFields: cardFormState.requiredFields,
     binData: cardFormState.binData,
+    descriptor,
+    cardNumberMaxLength: maxFormattedCardNumberLength(descriptor),
     reset,
   };
 }
