@@ -130,6 +130,80 @@ export type { BanksLoading, BanksRetrieved, BanksStep };
 import type { NamedComponentValidatableData } from './models/NamedComponentValidatableData';
 export type { NamedComponentValidatableData };
 
+export { PrimerCheckoutProvider } from './Components';
+export { usePrimerCheckout } from './Components';
+export { usePaymentMethods } from './Components';
+export type {
+  PrimerCheckoutProviderProps,
+  PrimerCheckoutContextValue,
+  PaymentOutcome,
+  CardFormState,
+} from './Components';
+export type {
+  PaymentMethodItem,
+  PaymentMethodSurcharge,
+  UsePaymentMethodsOptions,
+  UsePaymentMethodsReturn,
+} from './Components';
+export { useCardForm } from './Components';
+export type { UseCardFormOptions, UseCardFormReturn, CardFormErrors, CardFormField } from './Components';
+export { PrimerPaymentMethodList } from './Components';
+export type { PrimerPaymentMethodListProps } from './Components';
+export { PrimerCheckoutSheet } from './Components';
+export type { PrimerCheckoutSheetProps } from './Components';
+export { PrimerCardForm } from './Components';
+export type { PrimerCardFormProps } from './Components';
+export { PrimerTextInput, CardNumberInput, ExpiryDateInput, CVVInput, CardholderNameInput } from './Components';
+export type {
+  PrimerTextInputTheme,
+  PrimerTextInputProps,
+  PrimerTextInputRef,
+  CardInputTheme,
+  CardInputBaseProps,
+  CardNumberInputProps,
+  ExpiryDateInputProps,
+  CVVInputProps,
+  CardholderNameInputProps,
+} from './Components';
+export { PrimerAnalytics } from './Components/analytics';
+
+export { useLocalization, translate, hasLocale } from './Components/internal/localization';
+export type { TranslationParams, LocalizationResult } from './Components/internal/localization';
+
+export { useTheme } from './Components/internal/theme';
+export type {
+  PrimerTokens,
+  PrimerColorTokens,
+  PrimerSpacingTokens,
+  PrimerTypographyTokens,
+  PrimerTypographyStyle,
+  PrimerRadiusTokens,
+  PrimerBorderTokens,
+  PrimerThemeOverride,
+} from './Components/internal/theme';
+
+export { CheckoutSheet, useSheetHeight } from './Components/internal/checkout-sheet';
+export type { CheckoutSheetProps, SheetHeightContextValue } from './Components/internal/checkout-sheet';
+
+export {
+  CheckoutRoute,
+  NavigationContainer,
+  NavigationHeader,
+  NavigationProvider,
+  useNavigation,
+  useRoute,
+} from './Components/internal/navigation';
+export type {
+  NavigationHeaderAction,
+  NavigationHeaderProps,
+  NavigationState,
+  RouteEntry,
+  RouteParamMap,
+} from './Components/internal/navigation';
+
+export { LoadingScreen, SuccessScreen, ErrorScreen, StatusScreenLayout } from './Components/internal/screens';
+export type { StatusScreenLayoutProps } from './Components/internal/screens';
+
 // must be exported in order to support the old architecture
 const nativeModule = require('./specs/NativePrimer').default;
 export default nativeModule;

@@ -128,6 +128,26 @@ RCT_EXPORT_METHOD(cleanUp:(RCTPromiseResolveBlock)resolve
     resolve(nil);
 }
 
+RCT_EXPORT_METHOD(trackAnalyticsEvent:(NSString *)eventName
+                  metadata:(NSString *)metadata
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
+    [self.primer trackAnalyticsEvent:eventName metadata:metadata resolver:resolve rejecter:reject];
+}
+
+RCT_EXPORT_METHOD(sendLog:(NSString *)message
+                  event:(NSString *)event
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
+    [self.primer sendLog:message event:event resolver:resolve rejecter:reject];
+}
+
+RCT_EXPORT_METHOD(setupAnalyticsLoggingBridge:(NSString *)clientToken
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
+    [self.primer setupAnalyticsLoggingBridge:clientToken resolver:resolve rejecter:reject];
+}
+
 #ifdef RCT_NEW_ARCH_ENABLED
 #pragma mark - New Architecture Protocol Methods
 
@@ -182,8 +202,20 @@ RCT_EXPORT_METHOD(cleanUp:(RCTPromiseResolveBlock)resolve
 - (void)showVaultManagerWithClientToken:(nonnull NSString *)clientToken resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject { 
     [self.primer showVaultManagerWithClientToken:clientToken resolver:resolve rejecter:reject];
 }
-- (void)showPaymentMethod:(nonnull NSString *)paymentMethod intent:(nonnull NSString *)intent clientToken:(nonnull NSString *)clientToken resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject { 
+- (void)showPaymentMethod:(nonnull NSString *)paymentMethod intent:(nonnull NSString *)intent clientToken:(nonnull NSString *)clientToken resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject {
     [self.primer showPaymentMethod:paymentMethod intent:intent clientToken:clientToken resolver:resolve rejecter:reject];
+}
+
+- (void)trackAnalyticsEvent:(nonnull NSString *)eventName metadata:(NSString *)metadata resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject {
+    [self.primer trackAnalyticsEvent:eventName metadata:metadata resolver:resolve rejecter:reject];
+}
+
+- (void)sendLog:(nonnull NSString *)message event:(nonnull NSString *)event resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject {
+    [self.primer sendLog:message event:event resolver:resolve rejecter:reject];
+}
+
+- (void)setupAnalyticsLoggingBridge:(nonnull NSString *)clientToken resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject {
+    [self.primer setupAnalyticsLoggingBridge:clientToken resolver:resolve rejecter:reject];
 }
 
 #pragma mark - TurboModule

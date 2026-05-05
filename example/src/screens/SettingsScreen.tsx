@@ -7,6 +7,7 @@ import {
   View,
 } from 'react-native';
 import {styles} from '../styles';
+import {NavigationDemoModal} from './NavigationDemoScreen';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import {
   Environment,
@@ -76,6 +77,7 @@ export function makeCheckoutVaultingTypeFromIntVal(
 // @ts-ignore
 const SettingsScreen = ({navigation}) => {
   const isDarkMode = useColorScheme() === 'dark';
+  const [navDemoVisible, setNavDemoVisible] = React.useState(false);
   const [environment, setEnvironment] = React.useState<Environment>(
     Environment.Sandbox,
   );
@@ -847,6 +849,18 @@ const SettingsScreen = ({navigation}) => {
     return (
       <View>
         <TouchableOpacity
+          style={{
+            ...styles.button,
+            marginVertical: 5,
+            backgroundColor: '#5856D6',
+          }}
+          onPress={() => navigation.navigate('LocalizationDebug')}>
+          <Text style={{...styles.buttonText, color: 'white'}}>
+            Localization Debug
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
           testID="PrimerSDK"
           style={{
             ...styles.button,
@@ -891,6 +905,32 @@ const SettingsScreen = ({navigation}) => {
           }}>
           <Text style={{...styles.buttonText, color: 'white'}}>
             Headless Universal Checkout Vault
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={{
+            ...styles.button,
+            marginVertical: 5,
+            backgroundColor: '#007AFF',
+          }}
+          onPress={() => setNavDemoVisible(true)}>
+          <Text style={{...styles.buttonText, color: 'white'}}>
+            Navigation Demo
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={{
+            ...styles.button,
+            marginVertical: 5,
+            backgroundColor: '#2c3e50',
+          }}
+          onPress={() => {
+            navigation.navigate('AnalyticsDebug');
+          }}>
+          <Text style={{...styles.buttonText, color: 'white'}}>
+            Analytics Debug
           </Text>
         </TouchableOpacity>
       </View>
@@ -1276,22 +1316,44 @@ const SettingsScreen = ({navigation}) => {
   };
 
   return (
-    <ScrollView
-      contentInsetAdjustmentBehavior="automatic"
-      style={backgroundStyle}>
-      {/* <Header /> */}
-      <View
-        style={{
-          marginHorizontal: 24,
-        }}>
-        {renderRequiredSettings()}
-        {renderOptionalSettings()}
+    <>
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        style={backgroundStyle}>
+        {/* <Header /> */}
+        <View
+          style={{
+            marginHorizontal: 24,
+          }}>
+          <TouchableOpacity
+            style={{
+              ...styles.button,
+              marginTop: 12,
+              marginBottom: 8,
+              backgroundColor: '#2f98ff',
+            }}
+            onPress={() => {
+              updateAppPaymentParameters();
+              navigation.navigate('CheckoutComponentsList');
+            }}>
+            <Text style={{...styles.buttonText, color: 'white'}}>
+              Checkout Components
+            </Text>
+          </TouchableOpacity>
 
-        <View style={{marginVertical: 5}} />
+          {renderRequiredSettings()}
+          {renderOptionalSettings()}
 
-        {renderActions()}
-      </View>
-    </ScrollView>
+          <View style={{marginVertical: 5}} />
+
+          {renderActions()}
+        </View>
+      </ScrollView>
+      <NavigationDemoModal
+        visible={navDemoVisible}
+        onClose={() => setNavDemoVisible(false)}
+      />
+    </>
   );
 };
 
