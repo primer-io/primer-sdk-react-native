@@ -1,17 +1,51 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { PrimerCheckoutContext } from './internal/PrimerCheckoutContext';
 import { ThemeContext } from './internal/theme/ThemeContext';
 import { defaultDarkTokens, defaultLightTokens } from './internal/theme/tokens';
 import { mergeTokens } from './internal/theme/merge';
 import { PrimerHeadlessUniversalCheckout } from '../HeadlessUniversalCheckout/PrimerHeadlessUniversalCheckout';
 import PrimerHeadlessUniversalCheckoutAssetsManager from '../HeadlessUniversalCheckout/Managers/AssetsManager';
-import { toError } from './internal/utils/errors';
+import PrimerHeadlessUniversalCheckoutRawDataManager from '../HeadlessUniversalCheckout/Managers/PaymentMethodManagers/RawDataManager';
 import type { PrimerSettings } from '../models/PrimerSettings';
-import type { PrimerCheckoutProviderProps, PrimerCheckoutContextValue } from './types/PrimerCheckoutProviderTypes';
+import { PrimerError } from '../models/PrimerError';
+import type { PrimerRawData } from '../models/PrimerRawData';
+import type { PrimerBinData } from '../models/PrimerBinData';
+import type {
+  PrimerCheckoutProviderProps,
+  PrimerCheckoutContextValue,
+  PaymentOutcome,
+  CardFormState,
+} from './types/PrimerCheckoutProviderTypes';
+import type { CardFormErrors } from './types/CardFormTypes';
+import { fmt } from './internal/debug';
+import { toError } from './internal/utils/errors';
+
+const LOG = '[PrimerCheckoutProvider]';
 
 const assetsManager = new PrimerHeadlessUniversalCheckoutAssetsManager();
 
-const initialState: PrimerCheckoutContextValue = {
+const initialCardFormState: CardFormState = {
+  isValid: false,
+  errors: {},
+  binData: null,
+  metadata: null,
+  requiredFields: [],
+};
+
+interface InternalState {
+  isReady: boolean;
+  error: PrimerError | null;
+  clientSession: PrimerCheckoutContextValue['clientSession'];
+  availablePaymentMethods: PrimerCheckoutContextValue['availablePaymentMethods'];
+  paymentMethodResources: PrimerCheckoutContextValue['paymentMethodResources'];
+  isLoadingResources: boolean;
+  resourcesError: Error | null;
+  paymentOutcome: PaymentOutcome | null;
+  activeMethod: string | null;
+  cardFormState: CardFormState;
+}
+
+const initialState: InternalState = {
   isReady: false,
   error: null,
   clientSession: null,
@@ -19,7 +53,30 @@ const initialState: PrimerCheckoutContextValue = {
   paymentMethodResources: [],
   isLoadingResources: false,
   resourcesError: null,
+  paymentOutcome: null,
+  activeMethod: null,
+  cardFormState: initialCardFormState,
 };
+
+/** Map native validation errors to per-field typed errors the UI can render. */
+function parseValidationErrors(errors: PrimerError[] | undefined): CardFormErrors {
+  const fieldErrors: CardFormErrors = {};
+  if (!errors) return fieldErrors;
+  for (const error of errors) {
+    const id = (error.errorId ?? '').toLowerCase();
+    const description = error.description ?? error.message ?? 'Invalid';
+    if (id.includes('card') && id.includes('number')) {
+      fieldErrors.cardNumber = description;
+    } else if (id.includes('expir') || id.includes('expiry')) {
+      fieldErrors.expiryDate = description;
+    } else if (id.includes('cvv') || id.includes('cvc')) {
+      fieldErrors.cvv = description;
+    } else if (id.includes('cardholder') || id.includes('name')) {
+      fieldErrors.cardholderName = description;
+    }
+  }
+  return fieldErrors;
+}
 
 export function PrimerCheckoutProvider({
   clientToken,
@@ -31,12 +88,12 @@ export function PrimerCheckoutProvider({
   onError,
   children,
 }: PrimerCheckoutProviderProps) {
-  const [state, setState] = useState<PrimerCheckoutContextValue>(initialState);
+  const [state, setState] = useState<InternalState>(initialState);
 
   const [lightTokens] = useState(() => mergeTokens(defaultLightTokens, theme?.light));
   const [darkTokens] = useState(() => mergeTokens(defaultDarkTokens, theme?.dark));
 
-  // Keep refs for all callbacks and settings so the useEffect doesn't depend on them
+  // Refs keep init useEffect deps to [clientToken] only.
   const settingsRef = useRef(settings);
   settingsRef.current = settings;
   const onCheckoutCompleteRef = useRef(onCheckoutComplete);
@@ -48,6 +105,25 @@ export function PrimerCheckoutProvider({
   const onErrorRef = useRef(onError);
   onErrorRef.current = onError;
 
+  // Snapshot of current state for stable callbacks that need activeMethod.
+  const stateRef = useRef(state);
+  stateRef.current = state;
+
+  // Native manager. Lifecycle is driven by `state.activeMethod` — the method the user
+  // picked on the selection screen — so it survives the card-form view mount/unmount.
+  const managerRef = useRef<PrimerHeadlessUniversalCheckoutRawDataManager | null>(null);
+  // Stashed so `retry()` can re-submit without needing the view to re-enter the form.
+  // Compensates for an iOS native bug (see TODO in `retry`), not a JS-side concern.
+  const lastRawDataRef = useRef<PrimerRawData | null>(null);
+  const lastManagerCallbacksRef = useRef<{
+    onValidation: (isValid: boolean, errors: PrimerError[] | undefined) => void;
+    onBinDataChange: (binData: PrimerBinData) => void;
+    onMetadataChange: (metadata: unknown) => void;
+  } | null>(null);
+
+  // -----------------------------------------------------------------------
+  // Session init — create headless checkout + wire session-level callbacks.
+  // -----------------------------------------------------------------------
   useEffect(() => {
     setState(initialState);
     let cancelled = false;
@@ -55,9 +131,6 @@ export function PrimerCheckoutProvider({
     async function init() {
       const userCallbacks = settingsRef.current?.headlessUniversalCheckoutCallbacks;
 
-      // Only define callbacks that are actually needed — native SDK checks for presence
-      // and handler-based ones (onTokenizationSuccess, onCheckoutResume, onBeforePaymentCreate)
-      // will hang the flow if defined but no handler is invoked.
       const callbacks: PrimerSettings['headlessUniversalCheckoutCallbacks'] = {
         onAvailablePaymentMethodsLoad: (availablePaymentMethods) => {
           // Flip isLoadingResources: true atomically with the new list so the hook
@@ -78,9 +151,27 @@ export function PrimerCheckoutProvider({
           settingsRef.current?.headlessUniversalCheckoutCallbacks?.onClientSessionUpdate?.(clientSession);
         },
         onError: (error, checkoutData) => {
-          setState((prev) => ({ ...prev, error }));
+          setState((prev) => {
+            // Init-time errors → `error`. Payment-time errors → `paymentOutcome`.
+            if (prev.isReady) {
+              return {
+                ...prev,
+                paymentOutcome: { status: 'error', error, data: checkoutData ?? null },
+              };
+            }
+            return { ...prev, error };
+          });
           onErrorRef.current?.(error, checkoutData);
           settingsRef.current?.headlessUniversalCheckoutCallbacks?.onError?.(error, checkoutData);
+        },
+        // Always-subscribed so paymentOutcome fires regardless of merchant callbacks.
+        onCheckoutComplete: (checkoutData) => {
+          setState((prev) => ({
+            ...prev,
+            paymentOutcome: { status: 'success', data: checkoutData },
+          }));
+          onCheckoutCompleteRef.current?.(checkoutData);
+          settingsRef.current?.headlessUniversalCheckoutCallbacks?.onCheckoutComplete?.(checkoutData);
         },
       };
 
@@ -107,14 +198,6 @@ export function PrimerCheckoutProvider({
           );
         };
       }
-
-      if (onCheckoutCompleteRef.current || userCallbacks?.onCheckoutComplete) {
-        callbacks.onCheckoutComplete = (checkoutData) => {
-          onCheckoutCompleteRef.current?.(checkoutData);
-          settingsRef.current?.headlessUniversalCheckoutCallbacks?.onCheckoutComplete?.(checkoutData);
-        };
-      }
-
       if (userCallbacks?.onTokenizationStart) {
         callbacks.onTokenizationStart = (paymentMethodType) => {
           settingsRef.current?.headlessUniversalCheckoutCallbacks?.onTokenizationStart?.(paymentMethodType);
@@ -160,6 +243,7 @@ export function PrimerCheckoutProvider({
           ...prev,
           isReady: true,
           availablePaymentMethods: methods,
+          paymentMethodResources: [],
           isLoadingResources: true,
           resourcesError: null,
         }));
@@ -167,6 +251,7 @@ export function PrimerCheckoutProvider({
     }
 
     init().catch((err) => {
+      console.error(`${LOG} init failed ${fmt(err)}`);
       if (!cancelled) {
         setState((prev) => ({ ...prev, error: err }));
       }
@@ -178,7 +263,10 @@ export function PrimerCheckoutProvider({
     };
   }, [clientToken]);
 
-  // Re-fetch payment method resources whenever the set of available method types changes.
+  // -----------------------------------------------------------------------
+  // Payment method resource fetch — re-runs whenever the set of available
+  // method types changes (init, or onAvailablePaymentMethodsLoad firing post-ready).
+  // -----------------------------------------------------------------------
   const methodTypesSignature = useMemo(
     () =>
       state.availablePaymentMethods
@@ -218,6 +306,7 @@ export function PrimerCheckoutProvider({
         }
       })
       .catch((err) => {
+        console.warn(`${LOG} resources load failed ${fmt(err)}`);
         if (!cancelled) {
           setState((prev) => ({ ...prev, isLoadingResources: false, resourcesError: toError(err) }));
         }
@@ -228,9 +317,168 @@ export function PrimerCheckoutProvider({
     };
   }, [state.isReady, methodTypesSignature]);
 
+  // -----------------------------------------------------------------------
+  // Raw-data manager lifecycle.
+  //
+  // The effect creates a manager for the current `activeMethod` and tears it down in
+  // cleanup. Because `activeMethod` is set by the method-selection screen (user intent)
+  // rather than the card-form view's mount/unmount, the manager survives nav transitions
+  // through processing/success/error — exactly when retry needs it alive.
+  //
+  // The single cleanup handles all three teardown paths:
+  //   • method change     — effect re-runs, cleanup destroys old, body builds new
+  //   • session end       — `isReady` or `activeMethod` flips, effect re-runs, cleanup destroys
+  //   • provider unmount  — final cleanup destroys
+  // -----------------------------------------------------------------------
+  useEffect(() => {
+    if (!state.isReady || !state.activeMethod) {
+      return;
+    }
+
+    const method = state.activeMethod;
+    let cancelled = false;
+    const m = new PrimerHeadlessUniversalCheckoutRawDataManager();
+    managerRef.current = m;
+
+    const callbacks = {
+      onValidation: (isValid: boolean, errors: PrimerError[] | undefined) => {
+        const parsed = parseValidationErrors(errors);
+        setState((prev) => ({
+          ...prev,
+          cardFormState: { ...prev.cardFormState, isValid, errors: parsed },
+        }));
+      },
+      onBinDataChange: (binData: PrimerBinData) => {
+        setState((prev) => ({
+          ...prev,
+          cardFormState: { ...prev.cardFormState, binData },
+        }));
+      },
+      onMetadataChange: (metadata: unknown) => {
+        setState((prev) => ({
+          ...prev,
+          cardFormState: { ...prev.cardFormState, metadata },
+        }));
+      },
+    };
+    lastManagerCallbacksRef.current = callbacks;
+
+    (async () => {
+      try {
+        await m.configure({ paymentMethodType: method, ...callbacks });
+        if (cancelled) return;
+        const requiredFields = await m.getRequiredInputElementTypes();
+        if (cancelled) return;
+        setState((prev) => ({
+          ...prev,
+          cardFormState: { ...prev.cardFormState, requiredFields },
+        }));
+      } catch (err) {
+        console.error(`${LOG} manager configure failed ${fmt(err)}`);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      m.cleanUp().catch((err) => console.warn(`${LOG} manager cleanUp failed ${fmt(err)}`));
+      m.removeAllListeners();
+      if (managerRef.current === m) {
+        managerRef.current = null;
+      }
+      lastManagerCallbacksRef.current = null;
+      setState((prev) => ({ ...prev, cardFormState: initialCardFormState }));
+    };
+  }, [state.activeMethod, state.isReady]);
+
+  // -----------------------------------------------------------------------
+  // Actions — stable identities.
+  // -----------------------------------------------------------------------
+  const setActiveMethod = useCallback((method: string | null) => {
+    setState((prev) => (prev.activeMethod === method ? prev : { ...prev, activeMethod: method }));
+  }, []);
+
+  const setRawData = useCallback(async (data: PrimerRawData) => {
+    lastRawDataRef.current = data;
+    const m = managerRef.current;
+    if (!m) {
+      console.warn(`${LOG} setRawData: no manager (activeMethod=${stateRef.current.activeMethod})`);
+      return;
+    }
+    try {
+      await m.setRawData(data);
+    } catch (err) {
+      console.warn(`${LOG} setRawData failed: ${err instanceof PrimerError ? err.errorId : 'unknown'}`);
+      throw err;
+    }
+  }, []);
+
+  const submit = useCallback(async () => {
+    const m = managerRef.current;
+    if (!m) {
+      console.warn(`${LOG} submit: no manager`);
+      return;
+    }
+    await m.submit();
+  }, []);
+
+  const retry = useCallback(async () => {
+    const method = stateRef.current.activeMethod;
+    const m = managerRef.current;
+    if (!method || !m) {
+      console.warn(`${LOG} retry: no active method or manager ${fmt({ method, hasManager: !!m })}`);
+      return;
+    }
+    // TODO(iOS native fix): ios .../RawDataManager.swift:237 nullifies its delegate on
+    // successful tokenization, so any post-tokenize failure would silently drop subsequent
+    // submit() outcomes. Reconfiguring here rebuilds the delegate binding. Harmless on
+    // Android. Remove the reconfigure once the iOS SDK stops nullifying.
+    try {
+      // Re-pass the original callbacks so the JS-wrapper's listeners get re-registered.
+      // Otherwise native would emit onValidation/onBinDataChange/onMetadataChange during
+      // the retry attempt with no JS-side subscribers → RN warns "no listeners registered".
+      const callbacks = lastManagerCallbacksRef.current;
+      await m.configure(callbacks ? { paymentMethodType: method, ...callbacks } : { paymentMethodType: method });
+      if (lastRawDataRef.current) {
+        await m.setRawData(lastRawDataRef.current);
+      }
+      // Clear the previous outcome so the transitioner fires for the new attempt.
+      setState((prev) => (prev.paymentOutcome === null ? prev : { ...prev, paymentOutcome: null }));
+      await m.submit();
+    } catch (err) {
+      console.error(`${LOG} retry failed ${fmt(err)}`);
+      throw err;
+    }
+  }, []);
+
+  const clearPaymentOutcome = useCallback(() => {
+    setState((prev) => (prev.paymentOutcome === null ? prev : { ...prev, paymentOutcome: null }));
+  }, []);
+
+  const contextValue = useMemo<PrimerCheckoutContextValue>(
+    () => ({
+      isReady: state.isReady,
+      error: state.error,
+      clientSession: state.clientSession,
+      availablePaymentMethods: state.availablePaymentMethods,
+      paymentMethodResources: state.paymentMethodResources,
+      isLoadingResources: state.isLoadingResources,
+      resourcesError: state.resourcesError,
+      settings: settingsRef.current,
+      paymentOutcome: state.paymentOutcome,
+      activeMethod: state.activeMethod,
+      cardFormState: state.cardFormState,
+      setActiveMethod,
+      setRawData,
+      submit,
+      retry,
+      clearPaymentOutcome,
+    }),
+    [state, setActiveMethod, setRawData, submit, retry, clearPaymentOutcome]
+  );
+
   return (
     <ThemeContext.Provider value={{ lightTokens, darkTokens }}>
-      <PrimerCheckoutContext.Provider value={state}>{children}</PrimerCheckoutContext.Provider>
+      <PrimerCheckoutContext.Provider value={contextValue}>{children}</PrimerCheckoutContext.Provider>
     </ThemeContext.Provider>
   );
 }
