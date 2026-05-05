@@ -90,7 +90,7 @@ function parseValidationErrors(errors: PrimerError[] | undefined): CardFormError
       fieldErrors.expiryDate = description;
     } else if (id.includes('cvv') || id.includes('cvc')) {
       fieldErrors.cvv = description;
-    } else if (id.includes('cardholder') || id.includes('name')) {
+    } else if (id.includes('cardholder') || id.includes('card_holder')) {
       fieldErrors.cardholderName = description;
     }
   }
@@ -139,6 +139,10 @@ export function PrimerCheckoutProvider({
     onBinDataChange: (binData: PrimerBinData) => void;
     onMetadataChange: (metadata: unknown) => void;
   } | null>(null);
+  // Marks the manager that `retry()` currently holds. Effect cleanup defers
+  // teardown of this manager so an in-flight submit/configure isn't destroyed.
+  const retryingManagerRef = useRef<PrimerHeadlessUniversalCheckoutRawDataManager | null>(null);
+  const pendingCleanupRef = useRef<PrimerHeadlessUniversalCheckoutRawDataManager | null>(null);
 
   // -----------------------------------------------------------------------
   // Session init — create headless checkout + wire session-level callbacks.
@@ -402,6 +406,12 @@ export function PrimerCheckoutProvider({
 
     return () => {
       cancelled = true;
+      // If retry() holds this manager, defer destroy until retry's finally
+      // runs — otherwise we'd cleanUp() between its awaited configure/submit.
+      if (retryingManagerRef.current === m) {
+        pendingCleanupRef.current = m;
+        return;
+      }
       m.cleanUp().catch((err) => console.warn(`${LOG} manager cleanUp failed ${fmt(err)}`));
       m.removeAllListeners();
       if (managerRef.current === m) {
@@ -454,6 +464,7 @@ export function PrimerCheckoutProvider({
     // successful tokenization, so any post-tokenize failure would silently drop subsequent
     // submit() outcomes. Reconfiguring here rebuilds the delegate binding. Harmless on
     // Android. Remove the reconfigure once the iOS SDK stops nullifying.
+    retryingManagerRef.current = m;
     try {
       // Re-pass the original callbacks so the JS-wrapper's listeners get re-registered.
       // Otherwise native would emit onValidation/onBinDataChange/onMetadataChange during
@@ -469,6 +480,20 @@ export function PrimerCheckoutProvider({
     } catch (err) {
       console.error(`${LOG} retry failed ${fmt(err)}`);
       throw err;
+    } finally {
+      retryingManagerRef.current = null;
+      // Run a teardown that the effect cleanup deferred while retry was in flight.
+      const pending = pendingCleanupRef.current;
+      if (pending === m) {
+        pendingCleanupRef.current = null;
+        pending.cleanUp().catch((err) => console.warn(`${LOG} deferred cleanUp failed ${fmt(err)}`));
+        pending.removeAllListeners();
+        if (managerRef.current === pending) {
+          managerRef.current = null;
+        }
+        lastManagerCallbacksRef.current = null;
+        setState((prev) => ({ ...prev, cardFormState: initialCardFormState }));
+      }
     }
   }, []);
 

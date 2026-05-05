@@ -11,6 +11,7 @@ import { useBottomSafeArea } from './useBottomSafeArea';
 import { CheckoutButton } from '../ui';
 import { usePrimerCheckout } from '../../hooks/usePrimerCheckout';
 import { fmt } from '../debug';
+import { PrimerError } from '../../../models/PrimerError';
 
 const LOG = '[ErrorScreen]';
 const errorIcon = require('./assets/error-large.png');
@@ -36,7 +37,13 @@ export function ErrorScreen() {
     // Navigate to processing first so the user sees an immediate spinner;
     // the outcome transitioner replaces with success/error when retry resolves.
     replace(CheckoutRoute.processing);
-    retry().catch((err) => console.warn(`${LOG} retry error ${fmt(err)}`));
+    retry().catch((err) => {
+      console.warn(`${LOG} retry error ${fmt(err)}`);
+      // JS-side failures (e.g. configure/setRawData rejecting) never reach the
+      // native onError callback, so paymentOutcome stays null — without this
+      // the user is stuck on the processing spinner.
+      replace(CheckoutRoute.error, err instanceof PrimerError ? { error: err } : undefined);
+    });
   };
 
   const onChooseOther = () => {
