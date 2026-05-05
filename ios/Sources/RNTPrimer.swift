@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import PrimerSDK
+@_spi(PrimerInternal) import PrimerSDK
 import UIKit
 import React
 
@@ -63,6 +63,7 @@ enum PrimerEvents: Int, CaseIterable {
     var primerDidResumeWithDecisionHandler: ((_ resumeToken: String?, _ errorMessage: String?) -> Void)?
     var primerDidFailWithErrorDecisionHandler: ((_ errorMessage: String) -> Void)?
     var implementedRNCallbacks: ImplementedRNCallbacks?
+    private var analyticsLoggingBridge: ComponentsAnalyticsLoggingBridge?
 
     // MARK: - INITIALIZATION & REACT NATIVE SUPPORT
 
@@ -339,6 +340,58 @@ enum PrimerEvents: Int, CaseIterable {
         }
     }
 
+    // MARK: - Analytics Bridge
+
+    @objc
+    public func trackAnalyticsEvent(
+        _ eventName: String,
+        metadata: String?,
+        resolver: @escaping RCTPromiseResolveBlock,
+        rejecter: @escaping RCTPromiseRejectBlock
+    ) {
+        DispatchQueue.main.async {
+            let metadataDict: [String: String]?
+            if let metadata = metadata,
+               let data = metadata.data(using: .utf8),
+               let dict = try? JSONSerialization.jsonObject(with: data) as? [String: String] {
+                metadataDict = dict
+            } else {
+                metadataDict = nil
+            }
+            Task { await self.analyticsLoggingBridge?.trackEvent(eventName, metadata: metadataDict) }
+            resolver(nil)
+        }
+    }
+
+    @objc
+    public func sendLog(
+        _ message: String,
+        event: String,
+        resolver: @escaping RCTPromiseResolveBlock,
+        rejecter: @escaping RCTPromiseRejectBlock
+    ) {
+        DispatchQueue.main.async {
+            Task { await self.analyticsLoggingBridge?.logInfo(message: message, event: event) }
+            resolver(nil)
+        }
+    }
+
+    @objc
+    public func setupAnalyticsLoggingBridge(
+        _ clientToken: String,
+        resolver: @escaping RCTPromiseResolveBlock,
+        rejecter: @escaping RCTPromiseRejectBlock
+    ) {
+        DispatchQueue.main.async {
+            let bridge = ComponentsAnalyticsLoggingBridge()
+            self.analyticsLoggingBridge = bridge
+            Task {
+                await bridge.setup(clientToken: clientToken)
+                resolver(nil)
+            }
+        }
+    }
+
     private func handleRNBridgeError(_ error: Error, checkoutData: PrimerCheckoutData?, stopOnDebug: Bool) {
         DispatchQueue.main.async {
             if stopOnDebug {
@@ -367,7 +420,10 @@ extension RNTPrimer: PrimerDelegate {
                 do {
                     let checkoutData = try JSONEncoder().encode(data)
                     let checkoutJson = try JSONSerialization.jsonObject(with: checkoutData, options: .allowFragments)
-                    self.eventDelegate.sendEvent(withName: PrimerEvents.onCheckoutComplete.stringValue, body: checkoutJson)
+                    self.eventDelegate.sendEvent(
+                        withName: PrimerEvents.onCheckoutComplete.stringValue,
+                        body: checkoutJson
+                    )
                 } catch {
                     self.handleRNBridgeError(error, checkoutData: data, stopOnDebug: true)
                 }
@@ -522,7 +578,10 @@ extension RNTPrimer: PrimerDelegate {
             }
 
             DispatchQueue.main.async {
-              self.eventDelegate.sendEvent(withName: PrimerEvents.onResumeSuccess.stringValue, body: ["resumeToken": resumeToken])
+              self.eventDelegate.sendEvent(
+                  withName: PrimerEvents.onResumeSuccess.stringValue,
+                  body: ["resumeToken": resumeToken]
+              )
             }
         } else {
             // RN dev hasn't opted in on listening the tokenization callback.

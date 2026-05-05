@@ -919,6 +919,20 @@ const SettingsScreen = ({navigation}) => {
             Navigation Demo
           </Text>
         </TouchableOpacity>
+
+        <TouchableOpacity
+          style={{
+            ...styles.button,
+            marginVertical: 5,
+            backgroundColor: '#2c3e50',
+          }}
+          onPress={() => {
+            navigation.navigate('AnalyticsDebug');
+          }}>
+          <Text style={{...styles.buttonText, color: 'white'}}>
+            Analytics Debug
+          </Text>
+        </TouchableOpacity>
       </View>
     );
   };
