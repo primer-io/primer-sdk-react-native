@@ -1,6 +1,7 @@
 package com.primerioreactnative.components.manager.asset
 
 import androidx.core.content.ContextCompat
+import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
@@ -36,6 +37,34 @@ internal class PrimerRNHeadlessUniversalCheckoutAssetManager(
     private val reactContext: ReactApplicationContext,
 ) : ReactContextBaseJavaModule(reactContext) {
     override fun getName() = "RNTPrimerHeadlessUniversalCheckoutAssetsManager"
+
+    @ReactMethod
+    fun getCardNetworkTraits(
+        cardNetworkStr: String,
+        promise: Promise,
+    ) {
+        // Android always returns a Descriptor (Type.OTHER fallback for unknown strings).
+        // JS normalises cardNetwork == "OTHER" to DEFAULT_DESCRIPTOR, matching iOS nil semantics.
+        val descriptor = CardNetwork.lookupByCardNetwork(cardNetworkStr)
+        val panLengthsArray =
+            Arguments.createArray().apply {
+                descriptor.lengths.forEach { pushInt(it) }
+            }
+        val gapPatternArray =
+            Arguments.createArray().apply {
+                descriptor.gaps.forEach { pushInt(it) }
+            }
+        val result =
+            Arguments.createMap().apply {
+                putString("cardNetwork", descriptor.type.name)
+                putString("displayName", descriptor.type.displayName)
+                putArray("panLengths", panLengthsArray)
+                putArray("gapPattern", gapPatternArray)
+                putInt("cvvLength", descriptor.cvvLength)
+                putString("cvvLabel", descriptor.cvvLabel)
+            }
+        promise.resolve(result)
+    }
 
     @ReactMethod
     fun getCardNetworkImage(
