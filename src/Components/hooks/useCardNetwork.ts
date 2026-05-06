@@ -13,13 +13,14 @@ const assetsManager = new PrimerHeadlessUniversalCheckoutAssetsManager();
 const iconUrlCache = new Map<string, Promise<string>>();
 
 function getCardNetworkIconURL(network: string): Promise<string> {
-  const existing = iconUrlCache.get(network);
+  const key = network.toUpperCase();
+  const existing = iconUrlCache.get(key);
   if (existing) return existing;
-  const promise = assetsManager.getCardNetworkImageURL(network).catch((err) => {
-    iconUrlCache.delete(network);
+  const promise = assetsManager.getCardNetworkImageURL(key).catch((err) => {
+    iconUrlCache.delete(key);
     throw err;
   });
-  iconUrlCache.set(network, promise);
+  iconUrlCache.set(key, promise);
   return promise;
 }
 
@@ -51,10 +52,8 @@ export function useCardNetwork(): UseCardNetworkReturn {
 
   useEffect(() => {
     console.log(`${LOG} network change ${JSON.stringify({ network })}`);
-    if (!network) {
-      setDescriptor(DEFAULT_DESCRIPTOR);
-      return;
-    }
+    setDescriptor(DEFAULT_DESCRIPTOR);
+    if (!network) return;
     let cancelled = false;
     fetchCardNetworkDescriptor(network).then((d) => {
       if (cancelled) return;
@@ -71,10 +70,8 @@ export function useCardNetwork(): UseCardNetworkReturn {
     // Bancontact, and EFTPOS have icons but no validation traits on iOS — their descriptor
     // collapses to DEFAULT (id: 'OTHER'), but the raw network string is still the real
     // network name and the icon asset exists.
-    if (!network || network.toUpperCase() === 'OTHER') {
-      setIconUri(null);
-      return;
-    }
+    setIconUri(null);
+    if (!network || network.toUpperCase() === 'OTHER') return;
     let cancelled = false;
     getCardNetworkIconURL(network)
       .then((uri) => {
