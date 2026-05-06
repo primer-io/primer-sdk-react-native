@@ -77,9 +77,10 @@ export const CardNumberInput = forwardRef<PrimerTextInputRef, CardNumberInputPro
       ref={innerRef}
       value={cardForm.cardNumber}
       onChangeText={handleChangeText}
-      onBlur={() => cardForm.markFieldTouched('cardNumber')}
+      onFocus={() => cardForm.markFieldFocused('cardNumber')}
+      onBlur={() => cardForm.markFieldBlurred('cardNumber')}
       keyboardType="number-pad"
-      maxLength={19}
+      maxLength={cardForm.cardNumberMaxLength}
       autoComplete="cc-number"
       label={resolvedLabel}
       placeholder={resolvedPlaceholder}

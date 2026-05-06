@@ -19,7 +19,7 @@ import type {
   PaymentOutcome,
   CardFormState,
 } from './types/PrimerCheckoutProviderTypes';
-import type { CardFormErrors } from './types/CardFormTypes';
+import type { CardFormErrors, CardFormField } from './types/CardFormTypes';
 import { fmt } from './internal/debug';
 import { toError } from './internal/utils/errors';
 
@@ -87,6 +87,16 @@ function buildPaymentOutcome(checkoutData: PrimerCheckoutData): PaymentOutcome {
   };
 }
 
+// Native validation errors carry a free-form `errorId` like `invalid-card-number`. The table
+// below routes each id to a `CardFormField`. First match wins. When native gains a typed
+// `inputElementType` field on the error object, swap this for a direct enum-keyed lookup.
+const ERROR_FIELD_TABLE: ReadonlyArray<{ test: (id: string) => boolean; field: CardFormField }> = [
+  { test: (id) => id.includes('card') && id.includes('number'), field: 'cardNumber' },
+  { test: (id) => id.includes('expir'), field: 'expiryDate' },
+  { test: (id) => id.includes('cvv') || id.includes('cvc'), field: 'cvv' },
+  { test: (id) => id.includes('cardholder') || id.includes('card_holder'), field: 'cardholderName' },
+];
+
 /** Map native validation errors to per-field typed errors the UI can render. */
 function parseValidationErrors(errors: PrimerError[] | undefined): CardFormErrors {
   const fieldErrors: CardFormErrors = {};
@@ -94,15 +104,8 @@ function parseValidationErrors(errors: PrimerError[] | undefined): CardFormError
   for (const error of errors) {
     const id = (error.errorId ?? '').toLowerCase();
     const description = error.description ?? error.message ?? 'Invalid';
-    if (id.includes('card') && id.includes('number')) {
-      fieldErrors.cardNumber = description;
-    } else if (id.includes('expir') || id.includes('expiry')) {
-      fieldErrors.expiryDate = description;
-    } else if (id.includes('cvv') || id.includes('cvc')) {
-      fieldErrors.cvv = description;
-    } else if (id.includes('cardholder') || id.includes('card_holder')) {
-      fieldErrors.cardholderName = description;
-    }
+    const match = ERROR_FIELD_TABLE.find((entry) => entry.test(id));
+    if (match) fieldErrors[match.field] = description;
   }
   return fieldErrors;
 }
