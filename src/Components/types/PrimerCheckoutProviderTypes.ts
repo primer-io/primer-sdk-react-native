@@ -76,6 +76,10 @@ export interface PrimerCheckoutContextValue {
   vaultedIconUrisById: Record<string, string | undefined>;
   isLoadingVaulted: boolean;
   vaultedError: Error | null;
+  /** Id of the user-selected vaulted method, or `null` to fall back to the first method. */
+  activeVaultedMethodId: string | null;
+  /** When set to `'expanded'`, force the method-selection view to show APMs even after the shopper has switched vaulted method. Cleared automatically on subsequent selection changes. */
+  vaultDisplayOverride: 'expanded' | null;
 
   // --- Actions ---
   /** Register/deregister the active payment method. Pass `null` to tear down. */
@@ -95,4 +99,8 @@ export interface PrimerCheckoutContextValue {
   clearPaymentOutcome: () => void;
   /** Start the payment flow for a vaulted payment method by id. */
   payFromVault: (vaultedPaymentMethodId: string) => Promise<void>;
+  /** Make `id` the active vaulted method. No-op if it already matches the current active id. */
+  selectVaultedMethodId: (id: string) => void;
+  /** Force the method-selection view back to expanded layout while preserving the user's selection. */
+  requestExpandedVaultDisplay: () => void;
 }

@@ -23,7 +23,7 @@ export function ErrorScreen() {
   const { t } = useLocalization();
   const { replace } = useNavigation();
   const { params } = useRoute<CheckoutRoute.error>();
-  const { retry, clearPaymentOutcome } = usePrimerCheckout();
+  const { retry, clearPaymentOutcome, requestExpandedVaultDisplay } = usePrimerCheckout();
   const rawBottomInset = useBottomSafeArea();
   const bottomInset = Math.max(rawBottomInset, tokens.spacing.large);
   const sheetHeight = TOP_PADDING + CONTENT_HEIGHT + bottomInset;
@@ -47,6 +47,10 @@ export function ErrorScreen() {
   };
 
   const onChooseOther = () => {
+    // Flip the vault block to expanded layout (so APMs and the full method list
+    // are visible again) but keep the shopper's selected vault id intact —
+    // they may still want to retry the same vault method, just from the full menu.
+    requestExpandedVaultDisplay();
     clearPaymentOutcome();
     replace(CheckoutRoute.methodSelection);
   };

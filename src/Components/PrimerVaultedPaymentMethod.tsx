@@ -20,7 +20,7 @@ export function PrimerVaultedPaymentMethod({ data, onPay, style }: PrimerVaulted
 
   const hook = useVaultedPaymentMethods();
   const { replace } = useNavigation();
-  const method = data !== undefined ? data : hook.primaryMethod;
+  const method = data !== undefined ? data : hook.activeMethod;
 
   const handlePress = useCallback(() => {
     if (!method) return;
