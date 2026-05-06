@@ -23,6 +23,27 @@ class RNTPrimerHeadlessUniversalCheckoutAssetsManager: RCTEventEmitter {
     }
 
     @objc
+    func getCardNetworkTraits(
+        _ cardNetworkStr: String,
+        resolver: RCTPromiseResolveBlock,
+        rejecter: RCTPromiseRejectBlock
+    ) {
+        guard let traits = PrimerSDK.PrimerHeadlessUniversalCheckout.AssetsManager
+            .getCardNetworkTraits(cardNetworkString: cardNetworkStr) else {
+            resolver(nil)
+            return
+        }
+        resolver([
+            "cardNetwork": traits.cardNetwork.rawValue,
+            "displayName": traits.displayName,
+            "panLengths": traits.panLengths,
+            "gapPattern": traits.gapPattern,
+            "cvvLength": traits.cvvLength,
+            "cvvLabel": traits.cvvLabel
+        ])
+    }
+
+    @objc
     func getCardNetworkImage(
         _ cardNetworkStr: String,
         resolver: RCTPromiseResolveBlock,
