@@ -19,6 +19,7 @@ enum class ErrorTypeRN(val errorId: String) {
     UnsupportedPaymentIntent("unsupported-session-intent"),
     VaultManagerDeleteFailed("vaulted-manager-delete-failed"),
     InvalidVaultedPaymentMethodId("invalid-vaulted-payment-method-id"),
+    InvalidRawData("invalid-raw-data"),
 }
 
 @Serializable
