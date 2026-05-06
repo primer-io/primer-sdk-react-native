@@ -7,6 +7,20 @@ import type {
 
 type Resource = PrimerPaymentMethodAsset | PrimerPaymentMethodNativeView;
 
+/**
+ * Raw bridge shape emitted by native `getCardNetworkTraits`.
+ * iOS resolves `null` for networks without validation (bancontact, cartesBancaires, eftpos, unknown);
+ * Android always resolves a dict (Type.OTHER fallback) — consumers coalesce both to a default descriptor.
+ */
+export interface CardNetworkTraits {
+  cardNetwork: string;
+  displayName: string;
+  panLengths: number[];
+  gapPattern: number[];
+  cvvLength: number;
+  cvvLabel: string;
+}
+
 const { RNTPrimerHeadlessUniversalCheckoutAssetsManager } = NativeModules;
 
 class PrimerHeadlessUniversalCheckoutAssetsManager {
@@ -24,6 +38,18 @@ class PrimerHeadlessUniversalCheckoutAssetsManager {
       try {
         const data = await RNTPrimerHeadlessUniversalCheckoutAssetsManager.getCardNetworkImage(cardNetwork);
         resolve(data.cardNetworkImageURL);
+      } catch (err) {
+        console.error(err);
+        reject(err);
+      }
+    });
+  }
+
+  async getCardNetworkTraits(cardNetwork: string): Promise<CardNetworkTraits | null> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const data = await RNTPrimerHeadlessUniversalCheckoutAssetsManager.getCardNetworkTraits(cardNetwork);
+        resolve(data ?? null);
       } catch (err) {
         console.error(err);
         reject(err);

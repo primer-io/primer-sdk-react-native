@@ -1,9 +1,12 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
-import { Image, StyleSheet, type TextInputProps } from 'react-native';
+import { Image, StyleSheet, Text, View, type TextInputProps } from 'react-native';
 import { PrimerTextInput } from './PrimerTextInput';
 import { caretFromDigitIndex, countDigits, countDigitsBefore, targetDigitIndex } from './caret';
 import { PLACEHOLDER_ICON_HEIGHT, PLACEHOLDER_ICON_WIDTH, TRAILING_ICON_MARGIN } from './dimensions';
 import { useLocalization } from '../internal/localization';
+import { useTheme } from '../internal/theme';
+import { useCardNetwork } from '../hooks/useCardNetwork';
+import { getNetworkAbbreviation } from '../internal/cardNetwork';
 import type { CardNumberInputProps, PrimerTextInputRef } from '../types/CardInputTypes';
 
 type SelectionChangeHandler = NonNullable<TextInputProps['onSelectionChange']>;
@@ -17,6 +20,9 @@ export const CardNumberInput = forwardRef<PrimerTextInputRef, CardNumberInputPro
   const { t } = useLocalization();
   const resolvedLabel = label ?? t('primer_card_form_label_number');
   const resolvedPlaceholder = placeholder ?? t('primer_card_form_placeholder_number');
+  const { network, iconSource } = useCardNetwork();
+  const tokens = useTheme();
+  const abbreviation = iconSource == null && network ? getNetworkAbbreviation(network) : '';
 
   const innerRef = useRef<PrimerTextInputRef>(null);
   const lastSelectionRef = useRef({ start: 0, end: 0 });
@@ -80,12 +86,36 @@ export const CardNumberInput = forwardRef<PrimerTextInputRef, CardNumberInputPro
       error={cardForm.errors.cardNumber}
       onSelectionChange={handleSelectionChange}
       trailingContent={
-        <Image
-          source={placeholderSource}
-          style={styles.placeholder}
-          resizeMode="contain"
-          testID={rest.testID ? `${rest.testID}-placeholder-icon` : undefined}
-        />
+        abbreviation ? (
+          <View
+            style={[
+              styles.abbreviationChip,
+              {
+                borderColor: tokens.colors.border,
+                borderRadius: tokens.radii.small,
+                borderWidth: tokens.borders.input,
+              },
+            ]}
+            testID={rest.testID ? `${rest.testID}-network-abbreviation` : undefined}
+          >
+            <Text
+              style={{
+                color: tokens.colors.textPrimary,
+                fontFamily: tokens.typography.fontFamily,
+                fontSize: tokens.typography.bodySmall.fontSize,
+              }}
+            >
+              {abbreviation}
+            </Text>
+          </View>
+        ) : (
+          <Image
+            source={iconSource ?? placeholderSource}
+            style={styles.placeholder}
+            resizeMode="contain"
+            testID={rest.testID ? `${rest.testID}-network-icon` : undefined}
+          />
+        )
       }
       {...rest}
     />
@@ -93,6 +123,13 @@ export const CardNumberInput = forwardRef<PrimerTextInputRef, CardNumberInputPro
 });
 
 const styles = StyleSheet.create({
+  abbreviationChip: {
+    alignItems: 'center',
+    height: PLACEHOLDER_ICON_HEIGHT,
+    justifyContent: 'center',
+    marginLeft: TRAILING_ICON_MARGIN,
+    width: PLACEHOLDER_ICON_WIDTH,
+  },
   placeholder: {
     height: PLACEHOLDER_ICON_HEIGHT,
     marginLeft: TRAILING_ICON_MARGIN,
