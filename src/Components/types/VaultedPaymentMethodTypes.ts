@@ -22,16 +22,31 @@ export interface VaultedPaymentMethodItem {
   rawMethod: PrimerVaultedPaymentMethod;
 }
 
+/** UI mode for the vault block on the method-selection surface. */
+export type VaultDisplayMode = 'expanded' | 'lite';
+
 export interface UseVaultedPaymentMethodsReturn {
   vaultedMethods: VaultedPaymentMethodItem[];
   /** The method that should be displayed when only one row is rendered. `null` when none exist. */
   primaryMethod: VaultedPaymentMethodItem | null;
+  /** First method on the session — the "default" — independent of any user override. */
+  originalDefault: VaultedPaymentMethodItem | null;
+  /** The method the Pay button should charge — user-selected if any, else originalDefault. */
+  activeMethod: VaultedPaymentMethodItem | null;
+  /** `'lite'` once the shopper has actively switched off the default, unless they revert via Show other ways to pay. */
+  vaultDisplayMode: VaultDisplayMode;
+  /** True when the session has ≥ 2 vaulted methods (the "Show all" affordance is meaningful). */
+  canShowAll: boolean;
   isLoading: boolean;
   error: Error | null;
-  /** Start payment for `primaryMethod`. No-op when none is available. */
+  /** Start payment for `activeMethod`. No-op when none is available. */
   pay: () => Promise<void>;
   /** Start payment for a specific vaulted method id. */
   payById: (id: string) => Promise<void>;
+  /** Make `id` the active method. No-op when `id` matches the current active method id. */
+  selectVaultedMethodId: (id: string) => void;
+  /** Override `vaultDisplayMode` to `'expanded'` while preserving `activeMethod`. */
+  requestExpandedVaultDisplay: () => void;
 }
 
 export interface PrimerVaultedPaymentMethodProps {

@@ -10,6 +10,7 @@ import { MethodSelectionScreen } from '../screens/MethodSelectionScreen';
 import { CardFormScreen } from '../screens/CardFormScreen';
 import { ErrorScreen } from '../screens/ErrorScreen';
 import { SuccessScreen } from '../screens/SuccessScreen';
+import { VaultedMethodsScreen } from '../screens/VaultedMethodsScreen';
 import { CheckoutFlowContext } from './CheckoutFlowContext';
 
 const SUCCESS_AUTO_DISMISS_MS = 5000;
@@ -36,6 +37,7 @@ const screenMap: Partial<Record<CheckoutRouteType, React.ComponentType>> = {
   [CheckoutRoute.processing]: LoadingScreen,
   [CheckoutRoute.success]: CheckoutSuccessScreen,
   [CheckoutRoute.error]: ErrorScreen,
+  [CheckoutRoute.vaultedMethods]: VaultedMethodsScreen,
 };
 
 function ReadinessTransitioner() {

@@ -1,6 +1,10 @@
 import { useCallback, useMemo } from 'react';
 import { usePrimerCheckout } from './usePrimerCheckout';
-import type { UseVaultedPaymentMethodsReturn, VaultedPaymentMethodItem } from '../types/VaultedPaymentMethodTypes';
+import type {
+  UseVaultedPaymentMethodsReturn,
+  VaultDisplayMode,
+  VaultedPaymentMethodItem,
+} from '../types/VaultedPaymentMethodTypes';
 import type { PrimerVaultedPaymentMethod } from '../../models/PrimerVaultedPaymentMethod';
 
 const CARD_PAYMENT_METHOD_TYPE = 'PAYMENT_CARD';
@@ -47,6 +51,10 @@ export function useVaultedPaymentMethods(): UseVaultedPaymentMethodsReturn {
     isLoadingVaulted,
     vaultedError,
     payFromVault,
+    activeVaultedMethodId,
+    vaultDisplayOverride,
+    selectVaultedMethodId,
+    requestExpandedVaultDisplay,
   } = usePrimerCheckout();
 
   const vaultedMethods = useMemo<VaultedPaymentMethodItem[]>(
@@ -54,12 +62,26 @@ export function useVaultedPaymentMethods(): UseVaultedPaymentMethodsReturn {
     [rawMethods, vaultedIconUrisById]
   );
 
-  const primaryMethod = vaultedMethods[0] ?? null;
+  const originalDefault = vaultedMethods[0] ?? null;
+
+  const userPicked =
+    activeVaultedMethodId != null ? (vaultedMethods.find((m) => m.id === activeVaultedMethodId) ?? null) : null;
+  const activeMethod = userPicked ?? originalDefault;
+
+  // Lite is shown once the shopper has made an explicit selection from the list,
+  // and only while they haven't reverted via Show other ways to pay.
+  // `activeVaultedMethodId` is null until the first selection happens, so the
+  // "no interaction yet" path stays in expanded.
+  const hasUserSelected = activeVaultedMethodId != null;
+  const vaultDisplayMode: VaultDisplayMode =
+    hasUserSelected && vaultDisplayOverride !== 'expanded' ? 'lite' : 'expanded';
+
+  const canShowAll = vaultedMethods.length >= 2;
 
   const pay = useCallback(async () => {
-    if (!primaryMethod) return;
-    await payFromVault(primaryMethod.id);
-  }, [primaryMethod, payFromVault]);
+    if (!activeMethod) return;
+    await payFromVault(activeMethod.id);
+  }, [activeMethod, payFromVault]);
 
   const payById = useCallback(
     async (id: string) => {
@@ -70,10 +92,16 @@ export function useVaultedPaymentMethods(): UseVaultedPaymentMethodsReturn {
 
   return {
     vaultedMethods,
-    primaryMethod,
+    primaryMethod: originalDefault,
+    originalDefault,
+    activeMethod,
+    vaultDisplayMode,
+    canShowAll,
     isLoading: isLoadingVaulted,
     error: vaultedError,
     pay,
     payById,
+    selectVaultedMethodId,
+    requestExpandedVaultDisplay,
   };
 }

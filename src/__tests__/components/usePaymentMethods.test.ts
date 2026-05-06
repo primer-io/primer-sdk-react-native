@@ -107,6 +107,10 @@ const readyContext: PrimerCheckoutContextValue = {
   retry: async () => {},
   clearPaymentOutcome: () => {},
   payFromVault: async () => {},
+  activeVaultedMethodId: null,
+  vaultDisplayOverride: null,
+  selectVaultedMethodId: () => {},
+  requestExpandedVaultDisplay: () => {},
 };
 
 describe('usePaymentMethods', () => {
