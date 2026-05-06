@@ -50,6 +50,8 @@ interface InternalState {
   vaultedIconUrisById: Record<string, string | undefined>;
   isLoadingVaulted: boolean;
   vaultedError: Error | null;
+  activeVaultedMethodId: string | null;
+  vaultDisplayOverride: 'expanded' | null;
 }
 
 const initialState: InternalState = {
@@ -67,6 +69,8 @@ const initialState: InternalState = {
   vaultedIconUrisById: {},
   isLoadingVaulted: false,
   vaultedError: null,
+  activeVaultedMethodId: null,
+  vaultDisplayOverride: null,
 };
 
 /**
@@ -587,6 +591,42 @@ export function PrimerCheckoutProvider({
     setState((prev) => (prev.paymentOutcome === null ? prev : { ...prev, paymentOutcome: null }));
   }, []);
 
+  const selectVaultedMethodId = useCallback((id: string) => {
+    setState((prev) => {
+      // The id must exist among the current methods to be honoured.
+      if (!prev.vaultedMethods.some((m) => m.id === id)) {
+        console.warn(`${LOG} selectVaultedMethodId: id ${id} not present in vaultedMethods`);
+        return prev;
+      }
+      // Already lite-with-this-id (no override to clear) → nothing to do.
+      if (prev.activeVaultedMethodId === id && prev.vaultDisplayOverride === null) {
+        return prev;
+      }
+      // Any tap commits the user's choice and clears any prior expand-override.
+      return { ...prev, activeVaultedMethodId: id, vaultDisplayOverride: null };
+    });
+  }, []);
+
+  const requestExpandedVaultDisplay = useCallback(() => {
+    setState((prev) =>
+      prev.vaultDisplayOverride === 'expanded' ? prev : { ...prev, vaultDisplayOverride: 'expanded' }
+    );
+  }, []);
+
+  // Vanish fallback: if the user-selected method is no longer in `vaultedMethods`
+  // (mid-session client-session update removed it), clear the override so the
+  // hook falls back to the new originalDefault and the lite layout disappears.
+  useEffect(() => {
+    if (state.activeVaultedMethodId === null) return;
+    const stillPresent = state.vaultedMethods.some((m) => m.id === state.activeVaultedMethodId);
+    if (stillPresent) return;
+    setState((prev) =>
+      prev.activeVaultedMethodId === null && prev.vaultDisplayOverride === null
+        ? prev
+        : { ...prev, activeVaultedMethodId: null, vaultDisplayOverride: null }
+    );
+  }, [state.activeVaultedMethodId, state.vaultedMethods]);
+
   const payFromVault = useCallback(async (vaultedPaymentMethodId: string) => {
     const vm = vaultManagerRef.current;
     if (!vm) {
@@ -627,14 +667,28 @@ export function PrimerCheckoutProvider({
       vaultedIconUrisById: state.vaultedIconUrisById,
       isLoadingVaulted: state.isLoadingVaulted,
       vaultedError: state.vaultedError,
+      activeVaultedMethodId: state.activeVaultedMethodId,
+      vaultDisplayOverride: state.vaultDisplayOverride,
       setActiveMethod,
       setRawData,
       submit,
       retry,
       clearPaymentOutcome,
       payFromVault,
+      selectVaultedMethodId,
+      requestExpandedVaultDisplay,
     }),
-    [state, setActiveMethod, setRawData, submit, retry, clearPaymentOutcome, payFromVault]
+    [
+      state,
+      setActiveMethod,
+      setRawData,
+      submit,
+      retry,
+      clearPaymentOutcome,
+      payFromVault,
+      selectVaultedMethodId,
+      requestExpandedVaultDisplay,
+    ]
   );
 
   return (

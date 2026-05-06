@@ -71,6 +71,10 @@ const baseContext: PrimerCheckoutContextValue = {
   retry: async () => {},
   clearPaymentOutcome: () => {},
   payFromVault,
+  activeVaultedMethodId: null,
+  vaultDisplayOverride: null,
+  selectVaultedMethodId: () => {},
+  requestExpandedVaultDisplay: () => {},
 };
 
 beforeEach(() => {
@@ -168,5 +172,132 @@ describe('useVaultedPaymentMethods', () => {
     expect(item?.cardholderName).toBeUndefined();
     expect(item?.expiryMonth).toBeUndefined();
     expect(item?.brandName).toBeUndefined();
+  });
+
+  describe('canShowAll', () => {
+    it('is false when there are no vaulted methods', () => {
+      const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(baseContext));
+      expect(result.current.canShowAll).toBe(false);
+    });
+
+    it('is false with exactly one vaulted method', () => {
+      const ctx: PrimerCheckoutContextValue = { ...baseContext, vaultedMethods: [makeCardVault()] };
+      const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(ctx));
+      expect(result.current.canShowAll).toBe(false);
+    });
+
+    it('is true with two or more vaulted methods', () => {
+      const ctx: PrimerCheckoutContextValue = {
+        ...baseContext,
+        vaultedMethods: [makeCardVault({ id: 'a' }), makeCardVault({ id: 'b' })],
+      };
+      const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(ctx));
+      expect(result.current.canShowAll).toBe(true);
+    });
+  });
+
+  describe('originalDefault & activeMethod', () => {
+    it('originalDefault is the first method on the session', () => {
+      const ctx: PrimerCheckoutContextValue = {
+        ...baseContext,
+        vaultedMethods: [makeCardVault({ id: 'first' }), makeCardVault({ id: 'second' })],
+      };
+      const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(ctx));
+      expect(result.current.originalDefault?.id).toBe('first');
+    });
+
+    it('activeMethod falls back to originalDefault when no override is set', () => {
+      const ctx: PrimerCheckoutContextValue = {
+        ...baseContext,
+        vaultedMethods: [makeCardVault({ id: 'first' }), makeCardVault({ id: 'second' })],
+      };
+      const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(ctx));
+      expect(result.current.activeMethod?.id).toBe('first');
+    });
+
+    it('activeMethod resolves to the user-selected method when activeVaultedMethodId is set', () => {
+      const ctx: PrimerCheckoutContextValue = {
+        ...baseContext,
+        vaultedMethods: [makeCardVault({ id: 'first' }), makeCardVault({ id: 'second' })],
+        activeVaultedMethodId: 'second',
+      };
+      const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(ctx));
+      expect(result.current.activeMethod?.id).toBe('second');
+    });
+
+    it('activeMethod falls back to originalDefault when activeVaultedMethodId is missing from the list', () => {
+      const ctx: PrimerCheckoutContextValue = {
+        ...baseContext,
+        vaultedMethods: [makeCardVault({ id: 'first' }), makeCardVault({ id: 'second' })],
+        activeVaultedMethodId: 'gone',
+      };
+      const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(ctx));
+      expect(result.current.activeMethod?.id).toBe('first');
+    });
+  });
+
+  describe('vaultDisplayMode', () => {
+    it('is expanded before any selection has been made (activeVaultedMethodId === null)', () => {
+      const ctx: PrimerCheckoutContextValue = {
+        ...baseContext,
+        vaultedMethods: [makeCardVault({ id: 'a' }), makeCardVault({ id: 'b' })],
+      };
+      const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(ctx));
+      expect(result.current.vaultDisplayMode).toBe('expanded');
+    });
+
+    it('is lite once activeVaultedMethodId is set, regardless of whether the chosen method is the default', () => {
+      const ctxNonDefault: PrimerCheckoutContextValue = {
+        ...baseContext,
+        vaultedMethods: [makeCardVault({ id: 'a' }), makeCardVault({ id: 'b' })],
+        activeVaultedMethodId: 'b',
+      };
+      const nonDefault = renderHook(() => useVaultedPaymentMethods(), contextWrapper(ctxNonDefault));
+      expect(nonDefault.result.current.vaultDisplayMode).toBe('lite');
+
+      const ctxDefault: PrimerCheckoutContextValue = {
+        ...baseContext,
+        vaultedMethods: [makeCardVault({ id: 'a' }), makeCardVault({ id: 'b' })],
+        activeVaultedMethodId: 'a',
+      };
+      const def = renderHook(() => useVaultedPaymentMethods(), contextWrapper(ctxDefault));
+      expect(def.result.current.vaultDisplayMode).toBe('lite');
+    });
+
+    it('is expanded when vaultDisplayOverride is set to expanded (revert via Show other ways to pay)', () => {
+      const ctx: PrimerCheckoutContextValue = {
+        ...baseContext,
+        vaultedMethods: [makeCardVault({ id: 'a' }), makeCardVault({ id: 'b' })],
+        activeVaultedMethodId: 'b',
+        vaultDisplayOverride: 'expanded',
+      };
+      const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(ctx));
+      expect(result.current.vaultDisplayMode).toBe('expanded');
+      // Selection itself is preserved.
+      expect(result.current.activeMethod?.id).toBe('b');
+    });
+  });
+
+  describe('pay() with active selection', () => {
+    it('charges the user-selected method when activeVaultedMethodId is set', async () => {
+      const ctx: PrimerCheckoutContextValue = {
+        ...baseContext,
+        vaultedMethods: [makeCardVault({ id: 'a' }), makeCardVault({ id: 'b' })],
+        activeVaultedMethodId: 'b',
+      };
+      const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(ctx));
+      await result.current.pay();
+      expect(payFromVault).toHaveBeenCalledWith('b');
+    });
+
+    it('charges originalDefault when no selection has been made', async () => {
+      const ctx: PrimerCheckoutContextValue = {
+        ...baseContext,
+        vaultedMethods: [makeCardVault({ id: 'a' }), makeCardVault({ id: 'b' })],
+      };
+      const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(ctx));
+      await result.current.pay();
+      expect(payFromVault).toHaveBeenCalledWith('a');
+    });
   });
 });
