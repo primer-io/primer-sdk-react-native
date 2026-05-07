@@ -113,4 +113,10 @@ export interface PrimerCheckoutContextValue {
   selectVaultedMethodId: (id: string) => void;
   /** Force the method-selection view back to expanded layout while preserving the user's selection. */
   requestExpandedVaultDisplay: () => void;
+  /**
+   * Delete a vaulted payment method server-side, refresh the local list, and promote the first
+   * remaining method into the active slot if the deleted one was active. Matches iOS / Android
+   * Checkout Components behaviour. Rejects with `{ errorId, description }` on bridge failure.
+   */
+  deleteVaultedPaymentMethod: (id: string) => Promise<void>;
 }

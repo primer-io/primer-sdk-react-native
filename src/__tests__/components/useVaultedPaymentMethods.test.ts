@@ -48,6 +48,7 @@ function makeCardVault(overrides: Partial<PrimerVaultedPaymentMethod> = {}): Pri
 }
 
 const payFromVault = jest.fn().mockResolvedValue(undefined);
+const deleteVaultedPaymentMethodFn = jest.fn().mockResolvedValue(undefined);
 
 const baseContext: PrimerCheckoutContextValue = {
   isReady: true,
@@ -77,10 +78,12 @@ const baseContext: PrimerCheckoutContextValue = {
   vaultDisplayOverride: null,
   selectVaultedMethodId: () => {},
   requestExpandedVaultDisplay: () => {},
+  deleteVaultedPaymentMethod: deleteVaultedPaymentMethodFn,
 };
 
 beforeEach(() => {
   payFromVault.mockClear();
+  deleteVaultedPaymentMethodFn.mockClear();
 });
 
 describe('useVaultedPaymentMethods', () => {
@@ -174,28 +177,6 @@ describe('useVaultedPaymentMethods', () => {
     expect(item?.cardholderName).toBeUndefined();
     expect(item?.expiryMonth).toBeUndefined();
     expect(item?.brandName).toBeUndefined();
-  });
-
-  describe('canShowAll', () => {
-    it('is false when there are no vaulted methods', () => {
-      const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(baseContext));
-      expect(result.current.canShowAll).toBe(false);
-    });
-
-    it('is false with exactly one vaulted method', () => {
-      const ctx: PrimerCheckoutContextValue = { ...baseContext, vaultedMethods: [makeCardVault()] };
-      const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(ctx));
-      expect(result.current.canShowAll).toBe(false);
-    });
-
-    it('is true with two or more vaulted methods', () => {
-      const ctx: PrimerCheckoutContextValue = {
-        ...baseContext,
-        vaultedMethods: [makeCardVault({ id: 'a' }), makeCardVault({ id: 'b' })],
-      };
-      const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(ctx));
-      expect(result.current.canShowAll).toBe(true);
-    });
   });
 
   describe('originalDefault & activeMethod', () => {
@@ -300,6 +281,30 @@ describe('useVaultedPaymentMethods', () => {
       const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(ctx));
       await result.current.pay();
       expect(payFromVault).toHaveBeenCalledWith('a');
+    });
+  });
+
+  describe('deleteVaultedPaymentMethod', () => {
+    it('exposes the context method', () => {
+      const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(baseContext));
+      expect(typeof result.current.deleteVaultedPaymentMethod).toBe('function');
+    });
+
+    it('forwards the call to the context with the given id', async () => {
+      const ctx: PrimerCheckoutContextValue = {
+        ...baseContext,
+        vaultedMethods: [makeCardVault({ id: 'a' })],
+      };
+      const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(ctx));
+      await result.current.deleteVaultedPaymentMethod('a');
+      expect(deleteVaultedPaymentMethodFn).toHaveBeenCalledWith('a');
+    });
+
+    it('propagates rejection from the context implementation', async () => {
+      const err = { errorId: 'BRIDGE_FAILURE', description: 'boom' };
+      deleteVaultedPaymentMethodFn.mockRejectedValueOnce(err);
+      const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(baseContext));
+      await expect(result.current.deleteVaultedPaymentMethod('x')).rejects.toEqual(err);
     });
   });
 });

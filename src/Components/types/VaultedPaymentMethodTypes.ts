@@ -35,8 +35,6 @@ export interface UseVaultedPaymentMethodsReturn {
   activeMethod: VaultedPaymentMethodItem | null;
   /** `'lite'` once the shopper has actively switched off the default, unless they revert via Show other ways to pay. */
   vaultDisplayMode: VaultDisplayMode;
-  /** True when the session has ≥ 2 vaulted methods (the "Show all" affordance is meaningful). */
-  canShowAll: boolean;
   isLoading: boolean;
   error: Error | null;
   /** Start payment for `activeMethod`. No-op when none is available. */
@@ -47,6 +45,12 @@ export interface UseVaultedPaymentMethodsReturn {
   selectVaultedMethodId: (id: string) => void;
   /** Override `vaultDisplayMode` to `'expanded'` while preserving `activeMethod`. */
   requestExpandedVaultDisplay: () => void;
+  /**
+   * Delete a vaulted payment method. On success the local list refreshes and, if the deleted
+   * method was active, the first remaining method becomes the new active selection. Rejects
+   * with `{ errorId, description }` on bridge failure so callers can show a toast.
+   */
+  deleteVaultedPaymentMethod: (id: string) => Promise<void>;
 }
 
 export interface PrimerVaultedPaymentMethodProps {

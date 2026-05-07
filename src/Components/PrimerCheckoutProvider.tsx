@@ -1,14 +1,18 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { PrimerCheckoutContext } from './internal/PrimerCheckoutContext';
-import { ThemeContext } from './internal/theme/ThemeContext';
-import { defaultDarkTokens, defaultLightTokens } from './internal/theme/tokens';
-import { mergeTokens } from './internal/theme/merge';
-import { PrimerHeadlessUniversalCheckout } from '../HeadlessUniversalCheckout/PrimerHeadlessUniversalCheckout';
+
 import PrimerHeadlessUniversalCheckoutAssetsManager from '../HeadlessUniversalCheckout/Managers/AssetsManager';
 import PrimerHeadlessUniversalCheckoutRawDataManager from '../HeadlessUniversalCheckout/Managers/PaymentMethodManagers/RawDataManager';
 import PrimerHeadlessUniversalCheckoutVaultManager from '../HeadlessUniversalCheckout/Managers/VaultManager';
-import type { PrimerSettings } from '../models/PrimerSettings';
+import { PrimerHeadlessUniversalCheckout } from '../HeadlessUniversalCheckout/PrimerHeadlessUniversalCheckout';
 import { PrimerError } from '../models/PrimerError';
+import { fmt } from './internal/debug';
+import { PrimerCheckoutContext } from './internal/PrimerCheckoutContext';
+import { mergeTokens } from './internal/theme/merge';
+import { ThemeContext } from './internal/theme/ThemeContext';
+import { defaultDarkTokens, defaultLightTokens } from './internal/theme/tokens';
+import { toError } from './internal/utils/errors';
+
+import type { PrimerSettings } from '../models/PrimerSettings';
 import type { PrimerCheckoutData } from '../models/PrimerCheckoutData';
 import type { PrimerRawData } from '../models/PrimerRawData';
 import type { PrimerAddress } from '../models/PrimerClientSession';
@@ -21,8 +25,6 @@ import type {
   CardFormState,
 } from './types/PrimerCheckoutProviderTypes';
 import type { CardFormErrors, CardFormField } from './types/CardFormTypes';
-import { fmt } from './internal/debug';
-import { toError } from './internal/utils/errors';
 
 const LOG = '[PrimerCheckoutProvider]';
 
@@ -368,6 +370,36 @@ export function PrimerCheckoutProvider({
     };
   }, [state.isReady, methodTypesSignature]);
 
+  // Shared fetch + icon-resolve. Used by both the initial-load effect and the
+  // post-delete refresh path so the bridge call and icon-map shape stay in one place.
+  const refreshVaultedMethods = useCallback(async (): Promise<{
+    methods: PrimerVaultedPaymentMethod[];
+    iconMap: Record<string, string | undefined>;
+  }> => {
+    if (!vaultManagerRef.current) {
+      const vm = new PrimerHeadlessUniversalCheckoutVaultManager();
+      await vm.configure();
+      vaultManagerRef.current = vm;
+    }
+    const methods = await vaultManagerRef.current.fetchVaultedPaymentMethods();
+    const iconEntries = await Promise.all(
+      methods.map(async (m) => {
+        const network = m.paymentInstrumentData?.network;
+        if (!network) return [m.id, undefined] as const;
+        try {
+          const uri = await assetsManager.getCardNetworkImageURL(network);
+          return [m.id, uri] as const;
+        } catch (iconErr) {
+          console.warn(`${LOG} vault icon resolve failed for ${network} ${fmt(iconErr)}`);
+          return [m.id, undefined] as const;
+        }
+      })
+    );
+    const iconMap: Record<string, string | undefined> = {};
+    for (const [id, uri] of iconEntries) iconMap[id] = uri;
+    return { methods, iconMap };
+  }, []);
+
   // -----------------------------------------------------------------------
   // Vaulted payment methods — lazy-configured after `isReady`, re-fetched on
   // every client-session update. Brand-icon URIs are resolved at fetch time so
@@ -388,34 +420,9 @@ export function PrimerCheckoutProvider({
 
     (async () => {
       try {
-        if (!vaultManagerRef.current) {
-          const vm = new PrimerHeadlessUniversalCheckoutVaultManager();
-          await vm.configure();
-          if (cancelled) return;
-          vaultManagerRef.current = vm;
-        }
-        const methods = await vaultManagerRef.current.fetchVaultedPaymentMethods();
+        const { methods, iconMap } = await refreshVaultedMethods();
         if (cancelled) return;
         console.log(`${LOG} vault fetched ${methods.length} method(s)`);
-
-        const iconEntries = await Promise.all(
-          methods.map(async (m) => {
-            const network = m.paymentInstrumentData?.network;
-            if (!network) return [m.id, undefined] as const;
-            try {
-              const uri = await assetsManager.getCardNetworkImageURL(network);
-              return [m.id, uri] as const;
-            } catch (iconErr) {
-              console.warn(`${LOG} vault icon resolve failed for ${network} ${fmt(iconErr)}`);
-              return [m.id, undefined] as const;
-            }
-          })
-        );
-        if (cancelled) return;
-
-        const iconMap: Record<string, string | undefined> = {};
-        for (const [id, uri] of iconEntries) iconMap[id] = uri;
-
         setState((prev) => ({
           ...prev,
           vaultedMethods: methods,
@@ -437,7 +444,7 @@ export function PrimerCheckoutProvider({
     return () => {
       cancelled = true;
     };
-  }, [state.isReady, state.clientSession]);
+  }, [state.isReady, state.clientSession, refreshVaultedMethods]);
 
   // Fetch the merchant's accepted card networks once the session is ready, and
   // re-fetch when the client session mutates. Cached in context so chip-row consumers
@@ -700,6 +707,44 @@ export function PrimerCheckoutProvider({
     }
   }, []);
 
+  const deleteVaultedPaymentMethod = useCallback(
+    async (vaultedPaymentMethodId: string): Promise<void> => {
+      const vm = vaultManagerRef.current;
+      if (!vm) {
+        return Promise.reject({
+          errorId: 'VAULT_MANAGER_NOT_CONFIGURED',
+          description: 'Vault manager not configured',
+        });
+      }
+      if (!stateRef.current.vaultedMethods.some((m) => m.id === vaultedPaymentMethodId)) {
+        return Promise.reject({
+          errorId: 'INVALID_VAULTED_METHOD_ID',
+          description: `No vaulted method with id ${vaultedPaymentMethodId}`,
+        });
+      }
+      await vm.deleteVaultedPaymentMethod(vaultedPaymentMethodId);
+      const { methods, iconMap } = await refreshVaultedMethods();
+      // Promotion rule: matches iOS VaultedPaymentMethodManager.swift:18-31 and Android
+      // VaultViewModel.kt:136-148. If the deleted id was the user's explicit pick, replace
+      // it with the new top-of-list (or null when empty). Otherwise leave the explicit pick
+      // alone — feature 001's selectors will derive the displayed active correctly even
+      // when the un-picked default disappears.
+      setState((prev) => {
+        const wasActive = prev.activeVaultedMethodId === vaultedPaymentMethodId;
+        const nextActiveId = wasActive ? (methods[0]?.id ?? null) : prev.activeVaultedMethodId;
+        const nextOverride = methods.length === 0 ? null : prev.vaultDisplayOverride;
+        return {
+          ...prev,
+          vaultedMethods: methods,
+          vaultedIconUrisById: iconMap,
+          activeVaultedMethodId: nextActiveId,
+          vaultDisplayOverride: nextOverride,
+        };
+      });
+    },
+    [refreshVaultedMethods]
+  );
+
   const contextValue = useMemo<PrimerCheckoutContextValue>(
     () => ({
       isReady: state.isReady,
@@ -729,6 +774,7 @@ export function PrimerCheckoutProvider({
       payFromVault,
       selectVaultedMethodId,
       requestExpandedVaultDisplay,
+      deleteVaultedPaymentMethod,
     }),
     [
       state,
@@ -741,6 +787,7 @@ export function PrimerCheckoutProvider({
       payFromVault,
       selectVaultedMethodId,
       requestExpandedVaultDisplay,
+      deleteVaultedPaymentMethod,
     ]
   );
 

@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { ActivityIndicator, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import type { TextStyle } from 'react-native';
 import { useTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
@@ -8,18 +8,30 @@ export interface CheckoutButtonProps {
   title: string;
   onPress: () => void;
   variant: 'primary' | 'outlined';
+  loading?: boolean;
+  disabled?: boolean;
 }
 
-export function CheckoutButton({ title, onPress, variant }: CheckoutButtonProps) {
+export function CheckoutButton({ title, onPress, variant, loading = false, disabled = false }: CheckoutButtonProps) {
   const tokens = useTheme();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
 
   const buttonStyle = variant === 'primary' ? styles.primaryButton : styles.outlinedButton;
   const textStyle = variant === 'primary' ? styles.primaryText : styles.outlinedText;
+  const spinnerColor = variant === 'primary' ? tokens.colors.background : tokens.colors.textPrimary;
+  const isInteractive = !disabled && !loading;
+  const showDisabledTint = disabled && !loading;
 
   return (
-    <TouchableOpacity style={buttonStyle} onPress={onPress} activeOpacity={0.7}>
-      <Text style={textStyle}>{title}</Text>
+    <TouchableOpacity
+      style={[buttonStyle, showDisabledTint && styles.disabled]}
+      onPress={onPress}
+      disabled={!isInteractive}
+      activeOpacity={0.7}
+      accessibilityRole="button"
+      accessibilityState={{ disabled: !isInteractive, busy: loading }}
+    >
+      {loading ? <ActivityIndicator color={spinnerColor} /> : <Text style={textStyle}>{title}</Text>}
     </TouchableOpacity>
   );
 }
@@ -46,6 +58,9 @@ function createStyles(tokens: PrimerTokens) {
 
   /* eslint-disable react-native/no-unused-styles */
   return StyleSheet.create({
+    disabled: {
+      opacity: 0.5,
+    },
     outlinedButton: {
       ...baseButton,
       backgroundColor: colors.background,
