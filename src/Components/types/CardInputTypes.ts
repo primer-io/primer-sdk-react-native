@@ -57,6 +57,8 @@ export interface PrimerTextInputProps {
   labelStyle?: StyleProp<TextStyle>;
   /** Style override for the error helper text below the input. */
   errorStyle?: StyleProp<TextStyle>;
+  /** Accessibility label for the underlying TextInput; falls back to `label` when omitted. */
+  accessibilityLabel?: string;
   testID?: string;
 }
 

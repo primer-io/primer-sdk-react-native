@@ -116,6 +116,9 @@ const readyContext: PrimerCheckoutContextValue = {
   selectVaultedMethodId: () => {},
   requestExpandedVaultDisplay: () => {},
   deleteVaultedPaymentMethod: async () => {},
+  requiresVaultedCardCvv: false,
+  cvvInputVisible: false,
+  setCvvInputVisible: () => {},
 };
 
 describe('usePaymentMethods', () => {

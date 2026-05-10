@@ -15,6 +15,7 @@ import type {
 import type { IPrimerHeadlessUniversalCheckoutPaymentMethod } from '../../models/PrimerHeadlessUniversalCheckoutPaymentMethod';
 import type { PrimerPaymentMethodAsset, PrimerPaymentMethodNativeView } from '../../models/PrimerPaymentMethodResource';
 import type { PrimerVaultedPaymentMethod } from '../../models/PrimerVaultedPaymentMethod';
+import type { PrimerVaultedPaymentMethodAdditionalData } from '../../models/PrimerVaultedPaymentMethodAdditionalData';
 import type { PrimerThemeOverride } from '../internal/theme/types';
 import type { CardFormErrors } from './CardFormTypes';
 import type { CardNetworkId } from '../internal/cardNetwork';
@@ -86,6 +87,18 @@ export interface PrimerCheckoutContextValue {
   activeVaultedMethodId: string | null;
   /** When set to `'expanded'`, force the method-selection view to show APMs even after the shopper has switched vaulted method. Cleared automatically on subsequent selection changes. */
   vaultDisplayOverride: 'expanded' | null;
+  /**
+   * Whether the merchant's session has `paymentMethods.PAYMENT_CARD.options.captureVaultedCardCvv = true`.
+   * Read once after `vm.configure()` resolves and cached for the provider's lifetime — flag flips
+   * mid-session are picked up on the next provider re-initialization.
+   */
+  requiresVaultedCardCvv: boolean;
+  /**
+   * Whether the inline CVV input row is currently rendered inside the active vault tile.
+   * Lifted to the provider so the sheet-height calculation in `MethodSelectionScreen` can react
+   * (the entered CVV digits stay local to `PrimerVaultedPaymentMethod` for security).
+   */
+  cvvInputVisible: boolean;
 
   // --- Actions ---
   /** Register/deregister the active payment method. Pass `null` to tear down. */
@@ -120,12 +133,21 @@ export interface PrimerCheckoutContextValue {
   retry: () => Promise<void>;
   /** Clear the last payment outcome (e.g., when leaving the error screen). */
   clearPaymentOutcome: () => void;
-  /** Start the payment flow for a vaulted payment method by id. */
-  payFromVault: (vaultedPaymentMethodId: string) => Promise<void>;
+  /**
+   * Start the payment flow for a vaulted payment method by id.
+   * If `additionalData` is supplied (e.g. `{ cvv }` for CVV-recapture), the request is sent through
+   * the with-additional-data bridge path; otherwise the no-CVV bridge path is used.
+   */
+  payFromVault: (
+    vaultedPaymentMethodId: string,
+    additionalData?: PrimerVaultedPaymentMethodAdditionalData
+  ) => Promise<void>;
   /** Make `id` the active vaulted method. No-op if it already matches the current active id. */
   selectVaultedMethodId: (id: string) => void;
   /** Force the method-selection view back to expanded layout while preserving the user's selection. */
   requestExpandedVaultDisplay: () => void;
+  /** Toggle the inline CVV input row's visibility on the active vault tile. */
+  setCvvInputVisible: (visible: boolean) => void;
   /**
    * Delete a vaulted payment method server-side, refresh the local list, and promote the first
    * remaining method into the active slot if the deleted one was active. Matches iOS / Android

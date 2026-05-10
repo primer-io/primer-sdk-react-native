@@ -171,6 +171,19 @@ class PrimerRNHeadlessUniversalCheckoutVaultManager(
         }
     }
 
+    @ReactMethod
+    fun requiresVaultedCardCvv(promise: Promise) {
+        // TODO(ACC-7315): the captureVaultedCardCvv flag lives on the internal config model
+        // (`io.primer.android.configuration.data.model.ConfigurationDataResponse.captureVaultedCardCvv`)
+        // and is read by the internal `CheckCvvRecaptureRequiredUseCase` in `:components`.
+        // Neither the model nor the use case is exposed publicly, so we can't read the flag
+        // from the RN bridge today. Stubbed to `false` until a follow-up Android SDK PR adds
+        // a public accessor (e.g. on `PrimerHeadlessUniversalCheckoutVaultManager`'s companion).
+        // On RN, the JS-side DEBUG override in `PrimerCheckoutProvider.tsx` lets us exercise
+        // the UI flow regardless.
+        promise.resolve(false)
+    }
+
     companion object {
         const val NAME = "RNPrimerHeadlessUniversalCheckoutVaultManager"
     }

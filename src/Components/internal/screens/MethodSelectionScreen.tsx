@@ -16,6 +16,7 @@ import { useTheme } from '../theme';
 import { CheckoutButton } from '../ui/CheckoutButton';
 import { PAYMENT_METHOD_BUTTON_HEIGHT } from '../ui/PaymentMethodButton';
 import { useBottomSafeArea } from './useBottomSafeArea';
+import { getLastSeenKeyboardHeight, useKeyboardHeight } from './useKeyboardHeight';
 import { useStatusScreenHeight } from './useStatusScreenHeight';
 
 import type { TextStyle } from 'react-native';
@@ -27,6 +28,9 @@ const LOG = '[MethodSelectionScreen]';
 // Inner vault tile content height (cardholder line + brand row + inner gap).
 // Outer grey padding + tile padding are added into sheetHeight separately below.
 const VAULT_TILE_CONTENT_HEIGHT = 44;
+
+// Matches `FIELD_HEIGHT` in `Components/inputs/dimensions.ts`.
+const VAULT_TILE_CVV_ROW_HEIGHT = 44;
 
 const CHEVRON_ICON_SIZE = 20;
 const chevronDownIcon = require('./assets/chevron-down.png');
@@ -43,6 +47,7 @@ export function MethodSelectionScreen() {
     activeMethod: activeVaultedMethod,
     vaultDisplayMode,
     requestExpandedVaultDisplay,
+    cvvInputVisible,
   } = useVaultedPaymentMethods();
 
   const methodCount = paymentMethods.length;
@@ -56,8 +61,10 @@ export function MethodSelectionScreen() {
   const headerArea = tokens.spacing.xxsmall * 2 + tokens.typography.titleXLarge.lineHeight;
   const titleArea = tokens.typography.titleLarge.lineHeight;
   // Vault section = section title + content gap + outer padding*2 + tile padding*2 + tile content
+  //   (+ inner-tile gap + CVV row, when CVV state is open)
   //   + tile-to-button gap + Pay button (CheckoutButton: padding.medium*2 + titleLarge lineHeight)
   //   + section-to-APM gap.
+  const cvvExtraHeight = cvvInputVisible ? tokens.spacing.medium + VAULT_TILE_CVV_ROW_HEIGHT : 0;
   const vaultSectionHeight =
     activeVaultedMethod != null
       ? titleArea +
@@ -65,6 +72,7 @@ export function MethodSelectionScreen() {
         tokens.spacing.small * 2 +
         tokens.spacing.medium * 2 +
         VAULT_TILE_CONTENT_HEIGHT +
+        cvvExtraHeight +
         tokens.spacing.small +
         (tokens.spacing.medium * 2 + tokens.typography.titleLarge.lineHeight) +
         tokens.spacing.medium
@@ -73,6 +81,16 @@ export function MethodSelectionScreen() {
   const checkoutButtonHeight = tokens.spacing.medium * 2 + tokens.typography.titleLarge.lineHeight;
   const apmSectionHeight =
     vaultDisplayMode === 'lite' ? checkoutButtonHeight : titleArea + tokens.spacing.medium + listHeight;
+  // Grow the sheet by `keyboardHeight - bottomInset` so content stays above the keyboard.
+  // When CVV opens we use the last-seen height as an estimate to avoid a shrink-then-grow
+  // jump during the ~74ms gap before `keyboardWillShow` fires.
+  const keyboardHeight = useKeyboardHeight();
+  const effectiveKeyboardHeight =
+    keyboardHeight > 0 ? keyboardHeight : cvvInputVisible ? getLastSeenKeyboardHeight() : 0;
+  const keyboardSheetGrowth = effectiveKeyboardHeight > 0 ? Math.max(0, effectiveKeyboardHeight - bottomInset) : 0;
+  // Extra breathing room above the keyboard when CVV is open, so the input isn't flush
+  // against the keyboard's top edge.
+  const cvvBreathingRoom = cvvInputVisible ? tokens.spacing.xlarge : 0;
   const sheetHeight =
     tokens.spacing.large +
     headerArea +
@@ -80,7 +98,9 @@ export function MethodSelectionScreen() {
     vaultSectionHeight +
     apmSectionHeight +
     bottomInset +
-    tokens.spacing.xlarge;
+    tokens.spacing.xlarge +
+    keyboardSheetGrowth +
+    cvvBreathingRoom;
   useStatusScreenHeight(sheetHeight);
 
   const handleSelect = (method: PaymentMethodItem) => {
@@ -107,7 +127,7 @@ export function MethodSelectionScreen() {
   }, [activeVaultedMethod, requestExpandedVaultDisplay]);
 
   return (
-    <View style={[styles.container, { paddingBottom: bottomInset }]}>
+    <View style={[styles.root, { paddingBottom: bottomInset }]}>
       <NavigationHeader
         title={t('primer_checkout_title')}
         rightAction={{ label: t('primer_common_button_cancel'), onPress: onCancel }}
@@ -158,14 +178,14 @@ function createStyles(tokens: PrimerTokens) {
 
   /* eslint-disable react-native/no-unused-styles */
   return StyleSheet.create({
-    container: {
-      flex: 1,
-      paddingTop: spacing.large,
-    },
     content: {
       gap: spacing.medium,
       paddingHorizontal: spacing.large,
       paddingTop: spacing.xxlarge,
+    },
+    root: {
+      flex: 1,
+      paddingTop: spacing.large,
     },
     section: {
       gap: spacing.medium,
