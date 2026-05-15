@@ -1,6 +1,7 @@
 package com.primerioreactnative.datamodels
 
 import android.content.Context
+import android.content.res.Configuration
 import com.primerioreactnative.extensions.toLocale
 import com.primerioreactnative.extensions.toPrimerDebugOptions
 import com.primerioreactnative.extensions.toPrimerPaymentMethodOptions
@@ -62,8 +63,10 @@ data class PrimerThemeRN(
     val colors: ColorThemeRN? = null,
     val darkModeColors: ColorThemeRN? = null,
 ) {
-    fun toPrimerTheme(): PrimerTheme {
-        val isDarkMode = false
+    fun toPrimerTheme(context: Context): PrimerTheme {
+        val isDarkMode =
+            (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
+                Configuration.UI_MODE_NIGHT_YES
 
         return PrimerTheme.buildWithDynamicValues(
             isDarkMode = isDarkMode,
@@ -206,7 +209,7 @@ fun PrimerSettingsRN.toPrimerSettings(context: Context) =
         paymentHandling = paymentHandling,
         locale = localeData.toLocale(),
         paymentMethodOptions = paymentMethodOptions.toPrimerPaymentMethodOptions(context),
-        uiOptions = uiOptions.toPrimerUIOptions(),
+        uiOptions = uiOptions.toPrimerUIOptions(context),
         debugOptions = debugOptions.toPrimerDebugOptions(),
         clientSessionCachingEnabled = clientSessionCachingEnabled,
         apiVersion = when (apiVersion) {

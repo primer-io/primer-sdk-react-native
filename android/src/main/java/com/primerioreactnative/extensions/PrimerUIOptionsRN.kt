@@ -1,11 +1,12 @@
 package com.primerioreactnative.extensions
 
+import android.content.Context
 import com.primerioreactnative.datamodels.PrimerUIOptionsRN
 import io.primer.android.data.settings.DismissalMechanism
 import io.primer.android.ui.settings.PrimerUIOptions
 
 @OptIn(kotlin.ExperimentalStdlibApi::class)
-internal fun PrimerUIOptionsRN.toPrimerUIOptions() =
+internal fun PrimerUIOptionsRN.toPrimerUIOptions(context: Context) =
     PrimerUIOptions(
         isInitScreenEnabled,
         isSuccessScreenEnabled,
@@ -19,6 +20,6 @@ internal fun PrimerUIOptionsRN.toPrimerUIOptions() =
                 }
             }
         }.toList().takeIf { it.isNotEmpty() } ?: listOf(DismissalMechanism.GESTURES),
-        theme.toPrimerTheme(),
+        theme.toPrimerTheme(context),
         cardFormUIOptions.toPrimerCardFormUIOptions(),
     )
