@@ -53,7 +53,10 @@ jobs:
 
       - name: Create fresh React Native app
         run: |
-          npx @react-native-community/cli@${{ matrix.cli-version }} init CompatTestApp --version ${{ matrix.rn-version }} --skip-git-init --skip-install --pm yarn
+          npx @react-native-community/cli@${{ matrix.cli-version }} init CompatTestApp \
+            --version ${{ matrix.rn-version }} \
+            --template @react-native-community/template@${{ matrix.rn-version }} \
+            --skip-git-init --skip-install --pm yarn
 
       - name: Add library dependency
         working-directory: CompatTestApp
@@ -119,7 +122,10 @@ jobs:
 
       - name: Create fresh React Native app
         run: |
-          npx @react-native-community/cli@${{ matrix.cli-version }} init CompatTestApp --version ${{ matrix.rn-version }} --skip-git-init --skip-install --pm yarn
+          npx @react-native-community/cli@${{ matrix.cli-version }} init CompatTestApp \
+            --version ${{ matrix.rn-version }} \
+            --template @react-native-community/template@${{ matrix.rn-version }} \
+            --skip-git-init --skip-install --pm yarn
 
       - name: Add library dependency
         working-directory: CompatTestApp
