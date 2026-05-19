@@ -20,7 +20,7 @@ jobs:
           - rn-version: 0.79.6
             cli-version: 18
           - rn-version: 0.80.1
-            cli-version: 19
+            cli-version: 20
           - rn-version: 0.81.1
             cli-version: 20
           - rn-version: 0.82.1
