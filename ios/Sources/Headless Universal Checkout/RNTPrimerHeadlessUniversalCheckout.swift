@@ -283,7 +283,7 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
             )
             self.sendEvent(
               withName: updateCallbackName,
-              body: ["clientSession": payload])
+              body: [Self.clientSessionPayloadKey: payload])
           } catch {
             self.handleRNBridgeError(error, checkoutData: nil, stopOnDebug: true)
           }
@@ -566,7 +566,7 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
           )
           self.sendEvent(
             withName: rnCallbackName,
-            body: ["clientSession": payload])
+            body: [Self.clientSessionPayloadKey: payload])
 
         } catch {
           self.handleRNBridgeError(error, checkoutData: nil, stopOnDebug: true)
@@ -574,6 +574,8 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
       }
     }
   }
+
+  private static let clientSessionPayloadKey = "clientSession"
 
   // Merges a `PrimerClientSession`'s JSON representation with `checkoutModules`
   // surfaced by `ComponentsClientSessionBridge`. The bridge returns a value-typed
