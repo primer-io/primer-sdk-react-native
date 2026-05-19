@@ -15,7 +15,7 @@ import { VaultedMethodsScreen } from '../screens/VaultedMethodsScreen';
 import { CardFormStateProvider, BillingAddressFormStateProvider } from '../form-state';
 import { CheckoutFlowContext } from './CheckoutFlowContext';
 
-const SUCCESS_AUTO_DISMISS_MS = 5000;
+const SUCCESS_AUTO_DISMISS_MS = 3000;
 
 function CheckoutSuccessScreen() {
   const flow = useContext(CheckoutFlowContext);
