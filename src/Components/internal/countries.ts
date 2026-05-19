@@ -1,6 +1,6 @@
 // ISO 3166-1 alpha-2 country codes with English names.
-// Sorted alphabetically by display name. Names match the short-form conventions
-// from the ISO standard (UN member states + widely-used dependent territories).
+// The English `name` is the fallback used when `Intl.DisplayNames` is unavailable
+// or doesn't resolve a code. For display, prefer `getLocalizedCountryName(code, locale)`.
 
 export interface Country {
   readonly code: string;
@@ -268,4 +268,32 @@ const BY_CODE: Record<string, string> = Object.freeze(
 export function getCountryName(code: string | undefined | null): string | undefined {
   if (!code) return undefined;
   return BY_CODE[code.toUpperCase()];
+}
+
+// Cache one Intl.DisplayNames per locale — constructor allocations are not free.
+const displayNamesCache: Map<string, Intl.DisplayNames | null> = new Map();
+
+function getDisplayNames(locale: string): Intl.DisplayNames | null {
+  if (displayNamesCache.has(locale)) return displayNamesCache.get(locale)!;
+  let instance: Intl.DisplayNames | null = null;
+  try {
+    instance = new Intl.DisplayNames([locale], { type: 'region' });
+  } catch {
+    instance = null;
+  }
+  displayNamesCache.set(locale, instance);
+  return instance;
+}
+
+export function getLocalizedCountryName(code: string | undefined | null, locale: string): string | undefined {
+  if (!code) return undefined;
+  const upper = code.toUpperCase();
+  const fallback = BY_CODE[upper];
+  const displayNames = getDisplayNames(locale);
+  if (!displayNames) return fallback;
+  try {
+    return displayNames.of(upper) ?? fallback;
+  } catch {
+    return fallback;
+  }
 }

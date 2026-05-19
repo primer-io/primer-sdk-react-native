@@ -12,14 +12,14 @@ import { useCheckoutFlow } from '../checkout-flow/CheckoutFlowContext';
 import { PrimerTextInput } from '../../inputs/PrimerTextInput';
 import type { PrimerTextInputRef } from '../../types/CardInputTypes';
 import { useBillingAddressForm } from '../../hooks/useBillingAddressForm';
-import { COUNTRIES, type Country } from '../countries';
+import { COUNTRIES, getLocalizedCountryName, type Country } from '../countries';
 import { flagEmoji } from '../flags';
 
 const ROW_HEIGHT = 44;
 
 export function CountrySelectorScreen() {
   const tokens = useTheme();
-  const { t } = useLocalization();
+  const { t, locale } = useLocalization();
   const { pop, canGoBack } = useNavigation();
   const { onCancel } = useCheckoutFlow();
   const { params } = useRoute<CheckoutRoute.countrySelector>();
@@ -38,11 +38,25 @@ export function CountrySelectorScreen() {
     return () => clearTimeout(handle);
   }, []);
 
+  // Build a locale-aware list once per locale: name comes from Intl.DisplayNames with
+  // English fallback, and sort uses Intl.Collator so the order matches the active locale.
+  const localized = useMemo(() => {
+    const collator = new Intl.Collator(locale, { sensitivity: 'base' });
+    return COUNTRIES.map((c) => ({
+      code: c.code,
+      englishName: c.name,
+      name: getLocalizedCountryName(c.code, locale) ?? c.name,
+    })).sort((a, b) => collator.compare(a.name, b.name));
+  }, [locale]);
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return COUNTRIES;
-    return COUNTRIES.filter((c) => c.name.toLowerCase().includes(q) || c.code.toLowerCase().includes(q));
-  }, [query]);
+    if (!q) return localized;
+    return localized.filter(
+      (c) =>
+        c.name.toLowerCase().includes(q) || c.englishName.toLowerCase().includes(q) || c.code.toLowerCase().includes(q)
+    );
+  }, [query, localized]);
 
   const initialScrollIndex = useMemo(() => {
     if (!initialSelected) return 0;
