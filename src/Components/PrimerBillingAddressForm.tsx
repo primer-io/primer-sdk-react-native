@@ -7,7 +7,18 @@ import { useNavigation } from './internal/navigation/useNavigation';
 import { CheckoutRoute } from './internal/navigation/types';
 import { PrimerTextInput } from './inputs/PrimerTextInput';
 import { CountrySelectorRow } from './inputs/CountrySelectorRow';
-import type { PrimerBillingAddressFormProps } from './types/BillingAddressFormTypes';
+import type { PrimerBillingAddressFormProps, BillingAddressField } from './types/BillingAddressFormTypes';
+
+// Render order of text inputs in the form; first match (reversed) is the last visible field.
+const FIELD_ORDER: readonly BillingAddressField[] = [
+  'firstName',
+  'lastName',
+  'addressLine1',
+  'addressLine2',
+  'postalCode',
+  'city',
+  'state',
+];
 
 export function PrimerBillingAddressForm({
   billingForm,
@@ -28,6 +39,8 @@ export function PrimerBillingAddressForm({
   const { visibleFields } = billingForm;
   const showNameRow = visibleFields.firstName || visibleFields.lastName;
   const showPostalCityRow = visibleFields.postalCode || visibleFields.city;
+  const lastVisibleField = [...FIELD_ORDER].reverse().find((f) => visibleFields[f]);
+  const returnKey = (field: BillingAddressField): 'next' | 'done' => (field === lastVisibleField ? 'done' : 'next');
 
   return (
     <View style={[styles.container, style]} testID={testID}>
@@ -54,7 +67,7 @@ export function PrimerBillingAddressForm({
                 label={t('primer_card_form_label_first_name')}
                 placeholder={t('primer_card_form_placeholder_first_name')}
                 error={billingForm.errors.firstName}
-                returnKeyType="next"
+                returnKeyType={returnKey('firstName')}
                 testID={`${testID}-first-name`}
               />
             </View>
@@ -70,7 +83,7 @@ export function PrimerBillingAddressForm({
                 label={t('primer_card_form_label_last_name')}
                 placeholder={t('primer_card_form_placeholder_last_name')}
                 error={billingForm.errors.lastName}
-                returnKeyType="next"
+                returnKeyType={returnKey('lastName')}
                 testID={`${testID}-last-name`}
               />
             </View>
@@ -88,7 +101,7 @@ export function PrimerBillingAddressForm({
           label={t('primer_card_form_label_address1')}
           placeholder={t('primer_card_form_placeholder_address1')}
           error={billingForm.errors.addressLine1}
-          returnKeyType="next"
+          returnKeyType={returnKey('addressLine1')}
           testID={`${testID}-address-line-1`}
         />
       )}
@@ -102,7 +115,7 @@ export function PrimerBillingAddressForm({
           label={t('primer_card_form_label_address2')}
           placeholder={t('primer_card_form_placeholder_address2')}
           error={billingForm.errors.addressLine2}
-          returnKeyType="next"
+          returnKeyType={returnKey('addressLine2')}
           testID={`${testID}-address-line-2`}
         />
       )}
@@ -120,7 +133,7 @@ export function PrimerBillingAddressForm({
                 label={t('primer_card_form_label_postal')}
                 placeholder={t('primer_card_form_placeholder_postal')}
                 error={billingForm.errors.postalCode}
-                returnKeyType="next"
+                returnKeyType={returnKey('postalCode')}
                 testID={`${testID}-postal-code`}
               />
             </View>
@@ -135,7 +148,7 @@ export function PrimerBillingAddressForm({
                 label={t('primer_card_form_label_city')}
                 placeholder={t('primer_card_form_placeholder_city')}
                 error={billingForm.errors.city}
-                returnKeyType="next"
+                returnKeyType={returnKey('city')}
                 testID={`${testID}-city`}
               />
             </View>
@@ -152,7 +165,7 @@ export function PrimerBillingAddressForm({
           label={t('primer_card_form_label_state')}
           placeholder={t('primer_card_form_placeholder_state')}
           error={billingForm.errors.state}
-          returnKeyType="done"
+          returnKeyType={returnKey('state')}
           testID={`${testID}-state`}
         />
       )}
