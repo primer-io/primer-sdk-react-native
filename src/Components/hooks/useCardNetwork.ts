@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { usePrimerCheckout } from './usePrimerCheckout';
+import { usePrimerCard } from './usePrimerCard';
 import { DEFAULT_DESCRIPTOR, fetchCardNetworkDescriptor } from '../internal/cardNetwork';
 import { getCardNetworkIconURL } from '../internal/cardNetworkIcons';
 import type { CardNetworkDescriptor, CardNetworkIconSource } from '../internal/cardNetwork';
@@ -26,7 +26,7 @@ export interface UseCardNetworkReturn {
  * formatting (gaps), max length, and the CVV label; icon is a separate fetch.
  */
 export function useCardNetwork(): UseCardNetworkReturn {
-  const { cardFormState } = usePrimerCheckout();
+  const { cardFormState } = usePrimerCard();
   const network = cardFormState.binData?.preferred?.network ?? null;
 
   const [descriptor, setDescriptor] = useState<CardNetworkDescriptor>(DEFAULT_DESCRIPTOR);

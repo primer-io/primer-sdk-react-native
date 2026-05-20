@@ -4,7 +4,8 @@ import { NavigationContainer } from '../navigation/NavigationContainer';
 import { useNavigation } from '../navigation/useNavigation';
 import { CheckoutRoute } from '../navigation/types';
 import type { CheckoutRoute as CheckoutRouteType } from '../navigation/types';
-import { usePrimerCheckout } from '../../hooks/usePrimerCheckout';
+import { usePrimerCard } from '../../hooks/usePrimerCard';
+import { usePrimerSession } from '../../hooks/usePrimerSession';
 import { LoadingScreen } from '../screens/LoadingScreen';
 import { MethodSelectionScreen } from '../screens/MethodSelectionScreen';
 import { CardFormScreen } from '../screens/CardFormScreen';
@@ -19,7 +20,7 @@ const SUCCESS_AUTO_DISMISS_MS = 3000;
 
 function CheckoutSuccessScreen() {
   const flow = useContext(CheckoutFlowContext);
-  const { clearPaymentOutcome } = usePrimerCheckout();
+  const { clearPaymentOutcome } = usePrimerCard();
 
   useEffect(() => {
     const t = setTimeout(() => {
@@ -44,7 +45,7 @@ const screenMap: Partial<Record<CheckoutRouteType, React.ComponentType>> = {
 };
 
 function ReadinessTransitioner() {
-  const { isReady, isLoadingResources, error } = usePrimerCheckout();
+  const { isReady, isLoadingResources, error } = usePrimerSession();
   const { replace } = useNavigation();
   const hasTransitioned = useRef(false);
 
@@ -67,7 +68,8 @@ function ReadinessTransitioner() {
 }
 
 function PaymentOutcomeTransitioner() {
-  const { paymentOutcome, settings, clearPaymentOutcome } = usePrimerCheckout();
+  const { paymentOutcome, clearPaymentOutcome } = usePrimerCard();
+  const { settings } = usePrimerSession();
   const { replace } = useNavigation();
   const flow = useContext(CheckoutFlowContext);
   const lastOutcomeRef = useRef<typeof paymentOutcome>(null);

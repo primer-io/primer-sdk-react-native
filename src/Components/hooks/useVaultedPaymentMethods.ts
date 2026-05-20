@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { usePrimerCheckout } from './usePrimerCheckout';
+import { usePrimerVault } from './usePrimerVault';
 import type {
   UseVaultedPaymentMethodsReturn,
   VaultDisplayMode,
@@ -56,7 +56,7 @@ export function useVaultedPaymentMethods(): UseVaultedPaymentMethodsReturn {
     selectVaultedMethodId,
     requestExpandedVaultDisplay,
     deleteVaultedPaymentMethod,
-  } = usePrimerCheckout();
+  } = usePrimerVault();
 
   const vaultedMethods = useMemo<VaultedPaymentMethodItem[]>(
     () => rawMethods.map((m) => toVaultedItem(m, vaultedIconUrisById[m.id])),

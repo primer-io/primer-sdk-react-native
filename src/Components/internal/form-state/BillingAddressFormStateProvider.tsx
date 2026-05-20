@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { usePrimerCheckout } from '../../hooks/usePrimerCheckout';
+import { usePrimerCard } from '../../hooks/usePrimerCard';
+import { usePrimerSession } from '../../hooks/usePrimerSession';
 import { debounce, type DebouncedFunction } from '../../../utils/debounce';
 import { fmt } from '../debug';
 import { getBillingAddressVisibility } from '../billingAddressOptions';
@@ -78,7 +79,8 @@ const BillingAddressFormStateContext = createContext<UseBillingAddressFormReturn
  * state — the country selector can write while the form screen reads.
  */
 export function BillingAddressFormStateProvider({ children }: { children: ReactNode }) {
-  const { setBillingAddress: providerSetBillingAddress, clientSession } = usePrimerCheckout();
+  const { setBillingAddress: providerSetBillingAddress } = usePrimerCard();
+  const { clientSession } = usePrimerSession();
 
   const { fields: visibleFields, sectionVisible } = useMemo(
     () => getBillingAddressVisibility(clientSession),

@@ -132,10 +132,16 @@ export type { NamedComponentValidatableData };
 
 export { PrimerCheckoutProvider } from './Components';
 export { usePrimerCheckout } from './Components';
+export { usePrimerSession } from './Components';
+export { usePrimerCard } from './Components';
+export { usePrimerVault } from './Components';
 export { usePaymentMethods } from './Components';
 export type {
   PrimerCheckoutProviderProps,
   PrimerCheckoutContextValue,
+  PrimerSessionController,
+  PrimerCardController,
+  PrimerVaultController,
   PaymentOutcome,
   CardFormState,
 } from './Components';

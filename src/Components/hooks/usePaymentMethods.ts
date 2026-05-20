@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useColorScheme } from 'react-native';
-import { usePrimerCheckout } from './usePrimerCheckout';
+import { usePrimerSession } from './usePrimerSession';
 import { titleCaseFromType } from '../internal/utils/formatting';
 import { toError } from '../internal/utils/errors';
 import type { PrimerClientSessionPaymentMethodOption } from '../../models/PrimerClientSession';
@@ -53,7 +53,7 @@ export function usePaymentMethods(options: UsePaymentMethodsOptions = {}): UsePa
     resourcesError,
     isReady,
     clientSession,
-  } = usePrimerCheckout();
+  } = usePrimerSession();
 
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const colorScheme = useColorScheme();
