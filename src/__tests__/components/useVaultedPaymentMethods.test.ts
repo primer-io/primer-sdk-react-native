@@ -53,6 +53,7 @@ const baseContext: PrimerCheckoutContextValue = {
   isReady: true,
   error: null,
   clientSession: null,
+  acceptedCardNetworks: null,
   availablePaymentMethods: [],
   paymentMethodResources: [],
   isLoadingResources: false,

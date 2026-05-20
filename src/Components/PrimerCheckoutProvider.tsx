@@ -39,6 +39,7 @@ interface InternalState {
   isReady: boolean;
   error: PrimerError | null;
   clientSession: PrimerCheckoutContextValue['clientSession'];
+  acceptedCardNetworks: PrimerCheckoutContextValue['acceptedCardNetworks'];
   availablePaymentMethods: PrimerCheckoutContextValue['availablePaymentMethods'];
   paymentMethodResources: PrimerCheckoutContextValue['paymentMethodResources'];
   isLoadingResources: boolean;
@@ -58,6 +59,7 @@ const initialState: InternalState = {
   isReady: false,
   error: null,
   clientSession: null,
+  acceptedCardNetworks: null,
   availablePaymentMethods: [],
   paymentMethodResources: [],
   isLoadingResources: false,
@@ -433,6 +435,30 @@ export function PrimerCheckoutProvider({
     };
   }, [state.isReady, state.clientSession]);
 
+  // Fetch the merchant's accepted card networks once the session is ready, and
+  // re-fetch when the client session mutates. Cached in context so chip-row consumers
+  // read synchronously.
+  useEffect(() => {
+    if (!state.isReady) return;
+    let cancelled = false;
+    assetsManager
+      .getOrderedAllowedCardNetworks()
+      .then((networks) => {
+        if (cancelled) return;
+        setState((prev) =>
+          prev.acceptedCardNetworks === networks ? prev : { ...prev, acceptedCardNetworks: networks }
+        );
+      })
+      .catch((err) => {
+        console.warn(`${LOG} getOrderedAllowedCardNetworks failed ${fmt(err)}`);
+        if (cancelled) return;
+        setState((prev) => (prev.acceptedCardNetworks === null ? prev : { ...prev, acceptedCardNetworks: null }));
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [state.isReady, state.clientSession]);
+
   // -----------------------------------------------------------------------
   // Raw-data manager lifecycle.
   //
@@ -655,6 +681,7 @@ export function PrimerCheckoutProvider({
       isReady: state.isReady,
       error: state.error,
       clientSession: state.clientSession,
+      acceptedCardNetworks: state.acceptedCardNetworks,
       availablePaymentMethods: state.availablePaymentMethods,
       paymentMethodResources: state.paymentMethodResources,
       isLoadingResources: state.isLoadingResources,

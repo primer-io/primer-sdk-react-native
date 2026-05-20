@@ -79,6 +79,7 @@ const readyContext: PrimerCheckoutContextValue = {
   isReady: true,
   error: null,
   clientSession: null,
+  acceptedCardNetworks: null,
   availablePaymentMethods: [makeMethod('PAYMENT_CARD'), makeMethod('PAYPAL'), makeMethod('APPLE_PAY')],
   paymentMethodResources: [
     makeResource('PAYMENT_CARD', 'Card'),

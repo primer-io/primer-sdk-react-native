@@ -6,6 +6,7 @@ import { CardNumberInput } from './inputs/CardNumberInput';
 import { ExpiryDateInput } from './inputs/ExpiryDateInput';
 import { CVVInput } from './inputs/CVVInput';
 import { CardholderNameInput } from './inputs/CardholderNameInput';
+import { PrimerAcceptedCardNetworks } from './PrimerAcceptedCardNetworks';
 import type { PrimerTextInputRef } from './types/CardInputTypes';
 import type { PrimerCardFormProps } from './types/PrimerCardFormTypes';
 
@@ -36,6 +37,7 @@ export function PrimerCardForm({
 
   return (
     <View style={[styles.container, style]} testID={testID}>
+      <PrimerAcceptedCardNetworks testID={`${testID}-accepted-networks`} />
       <CardNumberInput
         ref={cardRef}
         cardForm={cardForm}

@@ -82,7 +82,7 @@ function createStyles(tokens: PrimerTokens) {
       gap: spacing.medium,
       paddingBottom: spacing.large,
       paddingHorizontal: spacing.large,
-      paddingTop: spacing.large,
+      paddingTop: spacing.xxlarge,
     },
     payButton: {
       alignItems: 'center',

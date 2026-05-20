@@ -18,6 +18,9 @@ RCT_EXTERN_METHOD(getCardNetworkImage:(NSString *)cardNetworkStr
                       resolver:(RCTPromiseResolveBlock)resolver
                       rejecter:(RCTPromiseRejectBlock)rejecter)
 
+RCT_EXTERN_METHOD(getOrderedAllowedCardNetworks:(RCTPromiseResolveBlock)resolver
+                      rejecter:(RCTPromiseRejectBlock)rejecter)
+
 RCT_EXTERN_METHOD(getPaymentMethodAsset:(NSString *)paymentMethodType
                       resolver:(RCTPromiseResolveBlock)resolver
                       rejecter:(RCTPromiseRejectBlock)rejecter)
