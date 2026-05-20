@@ -97,6 +97,38 @@ export function BillingAddressFormStateProvider({ children }: { children: ReactN
 
   const fieldsRef = useRef<BillingFields>({ ...EMPTY_FIELDS });
   const debouncedRef = useRef<DebouncedFunction<(address: PrimerAddress) => void> | null>(null);
+  // Prefill from clientSession.customer.billingAddress runs at most once per provider
+  // lifecycle. Subsequent client-session updates do not re-seed fields — otherwise the
+  // shopper's edits would be clobbered every time the session refreshes.
+  const hasPrefilledRef = useRef(false);
+
+  useEffect(() => {
+    if (hasPrefilledRef.current) return;
+    const initial = clientSession?.customer?.billingAddress;
+    if (!initial) return;
+
+    const next: BillingFields = { ...fieldsRef.current };
+    let changed = false;
+    (Object.keys(EMPTY_FIELDS) as BillingAddressField[]).forEach((field) => {
+      const value = initial[field];
+      if (typeof value === 'string' && value.length > 0 && next[field] === '') {
+        next[field] = value;
+        changed = true;
+      }
+    });
+    if (!changed) return;
+
+    fieldsRef.current = next;
+    setFirstName(next.firstName);
+    setLastName(next.lastName);
+    setAddressLine1(next.addressLine1);
+    setAddressLine2(next.addressLine2);
+    setCity(next.city);
+    setStateValue(next.state);
+    setPostalCode(next.postalCode);
+    setCountryCode(next.countryCode);
+    hasPrefilledRef.current = true;
+  }, [clientSession]);
 
   useEffect(() => {
     debouncedRef.current = debounce((address: PrimerAddress) => {
