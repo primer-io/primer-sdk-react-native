@@ -2,6 +2,7 @@ import { createElement, type ReactNode } from 'react';
 // @ts-expect-error -- react-test-renderer has no types for React 19
 import { act, create } from 'react-test-renderer';
 import { PrimerCheckoutContext } from '../../../Components/internal/PrimerCheckoutContext';
+import { CardFormStateProvider } from '../../../Components/internal/form-state/CardFormStateProvider';
 import { useCardForm } from '../../../Components/hooks/useCardForm';
 import type { CardNetworkDescriptor } from '../../../Components/internal/cardNetwork';
 import type { PrimerCheckoutContextValue } from '../../../Components/types/PrimerCheckoutProviderTypes';
@@ -48,6 +49,7 @@ const baseContext: PrimerCheckoutContextValue = {
   vaultedError: null,
   setActiveMethod: () => {},
   setRawData: async () => {},
+  setBillingAddress: async () => {},
   submit: async () => {},
   retry: async () => {},
   clearPaymentOutcome: () => {},
@@ -63,7 +65,8 @@ function withErrors(errors: CardFormErrors): PrimerCheckoutContextValue {
 }
 
 function contextWrapper(value: PrimerCheckoutContextValue) {
-  return ({ children }: { children: ReactNode }) => createElement(PrimerCheckoutContext.Provider, { value }, children);
+  return ({ children }: { children: ReactNode }) =>
+    createElement(PrimerCheckoutContext.Provider, { value }, createElement(CardFormStateProvider, null, children));
 }
 
 function renderHook<T>(hook: () => T, Wrapper: (props: { children: ReactNode }) => ReactNode) {
