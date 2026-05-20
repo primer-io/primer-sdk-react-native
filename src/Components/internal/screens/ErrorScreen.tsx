@@ -9,7 +9,8 @@ import { useStatusScreenHeight } from './useStatusScreenHeight';
 import { STATUS_SCREEN_ICON_SIZE } from './constants';
 import { useBottomSafeArea } from './useBottomSafeArea';
 import { CheckoutButton } from '../ui';
-import { usePrimerCheckout } from '../../hooks/usePrimerCheckout';
+import { usePrimerCard } from '../../hooks/usePrimerCard';
+import { usePrimerVault } from '../../hooks/usePrimerVault';
 import { fmt } from '../debug';
 import { PrimerError } from '../../../models/PrimerError';
 
@@ -23,7 +24,8 @@ export function ErrorScreen() {
   const { t } = useLocalization();
   const { replace } = useNavigation();
   const { params } = useRoute<CheckoutRoute.error>();
-  const { retry, clearPaymentOutcome, requestExpandedVaultDisplay } = usePrimerCheckout();
+  const { retry, clearPaymentOutcome } = usePrimerCard();
+  const { requestExpandedVaultDisplay } = usePrimerVault();
   const rawBottomInset = useBottomSafeArea();
   const bottomInset = Math.max(rawBottomInset, tokens.spacing.large);
   const sheetHeight = TOP_PADDING + CONTENT_HEIGHT + bottomInset;

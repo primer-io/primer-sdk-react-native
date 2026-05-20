@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { usePrimerCheckout } from '../../hooks/usePrimerCheckout';
+import { usePrimerCard } from '../../hooks/usePrimerCard';
+import { usePrimerSession } from '../../hooks/usePrimerSession';
 import { useCardNetwork } from '../../hooks/useCardNetwork';
 import { debounce, type DebouncedFunction } from '../../../utils/debounce';
 import { PrimerError } from '../../../models/PrimerError';
@@ -61,14 +62,8 @@ const CardFormStateContext = createContext<UseCardFormReturn | null>(null);
  * `PrimerCheckoutProvider`.
  */
 export function CardFormStateProvider({ children }: { children: ReactNode }) {
-  const {
-    isReady,
-    activeMethod,
-    cardFormState,
-    clientSession,
-    setRawData: providerSetRawData,
-    submit: providerSubmit,
-  } = usePrimerCheckout();
+  const { isReady, clientSession } = usePrimerSession();
+  const { activeMethod, cardFormState, setRawData: providerSetRawData, submit: providerSubmit } = usePrimerCard();
 
   // CARD_INFORMATION.options.cardHolderName === false hides the field. Any other shape
   // (no module, no options, or `true`) keeps it visible — matches native iOS/Android behavior.

@@ -121,7 +121,7 @@ const readyContext: PrimerCheckoutContextValue = {
 describe('usePaymentMethods', () => {
   it('throws when used outside provider', () => {
     expect(() => renderHook(() => usePaymentMethods())).toThrow(
-      'usePrimerCheckout must be used within a <PrimerCheckoutProvider>'
+      'usePrimerSession must be used within a <PrimerCheckoutProvider>'
     );
   });
 

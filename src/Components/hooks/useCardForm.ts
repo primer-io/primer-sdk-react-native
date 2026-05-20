@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useCardFormStateContext } from '../internal/form-state/CardFormStateProvider';
-import { usePrimerCheckout } from './usePrimerCheckout';
+import { usePrimerCard } from './usePrimerCard';
 import type { UseCardFormOptions, UseCardFormReturn } from '../types/CardFormTypes';
 
 /**
@@ -21,7 +21,7 @@ export function useCardForm(options: UseCardFormOptions = {}): UseCardFormReturn
     );
   }
 
-  const { cardFormState } = usePrimerCheckout();
+  const { cardFormState } = usePrimerCard();
 
   const onValidationChangeRef = useRef(options.onValidationChange);
   onValidationChangeRef.current = options.onValidationChange;

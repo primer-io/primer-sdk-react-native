@@ -1,10 +1,16 @@
 export { PrimerCheckoutProvider } from './PrimerCheckoutProvider';
 export { usePrimerCheckout } from './hooks/usePrimerCheckout';
+export { usePrimerSession } from './hooks/usePrimerSession';
+export { usePrimerCard } from './hooks/usePrimerCard';
+export { usePrimerVault } from './hooks/usePrimerVault';
 export { useLocalization } from './internal/localization';
 export { usePaymentMethods } from './hooks/usePaymentMethods';
 export type {
   PrimerCheckoutProviderProps,
   PrimerCheckoutContextValue,
+  PrimerSessionController,
+  PrimerCardController,
+  PrimerVaultController,
   PaymentOutcome,
   CardFormState,
 } from './types/PrimerCheckoutProviderTypes';

@@ -3,7 +3,7 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { PrimerAnalytics } from '../../analytics';
 import { usePaymentMethods } from '../../hooks/usePaymentMethods';
-import { usePrimerCheckout } from '../../hooks/usePrimerCheckout';
+import { usePrimerCard } from '../../hooks/usePrimerCard';
 import { useVaultedPaymentMethods } from '../../hooks/useVaultedPaymentMethods';
 import { PrimerPaymentMethodList } from '../../PrimerPaymentMethodList';
 import { PrimerVaultedPaymentMethod } from '../../PrimerVaultedPaymentMethod';
@@ -38,7 +38,7 @@ export function MethodSelectionScreen() {
   const { onCancel } = useCheckoutFlow();
   const { paymentMethods } = usePaymentMethods();
   const { push } = useNavigation();
-  const { setActiveMethod } = usePrimerCheckout();
+  const { setActiveMethod } = usePrimerCard();
   const {
     activeMethod: activeVaultedMethod,
     vaultDisplayMode,
