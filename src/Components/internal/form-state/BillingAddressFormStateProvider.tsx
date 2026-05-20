@@ -11,7 +11,7 @@ import type {
 } from '../../types/BillingAddressFormTypes';
 
 const LOG = '[BillingAddressFormState]';
-const DEBOUNCE_MS = 150;
+const DEBOUNCE_MS = 275;
 
 interface BillingFields {
   firstName: string;
