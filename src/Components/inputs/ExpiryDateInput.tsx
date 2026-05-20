@@ -69,7 +69,8 @@ export const ExpiryDateInput = forwardRef<PrimerTextInputRef, ExpiryDateInputPro
       ref={innerRef}
       value={cardForm.expiryDate}
       onChangeText={handleChangeText}
-      onBlur={() => cardForm.markFieldTouched('expiryDate')}
+      onFocus={() => cardForm.markFieldFocused('expiryDate')}
+      onBlur={() => cardForm.markFieldBlurred('expiryDate')}
       keyboardType="number-pad"
       maxLength={5}
       autoComplete="cc-exp"
