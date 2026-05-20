@@ -1,13 +1,12 @@
 // ISO 3166-1 alpha-2 country codes with English names.
 // The English `name` is the fallback used when `Intl.DisplayNames` is unavailable
 // or doesn't resolve a code. For display, prefer `getLocalizedCountryName(code, locale)`.
+//
+// The `as const` assertion below is load-bearing: it widens each entry's `code`
+// from `string` to its literal type, so `CountryCode` resolves to the union of
+// all 250 ISO codes rather than collapsing to `string`.
 
-export interface Country {
-  readonly code: string;
-  readonly name: string;
-}
-
-export const COUNTRIES: ReadonlyArray<Country> = [
+export const COUNTRIES = [
   { code: 'AF', name: 'Afghanistan' },
   { code: 'AL', name: 'Albania' },
   { code: 'DZ', name: 'Algeria' },
@@ -256,7 +255,11 @@ export const COUNTRIES: ReadonlyArray<Country> = [
   { code: 'YE', name: 'Yemen' },
   { code: 'ZM', name: 'Zambia' },
   { code: 'ZW', name: 'Zimbabwe' },
-];
+] as const;
+
+export type Country = (typeof COUNTRIES)[number];
+/** Literal union of every ISO 3166-1 alpha-2 code present in `COUNTRIES`. */
+export type CountryCode = Country['code'];
 
 const BY_CODE: Record<string, string> = Object.freeze(
   COUNTRIES.reduce<Record<string, string>>((acc, c) => {

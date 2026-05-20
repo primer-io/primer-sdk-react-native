@@ -12,10 +12,18 @@ import { useCheckoutFlow } from '../checkout-flow/CheckoutFlowContext';
 import { PrimerTextInput } from '../../inputs/PrimerTextInput';
 import type { PrimerTextInputRef } from '../../types/CardInputTypes';
 import { useBillingAddressForm } from '../../hooks/useBillingAddressForm';
-import { COUNTRIES, getLocalizedCountryName, type Country } from '../countries';
+import { COUNTRIES, getLocalizedCountryName, type CountryCode } from '../countries';
 import { flagEmoji } from '../flags';
 
 const ROW_HEIGHT = 44;
+
+// Row shape used inside the picker: code + the (localized) display name plus
+// the English fallback we keep for searching while the locale is non-English.
+interface CountryListItem {
+  code: CountryCode;
+  englishName: string;
+  name: string;
+}
 
 export function CountrySelectorScreen() {
   const tokens = useTheme();
@@ -28,7 +36,7 @@ export function CountrySelectorScreen() {
 
   const initialSelected = params?.selectedCountryCode ?? '';
   const [query, setQuery] = useState('');
-  const listRef = useRef<FlatList<Country>>(null);
+  const listRef = useRef<FlatList<CountryListItem>>(null);
   const searchRef = useRef<PrimerTextInputRef>(null);
 
   // Delay matches NavigationContainer's 250ms push animation — focusing sooner
@@ -65,7 +73,7 @@ export function CountrySelectorScreen() {
   }, [initialSelected, filtered]);
 
   const handleSelect = useCallback(
-    (code: string) => {
+    (code: CountryCode) => {
       billingForm.updateCountryCode(code);
       pop();
     },
@@ -74,10 +82,10 @@ export function CountrySelectorScreen() {
 
   const handleClearSearch = useCallback(() => setQuery(''), []);
 
-  const keyExtractor = useCallback((item: Country) => item.code, []);
+  const keyExtractor = useCallback((item: CountryListItem) => item.code, []);
 
   const renderItem = useCallback(
-    ({ item }: ListRenderItemInfo<Country>) => {
+    ({ item }: ListRenderItemInfo<CountryListItem>) => {
       const isSelected = item.code === initialSelected;
       return (
         <TouchableOpacity
@@ -107,7 +115,7 @@ export function CountrySelectorScreen() {
   );
 
   const getItemLayout = useCallback(
-    (_: ArrayLike<Country> | null | undefined, index: number) => ({
+    (_: ArrayLike<CountryListItem> | null | undefined, index: number) => ({
       length: ROW_HEIGHT,
       offset: ROW_HEIGHT * index,
       index,
