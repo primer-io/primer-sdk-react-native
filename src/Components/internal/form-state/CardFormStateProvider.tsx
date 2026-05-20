@@ -68,9 +68,17 @@ export function CardFormStateProvider({ children }: { children: ReactNode }) {
     isReady,
     activeMethod,
     cardFormState,
+    clientSession,
     setRawData: providerSetRawData,
     submit: providerSubmit,
   } = usePrimerCheckout();
+
+  // CARD_INFORMATION.options.cardHolderName === false hides the field. Any other shape
+  // (no module, no options, or `true`) keeps it visible — matches native iOS/Android behavior.
+  const isCardholderNameVisible = useMemo(() => {
+    const module = clientSession?.checkoutModules?.find((m) => m.type === 'CARD_INFORMATION');
+    return module?.options?.cardHolderName !== false;
+  }, [clientSession]);
 
   const [cardNumber, setCardNumber] = useState('');
   const [expiryDate, setExpiryDate] = useState('');
@@ -267,6 +275,7 @@ export function CardFormStateProvider({ children }: { children: ReactNode }) {
       binData: cardFormState.binData,
       descriptor,
       cardNumberMaxLength: maxFormattedCardNumberLength(descriptor),
+      isCardholderNameVisible,
       reset,
     }),
     [
@@ -289,6 +298,7 @@ export function CardFormStateProvider({ children }: { children: ReactNode }) {
       isSubmitting,
       submitAttempted,
       descriptor,
+      isCardholderNameVisible,
       reset,
     ]
   );
