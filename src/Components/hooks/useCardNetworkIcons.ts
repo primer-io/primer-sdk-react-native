@@ -1,10 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { getCardNetworkIconURL } from '../internal/cardNetworkIcons';
-import { getNetworkAbbreviation } from '../internal/cardNetwork';
+import { getNetworkAbbreviation, type CardNetworkId } from '../internal/cardNetwork';
 
 export interface CardNetworkIconState {
-  /** Upper-cased network id (`"VISA"`, `"AMEX"`, …). */
-  network: string;
+  /**
+   * Upper-cased network id (`"VISA"`, `"AMEX"`, …). Native can report ids outside the
+   * known union, so we allow any string while keeping autocomplete for known ids.
+   */
+  network: CardNetworkId | (string & {});
   /** Resolved image URI, or `null` while loading or when the fetch failed. */
   iconUri: string | null;
   /** Two-letter fallback (`"VI"`, `"AM"`, …) for chips without an icon. */
@@ -25,7 +28,6 @@ export function useCardNetworkIcons(networks: string[]): CardNetworkIconState[] 
   useEffect(() => {
     let cancelled = false;
     upperNetworks.forEach((network) => {
-      if (network === 'OTHER') return;
       getCardNetworkIconURL(network)
         .then((uri) => {
           if (!cancelled) {

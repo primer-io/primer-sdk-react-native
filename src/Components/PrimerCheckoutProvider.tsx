@@ -445,9 +445,15 @@ export function PrimerCheckoutProvider({
       .getOrderedAllowedCardNetworks()
       .then((networks) => {
         if (cancelled) return;
-        setState((prev) =>
-          prev.acceptedCardNetworks === networks ? prev : { ...prev, acceptedCardNetworks: networks }
-        );
+        setState((prev) => {
+          if (networks === null) {
+            return prev.acceptedCardNetworks === null ? prev : { ...prev, acceptedCardNetworks: null };
+          }
+          const same =
+            prev.acceptedCardNetworks?.length === networks.length &&
+            prev.acceptedCardNetworks.every((n, i) => n === networks[i]);
+          return same ? prev : { ...prev, acceptedCardNetworks: networks };
+        });
       })
       .catch((err) => {
         console.warn(`${LOG} getOrderedAllowedCardNetworks failed ${fmt(err)}`);
