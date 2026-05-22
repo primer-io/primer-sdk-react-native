@@ -1,5 +1,14 @@
-import { useCallback, useMemo } from 'react';
-import { ActivityIndicator, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  ActivityIndicator,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  useWindowDimensions,
+} from 'react-native';
 import type { TextStyle } from 'react-native';
 import { useTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
@@ -12,8 +21,17 @@ import { PrimerCardForm } from '../../PrimerCardForm';
 import { PrimerBillingAddressForm } from '../../PrimerBillingAddressForm';
 import { useCardForm } from '../../hooks/useCardForm';
 import { useBillingAddressForm } from '../../hooks/useBillingAddressForm';
+import { useSheetHeight } from '../checkout-sheet';
 import { useBottomSafeArea } from './useBottomSafeArea';
 import { useKeyboardPadding } from './useKeyboardPadding';
+
+// CheckoutSheet.dragHandleArea = paddingTop(12) + handle(4) + paddingBottom(4) = 20.
+// Included when sizing the sheet to fit content so it accounts for the chrome above
+// CardFormScreen's content.
+const DRAG_HANDLE_AREA = 20;
+// Cap on the dynamic sheet height — matches CheckoutSheet's DEFAULT_HEIGHT_RATIO so
+// the sheet never exceeds 92% of the screen.
+const MAX_SHEET_HEIGHT_RATIO = 0.92;
 
 export function CardFormScreen() {
   const tokens = useTheme();
@@ -24,6 +42,31 @@ export function CardFormScreen() {
   const billingForm = useBillingAddressForm();
   const bottomInset = useBottomSafeArea();
   const keyboardPadding = useKeyboardPadding();
+  const { height: screenHeight } = useWindowDimensions();
+  const { requestHeight } = useSheetHeight();
+
+  // Measure header / scroll-content / footer so the sheet can shrink to fit content
+  // when the form is short (e.g. only the card section is visible). The default 92%
+  // height is the *cap*; without the request the sheet would be too tall and leave an
+  // empty gap between the last field and the Pay button.
+  const [headerHeight, setHeaderHeight] = useState(0);
+  const [scrollContentHeight, setScrollContentHeight] = useState(0);
+  const [footerHeight, setFooterHeight] = useState(0);
+
+  // Re-request on every state — including with the keyboard open — because the form
+  // auto-focuses on mount, the keyboard pops before content measures, and we still
+  // want a snug fit. `scrollContentHeight` already inflates by `keyboardPadding` (via
+  // the ScrollView's paddingBottom below), so the sheet grows by the keyboard's
+  // height; sheet-bottom sits at screen-bottom, the keyboard covers the bottom
+  // `keyboardPadding`, and the visible portion above the keyboard exactly fits
+  // header + form + Pay button.
+  useEffect(() => {
+    if (headerHeight === 0 || scrollContentHeight === 0 || footerHeight === 0) return;
+    const desired = DRAG_HANDLE_AREA + headerHeight + scrollContentHeight + footerHeight;
+    const max = screenHeight * MAX_SHEET_HEIGHT_RATIO;
+    const release = requestHeight(Math.min(desired, max));
+    return release;
+  }, [headerHeight, scrollContentHeight, footerHeight, screenHeight, requestHeight]);
   // Gap between the Pay button and the keyboard / system inset:
   //   - keyboard closed: max(bottomInset, spacing.large) — clears home indicator / gesture pill.
   //   - iOS keyboard open: spacing.large (16). `keyboard.endCoordinates.height` already
@@ -57,18 +100,21 @@ export function CardFormScreen() {
   // the form fields scroll in between.
   return (
     <View style={styles.root}>
-      <NavigationHeader
-        title={t('primer_card_form_title')}
-        showBackButton={canGoBack}
-        backLabel={t('primer_common_back')}
-        onBackPress={pop}
-        rightAction={{ label: t('primer_common_button_cancel'), onPress: onCancel }}
-      />
+      <View onLayout={(e) => setHeaderHeight(e.nativeEvent.layout.height)}>
+        <NavigationHeader
+          title={t('primer_card_form_title')}
+          showBackButton={canGoBack}
+          backLabel={t('primer_common_back')}
+          onBackPress={pop}
+          rightAction={{ label: t('primer_common_button_cancel'), onPress: onCancel }}
+        />
+      </View>
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={[styles.scrollContent, { paddingBottom: tokens.spacing.medium + keyboardPadding }]}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
+        onContentSizeChange={(_, h) => setScrollContentHeight(h)}
       >
         <PrimerCardForm cardForm={cardForm} autoFocus onSubmit={handlePay} />
         {billingForm.sectionVisible && (
@@ -89,6 +135,7 @@ export function CardFormScreen() {
         <View pointerEvents="none" style={[styles.keyboardOverlay, { height: keyboardPadding }]} />
       )}
       <View
+        onLayout={(e) => setFooterHeight(e.nativeEvent.layout.height)}
         style={[
           styles.footer,
           {

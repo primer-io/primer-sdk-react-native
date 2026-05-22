@@ -286,6 +286,12 @@ function createStyles(tokens: PrimerTokens) {
     },
     sheetContainer: {
       ...StyleSheet.absoluteFillObject,
+      // Same color as sheetContent so the area below sheetContent (within the
+      // full-screen container) doesn't flash dark when sheetContent's height shrinks
+      // instantly while translateY animates to catch up — e.g. when the keyboard
+      // hides and the sheet resizes from "fits form + keyboard" back down to
+      // "fits form only".
+      backgroundColor: colors.background,
       borderTopLeftRadius: radii.large,
       borderTopRightRadius: radii.large,
       overflow: 'hidden',
