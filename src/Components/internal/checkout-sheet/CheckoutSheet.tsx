@@ -3,8 +3,10 @@ import type { HeightReleaseFn } from './SheetHeightContext';
 import {
   Animated,
   Easing,
+  InputAccessoryView,
   Modal,
   PanResponder,
+  Platform,
   StyleSheet,
   TouchableWithoutFeedback,
   View,
@@ -12,6 +14,7 @@ import {
 } from 'react-native';
 import { useTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
+import { PRIMER_EMPTY_ACCESSORY_ID } from '../../inputs/PrimerTextInput';
 import { SheetHeightContext } from './SheetHeightContext';
 import type { SheetHeightContextValue } from './SheetHeightContext';
 import type { CheckoutSheetProps } from './types';
@@ -218,8 +221,26 @@ export function CheckoutSheet({
           <Animated.View style={[styles.backdrop, { opacity: backdropOpacity }]} />
         </TouchableWithoutFeedback>
 
+        {/*
+         * Empty InputAccessoryView shared by every PrimerTextInput via inputAccessoryViewID.
+         * Claims the accessory slot above the iOS keyboard so the system's auto Previous/Next/Done
+         * toolbar isn't shown. iOS-only — no-op on Android.
+         */}
+        {Platform.OS === 'ios' && (
+          <InputAccessoryView nativeID={PRIMER_EMPTY_ACCESSORY_ID}>
+            <View />
+          </InputAccessoryView>
+        )}
+
         <Animated.View style={[styles.sheetContainer, { transform: [{ translateY }] }]} pointerEvents="box-none">
-          <View style={styles.sheetContent}>
+          {/*
+           * `sheetContent` is constrained to the *visible* height so the inner ScrollView
+           * knows when content overflows. Without this, the sheetContainer is full-screen
+           * (absoluteFillObject) and ScrollView measures itself as full-screen too — the
+           * bottom of the content silently extends past the visible window (which is only
+           * `sheetHeight` tall after the translateY) and ScrollView never enters scroll mode.
+           */}
+          <View style={[styles.sheetContent, { height: sheetHeight }]}>
             {shouldRenderDragHandle && (
               <View style={styles.dragHandleArea} {...panResponder.panHandlers}>
                 <View style={styles.dragHandle} />
@@ -271,7 +292,6 @@ function createStyles(tokens: PrimerTokens) {
     },
     sheetContent: {
       backgroundColor: colors.background,
-      flex: 1,
     },
   });
 }
