@@ -13,5 +13,6 @@ export function useNavigation() {
     replace: context.replace,
     popToRoot: context.popToRoot,
     canGoBack: context.state.stack.length > 1,
+    isAnimating: context.state.isAnimating,
   };
 }

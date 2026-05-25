@@ -6,6 +6,7 @@ import { formatCurrency as formatCurrencyUtil } from '../currency';
 import { formatDate as formatDateUtil } from '../utils/formatting';
 
 export interface LocalizationResult {
+  locale: string;
   t: (key: string, params?: TranslationParams) => string;
   formatCurrency: (amountInMinorUnits: number, currencyCode: string) => string;
   formatDate: (date: Date, options?: Intl.DateTimeFormatOptions) => string;
@@ -16,6 +17,7 @@ export function useLocalization(): LocalizationResult {
   return useMemo(() => {
     const { locale } = resolveLocale();
     return {
+      locale,
       t: (key: string, params?: TranslationParams) => translate(key, locale, params),
       formatCurrency: (amountInMinorUnits: number, currencyCode: string) =>
         formatCurrencyUtil(amountInMinorUnits, currencyCode, locale),

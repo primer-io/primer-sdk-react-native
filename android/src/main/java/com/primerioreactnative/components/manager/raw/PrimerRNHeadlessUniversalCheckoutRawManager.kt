@@ -32,6 +32,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -237,7 +238,9 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
             promise.reject(exception.errorId, exception.description)
         } else {
             rawManager.cleanup()
-            // `scope` is module-scoped; keep it alive across configure/cleanup cycles.
+            // `scope` is module-scoped; cancel pending coroutines but keep the scope
+            // alive across configure/cleanup cycles.
+            scope.coroutineContext.cancelChildren()
             promise.resolve(null)
         }
     }

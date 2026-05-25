@@ -8,13 +8,14 @@ import { usePrimerCheckout } from '../../hooks/usePrimerCheckout';
 import { LoadingScreen } from '../screens/LoadingScreen';
 import { MethodSelectionScreen } from '../screens/MethodSelectionScreen';
 import { CardFormScreen } from '../screens/CardFormScreen';
+import { CountrySelectorScreen } from '../screens/CountrySelectorScreen';
 import { ErrorScreen } from '../screens/ErrorScreen';
 import { SuccessScreen } from '../screens/SuccessScreen';
 import { VaultedMethodsScreen } from '../screens/VaultedMethodsScreen';
 import { CardFormStateProvider, BillingAddressFormStateProvider } from '../form-state';
 import { CheckoutFlowContext } from './CheckoutFlowContext';
 
-const SUCCESS_AUTO_DISMISS_MS = 5000;
+const SUCCESS_AUTO_DISMISS_MS = 3000;
 
 function CheckoutSuccessScreen() {
   const flow = useContext(CheckoutFlowContext);
@@ -35,6 +36,7 @@ const screenMap: Partial<Record<CheckoutRouteType, React.ComponentType>> = {
   [CheckoutRoute.splash]: LoadingScreen,
   [CheckoutRoute.methodSelection]: MethodSelectionScreen,
   [CheckoutRoute.cardForm]: CardFormScreen,
+  [CheckoutRoute.countrySelector]: CountrySelectorScreen,
   [CheckoutRoute.processing]: LoadingScreen,
   [CheckoutRoute.success]: CheckoutSuccessScreen,
   [CheckoutRoute.error]: ErrorScreen,

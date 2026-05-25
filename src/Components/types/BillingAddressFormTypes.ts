@@ -1,6 +1,7 @@
 import type { StyleProp, ViewStyle } from 'react-native';
 import type { PrimerAddress } from '../../models/PrimerClientSession';
 import type { BillingAddressVisibility } from '../internal/billingAddressOptions';
+import type { CountryCode } from '../internal/countries';
 
 export type BillingAddressField =
   | 'firstName'
@@ -36,7 +37,8 @@ export interface UseBillingAddressFormReturn {
   updateCity: (value: string) => void;
   updateState: (value: string) => void;
   updatePostalCode: (value: string) => void;
-  updateCountryCode: (value: string) => void;
+  /** Accepts only valid ISO 3166-1 alpha-2 codes from `COUNTRIES`. */
+  updateCountryCode: (value: CountryCode) => void;
 
   /** Overall validity — all visible required fields are non-blank. */
   isValid: boolean;
