@@ -55,6 +55,11 @@ export interface PrimerCheckoutContextValue {
   /** Init-time errors only (before `isReady`). Payment-time errors land in `paymentOutcome`. */
   error: PrimerError | null;
   clientSession: PrimerClientSession | null;
+  /**
+   * Ordered list of card networks the merchant accepts for the session, e.g. `['VISA', 'MASTERCARD']`.
+   * `null` until the bridge resolves or when the session has no `paymentMethod`; `[]` when explicitly empty.
+   */
+  acceptedCardNetworks: string[] | null;
   availablePaymentMethods: IPrimerHeadlessUniversalCheckoutPaymentMethod[];
   paymentMethodResources: Array<PrimerPaymentMethodAsset | PrimerPaymentMethodNativeView>;
   isLoadingResources: boolean;

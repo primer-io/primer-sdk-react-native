@@ -22,6 +22,7 @@ import com.primerioreactnative.datamodels.ErrorTypeRN
 import com.primerioreactnative.utils.errorTo
 import com.primerioreactnative.utils.toWritableMap
 import io.primer.android.components.SdkUninitializedException
+import io.primer.android.components.bridge.clientsession.ComponentsClientSessionBridge
 import io.primer.android.components.ui.assets.PrimerHeadlessUniversalCheckoutAssetsManager
 import io.primer.android.components.ui.assets.PrimerPaymentMethodAsset
 import io.primer.android.components.ui.assets.PrimerPaymentMethodNativeView
@@ -102,6 +103,25 @@ internal class PrimerRNHeadlessUniversalCheckoutAssetManager(
                 } catch (e: Exception) {
                     promise.reject(ErrorTypeRN.NativeBridgeFailed.errorId, e.message, e)
                 }
+        }
+    }
+
+    @ReactMethod
+    fun getOrderedAllowedCardNetworks(promise: Promise) {
+        try {
+            val networks = ComponentsClientSessionBridge.create().getOrderedAllowedCardNetworks()
+            val map = Arguments.createMap()
+            if (networks == null) {
+                map.putNull("networks")
+            } else {
+                val array = Arguments.createArray()
+                networks.forEach { array.pushString(it) }
+                map.putArray("networks", array)
+            }
+            promise.resolve(map)
+        } catch (e: Exception) {
+            val exception = ErrorTypeRN.NativeBridgeFailed errorTo e.message.orEmpty()
+            promise.reject(exception.errorId, exception.description, e)
         }
     }
 

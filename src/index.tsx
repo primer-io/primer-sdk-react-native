@@ -161,6 +161,8 @@ export { PrimerCheckoutSheet } from './Components';
 export type { PrimerCheckoutSheetProps } from './Components';
 export { PrimerCardForm } from './Components';
 export type { PrimerCardFormProps } from './Components';
+export { PrimerAcceptedCardNetworks } from './Components';
+export type { PrimerAcceptedCardNetworksProps } from './Components';
 export { PrimerBillingAddressForm } from './Components';
 export {
   PrimerTextInput,
