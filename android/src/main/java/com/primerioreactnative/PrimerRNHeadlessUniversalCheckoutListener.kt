@@ -88,7 +88,7 @@ class PrimerRNHeadlessUniversalCheckoutListener(
                     PrimerHeadlessUniversalCheckoutEvent.ON_CLIENT_SESSION_UPDATE.eventName,
                     JSONObject().apply {
                         put(
-                            "clientSession",
+                            CLIENT_SESSION_PAYLOAD_KEY,
                             JSONObject(
                                 Json.encodeToString(
                                     initialClientSession.toPrimerClientSessionRN(
@@ -204,7 +204,7 @@ class PrimerRNHeadlessUniversalCheckoutListener(
                 PrimerHeadlessUniversalCheckoutEvent.ON_CLIENT_SESSION_UPDATE.eventName,
                 JSONObject().apply {
                     put(
-                        "clientSession",
+                        CLIENT_SESSION_PAYLOAD_KEY,
                         JSONObject(
                             Json.encodeToString(
                                 clientSession.toPrimerClientSessionRN(checkoutModules),
@@ -406,6 +406,7 @@ class PrimerRNHeadlessUniversalCheckoutListener(
     }
 
     private companion object {
+        const val CLIENT_SESSION_PAYLOAD_KEY = "clientSession"
         val json = Json { encodeDefaults = true }
     }
 }

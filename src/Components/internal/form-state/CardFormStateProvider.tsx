@@ -7,7 +7,7 @@ import { formatDigitsWithGaps, maxFormattedCardNumberLength, maxPanDigits } from
 import type { CardFormField, CardFormErrors, UseCardFormReturn } from '../../types/CardFormTypes';
 
 const LOG = '[CardFormState]';
-const DEBOUNCE_MS = 150;
+const DEBOUNCE_MS = 275;
 const PAYMENT_METHOD_TYPE = 'PAYMENT_CARD';
 
 function formatCardNumber(value: string, gapPattern: readonly number[], maxDigits: number): string {
