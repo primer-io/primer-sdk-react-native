@@ -2,7 +2,6 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { usePrimerCheckout } from '../../hooks/usePrimerCheckout';
 import { useCardNetwork } from '../../hooks/useCardNetwork';
 import { debounce, type DebouncedFunction } from '../../../utils/debounce';
-import { fmt } from '../debug';
 import { PrimerError } from '../../../models/PrimerError';
 import { formatDigitsWithGaps, maxFormattedCardNumberLength, maxPanDigits } from '../cardFormat';
 import type { CardFormField, CardFormErrors, UseCardFormReturn } from '../../types/CardFormTypes';
@@ -13,9 +12,7 @@ const PAYMENT_METHOD_TYPE = 'PAYMENT_CARD';
 
 function formatCardNumber(value: string, gapPattern: readonly number[], maxDigits: number): string {
   const digits = value.replace(/\D/g, '').slice(0, maxDigits);
-  const out = formatDigitsWithGaps(digits, gapPattern);
-  console.log(`${LOG} formatCardNumber ${fmt({ raw: value, digits, gapPattern, maxDigits, out })}`);
-  return out;
+  return formatDigitsWithGaps(digits, gapPattern);
 }
 
 function formatExpiryDate(value: string, previous: string): string {
@@ -206,9 +203,6 @@ export function CardFormStateProvider({ children }: { children: ReactNode }) {
     const truncated = currentDigits.slice(0, maxDigits);
     const reformatted = formatDigitsWithGaps(truncated, descriptor.gapPattern);
     if (reformatted === fieldsRef.current.cardNumber) return;
-    console.log(
-      `${LOG} reformat on network change ${fmt({ before: fieldsRef.current.cardNumber, after: reformatted, gapPattern: descriptor.gapPattern, maxDigits })}`
-    );
     fieldsRef.current.cardNumber = reformatted;
     setCardNumber(reformatted);
     // If truncation actually dropped digits, tell native so validation matches
@@ -219,10 +213,7 @@ export function CardFormStateProvider({ children }: { children: ReactNode }) {
   const submit = useCallback(async () => {
     // Flip submit-attempted before any guard returns so a failed submit reveals every error.
     setSubmitAttempted(true);
-    if (!isReady || activeMethod !== PAYMENT_METHOD_TYPE) {
-      console.warn(`${LOG} submit: not ready ${fmt({ isReady, activeMethod })}`);
-      return;
-    }
+    if (!isReady || activeMethod !== PAYMENT_METHOD_TYPE) return;
     if (isSubmittingRef.current) return;
     debouncedRef.current?.flush();
     if (!cardFormState.isValid) return;
