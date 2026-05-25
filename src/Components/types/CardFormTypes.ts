@@ -70,6 +70,14 @@ export interface UseCardFormReturn {
    */
   cardNumberMaxLength: number;
 
+  /**
+   * Whether the cardholder-name field should be rendered. Driven by the
+   * `CARD_INFORMATION` checkout module (`options.cardHolderName`). Defaults to
+   * `true` when no module is present or the flag is unset; `false` only when
+   * the merchant explicitly disables the field.
+   */
+  isCardholderNameVisible: boolean;
+
   /** Clear all fields and reset local state. */
   reset: () => void;
 }

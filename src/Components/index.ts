@@ -20,6 +20,14 @@ export type { UseCardFormOptions, UseCardFormReturn, CardFormErrors, CardFormFie
 export { useCardNetwork } from './hooks/useCardNetwork';
 export type { UseCardNetworkReturn } from './hooks/useCardNetwork';
 export type { CardNetworkDescriptor, CardNetworkId, CardNetworkIconSource, CvvLabel } from './internal/cardNetwork';
+export { useBillingAddressForm } from './hooks/useBillingAddressForm';
+export type {
+  UseBillingAddressFormOptions,
+  UseBillingAddressFormReturn,
+  BillingAddressFormErrors,
+  BillingAddressField,
+  PrimerBillingAddressFormProps,
+} from './types/BillingAddressFormTypes';
 export { PrimerPaymentMethodList } from './PrimerPaymentMethodList';
 export type { PrimerPaymentMethodListProps } from './types/PrimerPaymentMethodListTypes';
 export { PrimerVaultedPaymentMethod } from './PrimerVaultedPaymentMethod';
@@ -33,7 +41,16 @@ export { PrimerCheckoutSheet } from './PrimerCheckoutSheet';
 export type { PrimerCheckoutSheetProps } from './PrimerCheckoutSheet';
 export { PrimerCardForm } from './PrimerCardForm';
 export type { PrimerCardFormProps } from './types/PrimerCardFormTypes';
-export { PrimerTextInput, CardNumberInput, ExpiryDateInput, CVVInput, CardholderNameInput } from './inputs';
+export { PrimerBillingAddressForm } from './PrimerBillingAddressForm';
+export {
+  PrimerTextInput,
+  CardNumberInput,
+  ExpiryDateInput,
+  CVVInput,
+  CardholderNameInput,
+  CountrySelectorRow,
+} from './inputs';
+export type { CountrySelectorRowProps } from './inputs';
 export type {
   PrimerTextInputTheme,
   PrimerTextInputProps,

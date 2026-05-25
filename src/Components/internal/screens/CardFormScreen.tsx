@@ -9,7 +9,9 @@ import { CheckoutRoute } from '../navigation/types';
 import { useLocalization } from '../localization';
 import { useCheckoutFlow } from '../checkout-flow/CheckoutFlowContext';
 import { PrimerCardForm } from '../../PrimerCardForm';
+import { PrimerBillingAddressForm } from '../../PrimerBillingAddressForm';
 import { useCardForm } from '../../hooks/useCardForm';
+import { useBillingAddressForm } from '../../hooks/useBillingAddressForm';
 
 export function CardFormScreen() {
   const tokens = useTheme();
@@ -17,16 +19,22 @@ export function CardFormScreen() {
   const { pop, replace, canGoBack } = useNavigation();
   const { onCancel } = useCheckoutFlow();
   const cardForm = useCardForm();
+  const billingForm = useBillingAddressForm();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
 
-  const canSubmit = cardForm.isValid && !cardForm.isSubmitting;
+  const canSubmit = cardForm.isValid && billingForm.isValid && !cardForm.isSubmitting;
 
-  // Jump to processing on Pay so the user doesn't stare at a stale form during tokenization.
-  const handlePay = useCallback(() => {
+  // Flush pending billing-address debounce before navigating so native has the full address;
+  // if anything fails before submit dispatches, the user stays on the form instead of stranded
+  // on the processing screen with nothing in flight.
+  const handlePay = useCallback(async () => {
     if (!canSubmit) return;
+    if (billingForm.sectionVisible) {
+      await billingForm.flush();
+    }
     replace(CheckoutRoute.processing);
     cardForm.submit();
-  }, [canSubmit, cardForm, replace]);
+  }, [canSubmit, cardForm, billingForm, replace]);
 
   return (
     <View style={styles.root}>
@@ -45,6 +53,13 @@ export function CardFormScreen() {
         />
         <View style={styles.body}>
           <PrimerCardForm cardForm={cardForm} autoFocus onSubmit={handlePay} />
+          {billingForm.sectionVisible && (
+            <>
+              <View style={styles.divider} />
+              <Text style={styles.sectionTitle}>{t('primer_card_form_billing_address_title')}</Text>
+              <PrimerBillingAddressForm billingForm={billingForm} />
+            </>
+          )}
           <TouchableOpacity
             onPress={handlePay}
             disabled={!canSubmit}
@@ -84,6 +99,11 @@ function createStyles(tokens: PrimerTokens) {
       paddingHorizontal: spacing.large,
       paddingTop: spacing.large,
     },
+    divider: {
+      backgroundColor: colors.border,
+      height: StyleSheet.hairlineWidth,
+      marginVertical: spacing.small,
+    },
     payButton: {
       alignItems: 'center',
       backgroundColor: colors.primary,
@@ -112,6 +132,14 @@ function createStyles(tokens: PrimerTokens) {
     scroll: {
       flexGrow: 1,
       paddingTop: spacing.large,
+    },
+    sectionTitle: {
+      color: colors.textPrimary,
+      fontFamily: typography.titleLarge.fontFamily,
+      fontSize: typography.titleLarge.fontSize,
+      fontWeight: typography.titleLarge.fontWeight as TextStyle['fontWeight'],
+      letterSpacing: typography.titleLarge.letterSpacing,
+      lineHeight: typography.titleLarge.lineHeight,
     },
   });
   /* eslint-enable react-native/no-unused-styles */
