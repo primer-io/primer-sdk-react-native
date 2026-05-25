@@ -104,6 +104,7 @@ const readyContext: PrimerCheckoutContextValue = {
   vaultedError: null,
   setActiveMethod: () => {},
   setRawData: async () => {},
+  setBillingAddress: async () => {},
   submit: async () => {},
   retry: async () => {},
   clearPaymentOutcome: () => {},

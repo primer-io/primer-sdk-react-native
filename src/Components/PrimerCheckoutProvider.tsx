@@ -11,6 +11,7 @@ import type { PrimerSettings } from '../models/PrimerSettings';
 import { PrimerError } from '../models/PrimerError';
 import type { PrimerCheckoutData } from '../models/PrimerCheckoutData';
 import type { PrimerRawData } from '../models/PrimerRawData';
+import type { PrimerAddress } from '../models/PrimerClientSession';
 import type { PrimerBinData } from '../models/PrimerBinData';
 import type { PrimerVaultedPaymentMethod } from '../models/PrimerVaultedPaymentMethod';
 import type {
@@ -19,7 +20,7 @@ import type {
   PaymentOutcome,
   CardFormState,
 } from './types/PrimerCheckoutProviderTypes';
-import type { CardFormErrors } from './types/CardFormTypes';
+import type { CardFormErrors, CardFormField } from './types/CardFormTypes';
 import { fmt } from './internal/debug';
 import { toError } from './internal/utils/errors';
 
@@ -93,6 +94,16 @@ function buildPaymentOutcome(checkoutData: PrimerCheckoutData): PaymentOutcome {
   };
 }
 
+// Native validation errors carry a free-form `errorId` like `invalid-card-number`. The table
+// below routes each id to a `CardFormField`. First match wins. When native gains a typed
+// `inputElementType` field on the error object, swap this for a direct enum-keyed lookup.
+const ERROR_FIELD_TABLE: ReadonlyArray<{ test: (id: string) => boolean; field: CardFormField }> = [
+  { test: (id) => id.includes('card') && id.includes('number'), field: 'cardNumber' },
+  { test: (id) => id.includes('expir'), field: 'expiryDate' },
+  { test: (id) => id.includes('cvv') || id.includes('cvc'), field: 'cvv' },
+  { test: (id) => id.includes('cardholder') || id.includes('card_holder'), field: 'cardholderName' },
+];
+
 /** Map native validation errors to per-field typed errors the UI can render. */
 function parseValidationErrors(errors: PrimerError[] | undefined): CardFormErrors {
   const fieldErrors: CardFormErrors = {};
@@ -100,15 +111,8 @@ function parseValidationErrors(errors: PrimerError[] | undefined): CardFormError
   for (const error of errors) {
     const id = (error.errorId ?? '').toLowerCase();
     const description = error.description ?? error.message ?? 'Invalid';
-    if (id.includes('card') && id.includes('number')) {
-      fieldErrors.cardNumber = description;
-    } else if (id.includes('expir') || id.includes('expiry')) {
-      fieldErrors.expiryDate = description;
-    } else if (id.includes('cvv') || id.includes('cvc')) {
-      fieldErrors.cvv = description;
-    } else if (id.includes('cardholder') || id.includes('card_holder')) {
-      fieldErrors.cardholderName = description;
-    }
+    const match = ERROR_FIELD_TABLE.find((entry) => entry.test(id));
+    if (match) fieldErrors[match.field] = description;
   }
   return fieldErrors;
 }
@@ -485,8 +489,8 @@ export function PrimerCheckoutProvider({
 
     const method = state.activeMethod;
     let cancelled = false;
-    const m = new PrimerHeadlessUniversalCheckoutRawDataManager();
-    managerRef.current = m;
+    const manager = new PrimerHeadlessUniversalCheckoutRawDataManager();
+    managerRef.current = manager;
 
     const callbacks = {
       onValidation: (isValid: boolean, errors: PrimerError[] | undefined) => {
@@ -513,9 +517,9 @@ export function PrimerCheckoutProvider({
 
     (async () => {
       try {
-        await m.configure({ paymentMethodType: method, ...callbacks });
+        await manager.configure({ paymentMethodType: method, ...callbacks });
         if (cancelled) return;
-        const requiredFields = await m.getRequiredInputElementTypes();
+        const requiredFields = await manager.getRequiredInputElementTypes();
         if (cancelled) return;
         setState((prev) => ({
           ...prev,
@@ -530,13 +534,13 @@ export function PrimerCheckoutProvider({
       cancelled = true;
       // If retry() holds this manager, defer destroy until retry's finally
       // runs — otherwise we'd cleanUp() between its awaited configure/submit.
-      if (retryingManagerRef.current === m) {
-        pendingCleanupRef.current = m;
+      if (retryingManagerRef.current === manager) {
+        pendingCleanupRef.current = manager;
         return;
       }
-      m.cleanUp().catch((err) => console.warn(`${LOG} manager cleanUp failed ${fmt(err)}`));
-      m.removeAllListeners();
-      if (managerRef.current === m) {
+      manager.cleanUp().catch((err) => console.warn(`${LOG} manager cleanUp failed ${fmt(err)}`));
+      manager.removeAllListeners();
+      if (managerRef.current === manager) {
         managerRef.current = null;
       }
       lastManagerCallbacksRef.current = null;
@@ -553,52 +557,66 @@ export function PrimerCheckoutProvider({
 
   const setRawData = useCallback(async (data: PrimerRawData) => {
     lastRawDataRef.current = data;
-    const m = managerRef.current;
-    if (!m) {
+    const manager = managerRef.current;
+    if (!manager) {
       console.warn(`${LOG} setRawData: no manager (activeMethod=${stateRef.current.activeMethod})`);
       return;
     }
     try {
-      await m.setRawData(data);
+      await manager.setRawData(data);
     } catch (err) {
       console.warn(`${LOG} setRawData failed: ${err instanceof PrimerError ? err.errorId : 'unknown'}`);
       throw err;
     }
   }, []);
 
+  const setBillingAddress = useCallback(async (address: PrimerAddress) => {
+    const manager = managerRef.current;
+    if (!manager) {
+      console.warn(`${LOG} setBillingAddress: no manager (activeMethod=${stateRef.current.activeMethod})`);
+      return;
+    }
+    try {
+      await manager.setBillingAddress(address);
+    } catch (err) {
+      console.warn(`${LOG} setBillingAddress failed ${fmt(err)}`);
+      throw err;
+    }
+  }, []);
+
   const submit = useCallback(async () => {
-    const m = managerRef.current;
-    if (!m) {
+    const manager = managerRef.current;
+    if (!manager) {
       console.warn(`${LOG} submit: no manager`);
       return;
     }
-    await m.submit();
+    await manager.submit();
   }, []);
 
   const retry = useCallback(async () => {
     const method = stateRef.current.activeMethod;
-    const m = managerRef.current;
-    if (!method || !m) {
-      console.warn(`${LOG} retry: no active method or manager ${fmt({ method, hasManager: !!m })}`);
+    const manager = managerRef.current;
+    if (!method || !manager) {
+      console.warn(`${LOG} retry: no active method or manager ${fmt({ method, hasManager: !!manager })}`);
       return;
     }
     // TODO(iOS native fix): ios .../RawDataManager.swift:237 nullifies its delegate on
     // successful tokenization, so any post-tokenize failure would silently drop subsequent
     // submit() outcomes. Reconfiguring here rebuilds the delegate binding. Harmless on
     // Android. Remove the reconfigure once the iOS SDK stops nullifying.
-    retryingManagerRef.current = m;
+    retryingManagerRef.current = manager;
     try {
       // Re-pass the original callbacks so the JS-wrapper's listeners get re-registered.
       // Otherwise native would emit onValidation/onBinDataChange/onMetadataChange during
       // the retry attempt with no JS-side subscribers → RN warns "no listeners registered".
       const callbacks = lastManagerCallbacksRef.current;
-      await m.configure(callbacks ? { paymentMethodType: method, ...callbacks } : { paymentMethodType: method });
+      await manager.configure(callbacks ? { paymentMethodType: method, ...callbacks } : { paymentMethodType: method });
       if (lastRawDataRef.current) {
-        await m.setRawData(lastRawDataRef.current);
+        await manager.setRawData(lastRawDataRef.current);
       }
       // Clear the previous outcome so the transitioner fires for the new attempt.
       setState((prev) => (prev.paymentOutcome === null ? prev : { ...prev, paymentOutcome: null }));
-      await m.submit();
+      await manager.submit();
     } catch (err) {
       console.error(`${LOG} retry failed ${fmt(err)}`);
       throw err;
@@ -606,7 +624,7 @@ export function PrimerCheckoutProvider({
       retryingManagerRef.current = null;
       // Run a teardown that the effect cleanup deferred while retry was in flight.
       const pending = pendingCleanupRef.current;
-      if (pending === m) {
+      if (pending === manager) {
         pendingCleanupRef.current = null;
         pending.cleanUp().catch((err) => console.warn(`${LOG} deferred cleanUp failed ${fmt(err)}`));
         pending.removeAllListeners();
@@ -704,6 +722,7 @@ export function PrimerCheckoutProvider({
       vaultDisplayOverride: state.vaultDisplayOverride,
       setActiveMethod,
       setRawData,
+      setBillingAddress,
       submit,
       retry,
       clearPaymentOutcome,
@@ -715,6 +734,7 @@ export function PrimerCheckoutProvider({
       state,
       setActiveMethod,
       setRawData,
+      setBillingAddress,
       submit,
       retry,
       clearPaymentOutcome,

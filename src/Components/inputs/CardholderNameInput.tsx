@@ -14,7 +14,8 @@ export const CardholderNameInput = forwardRef<PrimerTextInputRef, CardholderName
         ref={ref}
         value={cardForm.cardholderName}
         onChangeText={cardForm.updateCardholderName}
-        onBlur={() => cardForm.markFieldTouched('cardholderName')}
+        onFocus={() => cardForm.markFieldFocused('cardholderName')}
+        onBlur={() => cardForm.markFieldBlurred('cardholderName')}
         autoComplete="name"
         autoCapitalize="words"
         label={resolvedLabel}

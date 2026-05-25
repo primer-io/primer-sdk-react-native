@@ -63,21 +63,24 @@ export function PrimerCardForm({
             ref={cvvRef}
             cardForm={cardForm}
             editable={!disabled}
-            returnKeyType="next"
-            onSubmitEditing={() => nameRef.current?.focus()}
+            returnKeyType={cardForm.isCardholderNameVisible ? 'next' : 'done'}
+            onSubmitEditing={cardForm.isCardholderNameVisible ? () => nameRef.current?.focus() : onSubmit}
             testID={`${testID}-cvv`}
+            label={cardForm.descriptor.cvvLabel}
           />
         </View>
       </View>
 
-      <CardholderNameInput
-        ref={nameRef}
-        cardForm={cardForm}
-        editable={!disabled}
-        returnKeyType="done"
-        onSubmitEditing={onSubmit}
-        testID={`${testID}-cardholder-name`}
-      />
+      {cardForm.isCardholderNameVisible && (
+        <CardholderNameInput
+          ref={nameRef}
+          cardForm={cardForm}
+          editable={!disabled}
+          returnKeyType="done"
+          onSubmitEditing={onSubmit}
+          testID={`${testID}-cardholder-name`}
+        />
+      )}
     </View>
   );
 }

@@ -20,9 +20,10 @@ export const CVVInput = forwardRef<PrimerTextInputRef, CVVInputProps>(function C
       ref={ref}
       value={cardForm.cvv}
       onChangeText={cardForm.updateCVV}
-      onBlur={() => cardForm.markFieldTouched('cvv')}
+      onFocus={() => cardForm.markFieldFocused('cvv')}
+      onBlur={() => cardForm.markFieldBlurred('cvv')}
       keyboardType="number-pad"
-      maxLength={4}
+      maxLength={cardForm.descriptor.cvvLength}
       secureTextEntry
       autoComplete="cc-csc"
       label={resolvedLabel}
