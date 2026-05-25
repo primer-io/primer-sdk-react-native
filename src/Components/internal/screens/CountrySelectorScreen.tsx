@@ -28,7 +28,7 @@ interface CountryListItem {
 export function CountrySelectorScreen() {
   const tokens = useTheme();
   const { t, locale } = useLocalization();
-  const { pop, canGoBack } = useNavigation();
+  const { pop, canGoBack, isAnimating } = useNavigation();
   const { onCancel } = useCheckoutFlow();
   const { params } = useRoute<CheckoutRoute.countrySelector>();
   const billingForm = useBillingAddressForm();
@@ -39,12 +39,20 @@ export function CountrySelectorScreen() {
   const listRef = useRef<FlatList<CountryListItem>>(null);
   const searchRef = useRef<PrimerTextInputRef>(null);
 
-  // Delay matches NavigationContainer's 250ms push animation — focusing sooner
-  // opens the keyboard mid-slide and jumps the layout.
+  // Focus the search input once the push transition finishes — opening the
+  // keyboard mid-slide jumps the layout. We wait for isAnimating to flip back
+  // to false after a true tick (parent starts the transition in its post-mount
+  // effect, which fires after this one).
+  const wasAnimatingRef = useRef(false);
   useEffect(() => {
-    const handle = setTimeout(() => searchRef.current?.focus(), 300);
-    return () => clearTimeout(handle);
-  }, []);
+    if (isAnimating) {
+      wasAnimatingRef.current = true;
+      return;
+    }
+    if (wasAnimatingRef.current) {
+      searchRef.current?.focus();
+    }
+  }, [isAnimating]);
 
   // Build a locale-aware list once per locale: name comes from Intl.DisplayNames with
   // English fallback, and sort uses Intl.Collator so the order matches the active locale.
