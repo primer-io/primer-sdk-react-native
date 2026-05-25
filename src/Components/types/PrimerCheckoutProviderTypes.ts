@@ -17,6 +17,7 @@ import type { PrimerPaymentMethodAsset, PrimerPaymentMethodNativeView } from '..
 import type { PrimerVaultedPaymentMethod } from '../../models/PrimerVaultedPaymentMethod';
 import type { PrimerThemeOverride } from '../internal/theme/types';
 import type { CardFormErrors } from './CardFormTypes';
+import type { CardNetworkId } from '../internal/cardNetwork';
 
 export interface PrimerCheckoutProviderProps {
   clientToken: string;
@@ -94,7 +95,7 @@ export interface PrimerCheckoutContextValue {
    * a choice in the popover. Persists across re-renders / hook callers (lives on the
    * provider, not on individual hook instances).
    */
-  selectedCardNetwork: string | null;
+  selectedCardNetwork: CardNetworkId | null;
   /** Forward raw data to the active native manager. */
   setRawData: (data: PrimerRawData) => Promise<void>;
   /**
@@ -107,7 +108,7 @@ export interface PrimerCheckoutContextValue {
    * The native side stores the selection sticky-style and applies it to every subsequent
    * PrimerCardData built via setRawData, so the choice survives keystroke updates.
    */
-  selectCardNetwork: (identifier: string) => Promise<void>;
+  selectCardNetwork: (identifier: CardNetworkId) => Promise<void>;
   /** Fire the active manager's submit. First-attempt path. */
   submit: () => Promise<void>;
   /**

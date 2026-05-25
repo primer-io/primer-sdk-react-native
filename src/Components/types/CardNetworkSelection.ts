@@ -19,7 +19,7 @@ import type { CardNetworkId } from '../internal/cardNetwork';
 /** A card network surfaced to merchants. Identifier vocabulary follows {@link CardNetworkId}. */
 export interface CardNetwork {
   /** Stable, uppercase identifier (e.g. "VISA", "CARTES_BANCAIRES"). */
-  readonly identifier: CardNetworkId | string;
+  readonly identifier: CardNetworkId;
   /** Human-readable name (e.g. "Visa", "Cartes Bancaires"). */
   readonly displayName: string;
   /** Local file URI for the network's logo asset, or null if no asset is available. */
@@ -41,7 +41,7 @@ export interface UseCardNetworkSelectionReturn {
    */
   readonly selectedNetwork: CardNetwork | null;
   /** Identifier form of {@link selectedNetwork}. `null` until the shopper picks. */
-  readonly selectedIdentifier: string | null;
+  readonly selectedIdentifier: CardNetworkId | null;
   /**
    * What the UI should currently render as the active network. Falls back to
    * `availableNetworks[0]` (the SDK's BIN-derived default) when the shopper hasn't
@@ -50,7 +50,7 @@ export interface UseCardNetworkSelectionReturn {
    */
   readonly displayedNetwork: CardNetwork | null;
   /** Identifier form of {@link displayedNetwork}. */
-  readonly displayedIdentifier: string | null;
+  readonly displayedIdentifier: CardNetworkId | null;
   /** True when 2+ allowed networks are detected AND all permit user selection. */
   readonly isSelectorVisible: boolean;
   /** True when 2+ allowed networks are detected AND at least one is non-selectable (e.g. EFTPOS). */
@@ -62,5 +62,5 @@ export interface UseCardNetworkSelectionReturn {
    * when the identifier is malformed, not in `availableNetworks`, the form has been torn down,
    * or the native SDK refuses the call.
    */
-  selectNetwork(identifier: string): Promise<void>;
+  selectNetwork(identifier: CardNetworkId): Promise<void>;
 }

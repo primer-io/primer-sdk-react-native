@@ -25,6 +25,7 @@ import type {
   CardFormState,
 } from './types/PrimerCheckoutProviderTypes';
 import type { CardFormErrors, CardFormField } from './types/CardFormTypes';
+import type { CardNetworkId } from './internal/cardNetwork';
 
 const LOG = '[PrimerCheckoutProvider]';
 
@@ -58,7 +59,7 @@ interface InternalState {
   vaultDisplayOverride: 'expanded' | null;
   // Shopper-picked co-badged card network. Null until the user makes a
   // selection in the popover. Persists across re-renders / hook callers.
-  selectedCardNetwork: string | null;
+  selectedCardNetwork: CardNetworkId | null;
 }
 
 const initialState: InternalState = {
@@ -594,7 +595,7 @@ export function PrimerCheckoutProvider({
     }
   }, []);
 
-  const selectCardNetwork = useCallback(async (identifier: string): Promise<void> => {
+  const selectCardNetwork = useCallback(async (identifier: CardNetworkId): Promise<void> => {
     const m = managerRef.current;
     if (!m) {
       console.warn(`${LOG} selectCardNetwork: no manager (activeMethod=${stateRef.current.activeMethod})`);

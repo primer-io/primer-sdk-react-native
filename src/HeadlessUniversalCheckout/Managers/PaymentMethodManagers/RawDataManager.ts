@@ -6,6 +6,7 @@ import { PrimerError } from '../../../models/PrimerError';
 import type { PrimerInputElementType } from '../../../models/PrimerInputElementType';
 import type { PrimerBinData } from '../../../models/PrimerBinData';
 import type { PrimerAddress } from '../../../models/PrimerClientSession';
+import type { CardNetworkId } from '../../../Components/internal/cardNetwork';
 
 const { RNTPrimerHeadlessUniversalCheckoutRawDataManager } = NativeModules;
 const eventEmitter = new NativeEventEmitter(RNTPrimerHeadlessUniversalCheckoutRawDataManager);
@@ -201,7 +202,7 @@ class PrimerHeadlessUniversalCheckoutRawDataManager {
     });
   }
 
-  setSelectedCardNetwork(identifier: string): Promise<void> {
+  setSelectedCardNetwork(identifier: CardNetworkId): Promise<void> {
     return new Promise(async (resolve, reject) => {
       if (!this.options?.paymentMethodType) {
         reject(

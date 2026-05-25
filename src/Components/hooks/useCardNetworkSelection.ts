@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { usePrimerCheckout } from './usePrimerCheckout';
 import type { CardNetwork, UseCardNetworkSelectionReturn } from '../types/CardNetworkSelection';
+import type { CardNetworkId } from '../internal/cardNetwork';
 import type { PrimerCardNetwork } from '../../models/PrimerBinData';
 
 const LOG = '[useCardNetworkSelection]';
@@ -10,14 +11,15 @@ const LOG = '[useCardNetworkSelection]';
 const NON_SELECTABLE_NETWORKS = new Set<string>(['EFTPOS']);
 
 function toCardNetwork(raw: PrimerCardNetwork): CardNetwork {
-  const identifier = raw.network;
+  // Native emits the closed set of CardNetworkId strings; cast is faithful to that contract.
+  const identifier = raw.network as CardNetworkId;
   return {
     identifier,
     displayName: raw.displayName,
     // `allowed` is iOS-only on PrimerCardNetwork. undefined → treat as allowed.
     logoUri: null,
     allowed: raw.allowed !== false,
-    allowsUserSelection: !NON_SELECTABLE_NETWORKS.has(identifier.toUpperCase()),
+    allowsUserSelection: !NON_SELECTABLE_NETWORKS.has(identifier),
   };
 }
 
@@ -66,7 +68,7 @@ export function useCardNetworkSelection(): UseCardNetworkSelectionReturn {
   const isDualBadge = availableNetworks.length >= 2 && availableNetworks.some((n) => !n.allowsUserSelection);
 
   const selectNetwork = useCallback(
-    async (identifier: string): Promise<void> => {
+    async (identifier: CardNetworkId): Promise<void> => {
       console.log(`${LOG} select(id=${identifier})`);
       try {
         await providerSelect(identifier);
