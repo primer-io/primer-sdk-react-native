@@ -201,6 +201,29 @@ class PrimerHeadlessUniversalCheckoutRawDataManager {
     });
   }
 
+  setSelectedCardNetwork(identifier: string): Promise<void> {
+    return new Promise(async (resolve, reject) => {
+      if (!this.options?.paymentMethodType) {
+        reject(
+          new PrimerError(
+            'manager-not-configured',
+            undefined,
+            'HeadlessUniversalCheckoutRawDataManager has not been configured',
+            'Call HeadlessUniversalCheckoutRawDataManager.configure before calling this function.',
+            undefined
+          )
+        );
+        return;
+      }
+      try {
+        await RNTPrimerHeadlessUniversalCheckoutRawDataManager.setSelectedCardNetwork(identifier);
+        resolve();
+      } catch (err) {
+        reject(err);
+      }
+    });
+  }
+
   ///////////////////////////////////////////
   // HELPERS
   ///////////////////////////////////////////

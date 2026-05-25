@@ -28,6 +28,10 @@ export type {
   BillingAddressField,
   PrimerBillingAddressFormProps,
 } from './types/BillingAddressFormTypes';
+export { useCardNetworkSelection } from './hooks/useCardNetworkSelection';
+export type { CardNetwork, UseCardNetworkSelectionReturn } from './types/CardNetworkSelection';
+export { CardNetworkSelector } from './CardNetworkSelector';
+export type { CardNetworkSelectorProps } from './CardNetworkSelector';
 export { PrimerPaymentMethodList } from './PrimerPaymentMethodList';
 export type { PrimerPaymentMethodListProps } from './types/PrimerPaymentMethodListTypes';
 export { PrimerVaultedPaymentMethod } from './PrimerVaultedPaymentMethod';

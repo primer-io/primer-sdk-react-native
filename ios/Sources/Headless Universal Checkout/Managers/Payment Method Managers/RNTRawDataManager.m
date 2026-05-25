@@ -22,4 +22,6 @@ RCT_EXTERN_METHOD(setBillingAddress:(NSString *)billingAddressStr resolver:(RCTP
 
 RCT_EXTERN_METHOD(cleanUp:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 
+RCT_EXTERN_METHOD(setSelectedCardNetwork:(NSString *)identifier resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+
 @end

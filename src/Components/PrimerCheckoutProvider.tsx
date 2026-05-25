@@ -56,6 +56,9 @@ interface InternalState {
   vaultedError: Error | null;
   activeVaultedMethodId: string | null;
   vaultDisplayOverride: 'expanded' | null;
+  // Shopper-picked co-badged card network. Null until the user makes a
+  // selection in the popover. Persists across re-renders / hook callers.
+  selectedCardNetwork: string | null;
 }
 
 const initialState: InternalState = {
@@ -75,6 +78,7 @@ const initialState: InternalState = {
   isLoadingVaulted: false,
   vaultedError: null,
   activeVaultedMethodId: null,
+  selectedCardNetwork: null,
   vaultDisplayOverride: null,
 };
 
@@ -590,6 +594,18 @@ export function PrimerCheckoutProvider({
     }
   }, []);
 
+  const selectCardNetwork = useCallback(async (identifier: string): Promise<void> => {
+    const m = managerRef.current;
+    if (!m) {
+      console.warn(`${LOG} selectCardNetwork: no manager (activeMethod=${stateRef.current.activeMethod})`);
+      throw new PrimerError('NO_ACTIVE_CARD_FORM', undefined, 'No active card form', undefined, undefined);
+    }
+    console.log(`${LOG} selectCardNetwork(${identifier})`);
+    await m.setSelectedCardNetwork(identifier);
+    setState((prev) => (prev.selectedCardNetwork === identifier ? prev : { ...prev, selectedCardNetwork: identifier }));
+    console.log(`${LOG} selectCardNetwork ok ${identifier}`);
+  }, []);
+
   const submit = useCallback(async () => {
     const manager = managerRef.current;
     if (!manager) {
@@ -775,9 +791,11 @@ export function PrimerCheckoutProvider({
       vaultedError: state.vaultedError,
       activeVaultedMethodId: state.activeVaultedMethodId,
       vaultDisplayOverride: state.vaultDisplayOverride,
+      selectedCardNetwork: state.selectedCardNetwork,
       setActiveMethod,
       setRawData,
       setBillingAddress,
+      selectCardNetwork,
       submit,
       retry,
       clearPaymentOutcome,
@@ -791,6 +809,7 @@ export function PrimerCheckoutProvider({
       setActiveMethod,
       setRawData,
       setBillingAddress,
+      selectCardNetwork,
       submit,
       retry,
       clearPaymentOutcome,

@@ -37,6 +37,10 @@ class RNTPrimerHeadlessUniversalCheckoutRawDataManager: RCTEventEmitter {
 
   private var rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager!
   private var paymentMethodType: String?
+  // Sticky network selection: applied to every PrimerCardData produced via setRawData,
+  // so a network the shopper picks in the co-badge popover survives subsequent keystroke
+  // updates from the JS card form.
+  private var selectedCardNetwork: CardNetwork?
 
   override class func requiresMainQueueSetup() -> Bool {
     return true
@@ -117,6 +121,9 @@ class RNTPrimerHeadlessUniversalCheckoutRawDataManager: RCTEventEmitter {
     }
 
     if let rawCardData = PrimerCardData(cardDataStr: rawDataStr) {
+      if let sticky = self.selectedCardNetwork {
+        rawCardData.cardNetwork = sticky
+      }
       rawDataManager.rawData = rawCardData
       resolver(nil)
       return
@@ -213,6 +220,31 @@ class RNTPrimerHeadlessUniversalCheckoutRawDataManager: RCTEventEmitter {
     _ resolver: RCTPromiseResolveBlock,
     rejecter: RCTPromiseRejectBlock
   ) {
+    self.selectedCardNetwork = nil
+    resolver(nil)
+  }
+
+  @objc
+  public func setSelectedCardNetwork(
+    _ identifier: String,
+    resolver: @escaping RCTPromiseResolveBlock,
+    rejecter: @escaping RCTPromiseRejectBlock
+  ) {
+    guard let rawDataManager = rawDataManager else {
+      rejecter("NO_ACTIVE_CARD_FORM", "RawDataManager not initialized", nil)
+      return
+    }
+    guard let cardNetwork = CardNetwork(rawValue: identifier), cardNetwork != .unknown else {
+      rejecter("INVALID_NETWORK", "Unknown card network identifier: \(identifier)", nil)
+      return
+    }
+
+    self.selectedCardNetwork = cardNetwork
+
+    if let cardData = rawDataManager.rawData as? PrimerCardData {
+      cardData.cardNetwork = cardNetwork
+      rawDataManager.rawData = cardData
+    }
     resolver(nil)
   }
 
