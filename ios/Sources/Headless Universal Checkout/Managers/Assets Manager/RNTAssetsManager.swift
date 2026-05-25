@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import PrimerSDK
+@_spi(PrimerInternal) import PrimerSDK
 import React
 
 // swiftlint:disable type_name
@@ -41,6 +41,22 @@ class RNTPrimerHeadlessUniversalCheckoutAssetsManager: RCTEventEmitter {
             "cvvLength": traits.cvvLength,
             "cvvLabel": traits.cvvLabel
         ])
+    }
+
+    @objc
+    func getOrderedAllowedCardNetworks(
+        _ resolver: @escaping RCTPromiseResolveBlock,
+        rejecter: @escaping RCTPromiseRejectBlock
+    ) {
+        guard #available(iOS 15.0, *) else {
+            resolver(["networks": NSNull()])
+            return
+        }
+        if let networks = ComponentsClientSessionBridge().getOrderedAllowedCardNetworks() {
+            resolver(["networks": networks])
+        } else {
+            resolver(["networks": NSNull()])
+        }
     }
 
     @objc

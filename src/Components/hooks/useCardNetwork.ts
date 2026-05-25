@@ -1,28 +1,10 @@
 import { useEffect, useState } from 'react';
 import { usePrimerCheckout } from './usePrimerCheckout';
-import PrimerHeadlessUniversalCheckoutAssetsManager from '../../HeadlessUniversalCheckout/Managers/AssetsManager';
 import { DEFAULT_DESCRIPTOR, fetchCardNetworkDescriptor } from '../internal/cardNetwork';
+import { getCardNetworkIconURL } from '../internal/cardNetworkIcons';
 import type { CardNetworkDescriptor, CardNetworkIconSource } from '../internal/cardNetwork';
 
 const LOG = '[useCardNetwork]';
-
-const assetsManager = new PrimerHeadlessUniversalCheckoutAssetsManager();
-
-// Promise cache dedupes in-flight icon requests and persists resolved URLs across hook
-// instances. Keyed on the upper-cased network id.
-const iconUrlCache = new Map<string, Promise<string>>();
-
-function getCardNetworkIconURL(network: string): Promise<string> {
-  const key = network.toUpperCase();
-  const existing = iconUrlCache.get(key);
-  if (existing) return existing;
-  const promise = assetsManager.getCardNetworkImageURL(key).catch((err) => {
-    iconUrlCache.delete(key);
-    throw err;
-  });
-  iconUrlCache.set(key, promise);
-  return promise;
-}
 
 export interface UseCardNetworkReturn {
   /** Raw network identifier as reported by native (`"VISA"`, `"AMEX"`, ...), or `null` before BIN detection. */

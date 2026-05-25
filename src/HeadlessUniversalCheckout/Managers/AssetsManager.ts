@@ -57,6 +57,11 @@ class PrimerHeadlessUniversalCheckoutAssetsManager {
     });
   }
 
+  async getOrderedAllowedCardNetworks(): Promise<string[] | null> {
+    const data = await RNTPrimerHeadlessUniversalCheckoutAssetsManager.getOrderedAllowedCardNetworks();
+    return (data?.networks ?? null) as string[] | null;
+  }
+
   /**
    * @deprecated Use getPaymentMethodResource instead
    */
