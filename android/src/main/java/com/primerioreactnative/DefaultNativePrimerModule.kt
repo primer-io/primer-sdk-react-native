@@ -272,6 +272,7 @@ internal open class DefaultNativePrimerModule(
         }
     }
 
+    @Suppress("UnusedParameter")
     fun setupAnalyticsLoggingBridge(
         clientToken: String,
         promise: Promise,

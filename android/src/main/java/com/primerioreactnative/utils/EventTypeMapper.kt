@@ -2,6 +2,7 @@ package com.primerioreactnative.utils
 
 import io.primer.android.components.analytics.data.model.EventType
 
+@Suppress("CyclomaticComplexMethod", "ReturnCount")
 internal fun toEventType(name: String, metadata: Map<String, String>?): EventType? {
     return when (name) {
         "SDK_INIT_START" -> EventType.SdkInitStart
