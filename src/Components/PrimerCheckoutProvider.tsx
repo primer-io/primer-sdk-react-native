@@ -723,7 +723,20 @@ export function PrimerCheckoutProvider({
         });
       }
       await vm.deleteVaultedPaymentMethod(vaultedPaymentMethodId);
-      const { methods, iconMap } = await refreshVaultedMethods();
+      // Refresh is best-effort: if it fails after a successful server-side delete,
+      // reconcile local state from what we know (drop the deleted id) rather than
+      // rejecting — otherwise the caller surfaces "delete failed" for a delete that
+      // actually succeeded.
+      let methods: PrimerVaultedPaymentMethod[];
+      let iconMap: Record<string, string | undefined>;
+      try {
+        ({ methods, iconMap } = await refreshVaultedMethods());
+      } catch (refreshErr) {
+        console.warn(`${LOG} deleteVaultedPaymentMethod refresh failed ${fmt(refreshErr)}`);
+        methods = stateRef.current.vaultedMethods.filter((m) => m.id !== vaultedPaymentMethodId);
+        iconMap = { ...stateRef.current.vaultedIconUrisById };
+        delete iconMap[vaultedPaymentMethodId];
+      }
       // Promotion rule: matches iOS VaultedPaymentMethodManager.swift:18-31 and Android
       // VaultViewModel.kt:136-148. If the deleted id was the user's explicit pick, replace
       // it with the new top-of-list (or null when empty). Otherwise leave the explicit pick
