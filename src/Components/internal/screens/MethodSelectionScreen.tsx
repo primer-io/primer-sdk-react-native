@@ -41,7 +41,6 @@ export function MethodSelectionScreen() {
   const { setActiveMethod } = usePrimerCheckout();
   const {
     activeMethod: activeVaultedMethod,
-    canShowAll,
     vaultDisplayMode,
     requestExpandedVaultDisplay,
   } = useVaultedPaymentMethods();
@@ -118,23 +117,21 @@ export function MethodSelectionScreen() {
           <View style={styles.section}>
             <View style={styles.sectionHeaderRow}>
               <Text style={styles.sectionTitle}>{t('primer_vault_section_title')}</Text>
-              {canShowAll && (
-                <TouchableOpacity
-                  accessibilityRole="button"
-                  accessibilityLabel={t('accessibility_common_show_all')}
-                  onPress={handleShowAll}
-                  style={styles.showAllButton}
-                  hitSlop={{
-                    top: tokens.spacing.small,
-                    bottom: tokens.spacing.small,
-                    left: tokens.spacing.small,
-                    right: tokens.spacing.small,
-                  }}
-                >
-                  <Text style={styles.showAllLabel}>{t('primer_vault_button_show_all')}</Text>
-                  <Image source={chevronDownIcon} style={styles.showAllIcon} resizeMode="contain" />
-                </TouchableOpacity>
-              )}
+              <TouchableOpacity
+                accessibilityRole="button"
+                accessibilityLabel={t('accessibility_common_show_all')}
+                onPress={handleShowAll}
+                style={styles.showAllButton}
+                hitSlop={{
+                  top: tokens.spacing.small,
+                  bottom: tokens.spacing.small,
+                  left: tokens.spacing.small,
+                  right: tokens.spacing.small,
+                }}
+              >
+                <Text style={styles.showAllLabel}>{t('primer_vault_button_show_all')}</Text>
+                <Image source={chevronDownIcon} style={styles.showAllIcon} resizeMode="contain" />
+              </TouchableOpacity>
             </View>
             <PrimerVaultedPaymentMethod />
           </View>
