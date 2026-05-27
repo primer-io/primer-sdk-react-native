@@ -3,8 +3,10 @@ import type { HeightReleaseFn } from './SheetHeightContext';
 import {
   Animated,
   Easing,
+  InputAccessoryView,
   Modal,
   PanResponder,
+  Platform,
   StyleSheet,
   TouchableWithoutFeedback,
   View,
@@ -12,6 +14,7 @@ import {
 } from 'react-native';
 import { useTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
+import { PRIMER_EMPTY_ACCESSORY_ID } from '../../inputs/PrimerTextInput';
 import { SheetHeightContext } from './SheetHeightContext';
 import type { SheetHeightContextValue } from './SheetHeightContext';
 import type { CheckoutSheetProps } from './types';
@@ -218,8 +221,19 @@ export function CheckoutSheet({
           <Animated.View style={[styles.backdrop, { opacity: backdropOpacity }]} />
         </TouchableWithoutFeedback>
 
+        {/* Empty accessory claimed by every PrimerTextInput to suppress iOS's auto
+          Previous/Next/Done toolbar. See PRIMER_EMPTY_ACCESSORY_ID. */}
+        {Platform.OS === 'ios' && (
+          <InputAccessoryView nativeID={PRIMER_EMPTY_ACCESSORY_ID}>
+            <View />
+          </InputAccessoryView>
+        )}
+
         <Animated.View style={[styles.sheetContainer, { transform: [{ translateY }] }]} pointerEvents="box-none">
-          <View style={styles.sheetContent}>
+          {/* Constrained to the visible height so the inner ScrollView can detect overflow.
+            The container is full-screen (absoluteFillObject), so without this the ScrollView
+            measures itself as full-screen and never enters scroll mode. */}
+          <View style={[styles.sheetContent, { height: sheetHeight }]}>
             {shouldRenderDragHandle && (
               <View style={styles.dragHandleArea} {...panResponder.panHandlers}>
                 <View style={styles.dragHandle} />
@@ -265,13 +279,15 @@ function createStyles(tokens: PrimerTokens) {
     },
     sheetContainer: {
       ...StyleSheet.absoluteFillObject,
+      // Matches sheetContent so no dark gap flashes below it: on resize sheetContent's
+      // height shrinks instantly while translateY animates to catch up.
+      backgroundColor: colors.background,
       borderTopLeftRadius: radii.large,
       borderTopRightRadius: radii.large,
       overflow: 'hidden',
     },
     sheetContent: {
       backgroundColor: colors.background,
-      flex: 1,
     },
   });
 }
