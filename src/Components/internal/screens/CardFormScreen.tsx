@@ -25,12 +25,9 @@ import { useSheetHeight } from '../checkout-sheet';
 import { useBottomSafeArea } from './useBottomSafeArea';
 import { useKeyboardPadding } from './useKeyboardPadding';
 
-// CheckoutSheet.dragHandleArea = paddingTop(12) + handle(4) + paddingBottom(4) = 20.
-// Included when sizing the sheet to fit content so it accounts for the chrome above
-// CardFormScreen's content.
+// CheckoutSheet drag-handle chrome above our content: paddingTop(12) + handle(4) + paddingBottom(4).
 const DRAG_HANDLE_AREA = 20;
-// Cap on the dynamic sheet height — matches CheckoutSheet's DEFAULT_HEIGHT_RATIO so
-// the sheet never exceeds 92% of the screen.
+// Matches CheckoutSheet's DEFAULT_HEIGHT_RATIO — the sheet never exceeds 92% of the screen.
 const MAX_SHEET_HEIGHT_RATIO = 0.92;
 
 export function CardFormScreen() {
@@ -45,21 +42,14 @@ export function CardFormScreen() {
   const { height: screenHeight } = useWindowDimensions();
   const { requestHeight } = useSheetHeight();
 
-  // Measure header / scroll-content / footer so the sheet can shrink to fit content
-  // when the form is short (e.g. only the card section is visible). The default 92%
-  // height is the *cap*; without the request the sheet would be too tall and leave an
-  // empty gap between the last field and the Pay button.
+  // Measured so the sheet can shrink to fit a short form (92% height is just the cap).
   const [headerHeight, setHeaderHeight] = useState(0);
   const [scrollContentHeight, setScrollContentHeight] = useState(0);
   const [footerHeight, setFooterHeight] = useState(0);
 
-  // Re-request on every state — including with the keyboard open — because the form
-  // auto-focuses on mount, the keyboard pops before content measures, and we still
-  // want a snug fit. `scrollContentHeight` already inflates by `keyboardPadding` (via
-  // the ScrollView's paddingBottom below), so the sheet grows by the keyboard's
-  // height; sheet-bottom sits at screen-bottom, the keyboard covers the bottom
-  // `keyboardPadding`, and the visible portion above the keyboard exactly fits
-  // header + form + Pay button.
+  // Re-request even with the keyboard open: `scrollContentHeight` already inflates by
+  // `keyboardPadding`, so the sheet grows by the keyboard height and the portion above
+  // the keyboard fits header + form + Pay button exactly.
   useEffect(() => {
     if (headerHeight === 0 || scrollContentHeight === 0 || footerHeight === 0) return;
     const desired = DRAG_HANDLE_AREA + headerHeight + scrollContentHeight + footerHeight;
@@ -96,8 +86,6 @@ export function CardFormScreen() {
     cardForm.submit();
   }, [canSubmit, cardForm, billingForm, replace]);
 
-  // Fixed-footer layout: header pinned to top, footer pinned to bottom, only
-  // the form fields scroll in between.
   return (
     <View style={styles.root}>
       <View onLayout={(e) => setHeaderHeight(e.nativeEvent.layout.height)}>
@@ -125,12 +113,8 @@ export function CardFormScreen() {
           </>
         )}
       </ScrollView>
-      {/*
-       * Opaque overlay covering exactly the keyboard's area. Sits between the ScrollView
-       * and the footer in tree order so it draws over any form fields that would otherwise
-       * be visible through the (slightly translucent) iOS keyboard. Position:absolute so
-       * it doesn't affect flex layout — only the footer's translateY moves the Pay button.
-       */}
+      {/* Opaque overlay over the keyboard's area so form fields don't show through the
+        translucent iOS keyboard. Absolute so it stays out of the flex layout. */}
       {keyboardPadding > 0 && (
         <View pointerEvents="none" style={[styles.keyboardOverlay, { height: keyboardPadding }]} />
       )}

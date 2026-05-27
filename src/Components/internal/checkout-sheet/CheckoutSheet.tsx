@@ -221,11 +221,8 @@ export function CheckoutSheet({
           <Animated.View style={[styles.backdrop, { opacity: backdropOpacity }]} />
         </TouchableWithoutFeedback>
 
-        {/*
-         * Empty InputAccessoryView shared by every PrimerTextInput via inputAccessoryViewID.
-         * Claims the accessory slot above the iOS keyboard so the system's auto Previous/Next/Done
-         * toolbar isn't shown. iOS-only — no-op on Android.
-         */}
+        {/* Empty accessory claimed by every PrimerTextInput to suppress iOS's auto
+          Previous/Next/Done toolbar. See PRIMER_EMPTY_ACCESSORY_ID. */}
         {Platform.OS === 'ios' && (
           <InputAccessoryView nativeID={PRIMER_EMPTY_ACCESSORY_ID}>
             <View />
@@ -233,13 +230,9 @@ export function CheckoutSheet({
         )}
 
         <Animated.View style={[styles.sheetContainer, { transform: [{ translateY }] }]} pointerEvents="box-none">
-          {/*
-           * `sheetContent` is constrained to the *visible* height so the inner ScrollView
-           * knows when content overflows. Without this, the sheetContainer is full-screen
-           * (absoluteFillObject) and ScrollView measures itself as full-screen too — the
-           * bottom of the content silently extends past the visible window (which is only
-           * `sheetHeight` tall after the translateY) and ScrollView never enters scroll mode.
-           */}
+          {/* Constrained to the visible height so the inner ScrollView can detect overflow.
+            The container is full-screen (absoluteFillObject), so without this the ScrollView
+            measures itself as full-screen and never enters scroll mode. */}
           <View style={[styles.sheetContent, { height: sheetHeight }]}>
             {shouldRenderDragHandle && (
               <View style={styles.dragHandleArea} {...panResponder.panHandlers}>
@@ -286,11 +279,8 @@ function createStyles(tokens: PrimerTokens) {
     },
     sheetContainer: {
       ...StyleSheet.absoluteFillObject,
-      // Same color as sheetContent so the area below sheetContent (within the
-      // full-screen container) doesn't flash dark when sheetContent's height shrinks
-      // instantly while translateY animates to catch up — e.g. when the keyboard
-      // hides and the sheet resizes from "fits form + keyboard" back down to
-      // "fits form only".
+      // Matches sheetContent so no dark gap flashes below it: on resize sheetContent's
+      // height shrinks instantly while translateY animates to catch up.
       backgroundColor: colors.background,
       borderTopLeftRadius: radii.large,
       borderTopRightRadius: radii.large,
