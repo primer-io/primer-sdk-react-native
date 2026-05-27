@@ -5,6 +5,10 @@ import { FIELD_HEIGHT, LINE_HEIGHT_RATIO } from './dimensions';
 import type { PrimerTextInputProps, PrimerTextInputRef, PrimerTextInputTheme } from '../types/CardInputTypes';
 import type { PrimerTokens } from '../internal/theme/types';
 
+// Shared nativeID for an empty InputAccessoryView rendered once in CheckoutSheet.
+// Suppresses iOS's auto-added Previous/Next/Done navigation toolbar above the keyboard.
+export const PRIMER_EMPTY_ACCESSORY_ID = 'primer-empty-input-accessory';
+
 function resolveTheme(tokens: PrimerTokens, override?: PrimerTextInputTheme) {
   const borderWidth = override?.borderWidth ?? tokens.borders.input;
   const focusedBorderWidth = Math.max(override?.focusedBorderWidth ?? tokens.borders.strong, borderWidth);
@@ -174,6 +178,7 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
           returnKeyType={returnKeyType}
           onSubmitEditing={onSubmitEditing}
           blurOnSubmit={returnKeyType !== 'next'}
+          inputAccessoryViewID={Platform.OS === 'ios' ? PRIMER_EMPTY_ACCESSORY_ID : undefined}
           accessibilityState={{ disabled: !editable }}
           aria-invalid={hasError}
           testID={testID ? `${testID}-input` : undefined}
