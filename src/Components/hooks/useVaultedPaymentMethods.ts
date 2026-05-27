@@ -55,6 +55,7 @@ export function useVaultedPaymentMethods(): UseVaultedPaymentMethodsReturn {
     vaultDisplayOverride,
     selectVaultedMethodId,
     requestExpandedVaultDisplay,
+    deleteVaultedPaymentMethod,
   } = usePrimerCheckout();
 
   const vaultedMethods = useMemo<VaultedPaymentMethodItem[]>(
@@ -76,8 +77,6 @@ export function useVaultedPaymentMethods(): UseVaultedPaymentMethodsReturn {
   const vaultDisplayMode: VaultDisplayMode =
     hasUserSelected && vaultDisplayOverride !== 'expanded' ? 'lite' : 'expanded';
 
-  const canShowAll = vaultedMethods.length >= 2;
-
   const pay = useCallback(async () => {
     if (!activeMethod) return;
     await payFromVault(activeMethod.id);
@@ -96,12 +95,12 @@ export function useVaultedPaymentMethods(): UseVaultedPaymentMethodsReturn {
     originalDefault,
     activeMethod,
     vaultDisplayMode,
-    canShowAll,
     isLoading: isLoadingVaulted,
     error: vaultedError,
     pay,
     payById,
     selectVaultedMethodId,
     requestExpandedVaultDisplay,
+    deleteVaultedPaymentMethod,
   };
 }

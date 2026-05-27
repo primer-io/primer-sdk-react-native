@@ -59,6 +59,7 @@ const baseContext: PrimerCheckoutContextValue = {
   vaultDisplayOverride: null,
   selectVaultedMethodId: () => {},
   requestExpandedVaultDisplay: () => {},
+  deleteVaultedPaymentMethod: async () => {},
 };
 
 function withErrors(errors: CardFormErrors): PrimerCheckoutContextValue {
