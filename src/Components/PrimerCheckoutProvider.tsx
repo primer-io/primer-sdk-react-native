@@ -370,8 +370,7 @@ export function PrimerCheckoutProvider({
     };
   }, [state.isReady, methodTypesSignature]);
 
-  // Shared fetch + icon-resolve. Used by both the initial-load effect and the
-  // post-delete refresh path so the bridge call and icon-map shape stay in one place.
+  // Shared fetch + icon-resolve, used by both the initial-load effect and the post-delete refresh.
   const refreshVaultedMethods = useCallback(async (): Promise<{
     methods: PrimerVaultedPaymentMethod[];
     iconMap: Record<string, string | undefined>;
@@ -737,11 +736,9 @@ export function PrimerCheckoutProvider({
         iconMap = { ...stateRef.current.vaultedIconUrisById };
         delete iconMap[vaultedPaymentMethodId];
       }
-      // Promotion rule: matches iOS VaultedPaymentMethodManager.swift:18-31 and Android
-      // VaultViewModel.kt:136-148. If the deleted id was the user's explicit pick, replace
-      // it with the new top-of-list (or null when empty). Otherwise leave the explicit pick
-      // alone — feature 001's selectors will derive the displayed active correctly even
-      // when the un-picked default disappears.
+      // Promotion rule (matches iOS VaultedPaymentMethodManager.swift:18-31 and Android
+      // VaultViewModel.kt:136-148): if the deleted id was the user's explicit pick, replace it
+      // with the new top-of-list (or null when empty); otherwise leave the explicit pick alone.
       setState((prev) => {
         const wasActive = prev.activeVaultedMethodId === vaultedPaymentMethodId;
         const nextActiveId = wasActive ? (methods[0]?.id ?? null) : prev.activeVaultedMethodId;

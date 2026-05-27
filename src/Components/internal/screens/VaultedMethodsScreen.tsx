@@ -139,10 +139,8 @@ export function VaultedMethodsScreen() {
   const [pendingDeletion, setPendingDeletion] = useState<VaultedPaymentMethodItem | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Sheet height for the confirmation surface (Figma 366:69230 — taller-than-default not needed,
-  // sheet should shrink to roughly fit just the single tile + caption + Cancel/Delete row).
-  // Container paddingTop + showBackButton header (headerBar + titleTopMargin + titleXLarge)
-  //   + content paddingTop + tile + caption + buttons row + gaps + bottom inset + drag-handle reservation.
+  // Shrink the sheet to fit just the confirmation surface (single tile + caption + buttons row)
+  // instead of the default 92%. Figma 366:69230.
   const confirmationSheetHeight = useMemo(() => {
     const headerArea =
       tokens.spacing.large + tokens.spacing.xxlarge + tokens.spacing.large + tokens.typography.titleXLarge.lineHeight;
@@ -250,8 +248,7 @@ export function VaultedMethodsScreen() {
     setIsDeleting(true);
     try {
       await deleteVaultedPaymentMethod(target.id);
-      // The pre-delete list is the closure's `vaultedMethods`; the post-delete list is that minus
-      // the target. First-remaining (if wasActive) drives the analytics' promotedVaultedMethodId.
+      // First remaining method (from the pre-delete closure list) is the one promoted when active.
       const promotedId = wasActive ? (vaultedMethods.find((m) => m.id !== target.id)?.id ?? '') : '';
       void PrimerAnalytics.trackEvent('VAULT_METHOD_DELETED', {
         vaultedMethodId: target.id,
