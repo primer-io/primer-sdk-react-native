@@ -82,7 +82,7 @@
   "accessibility_vaulted_card_no_name": "{{cardNetwork}}カード、末尾{{last4}}、有効期限{{expiry}}",
   "accessibility_vaulted_klarna": "Klarna",
   "accessibility_vaulted_klarna_email": "Klarna、{{email}}",
-  "accessibility_vaulted_method_cvv": "Card {{label}}",
+  "accessibility_vaulted_method_cvv": "カード{{label}}",
   "accessibility_vaulted_payment_method": "保存済みのお支払い方法: {{paymentMethodName}}",
   "accessibility_vaulted_paypal": "PayPal",
   "accessibility_vaulted_paypal_email": "PayPal、{{email}}",

@@ -82,7 +82,7 @@
   "accessibility_vaulted_card_no_name": "{{cardNetwork}} 카드, 끝자리 {{last4}}, 만료일 {{expiry}}",
   "accessibility_vaulted_klarna": "Klarna",
   "accessibility_vaulted_klarna_email": "Klarna, {{email}}",
-  "accessibility_vaulted_method_cvv": "Card {{label}}",
+  "accessibility_vaulted_method_cvv": "카드 {{label}}",
   "accessibility_vaulted_payment_method": "저장된 결제 수단: {{paymentMethodName}}",
   "accessibility_vaulted_paypal": "PayPal",
   "accessibility_vaulted_paypal_email": "PayPal, {{email}}",

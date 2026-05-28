@@ -110,15 +110,8 @@ class RNPrimerHeadlessUniversalCheckoutVaultManager: RCTEventEmitter {
   func requiresVaultedCardCvv(
     _ resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock
   ) {
-    // TODO(ACC-7315): the captureVaultedCardCvv flag lives on the internal
-    // `ConfigurationService` (`Sources/PrimerSDK/.../ConfigurationService.swift`) which
-    // reads `apiConfiguration.paymentMethods[PAYMENT_CARD].options.captureVaultedCardCvv`.
-    // Both `ConfigurationService` and `CardOptions` are internal in the iOS SDK so we
-    // can't read them from the RN bridge today. Stubbed to `false` until a follow-up
-    // iOS SDK PR adds a public accessor (e.g.
-    // `PrimerHeadlessUniversalCheckout.VaultManager.requiresVaultedCardCvv()` or
-    // `Primer.shared.captureVaultedCardCvv`). On RN, the JS-side DEBUG override in
-    // `PrimerCheckoutProvider.tsx` lets us exercise the UI flow regardless.
+    // `captureVaultedCardCvv` is internal to the iOS SDK, so the bridge can't read it yet;
+    // stubbed to false pending a public accessor (ACC-7315).
     resolver(false)
   }
 }

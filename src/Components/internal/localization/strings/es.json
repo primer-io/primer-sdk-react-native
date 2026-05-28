@@ -82,7 +82,7 @@
   "accessibility_vaulted_card_no_name": "Tarjeta {{cardNetwork}} terminada en {{last4}}, caduca {{expiry}}",
   "accessibility_vaulted_klarna": "Klarna",
   "accessibility_vaulted_klarna_email": "Klarna, {{email}}",
-  "accessibility_vaulted_method_cvv": "Card {{label}}",
+  "accessibility_vaulted_method_cvv": "Tarjeta {{label}}",
   "accessibility_vaulted_payment_method": "Método de pago guardado: {{paymentMethodName}}",
   "accessibility_vaulted_paypal": "PayPal",
   "accessibility_vaulted_paypal_email": "PayPal, {{email}}",

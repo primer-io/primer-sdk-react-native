@@ -82,7 +82,7 @@
   "accessibility_vaulted_card_no_name": "บัตร {{cardNetwork}} ลงท้ายด้วย {{last4}} หมดอายุ {{expiry}}",
   "accessibility_vaulted_klarna": "Klarna",
   "accessibility_vaulted_klarna_email": "Klarna, {{email}}",
-  "accessibility_vaulted_method_cvv": "Card {{label}}",
+  "accessibility_vaulted_method_cvv": "บัตร {{label}}",
   "accessibility_vaulted_payment_method": "วิธีการชำระเงินที่บันทึกไว้: {{paymentMethodName}}",
   "accessibility_vaulted_paypal": "PayPal",
   "accessibility_vaulted_paypal_email": "PayPal, {{email}}",

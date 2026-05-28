@@ -41,7 +41,7 @@ export function PrimerVaultedPaymentMethod({ data, onPay, style }: PrimerVaulted
   useEffect(() => {
     setCvvInputVisible(false);
     setCvvValue('');
-  }, [method?.id]);
+  }, [method?.id, setCvvInputVisible]);
 
   useEffect(() => {
     if (hook.vaultDisplayMode !== 'expanded') return;
@@ -51,7 +51,7 @@ export function PrimerVaultedPaymentMethod({ data, onPay, style }: PrimerVaulted
     });
     setCvvInputVisible(false);
     setCvvValue('');
-  }, [hook.vaultDisplayMode, requiresCvvInput, method?.id]);
+  }, [hook.vaultDisplayMode, requiresCvvInput, method?.id, setCvvInputVisible]);
 
   // Recover if the merchant flag flips false mid-session while the CVV row is open —
   // otherwise the next Pay tap would still try to submit with a CVV.
@@ -60,7 +60,7 @@ export function PrimerVaultedPaymentMethod({ data, onPay, style }: PrimerVaulted
     if (!requiresCvvInput) return;
     setCvvInputVisible(false);
     setCvvValue('');
-  }, [hook.requiresVaultedCardCvv, requiresCvvInput]);
+  }, [hook.requiresVaultedCardCvv, requiresCvvInput, setCvvInputVisible]);
 
   const handlePress = useCallback(() => {
     if (!method) return;
@@ -92,7 +92,18 @@ export function PrimerVaultedPaymentMethod({ data, onPay, style }: PrimerVaulted
     }
     replace(CheckoutRoute.processing);
     void hook.pay();
-  }, [method, onPay, hook, replace, requiresCvvInput, cvvValue, expectedCvvLength, shouldRequireCvv, network]);
+  }, [
+    method,
+    onPay,
+    hook,
+    replace,
+    requiresCvvInput,
+    cvvValue,
+    expectedCvvLength,
+    shouldRequireCvv,
+    network,
+    setCvvInputVisible,
+  ]);
 
   if (!method) return null;
 

@@ -82,7 +82,7 @@
   "accessibility_vaulted_card_no_name": "{{cardNetwork}} kartı, son rakamları {{last4}}, son kullanma {{expiry}}",
   "accessibility_vaulted_klarna": "Klarna",
   "accessibility_vaulted_klarna_email": "Klarna, {{email}}",
-  "accessibility_vaulted_method_cvv": "Card {{label}}",
+  "accessibility_vaulted_method_cvv": "Kart {{label}}",
   "accessibility_vaulted_payment_method": "Kayıtlı ödeme yöntemi: {{paymentMethodName}}",
   "accessibility_vaulted_paypal": "PayPal",
   "accessibility_vaulted_paypal_email": "PayPal, {{email}}",

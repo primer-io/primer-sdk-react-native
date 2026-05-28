@@ -82,7 +82,7 @@
   "accessibility_vaulted_card_no_name": "{{cardNetwork}}卡，尾号{{last4}}，有效期至{{expiry}}",
   "accessibility_vaulted_klarna": "Klarna",
   "accessibility_vaulted_klarna_email": "Klarna，{{email}}",
-  "accessibility_vaulted_method_cvv": "Card {{label}}",
+  "accessibility_vaulted_method_cvv": "卡{{label}}",
   "accessibility_vaulted_payment_method": "已保存的支付方式：{{paymentMethodName}}",
   "accessibility_vaulted_paypal": "PayPal",
   "accessibility_vaulted_paypal_email": "PayPal，{{email}}",
