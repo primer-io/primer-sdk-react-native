@@ -99,6 +99,9 @@ import { PrimerGooglePayButtonConstants } from './HeadlessUniversalCheckout/Comp
 export { PrimerGooglePayButtonConstants };
 export { PrimerGooglePayButton, useGooglePay } from './Components';
 export type { GooglePayController, GooglePayAvailabilityError, PrimerGooglePayButtonProps } from './Components';
+// The bare, context-free native button (the pre-3.0 `PrimerGooglePayButton`) stays available for
+// Headless consumers that render it outside a `<PrimerCheckoutProvider>`.
+export { PrimerGooglePayButton as PrimerGooglePayNativeButton } from './HeadlessUniversalCheckout/Components/PrimerGooglePayButton';
 import type { UserDetailsRetrieved, UserDetailsCollected, AchStep } from './models/ach/AchSteps';
 export type { UserDetailsRetrieved as CollectUserDetails, UserDetailsCollected, AchStep };
 import type { AchFirstName, AchLastName, AchEmailAddress, AchValidatableData } from './models/ach/AchCollectableData';

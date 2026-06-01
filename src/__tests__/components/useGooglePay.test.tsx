@@ -156,6 +156,19 @@ describe('useGooglePay', () => {
     expect(nativeUiManager.showPaymentMethod).toHaveBeenCalledWith('CHECKOUT');
   });
 
+  it('ignores a re-entrant startPayment while a flow is already in flight', async () => {
+    const captures = await mountWithMethods([{ paymentMethodType: 'GOOGLE_PAY' }]);
+    const ctrl = captures[captures.length - 1]!;
+    await act(async () => {
+      await ctrl.startPayment();
+    });
+    await act(async () => {
+      await ctrl.startPayment(); // in flight → no-op, must not start a second native flow
+    });
+    expect(nativeUiManager.configure).toHaveBeenCalledTimes(1);
+    expect(nativeUiManager.showPaymentMethod).toHaveBeenCalledTimes(1);
+  });
+
   it('routes a successful checkout into paymentOutcome (H5, FR-007)', async () => {
     const captures = await mountWithMethods([{ paymentMethodType: 'GOOGLE_PAY' }]);
     const checkoutData = { payment: { id: 'pay_123', status: 'SUCCESS' } };

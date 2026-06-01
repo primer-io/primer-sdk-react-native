@@ -734,6 +734,11 @@ export function PrimerCheckoutProvider({
   // Google Pay rides the existing Headless NATIVE_UI path (same shape as payFromVault):
   // start the native flow; outcomes arrive through the shared onCheckoutComplete/onError.
   const startGooglePay = useCallback(async () => {
+    // Ignore re-entrant taps: the in-list method row isn't disabled while loading (only
+    // <PrimerGooglePayButton> is), so a fast double-tap would otherwise spawn two native flows.
+    if (stateRef.current.isGooglePayLoading) {
+      return;
+    }
     if (!isGooglePaySupported(stateRef.current.availablePaymentMethods)) {
       throw new PrimerError(
         'google-pay-unavailable',
