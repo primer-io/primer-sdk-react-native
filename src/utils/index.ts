@@ -26,7 +26,7 @@ export function toRgbColor(hex: string): RgbaColor | null {
   };
 }
 
-export function parseCallback<T>(data: any, callback: (val: T) => void) {
+export function parseCallback<T>(data: unknown, callback: (val: T) => void) {
   try {
     const error = JSON.parse(data) as T;
     callback(error);

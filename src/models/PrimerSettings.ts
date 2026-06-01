@@ -12,6 +12,7 @@ import type {
   PrimerErrorHandler,
   PrimerHeadlessUniversalCheckoutResumeHandler,
 } from './PrimerHandlers';
+import type { IPrimerHeadlessUniversalCheckoutPaymentMethod } from './PrimerHeadlessUniversalCheckoutPaymentMethod';
 
 export type PrimerSettings = IPrimerSettings;
 
@@ -47,7 +48,7 @@ interface IPrimerSettings {
   onDismiss?: () => void;
 
   headlessUniversalCheckoutCallbacks?: {
-    onAvailablePaymentMethodsLoad?: (availablePaymentMethods: any[]) => void;
+    onAvailablePaymentMethodsLoad?: (availablePaymentMethods: IPrimerHeadlessUniversalCheckoutPaymentMethod[]) => void;
     onTokenizationStart?: (paymentMethodType: string) => void;
     onTokenizationSuccess?: (
       paymentMethodTokenData: PrimerPaymentMethodTokenData,
