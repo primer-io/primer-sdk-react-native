@@ -90,6 +90,11 @@ const readyContext: PrimerCheckoutContextValue = {
   resourcesError: null,
   settings: undefined,
   paymentOutcome: null,
+  isGooglePayAvailable: false,
+  isGooglePayLoading: false,
+  googlePayAvailabilityError: null,
+  startGooglePay: async () => {},
+  cancelGooglePay: () => {},
   activeMethod: null,
   cardFormState: {
     isValid: false,

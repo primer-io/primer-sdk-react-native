@@ -19,6 +19,7 @@ import type { PrimerVaultedPaymentMethodAdditionalData } from '../../models/Prim
 import type { PrimerThemeOverride } from '../internal/theme/types';
 import type { CardFormErrors } from './CardFormTypes';
 import type { CardNetworkId } from '../internal/cardNetwork';
+import type { GooglePayAvailabilityError } from './PrimerGooglePayTypes';
 
 export interface PrimerCheckoutProviderProps {
   clientToken: string;
@@ -68,6 +69,18 @@ export interface PrimerCheckoutContextValue {
   resourcesError: Error | null;
   /** Settings the merchant passed to the provider. Needed for UI-option toggles. */
   settings: PrimerSettings | undefined;
+
+  // --- Google Pay (Checkout Components, Android) ---
+  /** Whether the Google Pay sheet can be presented now. `false` on iOS. */
+  isGooglePayAvailable: boolean;
+  /** True while a Google Pay attempt initiated through this surface is in flight. */
+  isGooglePayLoading: boolean;
+  /** Why Google Pay is unavailable, or `null` when available (coarse on Android). */
+  googlePayAvailabilityError: GooglePayAvailabilityError | null;
+  /** Present the native Google Pay sheet. Rejects if Google Pay is unavailable. */
+  startGooglePay: () => Promise<void>;
+  /** Cancel an in-flight Google Pay attempt (best-effort; cannot force-close the system sheet). */
+  cancelGooglePay: () => void;
 
   // --- Active payment attempt ---
   /** Outcome of the most recent payment attempt; `null` before any submit. */

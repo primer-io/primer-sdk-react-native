@@ -97,8 +97,8 @@ import { NativeResourceView } from './HeadlessUniversalCheckout/Components/Nativ
 export { NativeResourceView };
 import { PrimerGooglePayButtonConstants } from './HeadlessUniversalCheckout/Components/NativeResourceView';
 export { PrimerGooglePayButtonConstants };
-import { PrimerGooglePayButton } from './HeadlessUniversalCheckout/Components/PrimerGooglePayButton';
-export { PrimerGooglePayButton };
+export { PrimerGooglePayButton, useGooglePay } from './Components';
+export type { GooglePayController, GooglePayAvailabilityError, PrimerGooglePayButtonProps } from './Components';
 import type { UserDetailsRetrieved, UserDetailsCollected, AchStep } from './models/ach/AchSteps';
 export type { UserDetailsRetrieved as CollectUserDetails, UserDetailsCollected, AchStep };
 import type { AchFirstName, AchLastName, AchEmailAddress, AchValidatableData } from './models/ach/AchCollectableData';
