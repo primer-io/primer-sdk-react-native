@@ -1,17 +1,17 @@
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import type { TextStyle } from 'react-native';
-import { useTheme } from '../theme';
-import type { PrimerTokens } from '../theme';
+import { useTheme } from '../internal/theme';
+import type { PrimerTokens } from '../internal/theme';
 
-export interface StatusScreenLayoutProps {
+export interface PrimerStatusScreenLayoutProps {
   icon: React.ReactNode;
   title: string;
   subtitle: string;
   children?: React.ReactNode;
 }
 
-export function StatusScreenLayout({ icon, title, subtitle, children }: StatusScreenLayoutProps) {
+export function PrimerStatusScreenLayout({ icon, title, subtitle, children }: PrimerStatusScreenLayoutProps) {
   const tokens = useTheme();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
 

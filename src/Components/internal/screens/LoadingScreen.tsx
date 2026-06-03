@@ -1,14 +1,12 @@
-import { ActivityIndicator, View } from 'react-native';
+import { View } from 'react-native';
 
 import { useTheme } from '../theme';
 import { useLocalization } from '../localization';
 import { CheckoutRoute, useRoute } from '../navigation';
-import { StatusScreenLayout } from './StatusScreenLayout';
+import { PrimerLoadingScreen } from '../../status';
 import { useStatusScreenHeight } from './useStatusScreenHeight';
-import { STATUS_SCREEN_ICON_SIZE } from './constants';
 import { useBottomSafeArea } from './useBottomSafeArea';
 
-const SPINNER_SCALE = 1.1;
 const CONTENT_HEIGHT = 246;
 
 export function LoadingScreen() {
@@ -37,29 +35,9 @@ export function LoadingScreen() {
   const subtitle = params?.subtitle ?? t(defaultSubtitleKey);
 
   return (
-    /* eslint-disable react-native/no-inline-styles -- screen-level layout with fixed height and icon sizing */
+    /* eslint-disable-next-line react-native/no-inline-styles -- screen-level layout with fixed height */
     <View style={{ height: sheetHeight, justifyContent: 'center', paddingBottom: bottomInset }}>
-      <StatusScreenLayout
-        icon={
-          <View
-            style={{
-              width: STATUS_SCREEN_ICON_SIZE,
-              height: STATUS_SCREEN_ICON_SIZE,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <ActivityIndicator
-              size="large"
-              color={tokens.colors.primary}
-              style={{ transform: [{ scale: SPINNER_SCALE }] }}
-            />
-          </View>
-        }
-        title={title}
-        subtitle={subtitle}
-      />
+      <PrimerLoadingScreen title={title} subtitle={subtitle} />
     </View>
-    /* eslint-enable react-native/no-inline-styles */
   );
 }
