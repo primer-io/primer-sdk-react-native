@@ -9,9 +9,8 @@
  * Data sources (under the hood — not part of the public contract):
  *   - Available networks + currently-selected network come from the existing
  *     BinData event flow (`binData.alternatives` + `binData.preferred`).
- *   - `selectNetwork()` writes through the new `ComponentsCardNetworkSelectionBridge`
- *     TurboModule, which records the choice at the client-session level. The next
- *     BinData event then reflects the selection back to JS.
+ *   - `selectNetwork()` records the pick provider-side; it rides every raw-data
+ *     payload as `cardNetwork` and reaches tokenization as `preferredNetwork`.
  */
 
 import type { CardNetworkId } from '../internal/cardNetwork';
@@ -57,10 +56,9 @@ export interface UseCardNetworkSelectionReturn {
   readonly isDualBadge: boolean;
   /**
    * Set the shopper's preferred card network on the active card form.
-   * Resolves once the native side has accepted the choice.
-   * Rejects (`INVALID_NETWORK` / `INVALID_IDENTIFIER` / `NO_ACTIVE_CARD_FORM` / `NATIVE_REJECTED`)
-   * when the identifier is malformed, not in `availableNetworks`, the form has been torn down,
-   * or the native SDK refuses the call.
+   * Resolves once the pick has been applied to the card's raw data.
+   * Rejects (`NO_ACTIVE_CARD_FORM`) when the form has been torn down, or if
+   * re-sending the raw data to the native SDK fails.
    */
   selectNetwork(identifier: CardNetworkId): Promise<void>;
 }

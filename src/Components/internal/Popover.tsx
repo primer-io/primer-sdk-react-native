@@ -50,7 +50,14 @@ export function Popover({ visible, onDismiss, children, anchor, testID }: Popove
   ];
 
   return (
-    <Modal transparent visible={visible} onRequestClose={onDismiss} animationType="fade" testID={testID}>
+    <Modal
+      transparent
+      statusBarTranslucent
+      visible={visible}
+      onRequestClose={onDismiss}
+      animationType="fade"
+      testID={testID}
+    >
       <View style={styles.root} pointerEvents="box-none">
         <Pressable
           style={StyleSheet.absoluteFill}

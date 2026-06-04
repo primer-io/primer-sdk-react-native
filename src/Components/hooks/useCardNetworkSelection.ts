@@ -10,6 +10,9 @@ const LOG = '[useCardNetworkSelection]';
 // chooser would be misleading — we render them as a non-interactive dual-badge.
 const NON_SELECTABLE_NETWORKS = new Set<string>(['EFTPOS']);
 
+// A card is co-badged when the BIN resolves to at least this many networks.
+const MIN_COBADGE_NETWORKS = 2;
+
 function toCardNetwork(raw: PrimerCardNetwork): CardNetwork {
   // Native emits the closed set of CardNetworkId strings; cast is faithful to that contract.
   const identifier = raw.network as CardNetworkId;
@@ -64,8 +67,10 @@ export function useCardNetworkSelection(): UseCardNetworkSelectionReturn {
   );
   const displayedIdentifier = displayedNetwork?.identifier ?? null;
 
-  const isSelectorVisible = availableNetworks.length >= 2 && availableNetworks.every((n) => n.allowsUserSelection);
-  const isDualBadge = availableNetworks.length >= 2 && availableNetworks.some((n) => !n.allowsUserSelection);
+  const isSelectorVisible =
+    availableNetworks.length >= MIN_COBADGE_NETWORKS && availableNetworks.every((n) => n.allowsUserSelection);
+  const isDualBadge =
+    availableNetworks.length >= MIN_COBADGE_NETWORKS && availableNetworks.some((n) => !n.allowsUserSelection);
 
   const selectNetwork = useCallback(
     async (identifier: CardNetworkId): Promise<void> => {
