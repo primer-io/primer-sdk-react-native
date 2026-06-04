@@ -164,6 +164,10 @@ export function PrimerCheckoutProvider({
   // Stashed so `retry()` can re-submit without needing the view to re-enter the form.
   // Compensates for an iOS native bug (see TODO in `retry`), not a JS-side concern.
   const lastRawDataRef = useRef<PrimerRawData | null>(null);
+  // Shopper's co-badge pick. Ref (not just state) so `setRawData` reads it synchronously
+  // when merging it into each keystroke's payload — keeps the pick sticky without
+  // native-side state.
+  const selectedCardNetworkRef = useRef<CardNetworkId | null>(null);
   const lastManagerCallbacksRef = useRef<{
     onValidation: (isValid: boolean, errors: PrimerError[] | undefined) => void;
     onBinDataChange: (binData: PrimerBinData) => void;
@@ -555,7 +559,8 @@ export function PrimerCheckoutProvider({
         managerRef.current = null;
       }
       lastManagerCallbacksRef.current = null;
-      setState((prev) => ({ ...prev, cardFormState: initialCardFormState }));
+      selectedCardNetworkRef.current = null;
+      setState((prev) => ({ ...prev, cardFormState: initialCardFormState, selectedCardNetwork: null }));
     };
   }, [state.activeMethod, state.isReady]);
 
@@ -567,14 +572,19 @@ export function PrimerCheckoutProvider({
   }, []);
 
   const setRawData = useCallback(async (data: PrimerRawData) => {
-    lastRawDataRef.current = data;
+    // Keep the co-badge pick sticky: merge it into every card-data payload so it
+    // survives keystroke updates (native holds no selection state). The merged
+    // payload is what lands in `lastRawDataRef`, so `retry()` re-sends it too.
+    const network = selectedCardNetworkRef.current;
+    const payload = network && 'cardNumber' in data ? { ...data, cardNetwork: network } : data;
+    lastRawDataRef.current = payload;
     const manager = managerRef.current;
     if (!manager) {
       console.warn(`${LOG} setRawData: no manager (activeMethod=${stateRef.current.activeMethod})`);
       return;
     }
     try {
-      await manager.setRawData(data);
+      await manager.setRawData(payload);
     } catch (err) {
       console.warn(`${LOG} setRawData failed: ${err instanceof PrimerError ? err.errorId : 'unknown'}`);
       throw err;
@@ -595,17 +605,27 @@ export function PrimerCheckoutProvider({
     }
   }, []);
 
-  const selectCardNetwork = useCallback(async (identifier: CardNetworkId): Promise<void> => {
-    const m = managerRef.current;
-    if (!m) {
-      console.warn(`${LOG} selectCardNetwork: no manager (activeMethod=${stateRef.current.activeMethod})`);
-      throw new PrimerError('NO_ACTIVE_CARD_FORM', undefined, 'No active card form', undefined, undefined);
-    }
-    console.log(`${LOG} selectCardNetwork(${identifier})`);
-    await m.setSelectedCardNetwork(identifier);
-    setState((prev) => (prev.selectedCardNetwork === identifier ? prev : { ...prev, selectedCardNetwork: identifier }));
-    console.log(`${LOG} selectCardNetwork ok ${identifier}`);
-  }, []);
+  const selectCardNetwork = useCallback(
+    async (identifier: CardNetworkId): Promise<void> => {
+      const m = managerRef.current;
+      if (!m) {
+        console.warn(`${LOG} selectCardNetwork: no manager (activeMethod=${stateRef.current.activeMethod})`);
+        throw new PrimerError('NO_ACTIVE_CARD_FORM', undefined, 'No active card form', undefined, undefined);
+      }
+      console.log(`${LOG} selectCardNetwork(${identifier})`);
+      selectedCardNetworkRef.current = identifier;
+      // Re-send the last raw data so the pick applies immediately — setRawData merges
+      // the selection into the payload; subsequent keystrokes keep carrying it.
+      if (lastRawDataRef.current) {
+        await setRawData(lastRawDataRef.current);
+      }
+      setState((prev) =>
+        prev.selectedCardNetwork === identifier ? prev : { ...prev, selectedCardNetwork: identifier }
+      );
+      console.log(`${LOG} selectCardNetwork ok ${identifier}`);
+    },
+    [setRawData]
+  );
 
   const submit = useCallback(async () => {
     const manager = managerRef.current;
@@ -655,7 +675,8 @@ export function PrimerCheckoutProvider({
           managerRef.current = null;
         }
         lastManagerCallbacksRef.current = null;
-        setState((prev) => ({ ...prev, cardFormState: initialCardFormState }));
+        selectedCardNetworkRef.current = null;
+        setState((prev) => ({ ...prev, cardFormState: initialCardFormState, selectedCardNetwork: null }));
       }
     }
   }, []);

@@ -6,7 +6,6 @@ import { PrimerError } from '../../../models/PrimerError';
 import type { PrimerInputElementType } from '../../../models/PrimerInputElementType';
 import type { PrimerBinData } from '../../../models/PrimerBinData';
 import type { PrimerAddress } from '../../../models/PrimerClientSession';
-import type { CardNetworkId } from '../../../Components/internal/cardNetwork';
 
 const { RNTPrimerHeadlessUniversalCheckoutRawDataManager } = NativeModules;
 const eventEmitter = new NativeEventEmitter(RNTPrimerHeadlessUniversalCheckoutRawDataManager);
@@ -197,29 +196,6 @@ class PrimerHeadlessUniversalCheckoutRawDataManager {
           'Call HeadlessUniversalCheckoutRawDataManager.configure before calling this function.',
           undefined
         );
-        reject(err);
-      }
-    });
-  }
-
-  setSelectedCardNetwork(identifier: CardNetworkId): Promise<void> {
-    return new Promise(async (resolve, reject) => {
-      if (!this.options?.paymentMethodType) {
-        reject(
-          new PrimerError(
-            'manager-not-configured',
-            undefined,
-            'HeadlessUniversalCheckoutRawDataManager has not been configured',
-            'Call HeadlessUniversalCheckoutRawDataManager.configure before calling this function.',
-            undefined
-          )
-        );
-        return;
-      }
-      try {
-        await RNTPrimerHeadlessUniversalCheckoutRawDataManager.setSelectedCardNetwork(identifier);
-        resolve();
-      } catch (err) {
         reject(err);
       }
     });

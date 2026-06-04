@@ -24,11 +24,9 @@ import com.primerioreactnative.utils.toWritableMap
 import io.primer.android.RetailOutletsList
 import io.primer.android.components.SdkUninitializedException
 import io.primer.android.components.bridge.billingaddress.ComponentsBillingAddressBridge
-import io.primer.android.components.domain.core.models.card.PrimerCardData
 import io.primer.android.components.domain.exception.UnsupportedPaymentMethodManagerException
 import io.primer.android.components.manager.raw.PrimerHeadlessUniversalCheckoutRawDataManager
 import io.primer.android.components.manager.raw.PrimerHeadlessUniversalCheckoutRawDataManagerInterface
-import io.primer.android.configuration.data.model.CardNetwork
 import io.primer.android.core.ExperimentalPrimerApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -52,10 +50,6 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
     private lateinit var rawManager: PrimerHeadlessUniversalCheckoutRawDataManagerInterface
     private var paymentMethodTypeStr: String? = null
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    // Sticky network selection — applied to every PrimerCardData built from JS via setRawData,
-    // so a co-badge choice survives subsequent keystroke updates.
-    private var selectedCardNetwork: CardNetwork.Type? = null
-    private var lastCardData: PrimerCardData? = null
 
     init {
         listener.sendEvent = { eventName, paramsJson -> sendEvent(eventName, paramsJson) }
@@ -145,12 +139,9 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
             try {
                 val rawData =
                     when (PrimerRawPaymentMethodType.valueOf(paymentMethodTypeStr.toString())) {
-                        PrimerRawPaymentMethodType.PAYMENT_CARD -> {
-                            val base = json.decodeFromString<PrimerRNCardData>(rawDataStr).toPrimerCardData()
-                            val applied = selectedCardNetwork?.let { base.copy(cardNetwork = it) } ?: base
-                            lastCardData = applied
-                            applied
-                        }
+                        PrimerRawPaymentMethodType.PAYMENT_CARD ->
+                            json.decodeFromString<PrimerRNCardData>(rawDataStr)
+                                .toPrimerCardData()
 
                         PrimerRawPaymentMethodType.XENDIT_OVO,
                         PrimerRawPaymentMethodType.ADYEN_MBWAY,
@@ -251,31 +242,6 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
             scope.coroutineContext.cancelChildren()
             promise.resolve(null)
         }
-    }
-
-    @ReactMethod
-    fun setSelectedCardNetwork(
-        identifier: String,
-        promise: Promise,
-    ) {
-        if (::rawManager.isInitialized.not()) {
-            val exception = ErrorTypeRN.NativeBridgeFailed errorTo UNINITIALIZED_ERROR
-            promise.reject(exception.errorId, exception.description)
-            return
-        }
-        val network = CardNetwork.Type.values().firstOrNull { it.name == identifier }
-        if (network == null || network == CardNetwork.Type.OTHER) {
-            promise.reject("INVALID_NETWORK", "Unknown card network identifier: $identifier")
-            return
-        }
-        selectedCardNetwork = network
-        val current = lastCardData
-        if (current != null) {
-            val updated = current.copy(cardNetwork = network)
-            lastCardData = updated
-            rawManager.setRawData(updated)
-        }
-        promise.resolve(null)
     }
 
     @ReactMethod
