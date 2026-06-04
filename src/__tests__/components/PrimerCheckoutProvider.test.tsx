@@ -17,6 +17,12 @@ jest.mock(
           cleanUp: jest.fn(),
           setImplementedRNCallbacks: jest.fn().mockResolvedValue(undefined),
         },
+        RNTPrimerHeadlessUniversalCheckoutRawDataManager: {
+          configure: jest.fn(),
+          listRequiredInputElementTypes: jest.fn(),
+          setRawData: jest.fn(),
+          cleanUp: jest.fn(),
+        },
       },
       NativeEventEmitter: jest.fn().mockImplementation(() => ({
         addListener: mockAddListener,
@@ -479,5 +485,168 @@ describe('PrimerCheckoutProvider native event callbacks', () => {
 describe('usePrimerCheckout', () => {
   it('throws when called outside React render cycle', () => {
     expect(() => usePrimerCheckout()).toThrow();
+  });
+});
+
+describe('PrimerCheckoutProvider card network selection', () => {
+  const rawNative = rnMock.NativeModules.RNTPrimerHeadlessUniversalCheckoutRawDataManager;
+
+  const CARD = { cardNumber: '5555555555554444', expiryDate: '03/30', cvv: '123' };
+
+  const COBADGE_BIN_DATA = {
+    preferred: { network: 'MASTERCARD', displayName: 'Mastercard' },
+    alternatives: [{ network: 'CARTES_BANCAIRES', displayName: 'Cartes Bancaires' }],
+    status: 'COMPLETE',
+    firstDigits: '55555555',
+  };
+
+  function lastRawPayload() {
+    const calls = rawNative.setRawData.mock.calls;
+    return JSON.parse(calls[calls.length - 1][0]);
+  }
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    nativeModule.startWithClientToken.mockResolvedValue({
+      availablePaymentMethods: [
+        {
+          paymentMethodType: 'PAYMENT_CARD',
+          paymentMethodManagerCategories: ['RAW_DATA'],
+          supportedPrimerSessionIntents: ['CHECKOUT'],
+        },
+      ],
+    });
+    nativeModule.cleanUp.mockResolvedValue(undefined);
+    nativeModule.setImplementedRNCallbacks.mockResolvedValue(undefined);
+    rawNative.configure.mockResolvedValue(null);
+    rawNative.listRequiredInputElementTypes.mockResolvedValue({ inputElementTypes: [] });
+    rawNative.setRawData.mockResolvedValue(null);
+    rawNative.cleanUp.mockResolvedValue(null);
+  });
+
+  async function setupCardForm(): Promise<() => PrimerCheckoutContextValue> {
+    let latest: PrimerCheckoutContextValue | undefined;
+    await act(async () => {
+      renderer.create(
+        createElement(
+          PrimerCheckoutProvider,
+          { clientToken: 'token-1' },
+          createElement(TestConsumer, {
+            onContext: (ctx: PrimerCheckoutContextValue) => {
+              latest = ctx;
+            },
+          })
+        )
+      );
+      await flushPromises();
+    });
+    await act(async () => {
+      latest!.setActiveMethod('PAYMENT_CARD');
+      await flushPromises();
+    });
+    return () => latest!;
+  }
+
+  it('merges the picked network into every subsequent card payload', async () => {
+    const ctx = await setupCardForm();
+
+    await act(async () => {
+      await ctx().setRawData(CARD);
+    });
+    expect(lastRawPayload().cardNetwork).toBeUndefined();
+
+    await act(async () => {
+      await ctx().selectCardNetwork('CARTES_BANCAIRES');
+    });
+    expect(lastRawPayload()).toEqual({ ...CARD, cardNetwork: 'CARTES_BANCAIRES' });
+    expect(ctx().selectedCardNetwork).toBe('CARTES_BANCAIRES');
+
+    // Next keystroke keeps carrying the pick.
+    await act(async () => {
+      await ctx().setRawData({ ...CARD, cvv: '99' });
+    });
+    expect(lastRawPayload()).toEqual({ ...CARD, cvv: '99', cardNetwork: 'CARTES_BANCAIRES' });
+  });
+
+  it('keeps the pick while it stays among detected networks', async () => {
+    const ctx = await setupCardForm();
+    await act(async () => {
+      await ctx().setRawData(CARD);
+      await ctx().selectCardNetwork('CARTES_BANCAIRES');
+    });
+
+    const onBinDataChange = findListener('onBinDataChange');
+    expect(onBinDataChange).toBeDefined();
+    const callsBefore = rawNative.setRawData.mock.calls.length;
+
+    await act(async () => {
+      onBinDataChange!(COBADGE_BIN_DATA);
+      await flushPromises();
+    });
+
+    expect(ctx().selectedCardNetwork).toBe('CARTES_BANCAIRES');
+    // No strip re-send happened.
+    expect(rawNative.setRawData.mock.calls.length).toBe(callsBefore);
+  });
+
+  it('clears the pick and strips it from the payload when the PAN no longer detects it', async () => {
+    const ctx = await setupCardForm();
+    await act(async () => {
+      await ctx().setRawData(CARD);
+      await ctx().selectCardNetwork('CARTES_BANCAIRES');
+    });
+    expect(lastRawPayload().cardNetwork).toBe('CARTES_BANCAIRES');
+
+    const onBinDataChange = findListener('onBinDataChange');
+    await act(async () => {
+      onBinDataChange!({
+        preferred: { network: 'VISA', displayName: 'Visa' },
+        alternatives: [],
+        status: 'COMPLETE',
+        firstDigits: '41111111',
+      });
+      await flushPromises();
+    });
+
+    expect(ctx().selectedCardNetwork).toBeNull();
+    // The stale pick was stripped from the re-sent payload…
+    expect(lastRawPayload()).toEqual(CARD);
+
+    // …and stays gone on the next keystroke.
+    await act(async () => {
+      await ctx().setRawData({ ...CARD, cardNumber: '4111111111111111' });
+    });
+    expect(lastRawPayload()).toEqual({ ...CARD, cardNumber: '4111111111111111' });
+  });
+
+  it('does not re-send again when binData re-fires after the clear (no feedback loop)', async () => {
+    const ctx = await setupCardForm();
+    await act(async () => {
+      await ctx().setRawData(CARD);
+      await ctx().selectCardNetwork('CARTES_BANCAIRES');
+    });
+
+    const onBinDataChange = findListener('onBinDataChange');
+    const visaOnly = {
+      preferred: { network: 'VISA', displayName: 'Visa' },
+      alternatives: [],
+      status: 'COMPLETE',
+      firstDigits: '41111111',
+    };
+
+    await act(async () => {
+      onBinDataChange!(visaOnly);
+      await flushPromises();
+    });
+    const callsAfterClear = rawNative.setRawData.mock.calls.length;
+
+    // The strip re-send makes native re-validate and re-emit binData — simulate the echo.
+    await act(async () => {
+      onBinDataChange!(visaOnly);
+      await flushPromises();
+    });
+
+    expect(rawNative.setRawData.mock.calls.length).toBe(callsAfterClear);
+    expect(ctx().selectedCardNetwork).toBeNull();
   });
 });

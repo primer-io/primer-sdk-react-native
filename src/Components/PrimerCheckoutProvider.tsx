@@ -14,7 +14,7 @@ import { toError } from './internal/utils/errors';
 
 import type { PrimerSettings } from '../models/PrimerSettings';
 import type { PrimerCheckoutData } from '../models/PrimerCheckoutData';
-import type { PrimerRawData } from '../models/PrimerRawData';
+import type { PrimerCardData, PrimerRawData } from '../models/PrimerRawData';
 import type { PrimerAddress } from '../models/PrimerClientSession';
 import type { PrimerBinData } from '../models/PrimerBinData';
 import type { PrimerVaultedPaymentMethod } from '../models/PrimerVaultedPaymentMethod';
@@ -516,9 +516,27 @@ export function PrimerCheckoutProvider({
         }));
       },
       onBinDataChange: (binData: PrimerBinData) => {
+        // A PAN edit can change the detected networks. If the shopper's co-badge
+        // pick is no longer among them, drop it and re-send the last payload
+        // without it — otherwise a stale `preferredNetwork` could reach
+        // tokenization (e.g. paste a new PAN and submit without another keystroke).
+        const pick = selectedCardNetworkRef.current;
+        const detected = binData.preferred ? [binData.preferred, ...binData.alternatives] : binData.alternatives;
+        const pickIsStale = pick !== null && !detected.some((n) => n.network === pick);
+        if (pickIsStale) {
+          console.log(`${LOG} pick ${pick} not among detected networks — clearing`);
+          selectedCardNetworkRef.current = null;
+          const last = lastRawDataRef.current;
+          if (last && 'cardNetwork' in last) {
+            const stripped: PrimerCardData = { ...(last as PrimerCardData) };
+            delete stripped.cardNetwork;
+            setRawData(stripped).catch((err) => console.warn(`${LOG} re-send after pick clear failed ${fmt(err)}`));
+          }
+        }
         setState((prev) => ({
           ...prev,
           cardFormState: { ...prev.cardFormState, binData },
+          ...(pickIsStale ? { selectedCardNetwork: null } : null),
         }));
       },
       onMetadataChange: (metadata: unknown) => {
