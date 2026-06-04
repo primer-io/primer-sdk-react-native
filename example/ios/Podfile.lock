@@ -8,14 +8,14 @@ PODS:
   - hermes-engine (0.81.1):
     - hermes-engine/Pre-built (= 0.81.1)
   - hermes-engine/Pre-built (0.81.1)
-  - primer-io-react-native (2.44.1):
+  - primer-io-react-native (2.45.0):
     - boost
     - DoubleConversion
     - fast_float
     - fmt
     - glog
     - hermes-engine
-    - PrimerSDK (= 2.48.0)
+    - PrimerSDK (= 2.49.0)
     - RCT-Folly
     - RCT-Folly/Fabric
     - RCTRequired
@@ -38,25 +38,29 @@ PODS:
     - SocketRocket
     - Yoga
   - Primer3DS (2.8.0)
-  - PrimerBDCCore (2.48.0):
-    - PrimerBDCEngine (= 2.48.0)
-    - PrimerFoundation (= 2.48.0)
-    - PrimerStepResolver (= 2.48.0)
-  - PrimerBDCEngine (2.48.0):
-    - PrimerFoundation (= 2.48.0)
-    - PrimerStepResolver (= 2.48.0)
-  - PrimerFoundation (2.48.0)
+  - PrimerBDCCore (2.49.0):
+    - PrimerBDCEngine (= 2.49.0)
+    - PrimerFoundation (= 2.49.0)
+    - PrimerStepResolver (= 2.49.0)
+  - PrimerBDCEngine (2.49.0):
+    - PrimerFoundation (= 2.49.0)
+    - PrimerStepResolver (= 2.49.0)
+  - PrimerCore (2.49.0):
+    - Primer3DS
+    - PrimerFoundation (= 2.49.0)
+  - PrimerFoundation (2.49.0)
   - PrimerIPay88MYSDK (0.1.7)
-  - PrimerKlarnaSDK (1.1.1)
-  - PrimerSDK (2.48.0):
-    - PrimerSDK/Core (= 2.48.0)
-  - PrimerSDK/Core (2.48.0):
-    - PrimerBDCCore (= 2.48.0)
-    - PrimerBDCEngine (= 2.48.0)
-    - PrimerFoundation (= 2.48.0)
-    - PrimerStepResolver (= 2.48.0)
-  - PrimerStepResolver (2.48.0):
-    - PrimerFoundation (= 2.48.0)
+  - PrimerKlarnaSDK (1.3.1)
+  - PrimerSDK (2.49.0):
+    - PrimerSDK/Core (= 2.49.0)
+  - PrimerSDK/Core (2.49.0):
+    - PrimerBDCCore (= 2.49.0)
+    - PrimerBDCEngine (= 2.49.0)
+    - PrimerCore (= 2.49.0)
+    - PrimerFoundation (= 2.49.0)
+    - PrimerStepResolver (= 2.49.0)
+  - PrimerStepResolver (2.49.0):
+    - PrimerFoundation (= 2.49.0)
   - PrimerStripeSDK (1.0.0)
   - RCT-Folly (2024.11.18.00):
     - boost
@@ -2465,7 +2469,7 @@ DEPENDENCIES:
   - primer-io-react-native (from `../..`)
   - Primer3DS
   - PrimerIPay88MYSDK
-  - PrimerKlarnaSDK (= 1.1.1)
+  - PrimerKlarnaSDK (= 1.3.1)
   - PrimerSDK
   - PrimerStripeSDK (= 1.0.0)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
@@ -2543,6 +2547,7 @@ SPEC REPOS:
     - Primer3DS
     - PrimerBDCCore
     - PrimerBDCEngine
+    - PrimerCore
     - PrimerFoundation
     - PrimerIPay88MYSDK
     - PrimerKlarnaSDK
@@ -2712,15 +2717,16 @@ SPEC CHECKSUMS:
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
   glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
   hermes-engine: 4f8246b1f6d79f625e0d99472d1f3a71da4d28ca
-  primer-io-react-native: 675067deb09f5d0918c7d0c7dee1449dd7731683
+  primer-io-react-native: e78748b21612ae8ae6aebbfb7370ffc701e04890
   Primer3DS: b8b583ef260f703180870358bc55069de74f8f51
-  PrimerBDCCore: d8ebf028415f39558fd99039b363547ba3341327
-  PrimerBDCEngine: 44e0dbf78e13ae6a84372c61aaf26b67ad34bbf6
-  PrimerFoundation: 8bab6c2785060f7d87282dd08e019425cca23b36
+  PrimerBDCCore: c12a1c92a45895a0e628beb2ae380f0b17fd4117
+  PrimerBDCEngine: 326fa95c79ee94706619bebeb257fdbb8f3918bf
+  PrimerCore: 73e86d2620183b65b40b5681a86ffd8e6313d2c1
+  PrimerFoundation: 879930406228bfc7dbc60e3449ba0b5295e834d3
   PrimerIPay88MYSDK: 436ee0be7e2c97e4e81456ccddee20175e9e3c4d
-  PrimerKlarnaSDK: 564105170cc7b467bf95c31851813ea41c468f8b
-  PrimerSDK: a961e3d1078261d3a34766dc99f39b1003a34a87
-  PrimerStepResolver: 0ef5e5a001e1fc52c6dc2336b46c19cd1ba2b318
+  PrimerKlarnaSDK: 104962584ac6baad20424f73ee8493c8503fd487
+  PrimerSDK: 822743acdbaa008cfb500349a0af8b2331c16067
+  PrimerStepResolver: f1a49765775fa945d20fb868b0f750a7dd5bb53b
   PrimerStripeSDK: c37d4e7c1b5256d67d4890c4cc4b38ddc9427489
   RCT-Folly: 846fda9475e61ec7bcbf8a3fe81edfcaeb090669
   RCTDeprecation: c4b9e2fd0ab200e3af72b013ed6113187c607077
@@ -2791,6 +2797,6 @@ SPEC CHECKSUMS:
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: 11c9686a21e2cd82a094a723649d9f4507200fb0
 
-PODFILE CHECKSUM: d1e4f26b038ddcfd2fb3e17e3621384b441f7665
+PODFILE CHECKSUM: 246910e9779bb905217a2de861c30ff8021766b1
 
 COCOAPODS: 1.16.2
