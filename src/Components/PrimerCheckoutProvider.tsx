@@ -530,7 +530,9 @@ export function PrimerCheckoutProvider({
           if (last && 'cardNetwork' in last) {
             const stripped: PrimerCardData = { ...(last as PrimerCardData) };
             delete stripped.cardNetwork;
-            setRawData(stripped).catch((err) => console.warn(`${LOG} re-send after pick clear failed ${fmt(err)}`));
+            void setRawData(stripped).catch((err) =>
+              console.warn(`${LOG} re-send after pick clear failed ${fmt(err)}`)
+            );
           }
         }
         setState((prev) => ({

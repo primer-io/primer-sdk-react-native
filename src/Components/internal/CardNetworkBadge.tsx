@@ -51,9 +51,6 @@ export interface CardNetworkBadgeProps {
   marginLeft?: number;
 }
 
-const CHIP_BG = '#FAFAFA';
-const CHIP_RADIUS = 2;
-
 // Renders the icon for a given card network identifier. Falls back to an
 // abbreviation chip (e.g. "CB" for Cartes Bancaires) when no asset exists,
 // then to a generic placeholder. Shared by CardNumberInput trailing content
@@ -64,7 +61,18 @@ export function CardNetworkBadge({ identifier, testID, marginLeft }: CardNetwork
   const baseStyle = marginLeft != null ? { marginLeft } : null;
 
   if (uri) {
-    return <Image source={{ uri }} style={[styles.chipImage, baseStyle]} resizeMode="contain" testID={testID} />;
+    return (
+      <Image
+        source={{ uri }}
+        style={[
+          styles.chipImage,
+          baseStyle,
+          { backgroundColor: tokens.colors.surface, borderRadius: tokens.radii.xsmall },
+        ]}
+        resizeMode="contain"
+        testID={testID}
+      />
+    );
   }
   const abbreviation = getNetworkAbbreviation(identifier);
   if (abbreviation) {
@@ -74,8 +82,9 @@ export function CardNetworkBadge({ identifier, testID, marginLeft }: CardNetwork
           styles.chip,
           baseStyle,
           {
+            backgroundColor: tokens.colors.surface,
             borderColor: tokens.colors.border,
-            borderRadius: CHIP_RADIUS,
+            borderRadius: tokens.radii.xsmall,
             borderWidth: tokens.borders.input,
           },
         ]}
@@ -106,8 +115,6 @@ const styles = StyleSheet.create({
     width: PLACEHOLDER_ICON_WIDTH,
   },
   chipImage: {
-    backgroundColor: CHIP_BG,
-    borderRadius: CHIP_RADIUS,
     height: PLACEHOLDER_ICON_HEIGHT,
     width: PLACEHOLDER_ICON_WIDTH,
   },
