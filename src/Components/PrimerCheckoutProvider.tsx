@@ -57,8 +57,6 @@ interface InternalState {
   vaultedError: Error | null;
   activeVaultedMethodId: string | null;
   vaultDisplayOverride: 'expanded' | null;
-  // Shopper-picked co-badged card network. Null until the user makes a
-  // selection in the popover. Persists across re-renders / hook callers.
   selectedCardNetwork: CardNetworkId | null;
 }
 
@@ -634,8 +632,7 @@ export function PrimerCheckoutProvider({
       }
       console.log(`${LOG} selectCardNetwork(${identifier})`);
       selectedCardNetworkRef.current = identifier;
-      // Re-send the last raw data so the pick applies immediately — setRawData merges
-      // the selection into the payload; subsequent keystrokes keep carrying it.
+      // Re-send the last raw data so the pick applies immediately.
       if (lastRawDataRef.current) {
         await setRawData(lastRawDataRef.current);
       }

@@ -105,8 +105,8 @@ export interface PrimerCheckoutContextValue {
   setBillingAddress: (address: PrimerAddress) => Promise<void>;
   /**
    * Set the shopper-chosen card network on the active card form (co-badged cards).
-   * The native side stores the selection sticky-style and applies it to every subsequent
-   * PrimerCardData built via setRawData, so the choice survives keystroke updates.
+   * The provider merges the pick into every subsequent `setRawData` payload, so the
+   * choice survives keystroke updates.
    */
   selectCardNetwork: (identifier: CardNetworkId) => Promise<void>;
   /** Fire the active manager's submit. First-attempt path. */

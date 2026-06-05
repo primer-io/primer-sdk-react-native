@@ -561,7 +561,6 @@ describe('PrimerCheckoutProvider card network selection', () => {
     expect(lastRawPayload()).toEqual({ ...CARD, cardNetwork: 'CARTES_BANCAIRES' });
     expect(ctx().selectedCardNetwork).toBe('CARTES_BANCAIRES');
 
-    // Next keystroke keeps carrying the pick.
     await act(async () => {
       await ctx().setRawData({ ...CARD, cvv: '99' });
     });
@@ -585,7 +584,6 @@ describe('PrimerCheckoutProvider card network selection', () => {
     });
 
     expect(ctx().selectedCardNetwork).toBe('CARTES_BANCAIRES');
-    // No strip re-send happened.
     expect(rawNative.setRawData.mock.calls.length).toBe(callsBefore);
   });
 
@@ -609,10 +607,8 @@ describe('PrimerCheckoutProvider card network selection', () => {
     });
 
     expect(ctx().selectedCardNetwork).toBeNull();
-    // The stale pick was stripped from the re-sent payload…
     expect(lastRawPayload()).toEqual(CARD);
 
-    // …and stays gone on the next keystroke.
     await act(async () => {
       await ctx().setRawData({ ...CARD, cardNumber: '4111111111111111' });
     });

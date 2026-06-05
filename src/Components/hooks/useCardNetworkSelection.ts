@@ -46,10 +46,8 @@ export function useCardNetworkSelection(): UseCardNetworkSelectionReturn {
     return result;
   }, [binData]);
 
-  // `selectedCardNetwork` is the shopper's pick (provider-managed, single source of
-  // truth across all hook callers). Null until the shopper acts — we deliberately
-  // do NOT fall back to `binData.preferred`, which is the SDK's BIN-detection
-  // default rather than the shopper's choice.
+  // Deliberately no fallback to `binData.preferred` — that's the SDK's BIN-detection
+  // default, not the shopper's choice.
   const selectedIdentifier = selectedCardNetwork;
 
   const selectedNetwork = useMemo<CardNetwork | null>(() => {
@@ -57,10 +55,6 @@ export function useCardNetworkSelection(): UseCardNetworkSelectionReturn {
     return availableNetworks.find((n) => n.identifier === selectedIdentifier) ?? null;
   }, [availableNetworks, selectedIdentifier]);
 
-  // What the UI should display. Falls back to the first available network (the
-  // SDK's BIN-derived default) when the shopper hasn't picked — so the trigger
-  // never renders blank on a co-badge card. Backend / tokenization uses
-  // `selectedNetwork` separately, which stays null until the shopper acts.
   const displayedNetwork = useMemo<CardNetwork | null>(
     () => selectedNetwork ?? availableNetworks[0] ?? null,
     [selectedNetwork, availableNetworks]
