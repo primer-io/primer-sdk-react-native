@@ -5,6 +5,7 @@ export interface PrimerCardData extends PrimerRawData {
   expiryDate: string;
   cvv: string;
   cardholderName?: string;
+  cardNetwork?: string;
 }
 
 export interface PrimerPhoneNumberData extends PrimerRawData {

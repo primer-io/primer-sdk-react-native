@@ -6,6 +6,8 @@ import { PLACEHOLDER_ICON_HEIGHT, PLACEHOLDER_ICON_WIDTH, TRAILING_ICON_MARGIN }
 import { useLocalization } from '../internal/localization';
 import { useTheme } from '../internal/theme';
 import { useCardNetwork } from '../hooks/useCardNetwork';
+import { useCardNetworkSelection } from '../hooks/useCardNetworkSelection';
+import { CardNetworkSelector } from '../CardNetworkSelector';
 import { getNetworkAbbreviation } from '../internal/cardNetwork';
 import type { CardNumberInputProps, PrimerTextInputRef } from '../types/CardInputTypes';
 
@@ -21,6 +23,8 @@ export const CardNumberInput = forwardRef<PrimerTextInputRef, CardNumberInputPro
   const resolvedLabel = label ?? t('primer_card_form_label_number');
   const resolvedPlaceholder = placeholder ?? t('primer_card_form_placeholder_number');
   const { network, iconSource } = useCardNetwork();
+  const { isSelectorVisible, isDualBadge } = useCardNetworkSelection();
+  const showSelector = isSelectorVisible || isDualBadge;
   const tokens = useTheme();
   const abbreviation = iconSource == null && network ? getNetworkAbbreviation(network) : '';
 
@@ -87,7 +91,9 @@ export const CardNumberInput = forwardRef<PrimerTextInputRef, CardNumberInputPro
       error={cardForm.errors.cardNumber}
       onSelectionChange={handleSelectionChange}
       trailingContent={
-        abbreviation ? (
+        showSelector ? (
+          <CardNetworkSelector testID={rest.testID ? `${rest.testID}-network-selector` : undefined} />
+        ) : abbreviation ? (
           <View
             style={[
               styles.abbreviationChip,
