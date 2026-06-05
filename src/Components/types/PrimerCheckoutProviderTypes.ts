@@ -17,6 +17,7 @@ import type { PrimerPaymentMethodAsset, PrimerPaymentMethodNativeView } from '..
 import type { PrimerVaultedPaymentMethod } from '../../models/PrimerVaultedPaymentMethod';
 import type { PrimerThemeOverride } from '../internal/theme/types';
 import type { CardFormErrors } from './CardFormTypes';
+import type { CardNetworkId } from '../internal/cardNetwork';
 
 export interface PrimerCheckoutProviderProps {
   clientToken: string;
@@ -89,6 +90,12 @@ export interface PrimerCheckoutContextValue {
   // --- Actions ---
   /** Register/deregister the active payment method. Pass `null` to tear down. */
   setActiveMethod: (method: string | null) => void;
+  /**
+   * Shopper-picked card network for co-badged cards. `null` until the shopper makes
+   * a choice in the popover. Persists across re-renders / hook callers (lives on the
+   * provider, not on individual hook instances).
+   */
+  selectedCardNetwork: CardNetworkId | null;
   /** Forward raw data to the active native manager. */
   setRawData: (data: PrimerRawData) => Promise<void>;
   /**
@@ -96,6 +103,12 @@ export interface PrimerCheckoutContextValue {
    * client-session action, independent of raw card data, before submit.
    */
   setBillingAddress: (address: PrimerAddress) => Promise<void>;
+  /**
+   * Set the shopper-chosen card network on the active card form (co-badged cards).
+   * The provider merges the pick into every subsequent `setRawData` payload, so the
+   * choice survives keystroke updates.
+   */
+  selectCardNetwork: (identifier: CardNetworkId) => Promise<void>;
   /** Fire the active manager's submit. First-attempt path. */
   submit: () => Promise<void>;
   /**

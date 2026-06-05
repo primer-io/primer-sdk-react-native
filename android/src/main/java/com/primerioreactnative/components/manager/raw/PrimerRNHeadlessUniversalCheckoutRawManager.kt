@@ -140,9 +140,8 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
                 val rawData =
                     when (PrimerRawPaymentMethodType.valueOf(paymentMethodTypeStr.toString())) {
                         PrimerRawPaymentMethodType.PAYMENT_CARD ->
-                            json.decodeFromString<PrimerRNCardData>(
-                                rawDataStr,
-                            ).toPrimerCardData()
+                            json.decodeFromString<PrimerRNCardData>(rawDataStr)
+                                .toPrimerCardData()
 
                         PrimerRawPaymentMethodType.XENDIT_OVO,
                         PrimerRawPaymentMethodType.ADYEN_MBWAY,
