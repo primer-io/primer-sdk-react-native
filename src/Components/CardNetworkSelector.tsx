@@ -23,7 +23,7 @@ export interface CardNetworkSelectorProps {
 //   - selectable → selected badge + chevron, popover list on tap
 export function CardNetworkSelector({ testID }: CardNetworkSelectorProps) {
   const tokens = useTheme();
-  const { availableNetworks, selectedIdentifier, displayedIdentifier, isSelectorVisible, isDualBadge, selectNetwork } =
+  const { availableNetworks, displayedIdentifier, isSelectorVisible, isDualBadge, selectNetwork } =
     useCardNetworkSelection();
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [anchor, setAnchor] = useState<PopoverAnchor | null>(null);
@@ -47,9 +47,6 @@ export function CardNetworkSelector({ testID }: CardNetworkSelectorProps) {
   }
 
   const openPopover = () => {
-    console.log(
-      `${LOG} open popover (selected=${selectedIdentifier ?? 'nil'} displayed=${displayedIdentifier ?? 'nil'})`
-    );
     triggerRef.current?.measureInWindow((x: number, y: number, width: number, height: number) => {
       setAnchor({ x, y, width, height });
       setPopoverOpen(true);
@@ -88,7 +85,6 @@ export function CardNetworkSelector({ testID }: CardNetworkSelectorProps) {
             <View key={n.identifier}>
               <Pressable
                 onPress={async () => {
-                  console.log(`${LOG} option tapped ${n.identifier}`);
                   closePopover();
                   try {
                     await selectNetwork(n.identifier);

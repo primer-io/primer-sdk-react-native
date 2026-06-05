@@ -32,18 +32,12 @@ export function useCardNetworkSelection(): UseCardNetworkSelectionReturn {
 
   const availableNetworks = useMemo<ReadonlyArray<CardNetwork>>(() => {
     if (!binData) {
-      console.log(`${LOG} binData=null`);
       return [];
     }
-    console.log(
-      `${LOG} binData status=${binData.status} preferred=${binData.preferred?.network ?? 'nil'} alternatives=${JSON.stringify(binData.alternatives?.map((a) => a.network))}`
-    );
     const all: PrimerCardNetwork[] = binData.preferred
       ? [binData.preferred, ...binData.alternatives]
       : [...binData.alternatives];
-    const result = all.map(toCardNetwork).filter((n) => n.allowed);
-    console.log(`${LOG} availableNetworks=${JSON.stringify(result.map((r) => r.identifier))}`);
-    return result;
+    return all.map(toCardNetwork).filter((n) => n.allowed);
   }, [binData]);
 
   // Deliberately no fallback to `binData.preferred` — that's the SDK's BIN-detection
@@ -68,10 +62,8 @@ export function useCardNetworkSelection(): UseCardNetworkSelectionReturn {
 
   const selectNetwork = useCallback(
     async (identifier: CardNetworkId): Promise<void> => {
-      console.log(`${LOG} select(id=${identifier})`);
       try {
         await providerSelect(identifier);
-        console.log(`${LOG} select ok id=${identifier}`);
       } catch (err) {
         console.warn(`${LOG} select failed id=${identifier}: ${String(err)}`);
         throw err;

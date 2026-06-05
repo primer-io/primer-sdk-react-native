@@ -31,7 +31,6 @@ function useNetworkIconUri(identifier: string | null): string | null {
     let cancelled = false;
     getCardNetworkIconURL(identifier)
       .then((u) => {
-        console.log(`${LOG} icon resolved ${identifier}: ${u}`);
         if (!cancelled) setUri(u);
       })
       .catch((err) => {

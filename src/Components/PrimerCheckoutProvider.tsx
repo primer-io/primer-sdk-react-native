@@ -630,7 +630,6 @@ export function PrimerCheckoutProvider({
         console.warn(`${LOG} selectCardNetwork: no manager (activeMethod=${stateRef.current.activeMethod})`);
         throw new PrimerError('NO_ACTIVE_CARD_FORM', undefined, 'No active card form', undefined, undefined);
       }
-      console.log(`${LOG} selectCardNetwork(${identifier})`);
       selectedCardNetworkRef.current = identifier;
       // Re-send the last raw data so the pick applies immediately.
       if (lastRawDataRef.current) {
@@ -639,7 +638,6 @@ export function PrimerCheckoutProvider({
       setState((prev) =>
         prev.selectedCardNetwork === identifier ? prev : { ...prev, selectedCardNetwork: identifier }
       );
-      console.log(`${LOG} selectCardNetwork ok ${identifier}`);
     },
     [setRawData]
   );
