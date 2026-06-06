@@ -1,18 +1,18 @@
 import { useMemo } from 'react';
 import { Image, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import type { TextStyle } from 'react-native';
-import { useTheme } from '../theme';
+import { usePrimerTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
-import { useLocalization } from '../localization';
+import { usePrimerLocalization } from '../localization';
 import type { PaymentMethodButtonProps } from '../../types/PrimerPaymentMethodListTypes';
 
 export const PAYMENT_METHOD_BUTTON_HEIGHT = 44;
 const BUTTON_HEIGHT = PAYMENT_METHOD_BUTTON_HEIGHT;
 
 export function PaymentMethodButton({ item, onPress }: PaymentMethodButtonProps) {
-  const tokens = useTheme();
+  const tokens = usePrimerTheme();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
-  const { t } = useLocalization();
+  const { t } = usePrimerLocalization();
 
   const isCard = item.type === 'PAYMENT_CARD';
   // Branded button: full-color background + logo (PayPal, Klarna, iDEAL…).

@@ -20,7 +20,7 @@ jest.mock(
 );
 
 jest.mock('../../Components/internal/theme', () => ({
-  useTheme: () => ({
+  usePrimerTheme: () => ({
     colors: {
       background: '#fff',
       surface: '#fafafa',
@@ -47,7 +47,7 @@ jest.mock('../../Components/internal/theme', () => ({
 }));
 
 jest.mock('../../Components/internal/localization', () => ({
-  useLocalization: () => ({
+  usePrimerLocalization: () => ({
     t: (key: string) => key,
   }),
 }));

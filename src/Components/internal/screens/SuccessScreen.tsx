@@ -1,6 +1,6 @@
 import { View } from 'react-native';
-import { useTheme } from '../theme';
-import { useLocalization } from '../localization';
+import { usePrimerTheme } from '../theme';
+import { usePrimerLocalization } from '../localization';
 import { CheckoutRoute, useRoute } from '../navigation';
 import { PrimerSuccessScreen } from '../../status';
 import { useStatusScreenHeight } from './useStatusScreenHeight';
@@ -11,8 +11,8 @@ const CONTENT_HEIGHT = 246;
 const AUTO_DISMISS_MS = 3000;
 
 export function SuccessScreen() {
-  const tokens = useTheme();
-  const { t } = useLocalization();
+  const tokens = usePrimerTheme();
+  const { t } = usePrimerLocalization();
   const { params } = useRoute<CheckoutRoute.success>();
   const { onCancel } = useCheckoutFlow();
   const rawBottomInset = useBottomSafeArea();

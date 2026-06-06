@@ -1,7 +1,7 @@
 import { View } from 'react-native';
 
-import { useTheme } from '../theme';
-import { useLocalization } from '../localization';
+import { usePrimerTheme } from '../theme';
+import { usePrimerLocalization } from '../localization';
 import { CheckoutRoute, useRoute } from '../navigation';
 import { PrimerLoadingScreen } from '../../status';
 import { useStatusScreenHeight } from './useStatusScreenHeight';
@@ -10,8 +10,8 @@ import { useBottomSafeArea } from './useBottomSafeArea';
 const CONTENT_HEIGHT = 246;
 
 export function LoadingScreen() {
-  const tokens = useTheme();
-  const { t } = useLocalization();
+  const tokens = usePrimerTheme();
+  const { t } = usePrimerLocalization();
   const { route, params } = useRoute<CheckoutRoute.splash | CheckoutRoute.loading | CheckoutRoute.processing>();
   const rawBottomInset = useBottomSafeArea();
   const bottomInset = Math.max(rawBottomInset, tokens.spacing.large);

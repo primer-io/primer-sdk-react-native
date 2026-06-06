@@ -2,8 +2,8 @@ import { useEffect, useMemo, useRef } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import type { TextStyle } from 'react-native';
 
-import { useLocalization } from '../localization';
-import { useTheme } from '../theme';
+import { usePrimerLocalization } from '../localization';
+import { usePrimerTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
 import { PrimerTextInput } from '../../inputs/PrimerTextInput';
 import type { PrimerTextInputRef } from '../../types/CardInputTypes';
@@ -33,9 +33,9 @@ export function VaultedCardCvvRow({
   autoFocus = false,
   error,
 }: VaultedCardCvvRowProps) {
-  const tokens = useTheme();
+  const tokens = usePrimerTheme();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
-  const { t } = useLocalization();
+  const { t } = usePrimerLocalization();
   const inputRef = useRef<PrimerTextInputRef>(null);
 
   useEffect(() => {

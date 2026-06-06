@@ -15,7 +15,7 @@ export interface UseCardFormOptions {
   onBinDataChange?: (binData: PrimerBinData) => void;
 }
 
-export interface UseCardFormReturn {
+export interface UsePrimerCardFormReturn {
   /** Formatted card number (with spaces). */
   cardNumber: string;
   /** Formatted expiry as MM/YY. */

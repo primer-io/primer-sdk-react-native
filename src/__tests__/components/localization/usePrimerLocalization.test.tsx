@@ -1,16 +1,16 @@
 import { createElement } from 'react';
 // @ts-expect-error -- react-test-renderer has no types for React 19
 import renderer, { act } from 'react-test-renderer';
-import { useLocalization } from '../../../Components/internal/localization/useLocalization';
+import { usePrimerLocalization } from '../../../Components/internal/localization/usePrimerLocalization';
 
-let hookResult: ReturnType<typeof useLocalization>;
+let hookResult: ReturnType<typeof usePrimerLocalization>;
 
 function TestComponent() {
-  hookResult = useLocalization();
+  hookResult = usePrimerLocalization();
   return null;
 }
 
-describe('useLocalization', () => {
+describe('usePrimerLocalization', () => {
   it('t() resolves translations with interpolation', () => {
     act(() => {
       renderer.create(createElement(TestComponent));

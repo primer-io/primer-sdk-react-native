@@ -1,4 +1,4 @@
-export { useTheme } from './useTheme';
+export { usePrimerTheme } from './usePrimerTheme';
 export type {
   PrimerTokens,
   PrimerColorTokens,

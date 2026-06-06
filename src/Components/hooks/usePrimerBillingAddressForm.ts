@@ -1,6 +1,9 @@
 import { useEffect, useRef } from 'react';
 import { useBillingAddressFormStateContext } from '../internal/form-state/BillingAddressFormStateProvider';
-import type { UseBillingAddressFormOptions, UseBillingAddressFormReturn } from '../types/BillingAddressFormTypes';
+import type {
+  UsePrimerBillingAddressFormOptions,
+  UsePrimerBillingAddressFormReturn,
+} from '../types/BillingAddressFormTypes';
 
 /**
  * Billing-address form adapter hook. Thin wrapper over
@@ -12,11 +15,13 @@ import type { UseBillingAddressFormOptions, UseBillingAddressFormReturn } from '
  * `<BillingAddressFormStateProvider>` (the drop-in `CheckoutFlow` does this
  * for you).
  */
-export function useBillingAddressForm(options: UseBillingAddressFormOptions = {}): UseBillingAddressFormReturn {
+export function usePrimerBillingAddressForm(
+  options: UsePrimerBillingAddressFormOptions = {}
+): UsePrimerBillingAddressFormReturn {
   const state = useBillingAddressFormStateContext();
   if (!state) {
     throw new Error(
-      'useBillingAddressForm must be used within a <BillingAddressFormStateProvider>. ' +
+      'usePrimerBillingAddressForm must be used within a <BillingAddressFormStateProvider>. ' +
         'The built-in <PrimerCheckoutSheet>/<CheckoutFlow> wires this automatically.'
     );
   }

@@ -1,8 +1,8 @@
 import { useMemo, useCallback } from 'react';
 import { ActivityIndicator, FlatList, View, StyleSheet } from 'react-native';
-import { useTheme } from './internal/theme';
+import { usePrimerTheme } from './internal/theme';
 import type { PrimerTokens } from './internal/theme';
-import { usePaymentMethods } from './hooks/usePaymentMethods';
+import { usePrimerPaymentMethods } from './hooks/usePrimerPaymentMethods';
 import { PaymentMethodButton } from './internal/ui/PaymentMethodButton';
 import type { PaymentMethodItem } from './types/PaymentMethodTypes';
 import type { PrimerPaymentMethodListProps } from './types/PrimerPaymentMethodListTypes';
@@ -15,10 +15,10 @@ export function PrimerPaymentMethodList({
   onLoad,
   style,
 }: PrimerPaymentMethodListProps) {
-  const tokens = useTheme();
+  const tokens = usePrimerTheme();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
 
-  const hook = usePaymentMethods(
+  const hook = usePrimerPaymentMethods(
     data != null
       ? {}
       : {

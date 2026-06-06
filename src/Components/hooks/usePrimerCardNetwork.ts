@@ -4,7 +4,7 @@ import { DEFAULT_DESCRIPTOR, fetchCardNetworkDescriptor } from '../internal/card
 import { getCardNetworkIconURL } from '../internal/cardNetworkIcons';
 import type { CardNetworkDescriptor, CardNetworkIconSource } from '../internal/cardNetwork';
 
-const LOG = '[useCardNetwork]';
+const LOG = '[usePrimerCardNetwork]';
 
 export interface UseCardNetworkReturn {
   /** Raw network identifier as reported by native (`"VISA"`, `"AMEX"`, ...), or `null` before BIN detection. */
@@ -25,7 +25,7 @@ export interface UseCardNetworkReturn {
  * matching traits + icon from the native SDK. Traits drive per-network input
  * formatting (gaps), max length, and the CVV label; icon is a separate fetch.
  */
-export function useCardNetwork(): UseCardNetworkReturn {
+export function usePrimerCardNetwork(): UseCardNetworkReturn {
   const { cardFormState } = usePrimerCheckout();
   const network = cardFormState.binData?.preferred?.network ?? null;
 

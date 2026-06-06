@@ -1,14 +1,14 @@
 import type { StyleProp, ViewStyle } from 'react-native';
-import type { UseCardFormReturn } from './CardFormTypes';
+import type { UsePrimerCardFormReturn } from './CardFormTypes';
 
 /** Merchant-facing props for the composed `<PrimerCardForm />` component. */
 export interface PrimerCardFormProps {
   /**
-   * The card-form state returned by `useCardForm()`. Hoisted so the host screen
+   * The card-form state returned by `usePrimerCardForm()`. Hoisted so the host screen
    * can share it with a Pay button rendered outside the form, compose sibling
    * sections that rely on the same state (e.g. billing address), and drive submit.
    */
-  cardForm: UseCardFormReturn;
+  cardForm: UsePrimerCardFormReturn;
   /**
    * Fires when the user hits the return key on the last input. The host screen
    * typically routes this to the same handler that its Pay button uses.

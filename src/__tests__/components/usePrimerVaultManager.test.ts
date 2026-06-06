@@ -2,7 +2,7 @@ import { createElement, type ReactNode } from 'react';
 // @ts-expect-error -- react-test-renderer has no types for React 19
 import { act, create } from 'react-test-renderer';
 import { PrimerCheckoutContext } from '../../Components/internal/PrimerCheckoutContext';
-import { useVaultedPaymentMethods } from '../../Components/hooks/useVaultedPaymentMethods';
+import { usePrimerVaultManager } from '../../Components/hooks/usePrimerVaultManager';
 import type { PrimerCheckoutContextValue } from '../../Components/types/PrimerCheckoutProviderTypes';
 import type { PrimerVaultedPaymentMethod } from '../../models/PrimerVaultedPaymentMethod';
 
@@ -91,9 +91,9 @@ beforeEach(() => {
   deleteVaultedPaymentMethodFn.mockClear();
 });
 
-describe('useVaultedPaymentMethods', () => {
+describe('usePrimerVaultManager', () => {
   it('returns empty list and null primary when there are no vaulted methods', () => {
-    const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(baseContext));
+    const { result } = renderHook(() => usePrimerVaultManager(), contextWrapper(baseContext));
     expect(result.current.vaultedMethods).toEqual([]);
     expect(result.current.primaryMethod).toBeNull();
     expect(result.current.isLoading).toBe(false);
@@ -106,7 +106,7 @@ describe('useVaultedPaymentMethods', () => {
       vaultedMethods: [vault],
       vaultedIconUrisById: { 'vault-1': 'file:///tmp/mastercard.png' },
     };
-    const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(ctx));
+    const { result } = renderHook(() => usePrimerVaultManager(), contextWrapper(ctx));
     const item = result.current.primaryMethod;
     expect(item).not.toBeNull();
     expect(item?.id).toBe('vault-1');
@@ -123,7 +123,7 @@ describe('useVaultedPaymentMethods', () => {
       paymentInstrumentData: { last4Digits: undefined, accountNumberLast4Digits: 7890 },
     });
     const ctx: PrimerCheckoutContextValue = { ...baseContext, vaultedMethods: [vault] };
-    const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(ctx));
+    const { result } = renderHook(() => usePrimerVaultManager(), contextWrapper(ctx));
     expect(result.current.primaryMethod?.last4).toBe('7890');
   });
 
@@ -131,13 +131,13 @@ describe('useVaultedPaymentMethods', () => {
     const first = makeCardVault({ id: 'first' });
     const second = makeCardVault({ id: 'second' });
     const ctx: PrimerCheckoutContextValue = { ...baseContext, vaultedMethods: [first, second] };
-    const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(ctx));
+    const { result } = renderHook(() => usePrimerVaultManager(), contextWrapper(ctx));
     expect(result.current.primaryMethod?.id).toBe('first');
     expect(result.current.vaultedMethods).toHaveLength(2);
   });
 
   it('pay() is a no-op when no primary method exists', async () => {
-    const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(baseContext));
+    const { result } = renderHook(() => usePrimerVaultManager(), contextWrapper(baseContext));
     await result.current.pay();
     expect(payFromVault).not.toHaveBeenCalled();
   });
@@ -145,13 +145,13 @@ describe('useVaultedPaymentMethods', () => {
   it('pay() delegates to payFromVault with primary method id', async () => {
     const vault = makeCardVault();
     const ctx: PrimerCheckoutContextValue = { ...baseContext, vaultedMethods: [vault] };
-    const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(ctx));
+    const { result } = renderHook(() => usePrimerVaultManager(), contextWrapper(ctx));
     await result.current.pay();
     expect(payFromVault).toHaveBeenCalledWith('vault-1', undefined);
   });
 
   it('payById() delegates to payFromVault with the passed id', async () => {
-    const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(baseContext));
+    const { result } = renderHook(() => usePrimerVaultManager(), contextWrapper(baseContext));
     await result.current.payById('explicit-id');
     expect(payFromVault).toHaveBeenCalledWith('explicit-id', undefined);
   });
@@ -163,7 +163,7 @@ describe('useVaultedPaymentMethods', () => {
       isLoadingVaulted: true,
       vaultedError: err,
     };
-    const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(ctx));
+    const { result } = renderHook(() => usePrimerVaultManager(), contextWrapper(ctx));
     expect(result.current.isLoading).toBe(true);
     expect(result.current.error).toBe(err);
   });
@@ -177,7 +177,7 @@ describe('useVaultedPaymentMethods', () => {
       paymentInstrumentData: { externalPayerInfo: { email: 'a@b.c' } },
     };
     const ctx: PrimerCheckoutContextValue = { ...baseContext, vaultedMethods: [paypal] };
-    const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(ctx));
+    const { result } = renderHook(() => usePrimerVaultManager(), contextWrapper(ctx));
     const item = result.current.primaryMethod;
     expect(item?.cardholderName).toBeUndefined();
     expect(item?.expiryMonth).toBeUndefined();
@@ -190,7 +190,7 @@ describe('useVaultedPaymentMethods', () => {
         ...baseContext,
         vaultedMethods: [makeCardVault({ id: 'first' }), makeCardVault({ id: 'second' })],
       };
-      const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(ctx));
+      const { result } = renderHook(() => usePrimerVaultManager(), contextWrapper(ctx));
       expect(result.current.originalDefault?.id).toBe('first');
     });
 
@@ -199,7 +199,7 @@ describe('useVaultedPaymentMethods', () => {
         ...baseContext,
         vaultedMethods: [makeCardVault({ id: 'first' }), makeCardVault({ id: 'second' })],
       };
-      const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(ctx));
+      const { result } = renderHook(() => usePrimerVaultManager(), contextWrapper(ctx));
       expect(result.current.activeMethod?.id).toBe('first');
     });
 
@@ -209,7 +209,7 @@ describe('useVaultedPaymentMethods', () => {
         vaultedMethods: [makeCardVault({ id: 'first' }), makeCardVault({ id: 'second' })],
         activeVaultedMethodId: 'second',
       };
-      const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(ctx));
+      const { result } = renderHook(() => usePrimerVaultManager(), contextWrapper(ctx));
       expect(result.current.activeMethod?.id).toBe('second');
     });
 
@@ -219,7 +219,7 @@ describe('useVaultedPaymentMethods', () => {
         vaultedMethods: [makeCardVault({ id: 'first' }), makeCardVault({ id: 'second' })],
         activeVaultedMethodId: 'gone',
       };
-      const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(ctx));
+      const { result } = renderHook(() => usePrimerVaultManager(), contextWrapper(ctx));
       expect(result.current.activeMethod?.id).toBe('first');
     });
   });
@@ -230,7 +230,7 @@ describe('useVaultedPaymentMethods', () => {
         ...baseContext,
         vaultedMethods: [makeCardVault({ id: 'a' }), makeCardVault({ id: 'b' })],
       };
-      const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(ctx));
+      const { result } = renderHook(() => usePrimerVaultManager(), contextWrapper(ctx));
       expect(result.current.vaultDisplayMode).toBe('expanded');
     });
 
@@ -240,7 +240,7 @@ describe('useVaultedPaymentMethods', () => {
         vaultedMethods: [makeCardVault({ id: 'a' }), makeCardVault({ id: 'b' })],
         activeVaultedMethodId: 'b',
       };
-      const nonDefault = renderHook(() => useVaultedPaymentMethods(), contextWrapper(ctxNonDefault));
+      const nonDefault = renderHook(() => usePrimerVaultManager(), contextWrapper(ctxNonDefault));
       expect(nonDefault.result.current.vaultDisplayMode).toBe('lite');
 
       const ctxDefault: PrimerCheckoutContextValue = {
@@ -248,7 +248,7 @@ describe('useVaultedPaymentMethods', () => {
         vaultedMethods: [makeCardVault({ id: 'a' }), makeCardVault({ id: 'b' })],
         activeVaultedMethodId: 'a',
       };
-      const def = renderHook(() => useVaultedPaymentMethods(), contextWrapper(ctxDefault));
+      const def = renderHook(() => usePrimerVaultManager(), contextWrapper(ctxDefault));
       expect(def.result.current.vaultDisplayMode).toBe('lite');
     });
 
@@ -259,7 +259,7 @@ describe('useVaultedPaymentMethods', () => {
         activeVaultedMethodId: 'b',
         vaultDisplayOverride: 'expanded',
       };
-      const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(ctx));
+      const { result } = renderHook(() => usePrimerVaultManager(), contextWrapper(ctx));
       expect(result.current.vaultDisplayMode).toBe('expanded');
       // Selection itself is preserved.
       expect(result.current.activeMethod?.id).toBe('b');
@@ -273,7 +273,7 @@ describe('useVaultedPaymentMethods', () => {
         vaultedMethods: [makeCardVault({ id: 'a' }), makeCardVault({ id: 'b' })],
         activeVaultedMethodId: 'b',
       };
-      const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(ctx));
+      const { result } = renderHook(() => usePrimerVaultManager(), contextWrapper(ctx));
       await result.current.pay();
       expect(payFromVault).toHaveBeenCalledWith('b', undefined);
     });
@@ -283,7 +283,7 @@ describe('useVaultedPaymentMethods', () => {
         ...baseContext,
         vaultedMethods: [makeCardVault({ id: 'a' }), makeCardVault({ id: 'b' })],
       };
-      const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(ctx));
+      const { result } = renderHook(() => usePrimerVaultManager(), contextWrapper(ctx));
       await result.current.pay();
       expect(payFromVault).toHaveBeenCalledWith('a', undefined);
     });
@@ -291,7 +291,7 @@ describe('useVaultedPaymentMethods', () => {
 
   describe('deleteVaultedPaymentMethod', () => {
     it('exposes the context method', () => {
-      const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(baseContext));
+      const { result } = renderHook(() => usePrimerVaultManager(), contextWrapper(baseContext));
       expect(typeof result.current.deleteVaultedPaymentMethod).toBe('function');
     });
 
@@ -300,7 +300,7 @@ describe('useVaultedPaymentMethods', () => {
         ...baseContext,
         vaultedMethods: [makeCardVault({ id: 'a' })],
       };
-      const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(ctx));
+      const { result } = renderHook(() => usePrimerVaultManager(), contextWrapper(ctx));
       await result.current.deleteVaultedPaymentMethod('a');
       expect(deleteVaultedPaymentMethodFn).toHaveBeenCalledWith('a');
     });
@@ -308,7 +308,7 @@ describe('useVaultedPaymentMethods', () => {
     it('propagates rejection from the context implementation', async () => {
       const err = { errorId: 'BRIDGE_FAILURE', description: 'boom' };
       deleteVaultedPaymentMethodFn.mockRejectedValueOnce(err);
-      const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(baseContext));
+      const { result } = renderHook(() => usePrimerVaultManager(), contextWrapper(baseContext));
       await expect(result.current.deleteVaultedPaymentMethod('x')).rejects.toEqual(err);
     });
   });

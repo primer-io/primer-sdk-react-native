@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, type StyleProp, type ViewStyle } from 'react-native';
-import { useTheme } from '../internal/theme';
+import { usePrimerTheme } from '../internal/theme';
 import type { PrimerTokens } from '../internal/theme';
 import { flagEmoji } from '../internal/flags';
 import { FIELD_HEIGHT, LINE_HEIGHT_RATIO } from './dimensions';
@@ -34,7 +34,7 @@ export function CountrySelectorRow({
   style,
   testID,
 }: CountrySelectorRowProps) {
-  const tokens = useTheme();
+  const tokens = usePrimerTheme();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
 
   const hasValue = !!value;

@@ -1,6 +1,6 @@
 import { forwardRef, useImperativeHandle, useMemo, useRef, useState, type ComponentRef } from 'react';
 import { Platform, StyleSheet, Text, TextInput, View, type TextStyle } from 'react-native';
-import { useTheme } from '../internal/theme';
+import { usePrimerTheme } from '../internal/theme';
 import { FIELD_HEIGHT, LINE_HEIGHT_RATIO } from './dimensions';
 import type { PrimerTextInputProps, PrimerTextInputRef, PrimerTextInputTheme } from '../types/CardInputTypes';
 import type { PrimerTokens } from '../internal/theme/types';
@@ -64,7 +64,7 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
   },
   ref
 ) {
-  const tokens = useTheme();
+  const tokens = usePrimerTheme();
   const resolved = useMemo(() => resolveTheme(tokens, themeOverride), [tokens, themeOverride]);
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<ComponentRef<typeof TextInput>>(null);

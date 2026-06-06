@@ -1,10 +1,10 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { usePrimerCheckout } from '../../hooks/usePrimerCheckout';
-import { useCardNetwork } from '../../hooks/useCardNetwork';
+import { usePrimerCardNetwork } from '../../hooks/usePrimerCardNetwork';
 import { debounce, type DebouncedFunction } from '../../../utils/debounce';
 import { PrimerError } from '../../../models/PrimerError';
 import { formatDigitsWithGaps, maxFormattedCardNumberLength, maxPanDigits } from '../cardFormat';
-import type { CardFormField, CardFormErrors, UseCardFormReturn } from '../../types/CardFormTypes';
+import type { CardFormField, CardFormErrors, UsePrimerCardFormReturn } from '../../types/CardFormTypes';
 
 const LOG = '[CardFormState]';
 const DEBOUNCE_MS = 275;
@@ -49,12 +49,12 @@ const INITIAL_FOCUS: Record<CardFormField, boolean> = {
   cardholderName: false,
 };
 
-const CardFormStateContext = createContext<UseCardFormReturn | null>(null);
+const CardFormStateContext = createContext<UsePrimerCardFormReturn | null>(null);
 
 /**
  * Holds card-form state above the navigation stack so values survive screen
  * unmounts (e.g. when CardFormScreen is pushed past by the country selector).
- * Also gives every caller of `useCardForm()` the same singleton state.
+ * Also gives every caller of `usePrimerCardForm()` the same singleton state.
  *
  * Consumes `PrimerCheckoutContext` for the native validation state + the
  * `setRawData` / `submit` dispatch surfaces, so it must mount below
@@ -119,10 +119,10 @@ export function CardFormStateProvider({ children }: { children: ReactNode }) {
     debouncedRef.current?.(data);
   }, []);
 
-  // Descriptor resolves asynchronously (see useCardNetwork). Capture via a ref so
+  // Descriptor resolves asynchronously (see usePrimerCardNetwork). Capture via a ref so
   // updateCardNumber's useCallback dep array doesn't re-close over descriptor each
   // render; the ref is refreshed below whenever descriptor changes.
-  const { descriptor } = useCardNetwork();
+  const { descriptor } = usePrimerCardNetwork();
   const descriptorRef = useRef(descriptor);
   descriptorRef.current = descriptor;
 
@@ -244,7 +244,7 @@ export function CardFormStateProvider({ children }: { children: ReactNode }) {
     providerSetRawData({ cardNumber: '', expiryDate: '', cvv: '', cardholderName: '' }).catch(() => {});
   }, [providerSetRawData]);
 
-  const value = useMemo<UseCardFormReturn>(
+  const value = useMemo<UsePrimerCardFormReturn>(
     () => ({
       cardNumber,
       expiryDate,
@@ -297,6 +297,6 @@ export function CardFormStateProvider({ children }: { children: ReactNode }) {
   return <CardFormStateContext.Provider value={value}>{children}</CardFormStateContext.Provider>;
 }
 
-export function useCardFormStateContext(): UseCardFormReturn | null {
+export function useCardFormStateContext(): UsePrimerCardFormReturn | null {
   return useContext(CardFormStateContext);
 }

@@ -2,7 +2,7 @@ import { createElement } from 'react';
 // @ts-expect-error -- react-test-renderer has no types for React 19
 import renderer, { act } from 'react-test-renderer';
 import type {
-  UseVaultedPaymentMethodsReturn,
+  UsePrimerVaultManagerReturn,
   VaultedPaymentMethodItem,
 } from '../../Components/types/VaultedPaymentMethodTypes';
 import type { PrimerVaultedPaymentMethod as RawVaultedMethod } from '../../models/PrimerVaultedPaymentMethod';
@@ -27,7 +27,7 @@ jest.mock(
 );
 
 jest.mock('../../Components/internal/theme', () => ({
-  useTheme: () => ({
+  usePrimerTheme: () => ({
     colors: {
       background: '#fff',
       surface: '#fafafa',
@@ -57,7 +57,7 @@ jest.mock('../../Components/internal/theme', () => ({
 }));
 
 jest.mock('../../Components/internal/localization', () => ({
-  useLocalization: () => ({
+  usePrimerLocalization: () => ({
     t: (key: string, params?: Record<string, unknown>) => (params ? `${key}:${JSON.stringify(params)}` : key),
   }),
 }));
@@ -70,8 +70,8 @@ jest.mock('../../Components/analytics', () => ({
   PrimerAnalytics: { trackEvent: jest.fn() },
 }));
 
-jest.mock('../../Components/hooks/useVaultedPaymentMethods', () => ({
-  useVaultedPaymentMethods: jest.fn(),
+jest.mock('../../Components/hooks/usePrimerVaultManager', () => ({
+  usePrimerVaultManager: jest.fn(),
 }));
 
 jest.mock('../../Components/hooks/usePrimerCheckout', () => ({
@@ -91,16 +91,16 @@ jest.mock('../../Components/hooks/useCardNetworkDescriptor', () => ({
 import { PrimerVaultedPaymentMethod } from '../../Components/PrimerVaultedPaymentMethod';
 import { useNavigation } from '../../Components/internal/navigation/useNavigation';
 import { PrimerAnalytics } from '../../Components/analytics';
-import { useVaultedPaymentMethods } from '../../Components/hooks/useVaultedPaymentMethods';
+import { usePrimerVaultManager } from '../../Components/hooks/usePrimerVaultManager';
 import { usePrimerCheckout } from '../../Components/hooks/usePrimerCheckout';
 
 const mockReplace = jest.fn();
 (useNavigation as jest.Mock).mockReturnValue({ replace: mockReplace, push: jest.fn(), pop: jest.fn() });
 const mockTrackEvent = PrimerAnalytics.trackEvent as jest.Mock;
-const mockUseVault = useVaultedPaymentMethods as jest.Mock;
+const mockUseVault = usePrimerVaultManager as jest.Mock;
 const mockUseProvider = usePrimerCheckout as jest.Mock;
-const mockHookState: { current: UseVaultedPaymentMethodsReturn } = {
-  current: undefined as unknown as UseVaultedPaymentMethodsReturn,
+const mockHookState: { current: UsePrimerVaultManagerReturn } = {
+  current: undefined as unknown as UsePrimerVaultManagerReturn,
 };
 const mockSetCvvInputVisible = jest.fn((visible: boolean) => {
   if (mockHookState.current) {
@@ -144,7 +144,7 @@ function makeItem(raw: RawVaultedMethod, overrides: Partial<VaultedPaymentMethod
 
 const mockPay = jest.fn();
 
-function makeHook(overrides: Partial<UseVaultedPaymentMethodsReturn> = {}): UseVaultedPaymentMethodsReturn {
+function makeHook(overrides: Partial<UsePrimerVaultManagerReturn> = {}): UsePrimerVaultManagerReturn {
   const card = makeItem(makeRawCard());
   return {
     vaultedMethods: [card],

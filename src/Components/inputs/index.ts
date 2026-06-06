@@ -1,7 +1,7 @@
 export { PrimerTextInput } from './PrimerTextInput';
-export { CardNumberInput } from './CardNumberInput';
-export { ExpiryDateInput } from './ExpiryDateInput';
-export { CVVInput } from './CVVInput';
-export { CardholderNameInput } from './CardholderNameInput';
+export { PrimerCardNumberInput } from './PrimerCardNumberInput';
+export { PrimerExpiryDateInput } from './PrimerExpiryDateInput';
+export { PrimerCVVInput } from './PrimerCVVInput';
+export { PrimerCardholderNameInput } from './PrimerCardholderNameInput';
 export { CountrySelectorRow } from './CountrySelectorRow';
 export type { CountrySelectorRowProps } from './CountrySelectorRow';

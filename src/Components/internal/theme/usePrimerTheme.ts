@@ -4,7 +4,7 @@ import { ThemeContext } from './ThemeContext';
 import { defaultDarkTokens, defaultLightTokens } from './tokens';
 import type { PrimerTokens } from './types';
 
-export function useTheme(): PrimerTokens {
+export function usePrimerTheme(): PrimerTokens {
   const theme = useContext(ThemeContext);
   const colorScheme = useColorScheme();
 

@@ -1,6 +1,6 @@
 import { View } from 'react-native';
-import { useTheme } from '../theme';
-import { useLocalization } from '../localization';
+import { usePrimerTheme } from '../theme';
+import { usePrimerLocalization } from '../localization';
 import { CheckoutRoute, useNavigation, useRoute } from '../navigation';
 import { PrimerErrorScreen } from '../../status';
 import { useStatusScreenHeight } from './useStatusScreenHeight';
@@ -14,8 +14,8 @@ const CONTENT_HEIGHT = 282;
 const TOP_PADDING = 34;
 
 export function ErrorScreen() {
-  const tokens = useTheme();
-  const { t } = useLocalization();
+  const tokens = usePrimerTheme();
+  const { t } = usePrimerLocalization();
   const { replace } = useNavigation();
   const { params } = useRoute<CheckoutRoute.error>();
   const { retry, clearPaymentOutcome, requestExpandedVaultDisplay } = usePrimerCheckout();

@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useTheme } from './internal/theme';
+import { usePrimerTheme } from './internal/theme';
 import type { PrimerTokens } from './internal/theme';
-import { CardNumberInput } from './inputs/CardNumberInput';
-import { ExpiryDateInput } from './inputs/ExpiryDateInput';
-import { CVVInput } from './inputs/CVVInput';
-import { CardholderNameInput } from './inputs/CardholderNameInput';
+import { PrimerCardNumberInput } from './inputs/PrimerCardNumberInput';
+import { PrimerExpiryDateInput } from './inputs/PrimerExpiryDateInput';
+import { PrimerCVVInput } from './inputs/PrimerCVVInput';
+import { PrimerCardholderNameInput } from './inputs/PrimerCardholderNameInput';
 import { PrimerAcceptedCardNetworks } from './PrimerAcceptedCardNetworks';
 import type { PrimerTextInputRef } from './types/CardInputTypes';
 import type { PrimerCardFormProps } from './types/PrimerCardFormTypes';
@@ -17,7 +17,7 @@ export function PrimerCardForm({
   style,
   testID = 'primer-card-form',
 }: PrimerCardFormProps) {
-  const tokens = useTheme();
+  const tokens = usePrimerTheme();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
 
   const cardRef = useRef<PrimerTextInputRef>(null);
@@ -38,7 +38,7 @@ export function PrimerCardForm({
   return (
     <View style={[styles.container, style]} testID={testID}>
       <PrimerAcceptedCardNetworks testID={`${testID}-accepted-networks`} />
-      <CardNumberInput
+      <PrimerCardNumberInput
         ref={cardRef}
         cardForm={cardForm}
         editable={!disabled}
@@ -49,7 +49,7 @@ export function PrimerCardForm({
 
       <View style={styles.row}>
         <View style={styles.halfField}>
-          <ExpiryDateInput
+          <PrimerExpiryDateInput
             ref={expiryRef}
             cardForm={cardForm}
             editable={!disabled}
@@ -59,7 +59,7 @@ export function PrimerCardForm({
           />
         </View>
         <View style={styles.halfField}>
-          <CVVInput
+          <PrimerCVVInput
             ref={cvvRef}
             cardForm={cardForm}
             editable={!disabled}
@@ -72,7 +72,7 @@ export function PrimerCardForm({
       </View>
 
       {cardForm.isCardholderNameVisible && (
-        <CardholderNameInput
+        <PrimerCardholderNameInput
           ref={nameRef}
           cardForm={cardForm}
           editable={!disabled}

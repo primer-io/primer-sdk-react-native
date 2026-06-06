@@ -3,13 +3,13 @@ import { Alert, FlatList, Image, Pressable, StyleSheet, Text, TouchableOpacity, 
 import type { ListRenderItemInfo, TextStyle } from 'react-native';
 
 import { PrimerAnalytics } from '../../analytics';
-import { useVaultedPaymentMethods } from '../../hooks/useVaultedPaymentMethods';
+import { usePrimerVaultManager } from '../../hooks/usePrimerVaultManager';
 import type { VaultedPaymentMethodItem } from '../../types/VaultedPaymentMethodTypes';
-import { useLocalization } from '../localization';
+import { usePrimerLocalization } from '../localization';
 import { NavigationHeader } from '../navigation/NavigationHeader';
 import type { NavigationHeaderAction } from '../navigation/NavigationHeader';
 import { useNavigation } from '../navigation/useNavigation';
-import { useTheme } from '../theme';
+import { usePrimerTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
 import { CheckoutButton } from '../ui/CheckoutButton';
 import { useBottomSafeArea } from './useBottomSafeArea';
@@ -50,12 +50,12 @@ function VaultedMethodRow({
   onDeletePress,
   isInteractive,
 }: VaultedMethodRowProps) {
-  const tokens = useTheme();
+  const tokens = usePrimerTheme();
   const styles = useMemo(
     () => createRowStyles(tokens, isActive && showActiveTreatment),
     [tokens, isActive, showActiveTreatment]
   );
-  const { t } = useLocalization();
+  const { t } = usePrimerLocalization();
 
   const maskedNumber = method.last4 != null ? t('primer_vault_format_masked', { last4: method.last4 }) : null;
   const expiryText =
@@ -126,11 +126,10 @@ function VaultedMethodRow({
 }
 
 export function VaultedMethodsScreen() {
-  const tokens = useTheme();
+  const tokens = usePrimerTheme();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
-  const { t } = useLocalization();
-  const { vaultedMethods, activeMethod, selectVaultedMethodId, deleteVaultedPaymentMethod } =
-    useVaultedPaymentMethods();
+  const { t } = usePrimerLocalization();
+  const { vaultedMethods, activeMethod, selectVaultedMethodId, deleteVaultedPaymentMethod } = usePrimerVaultManager();
   const { pop } = useNavigation();
   const rawBottomInset = useBottomSafeArea();
   const bottomInset = Math.max(rawBottomInset, tokens.spacing.large);
@@ -379,7 +378,7 @@ function keyExtractor(item: VaultedPaymentMethodItem) {
 }
 
 function Separator() {
-  const tokens = useTheme();
+  const tokens = usePrimerTheme();
   return <View style={{ height: tokens.spacing.small }} />;
 }
 

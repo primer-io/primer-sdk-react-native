@@ -1,30 +1,30 @@
 import { useRef, useState, type ComponentRef } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
-import { useCardNetworkSelection } from './hooks/useCardNetworkSelection';
+import { usePrimerCardNetworkSelection } from './hooks/usePrimerCardNetworkSelection';
 import { Popover, type PopoverAnchor } from './internal/Popover';
 import { CardNetworkBadge } from './internal/CardNetworkBadge';
-import { useTheme } from './internal/theme';
+import { usePrimerTheme } from './internal/theme';
 import { TRAILING_ICON_MARGIN } from './inputs/dimensions';
 
-const LOG = '[CardNetworkSelector]';
+const LOG = '[PrimerCardNetworkSelector]';
 
 const CHEVRON_SIZE = 24;
 const CHEVRON_GAP = 4;
 const chevronDownIcon = require('./internal/screens/assets/chevron-down.png');
 
-export interface CardNetworkSelectorProps {
+export interface PrimerCardNetworkSelectorProps {
   testID?: string;
 }
 
 // Trailing adornment for the card-number input when 2+ networks are detected.
-// Three rendering modes (decided by useCardNetworkSelection):
+// Three rendering modes (decided by usePrimerCardNetworkSelection):
 //   - none      → returns null (caller falls back to its single-network icon)
 //   - dual-badge → side-by-side badges, no chevron (EFTPOS + Visa case)
 //   - selectable → selected badge + chevron, popover list on tap
-export function CardNetworkSelector({ testID }: CardNetworkSelectorProps) {
-  const tokens = useTheme();
+export function PrimerCardNetworkSelector({ testID }: PrimerCardNetworkSelectorProps) {
+  const tokens = usePrimerTheme();
   const { availableNetworks, displayedIdentifier, isSelectorVisible, isDualBadge, selectNetwork } =
-    useCardNetworkSelection();
+    usePrimerCardNetworkSelection();
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [anchor, setAnchor] = useState<PopoverAnchor | null>(null);
   const triggerRef = useRef<ComponentRef<typeof View>>(null);

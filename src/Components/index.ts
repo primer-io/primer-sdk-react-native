@@ -1,7 +1,7 @@
 export { PrimerCheckoutProvider } from './PrimerCheckoutProvider';
 export { usePrimerCheckout } from './hooks/usePrimerCheckout';
-export { useLocalization } from './internal/localization';
-export { usePaymentMethods } from './hooks/usePaymentMethods';
+export { usePrimerLocalization } from './internal/localization';
+export { usePrimerPaymentMethods } from './hooks/usePrimerPaymentMethods';
 export type {
   PrimerCheckoutProviderProps,
   PrimerCheckoutContextValue,
@@ -12,33 +12,33 @@ export type { TranslationParams } from './internal/localization';
 export type {
   PaymentMethodItem,
   PaymentMethodSurcharge,
-  UsePaymentMethodsOptions,
-  UsePaymentMethodsReturn,
+  UsePrimerPaymentMethodsOptions,
+  UsePrimerPaymentMethodsReturn,
 } from './types/PaymentMethodTypes';
-export { useCardForm } from './hooks/useCardForm';
-export type { UseCardFormOptions, UseCardFormReturn, CardFormErrors, CardFormField } from './types/CardFormTypes';
-export { useCardNetwork } from './hooks/useCardNetwork';
-export type { UseCardNetworkReturn } from './hooks/useCardNetwork';
+export { usePrimerCardForm } from './hooks/usePrimerCardForm';
+export type { UseCardFormOptions, UsePrimerCardFormReturn, CardFormErrors, CardFormField } from './types/CardFormTypes';
+export { usePrimerCardNetwork } from './hooks/usePrimerCardNetwork';
+export type { UseCardNetworkReturn } from './hooks/usePrimerCardNetwork';
 export type { CardNetworkDescriptor, CardNetworkId, CardNetworkIconSource, CvvLabel } from './internal/cardNetwork';
-export { useBillingAddressForm } from './hooks/useBillingAddressForm';
+export { usePrimerBillingAddressForm } from './hooks/usePrimerBillingAddressForm';
 export type {
-  UseBillingAddressFormOptions,
-  UseBillingAddressFormReturn,
+  UsePrimerBillingAddressFormOptions,
+  UsePrimerBillingAddressFormReturn,
   BillingAddressFormErrors,
   BillingAddressField,
   PrimerBillingAddressFormProps,
 } from './types/BillingAddressFormTypes';
-export { useCardNetworkSelection } from './hooks/useCardNetworkSelection';
-export type { CardNetwork, UseCardNetworkSelectionReturn } from './types/CardNetworkSelection';
-export { CardNetworkSelector } from './CardNetworkSelector';
-export type { CardNetworkSelectorProps } from './CardNetworkSelector';
+export { usePrimerCardNetworkSelection } from './hooks/usePrimerCardNetworkSelection';
+export type { CardNetworkDetails, UsePrimerCardNetworkSelectionReturn } from './types/CardNetworkSelection';
+export { PrimerCardNetworkSelector } from './PrimerCardNetworkSelector';
+export type { PrimerCardNetworkSelectorProps } from './PrimerCardNetworkSelector';
 export { PrimerPaymentMethodList } from './PrimerPaymentMethodList';
 export type { PrimerPaymentMethodListProps } from './types/PrimerPaymentMethodListTypes';
 export { PrimerVaultedPaymentMethod } from './PrimerVaultedPaymentMethod';
-export { useVaultedPaymentMethods } from './hooks/useVaultedPaymentMethods';
+export { usePrimerVaultManager } from './hooks/usePrimerVaultManager';
 export type {
   VaultedPaymentMethodItem,
-  UseVaultedPaymentMethodsReturn,
+  UsePrimerVaultManagerReturn,
   PrimerVaultedPaymentMethodProps,
 } from './types/VaultedPaymentMethodTypes';
 export { PrimerCheckoutSheet } from './PrimerCheckoutSheet';
@@ -50,21 +50,19 @@ export type { PrimerAcceptedCardNetworksProps } from './PrimerAcceptedCardNetwor
 export { PrimerBillingAddressForm } from './PrimerBillingAddressForm';
 export {
   PrimerTextInput,
-  CardNumberInput,
-  ExpiryDateInput,
-  CVVInput,
-  CardholderNameInput,
-  CountrySelectorRow,
+  PrimerCardNumberInput,
+  PrimerExpiryDateInput,
+  PrimerCVVInput,
+  PrimerCardholderNameInput,
 } from './inputs';
-export type { CountrySelectorRowProps } from './inputs';
 export type {
   PrimerTextInputTheme,
   PrimerTextInputProps,
   PrimerTextInputRef,
   CardInputTheme,
-  CardInputBaseProps,
-  CardNumberInputProps,
-  ExpiryDateInputProps,
-  CVVInputProps,
-  CardholderNameInputProps,
+  PrimerCardInputProps,
+  PrimerCardNumberInputProps,
+  PrimerExpiryDateInputProps,
+  PrimerCVVInputProps,
+  PrimerCardholderNameInputProps,
 } from './types/CardInputTypes';

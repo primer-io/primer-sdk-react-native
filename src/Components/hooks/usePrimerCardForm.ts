@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useCardFormStateContext } from '../internal/form-state/CardFormStateProvider';
 import { usePrimerCheckout } from './usePrimerCheckout';
-import type { UseCardFormOptions, UseCardFormReturn } from '../types/CardFormTypes';
+import type { UseCardFormOptions, UsePrimerCardFormReturn } from '../types/CardFormTypes';
 
 /**
  * Card form adapter hook. Thin wrapper over `CardFormStateProvider` — the
@@ -12,11 +12,11 @@ import type { UseCardFormOptions, UseCardFormReturn } from '../types/CardFormTyp
  * Must be used inside a `<PrimerCheckoutProvider>` tree that also mounts
  * `<CardFormStateProvider>` (the drop-in `CheckoutFlow` does this for you).
  */
-export function useCardForm(options: UseCardFormOptions = {}): UseCardFormReturn {
+export function usePrimerCardForm(options: UseCardFormOptions = {}): UsePrimerCardFormReturn {
   const state = useCardFormStateContext();
   if (!state) {
     throw new Error(
-      'useCardForm must be used within a <CardFormStateProvider>. ' +
+      'usePrimerCardForm must be used within a <CardFormStateProvider>. ' +
         'The built-in <PrimerCheckoutSheet>/<CheckoutFlow> wires this automatically.'
     );
   }

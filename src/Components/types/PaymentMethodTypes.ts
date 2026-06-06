@@ -34,13 +34,13 @@ export interface PaymentMethodItem {
 // Re-exported so `IPrimerAsset` is reachable for consumers that want all logo variants.
 export type { IPrimerAsset };
 
-export interface UsePaymentMethodsOptions {
+export interface UsePrimerPaymentMethodsOptions {
   include?: string[];
   exclude?: string[];
   onLoad?: (methods: PaymentMethodItem[]) => void;
 }
 
-export interface UsePaymentMethodsReturn {
+export interface UsePrimerPaymentMethodsReturn {
   paymentMethods: PaymentMethodItem[];
   isLoading: boolean;
   error: Error | null;

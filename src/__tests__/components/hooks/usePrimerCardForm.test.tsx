@@ -3,7 +3,7 @@ import { createElement, type ReactNode } from 'react';
 import { act, create } from 'react-test-renderer';
 import { PrimerCheckoutContext } from '../../../Components/internal/PrimerCheckoutContext';
 import { CardFormStateProvider } from '../../../Components/internal/form-state/CardFormStateProvider';
-import { useCardForm } from '../../../Components/hooks/useCardForm';
+import { usePrimerCardForm } from '../../../Components/hooks/usePrimerCardForm';
 import type { CardNetworkDescriptor } from '../../../Components/internal/cardNetwork';
 import type { PrimerCheckoutContextValue } from '../../../Components/types/PrimerCheckoutProviderTypes';
 import type { CardFormErrors } from '../../../Components/types/CardFormTypes';
@@ -23,8 +23,8 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 jest.mock('react-native', () => ({ useColorScheme: () => 'light' }), { virtual: true });
 
 let mockDescriptor: CardNetworkDescriptor = DEFAULT_DESCRIPTOR;
-jest.mock('../../../Components/hooks/useCardNetwork', () => ({
-  useCardNetwork: () => ({ network: mockDescriptor.id, descriptor: mockDescriptor, iconSource: null }),
+jest.mock('../../../Components/hooks/usePrimerCardNetwork', () => ({
+  usePrimerCardNetwork: () => ({ network: mockDescriptor.id, descriptor: mockDescriptor, iconSource: null }),
 }));
 
 beforeEach(() => {
@@ -101,27 +101,27 @@ const ALL_FIELD_ERRORS: CardFormErrors = {
   cardholderName: 'Cardholder required',
 };
 
-describe('useCardForm — error visibility', () => {
+describe('usePrimerCardForm — error visibility', () => {
   it('hides errors before any field has been focused', () => {
-    const { result } = renderHook(() => useCardForm(), contextWrapper(withErrors(ALL_FIELD_ERRORS)));
+    const { result } = renderHook(() => usePrimerCardForm(), contextWrapper(withErrors(ALL_FIELD_ERRORS)));
     expect(result.current.errors).toEqual({});
   });
 
   it('hides errors on a focused-but-not-yet-blurred field', () => {
-    const { result } = renderHook(() => useCardForm(), contextWrapper(withErrors(ALL_FIELD_ERRORS)));
+    const { result } = renderHook(() => usePrimerCardForm(), contextWrapper(withErrors(ALL_FIELD_ERRORS)));
     act(() => result.current.markFieldFocused('cardNumber'));
     expect(result.current.errors).toEqual({});
   });
 
   it('shows the field error after focus + blur', () => {
-    const { result } = renderHook(() => useCardForm(), contextWrapper(withErrors(ALL_FIELD_ERRORS)));
+    const { result } = renderHook(() => usePrimerCardForm(), contextWrapper(withErrors(ALL_FIELD_ERRORS)));
     act(() => result.current.markFieldFocused('cardNumber'));
     act(() => result.current.markFieldBlurred('cardNumber'));
     expect(result.current.errors).toEqual({ cardNumber: 'Invalid card number' });
   });
 
   it('hides the field error when re-focused (on-focus-clear)', () => {
-    const { result } = renderHook(() => useCardForm(), contextWrapper(withErrors(ALL_FIELD_ERRORS)));
+    const { result } = renderHook(() => usePrimerCardForm(), contextWrapper(withErrors(ALL_FIELD_ERRORS)));
     act(() => result.current.markFieldFocused('cvv'));
     act(() => result.current.markFieldBlurred('cvv'));
     expect(result.current.errors).toEqual({ cvv: 'Invalid CVV' });
@@ -130,21 +130,21 @@ describe('useCardForm — error visibility', () => {
   });
 
   it('shows every error after markSubmitAttempted regardless of focus state', () => {
-    const { result } = renderHook(() => useCardForm(), contextWrapper(withErrors(ALL_FIELD_ERRORS)));
+    const { result } = renderHook(() => usePrimerCardForm(), contextWrapper(withErrors(ALL_FIELD_ERRORS)));
     act(() => result.current.markSubmitAttempted());
     expect(result.current.errors).toEqual(ALL_FIELD_ERRORS);
     expect(result.current.submitAttempted).toBe(true);
   });
 
   it('keeps errors visible when user re-focuses a field after submit attempt', () => {
-    const { result } = renderHook(() => useCardForm(), contextWrapper(withErrors(ALL_FIELD_ERRORS)));
+    const { result } = renderHook(() => usePrimerCardForm(), contextWrapper(withErrors(ALL_FIELD_ERRORS)));
     act(() => result.current.markSubmitAttempted());
     act(() => result.current.markFieldFocused('cardNumber'));
     expect(result.current.errors.cardNumber).toBe('Invalid card number');
   });
 
   it('reset() clears submitAttempted and focus/blur state', () => {
-    const { result } = renderHook(() => useCardForm(), contextWrapper(withErrors(ALL_FIELD_ERRORS)));
+    const { result } = renderHook(() => usePrimerCardForm(), contextWrapper(withErrors(ALL_FIELD_ERRORS)));
     act(() => result.current.markSubmitAttempted());
     act(() => result.current.reset());
     expect(result.current.submitAttempted).toBe(false);
@@ -152,9 +152,9 @@ describe('useCardForm — error visibility', () => {
   });
 });
 
-describe('useCardForm — descriptor-driven dimensions', () => {
+describe('usePrimerCardForm — descriptor-driven dimensions', () => {
   it('cardNumberMaxLength tracks descriptor (default 22 = 19 digits + 3 gaps within)', () => {
-    const { result } = renderHook(() => useCardForm(), contextWrapper(baseContext));
+    const { result } = renderHook(() => usePrimerCardForm(), contextWrapper(baseContext));
     expect(result.current.cardNumberMaxLength).toBe(22);
   });
 
@@ -167,7 +167,7 @@ describe('useCardForm — descriptor-driven dimensions', () => {
       cvvLength: 4,
       cvvLabel: 'CID',
     };
-    const { result } = renderHook(() => useCardForm(), contextWrapper(baseContext));
+    const { result } = renderHook(() => usePrimerCardForm(), contextWrapper(baseContext));
     expect(result.current.cardNumberMaxLength).toBe(17);
   });
 
@@ -180,7 +180,7 @@ describe('useCardForm — descriptor-driven dimensions', () => {
       cvvLength: 4,
       cvvLabel: 'CID',
     };
-    const { result } = renderHook(() => useCardForm(), contextWrapper(baseContext));
+    const { result } = renderHook(() => usePrimerCardForm(), contextWrapper(baseContext));
     expect(result.current.descriptor.cvvLength).toBe(4);
     expect(result.current.descriptor.cvvLabel).toBe('CID');
   });

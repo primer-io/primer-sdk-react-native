@@ -17,7 +17,7 @@ export interface CardNetworkIconState {
 /**
  * Batch-resolves icon URIs for an ordered list of card networks. Preserves input order,
  * dedupes case-insensitively, and shares the module-level promise cache with
- * `useCardNetwork`, so an icon fetched once anywhere on the page is reused everywhere.
+ * `usePrimerCardNetwork`, so an icon fetched once anywhere on the page is reused everywhere.
  */
 export function useCardNetworkIcons(networks: string[]): CardNetworkIconState[] {
   const key = useMemo(() => [...new Set(networks.map((n) => n.toUpperCase()))].join('|'), [networks]);

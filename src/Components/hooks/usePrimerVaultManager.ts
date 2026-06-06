@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { usePrimerCheckout } from './usePrimerCheckout';
 import type {
-  UseVaultedPaymentMethodsReturn,
+  UsePrimerVaultManagerReturn,
   VaultDisplayMode,
   VaultedPaymentMethodItem,
 } from '../types/VaultedPaymentMethodTypes';
@@ -45,7 +45,7 @@ function toVaultedItem(method: PrimerVaultedPaymentMethod, iconUri: string | und
   };
 }
 
-export function useVaultedPaymentMethods(): UseVaultedPaymentMethodsReturn {
+export function usePrimerVaultManager(): UsePrimerVaultManagerReturn {
   const {
     vaultedMethods: rawMethods,
     vaultedIconUrisById,

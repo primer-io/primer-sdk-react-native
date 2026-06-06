@@ -7,8 +7,8 @@ import type { PrimerClientSessionPaymentMethodOption } from '../../models/Primer
 import type {
   PaymentMethodItem,
   PaymentMethodSurcharge,
-  UsePaymentMethodsOptions,
-  UsePaymentMethodsReturn,
+  UsePrimerPaymentMethodsOptions,
+  UsePrimerPaymentMethodsReturn,
 } from '../types/PaymentMethodTypes';
 
 const PAYMENT_CARD_TYPE = 'PAYMENT_CARD';
@@ -43,7 +43,7 @@ function buildSurchargeMap(
   return result;
 }
 
-export function usePaymentMethods(options: UsePaymentMethodsOptions = {}): UsePaymentMethodsReturn {
+export function usePrimerPaymentMethods(options: UsePrimerPaymentMethodsOptions = {}): UsePrimerPaymentMethodsReturn {
   const { include, exclude, onLoad } = options;
 
   const {

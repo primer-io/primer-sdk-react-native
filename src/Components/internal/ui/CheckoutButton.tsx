@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import type { TextStyle } from 'react-native';
-import { useTheme } from '../theme';
+import { usePrimerTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
 
 export interface CheckoutButtonProps {
@@ -13,7 +13,7 @@ export interface CheckoutButtonProps {
 }
 
 export function CheckoutButton({ title, onPress, variant, loading = false, disabled = false }: CheckoutButtonProps) {
-  const tokens = useTheme();
+  const tokens = usePrimerTheme();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
 
   const buttonStyle = variant === 'primary' ? styles.primaryButton : styles.outlinedButton;

@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import type { TextStyle } from 'react-native';
-import { useTheme } from '../internal/theme';
+import { usePrimerTheme } from '../internal/theme';
 import type { PrimerTokens } from '../internal/theme';
 
 export interface PrimerStatusScreenLayoutProps {
@@ -12,7 +12,7 @@ export interface PrimerStatusScreenLayoutProps {
 }
 
 export function PrimerStatusScreenLayout({ icon, title, subtitle, children }: PrimerStatusScreenLayoutProps) {
-  const tokens = useTheme();
+  const tokens = usePrimerTheme();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
 
   return (

@@ -3,7 +3,7 @@ import { createElement, type ReactNode } from 'react';
 import { act, create } from 'react-test-renderer';
 import { ThemeContext } from '../ThemeContext';
 import { defaultDarkTokens, defaultLightTokens } from '../tokens';
-import { useTheme } from '../useTheme';
+import { usePrimerTheme } from '../usePrimerTheme';
 import type { PrimerTokens } from '../types';
 
 let mockColorScheme: 'light' | 'dark' | null = 'light';
@@ -27,7 +27,7 @@ function renderHook<T>(hook: () => T, Wrapper?: (props: { children: ReactNode })
   return { result };
 }
 
-describe('useTheme', () => {
+describe('usePrimerTheme', () => {
   beforeEach(() => {
     mockColorScheme = 'light';
   });
@@ -35,19 +35,19 @@ describe('useTheme', () => {
   describe('outside provider', () => {
     it('returns defaultLightTokens in light mode', () => {
       mockColorScheme = 'light';
-      const { result } = renderHook(() => useTheme());
+      const { result } = renderHook(() => usePrimerTheme());
       expect(result.current).toBe(defaultLightTokens);
     });
 
     it('returns defaultDarkTokens in dark mode', () => {
       mockColorScheme = 'dark';
-      const { result } = renderHook(() => useTheme());
+      const { result } = renderHook(() => usePrimerTheme());
       expect(result.current).toBe(defaultDarkTokens);
     });
 
     it('returns defaultLightTokens when colorScheme is null', () => {
       mockColorScheme = null;
-      const { result } = renderHook(() => useTheme());
+      const { result } = renderHook(() => usePrimerTheme());
       expect(result.current).toBe(defaultLightTokens);
     });
   });
@@ -62,13 +62,13 @@ describe('useTheme', () => {
 
     it('returns defaultLightTokens in light mode', () => {
       mockColorScheme = 'light';
-      const { result } = renderHook(() => useTheme(), Wrapper);
+      const { result } = renderHook(() => usePrimerTheme(), Wrapper);
       expect(result.current).toBe(defaultLightTokens);
     });
 
     it('returns defaultDarkTokens in dark mode', () => {
       mockColorScheme = 'dark';
-      const { result } = renderHook(() => useTheme(), Wrapper);
+      const { result } = renderHook(() => usePrimerTheme(), Wrapper);
       expect(result.current).toBe(defaultDarkTokens);
     });
   });
@@ -88,13 +88,13 @@ describe('useTheme', () => {
 
     it('applies light override in light mode', () => {
       mockColorScheme = 'light';
-      const { result } = renderHook(() => useTheme(), Wrapper);
+      const { result } = renderHook(() => usePrimerTheme(), Wrapper);
       expect(result.current.colors.primary).toBe('#ff6b35');
     });
 
     it('does not apply light override in dark mode', () => {
       mockColorScheme = 'dark';
-      const { result } = renderHook(() => useTheme(), Wrapper);
+      const { result } = renderHook(() => usePrimerTheme(), Wrapper);
       expect(result.current.colors.primary).toBe(defaultDarkTokens.colors.primary);
     });
   });
@@ -118,13 +118,13 @@ describe('useTheme', () => {
 
     it('returns light override in light mode', () => {
       mockColorScheme = 'light';
-      const { result } = renderHook(() => useTheme(), Wrapper);
+      const { result } = renderHook(() => usePrimerTheme(), Wrapper);
       expect(result.current.colors.primary).toBe('#ff6b35');
     });
 
     it('returns dark override in dark mode', () => {
       mockColorScheme = 'dark';
-      const { result } = renderHook(() => useTheme(), Wrapper);
+      const { result } = renderHook(() => usePrimerTheme(), Wrapper);
       expect(result.current.colors.primary).toBe('#ff8c5a');
     });
   });
