@@ -45,6 +45,7 @@ export { PrimerCheckoutSheet } from './PrimerCheckoutSheet';
 export type { PrimerCheckoutSheetProps } from './PrimerCheckoutSheet';
 export { PrimerCardForm } from './PrimerCardForm';
 export type { PrimerCardFormProps } from './types/PrimerCardFormTypes';
+export { PrimerCardFormProvider } from './internal/form-state';
 export { PrimerAcceptedCardNetworks } from './PrimerAcceptedCardNetworks';
 export type { PrimerAcceptedCardNetworksProps } from './PrimerAcceptedCardNetworks';
 export { PrimerBillingAddressForm } from './PrimerBillingAddressForm';

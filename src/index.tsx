@@ -133,6 +133,8 @@ export type { NamedComponentValidatableData };
 export { PrimerCheckoutProvider } from './Components';
 export { usePrimerCheckout } from './Components';
 export { usePrimerPaymentMethods } from './Components';
+export { usePrimerVaultManager } from './Components';
+export type { VaultedPaymentMethodItem, UsePrimerVaultManagerReturn } from './Components';
 export type {
   PrimerCheckoutProviderProps,
   PrimerCheckoutContextValue,
@@ -146,15 +148,13 @@ export type {
   UsePrimerPaymentMethodsReturn,
 } from './Components';
 export { usePrimerCardForm } from './Components';
+export type { UseCardFormOptions, UsePrimerCardFormReturn, CardFormErrors, CardFormField } from './Components';
 export { usePrimerCardNetwork } from './Components';
 export type { UseCardNetworkReturn } from './Components';
 export { usePrimerCardNetworkSelection } from './Components';
 export type { CardNetworkDetails, CardNetworkId, UsePrimerCardNetworkSelectionReturn } from './Components';
 export { PrimerCardNetworkSelector } from './Components';
 export type { PrimerCardNetworkSelectorProps } from './Components';
-export { usePrimerVaultManager } from './Components';
-export type { VaultedPaymentMethodItem, UsePrimerVaultManagerReturn } from './Components';
-export type { UseCardFormOptions, UsePrimerCardFormReturn, CardFormErrors, CardFormField } from './Components';
 export { usePrimerBillingAddressForm } from './Components';
 export type {
   UsePrimerBillingAddressFormOptions,
@@ -169,6 +169,7 @@ export { PrimerCheckoutSheet } from './Components';
 export type { PrimerCheckoutSheetProps } from './Components';
 export { PrimerCardForm } from './Components';
 export type { PrimerCardFormProps } from './Components';
+export { PrimerCardFormProvider } from './Components';
 export { PrimerAcceptedCardNetworks } from './Components';
 export type { PrimerAcceptedCardNetworksProps } from './Components';
 export { PrimerBillingAddressForm } from './Components';

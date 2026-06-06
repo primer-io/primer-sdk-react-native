@@ -59,6 +59,8 @@ interface InternalState {
   vaultedError: Error | null;
   activeVaultedMethodId: string | null;
   vaultDisplayOverride: 'expanded' | null;
+  // Shopper-picked co-badged card network. Null until the user makes a
+  // selection in the popover. Persists across re-renders / hook callers.
   selectedCardNetwork: CardNetworkId | null;
   requiresVaultedCardCvv: boolean;
   cvvInputVisible: boolean;

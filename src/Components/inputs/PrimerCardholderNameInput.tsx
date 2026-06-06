@@ -1,10 +1,12 @@
 import { forwardRef } from 'react';
 import { PrimerTextInput } from './PrimerTextInput';
 import { usePrimerLocalization } from '../internal/localization';
+import { usePrimerCardForm } from '../hooks/usePrimerCardForm';
 import type { PrimerCardholderNameInputProps, PrimerTextInputRef } from '../types/CardInputTypes';
 
 export const PrimerCardholderNameInput = forwardRef<PrimerTextInputRef, PrimerCardholderNameInputProps>(
-  function PrimerCardholderNameInput({ cardForm, placeholder, label, ...rest }, ref) {
+  function PrimerCardholderNameInput({ placeholder, label, ...rest }, ref) {
+    const cardForm = usePrimerCardForm();
     const { t } = usePrimerLocalization();
     const resolvedLabel = label ?? t('primer_card_form_label_name');
     const resolvedPlaceholder = placeholder ?? t('primer_card_form_placeholder_name');
