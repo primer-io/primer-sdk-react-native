@@ -37,7 +37,7 @@ export function useCardNetwork(): UseCardNetworkReturn {
     setDescriptor(DEFAULT_DESCRIPTOR);
     if (!network) return;
     let cancelled = false;
-    fetchCardNetworkDescriptor(network).then((d) => {
+    void fetchCardNetworkDescriptor(network).then((d) => {
       if (cancelled) return;
       console.log(`${LOG} descriptor resolved ${JSON.stringify({ network, id: d.id })}`);
       setDescriptor(d);

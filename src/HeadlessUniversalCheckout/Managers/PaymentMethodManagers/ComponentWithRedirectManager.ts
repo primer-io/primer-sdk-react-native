@@ -119,37 +119,37 @@ export class PrimerHeadlessUniversalCheckoutComponentWithRedirectManager {
 
   private async configureListeners(props: ComponentWithRedirectManagerProps): Promise<void> {
     if (props?.onStep) {
-      this.addListener('onStep', (data) => {
+      void this.addListener('onStep', (data) => {
         props.onStep?.(data);
       });
     }
 
     if (props?.onInvalid) {
-      this.addListener('onInvalid', (data) => {
+      void this.addListener('onInvalid', (data) => {
         props.onInvalid?.(data);
       });
     }
 
     if (props?.onError) {
-      this.addListener('onError', (data) => {
+      void this.addListener('onError', (data) => {
         props.onError?.(data);
       });
     }
 
     if (props?.onValid) {
-      this.addListener('onValid', (data) => {
+      void this.addListener('onValid', (data) => {
         props.onValid?.(data);
       });
     }
 
     if (props?.onValidating) {
-      this.addListener('onValidating', (data) => {
+      void this.addListener('onValidating', (data) => {
         props.onValidating?.(data);
       });
     }
 
     if (props?.onValidationError) {
-      this.addListener('onValidationError', (data) => {
+      void this.addListener('onValidationError', (data) => {
         props.onValidationError?.(data);
       });
     }
