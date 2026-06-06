@@ -15,6 +15,12 @@ import HeadlessCheckoutKlarnaScreen from './screens/HeadlessCheckoutKlarnaScreen
 import HeadlessCheckoutWithRedirect from './screens/HeadlessCheckoutWithRedirect';
 import HeadlessCheckoutStripeAchScreen from './screens/HeadlessCheckoutStripeAchScreen';
 import {CheckoutComponentsListScreen} from './screens/CheckoutComponentsListScreen';
+import {CustomPaymentSelectionScreen} from './screens/CustomPaymentSelectionScreen';
+import {CoffeeReorderScreen} from './screens/CoffeeReorderScreen';
+import {AccordionCheckoutScreen} from './screens/AccordionCheckoutScreen';
+import {CardPreviewScreen} from './screens/CardPreviewScreen';
+import {CoinTopUpScreen} from './screens/CoinTopUpScreen';
+import {HooksOnlyScreen} from './screens/HooksOnlyScreen';
 import {LogBox} from 'react-native';
 import {
   SafeAreaProvider,
@@ -55,6 +61,36 @@ const App = () => {
             name="CheckoutComponentsList"
             component={CheckoutComponentsListScreen}
             options={{title: 'Checkout Components'}}
+          />
+          <Stack.Screen
+            name="CustomPaymentSelection"
+            component={CustomPaymentSelectionScreen}
+            options={{title: 'Secure checkout'}}
+          />
+          <Stack.Screen
+            name="CoffeeReorder"
+            component={CoffeeReorderScreen}
+            options={{title: 'Quick reorder'}}
+          />
+          <Stack.Screen
+            name="AccordionCheckout"
+            component={AccordionCheckoutScreen}
+            options={{title: 'Checkout'}}
+          />
+          <Stack.Screen
+            name="CardPreview"
+            component={CardPreviewScreen}
+            options={{title: 'Slide to pay'}}
+          />
+          <Stack.Screen
+            name="CoinTopUp"
+            component={CoinTopUpScreen}
+            options={{title: 'Coin store'}}
+          />
+          <Stack.Screen
+            name="HooksOnly"
+            component={HooksOnlyScreen}
+            options={{title: 'Bring-your-own UI'}}
           />
           <Stack.Screen name="Klarna" component={HeadlessCheckoutKlarnaScreen} />
           <Stack.Screen
