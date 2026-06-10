@@ -1,52 +1,52 @@
 package com.primerioreactnative.utils
 
-import io.primer.android.components.analytics.data.model.EventType
+import io.primer.android.components.analytics.data.model.AnalyticsEvent
 
 @Suppress("CyclomaticComplexMethod", "ReturnCount")
-internal fun toEventType(name: String, metadata: Map<String, String>?): EventType? {
+internal fun toAnalyticsEvent(name: String, metadata: Map<String, String>?): AnalyticsEvent? {
     return when (name) {
-        "SDK_INIT_START" -> EventType.SdkInitStart
-        "SDK_INIT_END" -> EventType.SdkInitEnd
-        "CHECKOUT_FLOW_STARTED" -> EventType.CheckoutFlowStarted
-        "PAYMENT_FLOW_EXITED" -> EventType.PaymentFlowExited
-        "PAYMENT_REATTEMPTED" -> EventType.PaymentReattempted
+        "SDK_INIT_START" -> AnalyticsEvent.SdkInitStart
+        "SDK_INIT_END" -> AnalyticsEvent.SdkInitEnd
+        "CHECKOUT_FLOW_STARTED" -> AnalyticsEvent.CheckoutFlowStarted
+        "PAYMENT_FLOW_EXITED" -> AnalyticsEvent.PaymentFlowExited
+        "PAYMENT_REATTEMPTED" -> AnalyticsEvent.PaymentReattempted
 
         "PAYMENT_METHOD_SELECTION" -> {
             val paymentMethod = metadata?.get("paymentMethod") ?: return null
-            EventType.PaymentMethodSelection(paymentMethod)
+            AnalyticsEvent.PaymentMethodSelection(paymentMethod)
         }
         "PAYMENT_DETAILS_ENTERED" -> {
             val paymentMethod = metadata?.get("paymentMethod") ?: return null
-            EventType.PaymentDetailsEntered(paymentMethod)
+            AnalyticsEvent.PaymentDetailsEntered(paymentMethod)
         }
         "PAYMENT_SUBMITTED" -> {
             val paymentMethod = metadata?.get("paymentMethod") ?: return null
-            EventType.PaymentSubmitted(paymentMethod)
+            AnalyticsEvent.PaymentSubmitted(paymentMethod)
         }
         "PAYMENT_PROCESSING_STARTED" -> {
             val paymentMethod = metadata?.get("paymentMethod") ?: return null
-            EventType.PaymentProcessingStarted(paymentMethod)
+            AnalyticsEvent.PaymentProcessingStarted(paymentMethod)
         }
         "PAYMENT_SUCCESS" -> {
             val paymentMethod = metadata?.get("paymentMethod") ?: return null
             val paymentId = metadata["paymentId"] ?: return null
-            EventType.PaymentSuccess(paymentMethod, paymentId)
+            AnalyticsEvent.PaymentSuccess(paymentMethod, paymentId)
         }
         "PAYMENT_FAILURE" -> {
             val paymentMethod = metadata?.get("paymentMethod") ?: return null
             val paymentId = metadata["paymentId"]
-            EventType.PaymentFailure(paymentMethod, paymentId)
+            AnalyticsEvent.PaymentFailure(paymentMethod, paymentId)
         }
         "PAYMENT_THREEDS" -> {
             val paymentMethod = metadata?.get("paymentMethod") ?: return null
             val threedsProvider = metadata["threedsProvider"] ?: return null
             val threedsResponse = metadata["threedsResponse"]
-            EventType.PaymentThreeDS(paymentMethod, threedsProvider, threedsResponse)
+            AnalyticsEvent.PaymentThreeDS(paymentMethod, threedsProvider, threedsResponse)
         }
         "PAYMENT_REDIRECT_TO_THIRD_PARTY" -> {
             val paymentMethod = metadata?.get("paymentMethod") ?: return null
             val redirectDestinationUrl = metadata["redirectDestinationUrl"] ?: return null
-            EventType.PaymentRedirect(paymentMethod, redirectDestinationUrl)
+            AnalyticsEvent.PaymentRedirect(paymentMethod, redirectDestinationUrl)
         }
 
         else -> null

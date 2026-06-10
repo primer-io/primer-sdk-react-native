@@ -13,7 +13,7 @@ import com.primerioreactnative.datamodels.PrimerSettingsRN
 import com.primerioreactnative.datamodels.toPrimerSettings
 import com.primerioreactnative.utils.PrimerImplementedRNCallbacks
 import com.primerioreactnative.utils.errorTo
-import com.primerioreactnative.utils.toEventType
+import com.primerioreactnative.utils.toAnalyticsEvent
 import com.primerioreactnative.utils.toWritableMap
 import io.primer.android.Primer
 import io.primer.android.PrimerSessionIntent
@@ -251,8 +251,8 @@ internal open class DefaultNativePrimerModule(
             val metadataMap: Map<String, String>? = metadata?.let {
                 json.decodeFromString<Map<String, String>>(it)
             }
-            val eventType = toEventType(eventName, metadataMap) ?: return promise.resolve(null)
-            analyticsLoggingBridge?.sendEvent(eventType)
+            val analyticsEvent = toAnalyticsEvent(eventName, metadataMap) ?: return promise.resolve(null)
+            analyticsLoggingBridge?.sendEvent(analyticsEvent)
             promise.resolve(null)
         } catch (expected: Exception) {
             promise.resolve(null)
