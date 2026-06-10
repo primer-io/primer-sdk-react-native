@@ -1,4 +1,4 @@
-import PrimerSDK
+@_spi(PrimerInternal) import PrimerSDK
 import React
 
 // swiftlint:disable type_name
@@ -110,8 +110,10 @@ class RNPrimerHeadlessUniversalCheckoutVaultManager: RCTEventEmitter {
   func requiresVaultedCardCvv(
     _ resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock
   ) {
-    // `captureVaultedCardCvv` is internal to the iOS SDK, so the bridge can't read it yet;
-    // stubbed to false pending a public accessor (ACC-7315).
-    resolver(false)
+    guard #available(iOS 15.0, *) else {
+      resolver(false)
+      return
+    }
+    resolver(ComponentsClientSessionBridge().getCaptureVaultedCardCvv())
   }
 }

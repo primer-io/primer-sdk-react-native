@@ -14,6 +14,7 @@ import com.primerioreactnative.components.datamodels.manager.vault.toPrimerVault
 import com.primerioreactnative.datamodels.ErrorTypeRN
 import com.primerioreactnative.utils.errorTo
 import com.primerioreactnative.utils.toWritableMap
+import io.primer.android.components.bridge.clientsession.ComponentsClientSessionBridge
 import io.primer.android.components.manager.vault.PrimerHeadlessUniversalCheckoutVaultManager
 import io.primer.android.components.manager.vault.PrimerHeadlessUniversalCheckoutVaultManagerInterface
 import kotlinx.coroutines.CoroutineScope
@@ -173,9 +174,7 @@ class PrimerRNHeadlessUniversalCheckoutVaultManager(
 
     @ReactMethod
     fun requiresVaultedCardCvv(promise: Promise) {
-        // `captureVaultedCardCvv` is internal to the Android SDK, so the bridge can't read it yet;
-        // stubbed to false pending a public accessor (ACC-7315).
-        promise.resolve(false)
+        promise.resolve(ComponentsClientSessionBridge.create().getCaptureVaultedCardCvv())
     }
 
     companion object {
