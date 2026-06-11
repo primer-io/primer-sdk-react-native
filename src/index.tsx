@@ -220,8 +220,18 @@ export type {
   RouteParamMap,
 } from './Components/internal/navigation';
 
-export { LoadingScreen, SuccessScreen, ErrorScreen, StatusScreenLayout } from './Components/internal/screens';
-export type { StatusScreenLayoutProps } from './Components/internal/screens';
+export {
+  PrimerLoadingScreen,
+  PrimerSuccessScreen,
+  PrimerErrorScreen,
+  PrimerStatusScreenLayout,
+} from './Components/status';
+export type {
+  PrimerLoadingScreenProps,
+  PrimerSuccessScreenProps,
+  PrimerErrorScreenProps,
+  PrimerStatusScreenLayoutProps,
+} from './Components/status';
 
 // must be exported in order to support the old architecture
 const nativeModule = require('./specs/NativePrimer').default;

@@ -11,9 +11,9 @@ import {
   useNavigation,
   useRoute,
   useTheme,
-  LoadingScreen as RealLoadingScreen,
-  SuccessScreen as RealSuccessScreen,
-  ErrorScreen as RealErrorScreen,
+  PrimerLoadingScreen as RealLoadingScreen,
+  PrimerSuccessScreen as RealSuccessScreen,
+  PrimerErrorScreen as RealErrorScreen,
 } from '@primer-io/react-native';
 
 // --- Sample Screens ---
