@@ -83,7 +83,7 @@ export function CardFormScreen() {
       await billingForm.flush();
     }
     replace(CheckoutRoute.processing);
-    void cardForm.submit().catch((err) => console.warn(`[CardFormScreen] submit failed: ${String(err)}`));
+    void cardForm.submit();
   }, [canSubmit, cardForm, billingForm, replace]);
 
   return (

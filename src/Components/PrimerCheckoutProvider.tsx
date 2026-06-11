@@ -319,7 +319,7 @@ export function PrimerCheckoutProvider({
       cancelled = true;
       // Vault manager is tied to the native session — let the next session recreate it.
       vaultManagerRef.current = null;
-      void PrimerHeadlessUniversalCheckout.cleanUp().catch((err) => console.warn(`${LOG} cleanUp failed ${fmt(err)}`));
+      void PrimerHeadlessUniversalCheckout.cleanUp();
     };
   }, [clientToken]);
 
