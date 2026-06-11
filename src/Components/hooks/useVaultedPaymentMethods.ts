@@ -6,6 +6,7 @@ import type {
   VaultedPaymentMethodItem,
 } from '../types/VaultedPaymentMethodTypes';
 import type { PrimerVaultedPaymentMethod } from '../../models/PrimerVaultedPaymentMethod';
+import type { PrimerVaultedPaymentMethodAdditionalData } from '../../models/PrimerVaultedPaymentMethodAdditionalData';
 
 const CARD_PAYMENT_METHOD_TYPE = 'PAYMENT_CARD';
 
@@ -56,6 +57,8 @@ export function useVaultedPaymentMethods(): UseVaultedPaymentMethodsReturn {
     selectVaultedMethodId,
     requestExpandedVaultDisplay,
     deleteVaultedPaymentMethod,
+    requiresVaultedCardCvv,
+    cvvInputVisible,
   } = usePrimerCheckout();
 
   const vaultedMethods = useMemo<VaultedPaymentMethodItem[]>(
@@ -77,14 +80,17 @@ export function useVaultedPaymentMethods(): UseVaultedPaymentMethodsReturn {
   const vaultDisplayMode: VaultDisplayMode =
     hasUserSelected && vaultDisplayOverride !== 'expanded' ? 'lite' : 'expanded';
 
-  const pay = useCallback(async () => {
-    if (!activeMethod) return;
-    await payFromVault(activeMethod.id);
-  }, [activeMethod, payFromVault]);
+  const pay = useCallback(
+    async (additionalData?: PrimerVaultedPaymentMethodAdditionalData) => {
+      if (!activeMethod) return;
+      await payFromVault(activeMethod.id, additionalData);
+    },
+    [activeMethod, payFromVault]
+  );
 
   const payById = useCallback(
-    async (id: string) => {
-      await payFromVault(id);
+    async (id: string, additionalData?: PrimerVaultedPaymentMethodAdditionalData) => {
+      await payFromVault(id, additionalData);
     },
     [payFromVault]
   );
@@ -97,6 +103,8 @@ export function useVaultedPaymentMethods(): UseVaultedPaymentMethodsReturn {
     vaultDisplayMode,
     isLoading: isLoadingVaulted,
     error: vaultedError,
+    requiresVaultedCardCvv,
+    cvvInputVisible,
     pay,
     payById,
     selectVaultedMethodId,

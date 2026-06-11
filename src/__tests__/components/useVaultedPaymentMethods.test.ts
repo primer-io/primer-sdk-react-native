@@ -81,6 +81,9 @@ const baseContext: PrimerCheckoutContextValue = {
   selectVaultedMethodId: () => {},
   requestExpandedVaultDisplay: () => {},
   deleteVaultedPaymentMethod: deleteVaultedPaymentMethodFn,
+  requiresVaultedCardCvv: false,
+  cvvInputVisible: false,
+  setCvvInputVisible: () => {},
 };
 
 beforeEach(() => {
@@ -144,13 +147,13 @@ describe('useVaultedPaymentMethods', () => {
     const ctx: PrimerCheckoutContextValue = { ...baseContext, vaultedMethods: [vault] };
     const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(ctx));
     await result.current.pay();
-    expect(payFromVault).toHaveBeenCalledWith('vault-1');
+    expect(payFromVault).toHaveBeenCalledWith('vault-1', undefined);
   });
 
   it('payById() delegates to payFromVault with the passed id', async () => {
     const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(baseContext));
     await result.current.payById('explicit-id');
-    expect(payFromVault).toHaveBeenCalledWith('explicit-id');
+    expect(payFromVault).toHaveBeenCalledWith('explicit-id', undefined);
   });
 
   it('surfaces isLoading / error from context', () => {
@@ -272,7 +275,7 @@ describe('useVaultedPaymentMethods', () => {
       };
       const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(ctx));
       await result.current.pay();
-      expect(payFromVault).toHaveBeenCalledWith('b');
+      expect(payFromVault).toHaveBeenCalledWith('b', undefined);
     });
 
     it('charges originalDefault when no selection has been made', async () => {
@@ -282,7 +285,7 @@ describe('useVaultedPaymentMethods', () => {
       };
       const { result } = renderHook(() => useVaultedPaymentMethods(), contextWrapper(ctx));
       await result.current.pay();
-      expect(payFromVault).toHaveBeenCalledWith('a');
+      expect(payFromVault).toHaveBeenCalledWith('a', undefined);
     });
   });
 

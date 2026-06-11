@@ -5,6 +5,7 @@ import PrimerHeadlessUniversalCheckoutRawDataManager from '../HeadlessUniversalC
 import PrimerHeadlessUniversalCheckoutVaultManager from '../HeadlessUniversalCheckout/Managers/VaultManager';
 import { PrimerHeadlessUniversalCheckout } from '../HeadlessUniversalCheckout/PrimerHeadlessUniversalCheckout';
 import { PrimerError } from '../models/PrimerError';
+import { PrimerAnalytics } from './analytics';
 import { fmt } from './internal/debug';
 import { PrimerCheckoutContext } from './internal/PrimerCheckoutContext';
 import { mergeTokens } from './internal/theme/merge';
@@ -18,6 +19,7 @@ import type { PrimerCardData, PrimerRawData } from '../models/PrimerRawData';
 import type { PrimerAddress } from '../models/PrimerClientSession';
 import type { PrimerBinData } from '../models/PrimerBinData';
 import type { PrimerVaultedPaymentMethod } from '../models/PrimerVaultedPaymentMethod';
+import type { PrimerVaultedPaymentMethodAdditionalData } from '../models/PrimerVaultedPaymentMethodAdditionalData';
 import type {
   PrimerCheckoutProviderProps,
   PrimerCheckoutContextValue,
@@ -58,6 +60,8 @@ interface InternalState {
   activeVaultedMethodId: string | null;
   vaultDisplayOverride: 'expanded' | null;
   selectedCardNetwork: CardNetworkId | null;
+  requiresVaultedCardCvv: boolean;
+  cvvInputVisible: boolean;
 }
 
 const initialState: InternalState = {
@@ -79,6 +83,8 @@ const initialState: InternalState = {
   activeVaultedMethodId: null,
   selectedCardNetwork: null,
   vaultDisplayOverride: null,
+  requiresVaultedCardCvv: false,
+  cvvInputVisible: false,
 };
 
 /**
@@ -386,6 +392,15 @@ export function PrimerCheckoutProvider({
       const vm = new PrimerHeadlessUniversalCheckoutVaultManager();
       await vm.configure();
       vaultManagerRef.current = vm;
+      let requiresCvv = false;
+      try {
+        requiresCvv = await vm.requiresVaultedCardCvv();
+      } catch (cvvErr) {
+        console.warn(`${LOG} requiresVaultedCardCvv failed; defaulting to false ${fmt(cvvErr)}`);
+      }
+      setState((prev) =>
+        prev.requiresVaultedCardCvv === requiresCvv ? prev : { ...prev, requiresVaultedCardCvv: requiresCvv }
+      );
     }
     const methods = await vaultManagerRef.current.fetchVaultedPaymentMethods();
     const iconEntries = await Promise.all(
@@ -428,7 +443,6 @@ export function PrimerCheckoutProvider({
       try {
         const { methods, iconMap } = await refreshVaultedMethods();
         if (cancelled) return;
-        console.log(`${LOG} vault fetched ${methods.length} method(s)`);
         setState((prev) => ({
           ...prev,
           vaultedMethods: methods,
@@ -722,6 +736,10 @@ export function PrimerCheckoutProvider({
     );
   }, []);
 
+  const setCvvInputVisible = useCallback((visible: boolean) => {
+    setState((prev) => (prev.cvvInputVisible === visible ? prev : { ...prev, cvvInputVisible: visible }));
+  }, []);
+
   // Vanish fallback: if the user-selected method is no longer in `vaultedMethods`
   // (mid-session client-session update removed it), clear the override so the
   // hook falls back to the new originalDefault and the lite layout disappears.
@@ -736,28 +754,38 @@ export function PrimerCheckoutProvider({
     );
   }, [state.activeVaultedMethodId, state.vaultedMethods]);
 
-  const payFromVault = useCallback(async (vaultedPaymentMethodId: string) => {
-    const vm = vaultManagerRef.current;
-    if (!vm) {
-      console.warn(`${LOG} payFromVault: vault manager not configured`);
-      return;
-    }
-    console.log(`${LOG} payFromVault id=${vaultedPaymentMethodId}`);
-    // Clear any stale outcome so PaymentOutcomeTransitioner re-fires for this attempt.
-    setState((prev) => (prev.paymentOutcome === null ? prev : { ...prev, paymentOutcome: null }));
-    try {
-      await vm.startPaymentFlow(vaultedPaymentMethodId);
-      // Outcome arrives through the shared onCheckoutComplete/onError callbacks.
-    } catch (err) {
-      console.error(`${LOG} payFromVault failed ${fmt(err)}`);
-      // Surface as an error outcome so the transitioner routes to the error screen.
-      const primerError = err as PrimerError;
-      setState((prev) => ({
-        ...prev,
-        paymentOutcome: { status: 'error', error: primerError, data: null },
-      }));
-    }
-  }, []);
+  const payFromVault = useCallback(
+    async (vaultedPaymentMethodId: string, additionalData?: PrimerVaultedPaymentMethodAdditionalData) => {
+      const vm = vaultManagerRef.current;
+      if (!vm) {
+        console.warn(`${LOG} payFromVault: vault manager not configured`);
+        return;
+      }
+      // Clear any stale outcome so PaymentOutcomeTransitioner re-fires for this attempt.
+      setState((prev) => (prev.paymentOutcome === null ? prev : { ...prev, paymentOutcome: null }));
+      try {
+        await vm.startPaymentFlow(vaultedPaymentMethodId, additionalData);
+      } catch (err) {
+        console.error(`${LOG} payFromVault failed ${fmt(err)}`);
+        if (additionalData?.cvv) {
+          const errorId =
+            (err as PrimerError | { errorId?: string } | undefined)?.errorId != null
+              ? String((err as PrimerError | { errorId?: string }).errorId)
+              : 'UNKNOWN';
+          void PrimerAnalytics.trackEvent('VAULT_CVV_SUBMISSION_FAILED', {
+            vaultedMethodId: vaultedPaymentMethodId,
+            errorId,
+          });
+        }
+        const primerError = err as PrimerError;
+        setState((prev) => ({
+          ...prev,
+          paymentOutcome: { status: 'error', error: primerError, data: null },
+        }));
+      }
+    },
+    []
+  );
 
   const deleteVaultedPaymentMethod = useCallback(
     async (vaultedPaymentMethodId: string): Promise<void> => {
@@ -829,6 +857,8 @@ export function PrimerCheckoutProvider({
       activeVaultedMethodId: state.activeVaultedMethodId,
       vaultDisplayOverride: state.vaultDisplayOverride,
       selectedCardNetwork: state.selectedCardNetwork,
+      requiresVaultedCardCvv: state.requiresVaultedCardCvv,
+      cvvInputVisible: state.cvvInputVisible,
       setActiveMethod,
       setRawData,
       setBillingAddress,
@@ -839,6 +869,7 @@ export function PrimerCheckoutProvider({
       payFromVault,
       selectVaultedMethodId,
       requestExpandedVaultDisplay,
+      setCvvInputVisible,
       deleteVaultedPaymentMethod,
     }),
     [
@@ -853,6 +884,7 @@ export function PrimerCheckoutProvider({
       payFromVault,
       selectVaultedMethodId,
       requestExpandedVaultDisplay,
+      setCvvInputVisible,
       deleteVaultedPaymentMethod,
     ]
   );

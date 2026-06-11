@@ -1,15 +1,20 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import type { TextStyle } from 'react-native';
 
+import { PrimerAnalytics } from './analytics';
 import { useTheme } from './internal/theme';
 import type { PrimerTokens } from './internal/theme';
 import { useLocalization } from './internal/localization';
 import { CheckoutRoute } from './internal/navigation/types';
 import { useNavigation } from './internal/navigation/useNavigation';
-import { CheckoutButton } from './internal/ui';
+import { CheckoutButton, VaultedCardCvvRow } from './internal/ui';
+import { useCardNetworkDescriptor } from './hooks/useCardNetworkDescriptor';
 import { useVaultedPaymentMethods } from './hooks/useVaultedPaymentMethods';
+import { usePrimerCheckout } from './hooks/usePrimerCheckout';
 import type { PrimerVaultedPaymentMethodProps, VaultedPaymentMethodItem } from './types/VaultedPaymentMethodTypes';
+
+const CARD_PAYMENT_METHOD_TYPE = 'PAYMENT_CARD';
 
 export const VAULTED_PAYMENT_METHOD_ROW_HEIGHT = 68;
 
@@ -19,8 +24,43 @@ export function PrimerVaultedPaymentMethod({ data, onPay, style }: PrimerVaulted
   const { t } = useLocalization();
 
   const hook = useVaultedPaymentMethods();
+  const { setCvvInputVisible } = usePrimerCheckout();
   const { replace } = useNavigation();
   const method = data !== undefined ? data : hook.activeMethod;
+
+  const requiresCvvInput = hook.cvvInputVisible;
+  const [cvvValue, setCvvValue] = useState('');
+
+  const network = method?.rawMethod.paymentInstrumentData?.network ?? null;
+  const isCard = method?.paymentInstrumentType === CARD_PAYMENT_METHOD_TYPE;
+  const shouldRequireCvv = hook.requiresVaultedCardCvv && isCard;
+  const descriptor = useCardNetworkDescriptor(network);
+  const expectedCvvLength = descriptor.cvvLength;
+  const isCvvComplete = !requiresCvvInput || cvvValue.length === expectedCvvLength;
+
+  useEffect(() => {
+    setCvvInputVisible(false);
+    setCvvValue('');
+  }, [method?.id, setCvvInputVisible]);
+
+  useEffect(() => {
+    if (hook.vaultDisplayMode !== 'expanded') return;
+    if (!requiresCvvInput) return;
+    void PrimerAnalytics.trackEvent('VAULT_CVV_REQUIRED_DISMISSED', {
+      vaultedMethodId: method?.id ?? '',
+    });
+    setCvvInputVisible(false);
+    setCvvValue('');
+  }, [hook.vaultDisplayMode, requiresCvvInput, method?.id, setCvvInputVisible]);
+
+  // Recover if the merchant flag flips false mid-session while the CVV row is open —
+  // otherwise the next Pay tap would still try to submit with a CVV.
+  useEffect(() => {
+    if (hook.requiresVaultedCardCvv) return;
+    if (!requiresCvvInput) return;
+    setCvvInputVisible(false);
+    setCvvValue('');
+  }, [hook.requiresVaultedCardCvv, requiresCvvInput, setCvvInputVisible]);
 
   const handlePress = useCallback(() => {
     if (!method) return;
@@ -28,11 +68,42 @@ export function PrimerVaultedPaymentMethod({ data, onPay, style }: PrimerVaulted
       onPay(method);
       return;
     }
-    // Jump to processing on Pay so the user doesn't stare at a stale form during tokenization.
-    // Matches the CardFormScreen submit pattern.
+    if (requiresCvvInput) {
+      if (cvvValue.length !== expectedCvvLength) return;
+      void PrimerAnalytics.trackEvent('VAULT_CVV_SUBMITTED', {
+        vaultedMethodId: method.id,
+        network: network ?? '',
+      });
+      replace(CheckoutRoute.processing);
+      void hook.pay({ cvv: cvvValue });
+      return;
+    }
+    if (shouldRequireCvv) {
+      // Commit the selection so the layout collapses to lite — this is also what the
+      // dismiss effect above listens for via vaultDisplayMode === 'expanded'.
+      hook.selectVaultedMethodId(method.id);
+      void PrimerAnalytics.trackEvent('VAULT_CVV_REQUIRED_RENDERED', {
+        vaultedMethodId: method.id,
+        network: network ?? '',
+        expectedCvvLength: String(expectedCvvLength),
+      });
+      setCvvInputVisible(true);
+      return;
+    }
     replace(CheckoutRoute.processing);
     void hook.pay();
-  }, [method, onPay, hook, replace]);
+  }, [
+    method,
+    onPay,
+    hook,
+    replace,
+    requiresCvvInput,
+    cvvValue,
+    expectedCvvLength,
+    shouldRequireCvv,
+    network,
+    setCvvInputVisible,
+  ]);
 
   if (!method) return null;
 
@@ -68,8 +139,22 @@ export function PrimerVaultedPaymentMethod({ data, onPay, style }: PrimerVaulted
             {expiryText != null && <Text style={styles.secondaryText}>{expiryText}</Text>}
           </View>
         </View>
+        {requiresCvvInput && (
+          <VaultedCardCvvRow
+            value={cvvValue}
+            onChangeValue={setCvvValue}
+            cvvLabel={descriptor.cvvLabel}
+            maxLength={descriptor.cvvLength}
+            autoFocus
+          />
+        )}
       </View>
-      <CheckoutButton title={t('primer_common_button_pay')} variant="primary" onPress={handlePress} />
+      <CheckoutButton
+        title={t('primer_common_button_pay')}
+        variant="primary"
+        onPress={handlePress}
+        disabled={!isCvvComplete}
+      />
     </View>
   );
 }
@@ -139,6 +224,7 @@ function createStyles(tokens: PrimerTokens) {
       borderColor: colors.primary,
       borderRadius: radii.medium,
       borderWidth: borders.strong,
+      gap: spacing.medium,
       padding: spacing.medium,
     },
   });

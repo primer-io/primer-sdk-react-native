@@ -1,5 +1,6 @@
 import type { StyleProp, ViewStyle } from 'react-native';
 import type { PrimerVaultedPaymentMethod } from '../../models/PrimerVaultedPaymentMethod';
+import type { PrimerVaultedPaymentMethodAdditionalData } from '../../models/PrimerVaultedPaymentMethodAdditionalData';
 
 /** View-model for a single vaulted payment method, with derived display fields. */
 export interface VaultedPaymentMethodItem {
@@ -37,10 +38,21 @@ export interface UseVaultedPaymentMethodsReturn {
   vaultDisplayMode: VaultDisplayMode;
   isLoading: boolean;
   error: Error | null;
-  /** Start payment for `activeMethod`. No-op when none is available. */
-  pay: () => Promise<void>;
-  /** Start payment for a specific vaulted method id. */
-  payById: (id: string) => Promise<void>;
+  /**
+   * Whether the merchant's session has CVV-recapture enabled for vaulted cards
+   * (`paymentMethods.PAYMENT_CARD.options.captureVaultedCardCvv = true`).
+   */
+  requiresVaultedCardCvv: boolean;
+  /** Whether the inline CVV input row is currently rendered inside the active vault tile. */
+  cvvInputVisible: boolean;
+  /**
+   * Start payment for `activeMethod`. No-op when none is available.
+   * If `additionalData` is supplied (e.g. `{ cvv }` for CVV-recapture), it is forwarded to the
+   * native vault-payment bridge.
+   */
+  pay: (additionalData?: PrimerVaultedPaymentMethodAdditionalData) => Promise<void>;
+  /** Start payment for a specific vaulted method id, with optional CVV-recapture additional data. */
+  payById: (id: string, additionalData?: PrimerVaultedPaymentMethodAdditionalData) => Promise<void>;
   /** Make `id` the active method. No-op when `id` matches the current active method id. */
   selectVaultedMethodId: (id: string) => void;
   /** Override `vaultDisplayMode` to `'expanded'` while preserving `activeMethod`. */

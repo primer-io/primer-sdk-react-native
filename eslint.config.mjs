@@ -18,6 +18,7 @@ export default tseslint.config(
       '**/babel.config.js',
       'index.js',
       '**/jest.config.js',
+      '**/jest.assetMock.js',
     ],
   },
   eslint.configs.recommended,

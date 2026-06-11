@@ -59,6 +59,7 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
     inputStyle,
     labelStyle,
     errorStyle,
+    accessibilityLabel,
     testID,
   },
   ref
@@ -180,6 +181,7 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
           blurOnSubmit={returnKeyType !== 'next'}
           inputAccessoryViewID={Platform.OS === 'ios' ? PRIMER_EMPTY_ACCESSORY_ID : undefined}
           accessibilityState={{ disabled: !editable }}
+          accessibilityLabel={accessibilityLabel ?? label}
           aria-invalid={hasError}
           testID={testID ? `${testID}-input` : undefined}
         />
