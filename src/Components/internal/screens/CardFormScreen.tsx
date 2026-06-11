@@ -83,7 +83,7 @@ export function CardFormScreen() {
       await billingForm.flush();
     }
     replace(CheckoutRoute.processing);
-    cardForm.submit();
+    void cardForm.submit();
   }, [canSubmit, cardForm, billingForm, replace]);
 
   return (

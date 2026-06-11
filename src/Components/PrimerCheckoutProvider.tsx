@@ -325,7 +325,7 @@ export function PrimerCheckoutProvider({
       cancelled = true;
       // Vault manager is tied to the native session — let the next session recreate it.
       vaultManagerRef.current = null;
-      PrimerHeadlessUniversalCheckout.cleanUp();
+      void PrimerHeadlessUniversalCheckout.cleanUp();
     };
   }, [clientToken]);
 
@@ -439,7 +439,7 @@ export function PrimerCheckoutProvider({
         : { ...prev, isLoadingVaulted: true, vaultedError: null }
     );
 
-    (async () => {
+    void (async () => {
       try {
         const { methods, iconMap } = await refreshVaultedMethods();
         if (cancelled) return;
@@ -562,7 +562,7 @@ export function PrimerCheckoutProvider({
     };
     lastManagerCallbacksRef.current = callbacks;
 
-    (async () => {
+    void (async () => {
       try {
         await manager.configure({ paymentMethodType: method, ...callbacks });
         if (cancelled) return;

@@ -25,7 +25,7 @@ import type { PrimerImplementedRNCallbacks } from './models/PrimerImplementedRNC
 const tokenizationHandler: PrimerTokenizationHandler = {
   handleFailure: async (errorMessage: string) => {
     try {
-      RNPrimer.handleTokenizationFailure(errorMessage);
+      await RNPrimer.handleTokenizationFailure(errorMessage);
     } catch (err) {
       console.error(err);
     }
@@ -33,7 +33,7 @@ const tokenizationHandler: PrimerTokenizationHandler = {
 
   handleSuccess: async () => {
     try {
-      RNPrimer.handleTokenizationSuccess();
+      await RNPrimer.handleTokenizationSuccess();
     } catch (err) {
       console.error(err);
     }
@@ -41,7 +41,7 @@ const tokenizationHandler: PrimerTokenizationHandler = {
 
   continueWithNewClientToken: async (newClientToken: string) => {
     try {
-      RNPrimer.handleTokenizationNewClientToken(newClientToken);
+      await RNPrimer.handleTokenizationNewClientToken(newClientToken);
     } catch (err) {
       console.error(err);
     }
@@ -53,7 +53,7 @@ const tokenizationHandler: PrimerTokenizationHandler = {
 const resumeHandler: PrimerResumeHandler = {
   handleFailure: async (errorMessage: string) => {
     try {
-      RNPrimer.handleResumeFailure(errorMessage);
+      await RNPrimer.handleResumeFailure(errorMessage);
     } catch (err) {
       console.error(err);
     }
@@ -61,7 +61,7 @@ const resumeHandler: PrimerResumeHandler = {
 
   handleSuccess: async () => {
     try {
-      RNPrimer.handleResumeSuccess();
+      await RNPrimer.handleResumeSuccess();
     } catch (err) {
       console.error(err);
     }
@@ -69,7 +69,7 @@ const resumeHandler: PrimerResumeHandler = {
 
   continueWithNewClientToken: async (newClientToken: string) => {
     try {
-      RNPrimer.handleResumeWithNewClientToken(newClientToken);
+      await RNPrimer.handleResumeWithNewClientToken(newClientToken);
     } catch (err) {
       console.error(err);
     }
@@ -81,7 +81,7 @@ const resumeHandler: PrimerResumeHandler = {
 const paymentCreationHandler: PrimerPaymentCreationHandler = {
   abortPaymentCreation: async (errorMessage: string) => {
     try {
-      RNPrimer.handlePaymentCreationAbort(errorMessage);
+      await RNPrimer.handlePaymentCreationAbort(errorMessage);
     } catch (err) {
       console.error(err);
     }
@@ -89,7 +89,7 @@ const paymentCreationHandler: PrimerPaymentCreationHandler = {
 
   continuePaymentCreation: async () => {
     try {
-      RNPrimer.handlePaymentCreationContinue();
+      await RNPrimer.handlePaymentCreationContinue();
     } catch (err) {
       console.error(err);
     }
@@ -101,7 +101,7 @@ const paymentCreationHandler: PrimerPaymentCreationHandler = {
 const errorHandler: PrimerErrorHandler = {
   showErrorMessage: async (errorMessage: string) => {
     try {
-      RNPrimer.showErrorMessage(errorMessage || '');
+      await RNPrimer.showErrorMessage(errorMessage || '');
     } catch (err) {
       console.error(err);
     }
@@ -309,13 +309,13 @@ export const Primer: IPrimer = {
     RNPrimerHeadlessUniversalCheckout.removeAllListeners();
     RNPrimer.removeAllListeners();
     primerSettings = undefined;
-    RNPrimer.dismiss();
+    void RNPrimer.dismiss();
   },
 
   dismiss(): void {
     RNPrimerHeadlessUniversalCheckout.removeAllListeners();
     RNPrimer.removeAllListeners();
     primerSettings = undefined;
-    RNPrimer.dismiss();
+    void RNPrimer.dismiss();
   },
 };
