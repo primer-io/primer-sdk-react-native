@@ -1,4 +1,5 @@
 import type { PrimerSettings } from './models/PrimerSettings';
+import type { PrimerImplementedRNCallbacks } from './models/PrimerImplementedRNCallbacks';
 import type { EventSubscription } from 'react-native';
 import NativePrimer from './specs/NativePrimer';
 
@@ -222,7 +223,7 @@ const RNPrimer = {
   },
 
   // HELPERS
-  setImplementedRNCallbacks: (implementedRNCallbacks: any): Promise<void> => {
+  setImplementedRNCallbacks: (implementedRNCallbacks: PrimerImplementedRNCallbacks): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {
         await NativePrimer.setImplementedRNCallbacks(JSON.stringify(implementedRNCallbacks));
