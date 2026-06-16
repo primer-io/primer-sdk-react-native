@@ -67,7 +67,7 @@ const assetsManager = new PrimerHeadlessUniversalCheckoutAssetsManager();
 
 // Promise cache keyed by upper-cased network id. Dedupes in-flight calls and persists
 // resolved descriptors across hook instances so switching back to a previously seen
-// network is instantaneous — mirrors the icon-cache pattern in useCardNetwork.
+// network is instantaneous — mirrors the icon-cache pattern in usePrimerCardNetwork.
 const descriptorCache = new Map<string, Promise<CardNetworkDescriptor>>();
 
 /**
@@ -109,7 +109,7 @@ export type CardNetworkIconSource = ImageSourcePropType | null;
  * Two-letter abbreviation for the bordered fallback chip when a network has no icon
  * asset (Bancontact, Cartes Bancaires, EFTPOS) or the asset fetch failed.
  *
- * Accepts the raw network string from native (`useCardNetwork().network`) since natives
+ * Accepts the raw network string from native (`usePrimerCardNetwork().network`) since natives
  * can report ids outside the known union. Underscored ids → first letter of each word;
  * single-word ids → first two letters. `OTHER` and empty input return empty string —
  * callers should render nothing in that case.

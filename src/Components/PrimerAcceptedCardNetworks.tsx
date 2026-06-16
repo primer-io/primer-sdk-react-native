@@ -1,6 +1,6 @@
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
-import { useTheme } from './internal/theme';
+import { usePrimerTheme } from './internal/theme';
 import { usePrimerCheckout } from './hooks/usePrimerCheckout';
 import { useCardNetworkIcons } from './hooks/useCardNetworkIcons';
 
@@ -19,7 +19,7 @@ export function PrimerAcceptedCardNetworks({
   style,
   testID = 'primer-accepted-card-networks',
 }: PrimerAcceptedCardNetworksProps) {
-  const tokens = useTheme();
+  const tokens = usePrimerTheme();
   const { acceptedCardNetworks } = usePrimerCheckout();
   const resolved = propNetworks ?? acceptedCardNetworks ?? [];
   const chips = useCardNetworkIcons(resolved);

@@ -12,7 +12,7 @@ import {
   View,
   useWindowDimensions,
 } from 'react-native';
-import { useTheme } from '../theme';
+import { usePrimerTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
 import { PRIMER_EMPTY_ACCESSORY_ID } from '../../inputs/PrimerTextInput';
 import { SheetHeightContext } from './SheetHeightContext';
@@ -35,7 +35,7 @@ export function CheckoutSheet({
   showDragHandle,
   children,
 }: CheckoutSheetProps) {
-  const tokens = useTheme();
+  const tokens = usePrimerTheme();
   const { height: screenHeight } = useWindowDimensions();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
 

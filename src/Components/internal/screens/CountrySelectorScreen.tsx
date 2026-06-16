@@ -1,17 +1,17 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import type { ListRenderItemInfo, TextStyle } from 'react-native';
-import { useTheme } from '../theme';
+import { usePrimerTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
 import { NavigationHeader } from '../navigation/NavigationHeader';
 import { useNavigation } from '../navigation/useNavigation';
 import { useRoute } from '../navigation/useRoute';
 import { CheckoutRoute } from '../navigation/types';
-import { useLocalization } from '../localization';
+import { usePrimerLocalization } from '../localization';
 import { useCheckoutFlow } from '../checkout-flow/CheckoutFlowContext';
 import { PrimerTextInput } from '../../inputs/PrimerTextInput';
 import type { PrimerTextInputRef } from '../../types/CardInputTypes';
-import { useBillingAddressForm } from '../../hooks/useBillingAddressForm';
+import { usePrimerBillingAddressForm } from '../../hooks/usePrimerBillingAddressForm';
 import { COUNTRIES, getLocalizedCountryName, type CountryCode } from '../countries';
 import { flagEmoji } from '../flags';
 
@@ -26,12 +26,12 @@ interface CountryListItem {
 }
 
 export function CountrySelectorScreen() {
-  const tokens = useTheme();
-  const { t, locale } = useLocalization();
+  const tokens = usePrimerTheme();
+  const { t, locale } = usePrimerLocalization();
   const { pop, canGoBack, isAnimating } = useNavigation();
   const { onCancel } = useCheckoutFlow();
   const { params } = useRoute<CheckoutRoute.countrySelector>();
-  const billingForm = useBillingAddressForm();
+  const billingForm = usePrimerBillingAddressForm();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
 
   const initialSelected = params?.selectedCountryCode ?? '';

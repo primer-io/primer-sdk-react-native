@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useEffect, useRef, useState } from 'rea
 import { View, Animated, StyleSheet, useWindowDimensions } from 'react-native';
 import type { ViewStyle } from 'react-native';
 import { NavigationContext, RouteEntryContext } from './NavigationContext';
-import { useTheme } from '../theme';
+import { usePrimerTheme } from '../theme';
 import type { CheckoutRoute, RouteEntry } from './types';
 
 const TRANSITION_DURATION = 250;
@@ -26,7 +26,7 @@ export function NavigationContainer({ screenMap }: NavigationContainerProps) {
     throw new Error('NavigationContainer must be used within a NavigationProvider');
   }
 
-  const tokens = useTheme();
+  const tokens = usePrimerTheme();
   const { width } = useWindowDimensions();
   const { state } = context;
   const current = state.stack[state.stack.length - 1]!;

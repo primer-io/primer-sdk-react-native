@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
 import { ActivityIndicator, View, StyleSheet } from 'react-native';
 
-import { useTheme } from '../internal/theme';
-import { useLocalization } from '../internal/localization';
+import { usePrimerTheme } from '../internal/theme';
+import { usePrimerLocalization } from '../internal/localization';
 import { STATUS_SCREEN_ICON_SIZE } from '../internal/screens/constants';
 import { PrimerStatusScreenLayout } from './PrimerStatusScreenLayout';
 
@@ -16,8 +16,8 @@ export interface PrimerLoadingScreenProps {
 }
 
 export function PrimerLoadingScreen({ title, subtitle, icon }: PrimerLoadingScreenProps) {
-  const tokens = useTheme();
-  const { t } = useLocalization();
+  const tokens = usePrimerTheme();
+  const { t } = usePrimerLocalization();
 
   const resolvedTitle = title ?? t('primer_checkout_loading_indicator');
   const resolvedSubtitle = subtitle ?? t('primer_checkout_loading_subtitle');

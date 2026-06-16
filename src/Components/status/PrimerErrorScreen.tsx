@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
 import { Image, View, StyleSheet } from 'react-native';
 
-import { useTheme } from '../internal/theme';
+import { usePrimerTheme } from '../internal/theme';
 import type { PrimerTokens } from '../internal/theme';
-import { useLocalization } from '../internal/localization';
+import { usePrimerLocalization } from '../internal/localization';
 import { STATUS_SCREEN_ICON_SIZE } from '../internal/screens/constants';
 import { CheckoutButton } from '../internal/ui';
 import { PrimerStatusScreenLayout } from './PrimerStatusScreenLayout';
@@ -29,8 +29,8 @@ export function PrimerErrorScreen({
   retryLabel,
   otherMethodLabel,
 }: PrimerErrorScreenProps) {
-  const tokens = useTheme();
-  const { t } = useLocalization();
+  const tokens = usePrimerTheme();
+  const { t } = usePrimerLocalization();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
 
   const resolvedTitle = title ?? t('primer_checkout_error_title');

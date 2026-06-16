@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
-import { useTheme } from './theme';
+import { usePrimerTheme } from './theme';
 import { getNetworkAbbreviation } from './cardNetwork';
 import { PLACEHOLDER_ICON_HEIGHT, PLACEHOLDER_ICON_WIDTH } from '../inputs/dimensions';
 import PrimerHeadlessUniversalCheckoutAssetsManager from '../../HeadlessUniversalCheckout/Managers/AssetsManager';
@@ -52,10 +52,10 @@ export interface CardNetworkBadgeProps {
 
 // Renders the icon for a given card network identifier. Falls back to an
 // abbreviation chip (e.g. "CB" for Cartes Bancaires) when no asset exists,
-// then to a generic placeholder. Shared by CardNumberInput trailing content
+// then to a generic placeholder. Shared by PrimerCardNumberInput trailing content
 // and the multi-network selector.
 export function CardNetworkBadge({ identifier, testID, marginLeft }: CardNetworkBadgeProps) {
-  const tokens = useTheme();
+  const tokens = usePrimerTheme();
   const uri = useNetworkIconUri(identifier);
   const baseStyle = marginLeft != null ? { marginLeft } : null;
 

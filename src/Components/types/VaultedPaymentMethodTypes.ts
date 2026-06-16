@@ -26,7 +26,7 @@ export interface VaultedPaymentMethodItem {
 /** UI mode for the vault block on the method-selection surface. */
 export type VaultDisplayMode = 'expanded' | 'lite';
 
-export interface UseVaultedPaymentMethodsReturn {
+export interface UsePrimerVaultManagerReturn {
   vaultedMethods: VaultedPaymentMethodItem[];
   /** The method that should be displayed when only one row is rendered. `null` when none exist. */
   primaryMethod: VaultedPaymentMethodItem | null;
@@ -66,7 +66,7 @@ export interface UseVaultedPaymentMethodsReturn {
 }
 
 export interface PrimerVaultedPaymentMethodProps {
-  /** Optional override for the row data. Defaults to `useVaultedPaymentMethods().primaryMethod`. */
+  /** Optional override for the row data. Defaults to `usePrimerVaultManager().primaryMethod`. */
   data?: VaultedPaymentMethodItem | null;
   /** Optional override for the Pay handler. Defaults to the hook's `pay`. */
   onPay?: (method: VaultedPaymentMethodItem) => void;

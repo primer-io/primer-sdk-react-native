@@ -1,8 +1,8 @@
 import { useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useTheme } from './internal/theme';
+import { usePrimerTheme } from './internal/theme';
 import type { PrimerTokens } from './internal/theme';
-import { useLocalization } from './internal/localization';
+import { usePrimerLocalization } from './internal/localization';
 import { useNavigation } from './internal/navigation/useNavigation';
 import { CheckoutRoute } from './internal/navigation/types';
 import { PrimerTextInput } from './inputs/PrimerTextInput';
@@ -26,8 +26,8 @@ export function PrimerBillingAddressForm({
   style,
   testID = 'primer-billing-address-form',
 }: PrimerBillingAddressFormProps) {
-  const tokens = useTheme();
-  const { t, locale } = useLocalization();
+  const tokens = usePrimerTheme();
+  const { t, locale } = usePrimerLocalization();
   const { push } = useNavigation();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
 

@@ -1,5 +1,5 @@
 import { Modal, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
-import { useTheme } from './theme';
+import { usePrimerTheme } from './theme';
 
 export interface PopoverAnchor {
   x: number;
@@ -25,7 +25,7 @@ const SCREEN_EDGE_PADDING = 16;
 // below the anchor and right-aligned with it; otherwise it falls back to a
 // screen-centered card.
 export function Popover({ visible, onDismiss, children, anchor, testID }: PopoverProps) {
-  const tokens = useTheme();
+  const tokens = usePrimerTheme();
   const screen = useWindowDimensions();
 
   const positionStyle = anchor

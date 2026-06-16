@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Image, StyleSheet } from 'react-native';
 
-import { useLocalization } from '../internal/localization';
+import { usePrimerLocalization } from '../internal/localization';
 import { STATUS_SCREEN_ICON_SIZE } from '../internal/screens/constants';
 import { PrimerStatusScreenLayout } from './PrimerStatusScreenLayout';
 
@@ -16,7 +16,7 @@ export interface PrimerSuccessScreenProps {
 }
 
 export function PrimerSuccessScreen({ title, subtitle, icon, onDismiss, autoDismissMs }: PrimerSuccessScreenProps) {
-  const { t } = useLocalization();
+  const { t } = usePrimerLocalization();
 
   useEffect(() => {
     if (!onDismiss || autoDismissMs == null) return;

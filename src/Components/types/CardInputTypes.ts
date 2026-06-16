@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import type { KeyboardTypeOptions, StyleProp, TextInputProps, TextStyle, ViewStyle } from 'react-native';
-import type { UseCardFormReturn } from './CardFormTypes';
+import type { UsePrimerCardFormReturn } from './CardFormTypes';
 
 export interface PrimerTextInputTheme {
   primaryColor?: string;
@@ -68,8 +68,8 @@ export interface PrimerTextInputRef {
   blur: () => void;
 }
 
-export interface CardInputBaseProps {
-  cardForm: UseCardFormReturn;
+export interface PrimerCardInputProps {
+  cardForm: UsePrimerCardFormReturn;
   theme?: PrimerTextInputTheme;
   editable?: boolean;
   label?: string;
@@ -83,10 +83,10 @@ export interface CardInputBaseProps {
   testID?: string;
 }
 
-export type CardNumberInputProps = CardInputBaseProps;
+export type PrimerCardNumberInputProps = PrimerCardInputProps;
 
-export type ExpiryDateInputProps = CardInputBaseProps;
+export type PrimerExpiryDateInputProps = PrimerCardInputProps;
 
-export type CVVInputProps = CardInputBaseProps;
+export type PrimerCVVInputProps = PrimerCardInputProps;
 
-export type CardholderNameInputProps = CardInputBaseProps;
+export type PrimerCardholderNameInputProps = PrimerCardInputProps;

@@ -2,17 +2,17 @@ import { useCallback, useMemo } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { PrimerAnalytics } from '../../analytics';
-import { usePaymentMethods } from '../../hooks/usePaymentMethods';
+import { usePrimerPaymentMethods } from '../../hooks/usePrimerPaymentMethods';
 import { usePrimerCheckout } from '../../hooks/usePrimerCheckout';
-import { useVaultedPaymentMethods } from '../../hooks/useVaultedPaymentMethods';
+import { usePrimerVaultManager } from '../../hooks/usePrimerVaultManager';
 import { PrimerPaymentMethodList } from '../../PrimerPaymentMethodList';
 import { PrimerVaultedPaymentMethod } from '../../PrimerVaultedPaymentMethod';
 import { useCheckoutFlow } from '../checkout-flow/CheckoutFlowContext';
-import { useLocalization } from '../localization';
+import { usePrimerLocalization } from '../localization';
 import { NavigationHeader } from '../navigation/NavigationHeader';
 import { CheckoutRoute } from '../navigation/types';
 import { useNavigation } from '../navigation/useNavigation';
-import { useTheme } from '../theme';
+import { usePrimerTheme } from '../theme';
 import { CheckoutButton } from '../ui/CheckoutButton';
 import { PAYMENT_METHOD_BUTTON_HEIGHT } from '../ui/PaymentMethodButton';
 import { useBottomSafeArea } from './useBottomSafeArea';
@@ -36,11 +36,11 @@ const CHEVRON_ICON_SIZE = 20;
 const chevronDownIcon = require('./assets/chevron-down.png');
 
 export function MethodSelectionScreen() {
-  const tokens = useTheme();
+  const tokens = usePrimerTheme();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
-  const { t } = useLocalization();
+  const { t } = usePrimerLocalization();
   const { onCancel } = useCheckoutFlow();
-  const { paymentMethods } = usePaymentMethods();
+  const { paymentMethods } = usePrimerPaymentMethods();
   const { push } = useNavigation();
   const { setActiveMethod } = usePrimerCheckout();
   const {
@@ -48,7 +48,7 @@ export function MethodSelectionScreen() {
     vaultDisplayMode,
     requestExpandedVaultDisplay,
     cvvInputVisible,
-  } = useVaultedPaymentMethods();
+  } = usePrimerVaultManager();
 
   const methodCount = paymentMethods.length;
   const buttonGap = tokens.spacing.small;

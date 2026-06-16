@@ -7,7 +7,7 @@ import type { PrimerAddress } from '../../../models/PrimerClientSession';
 import type {
   BillingAddressField,
   BillingAddressFormErrors,
-  UseBillingAddressFormReturn,
+  UsePrimerBillingAddressFormReturn,
 } from '../../types/BillingAddressFormTypes';
 
 const LOG = '[BillingAddressFormState]';
@@ -69,12 +69,12 @@ function fieldsToAddress(fields: BillingFields): PrimerAddress {
   };
 }
 
-const BillingAddressFormStateContext = createContext<UseBillingAddressFormReturn | null>(null);
+const BillingAddressFormStateContext = createContext<UsePrimerBillingAddressFormReturn | null>(null);
 
 /**
  * Holds billing-address state above the navigation stack so values survive screen
  * unmounts (specifically: CardFormScreen unmounts when CountrySelectorScreen is
- * pushed on top). Also means every `useBillingAddressForm()` call shares the same
+ * pushed on top). Also means every `usePrimerBillingAddressForm()` call shares the same
  * state — the country selector can write while the form screen reads.
  */
 export function BillingAddressFormStateProvider({ children }: { children: ReactNode }) {
@@ -220,7 +220,7 @@ export function BillingAddressFormStateProvider({ children }: { children: ReactN
     debouncedRef.current?.cancel();
   }, []);
 
-  const value = useMemo<UseBillingAddressFormReturn>(
+  const value = useMemo<UsePrimerBillingAddressFormReturn>(
     () => ({
       firstName,
       lastName,
@@ -278,6 +278,6 @@ export function BillingAddressFormStateProvider({ children }: { children: ReactN
   return <BillingAddressFormStateContext.Provider value={value}>{children}</BillingAddressFormStateContext.Provider>;
 }
 
-export function useBillingAddressFormStateContext(): UseBillingAddressFormReturn | null {
+export function useBillingAddressFormStateContext(): UsePrimerBillingAddressFormReturn | null {
   return useContext(BillingAddressFormStateContext);
 }

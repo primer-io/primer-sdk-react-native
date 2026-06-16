@@ -13,7 +13,7 @@ export interface LocalizationResult {
 }
 
 // Resolves locale once from device settings (matching native SDK behavior)
-export function useLocalization(): LocalizationResult {
+export function usePrimerLocalization(): LocalizationResult {
   return useMemo(() => {
     const { locale } = resolveLocale();
     return {

@@ -3,14 +3,14 @@ import { Image, StyleSheet, Text, View } from 'react-native';
 import type { TextStyle } from 'react-native';
 
 import { PrimerAnalytics } from './analytics';
-import { useTheme } from './internal/theme';
+import { usePrimerTheme } from './internal/theme';
 import type { PrimerTokens } from './internal/theme';
-import { useLocalization } from './internal/localization';
+import { usePrimerLocalization } from './internal/localization';
 import { CheckoutRoute } from './internal/navigation/types';
 import { useNavigation } from './internal/navigation/useNavigation';
 import { CheckoutButton, VaultedCardCvvRow } from './internal/ui';
 import { useCardNetworkDescriptor } from './hooks/useCardNetworkDescriptor';
-import { useVaultedPaymentMethods } from './hooks/useVaultedPaymentMethods';
+import { usePrimerVaultManager } from './hooks/usePrimerVaultManager';
 import { usePrimerCheckout } from './hooks/usePrimerCheckout';
 import type { PrimerVaultedPaymentMethodProps, VaultedPaymentMethodItem } from './types/VaultedPaymentMethodTypes';
 
@@ -19,11 +19,11 @@ const CARD_PAYMENT_METHOD_TYPE = 'PAYMENT_CARD';
 export const VAULTED_PAYMENT_METHOD_ROW_HEIGHT = 68;
 
 export function PrimerVaultedPaymentMethod({ data, onPay, style }: PrimerVaultedPaymentMethodProps) {
-  const tokens = useTheme();
+  const tokens = usePrimerTheme();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
-  const { t } = useLocalization();
+  const { t } = usePrimerLocalization();
 
-  const hook = useVaultedPaymentMethods();
+  const hook = usePrimerVaultManager();
   const { setCvvInputVisible } = usePrimerCheckout();
   const { replace } = useNavigation();
   const method = data !== undefined ? data : hook.activeMethod;

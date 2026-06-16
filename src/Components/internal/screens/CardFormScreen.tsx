@@ -10,17 +10,17 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import type { TextStyle } from 'react-native';
-import { useTheme } from '../theme';
+import { usePrimerTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
 import { NavigationHeader } from '../navigation/NavigationHeader';
 import { useNavigation } from '../navigation/useNavigation';
 import { CheckoutRoute } from '../navigation/types';
-import { useLocalization } from '../localization';
+import { usePrimerLocalization } from '../localization';
 import { useCheckoutFlow } from '../checkout-flow/CheckoutFlowContext';
 import { PrimerCardForm } from '../../PrimerCardForm';
 import { PrimerBillingAddressForm } from '../../PrimerBillingAddressForm';
-import { useCardForm } from '../../hooks/useCardForm';
-import { useBillingAddressForm } from '../../hooks/useBillingAddressForm';
+import { usePrimerCardForm } from '../../hooks/usePrimerCardForm';
+import { usePrimerBillingAddressForm } from '../../hooks/usePrimerBillingAddressForm';
 import { useSheetHeight } from '../checkout-sheet';
 import { useBottomSafeArea } from './useBottomSafeArea';
 import { useKeyboardPadding } from './useKeyboardPadding';
@@ -31,12 +31,12 @@ const DRAG_HANDLE_AREA = 20;
 const MAX_SHEET_HEIGHT_RATIO = 0.92;
 
 export function CardFormScreen() {
-  const tokens = useTheme();
-  const { t } = useLocalization();
+  const tokens = usePrimerTheme();
+  const { t } = usePrimerLocalization();
   const { pop, replace, canGoBack } = useNavigation();
   const { onCancel } = useCheckoutFlow();
-  const cardForm = useCardForm();
-  const billingForm = useBillingAddressForm();
+  const cardForm = usePrimerCardForm();
+  const billingForm = usePrimerBillingAddressForm();
   const bottomInset = useBottomSafeArea();
   const keyboardPadding = useKeyboardPadding();
   const { height: screenHeight } = useWindowDimensions();

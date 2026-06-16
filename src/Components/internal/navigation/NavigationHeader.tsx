@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import type { TextStyle } from 'react-native';
 import { useNavigation } from './useNavigation';
-import { useTheme } from '../theme';
+import { usePrimerTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
 
 export interface NavigationHeaderAction {
@@ -74,7 +74,7 @@ export function NavigationHeader({
   rightComponent,
 }: NavigationHeaderProps) {
   const { pop } = useNavigation();
-  const tokens = useTheme();
+  const tokens = usePrimerTheme();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
 
   const handleBackPress = onBackPress ?? pop;

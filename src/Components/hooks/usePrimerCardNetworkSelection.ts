@@ -1,10 +1,10 @@
 import { useCallback, useMemo } from 'react';
 import { usePrimerCheckout } from './usePrimerCheckout';
-import type { CardNetwork, UseCardNetworkSelectionReturn } from '../types/CardNetworkSelection';
+import type { CardNetworkDetails, UsePrimerCardNetworkSelectionReturn } from '../types/CardNetworkSelection';
 import type { CardNetworkId } from '../internal/cardNetwork';
 import type { PrimerCardNetwork } from '../../models/PrimerBinData';
 
-const LOG = '[useCardNetworkSelection]';
+const LOG = '[usePrimerCardNetworkSelection]';
 
 // Networks routed by the issuer rather than the shopper. Showing them in a
 // chooser would be misleading — we render them as a non-interactive dual-badge.
@@ -13,7 +13,7 @@ const NON_SELECTABLE_NETWORKS = new Set<string>(['EFTPOS']);
 // A card is co-badged when the BIN resolves to at least this many networks.
 const MIN_COBADGE_NETWORKS = 2;
 
-function toCardNetwork(raw: PrimerCardNetwork): CardNetwork {
+function toCardNetwork(raw: PrimerCardNetwork): CardNetworkDetails {
   // Native emits the closed set of CardNetworkId strings; cast is faithful to that contract.
   const identifier = raw.network as CardNetworkId;
   return {
@@ -26,11 +26,11 @@ function toCardNetwork(raw: PrimerCardNetwork): CardNetwork {
   };
 }
 
-export function useCardNetworkSelection(): UseCardNetworkSelectionReturn {
+export function usePrimerCardNetworkSelection(): UsePrimerCardNetworkSelectionReturn {
   const { cardFormState, selectCardNetwork: providerSelect, selectedCardNetwork } = usePrimerCheckout();
   const binData = cardFormState.binData;
 
-  const availableNetworks = useMemo<ReadonlyArray<CardNetwork>>(() => {
+  const availableNetworks = useMemo<ReadonlyArray<CardNetworkDetails>>(() => {
     if (!binData) {
       return [];
     }
@@ -44,12 +44,12 @@ export function useCardNetworkSelection(): UseCardNetworkSelectionReturn {
   // default, not the shopper's choice.
   const selectedIdentifier = selectedCardNetwork;
 
-  const selectedNetwork = useMemo<CardNetwork | null>(() => {
+  const selectedNetwork = useMemo<CardNetworkDetails | null>(() => {
     if (!selectedIdentifier) return null;
     return availableNetworks.find((n) => n.identifier === selectedIdentifier) ?? null;
   }, [availableNetworks, selectedIdentifier]);
 
-  const displayedNetwork = useMemo<CardNetwork | null>(
+  const displayedNetwork = useMemo<CardNetworkDetails | null>(
     () => selectedNetwork ?? availableNetworks[0] ?? null,
     [selectedNetwork, availableNetworks]
   );

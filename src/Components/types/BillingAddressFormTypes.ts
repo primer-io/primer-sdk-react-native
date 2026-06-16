@@ -15,12 +15,12 @@ export type BillingAddressField =
 
 export type BillingAddressFormErrors = Partial<Record<BillingAddressField, string>>;
 
-export interface UseBillingAddressFormOptions {
+export interface UsePrimerBillingAddressFormOptions {
   /** Called when the billing-address validity changes. */
   onValidationChange?: (isValid: boolean, errors: BillingAddressFormErrors) => void;
 }
 
-export interface UseBillingAddressFormReturn {
+export interface UsePrimerBillingAddressFormReturn {
   firstName: string;
   lastName: string;
   addressLine1: string;
@@ -65,11 +65,11 @@ export interface UseBillingAddressFormReturn {
 /** Merchant-facing props for the composed `<PrimerBillingAddressForm />` component. */
 export interface PrimerBillingAddressFormProps {
   /**
-   * The billing-address state returned by `useBillingAddressForm()`. Hoisted so the host screen
+   * The billing-address state returned by `usePrimerBillingAddressForm()`. Hoisted so the host screen
    * can share it with a Pay button rendered outside the form and coordinate submission with
    * other forms (e.g. the card form).
    */
-  billingForm: UseBillingAddressFormReturn;
+  billingForm: UsePrimerBillingAddressFormReturn;
   /** Optional outer container style. */
   style?: StyleProp<ViewStyle>;
   /** Test ID root for the form. Nested elements derive suffixed IDs. */
