@@ -4,19 +4,19 @@ import { usePrimerCheckout } from './usePrimerCheckout';
 import type { UseCardFormOptions, UsePrimerCardFormReturn } from '../types/CardFormTypes';
 
 /**
- * Card form adapter hook. Thin wrapper over `CardFormStateProvider` — the
+ * Card form adapter hook. Thin wrapper over `PrimerCardFormProvider` — the
  * provider owns the field state, focus tracking, debouncer, and submit lifecycle.
  * This hook reads the shared state and wires per-caller option callbacks
  * (`onValidationChange`, `onBinDataChange`, `onMetadataChange`).
  *
  * Must be used inside a `<PrimerCheckoutProvider>` tree that also mounts
- * `<CardFormStateProvider>` (the drop-in `CheckoutFlow` does this for you).
+ * `<PrimerCardFormProvider>` (the drop-in `CheckoutFlow` does this for you).
  */
 export function usePrimerCardForm(options: UseCardFormOptions = {}): UsePrimerCardFormReturn {
   const state = useCardFormStateContext();
   if (!state) {
     throw new Error(
-      'usePrimerCardForm must be used within a <CardFormStateProvider>. ' +
+      'usePrimerCardForm must be used within a <PrimerCardFormProvider>. ' +
         'The built-in <PrimerCheckoutSheet>/<CheckoutFlow> wires this automatically.'
     );
   }

@@ -12,7 +12,7 @@ import { CountrySelectorScreen } from '../screens/CountrySelectorScreen';
 import { ErrorScreen } from '../screens/ErrorScreen';
 import { SuccessScreen } from '../screens/SuccessScreen';
 import { VaultedMethodsScreen } from '../screens/VaultedMethodsScreen';
-import { CardFormStateProvider, BillingAddressFormStateProvider } from '../form-state';
+import { PrimerCardFormProvider, BillingAddressFormStateProvider } from '../form-state';
 import { CheckoutFlowContext } from './CheckoutFlowContext';
 
 const SUCCESS_AUTO_DISMISS_MS = 3000;
@@ -113,11 +113,11 @@ export function CheckoutFlow({ onCancel }: CheckoutFlowProps = {}) {
       <NavigationProvider initialRoute={CheckoutRoute.splash}>
         <ReadinessTransitioner />
         <PaymentOutcomeTransitioner />
-        <CardFormStateProvider>
+        <PrimerCardFormProvider>
           <BillingAddressFormStateProvider>
             <NavigationContainer screenMap={screenMap} />
           </BillingAddressFormStateProvider>
-        </CardFormStateProvider>
+        </PrimerCardFormProvider>
       </NavigationProvider>
     </CheckoutFlowContext.Provider>
   );

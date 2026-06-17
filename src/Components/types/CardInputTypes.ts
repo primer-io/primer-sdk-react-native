@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react';
 import type { KeyboardTypeOptions, StyleProp, TextInputProps, TextStyle, ViewStyle } from 'react-native';
-import type { UsePrimerCardFormReturn } from './CardFormTypes';
 
 export interface PrimerTextInputTheme {
   primaryColor?: string;
@@ -69,7 +68,6 @@ export interface PrimerTextInputRef {
 }
 
 export interface PrimerCardInputProps {
-  cardForm: UsePrimerCardFormReturn;
   theme?: PrimerTextInputTheme;
   editable?: boolean;
   label?: string;

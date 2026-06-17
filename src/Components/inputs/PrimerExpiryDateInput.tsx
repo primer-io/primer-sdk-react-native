@@ -4,6 +4,7 @@ import { PrimerTextInput } from './PrimerTextInput';
 import { caretFromDigitIndex, countDigits, countDigitsBefore, targetDigitIndex } from './caret';
 import { TRAILING_ICON_MARGIN, TRAILING_ICON_SIZE } from './dimensions';
 import { usePrimerLocalization } from '../internal/localization';
+import { usePrimerCardForm } from '../hooks/usePrimerCardForm';
 import type { PrimerExpiryDateInputProps, PrimerTextInputRef } from '../types/CardInputTypes';
 
 type SelectionChangeHandler = NonNullable<TextInputProps['onSelectionChange']>;
@@ -11,7 +12,8 @@ type SelectionChangeHandler = NonNullable<TextInputProps['onSelectionChange']>;
 const calendarSource = require('../../assets/images/ic-expiry-calendar.png');
 
 export const PrimerExpiryDateInput = forwardRef<PrimerTextInputRef, PrimerExpiryDateInputProps>(
-  function PrimerExpiryDateInput({ cardForm, placeholder, label, ...rest }, ref) {
+  function PrimerExpiryDateInput({ placeholder, label, ...rest }, ref) {
+    const cardForm = usePrimerCardForm();
     const { t } = usePrimerLocalization();
     const resolvedLabel = label ?? t('primer_card_form_label_expiry');
     const resolvedPlaceholder = placeholder ?? t('primer_card_form_placeholder_expiry');

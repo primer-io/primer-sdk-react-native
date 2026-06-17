@@ -60,7 +60,7 @@ const CardFormStateContext = createContext<UsePrimerCardFormReturn | null>(null)
  * `setRawData` / `submit` dispatch surfaces, so it must mount below
  * `PrimerCheckoutProvider`.
  */
-export function CardFormStateProvider({ children }: { children: ReactNode }) {
+export function PrimerCardFormProvider({ children }: { children: ReactNode }) {
   const {
     isReady,
     activeMethod,

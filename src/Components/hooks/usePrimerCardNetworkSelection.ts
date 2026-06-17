@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react';
 import { usePrimerCheckout } from './usePrimerCheckout';
 import type { CardNetworkDetails, UsePrimerCardNetworkSelectionReturn } from '../types/CardNetworkSelection';
 import type { CardNetworkId } from '../internal/cardNetwork';
-import type { PrimerCardNetwork } from '../../models/PrimerBinData';
+import type { PrimerCardNetwork as PrimerBinCardNetwork } from '../../models/PrimerBinData';
 
 const LOG = '[usePrimerCardNetworkSelection]';
 
@@ -13,13 +13,13 @@ const NON_SELECTABLE_NETWORKS = new Set<string>(['EFTPOS']);
 // A card is co-badged when the BIN resolves to at least this many networks.
 const MIN_COBADGE_NETWORKS = 2;
 
-function toCardNetwork(raw: PrimerCardNetwork): CardNetworkDetails {
+function toCardNetwork(raw: PrimerBinCardNetwork): CardNetworkDetails {
   // Native emits the closed set of CardNetworkId strings; cast is faithful to that contract.
   const identifier = raw.network as CardNetworkId;
   return {
     identifier,
     displayName: raw.displayName,
-    // `allowed` is iOS-only on PrimerCardNetwork. undefined → treat as allowed.
+    // `allowed` is iOS-only on PrimerBinCardNetwork. undefined → treat as allowed.
     logoUri: null,
     allowed: raw.allowed !== false,
     allowsUserSelection: !NON_SELECTABLE_NETWORKS.has(identifier),
@@ -34,7 +34,7 @@ export function usePrimerCardNetworkSelection(): UsePrimerCardNetworkSelectionRe
     if (!binData) {
       return [];
     }
-    const all: PrimerCardNetwork[] = binData.preferred
+    const all: PrimerBinCardNetwork[] = binData.preferred
       ? [binData.preferred, ...binData.alternatives]
       : [...binData.alternatives];
     return all.map(toCardNetwork).filter((n) => n.allowed);

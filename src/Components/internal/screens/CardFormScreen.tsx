@@ -104,7 +104,7 @@ export function CardFormScreen() {
         showsVerticalScrollIndicator={false}
         onContentSizeChange={(_, h) => setScrollContentHeight(h)}
       >
-        <PrimerCardForm cardForm={cardForm} autoFocus onSubmit={handlePay} />
+        <PrimerCardForm autoFocus onSubmit={handlePay} />
         {billingForm.sectionVisible && (
           <>
             <View style={styles.divider} />

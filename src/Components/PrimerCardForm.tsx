@@ -7,16 +7,17 @@ import { PrimerExpiryDateInput } from './inputs/PrimerExpiryDateInput';
 import { PrimerCVVInput } from './inputs/PrimerCVVInput';
 import { PrimerCardholderNameInput } from './inputs/PrimerCardholderNameInput';
 import { PrimerAcceptedCardNetworks } from './PrimerAcceptedCardNetworks';
+import { usePrimerCardForm } from './hooks/usePrimerCardForm';
 import type { PrimerTextInputRef } from './types/CardInputTypes';
 import type { PrimerCardFormProps } from './types/PrimerCardFormTypes';
 
 export function PrimerCardForm({
-  cardForm,
   onSubmit,
   autoFocus = false,
   style,
   testID = 'primer-card-form',
 }: PrimerCardFormProps) {
+  const cardForm = usePrimerCardForm();
   const tokens = usePrimerTheme();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
 
@@ -40,7 +41,6 @@ export function PrimerCardForm({
       <PrimerAcceptedCardNetworks testID={`${testID}-accepted-networks`} />
       <PrimerCardNumberInput
         ref={cardRef}
-        cardForm={cardForm}
         editable={!disabled}
         returnKeyType="next"
         onSubmitEditing={() => expiryRef.current?.focus()}
@@ -51,7 +51,6 @@ export function PrimerCardForm({
         <View style={styles.halfField}>
           <PrimerExpiryDateInput
             ref={expiryRef}
-            cardForm={cardForm}
             editable={!disabled}
             returnKeyType="next"
             onSubmitEditing={() => cvvRef.current?.focus()}
@@ -61,7 +60,6 @@ export function PrimerCardForm({
         <View style={styles.halfField}>
           <PrimerCVVInput
             ref={cvvRef}
-            cardForm={cardForm}
             editable={!disabled}
             returnKeyType={cardForm.isCardholderNameVisible ? 'next' : 'done'}
             onSubmitEditing={cardForm.isCardholderNameVisible ? () => nameRef.current?.focus() : onSubmit}
@@ -74,7 +72,6 @@ export function PrimerCardForm({
       {cardForm.isCardholderNameVisible && (
         <PrimerCardholderNameInput
           ref={nameRef}
-          cardForm={cardForm}
           editable={!disabled}
           returnKeyType="done"
           onSubmitEditing={onSubmit}

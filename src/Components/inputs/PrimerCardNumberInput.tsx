@@ -5,6 +5,7 @@ import { caretFromDigitIndex, countDigits, countDigitsBefore, targetDigitIndex }
 import { PLACEHOLDER_ICON_HEIGHT, PLACEHOLDER_ICON_WIDTH, TRAILING_ICON_MARGIN } from './dimensions';
 import { usePrimerLocalization } from '../internal/localization';
 import { usePrimerTheme } from '../internal/theme';
+import { usePrimerCardForm } from '../hooks/usePrimerCardForm';
 import { usePrimerCardNetwork } from '../hooks/usePrimerCardNetwork';
 import { usePrimerCardNetworkSelection } from '../hooks/usePrimerCardNetworkSelection';
 import { PrimerCardNetworkSelector } from '../PrimerCardNetworkSelector';
@@ -16,7 +17,8 @@ type SelectionChangeHandler = NonNullable<TextInputProps['onSelectionChange']>;
 const placeholderSource = require('../../assets/images/ic-card-placeholder.png');
 
 export const PrimerCardNumberInput = forwardRef<PrimerTextInputRef, PrimerCardNumberInputProps>(
-  function PrimerCardNumberInput({ cardForm, placeholder, label, ...rest }, ref) {
+  function PrimerCardNumberInput({ placeholder, label, ...rest }, ref) {
+    const cardForm = usePrimerCardForm();
     const { t } = usePrimerLocalization();
     const resolvedLabel = label ?? t('primer_card_form_label_number');
     const resolvedPlaceholder = placeholder ?? t('primer_card_form_placeholder_number');
