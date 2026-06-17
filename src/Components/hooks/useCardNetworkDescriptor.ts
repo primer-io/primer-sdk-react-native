@@ -15,7 +15,7 @@ export function useCardNetworkDescriptor(network: string | null | undefined): Ca
     setDescriptor(DEFAULT_DESCRIPTOR);
     if (!network) return;
     let cancelled = false;
-    fetchCardNetworkDescriptor(network).then((d) => {
+    void fetchCardNetworkDescriptor(network).then((d) => {
       if (!cancelled) setDescriptor(d);
     });
     return () => {
