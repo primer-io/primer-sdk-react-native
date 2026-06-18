@@ -269,10 +269,8 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
       // The native SDK only fires `primerHeadlessUniversalCheckoutDidUpdateClientSession`
       // on subsequent updates, never on initial load. Read the current session via
       // `ComponentsClientSessionBridge` and synthesize the update event so JS receives
-      // the initial session at startup. iOS < 15 has no bridge access; the JS-side
-      // `onClientSessionUpdate` callback then fires only on subsequent updates.
-      if self.implementedRNCallbacks?.isOnClientSessionUpdateImplemented == true,
-         #available(iOS 15.0, *) {
+      // the initial session at startup.
+      if self.implementedRNCallbacks?.isOnClientSessionUpdateImplemented == true {
         let bridge = ComponentsClientSessionBridge()
         if let initialClientSession = bridge.getClientSession() {
           let updateCallbackName = PrimerHeadlessUniversalCheckoutEvents.onClientSessionUpdate.stringValue
@@ -556,10 +554,7 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
         do {
           // Augment the SDK-provided `clientSession` with `checkoutModules` from the
           // bridge — these are not surfaced on the public `PrimerClientSession` type.
-          var checkoutModules: [ComponentsCheckoutModule]?
-          if #available(iOS 15.0, *) {
-            checkoutModules = ComponentsClientSessionBridge().getCheckoutModules()
-          }
+          let checkoutModules = ComponentsClientSessionBridge().getCheckoutModules()
           let payload = try Self.makeClientSessionPayload(
             clientSession: clientSession,
             checkoutModules: checkoutModules
@@ -588,7 +583,7 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
     let json = try clientSession.toJsonObject()
     var dict = (json as? [String: Any]) ?? [:]
 
-    if #available(iOS 15.0, *), let modules = checkoutModules as? [ComponentsCheckoutModule] {
+    if let modules = checkoutModules as? [ComponentsCheckoutModule] {
       dict["checkoutModules"] = modules.map { module -> [String: Any] in
         var moduleDict: [String: Any] = ["type": module.type]
         if let options = module.options {
