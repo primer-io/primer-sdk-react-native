@@ -63,10 +63,11 @@ target 'example_0_70_6' do
     installer.pods_project.targets.each do |target|
       if target.name == "primer-io-react-native" || target.name == "PrimerSDK"
         target.build_configurations.each do |config|
-          config.build_settings['SWIFT_INCLUDE_PATHS'] = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/Primer3DS ${PODS_CONFIGURATION_BUILD_DIR}/PrimerKlarnaSDK ${PODS_CONFIGURATION_BUILD_DIR}/PrimerIPay88MYSDK ${PODS_CONFIGURATION_BUILD_DIR}/PrimerStripeSDK"
-          config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -Xcc -fmodule-map-file="${PODS_CONFIGURATION_BUILD_DIR}/Primer3DS/Primer3DS.modulemap"  -Xcc  -fmodule-map-file="${PODS_CONFIGURATION_BUILD_DIR}/PrimerIPay88MYSDK/PrimerIPay88MYSDK.modulemap"'
-
-          config.build_settings['OTHER_LDFLAGS'] = '$(inherited) -weak_library -l"Primer3DS" -l"PrimerKlarnaSDK" -l"PrimerIPay88MYSDK" -l"PrimerStripeSDK"'
+          if linkage != 'dynamic'
+            config.build_settings['SWIFT_INCLUDE_PATHS'] = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/Primer3DS ${PODS_CONFIGURATION_BUILD_DIR}/PrimerKlarnaSDK ${PODS_CONFIGURATION_BUILD_DIR}/PrimerIPay88MYSDK ${PODS_CONFIGURATION_BUILD_DIR}/PrimerStripeSDK"
+            config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -Xcc -fmodule-map-file="${PODS_CONFIGURATION_BUILD_DIR}/Primer3DS/Primer3DS.modulemap"  -Xcc  -fmodule-map-file="${PODS_CONFIGURATION_BUILD_DIR}/PrimerIPay88MYSDK/PrimerIPay88MYSDK.modulemap"'
+            config.build_settings['OTHER_LDFLAGS'] = '$(inherited) -weak_library -l"Primer3DS" -l"PrimerKlarnaSDK" -l"PrimerIPay88MYSDK" -l"PrimerStripeSDK"'
+          end
         end
       end
     end
