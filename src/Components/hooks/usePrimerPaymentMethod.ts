@@ -3,6 +3,7 @@ import { Platform } from 'react-native';
 
 import { usePrimerCheckout } from './usePrimerCheckout';
 import { GOOGLE_PAY, isGooglePaySupported } from '../internal/googlePay';
+import { APPLE_PAY, isApplePaySupported } from '../internal/applePay';
 import { routeMethodSelection } from '../internal/routeMethodSelection';
 
 import type { PaymentMethodAvailabilityError, UsePrimerPaymentMethodReturn } from '../types/PrimerPaymentMethodTypes';
@@ -34,7 +35,7 @@ export function usePrimerPaymentMethod(type: string): UsePrimerPaymentMethodRetu
 
   return useMemo<UsePrimerPaymentMethodReturn>(() => {
     if (kind === 'nativeUi') {
-      const isAvailable = type === GOOGLE_PAY ? isGooglePaySupported(availablePaymentMethods) : isPresent;
+      const isAvailable = isNativeUiAvailable(type, availablePaymentMethods);
       return {
         kind: 'nativeUi',
         isAvailable,
@@ -64,11 +65,27 @@ export function usePrimerPaymentMethod(type: string): UsePrimerPaymentMethodRetu
   ]);
 }
 
+/** Native-UI availability — platform-gated for Google/Apple Pay (single-platform), list-membership otherwise. */
+function isNativeUiAvailable(type: string, methods: ReadonlyArray<{ paymentMethodType: string }>): boolean {
+  if (type === GOOGLE_PAY) {
+    return isGooglePaySupported(methods);
+  }
+  if (type === APPLE_PAY) {
+    return isApplePaySupported(methods);
+  }
+  return methods.some((m) => m.paymentMethodType === type);
+}
+
 function availabilityError(type: string): PaymentMethodAvailabilityError {
   if (type === GOOGLE_PAY) {
     return Platform.OS === 'android'
       ? { code: 'NOT_READY', message: 'Google Pay is not ready on this device.' }
       : { code: 'PLATFORM_NOT_SUPPORTED', message: 'Google Pay is only available on Android.' };
+  }
+  if (type === APPLE_PAY) {
+    return Platform.OS === 'ios'
+      ? { code: 'NOT_AVAILABLE', message: 'Apple Pay is not available on this device.' }
+      : { code: 'PLATFORM_NOT_SUPPORTED', message: 'Apple Pay is only available on iOS.' };
   }
   return { code: 'NOT_AVAILABLE', message: `${type} is not available. Ensure it is configured for this session.` };
 }

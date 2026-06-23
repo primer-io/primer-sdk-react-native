@@ -249,4 +249,43 @@ describe('usePrimerPaymentMethod', () => {
       expect(nativeUiManager.showPaymentMethod).not.toHaveBeenCalled();
     });
   });
+
+  describe('Apple Pay (nativeUi) on iOS', () => {
+    it('isAvailable is true when APPLE_PAY is among available methods', async () => {
+      rnMock.Platform.OS = 'ios';
+      const captures = await mountWithMethods([{ paymentMethodType: 'APPLE_PAY' }], 'APPLE_PAY');
+      const last = asNativeUi(captures[captures.length - 1]!);
+      expect(last.isAvailable).toBe(true);
+      expect(last.availabilityError).toBeNull();
+    });
+
+    it('start configures and shows APPLE_PAY when available', async () => {
+      rnMock.Platform.OS = 'ios';
+      const captures = await mountWithMethods([{ paymentMethodType: 'APPLE_PAY' }], 'APPLE_PAY');
+      const ctrl = asNativeUi(captures[captures.length - 1]!);
+      await act(async () => {
+        await ctrl.start();
+      });
+      expect(nativeUiManager.configure).toHaveBeenCalledWith('APPLE_PAY');
+      expect(nativeUiManager.showPaymentMethod).toHaveBeenCalledWith('CHECKOUT');
+    });
+  });
+
+  describe('Apple Pay (nativeUi) on Android', () => {
+    // The Android SDK can list APPLE_PAY, so the method routes to `nativeUi`, but the RN layer's
+    // own iOS-only guard reports it unavailable regardless of SDK behaviour.
+    it('reports unavailable with PLATFORM_NOT_SUPPORTED even when the SDK lists it', async () => {
+      const captures = await mountWithMethods([{ paymentMethodType: 'APPLE_PAY' }], 'APPLE_PAY');
+      const last = asNativeUi(captures[captures.length - 1]!);
+      expect(last.isAvailable).toBe(false);
+      expect(last.availabilityError?.code).toBe('PLATFORM_NOT_SUPPORTED');
+    });
+
+    it('start rejects and makes no native call on Android', async () => {
+      const captures = await mountWithMethods([{ paymentMethodType: 'APPLE_PAY' }], 'APPLE_PAY');
+      const ctrl = asNativeUi(captures[captures.length - 1]!);
+      await expect(ctrl.start()).rejects.toBeTruthy();
+      expect(nativeUiManager.showPaymentMethod).not.toHaveBeenCalled();
+    });
+  });
 });

@@ -15,6 +15,7 @@ import { ThemeContext } from './internal/theme/ThemeContext';
 import { defaultDarkTokens, defaultLightTokens } from './internal/theme/tokens';
 import { toError } from './internal/utils/errors';
 import { GOOGLE_PAY, isGooglePaySupported } from './internal/googlePay';
+import { APPLE_PAY, isApplePaySupported } from './internal/applePay';
 
 import type { PrimerSettings } from '../models/PrimerSettings';
 import type { PrimerCheckoutData } from '../models/PrimerCheckoutData';
@@ -738,6 +739,15 @@ export function PrimerCheckoutProvider({
         'google-pay-unavailable',
         'google-pay-unavailable',
         'Google Pay is not available on this device.',
+        undefined,
+        undefined
+      );
+    }
+    if (paymentMethodType === APPLE_PAY && !isApplePaySupported(stateRef.current.availablePaymentMethods)) {
+      throw new PrimerError(
+        'apple-pay-unavailable',
+        'apple-pay-unavailable',
+        'Apple Pay is not available on this device.',
         undefined,
         undefined
       );
