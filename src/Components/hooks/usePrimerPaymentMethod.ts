@@ -24,9 +24,9 @@ export function usePrimerPaymentMethod(type: string): UsePrimerPaymentMethodRetu
     setActiveMethod,
   } = usePrimerCheckout();
 
-  const isPresent = availablePaymentMethods.some((m) => m.paymentMethodType === type);
-  const categories = availablePaymentMethods.find((m) => m.paymentMethodType === type)?.paymentMethodManagerCategories;
-  const kind = routeMethodSelection(type, categories ?? []);
+  const method = availablePaymentMethods.find((m) => m.paymentMethodType === type);
+  const isPresent = method != null;
+  const kind = routeMethodSelection(type, method?.paymentMethodManagerCategories ?? []);
 
   const start = useCallback(() => startNativeUI(type), [startNativeUI, type]);
   const cancel = useCallback(() => cancelNativeUI(type), [cancelNativeUI, type]);

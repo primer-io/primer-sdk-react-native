@@ -1,3 +1,5 @@
+import type { UsePrimerPaymentMethodReturn } from '../types/PrimerPaymentMethodTypes';
+
 /**
  * How a payment method is driven, decided by **manager category** (mirrors RN Headless), not by
  * payment-method type. `usePrimerPaymentMethod` and the prebuilt method list share this map.
@@ -10,7 +12,8 @@
  * Availability (e.g. Google Pay's Android-only rule) is deliberately NOT part of routing — it lives
  * with the consumer. Later PRs extend the kinds (bank selection, Klarna, raw-data forms, QR).
  */
-export type PaymentMethodKind = 'nativeUi' | 'card' | 'unsupported';
+// Single source of truth — derived from the hook's union so the two can't drift as variants land.
+export type PaymentMethodKind = UsePrimerPaymentMethodReturn['kind'];
 
 const PAYMENT_CARD_TYPE = 'PAYMENT_CARD';
 

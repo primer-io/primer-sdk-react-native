@@ -41,7 +41,11 @@ export interface CardPaymentMethod {
   clearPaymentOutcome(): void;
 }
 
-/** A payment method type that isn't wired into Components yet. */
+/**
+ * Can't be driven here: either a type not wired into Components yet, OR a known method that isn't
+ * in the current session (its category is unknown). Either way it can't be started — render
+ * nothing / disabled.
+ */
 export interface UnsupportedPaymentMethod {
   kind: 'unsupported';
   readonly isAvailable: false;
