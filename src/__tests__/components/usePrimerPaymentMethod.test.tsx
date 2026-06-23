@@ -29,6 +29,20 @@ jest.mock(
           onBankSelected: jest.fn(),
           onBankFilterChange: jest.fn(),
         },
+        // Provider init effects touch these — mock them so init resolves cleanly instead of
+        // throwing async (unhandled rejections otherwise leak across parallel test suites).
+        RNTPrimerHeadlessUniversalCheckoutAssetsManager: {
+          getPaymentMethodResources: jest.fn().mockResolvedValue({ paymentMethodResources: [] }),
+          getPaymentMethodResource: jest.fn().mockResolvedValue({ paymentMethodResource: null }),
+          getOrderedAllowedCardNetworks: jest.fn().mockResolvedValue([]),
+          getCardNetworkImage: jest.fn().mockResolvedValue({}),
+          getCardNetworkTraits: jest.fn().mockResolvedValue({}),
+        },
+        RNPrimerHeadlessUniversalCheckoutVaultManager: {
+          configure: jest.fn().mockResolvedValue(undefined),
+          fetchVaultedPaymentMethods: jest.fn().mockResolvedValue({ paymentMethods: [] }),
+          requiresVaultedCardCvv: jest.fn().mockResolvedValue(false),
+        },
       },
       NativeEventEmitter: jest.fn().mockImplementation(() => ({
         addListener: mockAddListener,
@@ -398,6 +412,40 @@ describe('usePrimerPaymentMethod', () => {
         await asBankSelection(captures[captures.length - 1]!).submit();
       });
       expect(banksNative.submit).toHaveBeenCalled();
+    });
+  });
+
+  describe('web-redirect APMs (Twint/Sofort) — both platforms, no gate', () => {
+    it('routes a NATIVE_UI web-redirect method (Twint) to kind "nativeUi"', async () => {
+      const captures = await mountWithMethods([{ paymentMethodType: 'ADYEN_TWINT' }], 'ADYEN_TWINT');
+      expect(captures[captures.length - 1]!.kind).toBe('nativeUi');
+    });
+
+    it('Twint is available on both platforms when listed (no platform gate)', async () => {
+      const android = await mountWithMethods([{ paymentMethodType: 'ADYEN_TWINT' }], 'ADYEN_TWINT');
+      expect(asNativeUi(android[android.length - 1]!).isAvailable).toBe(true);
+      rnMock.Platform.OS = 'ios';
+      const ios = await mountWithMethods([{ paymentMethodType: 'ADYEN_TWINT' }], 'ADYEN_TWINT');
+      const last = asNativeUi(ios[ios.length - 1]!);
+      expect(last.isAvailable).toBe(true);
+      expect(last.availabilityError).toBeNull();
+    });
+
+    it('start configures and shows the tapped method (Twint)', async () => {
+      const captures = await mountWithMethods([{ paymentMethodType: 'ADYEN_TWINT' }], 'ADYEN_TWINT');
+      const ctrl = asNativeUi(captures[captures.length - 1]!);
+      await act(async () => {
+        await ctrl.start();
+      });
+      expect(nativeUiManager.configure).toHaveBeenCalledWith('ADYEN_TWINT');
+      expect(nativeUiManager.showPaymentMethod).toHaveBeenCalledWith('CHECKOUT');
+    });
+
+    it('Sofort rides the same path — routes to nativeUi and is available when listed', async () => {
+      const captures = await mountWithMethods([{ paymentMethodType: 'ADYEN_SOFORT' }], 'ADYEN_SOFORT');
+      const last = asNativeUi(captures[captures.length - 1]!);
+      expect(last.kind).toBe('nativeUi');
+      expect(last.isAvailable).toBe(true);
     });
   });
 });

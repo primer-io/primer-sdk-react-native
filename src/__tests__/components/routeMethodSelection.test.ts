@@ -16,6 +16,11 @@ describe('routeMethodSelection', () => {
     expect(routeMethodSelection('ADYEN_DOTPAY', ['COMPONENT_WITH_REDIRECT'])).toBe('bankSelection');
   });
 
+  it('routes pure-redirect NATIVE_UI APMs (Twint/Sofort) to nativeUi', () => {
+    expect(routeMethodSelection('ADYEN_TWINT', ['NATIVE_UI'])).toBe('nativeUi');
+    expect(routeMethodSelection('ADYEN_SOFORT', ['NATIVE_UI'])).toBe('nativeUi');
+  });
+
   it('routes a non-card RAW_DATA method to card for now (the rawDataForm split lands in #389)', () => {
     expect(routeMethodSelection('ADYEN_BANCONTACT_CARD', ['RAW_DATA'])).toBe('card');
   });
