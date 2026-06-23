@@ -8,6 +8,7 @@ import { usePrimerCheckout } from '../../hooks/usePrimerCheckout';
 import { LoadingScreen } from '../screens/LoadingScreen';
 import { MethodSelectionScreen } from '../screens/MethodSelectionScreen';
 import { CardFormScreen } from '../screens/CardFormScreen';
+import { BankSelectionScreen } from '../screens/BankSelectionScreen';
 import { CountrySelectorScreen } from '../screens/CountrySelectorScreen';
 import { ErrorScreen } from '../screens/ErrorScreen';
 import { SuccessScreen } from '../screens/SuccessScreen';
@@ -36,6 +37,7 @@ const screenMap: Partial<Record<CheckoutRouteType, React.ComponentType>> = {
   [CheckoutRoute.splash]: LoadingScreen,
   [CheckoutRoute.methodSelection]: MethodSelectionScreen,
   [CheckoutRoute.cardForm]: CardFormScreen,
+  [CheckoutRoute.bankSelection]: BankSelectionScreen,
   [CheckoutRoute.countrySelector]: CountrySelectorScreen,
   [CheckoutRoute.processing]: LoadingScreen,
   [CheckoutRoute.success]: CheckoutSuccessScreen,

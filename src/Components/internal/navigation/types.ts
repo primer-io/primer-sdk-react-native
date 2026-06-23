@@ -6,6 +6,7 @@ export enum CheckoutRoute {
   loading = 'loading',
   methodSelection = 'methodSelection',
   cardForm = 'cardForm',
+  bankSelection = 'bankSelection',
   processing = 'processing',
   success = 'success',
   error = 'error',
@@ -20,6 +21,7 @@ export type RouteParamMap = {
   [CheckoutRoute.loading]: { title?: string; subtitle?: string } | undefined;
   [CheckoutRoute.methodSelection]: undefined;
   [CheckoutRoute.cardForm]: { paymentMethodType: string };
+  [CheckoutRoute.bankSelection]: { paymentMethodType: string };
   [CheckoutRoute.processing]: undefined;
   [CheckoutRoute.success]: { checkoutData?: PrimerCheckoutData; title?: string; subtitle?: string } | undefined;
   [CheckoutRoute.error]: { error?: PrimerError; title?: string; subtitle?: string } | undefined;

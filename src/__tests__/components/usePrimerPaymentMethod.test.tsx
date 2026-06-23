@@ -22,6 +22,13 @@ jest.mock(
           configure: jest.fn().mockResolvedValue(undefined),
           showPaymentMethod: jest.fn().mockResolvedValue(undefined),
         },
+        RNTPrimerHeadlessUniversalCheckoutBanksComponent: {
+          configure: jest.fn().mockResolvedValue(undefined),
+          start: jest.fn(),
+          submit: jest.fn(),
+          onBankSelected: jest.fn(),
+          onBankFilterChange: jest.fn(),
+        },
       },
       NativeEventEmitter: jest.fn().mockImplementation(() => ({
         addListener: mockAddListener,
@@ -39,6 +46,7 @@ import renderer, { act } from 'react-test-renderer';
 import { PrimerCheckoutProvider } from '../../Components/PrimerCheckoutProvider';
 import { usePrimerPaymentMethod } from '../../Components/hooks/usePrimerPaymentMethod';
 import type {
+  BankSelectionPaymentMethod,
   NativeUiPaymentMethod,
   UsePrimerPaymentMethodReturn,
 } from '../../Components/types/PrimerPaymentMethodTypes';
@@ -46,6 +54,7 @@ import type {
 const rnMock = require('react-native');
 const nativeModule = rnMock.NativeModules.PrimerHeadlessUniversalCheckout;
 const nativeUiManager = rnMock.NativeModules.RNTPrimerHeadlessUniversalPaymentMethodNativeUIManager;
+const banksNative = rnMock.NativeModules.RNTPrimerHeadlessUniversalCheckoutBanksComponent;
 const mockAddListener: jest.Mock = rnMock.__mockAddListener;
 
 function findListener(eventName: string): ((...args: any[]) => void) | undefined {
@@ -57,6 +66,14 @@ function findListener(eventName: string): ((...args: any[]) => void) | undefined
 function asNativeUi(c: UsePrimerPaymentMethodReturn): NativeUiPaymentMethod {
   if (c.kind !== 'nativeUi') {
     throw new Error(`expected kind 'nativeUi', got '${c.kind}'`);
+  }
+  return c;
+}
+
+/** Asserts the captured controller is the `bankSelection` variant and returns it typed. */
+function asBankSelection(c: UsePrimerPaymentMethodReturn): BankSelectionPaymentMethod {
+  if (c.kind !== 'bankSelection') {
+    throw new Error(`expected kind 'bankSelection', got '${c.kind}'`);
   }
   return c;
 }
@@ -118,6 +135,7 @@ describe('usePrimerPaymentMethod', () => {
     rnMock.Platform.OS = 'android';
     nativeModule.cleanUp.mockResolvedValue(undefined);
     nativeModule.setImplementedRNCallbacks.mockResolvedValue(undefined);
+    banksNative.configure.mockResolvedValue(undefined);
   });
 
   it('throws when used outside <PrimerCheckoutProvider> (FR-019)', async () => {
@@ -318,6 +336,68 @@ describe('usePrimerPaymentMethod', () => {
       });
       expect(nativeUiManager.configure).toHaveBeenCalledWith('PAYPAL');
       expect(nativeUiManager.showPaymentMethod).toHaveBeenCalledWith('CHECKOUT');
+    });
+  });
+
+  describe('bank selection (COMPONENT_WITH_REDIRECT) — iDEAL / Dotpay', () => {
+    const ideal = [{ paymentMethodType: 'ADYEN_IDEAL', categories: ['COMPONENT_WITH_REDIRECT'] }];
+
+    it('routes a COMPONENT_WITH_REDIRECT method to kind "bankSelection"', async () => {
+      const captures = await mountWithMethods(ideal, 'ADYEN_IDEAL');
+      const last = captures[captures.length - 1]!;
+      expect(last.kind).toBe('bankSelection');
+      expect(last.isAvailable).toBe(true);
+    });
+
+    it('is available on both platforms when listed (no platform gate)', async () => {
+      rnMock.Platform.OS = 'ios';
+      const captures = await mountWithMethods(ideal, 'ADYEN_IDEAL');
+      expect(asBankSelection(captures[captures.length - 1]!).isAvailable).toBe(true);
+    });
+
+    it('start() provides the component, configures the type, and fetches the issuer list', async () => {
+      const captures = await mountWithMethods(ideal, 'ADYEN_IDEAL');
+      await act(async () => {
+        await asBankSelection(captures[captures.length - 1]!).start();
+        await flushPromises();
+      });
+      expect(banksNative.configure).toHaveBeenCalledWith('ADYEN_IDEAL');
+      expect(banksNative.start).toHaveBeenCalled();
+    });
+
+    it('populates banks from a banksRetrieved step', async () => {
+      const captures = await mountWithMethods(ideal, 'ADYEN_IDEAL');
+      await act(async () => {
+        await asBankSelection(captures[captures.length - 1]!).start();
+        await flushPromises();
+      });
+      const banks = [
+        { id: 'ing', name: 'ING', iconUrl: '', disabled: false },
+        { id: 'rabo', name: 'Rabobank', iconUrl: '', disabled: false },
+      ];
+      await act(async () => {
+        findListener('onStep')!({ stepName: 'banksRetrieved', banks });
+      });
+      const last = asBankSelection(captures[captures.length - 1]!);
+      expect(last.banks).toEqual(banks);
+      expect(last.isLoading).toBe(false);
+    });
+
+    it('selectBank forwards to native and tracks the selection; submit tokenises', async () => {
+      const captures = await mountWithMethods(ideal, 'ADYEN_IDEAL');
+      await act(async () => {
+        await asBankSelection(captures[captures.length - 1]!).start();
+        await flushPromises();
+      });
+      await act(async () => {
+        asBankSelection(captures[captures.length - 1]!).selectBank('ing');
+      });
+      expect(banksNative.onBankSelected).toHaveBeenCalledWith('ing');
+      expect(asBankSelection(captures[captures.length - 1]!).selectedBankId).toBe('ing');
+      await act(async () => {
+        await asBankSelection(captures[captures.length - 1]!).submit();
+      });
+      expect(banksNative.submit).toHaveBeenCalled();
     });
   });
 });

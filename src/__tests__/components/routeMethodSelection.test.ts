@@ -11,6 +11,11 @@ describe('routeMethodSelection', () => {
     expect(routeMethodSelection('GOOGLE_PAY', ['NATIVE_UI'])).toBe('nativeUi');
   });
 
+  it('routes a COMPONENT_WITH_REDIRECT method (iDEAL/Dotpay) to bankSelection', () => {
+    expect(routeMethodSelection('ADYEN_IDEAL', ['COMPONENT_WITH_REDIRECT'])).toBe('bankSelection');
+    expect(routeMethodSelection('ADYEN_DOTPAY', ['COMPONENT_WITH_REDIRECT'])).toBe('bankSelection');
+  });
+
   it('routes a non-card RAW_DATA method to card for now (the rawDataForm split lands in #389)', () => {
     expect(routeMethodSelection('ADYEN_BANCONTACT_CARD', ['RAW_DATA'])).toBe('card');
   });
