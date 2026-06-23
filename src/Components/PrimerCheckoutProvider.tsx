@@ -67,6 +67,10 @@ interface InternalState {
   banks: IssuingBank[];
   selectedBankId: string | null;
   isBanksLoading: boolean;
+  /** QR artifact for a QR method (PromptPay), from onCheckoutAdditionalInfo; null until delivered. */
+  qrCode: { url?: string; base64?: string } | null;
+  /** True while a QR/redirect method awaits off-app authorisation (onCheckoutPending). */
+  isQrPending: boolean;
   vaultedMethods: PrimerVaultedPaymentMethod[];
   vaultedIconUrisById: Record<string, string | undefined>;
   isLoadingVaulted: boolean;
@@ -97,6 +101,8 @@ const initialState: InternalState = {
   banks: [],
   selectedBankId: null,
   isBanksLoading: false,
+  qrCode: null,
+  isQrPending: false,
   vaultedMethods: [],
   vaultedIconUrisById: {},
   isLoadingVaulted: false,
@@ -295,16 +301,19 @@ export function PrimerCheckoutProvider({
           settingsRef.current?.headlessUniversalCheckoutCallbacks?.onTokenizationStart?.(paymentMethodType);
         };
       }
-      if (userCallbacks?.onCheckoutPending) {
-        callbacks.onCheckoutPending = (additionalInfo) => {
-          settingsRef.current?.headlessUniversalCheckoutCallbacks?.onCheckoutPending?.(additionalInfo);
-        };
-      }
-      if (userCallbacks?.onCheckoutAdditionalInfo) {
-        callbacks.onCheckoutAdditionalInfo = (additionalInfo) => {
-          settingsRef.current?.headlessUniversalCheckoutCallbacks?.onCheckoutAdditionalInfo?.(additionalInfo);
-        };
-      }
+      // Always-subscribed (not gated on a merchant callback) so the QR surface captures the
+      // QR artifact + pending phase for QR methods (PromptPay); the merchant callback still fires.
+      callbacks.onCheckoutPending = (additionalInfo) => {
+        setState((prev) => (prev.isQrPending ? prev : { ...prev, isQrPending: true }));
+        settingsRef.current?.headlessUniversalCheckoutCallbacks?.onCheckoutPending?.(additionalInfo);
+      };
+      callbacks.onCheckoutAdditionalInfo = (additionalInfo) => {
+        const info = additionalInfo as { qrCodeUrl?: string; qrCodeBase64?: string };
+        if (info?.qrCodeUrl != null || info?.qrCodeBase64 != null) {
+          setState((prev) => ({ ...prev, qrCode: { url: info.qrCodeUrl, base64: info.qrCodeBase64 } }));
+        }
+        settingsRef.current?.headlessUniversalCheckoutCallbacks?.onCheckoutAdditionalInfo?.(additionalInfo);
+      };
       if (userCallbacks?.onBeforeClientSessionUpdate) {
         callbacks.onBeforeClientSessionUpdate = () => {
           settingsRef.current?.headlessUniversalCheckoutCallbacks?.onBeforeClientSessionUpdate?.();
@@ -829,7 +838,14 @@ export function PrimerCheckoutProvider({
       );
     }
     // Clear any stale outcome so the result screen re-fires for this attempt.
-    setState((prev) => ({ ...prev, paymentOutcome: null, nativeUiInFlightType: paymentMethodType }));
+    // Clear any stale outcome (and QR state) so the result screen re-fires for this attempt.
+    setState((prev) => ({
+      ...prev,
+      paymentOutcome: null,
+      nativeUiInFlightType: paymentMethodType,
+      qrCode: null,
+      isQrPending: false,
+    }));
     try {
       const manager = new PrimerHeadlessUniversalCheckoutPaymentMethodNativeUIManager();
       await manager.configure(paymentMethodType);
@@ -1023,6 +1039,8 @@ export function PrimerCheckoutProvider({
       banks: state.banks,
       selectedBankId: state.selectedBankId,
       isBanksLoading: state.isBanksLoading,
+      qrCode: state.qrCode,
+      isQrPending: state.isQrPending,
       vaultedMethods: state.vaultedMethods,
       vaultedIconUrisById: state.vaultedIconUrisById,
       isLoadingVaulted: state.isLoadingVaulted,

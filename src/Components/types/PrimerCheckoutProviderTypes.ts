@@ -98,6 +98,12 @@ export interface PrimerCheckoutContextValue {
   /** Tokenise the selected bank and launch the redirect. */
   submitBanks: () => Promise<void>;
 
+  // --- QR (PromptPay; Headless-supported QR methods) ---
+  /** QR artifact for the active QR method (from `onCheckoutAdditionalInfo`), or `null`. */
+  qrCode: { url?: string; base64?: string } | null;
+  /** True while a QR/redirect method awaits off-app authorisation (`onCheckoutPending`). */
+  isQrPending: boolean;
+
   // --- Active payment attempt ---
   /** Outcome of the most recent payment attempt; `null` before any submit. */
   paymentOutcome: PaymentOutcome | null;

@@ -33,6 +33,8 @@ export function usePrimerPaymentMethod(type: string): UsePrimerPaymentMethodRetu
     cardFormState,
     setRawData,
     submit,
+    qrCode,
+    isQrPending,
   } = usePrimerCheckout();
 
   const method = availablePaymentMethods.find((m) => m.paymentMethodType === type);
@@ -56,6 +58,8 @@ export function usePrimerPaymentMethod(type: string): UsePrimerPaymentMethodRetu
         isLoading: nativeUiInFlightType === type,
         paymentOutcome,
         availabilityError: isAvailable ? null : availabilityError(type),
+        isPending: isQrPending,
+        qrCode,
         start,
         cancel,
         clearPaymentOutcome,
@@ -100,6 +104,8 @@ export function usePrimerPaymentMethod(type: string): UsePrimerPaymentMethodRetu
     isPresent,
     availablePaymentMethods,
     nativeUiInFlightType,
+    qrCode,
+    isQrPending,
     paymentOutcome,
     start,
     cancel,

@@ -24,6 +24,10 @@ export interface NativeUiPaymentMethod {
   readonly isLoading: boolean;
   readonly paymentOutcome: PaymentOutcome | null;
   readonly availabilityError: PaymentMethodAvailabilityError | null;
+  /** True while awaiting off-app authorisation (`onCheckoutPending`) — redirect / QR methods. */
+  readonly isPending: boolean;
+  /** QR artifact for a QR method (PromptPay), rendered as an image; `null` for non-QR methods. */
+  readonly qrCode: { url?: string; base64?: string } | null;
   /** Present the native UI. Rejects if `!isAvailable`. Outcome arrives via `paymentOutcome`. */
   start(): Promise<void>;
   /** Cancel an in-flight attempt (best-effort; cannot force-close a system sheet). */
