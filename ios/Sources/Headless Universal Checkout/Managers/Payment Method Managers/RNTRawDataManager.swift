@@ -140,6 +140,12 @@ class RNTPrimerHeadlessUniversalCheckoutRawDataManager: RCTEventEmitter {
       return
     }
 
+    if let rawOtpData = PrimerOTPData(otpDataStr: rawDataStr) {
+      rawDataManager.rawData = rawOtpData
+      resolver(nil)
+      return
+    }
+
     let err = RNTNativeError(
       errorId: "native-ios",
       errorDescription: "Failed to decode RawData on iOS.",

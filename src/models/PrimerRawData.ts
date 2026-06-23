@@ -21,3 +21,7 @@ export interface PrimerBancontactCardData extends PrimerRawData {
 export interface PrimerRetailerData extends PrimerRawData {
   id: string;
 }
+
+export interface PrimerOtpData extends PrimerRawData {
+  otp: string;
+}

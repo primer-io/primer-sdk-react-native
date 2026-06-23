@@ -62,6 +62,7 @@ import { usePrimerPaymentMethod } from '../../Components/hooks/usePrimerPaymentM
 import type {
   BankSelectionPaymentMethod,
   NativeUiPaymentMethod,
+  RawDataFormPaymentMethod,
   UsePrimerPaymentMethodReturn,
 } from '../../Components/types/PrimerPaymentMethodTypes';
 
@@ -88,6 +89,14 @@ function asNativeUi(c: UsePrimerPaymentMethodReturn): NativeUiPaymentMethod {
 function asBankSelection(c: UsePrimerPaymentMethodReturn): BankSelectionPaymentMethod {
   if (c.kind !== 'bankSelection') {
     throw new Error(`expected kind 'bankSelection', got '${c.kind}'`);
+  }
+  return c;
+}
+
+/** Asserts the captured controller is the `rawDataForm` variant and returns it typed. */
+function asRawDataForm(c: UsePrimerPaymentMethodReturn): RawDataFormPaymentMethod {
+  if (c.kind !== 'rawDataForm') {
+    throw new Error(`expected kind 'rawDataForm', got '${c.kind}'`);
   }
   return c;
 }
@@ -446,6 +455,27 @@ describe('usePrimerPaymentMethod', () => {
       const last = asNativeUi(captures[captures.length - 1]!);
       expect(last.kind).toBe('nativeUi');
       expect(last.isAvailable).toBe(true);
+    });
+  });
+
+  describe('raw-data form methods (Bancontact/MBWay/BLIK)', () => {
+    it('routes a non-card RAW_DATA method (MBWay) to kind "rawDataForm" with the form contract', async () => {
+      const captures = await mountWithMethods(
+        [{ paymentMethodType: 'ADYEN_MBWAY', categories: ['RAW_DATA'] }],
+        'ADYEN_MBWAY'
+      );
+      const form = asRawDataForm(captures[captures.length - 1]!);
+      expect(form.isAvailable).toBe(true);
+      expect(form.requiredInputs).toEqual([]); // populated once start() activates the raw-data manager
+      expect(form.isValid).toBe(false);
+    });
+
+    it('Bancontact also routes to rawDataForm (not the card form)', async () => {
+      const captures = await mountWithMethods(
+        [{ paymentMethodType: 'ADYEN_BANCONTACT_CARD', categories: ['RAW_DATA'] }],
+        'ADYEN_BANCONTACT_CARD'
+      );
+      expect(captures[captures.length - 1]!.kind).toBe('rawDataForm');
     });
   });
 });
