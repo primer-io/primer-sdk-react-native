@@ -9,11 +9,12 @@ import type { PrimerPaymentMethodManagerCategoryName } from '../../models/Primer
  *   `startNativeUI(type)`.
  * - `bankSelection` — a `COMPONENT_WITH_REDIRECT` bank-redirect method (iDEAL; Android Dotpay).
  * - `rawDataForm` — a non-card `RAW_DATA` method that collects a small input (Bancontact/MBWay/BLIK).
+ * - `klarna` — a `KLARNA` method (session → categories → embedded view → authorize → finalize).
  * - `card` — the card form (`PAYMENT_CARD` only).
  * - `unsupported` — not yet wired into Components.
  *
  * Availability (e.g. Google Pay's Android-only rule) is deliberately NOT part of routing — it lives
- * with the consumer. Later PRs extend the kinds (Klarna, QR).
+ * with the consumer. (QR rides `nativeUi` — it surfaces `qrCode` at runtime, no separate kind.)
  */
 // Single source of truth — derived from the hook's union so the two can't drift as variants land.
 export type PaymentMethodKind = UsePrimerPaymentMethodReturn['kind'];
@@ -32,6 +33,9 @@ export function routeMethodSelection(
   }
   if (categories.includes('COMPONENT_WITH_REDIRECT')) {
     return 'bankSelection';
+  }
+  if (categories.includes('KLARNA')) {
+    return 'klarna';
   }
   if (categories.includes('RAW_DATA')) {
     return 'rawDataForm';

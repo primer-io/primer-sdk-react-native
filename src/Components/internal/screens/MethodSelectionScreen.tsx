@@ -133,6 +133,10 @@ export function MethodSelectionScreen() {
         // Non-card RAW_DATA methods (Bancontact / MBWay / BLIK) — open the method's input form.
         push(CheckoutRoute.rawDataForm, { paymentMethodType: method.type });
         return;
+      case 'klarna':
+        // Klarna — open the category / embedded-view screen.
+        push(CheckoutRoute.klarna, { paymentMethodType: method.type });
+        return;
       case 'unsupported':
         console.warn(`${LOG} payment method ${method.type} not yet wired`);
         return;

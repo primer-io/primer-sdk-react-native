@@ -240,10 +240,12 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaComponent(
     }
 
     @ReactMethod
-    fun addListener(eventName: String?) = Unit
+    fun addListener(eventName: String?) {
+    }
 
     @ReactMethod
-    fun removeListeners(count: Int?) = Unit
+    fun removeListeners(count: Int?) {
+    }
 
     @ReactMethod
     fun onSetPaymentOptions(

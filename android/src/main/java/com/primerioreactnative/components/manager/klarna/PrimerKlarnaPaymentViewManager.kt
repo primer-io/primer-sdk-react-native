@@ -9,17 +9,23 @@ import io.primer.android.klarna.api.ui.PrimerKlarnaPaymentView
 import java.lang.ref.WeakReference
 
 class PrimerKlarnaPaymentViewManager : SimpleViewManager<NativeViewContainer>() {
-    override fun getName() = REACT_CLASS
+    override fun getName(): String {
+        return REACT_CLASS
+    }
 
-    override fun createViewInstance(reactContext: ThemedReactContext): NativeViewContainer =
-        NativeViewContainer(
+    override fun createViewInstance(reactContext: ThemedReactContext): NativeViewContainer {
+        return NativeViewContainer(
             reactContext,
         )
+    }
 
     override fun onAfterUpdateTransaction(view: NativeViewContainer) {
         super.onAfterUpdateTransaction(view)
+        val klarnaView = getPrimerKlarnaPaymentViewOrNull()
+        if (klarnaView == null) {
+        }
         view.addViewImpl(
-            getPrimerKlarnaPaymentViewOrNull()
+            klarnaView
                 ?: TextView(view.context).apply { text = "Error loading Klarna payment view" },
         )
     }

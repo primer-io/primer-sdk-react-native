@@ -11,6 +11,7 @@ import { CardFormScreen } from '../screens/CardFormScreen';
 import { BankSelectionScreen } from '../screens/BankSelectionScreen';
 import { RawDataFormScreen } from '../screens/RawDataFormScreen';
 import { QrCodeScreen } from '../screens/QrCodeScreen';
+import { KlarnaScreen } from '../screens/KlarnaScreen';
 import { CountrySelectorScreen } from '../screens/CountrySelectorScreen';
 import { ErrorScreen } from '../screens/ErrorScreen';
 import { SuccessScreen } from '../screens/SuccessScreen';
@@ -42,6 +43,7 @@ const screenMap: Partial<Record<CheckoutRouteType, React.ComponentType>> = {
   [CheckoutRoute.bankSelection]: BankSelectionScreen,
   [CheckoutRoute.rawDataForm]: RawDataFormScreen,
   [CheckoutRoute.qrCode]: QrCodeScreen,
+  [CheckoutRoute.klarna]: KlarnaScreen,
   [CheckoutRoute.countrySelector]: CountrySelectorScreen,
   [CheckoutRoute.processing]: LoadingScreen,
   [CheckoutRoute.success]: CheckoutSuccessScreen,

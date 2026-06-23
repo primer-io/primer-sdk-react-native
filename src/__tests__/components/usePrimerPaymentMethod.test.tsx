@@ -61,6 +61,7 @@ import { PrimerCheckoutProvider } from '../../Components/PrimerCheckoutProvider'
 import { usePrimerPaymentMethod } from '../../Components/hooks/usePrimerPaymentMethod';
 import type {
   BankSelectionPaymentMethod,
+  KlarnaPaymentMethod,
   NativeUiPaymentMethod,
   RawDataFormPaymentMethod,
   UsePrimerPaymentMethodReturn,
@@ -97,6 +98,14 @@ function asBankSelection(c: UsePrimerPaymentMethodReturn): BankSelectionPaymentM
 function asRawDataForm(c: UsePrimerPaymentMethodReturn): RawDataFormPaymentMethod {
   if (c.kind !== 'rawDataForm') {
     throw new Error(`expected kind 'rawDataForm', got '${c.kind}'`);
+  }
+  return c;
+}
+
+/** Asserts the captured controller is the `klarna` variant and returns it typed. */
+function asKlarna(c: UsePrimerPaymentMethodReturn): KlarnaPaymentMethod {
+  if (c.kind !== 'klarna') {
+    throw new Error(`expected kind 'klarna', got '${c.kind}'`);
   }
   return c;
 }
@@ -504,6 +513,19 @@ describe('usePrimerPaymentMethod', () => {
         findListener('onCheckoutPending')!({});
       });
       expect(asNativeUi(captures[captures.length - 1]!).isPending).toBe(true);
+    });
+  });
+
+  describe('Klarna (KLARNA)', () => {
+    const klarna = [{ paymentMethodType: 'KLARNA', categories: ['KLARNA'] }];
+
+    it('routes a KLARNA method to kind "klarna" with the controller shape', async () => {
+      const captures = await mountWithMethods(klarna, 'KLARNA');
+      const k = asKlarna(captures[captures.length - 1]!);
+      expect(k.isAvailable).toBe(true);
+      expect(k.paymentCategories).toEqual([]); // populated once start() opens the session
+      expect(k.selectedCategoryId).toBeNull();
+      expect(k.isViewLoaded).toBe(false);
     });
   });
 });

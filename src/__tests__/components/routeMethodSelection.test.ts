@@ -27,6 +27,10 @@ describe('routeMethodSelection', () => {
     expect(routeMethodSelection('ADYEN_BLIK', ['RAW_DATA'])).toBe('rawDataForm');
   });
 
+  it('routes a KLARNA method to klarna', () => {
+    expect(routeMethodSelection('KLARNA', ['KLARNA'])).toBe('klarna');
+  });
+
   it('returns unsupported for a category that is not yet routed', () => {
     expect(routeMethodSelection('SOME_FUTURE_METHOD', ['CARD_COMPONENTS'])).toBe('unsupported');
   });
