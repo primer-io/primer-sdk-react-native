@@ -1,4 +1,5 @@
 import type { UsePrimerPaymentMethodReturn } from '../types/PrimerPaymentMethodTypes';
+import type { PrimerPaymentMethodManagerCategoryName } from '../../models/PrimerHeadlessUniversalCheckoutPaymentMethod';
 
 /**
  * How a payment method is driven, decided by **manager category** (mirrors RN Headless), not by
@@ -17,7 +18,10 @@ export type PaymentMethodKind = UsePrimerPaymentMethodReturn['kind'];
 
 const PAYMENT_CARD_TYPE = 'PAYMENT_CARD';
 
-export function routeMethodSelection(type: string, categories: readonly string[]): PaymentMethodKind {
+export function routeMethodSelection(
+  type: string,
+  categories: readonly PrimerPaymentMethodManagerCategoryName[]
+): PaymentMethodKind {
   if (type === PAYMENT_CARD_TYPE) {
     return 'card';
   }

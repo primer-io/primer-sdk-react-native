@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import { PrimerError } from '../../../models/PrimerError';
 import { PrimerAnalytics } from '../../analytics';
 import { usePrimerPaymentMethods } from '../../hooks/usePrimerPaymentMethods';
 import { usePrimerCheckout } from '../../hooks/usePrimerCheckout';
@@ -12,6 +13,7 @@ import { usePrimerLocalization } from '../localization';
 import { NavigationHeader } from '../navigation/NavigationHeader';
 import { CheckoutRoute } from '../navigation/types';
 import { useNavigation } from '../navigation/useNavigation';
+import { routeMethodSelection } from '../routeMethodSelection';
 import { usePrimerTheme } from '../theme';
 import { CheckoutButton } from '../ui/CheckoutButton';
 import { PAYMENT_METHOD_BUTTON_HEIGHT } from '../ui/PaymentMethodButton';
@@ -104,21 +106,34 @@ export function MethodSelectionScreen() {
   useStatusScreenHeight(sheetHeight);
 
   const handleSelect = (method: PaymentMethodItem) => {
-    // Route by manager category (mirrors RN Headless), not by payment-method type.
-    if (method.categories.includes('NATIVE_UI')) {
-      // Jump to processing (same as the card form's Pay) so the shopper sees a spinner — not the
-      // method list — when the native sheet closes; PaymentOutcomeTransitioner navigates away once
-      // the outcome arrives.
-      replace(CheckoutRoute.processing);
-      void startNativeUI(method.type).catch(() => {});
-      return;
+    // Route through the shared classifier (the same map the hook uses), so a new kind can't be
+    // wired into one path and silently missed in the other.
+    const kind = routeMethodSelection(method.type, method.categories);
+    switch (kind) {
+      case 'nativeUi':
+        // Jump to processing (same as the card form's Pay) so the shopper sees a spinner — not the
+        // method list — while the native sheet animates; PaymentOutcomeTransitioner navigates away
+        // once the outcome arrives. If start() rejects (e.g. an unavailable method the SDK still
+        // lists, like Google Pay on iOS), show the error screen instead of stranding the shopper on
+        // the spinner.
+        replace(CheckoutRoute.processing);
+        void startNativeUI(method.type).catch((e) => {
+          replace(CheckoutRoute.error, { error: e instanceof PrimerError ? e : undefined });
+        });
+        return;
+      case 'card':
+        setActiveMethod(method.type);
+        push(CheckoutRoute.cardForm, { paymentMethodType: method.type });
+        return;
+      case 'unsupported':
+        console.warn(`${LOG} payment method ${method.type} not yet wired`);
+        return;
+      default: {
+        // A new union kind must add a case above, or this fails to compile.
+        const _exhaustive: never = kind;
+        void _exhaustive;
+      }
     }
-    if (method.categories.includes('RAW_DATA')) {
-      setActiveMethod(method.type);
-      push(CheckoutRoute.cardForm, { paymentMethodType: method.type });
-      return;
-    }
-    console.warn(`${LOG} payment method ${method.type} not yet wired`);
   };
 
   const handleShowAll = useCallback(() => {
