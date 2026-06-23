@@ -288,4 +288,36 @@ describe('usePrimerPaymentMethod', () => {
       expect(nativeUiManager.showPaymentMethod).not.toHaveBeenCalled();
     });
   });
+
+  describe('PayPal (nativeUi) — both platforms, no gate', () => {
+    it('routes a NATIVE_UI PayPal method to kind "nativeUi"', async () => {
+      const captures = await mountWithMethods([{ paymentMethodType: 'PAYPAL' }], 'PAYPAL');
+      expect(captures[captures.length - 1]!.kind).toBe('nativeUi');
+    });
+
+    it('isAvailable is true on Android when PAYPAL is listed', async () => {
+      const captures = await mountWithMethods([{ paymentMethodType: 'PAYPAL' }], 'PAYPAL');
+      const last = asNativeUi(captures[captures.length - 1]!);
+      expect(last.isAvailable).toBe(true);
+      expect(last.availabilityError).toBeNull();
+    });
+
+    it('isAvailable is also true on iOS when PAYPAL is listed (unlike Google/Apple Pay, no platform gate)', async () => {
+      rnMock.Platform.OS = 'ios';
+      const captures = await mountWithMethods([{ paymentMethodType: 'PAYPAL' }], 'PAYPAL');
+      const last = asNativeUi(captures[captures.length - 1]!);
+      expect(last.isAvailable).toBe(true);
+      expect(last.availabilityError).toBeNull();
+    });
+
+    it('start configures and shows PAYPAL when available', async () => {
+      const captures = await mountWithMethods([{ paymentMethodType: 'PAYPAL' }], 'PAYPAL');
+      const ctrl = asNativeUi(captures[captures.length - 1]!);
+      await act(async () => {
+        await ctrl.start();
+      });
+      expect(nativeUiManager.configure).toHaveBeenCalledWith('PAYPAL');
+      expect(nativeUiManager.showPaymentMethod).toHaveBeenCalledWith('CHECKOUT');
+    });
+  });
 });
