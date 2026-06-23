@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Platform } from 'react-native';
 
 import PrimerHeadlessUniversalCheckoutAssetsManager from '../HeadlessUniversalCheckout/Managers/AssetsManager';
 import PrimerHeadlessUniversalCheckoutRawDataManager from '../HeadlessUniversalCheckout/Managers/PaymentMethodManagers/RawDataManager';
@@ -15,6 +14,7 @@ import { mergeTokens } from './internal/theme/merge';
 import { ThemeContext } from './internal/theme/ThemeContext';
 import { defaultDarkTokens, defaultLightTokens } from './internal/theme/tokens';
 import { toError } from './internal/utils/errors';
+import { GOOGLE_PAY, isGooglePaySupported } from './internal/googlePay';
 
 import type { PrimerSettings } from '../models/PrimerSettings';
 import type { PrimerCheckoutData } from '../models/PrimerCheckoutData';
@@ -33,13 +33,6 @@ import type { CardFormErrors, CardFormField } from './types/CardFormTypes';
 import type { CardNetworkId } from './internal/cardNetwork';
 
 const LOG = '[PrimerCheckoutProvider]';
-
-const GOOGLE_PAY = 'GOOGLE_PAY';
-
-// The iOS SDK also recognizes GOOGLE_PAY, so it can appear in the available-methods list on iOS —
-// gate on Platform.OS so merchants need no platform branch in their render path (FR-010).
-const isGooglePaySupported = (methods: ReadonlyArray<{ paymentMethodType: string }>): boolean =>
-  Platform.OS === 'android' && methods.some((m) => m.paymentMethodType === GOOGLE_PAY);
 
 const assetsManager = new PrimerHeadlessUniversalCheckoutAssetsManager();
 
@@ -61,7 +54,7 @@ interface InternalState {
   isLoadingResources: boolean;
   resourcesError: Error | null;
   paymentOutcome: PaymentOutcome | null;
-  isGooglePayLoading: boolean;
+  nativeUiInFlightType: string | null;
   activeMethod: string | null;
   cardFormState: CardFormState;
   vaultedMethods: PrimerVaultedPaymentMethod[];
@@ -87,7 +80,7 @@ const initialState: InternalState = {
   isLoadingResources: false,
   resourcesError: null,
   paymentOutcome: null,
-  isGooglePayLoading: false,
+  nativeUiInFlightType: null,
   activeMethod: null,
   cardFormState: initialCardFormState,
   vaultedMethods: [],
@@ -232,7 +225,7 @@ export function PrimerCheckoutProvider({
             if (prev.isReady) {
               return {
                 ...prev,
-                isGooglePayLoading: false,
+                nativeUiInFlightType: null,
                 paymentOutcome: { status: 'error', error, data: checkoutData ?? null },
               };
             }
@@ -248,7 +241,7 @@ export function PrimerCheckoutProvider({
           // result screen to show. Backend statuses: SUCCESS | FAILED | PENDING.
           setState((prev) => ({
             ...prev,
-            isGooglePayLoading: false,
+            nativeUiInFlightType: null,
             paymentOutcome: buildPaymentOutcome(checkoutData),
           }));
           onCheckoutCompleteRef.current?.(checkoutData);
@@ -731,15 +724,16 @@ export function PrimerCheckoutProvider({
     setState((prev) => (prev.paymentOutcome === null ? prev : { ...prev, paymentOutcome: null }));
   }, []);
 
-  // Google Pay rides the existing Headless NATIVE_UI path (same shape as payFromVault):
-  // start the native flow; outcomes arrive through the shared onCheckoutComplete/onError.
-  const startGooglePay = useCallback(async () => {
-    // Ignore re-entrant taps: the in-list method row isn't disabled while loading (only
-    // <PrimerGooglePayButton> is), so a fast double-tap would otherwise spawn two native flows.
-    if (stateRef.current.isGooglePayLoading) {
+  // NATIVE_UI methods (Google Pay today; Apple Pay / PayPal / web-redirect APMs later) ride the
+  // existing Headless NATIVE_UI path: start the native flow by type; outcomes arrive through the
+  // shared onCheckoutComplete/onError. Only one native-UI flow runs at a time.
+  const startNativeUI = useCallback(async (paymentMethodType: string) => {
+    // Ignore re-entrant taps: the in-list method row isn't disabled while loading, so a fast
+    // double-tap would otherwise spawn two native flows.
+    if (stateRef.current.nativeUiInFlightType !== null) {
       return;
     }
-    if (!isGooglePaySupported(stateRef.current.availablePaymentMethods)) {
+    if (paymentMethodType === GOOGLE_PAY && !isGooglePaySupported(stateRef.current.availablePaymentMethods)) {
       throw new PrimerError(
         'google-pay-unavailable',
         'google-pay-unavailable',
@@ -749,28 +743,31 @@ export function PrimerCheckoutProvider({
       );
     }
     // Clear any stale outcome so the result screen re-fires for this attempt.
-    setState((prev) => ({ ...prev, paymentOutcome: null, isGooglePayLoading: true }));
+    setState((prev) => ({ ...prev, paymentOutcome: null, nativeUiInFlightType: paymentMethodType }));
     try {
       const manager = new PrimerHeadlessUniversalCheckoutPaymentMethodNativeUIManager();
-      await manager.configure(GOOGLE_PAY);
+      await manager.configure(paymentMethodType);
       await manager.showPaymentMethod(PrimerSessionIntent.CHECKOUT);
       // Success / failure arrive via onCheckoutComplete / onError; shopper-cancel via
-      // onError('payment-cancelled'). isGooglePayLoading is reset in those handlers.
+      // onError('payment-cancelled'). nativeUiInFlightType is reset in those handlers.
     } catch (err) {
-      console.warn(`${LOG} startGooglePay failed ${fmt(err)}`);
+      console.warn(`${LOG} startNativeUI(${paymentMethodType}) failed ${fmt(err)}`);
       setState((prev) => ({
         ...prev,
-        isGooglePayLoading: false,
+        nativeUiInFlightType: null,
         paymentOutcome: { status: 'error', error: err as PrimerError, data: null },
       }));
       throw err;
     }
   }, []);
 
-  const cancelGooglePay = useCallback(() => {
-    // The Google Pay sheet is a system Activity JS can't force-close (FR-002b), so we only clear
-    // the in-flight flag. A real dismissal surfaces via onError('payment-cancelled').
-    setState((prev) => (prev.isGooglePayLoading ? { ...prev, isGooglePayLoading: false } : prev));
+  const cancelNativeUI = useCallback((paymentMethodType: string) => {
+    // The native sheet is a system surface JS can't force-close (FR-002b), so we only clear the
+    // in-flight flag, and only for the matching method. A real dismissal surfaces via
+    // onError('payment-cancelled').
+    setState((prev) =>
+      prev.nativeUiInFlightType === paymentMethodType ? { ...prev, nativeUiInFlightType: null } : prev
+    );
   }, []);
 
   const selectVaultedMethodId = useCallback((id: string) => {
@@ -896,17 +893,6 @@ export function PrimerCheckoutProvider({
   );
 
   const contextValue = useMemo<PrimerCheckoutContextValue>(() => {
-    // Native already gated availability by isReadyToPay; we just read the methods list.
-    const isGooglePayAvailable = isGooglePaySupported(state.availablePaymentMethods);
-    const googlePayAvailabilityError = isGooglePayAvailable
-      ? null
-      : {
-          code: Platform.OS === 'android' ? 'NOT_READY' : 'PLATFORM_NOT_SUPPORTED',
-          message:
-            Platform.OS === 'android'
-              ? 'Google Pay is not ready on this device.'
-              : 'Google Pay is only available on Android.',
-        };
     return {
       isReady: state.isReady,
       error: state.error,
@@ -918,9 +904,7 @@ export function PrimerCheckoutProvider({
       resourcesError: state.resourcesError,
       settings: settingsRef.current,
       paymentOutcome: state.paymentOutcome,
-      isGooglePayAvailable,
-      isGooglePayLoading: state.isGooglePayLoading,
-      googlePayAvailabilityError,
+      nativeUiInFlightType: state.nativeUiInFlightType,
       activeMethod: state.activeMethod,
       cardFormState: state.cardFormState,
       vaultedMethods: state.vaultedMethods,
@@ -939,8 +923,8 @@ export function PrimerCheckoutProvider({
       submit,
       retry,
       clearPaymentOutcome,
-      startGooglePay,
-      cancelGooglePay,
+      startNativeUI,
+      cancelNativeUI,
       payFromVault,
       selectVaultedMethodId,
       requestExpandedVaultDisplay,
@@ -949,8 +933,8 @@ export function PrimerCheckoutProvider({
     };
   }, [
     state,
-    startGooglePay,
-    cancelGooglePay,
+    startNativeUI,
+    cancelNativeUI,
     setActiveMethod,
     setRawData,
     setBillingAddress,

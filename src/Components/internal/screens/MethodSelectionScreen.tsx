@@ -42,7 +42,7 @@ export function MethodSelectionScreen() {
   const { onCancel } = useCheckoutFlow();
   const { paymentMethods } = usePrimerPaymentMethods();
   const { push, replace } = useNavigation();
-  const { setActiveMethod, startGooglePay } = usePrimerCheckout();
+  const { setActiveMethod, startNativeUI } = usePrimerCheckout();
   const {
     activeMethod: activeVaultedMethod,
     vaultDisplayMode,
@@ -106,11 +106,11 @@ export function MethodSelectionScreen() {
   const handleSelect = (method: PaymentMethodItem) => {
     // Route by manager category (mirrors RN Headless), not by payment-method type.
     if (method.categories.includes('NATIVE_UI')) {
-      // Google Pay is the only NATIVE_UI method today. Jump to processing (same as the card
-      // form's Pay) so the shopper sees a spinner — not the method list — when the native
-      // sheet closes; PaymentOutcomeTransitioner navigates away once the outcome arrives.
+      // Jump to processing (same as the card form's Pay) so the shopper sees a spinner — not the
+      // method list — when the native sheet closes; PaymentOutcomeTransitioner navigates away once
+      // the outcome arrives.
       replace(CheckoutRoute.processing);
-      void startGooglePay().catch(() => {});
+      void startNativeUI(method.type).catch(() => {});
       return;
     }
     if (method.categories.includes('RAW_DATA')) {

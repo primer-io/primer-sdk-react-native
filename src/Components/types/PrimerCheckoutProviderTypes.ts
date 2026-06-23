@@ -19,7 +19,6 @@ import type { PrimerVaultedPaymentMethodAdditionalData } from '../../models/Prim
 import type { PrimerThemeOverride } from '../internal/theme/types';
 import type { CardFormErrors } from './CardFormTypes';
 import type { CardNetworkId } from '../internal/cardNetwork';
-import type { GooglePayAvailabilityError } from './PrimerGooglePayTypes';
 
 export interface PrimerCheckoutProviderProps {
   clientToken: string;
@@ -70,17 +69,16 @@ export interface PrimerCheckoutContextValue {
   /** Settings the merchant passed to the provider. Needed for UI-option toggles. */
   settings: PrimerSettings | undefined;
 
-  // --- Google Pay (Checkout Components, Android) ---
-  /** Whether the Google Pay sheet can be presented now. `false` on iOS. */
-  isGooglePayAvailable: boolean;
-  /** True while a Google Pay attempt initiated through this surface is in flight. */
-  isGooglePayLoading: boolean;
-  /** Why Google Pay is unavailable, or `null` when available (coarse on Android). */
-  googlePayAvailabilityError: GooglePayAvailabilityError | null;
-  /** Present the native Google Pay sheet. Rejects if Google Pay is unavailable. */
-  startGooglePay: () => Promise<void>;
-  /** Cancel an in-flight Google Pay attempt (best-effort; cannot force-close the system sheet). */
-  cancelGooglePay: () => void;
+  // --- Native-UI methods (Google Pay today; Apple Pay / PayPal / web-redirect APMs later) ---
+  /**
+   * Which native-UI method is currently in flight, or `null`. Backs each method's `isLoading` flag.
+   * Merchants use `usePrimerPaymentMethod(type)`, not this directly.
+   */
+  nativeUiInFlightType: string | null;
+  /** Start a native-UI method by payment-method type. Rejects if the method is unavailable. */
+  startNativeUI: (paymentMethodType: string) => Promise<void>;
+  /** Cancel an in-flight native-UI attempt (best-effort; cannot force-close the system sheet). */
+  cancelNativeUI: (paymentMethodType: string) => void;
 
   // --- Active payment attempt ---
   /** Outcome of the most recent payment attempt; `null` before any submit. */

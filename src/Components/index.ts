@@ -17,13 +17,14 @@ export type {
 } from './types/PaymentMethodTypes';
 export { usePrimerCardForm } from './hooks/usePrimerCardForm';
 export type { UseCardFormOptions, UsePrimerCardFormReturn, CardFormErrors, CardFormField } from './types/CardFormTypes';
-export { useGooglePay } from './hooks/useGooglePay';
-export { PrimerGooglePayButton } from './PrimerGooglePayButton';
+export { usePrimerPaymentMethod } from './hooks/usePrimerPaymentMethod';
 export type {
-  GooglePayController,
-  GooglePayAvailabilityError,
-  PrimerGooglePayButtonProps,
-} from './types/PrimerGooglePayTypes';
+  UsePrimerPaymentMethodReturn,
+  NativeUiPaymentMethod,
+  CardPaymentMethod,
+  UnsupportedPaymentMethod,
+  PaymentMethodAvailabilityError,
+} from './types/PrimerPaymentMethodTypes';
 export { usePrimerCardNetwork } from './hooks/usePrimerCardNetwork';
 export type { UseCardNetworkReturn } from './hooks/usePrimerCardNetwork';
 export type { CardNetworkDescriptor, CardNetworkId, CardNetworkIconSource, CvvLabel } from './internal/cardNetwork';
