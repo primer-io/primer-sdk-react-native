@@ -53,6 +53,8 @@ const baseContext: PrimerCheckoutContextValue = {
   selectBank: () => {},
   submitBanks: async () => {},
   stopBanks: () => {},
+  qrCode: null,
+  isQrPending: false,
   activeMethod: 'PAYMENT_CARD',
   cardFormState: { isValid: false, errors: {}, binData: null, metadata: null, requiredFields: [] },
   vaultedMethods: [],
