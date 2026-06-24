@@ -10,6 +10,7 @@ import { MethodSelectionScreen } from '../screens/MethodSelectionScreen';
 import { CardFormScreen } from '../screens/CardFormScreen';
 import { BankSelectionScreen } from '../screens/BankSelectionScreen';
 import { RawDataFormScreen } from '../screens/RawDataFormScreen';
+import { QrCodeScreen } from '../screens/QrCodeScreen';
 import { CountrySelectorScreen } from '../screens/CountrySelectorScreen';
 import { ErrorScreen } from '../screens/ErrorScreen';
 import { SuccessScreen } from '../screens/SuccessScreen';
@@ -40,6 +41,7 @@ const screenMap: Partial<Record<CheckoutRouteType, React.ComponentType>> = {
   [CheckoutRoute.cardForm]: CardFormScreen,
   [CheckoutRoute.bankSelection]: BankSelectionScreen,
   [CheckoutRoute.rawDataForm]: RawDataFormScreen,
+  [CheckoutRoute.qrCode]: QrCodeScreen,
   [CheckoutRoute.countrySelector]: CountrySelectorScreen,
   [CheckoutRoute.processing]: LoadingScreen,
   [CheckoutRoute.success]: CheckoutSuccessScreen,
@@ -66,6 +68,26 @@ function ReadinessTransitioner() {
       replace(CheckoutRoute.methodSelection);
     }
   }, [isReady, isLoadingResources, error, replace]);
+
+  return null;
+}
+
+function QrCodeTransitioner() {
+  // Navigate to the QR screen only when an actual QR payload arrives (keyed on `qrCode`, not
+  // `isQrPending` — pending can fire for non-QR async methods). startNativeUI clears `qrCode` at
+  // the start of each flow, which resets the guard for the next QR payment.
+  const { qrCode } = usePrimerCheckout();
+  const { replace } = useNavigation();
+  const shownRef = useRef(false);
+
+  useEffect(() => {
+    if (qrCode != null && !shownRef.current) {
+      shownRef.current = true;
+      replace(CheckoutRoute.qrCode);
+    } else if (qrCode == null) {
+      shownRef.current = false;
+    }
+  }, [qrCode, replace]);
 
   return null;
 }
@@ -116,6 +138,7 @@ export function CheckoutFlow({ onCancel }: CheckoutFlowProps = {}) {
     <CheckoutFlowContext.Provider value={contextValue}>
       <NavigationProvider initialRoute={CheckoutRoute.splash}>
         <ReadinessTransitioner />
+        <QrCodeTransitioner />
         <PaymentOutcomeTransitioner />
         <PrimerCardFormProvider>
           <BillingAddressFormStateProvider>

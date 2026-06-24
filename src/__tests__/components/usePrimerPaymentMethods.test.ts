@@ -100,6 +100,8 @@ const readyContext: PrimerCheckoutContextValue = {
   filterBanks: () => {},
   selectBank: () => {},
   submitBanks: async () => {},
+  qrCode: null,
+  isQrPending: false,
   activeMethod: null,
   cardFormState: {
     isValid: false,

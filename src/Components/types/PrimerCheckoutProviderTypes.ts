@@ -43,6 +43,12 @@ export type PaymentOutcome =
   | { status: 'success'; data: PrimerCheckoutData }
   | { status: 'error'; error: PrimerError; data: PrimerCheckoutData | null };
 
+/** QR artifact delivered by a QR-class native-UI method (PromptPay). */
+export interface QrCodeArtifact {
+  url?: string;
+  base64?: string;
+}
+
 /** Validation + metadata state surfaced by the active raw-data manager. */
 export interface CardFormState {
   isValid: boolean;
@@ -97,6 +103,13 @@ export interface PrimerCheckoutContextValue {
   selectBank: (bankId: string) => void;
   /** Tokenise the selected bank and launch the redirect. */
   submitBanks: () => Promise<void>;
+
+  // --- QR (PromptPay; Headless-supported QR methods) ---
+  // Single-active-method: these slots hold the currently-active method's state, not a per-type map.
+  /** QR artifact for the active QR method (from `onCheckoutAdditionalInfo`), or `null`. */
+  qrCode: QrCodeArtifact | null;
+  /** True while a QR/redirect method awaits off-app authorisation (`onCheckoutPending`). */
+  isQrPending: boolean;
 
   // --- Active payment attempt ---
   /** Outcome of the most recent payment attempt; `null` before any submit. */
