@@ -125,6 +125,10 @@ export function MethodSelectionScreen() {
         setActiveMethod(method.type);
         push(CheckoutRoute.cardForm, { paymentMethodType: method.type });
         return;
+      case 'bankSelection':
+        // Bank-redirect methods (iDEAL; Android Dotpay) — open the bank picker.
+        push(CheckoutRoute.bankSelection, { paymentMethodType: method.type });
+        return;
       case 'unsupported':
         console.warn(`${LOG} payment method ${method.type} not yet wired`);
         return;

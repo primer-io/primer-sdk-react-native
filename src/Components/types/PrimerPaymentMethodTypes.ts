@@ -1,4 +1,5 @@
 import type { PaymentOutcome } from './PrimerCheckoutProviderTypes';
+import type { IssuingBank } from '../../models/IssuingBank';
 
 /**
  * Why a payment method is unavailable. Coarse `{ code, message }`; the codes are method-specific
@@ -42,6 +43,32 @@ export interface CardPaymentMethod {
 }
 
 /**
+ * A bank-selection redirect method (`COMPONENT_WITH_REDIRECT` — iDEAL; Android Dotpay). `start()`
+ * fetches the issuer list; pick a bank with `selectBank`, then `submit()` launches the bank
+ * redirect. The outcome arrives via `paymentOutcome`. Render nothing when `!isAvailable`.
+ */
+export interface BankSelectionPaymentMethod {
+  kind: 'bankSelection';
+  readonly isAvailable: boolean;
+  /** True while the issuer list loads, and from `submit()` until a terminal outcome. */
+  readonly isLoading: boolean;
+  readonly paymentOutcome: PaymentOutcome | null;
+  /** Issuer list; empty until `start()` resolves, re-emitted on `filter`. */
+  readonly banks: IssuingBank[];
+  /** The shopper's current selection, or `null`. */
+  readonly selectedBankId: string | null;
+  /** Fetch the issuer list (emits loading, then the retrieved banks). */
+  start(): Promise<void>;
+  /** Filter the issuer list by name. */
+  filter(text: string): void;
+  /** Select an issuer (required before `submit`). */
+  selectBank(bankId: string): void;
+  /** Tokenise the selection and launch the bank redirect. */
+  submit(): Promise<void>;
+  clearPaymentOutcome(): void;
+}
+
+/**
  * Can't be driven here: either a type not wired into Components yet, OR a known method that isn't
  * in the current session (its category is unknown). Either way it can't be started — render
  * nothing / disabled.
@@ -52,4 +79,8 @@ export interface UnsupportedPaymentMethod {
 }
 
 /** Return value of {@link usePrimerPaymentMethod}; narrow on `kind`. */
-export type UsePrimerPaymentMethodReturn = NativeUiPaymentMethod | CardPaymentMethod | UnsupportedPaymentMethod;
+export type UsePrimerPaymentMethodReturn =
+  | NativeUiPaymentMethod
+  | BankSelectionPaymentMethod
+  | CardPaymentMethod
+  | UnsupportedPaymentMethod;

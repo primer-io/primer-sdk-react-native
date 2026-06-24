@@ -5,13 +5,14 @@ import type { PrimerPaymentMethodManagerCategoryName } from '../../models/Primer
  * How a payment method is driven, decided by **manager category** (mirrors RN Headless), not by
  * payment-method type. `usePrimerPaymentMethod` and the prebuilt method list share this map.
  *
- * - `nativeUi` — a native-sheet / browser-redirect method (Google Pay today), started via
+ * - `nativeUi` — a native-sheet / browser-redirect method (Google/Apple Pay, PayPal), started via
  *   `startNativeUI(type)`.
+ * - `bankSelection` — a `COMPONENT_WITH_REDIRECT` bank-redirect method (iDEAL; Android Dotpay).
  * - `card` — the card form (`PAYMENT_CARD` only).
  * - `unsupported` — not yet wired into Components.
  *
  * Availability (e.g. Google Pay's Android-only rule) is deliberately NOT part of routing — it lives
- * with the consumer. Later PRs extend the kinds (bank selection, Klarna, raw-data forms, QR).
+ * with the consumer. Later PRs extend the kinds (Klarna, raw-data forms, QR).
  */
 // Single source of truth — derived from the hook's union so the two can't drift as variants land.
 export type PaymentMethodKind = UsePrimerPaymentMethodReturn['kind'];
@@ -27,6 +28,9 @@ export function routeMethodSelection(
   }
   if (categories.includes('NATIVE_UI')) {
     return 'nativeUi';
+  }
+  if (categories.includes('COMPONENT_WITH_REDIRECT')) {
+    return 'bankSelection';
   }
   // Non-card `RAW_DATA` (Bancontact/MBWay/BLIK) is intentionally `unsupported` here — its input
   // form lands in #394 (ORC-6514), which turns this into `rawDataForm`. Routing it to `card` now

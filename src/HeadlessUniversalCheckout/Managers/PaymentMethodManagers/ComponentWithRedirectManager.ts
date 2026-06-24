@@ -89,32 +89,31 @@ export class PrimerHeadlessUniversalCheckoutComponentWithRedirectManager {
   async provide(props: ComponentWithRedirectManagerProps): Promise<BanksComponent | any> {
     await this.configureListeners(props);
 
-    if (props.paymentMethodType === 'ADYEN_IDEAL') {
-      const banksComponent: BanksComponent = {
-        start: async () => {
-          RNTPrimerHeadlessUniversalCheckoutBanksComponent.start();
-        },
-        submit: async () => {
-          RNTPrimerHeadlessUniversalCheckoutBanksComponent.submit();
-        },
-        onBankFilterChange: async (filter: String) => {
-          RNTPrimerHeadlessUniversalCheckoutBanksComponent.onBankFilterChange(filter);
-        },
-        handleBankFilterChange: async (filter: String) => {
-          RNTPrimerHeadlessUniversalCheckoutBanksComponent.onBankFilterChange(filter);
-        },
-        onBankSelected: async (bankId: String) => {
-          RNTPrimerHeadlessUniversalCheckoutBanksComponent.onBankSelected(bankId);
-        },
-        handleBankChange: async (bankId: String) => {
-          RNTPrimerHeadlessUniversalCheckoutBanksComponent.onBankSelected(bankId);
-        },
-      };
-      await RNTPrimerHeadlessUniversalCheckoutBanksComponent.configure(props.paymentMethodType);
-      return banksComponent;
-    } else {
-      return null;
-    }
+    // Serve any COMPONENT_WITH_REDIRECT method (iDEAL on both platforms, Dotpay on Android), not
+    // just ADYEN_IDEAL. The native bridge configure(type) and the native SDK's
+    // ComponentWithRedirectManager validate the type and reject unsupported ones.
+    const banksComponent: BanksComponent = {
+      start: async () => {
+        RNTPrimerHeadlessUniversalCheckoutBanksComponent.start();
+      },
+      submit: async () => {
+        RNTPrimerHeadlessUniversalCheckoutBanksComponent.submit();
+      },
+      onBankFilterChange: async (filter: String) => {
+        RNTPrimerHeadlessUniversalCheckoutBanksComponent.onBankFilterChange(filter);
+      },
+      handleBankFilterChange: async (filter: String) => {
+        RNTPrimerHeadlessUniversalCheckoutBanksComponent.onBankFilterChange(filter);
+      },
+      onBankSelected: async (bankId: String) => {
+        RNTPrimerHeadlessUniversalCheckoutBanksComponent.onBankSelected(bankId);
+      },
+      handleBankChange: async (bankId: String) => {
+        RNTPrimerHeadlessUniversalCheckoutBanksComponent.onBankSelected(bankId);
+      },
+    };
+    await RNTPrimerHeadlessUniversalCheckoutBanksComponent.configure(props.paymentMethodType);
+    return banksComponent;
   }
 
   private async configureListeners(props: ComponentWithRedirectManagerProps): Promise<void> {

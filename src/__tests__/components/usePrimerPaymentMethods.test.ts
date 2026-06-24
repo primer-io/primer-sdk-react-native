@@ -93,6 +93,13 @@ const readyContext: PrimerCheckoutContextValue = {
   nativeUiInFlightType: null,
   startNativeUI: async () => {},
   cancelNativeUI: () => {},
+  banks: [],
+  selectedBankId: null,
+  isBanksLoading: false,
+  startBanks: async () => {},
+  filterBanks: () => {},
+  selectBank: () => {},
+  submitBanks: async () => {},
   activeMethod: null,
   cardFormState: {
     isValid: false,
