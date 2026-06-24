@@ -29,6 +29,28 @@ jest.mock(
           onBankSelected: jest.fn(),
           onBankFilterChange: jest.fn(),
         },
+        RNTPrimerHeadlessUniversalCheckoutKlarnaComponent: {
+          configure: jest.fn().mockResolvedValue(undefined),
+          start: jest.fn(),
+          submit: jest.fn(),
+          onSetPaymentOptions: jest.fn(),
+          onFinalizePayment: jest.fn(),
+          cleanUp: jest.fn().mockResolvedValue(undefined),
+        },
+        // Provider init effects touch these — mock them so init resolves cleanly instead of
+        // throwing async (unhandled rejections otherwise leak across parallel test suites).
+        RNTPrimerHeadlessUniversalCheckoutAssetsManager: {
+          getPaymentMethodResources: jest.fn().mockResolvedValue({ paymentMethodResources: [] }),
+          getPaymentMethodResource: jest.fn().mockResolvedValue({ paymentMethodResource: null }),
+          getOrderedAllowedCardNetworks: jest.fn().mockResolvedValue([]),
+          getCardNetworkImage: jest.fn().mockResolvedValue({}),
+          getCardNetworkTraits: jest.fn().mockResolvedValue({}),
+        },
+        RNPrimerHeadlessUniversalCheckoutVaultManager: {
+          configure: jest.fn().mockResolvedValue(undefined),
+          fetchVaultedPaymentMethods: jest.fn().mockResolvedValue({ paymentMethods: [] }),
+          requiresVaultedCardCvv: jest.fn().mockResolvedValue(false),
+        },
       },
       NativeEventEmitter: jest.fn().mockImplementation(() => ({
         addListener: mockAddListener,
@@ -48,6 +70,7 @@ import { usePrimerPaymentMethod } from '../../Components/hooks/usePrimerPaymentM
 import { PrimerError } from '../../models/PrimerError';
 import type {
   BankSelectionPaymentMethod,
+  KlarnaPaymentMethod,
   NativeUiPaymentMethod,
   RawDataFormPaymentMethod,
   UsePrimerPaymentMethodReturn,
@@ -57,6 +80,7 @@ const rnMock = require('react-native');
 const nativeModule = rnMock.NativeModules.PrimerHeadlessUniversalCheckout;
 const nativeUiManager = rnMock.NativeModules.RNTPrimerHeadlessUniversalPaymentMethodNativeUIManager;
 const banksNative = rnMock.NativeModules.RNTPrimerHeadlessUniversalCheckoutBanksComponent;
+const klarnaNative = rnMock.NativeModules.RNTPrimerHeadlessUniversalCheckoutKlarnaComponent;
 const mockAddListener: jest.Mock = rnMock.__mockAddListener;
 
 function findListener(eventName: string): ((...args: any[]) => void) | undefined {
@@ -84,6 +108,14 @@ function asBankSelection(c: UsePrimerPaymentMethodReturn): BankSelectionPaymentM
 function asRawDataForm(c: UsePrimerPaymentMethodReturn): RawDataFormPaymentMethod {
   if (c.kind !== 'rawDataForm') {
     throw new Error(`expected kind 'rawDataForm', got '${c.kind}'`);
+  }
+  return c;
+}
+
+/** Asserts the captured controller is the `klarna` variant and returns it typed. */
+function asKlarna(c: UsePrimerPaymentMethodReturn): KlarnaPaymentMethod {
+  if (c.kind !== 'klarna') {
+    throw new Error(`expected kind 'klarna', got '${c.kind}'`);
   }
   return c;
 }
@@ -146,6 +178,8 @@ describe('usePrimerPaymentMethod', () => {
     nativeModule.cleanUp.mockResolvedValue(undefined);
     nativeModule.setImplementedRNCallbacks.mockResolvedValue(undefined);
     banksNative.configure.mockResolvedValue(undefined);
+    klarnaNative.configure.mockResolvedValue(undefined);
+    klarnaNative.cleanUp.mockResolvedValue(undefined);
   });
 
   it('throws when used outside <PrimerCheckoutProvider> (FR-019)', async () => {
@@ -209,6 +243,21 @@ describe('usePrimerPaymentMethod', () => {
       expect(nativeUiManager.showPaymentMethod).toHaveBeenCalledWith('CHECKOUT');
     });
 
+    it('a native start() failure sets an error outcome, resets loading, and rejects', async () => {
+      nativeUiManager.showPaymentMethod.mockRejectedValueOnce(
+        new PrimerError('native-ui-failed', undefined, 'native sheet failed', undefined, undefined)
+      );
+      const captures = await mountWithMethods([{ paymentMethodType: 'GOOGLE_PAY' }]);
+      const ctrl = asNativeUi(captures[captures.length - 1]!);
+      await act(async () => {
+        await expect(ctrl.start()).rejects.toBeTruthy();
+        await flushPromises();
+      });
+      const last = asNativeUi(captures[captures.length - 1]!);
+      expect(last.paymentOutcome?.status).toBe('error');
+      expect(last.isLoading).toBe(false);
+    });
+
     it('ignores a re-entrant start while a flow is already in flight', async () => {
       const captures = await mountWithMethods([{ paymentMethodType: 'GOOGLE_PAY' }]);
       const ctrl = asNativeUi(captures[captures.length - 1]!);
@@ -255,21 +304,6 @@ describe('usePrimerPaymentMethod', () => {
         });
       });
       expect(asNativeUi(captures[captures.length - 1]!).paymentOutcome?.status).toBe('error');
-    });
-
-    it('a native start() failure sets an error outcome, resets loading, and rejects', async () => {
-      nativeUiManager.showPaymentMethod.mockRejectedValueOnce(
-        new PrimerError('native-ui-failed', undefined, 'native sheet failed', undefined, undefined)
-      );
-      const captures = await mountWithMethods([{ paymentMethodType: 'GOOGLE_PAY' }]);
-      const ctrl = asNativeUi(captures[captures.length - 1]!);
-      await act(async () => {
-        await expect(ctrl.start()).rejects.toBeTruthy();
-        await flushPromises();
-      });
-      const last = asNativeUi(captures[captures.length - 1]!);
-      expect(last.paymentOutcome?.status).toBe('error');
-      expect(last.isLoading).toBe(false);
     });
   });
 
@@ -364,40 +398,6 @@ describe('usePrimerPaymentMethod', () => {
     });
   });
 
-  describe('web-redirect APMs (Twint/Sofort) — both platforms, no gate', () => {
-    it('routes a NATIVE_UI web-redirect method (Twint) to kind "nativeUi"', async () => {
-      const captures = await mountWithMethods([{ paymentMethodType: 'ADYEN_TWINT' }], 'ADYEN_TWINT');
-      expect(captures[captures.length - 1]!.kind).toBe('nativeUi');
-    });
-
-    it('Twint is available on both platforms when listed (no platform gate)', async () => {
-      const android = await mountWithMethods([{ paymentMethodType: 'ADYEN_TWINT' }], 'ADYEN_TWINT');
-      expect(asNativeUi(android[android.length - 1]!).isAvailable).toBe(true);
-      rnMock.Platform.OS = 'ios';
-      const ios = await mountWithMethods([{ paymentMethodType: 'ADYEN_TWINT' }], 'ADYEN_TWINT');
-      const last = asNativeUi(ios[ios.length - 1]!);
-      expect(last.isAvailable).toBe(true);
-      expect(last.availabilityError).toBeNull();
-    });
-
-    it('start configures and shows the tapped method (Twint)', async () => {
-      const captures = await mountWithMethods([{ paymentMethodType: 'ADYEN_TWINT' }], 'ADYEN_TWINT');
-      const ctrl = asNativeUi(captures[captures.length - 1]!);
-      await act(async () => {
-        await ctrl.start();
-      });
-      expect(nativeUiManager.configure).toHaveBeenCalledWith('ADYEN_TWINT');
-      expect(nativeUiManager.showPaymentMethod).toHaveBeenCalledWith('CHECKOUT');
-    });
-
-    it('Sofort rides the same path — routes to nativeUi and is available when listed', async () => {
-      const captures = await mountWithMethods([{ paymentMethodType: 'ADYEN_SOFORT' }], 'ADYEN_SOFORT');
-      const last = asNativeUi(captures[captures.length - 1]!);
-      expect(last.kind).toBe('nativeUi');
-      expect(last.isAvailable).toBe(true);
-    });
-  });
-
   describe('bank selection (COMPONENT_WITH_REDIRECT) — iDEAL / Dotpay', () => {
     const ideal = [{ paymentMethodType: 'ADYEN_IDEAL', categories: ['COMPONENT_WITH_REDIRECT'] }];
 
@@ -472,6 +472,40 @@ describe('usePrimerPaymentMethod', () => {
     });
   });
 
+  describe('web-redirect APMs (Twint/Sofort) — both platforms, no gate', () => {
+    it('routes a NATIVE_UI web-redirect method (Twint) to kind "nativeUi"', async () => {
+      const captures = await mountWithMethods([{ paymentMethodType: 'ADYEN_TWINT' }], 'ADYEN_TWINT');
+      expect(captures[captures.length - 1]!.kind).toBe('nativeUi');
+    });
+
+    it('Twint is available on both platforms when listed (no platform gate)', async () => {
+      const android = await mountWithMethods([{ paymentMethodType: 'ADYEN_TWINT' }], 'ADYEN_TWINT');
+      expect(asNativeUi(android[android.length - 1]!).isAvailable).toBe(true);
+      rnMock.Platform.OS = 'ios';
+      const ios = await mountWithMethods([{ paymentMethodType: 'ADYEN_TWINT' }], 'ADYEN_TWINT');
+      const last = asNativeUi(ios[ios.length - 1]!);
+      expect(last.isAvailable).toBe(true);
+      expect(last.availabilityError).toBeNull();
+    });
+
+    it('start configures and shows the tapped method (Twint)', async () => {
+      const captures = await mountWithMethods([{ paymentMethodType: 'ADYEN_TWINT' }], 'ADYEN_TWINT');
+      const ctrl = asNativeUi(captures[captures.length - 1]!);
+      await act(async () => {
+        await ctrl.start();
+      });
+      expect(nativeUiManager.configure).toHaveBeenCalledWith('ADYEN_TWINT');
+      expect(nativeUiManager.showPaymentMethod).toHaveBeenCalledWith('CHECKOUT');
+    });
+
+    it('Sofort rides the same path — routes to nativeUi and is available when listed', async () => {
+      const captures = await mountWithMethods([{ paymentMethodType: 'ADYEN_SOFORT' }], 'ADYEN_SOFORT');
+      const last = asNativeUi(captures[captures.length - 1]!);
+      expect(last.kind).toBe('nativeUi');
+      expect(last.isAvailable).toBe(true);
+    });
+  });
+
   describe('raw-data form methods (Bancontact/MBWay/BLIK)', () => {
     it('routes a non-card RAW_DATA method (MBWay) to kind "rawDataForm" with the form contract', async () => {
       const captures = await mountWithMethods(
@@ -518,6 +552,51 @@ describe('usePrimerPaymentMethod', () => {
         findListener('onCheckoutPending')!({});
       });
       expect(asNativeUi(captures[captures.length - 1]!).isPending).toBe(true);
+    });
+  });
+
+  describe('Klarna (KLARNA)', () => {
+    const klarna = [{ paymentMethodType: 'KLARNA', categories: ['KLARNA'] }];
+
+    it('routes a KLARNA method to kind "klarna" with the controller shape', async () => {
+      const captures = await mountWithMethods(klarna, 'KLARNA');
+      const k = asKlarna(captures[captures.length - 1]!);
+      expect(k.isAvailable).toBe(true);
+      expect(k.paymentCategories).toEqual([]); // populated once start() opens the session
+      expect(k.selectedCategoryId).toBeNull();
+      expect(k.isViewLoaded).toBe(false);
+    });
+
+    it('auto-finalizes exactly once on paymentSessionAuthorized; a later manual finalize() is a no-op', async () => {
+      const captures = await mountWithMethods(klarna, 'KLARNA');
+      await act(async () => {
+        await asKlarna(captures[captures.length - 1]!).start();
+        await flushPromises();
+      });
+      // SDK authorized but not finalized (Headless autoFinalize=false) → provider finalizes once.
+      await act(async () => {
+        findListener('onStep')!({ stepName: 'paymentSessionAuthorized', isFinalized: false });
+        await flushPromises();
+      });
+      expect(klarnaNative.onFinalizePayment).toHaveBeenCalledTimes(1);
+      // The guard must stop a manual finalize() from double-firing (native errors on double-finalize).
+      await act(async () => {
+        await asKlarna(captures[captures.length - 1]!).finalize();
+      });
+      expect(klarnaNative.onFinalizePayment).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not finalize when the authorized step is already finalized', async () => {
+      const captures = await mountWithMethods(klarna, 'KLARNA');
+      await act(async () => {
+        await asKlarna(captures[captures.length - 1]!).start();
+        await flushPromises();
+      });
+      await act(async () => {
+        findListener('onStep')!({ stepName: 'paymentSessionAuthorized', isFinalized: true });
+        await flushPromises();
+      });
+      expect(klarnaNative.onFinalizePayment).not.toHaveBeenCalled();
     });
   });
 });
