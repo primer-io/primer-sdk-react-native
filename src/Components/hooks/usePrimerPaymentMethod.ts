@@ -30,6 +30,9 @@ export function usePrimerPaymentMethod(type: string): UsePrimerPaymentMethodRetu
     filterBanks,
     selectBank,
     submitBanks,
+    cardFormState,
+    setRawData,
+    submit,
   } = usePrimerCheckout();
 
   const method = availablePaymentMethods.find((m) => m.paymentMethodType === type);
@@ -40,6 +43,9 @@ export function usePrimerPaymentMethod(type: string): UsePrimerPaymentMethodRetu
   const cancel = useCallback(() => cancelNativeUI(type), [cancelNativeUI, type]);
   const startCard = useCallback(() => setActiveMethod(type), [setActiveMethod, type]);
   const startBank = useCallback(() => startBanks(type), [startBanks, type]);
+  const startRawDataForm = useCallback(async () => {
+    setActiveMethod(type);
+  }, [setActiveMethod, type]);
 
   return useMemo<UsePrimerPaymentMethodReturn>(() => {
     if (kind === 'nativeUi') {
@@ -70,6 +76,20 @@ export function usePrimerPaymentMethod(type: string): UsePrimerPaymentMethodRetu
         clearPaymentOutcome,
       };
     }
+    if (kind === 'rawDataForm') {
+      return {
+        kind: 'rawDataForm',
+        isAvailable: isPresent,
+        requiredInputs: cardFormState.requiredFields,
+        validationErrors: Object.values(cardFormState.errors).filter((e): e is string => Boolean(e)),
+        isValid: cardFormState.isValid,
+        paymentOutcome,
+        start: startRawDataForm,
+        setData: setRawData,
+        submit,
+        clearPaymentOutcome,
+      };
+    }
     if (kind === 'card') {
       return { kind: 'card', isAvailable: isPresent, start: startCard, clearPaymentOutcome };
     }
@@ -91,6 +111,10 @@ export function usePrimerPaymentMethod(type: string): UsePrimerPaymentMethodRetu
     banks,
     selectedBankId,
     isBanksLoading,
+    cardFormState,
+    setRawData,
+    submit,
+    startRawDataForm,
     clearPaymentOutcome,
   ]);
 }
