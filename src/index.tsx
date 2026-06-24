@@ -97,8 +97,17 @@ import { NativeResourceView } from './HeadlessUniversalCheckout/Components/Nativ
 export { NativeResourceView };
 import { PrimerGooglePayButtonConstants } from './HeadlessUniversalCheckout/Components/NativeResourceView';
 export { PrimerGooglePayButtonConstants };
-import { PrimerGooglePayButton } from './HeadlessUniversalCheckout/Components/PrimerGooglePayButton';
-export { PrimerGooglePayButton };
+export { usePrimerPaymentMethod } from './Components';
+export type {
+  UsePrimerPaymentMethodReturn,
+  NativeUiPaymentMethod,
+  CardPaymentMethod,
+  UnsupportedPaymentMethod,
+  PaymentMethodAvailabilityError,
+} from './Components';
+// The bare, context-free native button (the pre-3.0 `PrimerGooglePayButton`) stays available for
+// Headless consumers that render it outside a `<PrimerCheckoutProvider>`.
+export { PrimerGooglePayButton as PrimerGooglePayNativeButton } from './HeadlessUniversalCheckout/Components/PrimerGooglePayButton';
 import type { UserDetailsRetrieved, UserDetailsCollected, AchStep } from './models/ach/AchSteps';
 export type { UserDetailsRetrieved as CollectUserDetails, UserDetailsCollected, AchStep };
 import type { AchFirstName, AchLastName, AchEmailAddress, AchValidatableData } from './models/ach/AchCollectableData';

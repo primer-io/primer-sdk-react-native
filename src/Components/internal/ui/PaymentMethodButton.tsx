@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
-import { Image, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Image, Text, TouchableOpacity, StyleSheet, View } from 'react-native';
 import type { TextStyle } from 'react-native';
+import { PrimerGooglePayButton as PrimerGooglePayNativeButton } from '../../../HeadlessUniversalCheckout/Components/PrimerGooglePayButton';
 import { usePrimerTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
 import { usePrimerLocalization } from '../localization';
@@ -13,6 +14,18 @@ export function PaymentMethodButton({ item, onPress }: PaymentMethodButtonProps)
   const tokens = usePrimerTheme();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
   const { t } = usePrimerLocalization();
+
+  // Native-view methods (e.g. Google Pay) render the SDK's own display-only button as the whole
+  // row; pointerEvents="none" lets the row's TouchableOpacity own the tap, not the native button.
+  if (item.nativeViewName === 'PrimerGooglePayButton') {
+    return (
+      <TouchableOpacity style={styles.nativeButton} onPress={onPress} activeOpacity={0.7}>
+        <View style={styles.nativeButton} pointerEvents="none">
+          <PrimerGooglePayNativeButton style={styles.nativeButton} />
+        </View>
+      </TouchableOpacity>
+    );
+  }
 
   const isCard = item.type === 'PAYMENT_CARD';
   // Branded button: full-color background + logo (PayPal, Klarna, iDEAL…).
@@ -77,6 +90,10 @@ function createStyles(tokens: PrimerTokens) {
     logo: {
       height: BUTTON_HEIGHT * 0.5,
       width: '40%',
+    },
+    nativeButton: {
+      height: BUTTON_HEIGHT,
+      width: '100%',
     },
     outlinedButton: {
       backgroundColor: colors.background,

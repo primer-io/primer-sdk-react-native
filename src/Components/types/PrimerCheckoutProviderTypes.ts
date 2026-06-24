@@ -69,6 +69,17 @@ export interface PrimerCheckoutContextValue {
   /** Settings the merchant passed to the provider. Needed for UI-option toggles. */
   settings: PrimerSettings | undefined;
 
+  // --- Native-UI methods (Google Pay today; Apple Pay / PayPal / web-redirect APMs later) ---
+  /**
+   * Which native-UI method is currently in flight, or `null`. Backs each method's `isLoading` flag.
+   * Merchants use `usePrimerPaymentMethod(type)`, not this directly.
+   */
+  nativeUiInFlightType: string | null;
+  /** Start a native-UI method by payment-method type. Rejects if the method is unavailable. */
+  startNativeUI: (paymentMethodType: string) => Promise<void>;
+  /** Cancel an in-flight native-UI attempt (best-effort; cannot force-close the system sheet). */
+  cancelNativeUI: (paymentMethodType: string) => void;
+
   // --- Active payment attempt ---
   /** Outcome of the most recent payment attempt; `null` before any submit. */
   paymentOutcome: PaymentOutcome | null;

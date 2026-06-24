@@ -2,16 +2,20 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import PrimerHeadlessUniversalCheckoutAssetsManager from '../HeadlessUniversalCheckout/Managers/AssetsManager';
 import PrimerHeadlessUniversalCheckoutRawDataManager from '../HeadlessUniversalCheckout/Managers/PaymentMethodManagers/RawDataManager';
+import PrimerHeadlessUniversalCheckoutPaymentMethodNativeUIManager from '../HeadlessUniversalCheckout/Managers/PaymentMethodManagers/NativeUIManager';
 import PrimerHeadlessUniversalCheckoutVaultManager from '../HeadlessUniversalCheckout/Managers/VaultManager';
 import { PrimerHeadlessUniversalCheckout } from '../HeadlessUniversalCheckout/PrimerHeadlessUniversalCheckout';
 import { PrimerError } from '../models/PrimerError';
 import { PrimerAnalytics } from './analytics';
+import { PrimerSessionIntent } from '../models/PrimerSessionIntent';
 import { fmt } from './internal/debug';
 import { PrimerCheckoutContext } from './internal/PrimerCheckoutContext';
 import { mergeTokens } from './internal/theme/merge';
 import { ThemeContext } from './internal/theme/ThemeContext';
 import { defaultDarkTokens, defaultLightTokens } from './internal/theme/tokens';
 import { toError } from './internal/utils/errors';
+import { GOOGLE_PAY, isGooglePaySupported } from './internal/googlePay';
+import { APPLE_PAY, isApplePaySupported } from './internal/applePay';
 
 import type { PrimerSettings } from '../models/PrimerSettings';
 import type { PrimerCheckoutData } from '../models/PrimerCheckoutData';
@@ -51,6 +55,7 @@ interface InternalState {
   isLoadingResources: boolean;
   resourcesError: Error | null;
   paymentOutcome: PaymentOutcome | null;
+  nativeUiInFlightType: string | null;
   activeMethod: string | null;
   cardFormState: CardFormState;
   vaultedMethods: PrimerVaultedPaymentMethod[];
@@ -76,6 +81,7 @@ const initialState: InternalState = {
   isLoadingResources: false,
   resourcesError: null,
   paymentOutcome: null,
+  nativeUiInFlightType: null,
   activeMethod: null,
   cardFormState: initialCardFormState,
   vaultedMethods: [],
@@ -168,7 +174,7 @@ export function PrimerCheckoutProvider({
   // cleared on session teardown alongside `PrimerHeadlessUniversalCheckout.cleanUp()`.
   const vaultManagerRef = useRef<PrimerHeadlessUniversalCheckoutVaultManager | null>(null);
   // Stashed so `retry()` can re-submit without needing the view to re-enter the form.
-  // Compensates for an iOS native bug (see TODO in `retry`), not a JS-side concern.
+  // Compensates for an iOS native bug (see the iOS-workaround note in `retry`), not a JS-side concern.
   const lastRawDataRef = useRef<PrimerRawData | null>(null);
   // Shopper's co-badge pick. Ref (not just state) so `setRawData` reads it synchronously
   // when merging it into each keystroke's payload — keeps the pick sticky without
@@ -215,10 +221,12 @@ export function PrimerCheckoutProvider({
         },
         onError: (error, checkoutData) => {
           setState((prev) => {
-            // Init-time errors → `error`. Payment-time errors → `paymentOutcome`.
+            // Init-time errors → `error`. Payment-time errors → `paymentOutcome` → error
+            // screen. This includes Google Pay's 'payment-cancelled', surfaced as a failure.
             if (prev.isReady) {
               return {
                 ...prev,
+                nativeUiInFlightType: null,
                 paymentOutcome: { status: 'error', error, data: checkoutData ?? null },
               };
             }
@@ -234,6 +242,7 @@ export function PrimerCheckoutProvider({
           // result screen to show. Backend statuses: SUCCESS | FAILED | PENDING.
           setState((prev) => ({
             ...prev,
+            nativeUiInFlightType: null,
             paymentOutcome: buildPaymentOutcome(checkoutData),
           }));
           onCheckoutCompleteRef.current?.(checkoutData);
@@ -454,10 +463,11 @@ export function PrimerCheckoutProvider({
       } catch (err) {
         console.warn(`${LOG} vault fetch failed ${fmt(err)}`);
         if (!cancelled) {
+          const vaultedError = toError(err);
           setState((prev) => ({
             ...prev,
             isLoadingVaulted: false,
-            vaultedError: toError(err),
+            vaultedError,
           }));
         }
       }
@@ -674,10 +684,10 @@ export function PrimerCheckoutProvider({
       console.warn(`${LOG} retry: no active method or manager ${fmt({ method, hasManager: !!manager })}`);
       return;
     }
-    // TODO(iOS native fix): ios .../RawDataManager.swift:237 nullifies its delegate on
-    // successful tokenization, so any post-tokenize failure would silently drop subsequent
-    // submit() outcomes. Reconfiguring here rebuilds the delegate binding. Harmless on
-    // Android. Remove the reconfigure once the iOS SDK stops nullifying.
+    // iOS workaround: the native iOS RawDataManager nullifies its delegate on successful
+    // tokenization, so any post-tokenize failure would silently drop subsequent submit()
+    // outcomes. Reconfiguring here rebuilds the delegate binding; harmless on Android.
+    // (The "remove once the iOS SDK stops nullifying" reminder lives in the PR description.)
     retryingManagerRef.current = manager;
     try {
       // Re-pass the original callbacks so the JS-wrapper's listeners get re-registered.
@@ -714,6 +724,65 @@ export function PrimerCheckoutProvider({
 
   const clearPaymentOutcome = useCallback(() => {
     setState((prev) => (prev.paymentOutcome === null ? prev : { ...prev, paymentOutcome: null }));
+  }, []);
+
+  // NATIVE_UI methods (Google Pay today; Apple Pay / PayPal / web-redirect APMs later) ride the
+  // existing Headless NATIVE_UI path: start the native flow by type; outcomes arrive through the
+  // shared onCheckoutComplete/onError. Only one native-UI flow runs at a time.
+  const startNativeUI = useCallback(async (paymentMethodType: string) => {
+    // Ignore re-entrant taps: the in-list method row isn't disabled while loading, so a fast
+    // double-tap would otherwise spawn two native flows.
+    if (stateRef.current.nativeUiInFlightType !== null) {
+      return;
+    }
+    if (paymentMethodType === GOOGLE_PAY && !isGooglePaySupported(stateRef.current.availablePaymentMethods)) {
+      throw new PrimerError(
+        'google-pay-unavailable',
+        'google-pay-unavailable',
+        'Google Pay is not available on this device.',
+        undefined,
+        undefined
+      );
+    }
+    if (paymentMethodType === APPLE_PAY && !isApplePaySupported(stateRef.current.availablePaymentMethods)) {
+      throw new PrimerError(
+        'apple-pay-unavailable',
+        'apple-pay-unavailable',
+        'Apple Pay is not available on this device.',
+        undefined,
+        undefined
+      );
+    }
+    // Clear any stale outcome so the result screen re-fires for this attempt.
+    setState((prev) => ({ ...prev, paymentOutcome: null, nativeUiInFlightType: paymentMethodType }));
+    try {
+      const manager = new PrimerHeadlessUniversalCheckoutPaymentMethodNativeUIManager();
+      await manager.configure(paymentMethodType);
+      await manager.showPaymentMethod(PrimerSessionIntent.CHECKOUT);
+      // Success / failure arrive via onCheckoutComplete / onError; shopper-cancel via
+      // onError('payment-cancelled'). nativeUiInFlightType is reset in those handlers.
+    } catch (err) {
+      console.warn(`${LOG} startNativeUI(${paymentMethodType}) failed ${fmt(err)}`);
+      const error =
+        err instanceof PrimerError
+          ? err
+          : new PrimerError('native-ui-start-failed', undefined, toError(err).message, undefined, undefined);
+      setState((prev) => ({
+        ...prev,
+        nativeUiInFlightType: null,
+        paymentOutcome: { status: 'error', error, data: null },
+      }));
+      throw error;
+    }
+  }, []);
+
+  const cancelNativeUI = useCallback((paymentMethodType: string) => {
+    // The native sheet is a system surface JS can't force-close (FR-002b), so we only clear the
+    // in-flight flag, and only for the matching method. A real dismissal surfaces via
+    // onError('payment-cancelled').
+    setState((prev) =>
+      prev.nativeUiInFlightType === paymentMethodType ? { ...prev, nativeUiInFlightType: null } : prev
+    );
   }, []);
 
   const selectVaultedMethodId = useCallback((id: string) => {
@@ -838,8 +907,8 @@ export function PrimerCheckoutProvider({
     [refreshVaultedMethods]
   );
 
-  const contextValue = useMemo<PrimerCheckoutContextValue>(
-    () => ({
+  const contextValue = useMemo<PrimerCheckoutContextValue>(() => {
+    return {
       isReady: state.isReady,
       error: state.error,
       clientSession: state.clientSession,
@@ -850,6 +919,7 @@ export function PrimerCheckoutProvider({
       resourcesError: state.resourcesError,
       settings: settingsRef.current,
       paymentOutcome: state.paymentOutcome,
+      nativeUiInFlightType: state.nativeUiInFlightType,
       activeMethod: state.activeMethod,
       cardFormState: state.cardFormState,
       vaultedMethods: state.vaultedMethods,
@@ -868,28 +938,31 @@ export function PrimerCheckoutProvider({
       submit,
       retry,
       clearPaymentOutcome,
+      startNativeUI,
+      cancelNativeUI,
       payFromVault,
       selectVaultedMethodId,
       requestExpandedVaultDisplay,
       setCvvInputVisible,
       deleteVaultedPaymentMethod,
-    }),
-    [
-      state,
-      setActiveMethod,
-      setRawData,
-      setBillingAddress,
-      selectCardNetwork,
-      submit,
-      retry,
-      clearPaymentOutcome,
-      payFromVault,
-      selectVaultedMethodId,
-      requestExpandedVaultDisplay,
-      setCvvInputVisible,
-      deleteVaultedPaymentMethod,
-    ]
-  );
+    };
+  }, [
+    state,
+    startNativeUI,
+    cancelNativeUI,
+    setActiveMethod,
+    setRawData,
+    setBillingAddress,
+    selectCardNetwork,
+    submit,
+    retry,
+    clearPaymentOutcome,
+    payFromVault,
+    selectVaultedMethodId,
+    requestExpandedVaultDisplay,
+    setCvvInputVisible,
+    deleteVaultedPaymentMethod,
+  ]);
 
   return (
     <ThemeContext.Provider value={{ lightTokens, darkTokens }}>
