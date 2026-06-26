@@ -11,6 +11,7 @@ jest.mock(
   () => {
     const mockAddListener = jest.fn().mockImplementation(() => ({ remove: jest.fn() }));
     return {
+      Platform: { OS: 'android', select: (o: any) => o.android ?? o.default },
       NativeModules: {
         PrimerHeadlessUniversalCheckout: {
           startWithClientToken: jest.fn(),

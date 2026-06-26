@@ -76,7 +76,7 @@ export function CheckoutComponentsListScreen() {
 
   if (appPaymentParameters.merchantName) {
     settings.paymentMethodOptions!.applePayOptions = {
-      merchantIdentifier: 'merchant.checkout.team',
+      merchantIdentifier: 'merchant.acceptance.team',
       merchantName: appPaymentParameters.merchantName,
       isCaptureBillingAddressEnabled: false,
     };

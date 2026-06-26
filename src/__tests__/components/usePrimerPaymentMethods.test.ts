@@ -90,6 +90,9 @@ const readyContext: PrimerCheckoutContextValue = {
   resourcesError: null,
   settings: undefined,
   paymentOutcome: null,
+  nativeUiInFlightType: null,
+  startNativeUI: async () => {},
+  cancelNativeUI: () => {},
   activeMethod: null,
   cardFormState: {
     isValid: false,
