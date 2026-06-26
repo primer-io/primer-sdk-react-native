@@ -7,7 +7,7 @@ import type { PrimerPaymentMethodManagerCategoryName } from '../../models/Primer
  *
  * - `nativeUi` — a native-sheet / browser-redirect method (Google Pay today), started via
  *   `startNativeUI(type)`.
- * - `card` — the card form (`PAYMENT_CARD`, and any other `RAW_DATA` method for now).
+ * - `card` — the card form (`PAYMENT_CARD` only).
  * - `unsupported` — not yet wired into Components.
  *
  * Availability (e.g. Google Pay's Android-only rule) is deliberately NOT part of routing — it lives
@@ -28,8 +28,8 @@ export function routeMethodSelection(
   if (categories.includes('NATIVE_UI')) {
     return 'nativeUi';
   }
-  if (categories.includes('RAW_DATA')) {
-    return 'card';
-  }
+  // Non-card `RAW_DATA` (Bancontact/MBWay/BLIK) is intentionally `unsupported` here — its input
+  // form lands in #394 (ORC-6514), which turns this into `rawDataForm`. Routing it to `card` now
+  // would wrongly open the card form for a non-card method.
   return 'unsupported';
 }

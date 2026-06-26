@@ -16,8 +16,8 @@ describe('routeMethodSelection', () => {
     expect(routeMethodSelection('ADYEN_SOFORT', ['NATIVE_UI'])).toBe('nativeUi');
   });
 
-  it('routes a non-card RAW_DATA method to card for now (the rawDataForm split lands in #389)', () => {
-    expect(routeMethodSelection('ADYEN_BANCONTACT_CARD', ['RAW_DATA'])).toBe('card');
+  it('routes a non-card RAW_DATA method to unsupported until the rawDataForm split lands in #394', () => {
+    expect(routeMethodSelection('ADYEN_BANCONTACT_CARD', ['RAW_DATA'])).toBe('unsupported');
   });
 
   it('returns unsupported for a category that is not yet routed', () => {
