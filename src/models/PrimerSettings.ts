@@ -3,6 +3,7 @@ import type { PrimerCheckoutAdditionalInfo } from './PrimerCheckoutAdditionalInf
 import type { PrimerCheckoutPaymentMethodData } from './PrimerCheckoutPaymentMethodData';
 import type { PrimerClientSession } from './PrimerClientSession';
 import type { PrimerPaymentMethodTokenData } from './PrimerPaymentMethodTokenData';
+import type { IPrimerHeadlessUniversalCheckoutPaymentMethod } from './PrimerHeadlessUniversalCheckoutPaymentMethod';
 import type { PrimerError } from './PrimerError';
 import type { IPrimerTheme } from './PrimerTheme';
 import type {
@@ -47,7 +48,7 @@ interface IPrimerSettings {
   onDismiss?: () => void;
 
   headlessUniversalCheckoutCallbacks?: {
-    onAvailablePaymentMethodsLoad?: (availablePaymentMethods: any[]) => void;
+    onAvailablePaymentMethodsLoad?: (availablePaymentMethods: IPrimerHeadlessUniversalCheckoutPaymentMethod[]) => void;
     onTokenizationStart?: (paymentMethodType: string) => void;
     onTokenizationSuccess?: (
       paymentMethodTokenData: PrimerPaymentMethodTokenData,
