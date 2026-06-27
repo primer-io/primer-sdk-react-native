@@ -5,30 +5,7 @@ import { createElement } from 'react';
 // @ts-expect-error -- react-test-renderer has no types for React 19
 import { act, create } from 'react-test-renderer';
 
-// react-native is not transformed in this project's jest setup (transformIgnorePatterns
-// excludes node_modules, test env is node), so every test mocks it. We render real
-// primitives here, so the mock provides lightweight host-ish components + StyleSheet.
-let mockColorScheme: 'light' | 'dark' | null = 'light';
-
-jest.mock('react-native', () => {
-  // Inlined here because jest hoists jest.mock above imports; the factory may only
-  // reference mock-prefixed outer vars, so it can't close over a top-level helper.
-  const { createElement: ce } = require('react');
-  const makeComponent = (name: string) => {
-    const Mock = (props: { children?: unknown }) => ce(name, props, props?.children);
-    Mock.displayName = name;
-    return Mock;
-  };
-  return {
-    useColorScheme: () => mockColorScheme,
-    View: makeComponent('View'),
-    Text: makeComponent('Text'),
-    Image: makeComponent('Image'),
-    ActivityIndicator: makeComponent('ActivityIndicator'),
-    TouchableOpacity: makeComponent('TouchableOpacity'),
-    StyleSheet: { create: (styles: Record<string, unknown>) => styles },
-  };
-});
+// react-native is provided by the global mock at <rootDir>/__mocks__/react-native.js.
 
 // PNG assets can't be loaded by jest (no asset transformer / moduleNameMapper).
 jest.mock('../../../Components/internal/screens/assets/check-circle-large.png', () => 1, { virtual: true });
@@ -49,10 +26,6 @@ function render(element: ReturnType<typeof createElement>) {
   });
   return testRenderer;
 }
-
-beforeEach(() => {
-  mockColorScheme = 'light';
-});
 
 describe('public status components (standalone, no checkout/navigation provider)', () => {
   it('PrimerStatusScreenLayout renders title, subtitle, icon and children without throwing', () => {

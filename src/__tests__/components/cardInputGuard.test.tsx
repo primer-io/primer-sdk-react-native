@@ -12,24 +12,7 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
 jest.mock('../../specs/NativePrimer', () => ({ __esModule: true, default: {} }), { virtual: true });
 
-jest.mock(
-  'react-native',
-  () => ({
-    NativeModules: {},
-    NativeEventEmitter: jest.fn().mockImplementation(() => ({
-      addListener: jest.fn(() => ({ remove: jest.fn() })),
-      removeAllListeners: jest.fn(),
-    })),
-    StyleSheet: { create: (s: unknown) => s, hairlineWidth: 1 },
-    Platform: { OS: 'ios', select: (o: { ios: unknown }) => o.ios },
-    Image: 'Image',
-    View: 'View',
-    Text: 'Text',
-    TextInput: 'TextInput',
-    Pressable: 'Pressable',
-  }),
-  { virtual: true }
-);
+// react-native is provided by the global mock at <rootDir>/__mocks__/react-native.js.
 
 import { createElement } from 'react';
 // @ts-expect-error -- react-test-renderer has no types for React 19
