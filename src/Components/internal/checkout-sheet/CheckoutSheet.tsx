@@ -107,6 +107,13 @@ export function CheckoutSheet({
   }, [dragValue]);
 
   const dismissBySwipe = useCallback(() => {
+    // Visibility is parent-controlled via `visible`; without onRequestDismiss we can't tell
+    // the parent to close, so dismissing here would strand the sheet (hidden but visible=true).
+    // Match handleBackdropPress: no handler → no dismiss, just spring back.
+    if (!onRequestDismiss) {
+      springDragBack();
+      return;
+    }
     Animated.timing(dragValue, {
       toValue: sheetHeight,
       duration: SWIPE_DISMISS_DURATION,
@@ -117,11 +124,11 @@ export function CheckoutSheet({
         setModalVisible(false);
         dragValue.setValue(0);
         showAnimValue.setValue(0);
-        onDismiss?.();
-        onRequestDismiss?.();
+        onRequestDismiss(); // request first (parent sets visible=false) — matches other dismiss paths
+        onDismiss?.(); // then "fully dismissed"
       }
     });
-  }, [dragValue, sheetHeight, showAnimValue, onDismiss, onRequestDismiss]);
+  }, [dragValue, sheetHeight, showAnimValue, onDismiss, onRequestDismiss, springDragBack]);
 
   const prevVisibleRef = useRef(false);
   useEffect(() => {
