@@ -9,6 +9,7 @@ import { LoadingScreen } from '../screens/LoadingScreen';
 import { MethodSelectionScreen } from '../screens/MethodSelectionScreen';
 import { CardFormScreen } from '../screens/CardFormScreen';
 import { BankSelectionScreen } from '../screens/BankSelectionScreen';
+import { RawDataFormScreen } from '../screens/RawDataFormScreen';
 import { CountrySelectorScreen } from '../screens/CountrySelectorScreen';
 import { ErrorScreen } from '../screens/ErrorScreen';
 import { SuccessScreen } from '../screens/SuccessScreen';
@@ -38,6 +39,7 @@ const screenMap: Partial<Record<CheckoutRouteType, React.ComponentType>> = {
   [CheckoutRoute.methodSelection]: MethodSelectionScreen,
   [CheckoutRoute.cardForm]: CardFormScreen,
   [CheckoutRoute.bankSelection]: BankSelectionScreen,
+  [CheckoutRoute.rawDataForm]: RawDataFormScreen,
   [CheckoutRoute.countrySelector]: CountrySelectorScreen,
   [CheckoutRoute.processing]: LoadingScreen,
   [CheckoutRoute.success]: CheckoutSuccessScreen,
