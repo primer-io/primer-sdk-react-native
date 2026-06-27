@@ -5,10 +5,13 @@ import com.primerioreactnative.datamodels.klarna.KlarnaPaymentCollectableDataRN.
 import io.primer.android.klarna.api.composable.KlarnaPaymentCollectableData.FinalizePayment
 import io.primer.android.klarna.api.composable.KlarnaPaymentCollectableData.PaymentOptions
 
-internal fun PaymentOptions.toPaymentOptionsRN() =
-    PaymentOptionsRN(
+internal fun PaymentOptions.toPaymentOptionsRN(): PaymentOptionsRN {
+    return PaymentOptionsRN(
         returnIntentUrl = returnIntentUrl,
         paymentCategory = paymentCategory.toKlarnaPaymentCategoryRN(),
     )
+}
 
-internal fun FinalizePayment.toFinalizePaymentRN() = FinalizePaymentRN()
+internal fun FinalizePayment.toFinalizePaymentRN(): FinalizePaymentRN {
+    return FinalizePaymentRN()
+}

@@ -19,7 +19,8 @@ static __weak UIView *primerKlarnaPaymentView = nil;
 }
 
 - (UIView *)view {
-    return primerKlarnaPaymentView;
+    UIView *view = primerKlarnaPaymentView;
+    return view;
 }
 
 @end

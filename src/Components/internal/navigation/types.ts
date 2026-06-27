@@ -9,6 +9,7 @@ export enum CheckoutRoute {
   bankSelection = 'bankSelection',
   rawDataForm = 'rawDataForm',
   qrCode = 'qrCode',
+  klarna = 'klarna',
   processing = 'processing',
   success = 'success',
   error = 'error',
@@ -26,6 +27,7 @@ export type RouteParamMap = {
   [CheckoutRoute.bankSelection]: { paymentMethodType: string };
   [CheckoutRoute.rawDataForm]: { paymentMethodType: string };
   [CheckoutRoute.qrCode]: undefined;
+  [CheckoutRoute.klarna]: { paymentMethodType: string };
   [CheckoutRoute.processing]: undefined;
   [CheckoutRoute.success]: { checkoutData?: PrimerCheckoutData; title?: string; subtitle?: string } | undefined;
   [CheckoutRoute.error]: { error?: PrimerError; title?: string; subtitle?: string } | undefined;
