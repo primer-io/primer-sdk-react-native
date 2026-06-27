@@ -1,0 +1,53 @@
+import { forwardRef } from 'react';
+import { Image, StyleSheet } from 'react-native';
+import { PrimerTextInput } from './PrimerTextInput';
+import { TRAILING_ICON_MARGIN, TRAILING_ICON_SIZE } from './dimensions';
+import { usePrimerLocalization } from '../internal/localization';
+import { usePrimerCardForm } from '../hooks/usePrimerCardForm';
+import type { PrimerCVVInputProps, PrimerTextInputRef } from '../types/CardInputTypes';
+
+const cvvSource = require('../../assets/images/ic-cvv-hint.png');
+
+export const PrimerCVVInput = forwardRef<PrimerTextInputRef, PrimerCVVInputProps>(function PrimerCVVInput(
+  { placeholder, label, ...rest },
+  ref
+) {
+  const cardForm = usePrimerCardForm();
+  const { t } = usePrimerLocalization();
+  const resolvedLabel = label ?? t('primer_card_form_label_cvv');
+  const resolvedPlaceholder = placeholder ?? t('primer_card_form_placeholder_cvv');
+
+  return (
+    <PrimerTextInput
+      ref={ref}
+      value={cardForm.cvv}
+      onChangeText={cardForm.updateCVV}
+      onFocus={() => cardForm.markFieldFocused('cvv')}
+      onBlur={() => cardForm.markFieldBlurred('cvv')}
+      keyboardType="number-pad"
+      maxLength={cardForm.descriptor.cvvLength}
+      secureTextEntry
+      autoComplete="cc-csc"
+      label={resolvedLabel}
+      placeholder={resolvedPlaceholder}
+      error={cardForm.errors.cvv}
+      trailingContent={
+        <Image
+          source={cvvSource}
+          style={styles.icon}
+          resizeMode="contain"
+          testID={rest.testID ? `${rest.testID}-hint-icon` : undefined}
+        />
+      }
+      {...rest}
+    />
+  );
+});
+
+const styles = StyleSheet.create({
+  icon: {
+    height: TRAILING_ICON_SIZE,
+    marginLeft: TRAILING_ICON_MARGIN,
+    width: TRAILING_ICON_SIZE,
+  },
+});

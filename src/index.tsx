@@ -97,8 +97,17 @@ import { NativeResourceView } from './HeadlessUniversalCheckout/Components/Nativ
 export { NativeResourceView };
 import { PrimerGooglePayButtonConstants } from './HeadlessUniversalCheckout/Components/NativeResourceView';
 export { PrimerGooglePayButtonConstants };
-import { PrimerGooglePayButton } from './HeadlessUniversalCheckout/Components/PrimerGooglePayButton';
-export { PrimerGooglePayButton };
+export { usePrimerPaymentMethod } from './Components';
+export type {
+  UsePrimerPaymentMethodReturn,
+  NativeUiPaymentMethod,
+  CardPaymentMethod,
+  UnsupportedPaymentMethod,
+  PaymentMethodAvailabilityError,
+} from './Components';
+// The bare, context-free native button (the pre-3.0 `PrimerGooglePayButton`) stays available for
+// Headless consumers that render it outside a `<PrimerCheckoutProvider>`.
+export { PrimerGooglePayButton as PrimerGooglePayNativeButton } from './HeadlessUniversalCheckout/Components/PrimerGooglePayButton';
 import type { UserDetailsRetrieved, UserDetailsCollected, AchStep } from './models/ach/AchSteps';
 export type { UserDetailsRetrieved as CollectUserDetails, UserDetailsCollected, AchStep };
 import type { AchFirstName, AchLastName, AchEmailAddress, AchValidatableData } from './models/ach/AchCollectableData';
@@ -129,6 +138,97 @@ import type { BanksLoading, BanksRetrieved, BanksStep } from './models/banks/Ban
 export type { BanksLoading, BanksRetrieved, BanksStep };
 import type { NamedComponentValidatableData } from './models/NamedComponentValidatableData';
 export type { NamedComponentValidatableData };
+
+export { PrimerCheckoutProvider } from './Components';
+export { usePrimerCheckout } from './Components';
+export { usePrimerPaymentMethods } from './Components';
+export { usePrimerVaultManager } from './Components';
+export type { VaultedPaymentMethodItem, UsePrimerVaultManagerReturn } from './Components';
+export type {
+  PrimerCheckoutProviderProps,
+  PrimerCheckoutContextValue,
+  PaymentOutcome,
+  CardFormState,
+} from './Components';
+export type {
+  PaymentMethodItem,
+  PaymentMethodSurcharge,
+  UsePrimerPaymentMethodsOptions,
+  UsePrimerPaymentMethodsReturn,
+} from './Components';
+export { usePrimerCardForm } from './Components';
+export type { UseCardFormOptions, UsePrimerCardFormReturn, CardFormErrors, CardFormField } from './Components';
+export { usePrimerCardNetwork } from './Components';
+export type { UseCardNetworkReturn } from './Components';
+export { usePrimerCardNetworkSelection } from './Components';
+export type { CardNetworkDetails, CardNetworkId, UsePrimerCardNetworkSelectionReturn } from './Components';
+export { PrimerCardNetworkSelector } from './Components';
+export type { PrimerCardNetworkSelectorProps } from './Components';
+export { usePrimerBillingAddressForm } from './Components';
+export type {
+  UsePrimerBillingAddressFormOptions,
+  UsePrimerBillingAddressFormReturn,
+  BillingAddressFormErrors,
+  BillingAddressField,
+  PrimerBillingAddressFormProps,
+} from './Components';
+export { PrimerPaymentMethodList } from './Components';
+export type { PrimerPaymentMethodListProps } from './Components';
+export { PrimerCheckoutSheet } from './Components';
+export type { PrimerCheckoutSheetProps } from './Components';
+export { PrimerCardForm } from './Components';
+export type { PrimerCardFormProps } from './Components';
+export { PrimerCardFormProvider } from './Components';
+export { PrimerAcceptedCardNetworks } from './Components';
+export type { PrimerAcceptedCardNetworksProps } from './Components';
+export { PrimerBillingAddressForm } from './Components';
+export {
+  PrimerTextInput,
+  PrimerCardNumberInput,
+  PrimerExpiryDateInput,
+  PrimerCVVInput,
+  PrimerCardholderNameInput,
+} from './Components';
+export type {
+  PrimerTextInputTheme,
+  PrimerTextInputProps,
+  PrimerTextInputRef,
+  CardInputTheme,
+  PrimerCardInputProps,
+  PrimerCardNumberInputProps,
+  PrimerExpiryDateInputProps,
+  PrimerCVVInputProps,
+  PrimerCardholderNameInputProps,
+} from './Components';
+export { PrimerAnalytics } from './Components/analytics';
+
+export { usePrimerLocalization } from './Components/internal/localization';
+export type { TranslationParams, LocalizationResult } from './Components/internal/localization';
+
+export { usePrimerTheme } from './Components/internal/theme';
+export type {
+  PrimerTokens,
+  PrimerColorTokens,
+  PrimerSpacingTokens,
+  PrimerTypographyTokens,
+  PrimerTypographyStyle,
+  PrimerRadiusTokens,
+  PrimerBorderTokens,
+  PrimerThemeOverride,
+} from './Components/internal/theme';
+
+export {
+  PrimerLoadingScreen,
+  PrimerSuccessScreen,
+  PrimerErrorScreen,
+  PrimerStatusScreenLayout,
+} from './Components/status';
+export type {
+  PrimerLoadingScreenProps,
+  PrimerSuccessScreenProps,
+  PrimerErrorScreenProps,
+  PrimerStatusScreenLayoutProps,
+} from './Components/status';
 
 // must be exported in order to support the old architecture
 const nativeModule = require('./specs/NativePrimer').default;

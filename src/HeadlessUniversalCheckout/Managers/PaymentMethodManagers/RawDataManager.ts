@@ -5,6 +5,7 @@ import type { PrimerInitializationData } from '../../../models/PrimerInitializat
 import { PrimerError } from '../../../models/PrimerError';
 import type { PrimerInputElementType } from '../../../models/PrimerInputElementType';
 import type { PrimerBinData } from '../../../models/PrimerBinData';
+import type { PrimerAddress } from '../../../models/PrimerClientSession';
 
 const { RNTPrimerHeadlessUniversalCheckoutRawDataManager } = NativeModules;
 const eventEmitter = new NativeEventEmitter(RNTPrimerHeadlessUniversalCheckoutRawDataManager);
@@ -52,6 +53,14 @@ class PrimerHeadlessUniversalCheckoutRawDataManager {
   }
 
   async configureListeners(): Promise<void> {
+    // Drop previous subscriptions so calling configure() multiple times (e.g. the
+    // reconfigure-on-retry pattern in Checkout Components) doesn't stack duplicate
+    // event handlers on the shared module emitter.
+    for (const sub of this.subscriptions) {
+      sub.remove();
+    }
+    this.subscriptions = [];
+
     //@ts-ignore
     if (this.options?.onMetadataChange) {
       const sub = await this.addListener('onMetadataChange', (data) => {
@@ -131,6 +140,28 @@ class PrimerHeadlessUniversalCheckoutRawDataManager {
       if (this.options?.paymentMethodType) {
         try {
           await RNTPrimerHeadlessUniversalCheckoutRawDataManager.submit();
+          resolve();
+        } catch (err) {
+          reject(err);
+        }
+      } else {
+        const err = new PrimerError(
+          'manager-not-configured',
+          undefined,
+          'HeadlessUniversalCheckoutRawDataManager has not been configured',
+          'Call HeadlessUniversalCheckoutRawDataManager.configure before calling this function.',
+          undefined
+        );
+        reject(err);
+      }
+    });
+  }
+
+  setBillingAddress(address: PrimerAddress): Promise<void> {
+    return new Promise(async (resolve, reject) => {
+      if (this.options?.paymentMethodType) {
+        try {
+          await RNTPrimerHeadlessUniversalCheckoutRawDataManager.setBillingAddress(JSON.stringify(address));
           resolve();
         } catch (err) {
           reject(err);
