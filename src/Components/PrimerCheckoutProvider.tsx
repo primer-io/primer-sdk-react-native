@@ -244,6 +244,7 @@ export function PrimerCheckoutProvider({
               return {
                 ...prev,
                 nativeUiInFlightType: null,
+                isBanksLoading: false,
                 paymentOutcome: { status: 'error', error, data: checkoutData ?? null },
               };
             }
@@ -260,6 +261,7 @@ export function PrimerCheckoutProvider({
           setState((prev) => ({
             ...prev,
             nativeUiInFlightType: null,
+            isBanksLoading: false,
             paymentOutcome: buildPaymentOutcome(checkoutData),
           }));
           onCheckoutCompleteRef.current?.(checkoutData);

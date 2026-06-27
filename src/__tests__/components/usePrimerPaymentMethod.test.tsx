@@ -450,6 +450,54 @@ describe('usePrimerPaymentMethod', () => {
       expect(banksNative.submit).toHaveBeenCalled();
     });
 
+    // submit() holds isLoading until a terminal outcome, but the redirect outcome arrives through
+    // the SHARED onCheckoutComplete/onError — not the component-level onError — so those handlers
+    // must clear isBanksLoading, else isLoading is stuck true and the Pay button never re-enables.
+    it('clears isLoading when a successful checkout arrives via the shared onCheckoutComplete', async () => {
+      const captures = await mountWithMethods(ideal, 'ADYEN_IDEAL');
+      await act(async () => {
+        await asBankSelection(captures[captures.length - 1]!).start();
+        await flushPromises();
+      });
+      await act(async () => {
+        asBankSelection(captures[captures.length - 1]!).selectBank('ing');
+      });
+      await act(async () => {
+        await asBankSelection(captures[captures.length - 1]!).submit();
+      });
+      expect(asBankSelection(captures[captures.length - 1]!).isLoading).toBe(true);
+      const checkoutData = { payment: { id: 'pay_123', status: 'SUCCESS' } };
+      await act(async () => {
+        findListener('onCheckoutComplete')!(checkoutData);
+      });
+      const last = asBankSelection(captures[captures.length - 1]!);
+      expect(last.paymentOutcome).toEqual({ status: 'success', data: checkoutData });
+      expect(last.isLoading).toBe(false);
+    });
+
+    it('clears isLoading when a payment failure arrives via the shared onError', async () => {
+      const captures = await mountWithMethods(ideal, 'ADYEN_IDEAL');
+      await act(async () => {
+        await asBankSelection(captures[captures.length - 1]!).start();
+        await flushPromises();
+      });
+      await act(async () => {
+        asBankSelection(captures[captures.length - 1]!).selectBank('ing');
+      });
+      await act(async () => {
+        await asBankSelection(captures[captures.length - 1]!).submit();
+      });
+      await act(async () => {
+        findListener('onError')!({
+          error: { errorId: 'declined', errorCode: 'E01', description: 'Card declined' },
+          checkoutData: null,
+        });
+      });
+      const last = asBankSelection(captures[captures.length - 1]!);
+      expect(last.paymentOutcome?.status).toBe('error');
+      expect(last.isLoading).toBe(false);
+    });
+
     it('filter forwards the query to the native bank filter', async () => {
       const captures = await mountWithMethods(ideal, 'ADYEN_IDEAL');
       await act(async () => {
