@@ -1,4 +1,4 @@
-import type { PaymentOutcome } from './PrimerCheckoutProviderTypes';
+import type { PaymentOutcome, QrCodeArtifact } from './PrimerCheckoutProviderTypes';
 import type { IssuingBank } from '../../models/IssuingBank';
 import type { PrimerInputElementType } from '../../models/PrimerInputElementType';
 import type { PrimerRawData } from '../../models/PrimerRawData';
@@ -24,6 +24,14 @@ export interface NativeUiPaymentMethod {
   readonly isLoading: boolean;
   readonly paymentOutcome: PaymentOutcome | null;
   readonly availabilityError: PaymentMethodAvailabilityError | null;
+  /** True while awaiting off-app authorisation (`onCheckoutPending`) — redirect / QR methods only. */
+  readonly isPending: boolean;
+  /**
+   * QR artifact for the QR-class native-UI method (PromptPay), rendered as an image; always `null`
+   * for sheet (Google/Apple Pay) and redirect (Twint/Sofort) methods. A dedicated `qr` kind is the
+   * intended split once a second QR method exists.
+   */
+  readonly qrCode: QrCodeArtifact | null;
   /** Present the native UI. Rejects if `!isAvailable`. Outcome arrives via `paymentOutcome`. */
   start(): Promise<void>;
   /** Cancel an in-flight attempt (best-effort; cannot force-close a system sheet). */

@@ -492,4 +492,32 @@ describe('usePrimerPaymentMethod', () => {
       expect(captures[captures.length - 1]!.kind).toBe('rawDataForm');
     });
   });
+
+  describe('QR methods (PromptPay) — nativeUi + qrCode/isPending', () => {
+    const qr = [{ paymentMethodType: 'OMISE_PROMPTPAY', categories: ['NATIVE_UI'] }];
+
+    it('routes a QR method to kind "nativeUi"; qrCode null + isPending false initially', async () => {
+      const captures = await mountWithMethods(qr, 'OMISE_PROMPTPAY');
+      const last = asNativeUi(captures[captures.length - 1]!);
+      expect(last.kind).toBe('nativeUi');
+      expect(last.qrCode).toBeNull();
+      expect(last.isPending).toBe(false);
+    });
+
+    it('captures the QR artifact from onCheckoutAdditionalInfo', async () => {
+      const captures = await mountWithMethods(qr, 'OMISE_PROMPTPAY');
+      await act(async () => {
+        findListener('onCheckoutAdditionalInfo')!({ qrCodeBase64: 'QR_DATA_BASE64' });
+      });
+      expect(asNativeUi(captures[captures.length - 1]!).qrCode?.base64).toBe('QR_DATA_BASE64');
+    });
+
+    it('sets isPending on onCheckoutPending', async () => {
+      const captures = await mountWithMethods(qr, 'OMISE_PROMPTPAY');
+      await act(async () => {
+        findListener('onCheckoutPending')!({});
+      });
+      expect(asNativeUi(captures[captures.length - 1]!).isPending).toBe(true);
+    });
+  });
 });
