@@ -903,6 +903,16 @@ export function PrimerCheckoutProvider({
     await banksComponentRef.current?.submit();
   }, []);
 
+  // Disarm the bank flow (called on return to the method list) so re-selecting the same method
+  // re-runs the provide effect instead of stranding on a spinner.
+  const stopBanks = useCallback(() => {
+    setState((prev) =>
+      prev.activeBanksMethod === null
+        ? prev
+        : { ...prev, activeBanksMethod: null, banks: [], selectedBankId: null, isBanksLoading: false }
+    );
+  }, []);
+
   const selectVaultedMethodId = useCallback((id: string) => {
     setState((prev) => {
       // The id must exist among the current methods to be honoured.
@@ -1065,6 +1075,7 @@ export function PrimerCheckoutProvider({
       filterBanks,
       selectBank,
       submitBanks,
+      stopBanks,
       payFromVault,
       selectVaultedMethodId,
       requestExpandedVaultDisplay,
@@ -1079,6 +1090,7 @@ export function PrimerCheckoutProvider({
     filterBanks,
     selectBank,
     submitBanks,
+    stopBanks,
     setActiveMethod,
     setRawData,
     setBillingAddress,

@@ -71,6 +71,7 @@ const baseContext: PrimerCheckoutContextValue = {
   filterBanks: () => {},
   selectBank: () => {},
   submitBanks: async () => {},
+  stopBanks: () => {},
   activeMethod: null,
   cardFormState: { isValid: false, errors: {}, binData: null, metadata: null, requiredFields: [] },
   vaultedMethods: [],

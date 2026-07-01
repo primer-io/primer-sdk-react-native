@@ -97,6 +97,8 @@ export interface PrimerCheckoutContextValue {
   selectBank: (bankId: string) => void;
   /** Tokenise the selected bank and launch the redirect. */
   submitBanks: () => Promise<void>;
+  /** Disarm the flow and tear down the redirect component (call on leaving the picker). */
+  stopBanks: () => void;
 
   // --- Active payment attempt ---
   /** Outcome of the most recent payment attempt; `null` before any submit. */

@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { PrimerError } from '../../../models/PrimerError';
@@ -44,13 +44,19 @@ export function MethodSelectionScreen() {
   const { onCancel } = useCheckoutFlow();
   const { paymentMethods } = usePrimerPaymentMethods();
   const { push, replace } = useNavigation();
-  const { setActiveMethod, startNativeUI } = usePrimerCheckout();
+  const { setActiveMethod, startNativeUI, stopBanks } = usePrimerCheckout();
   const {
     activeMethod: activeVaultedMethod,
     vaultDisplayMode,
     requestExpandedVaultDisplay,
     cvvInputVisible,
   } = usePrimerVaultManager();
+
+  // Back on the method list means no bank flow is active: disarm so re-picking the same method
+  // re-fetches. Fires only here (not on bank-screen unmount), so an in-flight submit isn't torn down.
+  useEffect(() => {
+    stopBanks();
+  }, [stopBanks]);
 
   const methodCount = paymentMethods.length;
   const buttonGap = tokens.spacing.small;
