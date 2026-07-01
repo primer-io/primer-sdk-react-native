@@ -23,6 +23,13 @@ export function usePrimerPaymentMethod(type: string): UsePrimerPaymentMethodRetu
     cancelNativeUI,
     clearPaymentOutcome,
     setActiveMethod,
+    banks,
+    selectedBankId,
+    isBanksLoading,
+    startBanks,
+    filterBanks,
+    selectBank,
+    submitBanks,
   } = usePrimerCheckout();
 
   const method = availablePaymentMethods.find((m) => m.paymentMethodType === type);
@@ -32,6 +39,7 @@ export function usePrimerPaymentMethod(type: string): UsePrimerPaymentMethodRetu
   const start = useCallback(() => startNativeUI(type), [startNativeUI, type]);
   const cancel = useCallback(() => cancelNativeUI(type), [cancelNativeUI, type]);
   const startCard = useCallback(() => setActiveMethod(type), [setActiveMethod, type]);
+  const startBank = useCallback(() => startBanks(type), [startBanks, type]);
 
   return useMemo<UsePrimerPaymentMethodReturn>(() => {
     if (kind === 'nativeUi') {
@@ -44,6 +52,21 @@ export function usePrimerPaymentMethod(type: string): UsePrimerPaymentMethodRetu
         availabilityError: isAvailable ? null : availabilityError(type),
         start,
         cancel,
+        clearPaymentOutcome,
+      };
+    }
+    if (kind === 'bankSelection') {
+      return {
+        kind: 'bankSelection',
+        isAvailable: isPresent,
+        isLoading: isBanksLoading,
+        paymentOutcome,
+        banks,
+        selectedBankId,
+        start: startBank,
+        filter: filterBanks,
+        selectBank,
+        submit: submitBanks,
         clearPaymentOutcome,
       };
     }
@@ -61,6 +84,13 @@ export function usePrimerPaymentMethod(type: string): UsePrimerPaymentMethodRetu
     start,
     cancel,
     startCard,
+    startBank,
+    filterBanks,
+    selectBank,
+    submitBanks,
+    banks,
+    selectedBankId,
+    isBanksLoading,
     clearPaymentOutcome,
   ]);
 }
