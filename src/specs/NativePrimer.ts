@@ -34,7 +34,8 @@ export interface Spec extends TurboModule {
   // Analytics bridge
   setupAnalyticsLoggingBridge(clientToken: string): Promise<void>;
   trackAnalyticsEvent(eventName: string, metadata?: string): Promise<void>;
-  sendLog(message: string, event: string): Promise<void>;
+  sendLog(message: string, event: string, initDurationMs?: number): Promise<void>;
+  sendErrorLog(message: string, event?: string, errorMessage?: string, stack?: string): Promise<void>;
 
   // Backward compat
   addListener(eventName?: string): void;

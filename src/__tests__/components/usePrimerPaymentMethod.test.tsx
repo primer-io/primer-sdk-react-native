@@ -3,7 +3,12 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
 jest.mock('../../specs/NativePrimer', () => ({
   __esModule: true,
-  default: {},
+  default: {
+    setupAnalyticsLoggingBridge: jest.fn().mockResolvedValue(undefined),
+    trackAnalyticsEvent: jest.fn().mockResolvedValue(undefined),
+    sendLog: jest.fn().mockResolvedValue(undefined),
+    sendErrorLog: jest.fn().mockResolvedValue(undefined),
+  },
 }));
 
 jest.mock(

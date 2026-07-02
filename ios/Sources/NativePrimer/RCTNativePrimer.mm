@@ -137,9 +137,19 @@ RCT_EXPORT_METHOD(trackAnalyticsEvent:(NSString *)eventName
 
 RCT_EXPORT_METHOD(sendLog:(NSString *)message
                   event:(NSString *)event
+                  initDurationMs:(NSNumber * _Nullable)initDurationMs
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
-    [self.primer sendLog:message event:event resolver:resolve rejecter:reject];
+    [self.primer sendLog:message event:event initDurationMs:initDurationMs resolver:resolve rejecter:reject];
+}
+
+RCT_EXPORT_METHOD(sendErrorLog:(NSString *)message
+                  event:(NSString * _Nullable)event
+                  errorMessage:(NSString * _Nullable)errorMessage
+                  stack:(NSString * _Nullable)stack
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
+    [self.primer sendErrorLog:message event:event errorMessage:errorMessage stack:stack resolver:resolve rejecter:reject];
 }
 
 RCT_EXPORT_METHOD(setupAnalyticsLoggingBridge:(NSString *)clientToken
@@ -210,8 +220,12 @@ RCT_EXPORT_METHOD(setupAnalyticsLoggingBridge:(NSString *)clientToken
     [self.primer trackAnalyticsEvent:eventName metadata:metadata resolver:resolve rejecter:reject];
 }
 
-- (void)sendLog:(nonnull NSString *)message event:(nonnull NSString *)event resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject {
-    [self.primer sendLog:message event:event resolver:resolve rejecter:reject];
+- (void)sendLog:(nonnull NSString *)message event:(nonnull NSString *)event initDurationMs:(NSNumber *)initDurationMs resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject {
+    [self.primer sendLog:message event:event initDurationMs:initDurationMs resolver:resolve rejecter:reject];
+}
+
+- (void)sendErrorLog:(nonnull NSString *)message event:(NSString *)event errorMessage:(NSString *)errorMessage stack:(NSString *)stack resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject {
+    [self.primer sendErrorLog:message event:event errorMessage:errorMessage stack:stack resolver:resolve rejecter:reject];
 }
 
 - (void)setupAnalyticsLoggingBridge:(nonnull NSString *)clientToken resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject {

@@ -262,10 +262,26 @@ internal open class DefaultNativePrimerModule(
     fun sendLog(
         message: String,
         event: String,
+        initDurationMs: Double?,
         promise: Promise,
     ) {
         try {
-            analyticsLoggingBridge?.sendInfoLog(message, event)
+            analyticsLoggingBridge?.sendInfoLog(message, event, initDurationMs?.toLong())
+            promise.resolve(null)
+        } catch (expected: Exception) {
+            promise.resolve(null)
+        }
+    }
+
+    fun sendErrorLog(
+        message: String,
+        event: String?,
+        errorMessage: String?,
+        stack: String?,
+        promise: Promise,
+    ) {
+        try {
+            analyticsLoggingBridge?.sendErrorLog(message, event, errorMessage, stack)
             promise.resolve(null)
         } catch (expected: Exception) {
             promise.resolve(null)

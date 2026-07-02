@@ -167,6 +167,34 @@ export function PrimerCheckoutProvider({
   const stateRef = useRef(state);
   stateRef.current = state;
 
+  // Analytics session state: dedup SELECTION per method, correlate outcomes with the attempted
+  // method, and drive REATTEMPTED / FLOW_EXITED semantics. Reset per client token.
+  const selectionSentRef = useRef<Set<string>>(new Set());
+  const lastAttemptedMethodRef = useRef<string | null>(null);
+  const hadFailureRef = useRef(false);
+  const hadSuccessRef = useRef(false);
+  const becameReadyRef = useRef(false);
+
+  const trackSelection = useCallback((paymentMethod: string) => {
+    if (selectionSentRef.current.has(paymentMethod)) return;
+    selectionSentRef.current.add(paymentMethod);
+    void PrimerAnalytics.trackEvent('PAYMENT_METHOD_SELECTION', { paymentMethod });
+  }, []);
+
+  // Fires the attempt-start events shared by every pay path: REATTEMPTED (when retrying after a
+  // failure), SUBMITTED (form/vault submits — not wallet handoffs), then PROCESSING_STARTED.
+  const trackAttemptStart = useCallback((paymentMethod: string, options: { submitted: boolean }) => {
+    lastAttemptedMethodRef.current = paymentMethod;
+    if (hadFailureRef.current) {
+      hadFailureRef.current = false;
+      void PrimerAnalytics.trackEvent('PAYMENT_REATTEMPTED', { paymentMethod });
+    }
+    if (options.submitted) {
+      void PrimerAnalytics.trackEvent('PAYMENT_SUBMITTED', { paymentMethod });
+    }
+    void PrimerAnalytics.trackEvent('PAYMENT_PROCESSING_STARTED', { paymentMethod });
+  }, []);
+
   // Native manager. Lifecycle is driven by `state.activeMethod` — the method the user
   // picked on the selection screen — so it survives the card-form view mount/unmount.
   const managerRef = useRef<PrimerHeadlessUniversalCheckoutRawDataManager | null>(null);
@@ -195,7 +223,13 @@ export function PrimerCheckoutProvider({
   // -----------------------------------------------------------------------
   useEffect(() => {
     setState(initialState);
+    selectionSentRef.current = new Set();
+    lastAttemptedMethodRef.current = null;
+    hadFailureRef.current = false;
+    hadSuccessRef.current = false;
+    becameReadyRef.current = false;
     let cancelled = false;
+    const initStartedAt = Date.now();
 
     async function init() {
       const userCallbacks = settingsRef.current?.headlessUniversalCheckoutCallbacks;
@@ -312,6 +346,22 @@ export function PrimerCheckoutProvider({
       const methods = await PrimerHeadlessUniversalCheckout.startWithClientToken(clientToken, mergedSettings);
 
       if (!cancelled) {
+        // Bridge setup must follow native init: the Android bridge resolves the SDK's DI
+        // container (null forever if created earlier) and iOS reuses the live checkout session
+        // id. Telemetry must never block checkout, so failures only warn.
+        try {
+          await PrimerAnalytics.setup(clientToken);
+          void PrimerAnalytics.trackEvent('SDK_INIT_START');
+          void PrimerAnalytics.trackEvent('SDK_INIT_END');
+          void PrimerAnalytics.sendLog(
+            'Checkout components initialized',
+            'checkout-initialized',
+            Date.now() - initStartedAt
+          );
+        } catch (analyticsErr) {
+          console.warn(`${LOG} analytics setup failed ${fmt(analyticsErr)}`);
+        }
+
         // Seed isLoadingResources atomically with isReady so consumers don't see a
         // brief "ready but no resources loading" window before the fetch effect runs.
         setState((prev) => ({
@@ -322,11 +372,26 @@ export function PrimerCheckoutProvider({
           isLoadingResources: true,
           resourcesError: null,
         }));
+        becameReadyRef.current = true;
+        void PrimerAnalytics.trackEvent('CHECKOUT_FLOW_STARTED');
       }
     }
 
     init().catch((err) => {
       console.error(`${LOG} init failed ${fmt(err)}`);
+      // Best effort: setup may not have run — on iOS the log still ships (the bridge decodes
+      // the token standalone); on Android pre-init logs are a known accepted drop.
+      const primerErr = err as PrimerError | Error;
+      void PrimerAnalytics.setup(clientToken)
+        .then(() =>
+          PrimerAnalytics.sendErrorLog(
+            'Checkout initialization failed',
+            'checkout-init-failed',
+            'description' in primerErr ? primerErr.description : primerErr.message,
+            primerErr instanceof Error ? primerErr.stack : undefined
+          )
+        )
+        .catch(() => {});
       if (!cancelled) {
         setState((prev) => ({ ...prev, error: err }));
       }
@@ -334,11 +399,46 @@ export function PrimerCheckoutProvider({
 
     return () => {
       cancelled = true;
+      // Session ends without a completed payment (unmount or token change) → funnel exit.
+      if (becameReadyRef.current && !hadSuccessRef.current) {
+        void PrimerAnalytics.trackEvent('PAYMENT_FLOW_EXITED');
+      }
       // Vault manager is tied to the native session — let the next session recreate it.
       vaultManagerRef.current = null;
       void PrimerHeadlessUniversalCheckout.cleanUp();
     };
   }, [clientToken]);
+
+  // -----------------------------------------------------------------------
+  // Analytics: single choke point for terminal outcomes. Every pay path (card
+  // submit, native-UI, vault, retry) lands in `paymentOutcome`, so SUCCESS /
+  // FAILURE emit exactly once per attempt on the null → terminal transition
+  // (each attempt clears the outcome first).
+  // -----------------------------------------------------------------------
+  useEffect(() => {
+    const outcome = state.paymentOutcome;
+    if (outcome === null) return;
+    const paymentMethod = lastAttemptedMethodRef.current ?? 'UNKNOWN';
+    if (outcome.status === 'success') {
+      hadSuccessRef.current = true;
+      void PrimerAnalytics.trackEvent('PAYMENT_SUCCESS', {
+        paymentMethod,
+        paymentId: outcome.data?.payment?.id ?? 'unknown',
+      });
+      return;
+    }
+    hadFailureRef.current = true;
+    const paymentId = outcome.data?.payment?.id;
+    void PrimerAnalytics.trackEvent('PAYMENT_FAILURE', {
+      paymentMethod,
+      ...(paymentId ? { paymentId } : null),
+    });
+    void PrimerAnalytics.sendErrorLog(
+      'Payment failed',
+      'failed-payment',
+      outcome.error?.description ?? outcome.error?.message
+    );
+  }, [state.paymentOutcome]);
 
   // -----------------------------------------------------------------------
   // Payment method resource fetch — re-runs whenever the set of available
@@ -531,8 +631,15 @@ export function PrimerCheckoutProvider({
     const manager = new PrimerHeadlessUniversalCheckoutRawDataManager();
     managerRef.current = manager;
 
+    // Once per card-form session: first invalid → valid transition.
+    let detailsEnteredFired = false;
+
     const callbacks = {
       onValidation: (isValid: boolean, errors: PrimerError[] | undefined) => {
+        if (isValid && !detailsEnteredFired) {
+          detailsEnteredFired = true;
+          void PrimerAnalytics.trackEvent('PAYMENT_DETAILS_ENTERED', { paymentMethod: method });
+        }
         const parsed = parseValidationErrors(errors);
         setState((prev) => ({
           ...prev,
@@ -611,9 +718,15 @@ export function PrimerCheckoutProvider({
   // -----------------------------------------------------------------------
   // Actions — stable identities.
   // -----------------------------------------------------------------------
-  const setActiveMethod = useCallback((method: string | null) => {
-    setState((prev) => (prev.activeMethod === method ? prev : { ...prev, activeMethod: method }));
-  }, []);
+  const setActiveMethod = useCallback(
+    (method: string | null) => {
+      if (method !== null) {
+        trackSelection(method);
+      }
+      setState((prev) => (prev.activeMethod === method ? prev : { ...prev, activeMethod: method }));
+    },
+    [trackSelection]
+  );
 
   const setRawData = useCallback(async (data: PrimerRawData) => {
     // Keep the co-badge pick sticky: merge it into every card-data payload so it
@@ -674,8 +787,9 @@ export function PrimerCheckoutProvider({
       console.warn(`${LOG} submit: no manager`);
       return;
     }
+    trackAttemptStart(stateRef.current.activeMethod ?? 'PAYMENT_CARD', { submitted: true });
     await manager.submit();
-  }, []);
+  }, [trackAttemptStart]);
 
   const retry = useCallback(async () => {
     const method = stateRef.current.activeMethod;
@@ -700,6 +814,7 @@ export function PrimerCheckoutProvider({
       }
       // Clear the previous outcome so the transitioner fires for the new attempt.
       setState((prev) => (prev.paymentOutcome === null ? prev : { ...prev, paymentOutcome: null }));
+      trackAttemptStart(method, { submitted: true });
       await manager.submit();
     } catch (err) {
       console.error(`${LOG} retry failed ${fmt(err)}`);
@@ -729,52 +844,64 @@ export function PrimerCheckoutProvider({
   // NATIVE_UI methods (Google Pay today; Apple Pay / PayPal / web-redirect APMs later) ride the
   // existing Headless NATIVE_UI path: start the native flow by type; outcomes arrive through the
   // shared onCheckoutComplete/onError. Only one native-UI flow runs at a time.
-  const startNativeUI = useCallback(async (paymentMethodType: string) => {
-    // Ignore re-entrant taps: the in-list method row isn't disabled while loading, so a fast
-    // double-tap would otherwise spawn two native flows.
-    if (stateRef.current.nativeUiInFlightType !== null) {
-      return;
-    }
-    if (paymentMethodType === GOOGLE_PAY && !isGooglePaySupported(stateRef.current.availablePaymentMethods)) {
-      throw new PrimerError(
-        'google-pay-unavailable',
-        'google-pay-unavailable',
-        'Google Pay is not available on this device.',
-        undefined,
-        undefined
-      );
-    }
-    if (paymentMethodType === APPLE_PAY && !isApplePaySupported(stateRef.current.availablePaymentMethods)) {
-      throw new PrimerError(
-        'apple-pay-unavailable',
-        'apple-pay-unavailable',
-        'Apple Pay is not available on this device.',
-        undefined,
-        undefined
-      );
-    }
-    // Clear any stale outcome so the result screen re-fires for this attempt.
-    setState((prev) => ({ ...prev, paymentOutcome: null, nativeUiInFlightType: paymentMethodType }));
-    try {
-      const manager = new PrimerHeadlessUniversalCheckoutPaymentMethodNativeUIManager();
-      await manager.configure(paymentMethodType);
-      await manager.showPaymentMethod(PrimerSessionIntent.CHECKOUT);
-      // Success / failure arrive via onCheckoutComplete / onError; shopper-cancel via
-      // onError('payment-cancelled'). nativeUiInFlightType is reset in those handlers.
-    } catch (err) {
-      console.warn(`${LOG} startNativeUI(${paymentMethodType}) failed ${fmt(err)}`);
-      const error =
-        err instanceof PrimerError
-          ? err
-          : new PrimerError('native-ui-start-failed', undefined, toError(err).message, undefined, undefined);
-      setState((prev) => ({
-        ...prev,
-        nativeUiInFlightType: null,
-        paymentOutcome: { status: 'error', error, data: null },
-      }));
-      throw error;
-    }
-  }, []);
+  const startNativeUI = useCallback(
+    async (paymentMethodType: string) => {
+      // Ignore re-entrant taps: the in-list method row isn't disabled while loading, so a fast
+      // double-tap would otherwise spawn two native flows.
+      if (stateRef.current.nativeUiInFlightType !== null) {
+        return;
+      }
+      if (paymentMethodType === GOOGLE_PAY && !isGooglePaySupported(stateRef.current.availablePaymentMethods)) {
+        throw new PrimerError(
+          'google-pay-unavailable',
+          'google-pay-unavailable',
+          'Google Pay is not available on this device.',
+          undefined,
+          undefined
+        );
+      }
+      if (paymentMethodType === APPLE_PAY && !isApplePaySupported(stateRef.current.availablePaymentMethods)) {
+        throw new PrimerError(
+          'apple-pay-unavailable',
+          'apple-pay-unavailable',
+          'Apple Pay is not available on this device.',
+          undefined,
+          undefined
+        );
+      }
+      // Clear any stale outcome so the result screen re-fires for this attempt.
+      setState((prev) => ({ ...prev, paymentOutcome: null, nativeUiInFlightType: paymentMethodType }));
+      // Wallet/APM handoff: the tap both selects the method and hands processing to the native
+      // flow (no form, so no SUBMITTED — matches the Web sequence for wallets).
+      trackSelection(paymentMethodType);
+      trackAttemptStart(paymentMethodType, { submitted: false });
+      try {
+        const manager = new PrimerHeadlessUniversalCheckoutPaymentMethodNativeUIManager();
+        await manager.configure(paymentMethodType);
+        await manager.showPaymentMethod(PrimerSessionIntent.CHECKOUT);
+        // Success / failure arrive via onCheckoutComplete / onError; shopper-cancel via
+        // onError('payment-cancelled'). nativeUiInFlightType is reset in those handlers.
+      } catch (err) {
+        console.warn(`${LOG} startNativeUI(${paymentMethodType}) failed ${fmt(err)}`);
+        const error =
+          err instanceof PrimerError
+            ? err
+            : new PrimerError('native-ui-start-failed', undefined, toError(err).message, undefined, undefined);
+        void PrimerAnalytics.sendErrorLog(
+          'Unable to present payment method',
+          'unable-to-present-payment-method',
+          `${paymentMethodType}: ${error.description ?? error.message}`
+        );
+        setState((prev) => ({
+          ...prev,
+          nativeUiInFlightType: null,
+          paymentOutcome: { status: 'error', error, data: null },
+        }));
+        throw error;
+      }
+    },
+    [trackSelection, trackAttemptStart]
+  );
 
   const cancelNativeUI = useCallback((paymentMethodType: string) => {
     // The native sheet is a system surface JS can't force-close (FR-002b), so we only clear the
@@ -834,6 +961,8 @@ export function PrimerCheckoutProvider({
       }
       // Clear any stale outcome so PaymentOutcomeTransitioner re-fires for this attempt.
       setState((prev) => (prev.paymentOutcome === null ? prev : { ...prev, paymentOutcome: null }));
+      // Vaulted pay is a card payment: same SUBMITTED → PROCESSING → outcome sequence.
+      trackAttemptStart('PAYMENT_CARD', { submitted: true });
       try {
         await vm.startPaymentFlow(vaultedPaymentMethodId, additionalData);
       } catch (err) {

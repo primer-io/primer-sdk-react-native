@@ -1,5 +1,6 @@
 package com.primerioreactnative.utils
 
+import android.util.Log
 import io.primer.android.components.analytics.data.model.AnalyticsEvent
 
 @Suppress("CyclomaticComplexMethod", "ReturnCount")
@@ -9,7 +10,7 @@ internal fun toAnalyticsEvent(name: String, metadata: Map<String, String>?): Ana
         "SDK_INIT_END" -> AnalyticsEvent.SdkInitEnd
         "CHECKOUT_FLOW_STARTED" -> AnalyticsEvent.CheckoutFlowStarted
         "PAYMENT_FLOW_EXITED" -> AnalyticsEvent.PaymentFlowExited
-        "PAYMENT_REATTEMPTED" -> AnalyticsEvent.PaymentReattempted
+        "PAYMENT_REATTEMPTED" -> AnalyticsEvent.PaymentReattempted(metadata?.get("paymentMethod"))
 
         "PAYMENT_METHOD_SELECTION" -> {
             val paymentMethod = metadata?.get("paymentMethod") ?: return null
@@ -49,6 +50,9 @@ internal fun toAnalyticsEvent(name: String, metadata: Map<String, String>?): Ana
             AnalyticsEvent.PaymentRedirect(paymentMethod, redirectDestinationUrl)
         }
 
-        else -> null
+        else -> {
+            Log.d("AnalyticsEventMapper", "Dropping unknown analytics event: $name")
+            null
+        }
     }
 }

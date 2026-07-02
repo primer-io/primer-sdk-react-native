@@ -82,7 +82,18 @@ const reactNative = {
   NativeModules: {},
   Platform,
   StyleSheet,
-  TurboModuleRegistry: { get: () => null, getEnforcing: () => ({}) },
+  // Every TurboModule method resolves as an async no-op so a new spec method can never
+  // crash tests; suites that assert calls spy on the JS wrappers (e.g. PrimerAnalytics).
+  TurboModuleRegistry: {
+    get: () => null,
+    getEnforcing: () =>
+      new Proxy(
+        {},
+        {
+          get: (target, prop) => (prop === 'then' ? undefined : () => Promise.resolve(null)),
+        }
+      ),
+  },
   requireNativeComponent: (name) => makeComponent(name),
   useColorScheme: () => 'light',
   useWindowDimensions: () => ({ width: 375, height: 812, scale: 2, fontScale: 1 }),

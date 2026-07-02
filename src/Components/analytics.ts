@@ -9,7 +9,11 @@ export const PrimerAnalytics = {
     return RNPrimer.trackAnalyticsEvent(eventName, metadata ? JSON.stringify(metadata) : undefined);
   },
 
-  sendLog: (message: string, event: string): Promise<void> => {
-    return RNPrimer.sendLog(message, event);
+  sendLog: (message: string, event: string, initDurationMs?: number): Promise<void> => {
+    return RNPrimer.sendLog(message, event, initDurationMs);
+  },
+
+  sendErrorLog: (message: string, event?: string, errorMessage?: string, stack?: string): Promise<void> => {
+    return RNPrimer.sendErrorLog(message, event, errorMessage, stack);
   },
 };
