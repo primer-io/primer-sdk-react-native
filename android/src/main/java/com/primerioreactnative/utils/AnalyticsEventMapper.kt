@@ -1,6 +1,5 @@
 package com.primerioreactnative.utils
 
-import android.util.Log
 import io.primer.android.components.analytics.data.model.AnalyticsEvent
 
 @Suppress("CyclomaticComplexMethod", "ReturnCount")
@@ -50,9 +49,6 @@ internal fun toAnalyticsEvent(name: String, metadata: Map<String, String>?): Ana
             AnalyticsEvent.PaymentRedirect(paymentMethod, redirectDestinationUrl)
         }
 
-        else -> {
-            Log.d("AnalyticsEventMapper", "Dropping unknown analytics event: $name")
-            null
-        }
+        else -> null
     }
 }

@@ -31,14 +31,26 @@ internal class AnalyticsEventMapperTest {
         }
 
         @Test
-        fun `toAnalyticsEvent returns PaymentReattempted`() {
-            assertEquals(AnalyticsEvent.PaymentReattempted, toAnalyticsEvent("PAYMENT_REATTEMPTED", null))
-        }
-
-        @Test
         fun `toAnalyticsEvent ignores metadata for data object events`() {
             val metadata = mapOf("paymentMethod" to "PAYMENT_CARD")
             assertEquals(AnalyticsEvent.SdkInitStart, toAnalyticsEvent("SDK_INIT_START", metadata))
+        }
+    }
+
+    @Nested
+    inner class `PaymentReattempted event` {
+        @Test
+        fun `toAnalyticsEvent returns PaymentReattempted with paymentMethod`() {
+            val metadata = mapOf("paymentMethod" to "PAYMENT_CARD")
+            assertEquals(
+                AnalyticsEvent.PaymentReattempted("PAYMENT_CARD"),
+                toAnalyticsEvent("PAYMENT_REATTEMPTED", metadata),
+            )
+        }
+
+        @Test
+        fun `toAnalyticsEvent returns PaymentReattempted with null paymentMethod when absent`() {
+            assertEquals(AnalyticsEvent.PaymentReattempted(null), toAnalyticsEvent("PAYMENT_REATTEMPTED", null))
         }
     }
 

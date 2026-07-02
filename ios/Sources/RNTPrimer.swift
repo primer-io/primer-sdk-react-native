@@ -379,6 +379,8 @@ enum PrimerEvents: Int, CaseIterable {
     }
 
     @objc
+    // resolver + rejecter are framework-mandated on RN promise bridges.
+    // swiftlint:disable:next function_parameter_count
     public func sendErrorLog(
         _ message: String,
         event: String?,

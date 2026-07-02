@@ -251,6 +251,32 @@ describe('PrimerCheckoutProvider analytics contract', () => {
     expect(trackedNames()).not.toContain('PAYMENT_FLOW_EXITED');
   });
 
+  it('does not emit SUCCESS or FAILURE for a PENDING payment, and still exits on unmount', async () => {
+    const { root, ctx } = await renderProvider();
+    await act(async () => {
+      ctx().setActiveMethod('PAYMENT_CARD');
+      await flushPromises();
+    });
+    await act(async () => {
+      await ctx().submit();
+      await flushPromises();
+    });
+
+    const onCheckoutComplete = findListener('onCheckoutComplete');
+    await act(async () => {
+      onCheckoutComplete!({ payment: { id: 'pay_pending', status: 'PENDING' } });
+      await flushPromises();
+    });
+    expect(trackedNames()).not.toContain('PAYMENT_SUCCESS');
+    expect(trackedNames()).not.toContain('PAYMENT_FAILURE');
+
+    // PENDING is not a completed success, so leaving now is still a funnel exit.
+    await act(async () => {
+      root.unmount();
+    });
+    expect(trackedNames()).toContain('PAYMENT_FLOW_EXITED');
+  });
+
   it('emits FAILURE with an error log, then REATTEMPTED on the next submit', async () => {
     const { ctx } = await renderProvider();
     await act(async () => {

@@ -167,8 +167,7 @@ export function PrimerCheckoutProvider({
   const stateRef = useRef(state);
   stateRef.current = state;
 
-  // Analytics session state: dedup SELECTION per method, correlate outcomes with the attempted
-  // method, and drive REATTEMPTED / FLOW_EXITED semantics. Reset per client token.
+  // Analytics session state (reset per client token): SELECTION dedup + outcome correlation.
   const selectionSentRef = useRef<Set<string>>(new Set());
   const lastAttemptedMethodRef = useRef<string | null>(null);
   const hadFailureRef = useRef(false);
@@ -181,8 +180,7 @@ export function PrimerCheckoutProvider({
     void PrimerAnalytics.trackEvent('PAYMENT_METHOD_SELECTION', { paymentMethod });
   }, []);
 
-  // Fires the attempt-start events shared by every pay path: REATTEMPTED (when retrying after a
-  // failure), SUBMITTED (form/vault submits — not wallet handoffs), then PROCESSING_STARTED.
+  // Attempt-start events shared by every pay path: REATTEMPTED (after failure), optional SUBMITTED, PROCESSING.
   const trackAttemptStart = useCallback((paymentMethod: string, options: { submitted: boolean }) => {
     lastAttemptedMethodRef.current = paymentMethod;
     if (hadFailureRef.current) {
@@ -346,9 +344,7 @@ export function PrimerCheckoutProvider({
       const methods = await PrimerHeadlessUniversalCheckout.startWithClientToken(clientToken, mergedSettings);
 
       if (!cancelled) {
-        // Bridge setup must follow native init: the Android bridge resolves the SDK's DI
-        // container (null forever if created earlier) and iOS reuses the live checkout session
-        // id. Telemetry must never block checkout, so failures only warn.
+        // Setup must run after native init — Android's bridge resolves the SDK DI container here.
         try {
           await PrimerAnalytics.setup(clientToken);
           void PrimerAnalytics.trackEvent('SDK_INIT_START');
@@ -379,8 +375,7 @@ export function PrimerCheckoutProvider({
 
     init().catch((err) => {
       console.error(`${LOG} init failed ${fmt(err)}`);
-      // Best effort: setup may not have run — on iOS the log still ships (the bridge decodes
-      // the token standalone); on Android pre-init logs are a known accepted drop.
+      // Best effort: setup may not have run yet (Android drops pre-init logs; iOS still ships).
       const primerErr = err as PrimerError | Error;
       void PrimerAnalytics.setup(clientToken)
         .then(() =>
@@ -409,17 +404,14 @@ export function PrimerCheckoutProvider({
     };
   }, [clientToken]);
 
-  // -----------------------------------------------------------------------
-  // Analytics: single choke point for terminal outcomes. Every pay path (card
-  // submit, native-UI, vault, retry) lands in `paymentOutcome`, so SUCCESS /
-  // FAILURE emit exactly once per attempt on the null → terminal transition
-  // (each attempt clears the outcome first).
-  // -----------------------------------------------------------------------
+  // Single choke point: every pay path lands in `paymentOutcome`, so SUCCESS/FAILURE emit once per attempt.
   useEffect(() => {
     const outcome = state.paymentOutcome;
     if (outcome === null) return;
     const paymentMethod = lastAttemptedMethodRef.current ?? 'UNKNOWN';
     if (outcome.status === 'success') {
+      // PENDING reaches the 'success' outcome but isn't a completed payment — don't count it.
+      if (outcome.data?.payment?.status === 'PENDING') return;
       hadSuccessRef.current = true;
       void PrimerAnalytics.trackEvent('PAYMENT_SUCCESS', {
         paymentMethod,
@@ -871,8 +863,7 @@ export function PrimerCheckoutProvider({
       }
       // Clear any stale outcome so the result screen re-fires for this attempt.
       setState((prev) => ({ ...prev, paymentOutcome: null, nativeUiInFlightType: paymentMethodType }));
-      // Wallet/APM handoff: the tap both selects the method and hands processing to the native
-      // flow (no form, so no SUBMITTED — matches the Web sequence for wallets).
+      // Wallet/APM handoff: select + hand off to native, no form so no SUBMITTED (matches Web).
       trackSelection(paymentMethodType);
       trackAttemptStart(paymentMethodType, { submitted: false });
       try {
