@@ -138,14 +138,14 @@ export function MethodSelectionScreen() {
 
   const handleShowAll = useCallback(() => {
     void PrimerAnalytics.trackEvent('VAULT_LIST_OPENED', {
-      currentVaultedMethodId: activeVaultedMethod?.id ?? '',
+      vaultedMethodId: activeVaultedMethod?.id ?? '',
     });
     push(CheckoutRoute.vaultedMethods);
   }, [activeVaultedMethod, push]);
 
   const handleRequestExpanded = useCallback(() => {
     void PrimerAnalytics.trackEvent('VAULT_OTHER_PAY_METHODS_REQUESTED', {
-      activeVaultedMethodId: activeVaultedMethod?.id ?? '',
+      vaultedMethodId: activeVaultedMethod?.id ?? '',
     });
     requestExpandedVaultDisplay();
   }, [activeVaultedMethod, requestExpandedVaultDisplay]);

@@ -239,6 +239,99 @@ internal class AnalyticsEventMapperTest {
     }
 
     @Nested
+    inner class `Vault events` {
+        @Test
+        fun `toAnalyticsEvent returns VaultListOpened with vaultedMethodId`() {
+            assertEquals(
+                AnalyticsEvent.VaultListOpened("vm-1"),
+                toAnalyticsEvent("VAULT_LIST_OPENED", mapOf("vaultedMethodId" to "vm-1")),
+            )
+        }
+
+        @Test
+        fun `toAnalyticsEvent treats empty vaultedMethodId as null for optional-id events`() {
+            assertEquals(
+                AnalyticsEvent.VaultListOpened(null),
+                toAnalyticsEvent("VAULT_LIST_OPENED", mapOf("vaultedMethodId" to "")),
+            )
+        }
+
+        @Test
+        fun `toAnalyticsEvent returns VaultMethodSelected with previous id`() {
+            val metadata = mapOf("vaultedMethodId" to "vm-2", "previousVaultedMethodId" to "vm-1")
+            assertEquals(
+                AnalyticsEvent.VaultMethodSelected("vm-2", "vm-1"),
+                toAnalyticsEvent("VAULT_METHOD_SELECTED", metadata),
+            )
+        }
+
+        @Test
+        fun `toAnalyticsEvent returns null for VaultMethodSelected without vaultedMethodId`() {
+            assertNull(toAnalyticsEvent("VAULT_METHOD_SELECTED", null))
+        }
+
+        @Test
+        fun `toAnalyticsEvent parses vaultedMethodCount as Int`() {
+            assertEquals(
+                AnalyticsEvent.VaultEditModeEntered(3),
+                toAnalyticsEvent("VAULT_EDIT_MODE_ENTERED", mapOf("vaultedMethodCount" to "3")),
+            )
+        }
+
+        @Test
+        fun `toAnalyticsEvent parses exitedFromConfirmation as Boolean`() {
+            assertEquals(
+                AnalyticsEvent.VaultEditModeExited(true),
+                toAnalyticsEvent("VAULT_EDIT_MODE_EXITED", mapOf("exitedFromConfirmation" to "true")),
+            )
+        }
+
+        @Test
+        fun `toAnalyticsEvent returns VaultMethodDeleted with all fields`() {
+            val metadata = mapOf(
+                "vaultedMethodId" to "vm-1",
+                "isActive" to "true",
+                "promotedVaultedMethodId" to "vm-2",
+            )
+            assertEquals(
+                AnalyticsEvent.VaultMethodDeleted("vm-1", true, "vm-2"),
+                toAnalyticsEvent("VAULT_METHOD_DELETED", metadata),
+            )
+        }
+
+        @Test
+        fun `toAnalyticsEvent returns VaultMethodDeletionFailed with errorId and isActive`() {
+            val metadata = mapOf(
+                "vaultedMethodId" to "vm-1",
+                "errorId" to "vault-delete-failed",
+                "isActive" to "false",
+            )
+            assertEquals(
+                AnalyticsEvent.VaultMethodDeletionFailed("vm-1", "vault-delete-failed", false),
+                toAnalyticsEvent("VAULT_METHOD_DELETION_FAILED", metadata),
+            )
+        }
+
+        @Test
+        fun `toAnalyticsEvent returns VaultCvvRequiredRendered with network and expectedCvvLength`() {
+            val metadata = mapOf(
+                "vaultedMethodId" to "vm-1",
+                "network" to "VISA",
+                "expectedCvvLength" to "4",
+            )
+            assertEquals(
+                AnalyticsEvent.VaultCvvRequiredRendered("vm-1", "VISA", 4),
+                toAnalyticsEvent("VAULT_CVV_REQUIRED_RENDERED", metadata),
+            )
+        }
+
+        @Test
+        fun `toAnalyticsEvent returns null for VaultCvvSubmitted without vaultedMethodId`() {
+            assertNull(toAnalyticsEvent("VAULT_CVV_SUBMITTED", null))
+        }
+    }
+
+    @Nested
     inner class `unknown and edge cases` {
         @Test
         fun `toAnalyticsEvent returns null for unknown event name`() {
