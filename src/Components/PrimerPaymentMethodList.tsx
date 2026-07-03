@@ -32,7 +32,6 @@ export function PrimerPaymentMethodList({
 
   const handlePress = useCallback(
     (item: PaymentMethodItem) => {
-      // TODO: Fire PAYMENT_METHOD_SELECTION analytics event when analytics bridge is available
       onSelect(item);
     },
     [onSelect]

@@ -367,11 +367,37 @@ enum PrimerEvents: Int, CaseIterable {
     public func sendLog(
         _ message: String,
         event: String,
+        initDurationMs: NSNumber?,
         resolver: @escaping RCTPromiseResolveBlock,
         rejecter: @escaping RCTPromiseRejectBlock
     ) {
         DispatchQueue.main.async {
-            Task { await self.analyticsLoggingBridge?.logInfo(message: message, event: event) }
+            let userInfo: [String: Any]? = initDurationMs.map { ["init_duration_ms": $0.intValue] }
+            Task { await self.analyticsLoggingBridge?.logInfo(message: message, event: event, userInfo: userInfo) }
+            resolver(nil)
+        }
+    }
+
+    @objc
+    // resolver + rejecter are framework-mandated on RN promise bridges.
+    // swiftlint:disable:next function_parameter_count
+    public func sendErrorLog(
+        _ message: String,
+        event: String?,
+        errorMessage: String?,
+        stack: String?,
+        resolver: @escaping RCTPromiseResolveBlock,
+        rejecter: @escaping RCTPromiseRejectBlock
+    ) {
+        DispatchQueue.main.async {
+            Task {
+                await self.analyticsLoggingBridge?.logError(
+                    message: message,
+                    event: event,
+                    errorMessage: errorMessage,
+                    stack: stack
+                )
+            }
             resolver(nil)
         }
     }

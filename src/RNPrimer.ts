@@ -257,10 +257,21 @@ const RNPrimer = {
     });
   },
 
-  sendLog: (message: string, event: string): Promise<void> => {
+  sendLog: (message: string, event: string, initDurationMs?: number): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {
-        await NativePrimer.sendLog(message, event);
+        await NativePrimer.sendLog(message, event, initDurationMs);
+        resolve();
+      } catch (err) {
+        reject(err);
+      }
+    });
+  },
+
+  sendErrorLog: (message: string, event?: string, errorMessage?: string, stack?: string): Promise<void> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        await NativePrimer.sendErrorLog(message, event, errorMessage, stack);
         resolve();
       } catch (err) {
         reject(err);

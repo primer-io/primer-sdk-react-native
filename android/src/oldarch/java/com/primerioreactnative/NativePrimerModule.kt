@@ -139,8 +139,25 @@ class NativePrimerModule(private val reactContext: ReactApplicationContext, priv
   }
 
   @ReactMethod
-  fun sendLog(message: String, event: String, promise: Promise) {
-    implementation.sendLog(message = message, event = event, promise = promise)
+  fun sendLog(message: String, event: String, initDurationMs: Double?, promise: Promise) {
+    implementation.sendLog(message = message, event = event, initDurationMs = initDurationMs, promise = promise)
+  }
+
+  @ReactMethod
+  fun sendErrorLog(
+    message: String,
+    event: String?,
+    errorMessage: String?,
+    stack: String?,
+    promise: Promise
+  ) {
+    implementation.sendErrorLog(
+      message = message,
+      event = event,
+      errorMessage = errorMessage,
+      stack = stack,
+      promise = promise
+    )
   }
 
   @ReactMethod

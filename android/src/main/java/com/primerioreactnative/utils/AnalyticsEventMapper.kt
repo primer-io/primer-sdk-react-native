@@ -9,7 +9,7 @@ internal fun toAnalyticsEvent(name: String, metadata: Map<String, String>?): Ana
         "SDK_INIT_END" -> AnalyticsEvent.SdkInitEnd
         "CHECKOUT_FLOW_STARTED" -> AnalyticsEvent.CheckoutFlowStarted
         "PAYMENT_FLOW_EXITED" -> AnalyticsEvent.PaymentFlowExited
-        "PAYMENT_REATTEMPTED" -> AnalyticsEvent.PaymentReattempted
+        "PAYMENT_REATTEMPTED" -> AnalyticsEvent.PaymentReattempted(metadata?.get("paymentMethod"))
 
         "PAYMENT_METHOD_SELECTION" -> {
             val paymentMethod = metadata?.get("paymentMethod") ?: return null
