@@ -195,8 +195,8 @@ export function VaultedMethodsScreen() {
       // the active row still flips to lite but isn't a "switch".
       if (method.id !== fromId) {
         void PrimerAnalytics.trackEvent('VAULT_METHOD_SELECTED', {
-          fromVaultedMethodId: fromId,
-          toVaultedMethodId: method.id,
+          vaultedMethodId: method.id,
+          previousVaultedMethodId: fromId,
         });
       }
       selectVaultedMethodId(method.id);
@@ -251,7 +251,7 @@ export function VaultedMethodsScreen() {
       const promotedId = wasActive ? (vaultedMethods.find((m) => m.id !== target.id)?.id ?? '') : '';
       void PrimerAnalytics.trackEvent('VAULT_METHOD_DELETED', {
         vaultedMethodId: target.id,
-        wasActive: String(wasActive),
+        isActive: String(wasActive),
         promotedVaultedMethodId: promotedId,
       });
       setPendingDeletion(null);
@@ -266,7 +266,7 @@ export function VaultedMethodsScreen() {
       void PrimerAnalytics.trackEvent('VAULT_METHOD_DELETION_FAILED', {
         vaultedMethodId: target.id,
         errorId,
-        wasActive: String(wasActive),
+        isActive: String(wasActive),
       });
       Alert.alert(t('primer_common_error_generic'));
       setPendingDeletion(null);
