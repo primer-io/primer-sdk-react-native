@@ -132,6 +132,7 @@ interface IPrimerApplePayOptions {
   checkProvidedNetworks?: boolean;
   shippingOptions?: IShippingOptions;
   billingOptions?: IBillingOptions;
+  allowedCardTypes?: PrimerWalletCardType[];
 }
 interface IShippingOptions {
   shippingContactFields?: RequiredContactField[];
@@ -142,6 +143,8 @@ interface IBillingOptions {
 }
 
 type RequiredContactField = 'name' | 'emailAddress' | 'phoneNumber' | 'postalAddress';
+
+type PrimerWalletCardType = 'credit' | 'debit' | 'prepaid';
 
 interface IPrimerCardPaymentOptions {
   is3DSOnVaultingEnabled: boolean;
@@ -154,7 +157,7 @@ interface IPrimerGoCardlessOptions {
 
 interface IPrimerGooglePayOptions {
   merchantName?: string;
-  allowedCardNetworks?: string[];
+  allowedCardTypes?: PrimerWalletCardType[];
   isCaptureBillingAddressEnabled?: boolean;
   isExistingPaymentMethodRequired?: boolean;
   shippingAddressParameters?: IPrimerGoogleShippingAddressParameters;

@@ -15,7 +15,7 @@ PODS:
     - fmt
     - glog
     - hermes-engine
-    - PrimerSDK (= 2.49.0)
+    - PrimerSDK (= 2.51.1)
     - RCT-Folly
     - RCT-Folly/Fabric
     - RCTRequired
@@ -38,30 +38,37 @@ PODS:
     - SocketRocket
     - Yoga
   - Primer3DS (2.8.0)
-  - PrimerBDCCore (2.49.0):
-    - PrimerBDCEngine (= 2.49.0)
-    - PrimerFoundation (= 2.49.0)
-    - PrimerStepResolver (= 2.49.0)
-  - PrimerBDCEngine (2.49.0):
-    - PrimerFoundation (= 2.49.0)
-    - PrimerStepResolver (= 2.49.0)
-  - PrimerCore (2.49.0):
+  - PrimerBDCCore (2.51.1):
+    - PrimerBDCEngine (= 2.51.1)
+    - PrimerFoundation (= 2.51.1)
+    - PrimerStepResolver (= 2.51.1)
+  - PrimerBDCEngine (2.51.1):
+    - PrimerFoundation (= 2.51.1)
+    - PrimerStepResolver (= 2.51.1)
+  - PrimerCore (2.51.1):
     - Primer3DS
-    - PrimerFoundation (= 2.49.0)
-  - PrimerFoundation (2.49.0)
+    - PrimerFoundation (= 2.51.1)
+  - PrimerFoundation (2.51.1)
   - PrimerIPay88MYSDK (0.1.7)
   - PrimerKlarnaSDK (1.3.1)
-  - PrimerSDK (2.49.0):
-    - PrimerSDK/Core (= 2.49.0)
-  - PrimerSDK/Core (2.49.0):
-    - PrimerBDCCore (= 2.49.0)
-    - PrimerBDCEngine (= 2.49.0)
-    - PrimerCore (= 2.49.0)
-    - PrimerFoundation (= 2.49.0)
-    - PrimerStepResolver (= 2.49.0)
-  - PrimerStepResolver (2.49.0):
-    - PrimerFoundation (= 2.49.0)
+  - PrimerNetworking (2.51.1):
+    - PrimerFoundation (= 2.51.1)
+  - PrimerResources (2.51.1)
+  - PrimerSDK (2.51.1):
+    - PrimerSDK/Core (= 2.51.1)
+  - PrimerSDK/Core (2.51.1):
+    - PrimerBDCCore (= 2.51.1)
+    - PrimerBDCEngine (= 2.51.1)
+    - PrimerCore (= 2.51.1)
+    - PrimerFoundation (= 2.51.1)
+    - PrimerNetworking (= 2.51.1)
+    - PrimerResources (= 2.51.1)
+    - PrimerStepResolver (= 2.51.1)
+    - PrimerUI (= 2.51.1)
+  - PrimerStepResolver (2.51.1):
+    - PrimerFoundation (= 2.51.1)
   - PrimerStripeSDK (1.0.0)
+  - PrimerUI (2.51.1)
   - RCT-Folly (2024.11.18.00):
     - boost
     - DoubleConversion
@@ -2551,9 +2558,12 @@ SPEC REPOS:
     - PrimerFoundation
     - PrimerIPay88MYSDK
     - PrimerKlarnaSDK
+    - PrimerNetworking
+    - PrimerResources
     - PrimerSDK
     - PrimerStepResolver
     - PrimerStripeSDK
+    - PrimerUI
     - SocketRocket
 
 EXTERNAL SOURCES:
@@ -2717,17 +2727,20 @@ SPEC CHECKSUMS:
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
   glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
   hermes-engine: 4f8246b1f6d79f625e0d99472d1f3a71da4d28ca
-  primer-io-react-native: e78748b21612ae8ae6aebbfb7370ffc701e04890
+  primer-io-react-native: 51816f1d7259c680159e22654a2021e1727f5de2
   Primer3DS: b8b583ef260f703180870358bc55069de74f8f51
-  PrimerBDCCore: c12a1c92a45895a0e628beb2ae380f0b17fd4117
-  PrimerBDCEngine: 326fa95c79ee94706619bebeb257fdbb8f3918bf
-  PrimerCore: 73e86d2620183b65b40b5681a86ffd8e6313d2c1
-  PrimerFoundation: 879930406228bfc7dbc60e3449ba0b5295e834d3
+  PrimerBDCCore: 7f5344b88a2123bda018e8aad84eab97554f640a
+  PrimerBDCEngine: df493c9d3e4712aaea45bbd9c3f1e58a8232b66a
+  PrimerCore: a7281a00d18dee78e63f2e8110b89029554a9476
+  PrimerFoundation: 78c4a2437577ad06caea15f5d2a619b3b113be48
   PrimerIPay88MYSDK: 436ee0be7e2c97e4e81456ccddee20175e9e3c4d
   PrimerKlarnaSDK: 104962584ac6baad20424f73ee8493c8503fd487
-  PrimerSDK: 822743acdbaa008cfb500349a0af8b2331c16067
-  PrimerStepResolver: f1a49765775fa945d20fb868b0f750a7dd5bb53b
+  PrimerNetworking: 8b80bcca22bea3b0781241c6e7b3f2983a3d0a7d
+  PrimerResources: 3588c545e393a0e6942aa5b50ff00d7dc0881403
+  PrimerSDK: ed1627c6e576fd60688394ee1da08dfce6a2798e
+  PrimerStepResolver: 27bb5225697aaaf1c0159fb7c2114f9dc1a131ba
   PrimerStripeSDK: c37d4e7c1b5256d67d4890c4cc4b38ddc9427489
+  PrimerUI: f1fbd445fc83d56abba38154089f4d7f8510ac10
   RCT-Folly: 846fda9475e61ec7bcbf8a3fe81edfcaeb090669
   RCTDeprecation: c4b9e2fd0ab200e3af72b013ed6113187c607077
   RCTRequired: e97dd5dafc1db8094e63bc5031e0371f092ae92a
