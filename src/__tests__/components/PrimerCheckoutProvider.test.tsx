@@ -38,6 +38,13 @@ jest.mock(
           startPaymentFlowWithAdditionalData: jest.fn().mockResolvedValue(undefined),
           requiresVaultedCardCvv: jest.fn().mockResolvedValue(false),
         },
+        RNTPrimerHeadlessUniversalCheckoutBanksComponent: {
+          configure: jest.fn().mockResolvedValue(undefined),
+          start: jest.fn(),
+          submit: jest.fn(),
+          onBankSelected: jest.fn(),
+          onBankFilterChange: jest.fn(),
+        },
       },
       NativeEventEmitter: jest.fn().mockImplementation(() => ({
         addListener: mockAddListener,
@@ -54,11 +61,13 @@ import { createElement } from 'react';
 import renderer, { act } from 'react-test-renderer';
 import { PrimerCheckoutProvider } from '../../Components/PrimerCheckoutProvider';
 import { usePrimerCheckout } from '../../Components/hooks/usePrimerCheckout';
+import { PrimerError } from '../../models/PrimerError';
 import type { PrimerCheckoutContextValue } from '../../Components/types/PrimerCheckoutProviderTypes';
 
 const rnMock = require('react-native');
 const nativeModule = rnMock.NativeModules.PrimerHeadlessUniversalCheckout;
 const vaultModule = rnMock.NativeModules.RNPrimerHeadlessUniversalCheckoutVaultManager;
+const banksModule = rnMock.NativeModules.RNTPrimerHeadlessUniversalCheckoutBanksComponent;
 const mockAddListener: jest.Mock = rnMock.__mockAddListener;
 
 function findListener(eventName: string): ((...args: any[]) => void) | undefined {
@@ -810,5 +819,129 @@ describe('PrimerCheckoutProvider — requiresVaultedCardCvv flag wiring', () => 
       JSON.stringify({ cvv: '123' })
     );
     expect(vaultModule.startPaymentFlow).not.toHaveBeenCalled();
+  });
+
+  // --- Bank-selection re-entry (ORC-6514 permanent-spinner fix) ---
+  // The provide effect is keyed on `activeBanksMethod`, so re-selecting the SAME method only
+  // re-fetches once the flow has been disarmed (`stopBanks`) — which is what MethodSelectionScreen
+  // fires on return to the method list.
+  async function renderReady(): Promise<() => PrimerCheckoutContextValue> {
+    const captures: PrimerCheckoutContextValue[] = [];
+    await act(async () => {
+      renderer.create(
+        createElement(
+          PrimerCheckoutProvider,
+          { clientToken: 'token-1' },
+          createElement(TestConsumer, {
+            onContext: (ctx: PrimerCheckoutContextValue) => {
+              captures.push(ctx);
+            },
+          })
+        )
+      );
+      await flushPromises();
+    });
+    return () => captures[captures.length - 1]!;
+  }
+
+  it('startBanks provides the redirect component and fills the issuer list on banksRetrieved', async () => {
+    const ctx = await renderReady();
+    const before = mockAddListener.mock.calls.length;
+
+    await act(async () => {
+      await ctx().startBanks('ADYEN_IDEAL');
+      await flushPromises();
+    });
+
+    expect(banksModule.configure).toHaveBeenCalledWith('ADYEN_IDEAL');
+    expect(banksModule.start).toHaveBeenCalledTimes(1);
+    expect(ctx().isBanksLoading).toBe(true);
+
+    const onStep = mockAddListener.mock.calls.slice(before).find((c: any[]) => c[0] === 'onStep')?.[1];
+    expect(onStep).toBeDefined();
+    await act(async () => {
+      onStep!({ stepName: 'banksRetrieved', banks: [{ id: 'ing', name: 'ING' }] });
+      await flushPromises();
+    });
+
+    expect(ctx().banks).toEqual([{ id: 'ing', name: 'ING' }]);
+    expect(ctx().isBanksLoading).toBe(false);
+  });
+
+  it('re-selecting the same method re-fetches only after disarm (the spinner fix)', async () => {
+    const ctx = await renderReady();
+
+    await act(async () => {
+      await ctx().startBanks('ADYEN_IDEAL');
+      await flushPromises();
+    });
+    expect(banksModule.configure).toHaveBeenCalledTimes(1);
+    expect(banksModule.start).toHaveBeenCalledTimes(1);
+
+    // Re-arm the SAME method without disarm: the effect dep is unchanged, so nothing re-runs.
+    // This is the original bug — an empty list + spinner that never refreshes.
+    await act(async () => {
+      await ctx().startBanks('ADYEN_IDEAL');
+      await flushPromises();
+    });
+    expect(banksModule.configure).toHaveBeenCalledTimes(1);
+    expect(banksModule.start).toHaveBeenCalledTimes(1);
+
+    // Disarm (what MethodSelectionScreen does on return to the list), then re-arm the same method.
+    await act(async () => {
+      ctx().stopBanks();
+      await flushPromises();
+    });
+    await act(async () => {
+      await ctx().startBanks('ADYEN_IDEAL');
+      await flushPromises();
+    });
+    expect(banksModule.configure).toHaveBeenCalledTimes(2);
+    expect(banksModule.start).toHaveBeenCalledTimes(2);
+  });
+
+  it('stopBanks clears the issuer list, selection, and loading flag', async () => {
+    const ctx = await renderReady();
+    const before = mockAddListener.mock.calls.length;
+    await act(async () => {
+      await ctx().startBanks('ADYEN_IDEAL');
+      await flushPromises();
+    });
+    const onStep = mockAddListener.mock.calls.slice(before).find((c: any[]) => c[0] === 'onStep')?.[1];
+    await act(async () => {
+      onStep!({ stepName: 'banksRetrieved', banks: [{ id: 'ing', name: 'ING' }] });
+      await flushPromises();
+    });
+    expect(ctx().banks).toHaveLength(1);
+
+    await act(async () => {
+      ctx().stopBanks();
+      await flushPromises();
+    });
+    expect(ctx().banks).toEqual([]);
+    expect(ctx().selectedBankId).toBeNull();
+    expect(ctx().isBanksLoading).toBe(false);
+  });
+
+  it('surfaces a component error that arrives after submit (listener not torn down by submit)', async () => {
+    const ctx = await renderReady();
+    const before = mockAddListener.mock.calls.length;
+    await act(async () => {
+      await ctx().startBanks('ADYEN_IDEAL');
+      await flushPromises();
+    });
+    const onError = mockAddListener.mock.calls.slice(before).find((c: any[]) => c[0] === 'onError')?.[1];
+    expect(onError).toBeDefined();
+
+    await act(async () => {
+      await ctx().submitBanks();
+      await flushPromises();
+    });
+    // A tokenisation/redirect failure arriving after submit still yields an error outcome.
+    await act(async () => {
+      onError!(new PrimerError('bank-error', 'bank-error', 'boom', undefined, undefined));
+      await flushPromises();
+    });
+    expect(ctx().paymentOutcome?.status).toBe('error');
   });
 });

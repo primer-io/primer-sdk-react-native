@@ -16,6 +16,7 @@ import type { IPrimerHeadlessUniversalCheckoutPaymentMethod } from '../../models
 import type { PrimerPaymentMethodAsset, PrimerPaymentMethodNativeView } from '../../models/PrimerPaymentMethodResource';
 import type { PrimerVaultedPaymentMethod } from '../../models/PrimerVaultedPaymentMethod';
 import type { PrimerVaultedPaymentMethodAdditionalData } from '../../models/PrimerVaultedPaymentMethodAdditionalData';
+import type { IssuingBank } from '../../models/IssuingBank';
 import type { PrimerThemeOverride } from '../internal/theme/types';
 import type { CardFormErrors } from './CardFormTypes';
 import type { CardNetworkId } from '../internal/cardNetwork';
@@ -79,6 +80,25 @@ export interface PrimerCheckoutContextValue {
   startNativeUI: (paymentMethodType: string) => Promise<void>;
   /** Cancel an in-flight native-UI attempt (best-effort; cannot force-close the system sheet). */
   cancelNativeUI: (paymentMethodType: string) => void;
+
+  // --- Bank selection (COMPONENT_WITH_REDIRECT — iDEAL, Android Dotpay) ---
+  // Backs the `bankSelection` variant of `usePrimerPaymentMethod(type)`; merchants use that, not these.
+  /** Issuer list for the active bank-selection method; empty until fetched. */
+  banks: IssuingBank[];
+  /** The shopper's currently selected bank id, or `null`. */
+  selectedBankId: string | null;
+  /** True while the issuer list is loading or a bank-redirect submit is in flight. */
+  isBanksLoading: boolean;
+  /** Begin a bank-selection flow for the given method (fetches the issuer list). */
+  startBanks: (paymentMethodType: string) => Promise<void>;
+  /** Filter the issuer list by name. */
+  filterBanks: (text: string) => void;
+  /** Select an issuer by id (triggers validation). */
+  selectBank: (bankId: string) => void;
+  /** Tokenise the selected bank and launch the redirect. */
+  submitBanks: () => Promise<void>;
+  /** Disarm the flow and tear down the redirect component (call on leaving the picker). */
+  stopBanks: () => void;
 
   // --- Active payment attempt ---
   /** Outcome of the most recent payment attempt; `null` before any submit. */

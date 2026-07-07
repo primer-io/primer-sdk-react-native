@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import PrimerHeadlessUniversalCheckoutAssetsManager from '../HeadlessUniversalCheckout/Managers/AssetsManager';
 import PrimerHeadlessUniversalCheckoutRawDataManager from '../HeadlessUniversalCheckout/Managers/PaymentMethodManagers/RawDataManager';
 import PrimerHeadlessUniversalCheckoutPaymentMethodNativeUIManager from '../HeadlessUniversalCheckout/Managers/PaymentMethodManagers/NativeUIManager';
+import { PrimerHeadlessUniversalCheckoutComponentWithRedirectManager } from '../HeadlessUniversalCheckout/Managers/PaymentMethodManagers/ComponentWithRedirectManager';
 import PrimerHeadlessUniversalCheckoutVaultManager from '../HeadlessUniversalCheckout/Managers/VaultManager';
 import { PrimerHeadlessUniversalCheckout } from '../HeadlessUniversalCheckout/PrimerHeadlessUniversalCheckout';
 import { PrimerError } from '../models/PrimerError';
@@ -32,6 +33,9 @@ import type {
 } from './types/PrimerCheckoutProviderTypes';
 import type { CardFormErrors, CardFormField } from './types/CardFormTypes';
 import type { CardNetworkId } from './internal/cardNetwork';
+import type { BanksComponent } from '../HeadlessUniversalCheckout/Managers/PaymentMethodManagers/ComponentWithRedirectManager';
+import type { BanksStep } from '../models/banks/BanksSteps';
+import type { IssuingBank } from '../models/IssuingBank';
 
 const LOG = '[PrimerCheckoutProvider]';
 
@@ -58,6 +62,11 @@ interface InternalState {
   nativeUiInFlightType: string | null;
   activeMethod: string | null;
   cardFormState: CardFormState;
+  /** Active COMPONENT_WITH_REDIRECT (bank-selection) method, or null. Drives the banks lifecycle. */
+  activeBanksMethod: string | null;
+  banks: IssuingBank[];
+  selectedBankId: string | null;
+  isBanksLoading: boolean;
   vaultedMethods: PrimerVaultedPaymentMethod[];
   vaultedIconUrisById: Record<string, string | undefined>;
   isLoadingVaulted: boolean;
@@ -84,6 +93,10 @@ const initialState: InternalState = {
   nativeUiInFlightType: null,
   activeMethod: null,
   cardFormState: initialCardFormState,
+  activeBanksMethod: null,
+  banks: [],
+  selectedBankId: null,
+  isBanksLoading: false,
   vaultedMethods: [],
   vaultedIconUrisById: {},
   isLoadingVaulted: false,
@@ -196,6 +209,10 @@ export function PrimerCheckoutProvider({
   // Native manager. Lifecycle is driven by `state.activeMethod` — the method the user
   // picked on the selection screen — so it survives the card-form view mount/unmount.
   const managerRef = useRef<PrimerHeadlessUniversalCheckoutRawDataManager | null>(null);
+  // Bank-selection (COMPONENT_WITH_REDIRECT) manager + its component. Lifecycle driven by
+  // `state.activeBanksMethod`, mirroring the raw-data manager above.
+  const banksManagerRef = useRef<PrimerHeadlessUniversalCheckoutComponentWithRedirectManager | null>(null);
+  const banksComponentRef = useRef<BanksComponent | null>(null);
   // Vault manager is lazy — created on first vault fetch, reused across client-session updates,
   // cleared on session teardown alongside `PrimerHeadlessUniversalCheckout.cleanUp()`.
   const vaultManagerRef = useRef<PrimerHeadlessUniversalCheckoutVaultManager | null>(null);
@@ -259,6 +276,7 @@ export function PrimerCheckoutProvider({
               return {
                 ...prev,
                 nativeUiInFlightType: null,
+                isBanksLoading: false,
                 paymentOutcome: { status: 'error', error, data: checkoutData ?? null },
               };
             }
@@ -275,6 +293,7 @@ export function PrimerCheckoutProvider({
           setState((prev) => ({
             ...prev,
             nativeUiInFlightType: null,
+            isBanksLoading: false,
             paymentOutcome: buildPaymentOutcome(checkoutData),
           }));
           onCheckoutCompleteRef.current?.(checkoutData);
@@ -833,6 +852,76 @@ export function PrimerCheckoutProvider({
     setState((prev) => (prev.paymentOutcome === null ? prev : { ...prev, paymentOutcome: null }));
   }, []);
 
+  // --- Bank-selection (COMPONENT_WITH_REDIRECT) lifecycle — iDEAL, Android Dotpay ---
+  // Keyed on `activeBanksMethod` (armed by startBanks): provide a BanksComponent, subscribe to its
+  // step + error events, and fetch the issuer list. The redirect + status polling are owned by the
+  // native SDK; the terminal outcome arrives through the shared onCheckoutComplete / onError.
+  useEffect(() => {
+    if (!state.isReady || !state.activeBanksMethod) {
+      return;
+    }
+
+    const method = state.activeBanksMethod;
+    let cancelled = false;
+    const manager = new PrimerHeadlessUniversalCheckoutComponentWithRedirectManager();
+    banksManagerRef.current = manager;
+
+    void (async () => {
+      try {
+        const component: BanksComponent = await manager.provide({
+          paymentMethodType: method,
+          onStep: (step: BanksStep) => {
+            if (cancelled) return;
+            if (step.stepName === 'banksRetrieved') {
+              setState((prev) => ({ ...prev, banks: step.banks, isBanksLoading: false }));
+            } else {
+              setState((prev) => (prev.isBanksLoading ? prev : { ...prev, isBanksLoading: true }));
+            }
+          },
+          onError: (error) => {
+            if (cancelled) return;
+            setState((prev) =>
+              prev.isReady
+                ? { ...prev, isBanksLoading: false, paymentOutcome: { status: 'error', error, data: null } }
+                : { ...prev, isBanksLoading: false, error }
+            );
+          },
+        });
+        if (cancelled) {
+          manager.removeAllListeners();
+          return;
+        }
+        banksComponentRef.current = component;
+        await component.start();
+      } catch (err) {
+        console.warn(`${LOG} banks provide/start failed ${fmt(err)}`);
+        if (!cancelled) {
+          // Surface a startup failure as an error outcome (mirrors onError above) so
+          // PaymentOutcomeTransitioner routes to the error screen instead of leaving the shopper
+          // on an empty bank list with a disabled Pay button.
+          const error =
+            err instanceof PrimerError
+              ? err
+              : new PrimerError('bank-selection-start-failed', undefined, toError(err).message, undefined, undefined);
+          setState((prev) =>
+            prev.isReady
+              ? { ...prev, isBanksLoading: false, paymentOutcome: { status: 'error', error, data: null } }
+              : { ...prev, isBanksLoading: false, error }
+          );
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      manager.removeAllListeners();
+      if (banksManagerRef.current === manager) {
+        banksManagerRef.current = null;
+      }
+      banksComponentRef.current = null;
+    };
+  }, [state.activeBanksMethod, state.isReady]);
+
   // NATIVE_UI methods (Google Pay today; Apple Pay / PayPal / web-redirect APMs later) ride the
   // existing Headless NATIVE_UI path: start the native flow by type; outcomes arrive through the
   // shared onCheckoutComplete/onError. Only one native-UI flow runs at a time.
@@ -900,6 +989,45 @@ export function PrimerCheckoutProvider({
     // onError('payment-cancelled').
     setState((prev) =>
       prev.nativeUiInFlightType === paymentMethodType ? { ...prev, nativeUiInFlightType: null } : prev
+    );
+  }, []);
+
+  // Bank-selection actions (COMPONENT_WITH_REDIRECT). `startBanks` arms the lifecycle effect above;
+  // filter/select/submit forward to the active BanksComponent.
+  const startBanks = useCallback(async (paymentMethodType: string) => {
+    setState((prev) => ({
+      ...prev,
+      activeBanksMethod: paymentMethodType,
+      banks: [],
+      selectedBankId: null,
+      isBanksLoading: true,
+      paymentOutcome: null,
+    }));
+  }, []);
+
+  const filterBanks = useCallback((text: string) => {
+    void banksComponentRef.current?.handleBankFilterChange(text);
+  }, []);
+
+  const selectBank = useCallback((bankId: string) => {
+    void banksComponentRef.current?.handleBankChange(bankId);
+    setState((prev) => (prev.selectedBankId === bankId ? prev : { ...prev, selectedBankId: bankId }));
+  }, []);
+
+  const submitBanks = useCallback(async () => {
+    // Hold isLoading from submit() until a terminal outcome so a custom Pay button disables during
+    // tokenise→redirect — onError/onCheckoutComplete clear it.
+    setState((prev) => ({ ...prev, isBanksLoading: true, paymentOutcome: null }));
+    await banksComponentRef.current?.submit();
+  }, []);
+
+  // Disarm the bank flow (called on return to the method list) so re-selecting the same method
+  // re-runs the provide effect instead of stranding on a spinner.
+  const stopBanks = useCallback(() => {
+    setState((prev) =>
+      prev.activeBanksMethod === null
+        ? prev
+        : { ...prev, activeBanksMethod: null, banks: [], selectedBankId: null, isBanksLoading: false }
     );
   }, []);
 
@@ -1042,6 +1170,9 @@ export function PrimerCheckoutProvider({
       nativeUiInFlightType: state.nativeUiInFlightType,
       activeMethod: state.activeMethod,
       cardFormState: state.cardFormState,
+      banks: state.banks,
+      selectedBankId: state.selectedBankId,
+      isBanksLoading: state.isBanksLoading,
       vaultedMethods: state.vaultedMethods,
       vaultedIconUrisById: state.vaultedIconUrisById,
       isLoadingVaulted: state.isLoadingVaulted,
@@ -1060,6 +1191,11 @@ export function PrimerCheckoutProvider({
       clearPaymentOutcome,
       startNativeUI,
       cancelNativeUI,
+      startBanks,
+      filterBanks,
+      selectBank,
+      submitBanks,
+      stopBanks,
       payFromVault,
       selectVaultedMethodId,
       requestExpandedVaultDisplay,
@@ -1070,6 +1206,11 @@ export function PrimerCheckoutProvider({
     state,
     startNativeUI,
     cancelNativeUI,
+    startBanks,
+    filterBanks,
+    selectBank,
+    submitBanks,
+    stopBanks,
     setActiveMethod,
     setRawData,
     setBillingAddress,
