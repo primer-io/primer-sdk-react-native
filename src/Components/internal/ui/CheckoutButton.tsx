@@ -24,7 +24,7 @@ export function CheckoutButton({ title, onPress, variant, loading = false, disab
 
   return (
     <TouchableOpacity
-      style={[buttonStyle, showDisabledTint && styles.disabled]}
+      style={[buttonStyle, showDisabledTint ? styles.dimmed : styles.opaque]}
       onPress={onPress}
       disabled={!isInteractive}
       activeOpacity={0.7}
@@ -58,8 +58,11 @@ function createStyles(tokens: PrimerTokens) {
 
   /* eslint-disable react-native/no-unused-styles */
   return StyleSheet.create({
-    disabled: {
+    dimmed: {
       opacity: 0.5,
+    },
+    opaque: {
+      opacity: 1,
     },
     outlinedButton: {
       ...baseButton,

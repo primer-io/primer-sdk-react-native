@@ -132,7 +132,7 @@ export function CardFormScreen() {
           onPress={handlePay}
           disabled={!canSubmit}
           activeOpacity={0.7}
-          style={[styles.payButton, !canSubmit && styles.payButtonDisabled]}
+          style={[styles.payButton, canSubmit ? styles.payButtonEnabled : styles.payButtonDisabled]}
           accessibilityRole="button"
           accessibilityState={{ disabled: !canSubmit, busy: cardForm.isSubmitting }}
           accessibilityLabel={t('accessibility_card_form_submit_label')}
@@ -188,6 +188,9 @@ function createStyles(tokens: PrimerTokens) {
     },
     payButtonDisabled: {
       opacity: 0.5,
+    },
+    payButtonEnabled: {
+      opacity: 1,
     },
     payButtonText: {
       color: colors.background,

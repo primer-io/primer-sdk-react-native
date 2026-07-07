@@ -59,6 +59,7 @@ const Animated = {
   loop: () => ({ start: () => {}, stop: () => {} }),
   parallel: () => ({ start: (cb) => cb && cb({ finished: true }) }),
   sequence: () => ({ start: (cb) => cb && cb({ finished: true }) }),
+  subtract: (a, b) => ({ __sub: [a, b] }),
 };
 
 const reactNative = {

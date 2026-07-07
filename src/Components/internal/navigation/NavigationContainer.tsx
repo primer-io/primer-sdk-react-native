@@ -95,11 +95,14 @@ export function NavigationContainer({ screenMap }: NavigationContainerProps) {
   const outgoingZIndex = transition.type === 'pop' ? 2 : 1;
   const showOutgoing = transition.type !== 'none' && !!OutgoingComponent && !!transition.outgoingEntry;
 
+  // Fresh ref each render: an unchanged style ref makes RN 0.85+ Fabric skip child re-layout on a route swap (blank sheet).
+  const screen: ViewStyle = { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 };
+
   return (
     <View style={styles.container}>
       <Animated.View
         key={`screen-${current.key}`}
-        style={[styles.screen, bg, { zIndex: currentZIndex }, renderCurrentAnim(transition.type, animValue, width)]}
+        style={[screen, bg, { zIndex: currentZIndex }, renderCurrentAnim(transition.type, animValue, width)]}
       >
         <RouteEntryContext.Provider value={current}>
           <ScreenComponent />
@@ -108,7 +111,7 @@ export function NavigationContainer({ screenMap }: NavigationContainerProps) {
       {showOutgoing && OutgoingComponent && transition.outgoingEntry && (
         <Animated.View
           key={`screen-${transition.outgoingEntry.key}`}
-          style={[styles.screen, bg, { zIndex: outgoingZIndex }, renderOutgoingAnim(transition.type, animValue, width)]}
+          style={[screen, bg, { zIndex: outgoingZIndex }, renderOutgoingAnim(transition.type, animValue, width)]}
         >
           <RouteEntryContext.Provider value={transition.outgoingEntry}>
             <OutgoingComponent />
@@ -119,58 +122,57 @@ export function NavigationContainer({ screenMap }: NavigationContainerProps) {
   );
 }
 
-// Animated styles use the Animated.View's style prop type, which is wider than the
-// static StyleProp<ViewStyle>. Returning `Animated.WithAnimatedValue<ViewStyle>`
-// keeps full type safety without resorting to `any`.
-function renderCurrentAnim(
+// Both helpers return opacity+transform in every case: removing a previously-set one trips RN 0.86's mount assert.
+export function renderCurrentAnim(
   type: TransitionType,
   animValue: Animated.Value,
   width: number
-): Animated.WithAnimatedValue<ViewStyle> | null {
+): Animated.WithAnimatedValue<ViewStyle> {
   switch (type) {
     case 'replace':
-      return { opacity: animValue };
+      return { opacity: animValue, transform: [{ translateX: 0 }] };
     case 'push':
       return {
+        opacity: 1,
         transform: [{ translateX: animValue.interpolate({ inputRange: [0, 1], outputRange: [width, 0] }) }],
       };
     case 'pop':
       return {
+        opacity: 1,
         transform: [{ translateX: animValue.interpolate({ inputRange: [0, 1], outputRange: [-width * 0.3, 0] }) }],
       };
     case 'none':
     default:
-      return null;
+      return { opacity: 1, transform: [{ translateX: 0 }] };
   }
 }
 
-function renderOutgoingAnim(
+export function renderOutgoingAnim(
   type: TransitionType,
   animValue: Animated.Value,
   width: number
-): Animated.WithAnimatedValue<ViewStyle> | null {
+): Animated.WithAnimatedValue<ViewStyle> {
   switch (type) {
     case 'replace':
-      return { opacity: Animated.subtract(1, animValue) };
+      return { opacity: Animated.subtract(1, animValue), transform: [{ translateX: 0 }] };
     case 'push':
       return {
+        opacity: 1,
         transform: [{ translateX: animValue.interpolate({ inputRange: [0, 1], outputRange: [0, -width * 0.3] }) }],
       };
     case 'pop':
       return {
+        opacity: 1,
         transform: [{ translateX: animValue.interpolate({ inputRange: [0, 1], outputRange: [0, width] }) }],
       };
     case 'none':
     default:
-      return null;
+      return { opacity: 1, transform: [{ translateX: 0 }] };
   }
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  screen: {
-    ...StyleSheet.absoluteFillObject,
   },
 });
