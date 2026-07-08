@@ -27,6 +27,12 @@ describe('routeMethodSelection', () => {
     expect(routeMethodSelection('ADYEN_BLIK', ['RAW_DATA'])).toBe('rawDataForm');
   });
 
+  it('leaves other RAW_DATA methods (e.g. XENDIT_RETAIL_OUTLETS) unsupported', () => {
+    // Retail-outlets needs a list picker, not the free-text form; OVO/others aren't wired yet.
+    expect(routeMethodSelection('XENDIT_RETAIL_OUTLETS', ['RAW_DATA'])).toBe('unsupported');
+    expect(routeMethodSelection('XENDIT_OVO', ['RAW_DATA'])).toBe('unsupported');
+  });
+
   it('returns unsupported for a category that is not yet routed', () => {
     expect(routeMethodSelection('SOME_FUTURE_METHOD', ['CARD_COMPONENTS'])).toBe('unsupported');
   });

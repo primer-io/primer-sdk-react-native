@@ -20,6 +20,9 @@ export type PaymentMethodKind = UsePrimerPaymentMethodReturn['kind'];
 
 const PAYMENT_CARD_TYPE = 'PAYMENT_CARD';
 
+// RAW_DATA methods with a working form here; others (e.g. XENDIT_RETAIL_OUTLETS, a list picker) stay unsupported.
+const RAW_DATA_FORM_TYPES = new Set(['ADYEN_BANCONTACT_CARD', 'ADYEN_MBWAY', 'ADYEN_BLIK']);
+
 export function routeMethodSelection(
   type: string,
   categories: readonly PrimerPaymentMethodManagerCategoryName[]
@@ -33,7 +36,7 @@ export function routeMethodSelection(
   if (categories.includes('COMPONENT_WITH_REDIRECT')) {
     return 'bankSelection';
   }
-  if (categories.includes('RAW_DATA')) {
+  if (categories.includes('RAW_DATA') && RAW_DATA_FORM_TYPES.has(type)) {
     return 'rawDataForm';
   }
   return 'unsupported';

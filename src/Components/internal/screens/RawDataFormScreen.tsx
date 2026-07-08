@@ -71,7 +71,7 @@ export function RawDataFormScreen() {
     if (!isValid) return;
     // Jump to processing while tokenisation / any redirect runs; the outcome navigates away.
     replace(CheckoutRoute.processing);
-    void submit();
+    void submit().catch(() => {});
   };
 
   return (
