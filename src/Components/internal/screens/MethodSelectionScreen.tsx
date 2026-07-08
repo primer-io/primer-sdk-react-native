@@ -135,6 +135,10 @@ export function MethodSelectionScreen() {
         // Bank-redirect methods (iDEAL; Android Dotpay) — open the bank picker.
         push(CheckoutRoute.bankSelection, { paymentMethodType: method.type });
         return;
+      case 'rawDataForm':
+        // Non-card RAW_DATA methods (Bancontact / MBWay / BLIK) — open the method's input form.
+        push(CheckoutRoute.rawDataForm, { paymentMethodType: method.type });
+        return;
       case 'unsupported':
         console.warn(`${LOG} payment method ${method.type} not yet wired`);
         return;

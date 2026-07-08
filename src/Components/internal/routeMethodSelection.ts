@@ -8,16 +8,20 @@ import type { PrimerPaymentMethodManagerCategoryName } from '../../models/Primer
  * - `nativeUi` — a native-sheet / browser-redirect method (Google/Apple Pay, PayPal), started via
  *   `startNativeUI(type)`.
  * - `bankSelection` — a `COMPONENT_WITH_REDIRECT` bank-redirect method (iDEAL; Android Dotpay).
+ * - `rawDataForm` — a non-card `RAW_DATA` method that collects a small input (Bancontact/MBWay/BLIK).
  * - `card` — the card form (`PAYMENT_CARD` only).
  * - `unsupported` — not yet wired into Components.
  *
  * Availability (e.g. Google Pay's Android-only rule) is deliberately NOT part of routing — it lives
- * with the consumer. Later PRs extend the kinds (Klarna, raw-data forms, QR).
+ * with the consumer. Later PRs extend the kinds (Klarna, QR).
  */
 // Single source of truth — derived from the hook's union so the two can't drift as variants land.
 export type PaymentMethodKind = UsePrimerPaymentMethodReturn['kind'];
 
 const PAYMENT_CARD_TYPE = 'PAYMENT_CARD';
+
+// RAW_DATA methods with a working form here; others (e.g. XENDIT_RETAIL_OUTLETS, a list picker) stay unsupported.
+const RAW_DATA_FORM_TYPES = new Set(['ADYEN_BANCONTACT_CARD', 'ADYEN_MBWAY', 'ADYEN_BLIK']);
 
 export function routeMethodSelection(
   type: string,
@@ -32,8 +36,8 @@ export function routeMethodSelection(
   if (categories.includes('COMPONENT_WITH_REDIRECT')) {
     return 'bankSelection';
   }
-  // Non-card `RAW_DATA` (Bancontact/MBWay/BLIK) is intentionally `unsupported` here — its input
-  // form lands in #394 (ORC-6514), which turns this into `rawDataForm`. Routing it to `card` now
-  // would wrongly open the card form for a non-card method.
+  if (categories.includes('RAW_DATA') && RAW_DATA_FORM_TYPES.has(type)) {
+    return 'rawDataForm';
+  }
   return 'unsupported';
 }

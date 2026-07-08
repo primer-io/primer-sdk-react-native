@@ -13,6 +13,7 @@ import com.primerioreactnative.components.datamodels.core.PrimerRawPaymentMethod
 import com.primerioreactnative.components.datamodels.manager.raw.billingAddress.PrimerRNAddress
 import com.primerioreactnative.components.datamodels.manager.raw.card.PrimerRNCardData
 import com.primerioreactnative.components.datamodels.manager.raw.cardRedirect.PrimerRNBancontactCardData
+import com.primerioreactnative.components.datamodels.manager.raw.otp.PrimerRNOtpData
 import com.primerioreactnative.components.datamodels.manager.raw.phoneNumber.PrimerRNPhoneNumberData
 import com.primerioreactnative.components.datamodels.manager.raw.retailOutlets.PrimerRNRetailOutletData
 import com.primerioreactnative.components.datamodels.manager.raw.retailOutlets.toRNRetailOutletsList
@@ -156,6 +157,10 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
                         PrimerRawPaymentMethodType.XENDIT_RETAIL_OUTLETS ->
                             json.decodeFromString<PrimerRNRetailOutletData>(rawDataStr)
                                 .toPrimerRetailOutletData()
+
+                        PrimerRawPaymentMethodType.ADYEN_BLIK ->
+                            json.decodeFromString<PrimerRNOtpData>(rawDataStr)
+                                .toPrimerOtpData()
                     }
                 rawManager.setRawData(rawData)
                 promise.resolve(null)

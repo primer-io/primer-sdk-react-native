@@ -1,5 +1,7 @@
 import type { PaymentOutcome } from './PrimerCheckoutProviderTypes';
 import type { IssuingBank } from '../../models/IssuingBank';
+import type { PrimerInputElementType } from '../../models/PrimerInputElementType';
+import type { PrimerRawData } from '../../models/PrimerRawData';
 
 /**
  * Why a payment method is unavailable. Coarse `{ code, message }`; the codes are method-specific
@@ -69,6 +71,31 @@ export interface BankSelectionPaymentMethod {
 }
 
 /**
+ * A non-card `RAW_DATA` form method that collects a small, method-specific input before tokenising
+ * — Bancontact (card fields), MBWay (phone), BLIK (OTP). `start()` activates the method's raw-data
+ * manager; render `requiredInputs`, push entries via `setData`, then `submit()`. The outcome arrives
+ * via `paymentOutcome`. Render nothing when `!isAvailable`.
+ */
+export interface RawDataFormPaymentMethod {
+  kind: 'rawDataForm';
+  readonly isAvailable: boolean;
+  /** The fields this method requires, from the SDK — drives the form (never the card form). */
+  readonly requiredInputs: PrimerInputElementType[];
+  /** Current validation messages (card-field methods populate these; `isValid` is the reliable gate). */
+  readonly validationErrors: string[];
+  /** Whether the entered data is valid and ready to submit. */
+  readonly isValid: boolean;
+  readonly paymentOutcome: PaymentOutcome | null;
+  /** Activate this method's raw-data manager (configure + fetch required inputs). */
+  start(): Promise<void>;
+  /** Forward the method's raw data (`PrimerPhoneNumberData` / `PrimerBancontactCardData` / `PrimerOtpData`). */
+  setData(data: PrimerRawData): Promise<void>;
+  /** Tokenise and proceed (some methods then redirect; the native SDK owns it). */
+  submit(): Promise<void>;
+  clearPaymentOutcome(): void;
+}
+
+/**
  * Can't be driven here: either a type not wired into Components yet, OR a known method that isn't
  * in the current session (its category is unknown). Either way it can't be started — render
  * nothing / disabled.
@@ -82,5 +109,6 @@ export interface UnsupportedPaymentMethod {
 export type UsePrimerPaymentMethodReturn =
   | NativeUiPaymentMethod
   | BankSelectionPaymentMethod
+  | RawDataFormPaymentMethod
   | CardPaymentMethod
   | UnsupportedPaymentMethod;
