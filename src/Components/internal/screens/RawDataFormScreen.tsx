@@ -64,7 +64,7 @@ export function RawDataFormScreen() {
   const handleChange = (field: string, text: string) => {
     const next = { ...values, [field]: text };
     setValues(next);
-    void setData(buildRawData(next)).catch(() => {});
+    void setData(buildRawData(params.paymentMethodType, next)).catch(() => {});
   };
 
   const handleSubmit = () => {
