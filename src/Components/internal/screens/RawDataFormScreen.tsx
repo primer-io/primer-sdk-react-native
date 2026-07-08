@@ -96,7 +96,9 @@ export function RawDataFormScreen() {
               style={styles.input}
               value={values[field] ?? ''}
               onChangeText={(text) => handleChange(field, text)}
-              keyboardType={NUMERIC_FIELDS.has(field) ? 'number-pad' : 'default'}
+              keyboardType={
+                field === 'PHONE_NUMBER' ? 'phone-pad' : NUMERIC_FIELDS.has(field) ? 'number-pad' : 'default'
+              }
               autoCapitalize="none"
               accessibilityLabel={FIELD_LABEL[field] ?? field}
             />
