@@ -119,6 +119,8 @@ export interface PrimerCheckoutContextValue {
   authorizeKlarna: () => Promise<void>;
   /** Finalize the Klarna payment (prebuilt auto-finalizes; manual path for custom layouts). */
   finalizeKlarna: () => Promise<void>;
+  /** Disarm the Klarna flow on return to the method list (mirrors stopBanks). */
+  stopKlarna: () => void;
 
   // --- Active payment attempt ---
   /** Outcome of the most recent payment attempt; `null` before any submit. */

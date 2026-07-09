@@ -303,6 +303,7 @@ export function PrimerCheckoutProvider({
                 ...prev,
                 nativeUiInFlightType: null,
                 isBanksLoading: false,
+                isKlarnaLoading: false,
                 paymentOutcome: { status: 'error', error, data: checkoutData ?? null },
               };
             }
@@ -320,6 +321,7 @@ export function PrimerCheckoutProvider({
             ...prev,
             nativeUiInFlightType: null,
             isBanksLoading: false,
+            isKlarnaLoading: false,
             paymentOutcome: buildPaymentOutcome(checkoutData),
           }));
           onCheckoutCompleteRef.current?.(checkoutData);
@@ -1178,6 +1180,24 @@ export function PrimerCheckoutProvider({
     );
   }, []);
 
+  // Disarm the Klarna flow on return to the method list (mirrors stopBanks): niling activeKlarnaMethod
+  // triggers the effect cleanup (cleanUp() the component + reset the finalize guard) so an abandoned
+  // session can't leak step/error callbacks into the rest of the checkout.
+  const stopKlarna = useCallback(() => {
+    setState((prev) =>
+      prev.activeKlarnaMethod === null
+        ? prev
+        : {
+            ...prev,
+            activeKlarnaMethod: null,
+            klarnaPaymentCategories: [],
+            selectedKlarnaCategoryId: null,
+            isKlarnaViewLoaded: false,
+            isKlarnaLoading: false,
+          }
+    );
+  }, []);
+
   // Klarna actions (KLARNA). `startKlarna` arms the lifecycle effect above; select/authorize/finalize
   // forward to the active KlarnaComponent. `returnIntentUrl` (Android) is sourced from settings so
   // the merchant writes no Platform.OS check (iOS ignores it).
@@ -1425,6 +1445,7 @@ export function PrimerCheckoutProvider({
       selectKlarnaCategory,
       authorizeKlarna,
       finalizeKlarna,
+      stopKlarna,
       payFromVault,
       selectVaultedMethodId,
       requestExpandedVaultDisplay,
@@ -1444,6 +1465,7 @@ export function PrimerCheckoutProvider({
     selectKlarnaCategory,
     authorizeKlarna,
     finalizeKlarna,
+    stopKlarna,
     setActiveMethod,
     setRawData,
     setBillingAddress,

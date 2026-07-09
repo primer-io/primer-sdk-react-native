@@ -37,6 +37,7 @@ const baseContext: PrimerCheckoutContextValue = {
   selectBank: () => {},
   submitBanks: async () => {},
   stopBanks: () => {},
+  stopKlarna: () => {},
   klarnaPaymentCategories: [],
   selectedKlarnaCategoryId: null,
   isKlarnaViewLoaded: false,

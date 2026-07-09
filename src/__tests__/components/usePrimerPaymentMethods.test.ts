@@ -101,6 +101,7 @@ const readyContext: PrimerCheckoutContextValue = {
   selectBank: () => {},
   submitBanks: async () => {},
   stopBanks: () => {},
+  stopKlarna: () => {},
   klarnaPaymentCategories: [],
   selectedKlarnaCategoryId: null,
   isKlarnaViewLoaded: false,
