@@ -109,7 +109,7 @@ export function KlarnaScreen() {
     // Mirror the card form / bank selection: jump to processing while the native authorize +
     // finalize + tokenize run; PaymentOutcomeTransitioner navigates away once the outcome arrives.
     replace(CheckoutRoute.processing);
-    void authorize();
+    void authorize().catch(() => {});
   };
 
   // Continue is visible from the moment categories load: disabled until the embedded view is ready,

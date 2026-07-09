@@ -1238,7 +1238,7 @@ export function PrimerCheckoutProvider({
       setState((prev) =>
         prev.isReady
           ? { ...prev, isKlarnaLoading: false, paymentOutcome: { status: 'error', error, data: null } }
-          : prev
+          : { ...prev, isKlarnaLoading: false, error }
       );
       return;
     }
