@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Image, StyleSheet, Text, View } from 'react-native';
 
 import { usePrimerCheckout } from '../../hooks/usePrimerCheckout';
@@ -36,6 +36,10 @@ export function QrCodeScreen() {
   const imageUri =
     qrCode?.base64 != null ? `data:image/png;base64,${qrCode.base64}` : qrCode?.url != null ? qrCode.url : null;
 
+  const [imageFailed, setImageFailed] = useState(false);
+  // Reset on a new QR so a retry renders the image instead of staying on the error state.
+  useEffect(() => setImageFailed(false), [imageUri]);
+
   return (
     <View style={[styles.root, { paddingBottom: bottomInset }]}>
       <NavigationHeader
@@ -44,16 +48,27 @@ export function QrCodeScreen() {
       />
       <View style={styles.content}>
         <Text style={styles.title}>{t('primer_checkout_qr_title')}</Text>
-        {imageUri != null ? (
-          <Image source={{ uri: imageUri }} style={styles.qr} resizeMode="contain" />
+        {imageFailed ? (
+          <View style={styles.qr}>
+            <Text style={styles.status}>{t('primer_checkout_qr_error')}</Text>
+          </View>
+        ) : imageUri != null ? (
+          <Image
+            source={{ uri: imageUri }}
+            style={styles.qr}
+            resizeMode="contain"
+            onError={() => setImageFailed(true)}
+          />
         ) : (
           <View style={styles.qr}>
             <ActivityIndicator color={tokens.colors.textPrimary} />
           </View>
         )}
-        <Text style={styles.status}>
-          {isQrPending ? t('primer_checkout_qr_waiting') : t('primer_checkout_qr_instruction')}
-        </Text>
+        {imageFailed ? null : (
+          <Text style={styles.status}>
+            {isQrPending ? t('primer_checkout_qr_waiting') : t('primer_checkout_qr_instruction')}
+          </Text>
+        )}
       </View>
     </View>
   );

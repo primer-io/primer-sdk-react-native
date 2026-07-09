@@ -20,6 +20,7 @@ import { APPLE_PAY, isApplePaySupported } from './internal/applePay';
 
 import type { PrimerSettings } from '../models/PrimerSettings';
 import type { PrimerCheckoutData } from '../models/PrimerCheckoutData';
+import type { PromptPayCheckoutAdditionalInfo } from '../models/PrimerCheckoutAdditionalInfo';
 import type { PrimerCardData, PrimerRawData } from '../models/PrimerRawData';
 import type { PrimerAddress } from '../models/PrimerClientSession';
 import type { PrimerBinData } from '../models/PrimerBinData';
@@ -343,9 +344,20 @@ export function PrimerCheckoutProvider({
         settingsRef.current?.headlessUniversalCheckoutCallbacks?.onCheckoutPending?.(additionalInfo);
       };
       callbacks.onCheckoutAdditionalInfo = (additionalInfo) => {
-        const info = additionalInfo as { qrCodeUrl?: string; qrCodeBase64?: string };
-        if (info?.qrCodeUrl != null || info?.qrCodeBase64 != null) {
-          setState((prev) => ({ ...prev, qrCode: { url: info.qrCodeUrl, base64: info.qrCodeBase64 } }));
+        // Capture the QR artifact for QR methods (PromptPay). Discriminate on the typed
+        // `additionalInfoName` (both native platforms emit it) instead of sniffing fields, and log
+        // when a QR payload arrives with no code so a stuck QR screen is diagnosable, not silent.
+        if (additionalInfo?.additionalInfoName === 'PromptPayCheckoutAdditionalInfo') {
+          const info = additionalInfo as PromptPayCheckoutAdditionalInfo;
+          if (info.qrCodeUrl != null || info.qrCodeBase64 != null) {
+            setState((prev) => ({ ...prev, qrCode: { url: info.qrCodeUrl, base64: info.qrCodeBase64 } }));
+          } else {
+            void PrimerAnalytics.sendErrorLog(
+              'QR additional-info without a code',
+              'qr-additional-info-missing-code',
+              'PromptPayCheckoutAdditionalInfo delivered neither qrCodeUrl nor qrCodeBase64'
+            );
+          }
         }
         settingsRef.current?.headlessUniversalCheckoutCallbacks?.onCheckoutAdditionalInfo?.(additionalInfo);
       };

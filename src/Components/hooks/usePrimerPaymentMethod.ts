@@ -58,8 +58,11 @@ export function usePrimerPaymentMethod(type: string): UsePrimerPaymentMethodRetu
         isLoading: nativeUiInFlightType === type,
         paymentOutcome,
         availabilityError: isAvailable ? null : availabilityError(type),
-        isPending: isQrPending,
-        qrCode,
+        // Scope QR/pending to the in-flight method: `qrCode`/`isQrPending` are single-active-method
+        // context slots, so without this gate every rendered nativeUi method would report the active
+        // method's QR/pending state (matches how `isLoading` is scoped above).
+        isPending: nativeUiInFlightType === type && isQrPending,
+        qrCode: nativeUiInFlightType === type ? qrCode : null,
         start,
         cancel,
         clearPaymentOutcome,

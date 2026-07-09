@@ -559,8 +559,16 @@ describe('usePrimerPaymentMethod', () => {
 
     it('captures the QR artifact from onCheckoutAdditionalInfo', async () => {
       const captures = await mountWithMethods(qr, 'OMISE_PROMPTPAY');
+      // Start the method so it's the in-flight one (mirrors the real flow: tap → start → QR arrives);
+      // qrCode is now scoped to the in-flight method.
       await act(async () => {
-        findListener('onCheckoutAdditionalInfo')!({ qrCodeBase64: 'QR_DATA_BASE64' });
+        await asNativeUi(captures[captures.length - 1]!).start();
+      });
+      await act(async () => {
+        findListener('onCheckoutAdditionalInfo')!({
+          additionalInfoName: 'PromptPayCheckoutAdditionalInfo',
+          qrCodeBase64: 'QR_DATA_BASE64',
+        });
       });
       expect(asNativeUi(captures[captures.length - 1]!).qrCode?.base64).toBe('QR_DATA_BASE64');
     });
@@ -568,9 +576,61 @@ describe('usePrimerPaymentMethod', () => {
     it('sets isPending on onCheckoutPending', async () => {
       const captures = await mountWithMethods(qr, 'OMISE_PROMPTPAY');
       await act(async () => {
+        await asNativeUi(captures[captures.length - 1]!).start();
+      });
+      await act(async () => {
         findListener('onCheckoutPending')!({});
       });
       expect(asNativeUi(captures[captures.length - 1]!).isPending).toBe(true);
+    });
+
+    it('does not leak qrCode/isPending to a non-active nativeUi method', async () => {
+      // qrCode/isQrPending are single-active-method context slots; the hook must scope them to the
+      // in-flight method (like isLoading) so a second nativeUi button doesn't report the active
+      // method's QR/pending state.
+      resolveMethods([
+        { paymentMethodType: 'OMISE_PROMPTPAY', categories: ['NATIVE_UI'] },
+        { paymentMethodType: 'PAYPAL', categories: ['NATIVE_UI'] },
+      ]);
+      const active: UsePrimerPaymentMethodReturn[] = [];
+      const bystander: UsePrimerPaymentMethodReturn[] = [];
+      await act(async () => {
+        renderer.create(
+          createElement(
+            PrimerCheckoutProvider,
+            { clientToken: 'token-1' },
+            createElement(Consumer, {
+              type: 'OMISE_PROMPTPAY',
+              onController: (c: UsePrimerPaymentMethodReturn) => active.push(c),
+            }),
+            createElement(Consumer, {
+              type: 'PAYPAL',
+              onController: (c: UsePrimerPaymentMethodReturn) => bystander.push(c),
+            })
+          )
+        );
+        await flushPromises();
+      });
+      // Start the QR method so it becomes the in-flight method, then have native deliver its
+      // pending phase + QR artifact.
+      await act(async () => {
+        await asNativeUi(active[active.length - 1]!).start();
+      });
+      await act(async () => {
+        findListener('onCheckoutPending')!({});
+        findListener('onCheckoutAdditionalInfo')!({
+          additionalInfoName: 'PromptPayCheckoutAdditionalInfo',
+          qrCodeBase64: 'QR_DATA',
+        });
+      });
+      // The active method sees its own QR/pending state...
+      const activeLast = asNativeUi(active[active.length - 1]!);
+      expect(activeLast.isPending).toBe(true);
+      expect(activeLast.qrCode?.base64).toBe('QR_DATA');
+      // ...the bystander must not.
+      const bystanderLast = asNativeUi(bystander[bystander.length - 1]!);
+      expect(bystanderLast.isPending).toBe(false);
+      expect(bystanderLast.qrCode).toBeNull();
     });
   });
 });

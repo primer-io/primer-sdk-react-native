@@ -186,6 +186,7 @@
   "primer_checkout_loading_subtitle": "This may take a few seconds.",
   "primer_checkout_processing_subtitle": "Please wait...",
   "primer_checkout_processing_title": "Processing your payment",
+  "primer_checkout_qr_error": "Couldn't load the QR code. Please try again.",
   "primer_checkout_qr_instruction": "Open your banking app and scan the code.",
   "primer_checkout_qr_title": "Scan to pay",
   "primer_checkout_qr_waiting": "Waiting for payment…",
