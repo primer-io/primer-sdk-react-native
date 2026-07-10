@@ -102,13 +102,14 @@ class RNTPrimerHeadlessUniversalCheckoutKlarnaComponent: RCTEventEmitter {
     _ resolver: RCTPromiseResolveBlock,
     rejecter: RCTPromiseRejectBlock
   ) {
-    guard let klarnaComponent = self.klarnaComponent else {
+    guard self.klarnaComponent != nil else {
       rejecter("UNINITIALIZED_ERROR", "Klarna component is uninitialized", nil)
       return
     }
 
+    // Re-deref at execution time so a cleanUp() racing the main-queue hop no-ops.
     DispatchQueue.main.async {
-      klarnaComponent.submit()
+      self.klarnaComponent?.submit()
     }
     resolver(nil)
   }
@@ -129,13 +130,13 @@ class RNTPrimerHeadlessUniversalCheckoutKlarnaComponent: RCTEventEmitter {
       return
     }
 
-    guard let klarnaComponent = self.klarnaComponent else {
+    guard self.klarnaComponent != nil else {
       rejecter("UNINITIALIZED_ERROR", "Klarna component is uninitialized", nil)
       return
     }
 
     DispatchQueue.main.async {
-      klarnaComponent.updateCollectedData(
+      self.klarnaComponent?.updateCollectedData(
         collectableData: KlarnaCollectableData.paymentCategory(
           klarnaPaymentCategory, clientToken: self.clientToken)
       )
