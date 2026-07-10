@@ -5,13 +5,13 @@ import type { PrimerPaymentMethodManagerCategoryName } from '../../models/Primer
  * How a payment method is driven, decided by **manager category** (mirrors RN Headless), not by
  * payment-method type. `usePrimerPaymentMethod` and the prebuilt method list share this map.
  *
- * - `nativeUi` — a native-sheet / browser-redirect method (Google/Apple Pay, PayPal); the variant's
- *   `start()` presents it.
+ * - `nativeUi` — a native-sheet / browser-redirect method (Google/Apple Pay, PayPal), started via
+ *   `startNativeUI(type)`.
  * - `bankSelection` — a `COMPONENT_WITH_REDIRECT` bank-redirect method (iDEAL; Android Dotpay).
  * - `rawDataForm` — a non-card `RAW_DATA` method that collects a small input (Bancontact/MBWay/BLIK).
  * - `klarna` — a `KLARNA` method (session → categories → embedded view → authorize → finalize).
  * - `card` — the card form (`PAYMENT_CARD` only).
- * - `unsupported` — not wired into Components, or a known method not in the current session.
+ * - `unsupported` — not yet wired into Components.
  *
  * Availability (e.g. Google Pay's Android-only rule) is deliberately NOT part of routing — it lives
  * with the consumer.
@@ -28,7 +28,6 @@ export function routeMethodSelection(
   type: string,
   categories: readonly PrimerPaymentMethodManagerCategoryName[]
 ): PaymentMethodKind {
-  // PAYMENT_CARD is routed by type here; its CARD_COMPONENTS category is intentionally not matched below.
   if (type === PAYMENT_CARD_TYPE) {
     return 'card';
   }

@@ -248,21 +248,6 @@ describe('usePrimerPaymentMethod', () => {
       expect(nativeUiManager.showPaymentMethod).toHaveBeenCalledWith('CHECKOUT');
     });
 
-    it('a native start() failure sets an error outcome, resets loading, and rejects', async () => {
-      nativeUiManager.showPaymentMethod.mockRejectedValueOnce(
-        new PrimerError('native-ui-failed', undefined, 'native sheet failed', undefined, undefined)
-      );
-      const captures = await mountWithMethods([{ paymentMethodType: 'GOOGLE_PAY' }]);
-      const ctrl = asNativeUi(captures[captures.length - 1]!);
-      await act(async () => {
-        await expect(ctrl.start()).rejects.toBeTruthy();
-        await flushPromises();
-      });
-      const last = asNativeUi(captures[captures.length - 1]!);
-      expect(last.paymentOutcome?.status).toBe('error');
-      expect(last.isLoading).toBe(false);
-    });
-
     it('ignores a re-entrant start while a flow is already in flight', async () => {
       const captures = await mountWithMethods([{ paymentMethodType: 'GOOGLE_PAY' }]);
       const ctrl = asNativeUi(captures[captures.length - 1]!);
@@ -309,6 +294,21 @@ describe('usePrimerPaymentMethod', () => {
         });
       });
       expect(asNativeUi(captures[captures.length - 1]!).paymentOutcome?.status).toBe('error');
+    });
+
+    it('a native start() failure sets an error outcome, resets loading, and rejects', async () => {
+      nativeUiManager.showPaymentMethod.mockRejectedValueOnce(
+        new PrimerError('native-ui-failed', undefined, 'native sheet failed', undefined, undefined)
+      );
+      const captures = await mountWithMethods([{ paymentMethodType: 'GOOGLE_PAY' }]);
+      const ctrl = asNativeUi(captures[captures.length - 1]!);
+      await act(async () => {
+        await expect(ctrl.start()).rejects.toBeTruthy();
+        await flushPromises();
+      });
+      const last = asNativeUi(captures[captures.length - 1]!);
+      expect(last.paymentOutcome?.status).toBe('error');
+      expect(last.isLoading).toBe(false);
     });
   });
 
@@ -400,6 +400,40 @@ describe('usePrimerPaymentMethod', () => {
       });
       expect(nativeUiManager.configure).toHaveBeenCalledWith('PAYPAL');
       expect(nativeUiManager.showPaymentMethod).toHaveBeenCalledWith('CHECKOUT');
+    });
+  });
+
+  describe('web-redirect APMs (Twint/Sofort) — both platforms, no gate', () => {
+    it('routes a NATIVE_UI web-redirect method (Twint) to kind "nativeUi"', async () => {
+      const captures = await mountWithMethods([{ paymentMethodType: 'ADYEN_TWINT' }], 'ADYEN_TWINT');
+      expect(captures[captures.length - 1]!.kind).toBe('nativeUi');
+    });
+
+    it('Twint is available on both platforms when listed (no platform gate)', async () => {
+      const android = await mountWithMethods([{ paymentMethodType: 'ADYEN_TWINT' }], 'ADYEN_TWINT');
+      expect(asNativeUi(android[android.length - 1]!).isAvailable).toBe(true);
+      rnMock.Platform.OS = 'ios';
+      const ios = await mountWithMethods([{ paymentMethodType: 'ADYEN_TWINT' }], 'ADYEN_TWINT');
+      const last = asNativeUi(ios[ios.length - 1]!);
+      expect(last.isAvailable).toBe(true);
+      expect(last.availabilityError).toBeNull();
+    });
+
+    it('start configures and shows the tapped method (Twint)', async () => {
+      const captures = await mountWithMethods([{ paymentMethodType: 'ADYEN_TWINT' }], 'ADYEN_TWINT');
+      const ctrl = asNativeUi(captures[captures.length - 1]!);
+      await act(async () => {
+        await ctrl.start();
+      });
+      expect(nativeUiManager.configure).toHaveBeenCalledWith('ADYEN_TWINT');
+      expect(nativeUiManager.showPaymentMethod).toHaveBeenCalledWith('CHECKOUT');
+    });
+
+    it('Sofort rides the same path — routes to nativeUi and is available when listed', async () => {
+      const captures = await mountWithMethods([{ paymentMethodType: 'ADYEN_SOFORT' }], 'ADYEN_SOFORT');
+      const last = asNativeUi(captures[captures.length - 1]!);
+      expect(last.kind).toBe('nativeUi');
+      expect(last.isAvailable).toBe(true);
     });
   });
 
@@ -522,40 +556,6 @@ describe('usePrimerPaymentMethod', () => {
         asBankSelection(captures[captures.length - 1]!).filter('rabo');
       });
       expect(banksNative.onBankFilterChange).toHaveBeenCalledWith('rabo');
-    });
-  });
-
-  describe('web-redirect APMs (Twint/Sofort) — both platforms, no gate', () => {
-    it('routes a NATIVE_UI web-redirect method (Twint) to kind "nativeUi"', async () => {
-      const captures = await mountWithMethods([{ paymentMethodType: 'ADYEN_TWINT' }], 'ADYEN_TWINT');
-      expect(captures[captures.length - 1]!.kind).toBe('nativeUi');
-    });
-
-    it('Twint is available on both platforms when listed (no platform gate)', async () => {
-      const android = await mountWithMethods([{ paymentMethodType: 'ADYEN_TWINT' }], 'ADYEN_TWINT');
-      expect(asNativeUi(android[android.length - 1]!).isAvailable).toBe(true);
-      rnMock.Platform.OS = 'ios';
-      const ios = await mountWithMethods([{ paymentMethodType: 'ADYEN_TWINT' }], 'ADYEN_TWINT');
-      const last = asNativeUi(ios[ios.length - 1]!);
-      expect(last.isAvailable).toBe(true);
-      expect(last.availabilityError).toBeNull();
-    });
-
-    it('start configures and shows the tapped method (Twint)', async () => {
-      const captures = await mountWithMethods([{ paymentMethodType: 'ADYEN_TWINT' }], 'ADYEN_TWINT');
-      const ctrl = asNativeUi(captures[captures.length - 1]!);
-      await act(async () => {
-        await ctrl.start();
-      });
-      expect(nativeUiManager.configure).toHaveBeenCalledWith('ADYEN_TWINT');
-      expect(nativeUiManager.showPaymentMethod).toHaveBeenCalledWith('CHECKOUT');
-    });
-
-    it('Sofort rides the same path — routes to nativeUi and is available when listed', async () => {
-      const captures = await mountWithMethods([{ paymentMethodType: 'ADYEN_SOFORT' }], 'ADYEN_SOFORT');
-      const last = asNativeUi(captures[captures.length - 1]!);
-      expect(last.kind).toBe('nativeUi');
-      expect(last.isAvailable).toBe(true);
     });
   });
 
