@@ -5,35 +5,7 @@ import { useNavigation } from '../navigation/useNavigation';
 import { CheckoutRoute } from '../navigation/types';
 import { CheckoutFlowContext } from './CheckoutFlowContext';
 
-/**
- * Headless transitioners — they render nothing; each watches provider state and drives navigation.
- * Split out of CheckoutFlow so the navigation guarantees (a failed flow lands on the error screen)
- * can be unit-tested without rendering the whole screen tree.
- */
-
-export function ReadinessTransitioner() {
-  const { isReady, isLoadingResources, error } = usePrimerCheckout();
-  const { replace } = useNavigation();
-  const hasTransitioned = useRef(false);
-
-  useEffect(() => {
-    if (hasTransitioned.current) return;
-
-    if (error) {
-      hasTransitioned.current = true;
-      replace(CheckoutRoute.error, { error });
-      return;
-    }
-
-    if (isReady && !isLoadingResources) {
-      hasTransitioned.current = true;
-      replace(CheckoutRoute.methodSelection);
-    }
-  }, [isReady, isLoadingResources, error, replace]);
-
-  return null;
-}
-
+// Renders nothing; routes each payment outcome to the success/error screen (or dismisses when disabled).
 export function PaymentOutcomeTransitioner() {
   const { paymentOutcome, settings, clearPaymentOutcome } = usePrimerCheckout();
   const { replace, isAnimating } = useNavigation();

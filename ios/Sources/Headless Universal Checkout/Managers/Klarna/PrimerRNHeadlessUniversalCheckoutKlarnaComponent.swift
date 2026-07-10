@@ -107,8 +107,6 @@ class RNTPrimerHeadlessUniversalCheckoutKlarnaComponent: RCTEventEmitter {
       return
     }
 
-    // submit()/authorize calls WKWebView.evaluateJavaScript, which must run on main. This TurboModule
-    // method runs on a background queue under New Arch, so hop to main (like onSetPaymentOptions).
     DispatchQueue.main.async {
       klarnaComponent.submit()
     }
@@ -151,7 +149,6 @@ class RNTPrimerHeadlessUniversalCheckoutKlarnaComponent: RCTEventEmitter {
     _ resolver: RCTPromiseResolveBlock,
     rejecter: RCTPromiseRejectBlock
   ) {
-    // finalise() also calls WKWebView.evaluateJavaScript → must run on main (same reason as submit()).
     DispatchQueue.main.async {
       self.klarnaComponent?.updateCollectedData(collectableData: KlarnaCollectableData.finalizePayment)
     }

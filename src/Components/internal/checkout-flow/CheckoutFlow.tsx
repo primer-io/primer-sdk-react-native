@@ -16,7 +16,8 @@ import { SuccessScreen } from '../screens/SuccessScreen';
 import { VaultedMethodsScreen } from '../screens/VaultedMethodsScreen';
 import { PrimerCardFormProvider, BillingAddressFormStateProvider } from '../form-state';
 import { CheckoutFlowContext } from './CheckoutFlowContext';
-import { PaymentOutcomeTransitioner, ReadinessTransitioner } from './transitioners';
+import { ReadinessTransitioner } from './ReadinessTransitioner';
+import { PaymentOutcomeTransitioner } from './PaymentOutcomeTransitioner';
 
 const SUCCESS_AUTO_DISMISS_MS = 3000;
 

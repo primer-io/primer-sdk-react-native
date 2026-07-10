@@ -10,7 +10,7 @@ import { PrimerCheckoutContext } from '../../Components/internal/PrimerCheckoutC
 import { NavigationContext } from '../../Components/internal/navigation/NavigationContext';
 import type { NavigationContextValue } from '../../Components/internal/navigation/NavigationContext';
 import { CheckoutRoute } from '../../Components/internal/navigation/types';
-import { PaymentOutcomeTransitioner } from '../../Components/internal/checkout-flow/transitioners';
+import { PaymentOutcomeTransitioner } from '../../Components/internal/checkout-flow/PaymentOutcomeTransitioner';
 import { PrimerError } from '../../models/PrimerError';
 import type { PrimerCheckoutData } from '../../models/PrimerCheckoutData';
 import type { PrimerCheckoutContextValue } from '../../Components/types/PrimerCheckoutProviderTypes';

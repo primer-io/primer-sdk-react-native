@@ -78,8 +78,7 @@ interface InternalState {
   selectedKlarnaCategoryId: string | null;
   isKlarnaViewLoaded: boolean;
   isKlarnaLoading: boolean;
-  // Bumped by startKlarna so re-entering the screen (even with the same method) re-runs the lifecycle
-  // effect and provisions a fresh component — a stale Klarna component can't be reused.
+  // Bumped by startKlarna so a same-method re-entry re-runs the lifecycle effect.
   klarnaSessionNonce: number;
   vaultedMethods: PrimerVaultedPaymentMethod[];
   vaultedIconUrisById: Record<string, string | undefined>;
@@ -236,8 +235,7 @@ export function PrimerCheckoutProvider({
   // Klarna (KLARNA) manager + component. Lifecycle driven by `state.activeKlarnaMethod`.
   const klarnaManagerRef = useRef<PrimerHeadlessUniversalCheckoutKlarnaManager | null>(null);
   const klarnaComponentRef = useRef<KlarnaComponent | null>(null);
-  // Guards a double-finalize: the prebuilt onStep auto-finalizes when isFinalized===false, and the
-  // hook's finalize() can also call it — finalizePayment() is issued at most once per authorize.
+  // finalizePayment() is issued at most once per authorize (onStep auto-finalize vs the hook's finalize()).
   const klarnaFinalizeIssuedRef = useRef(false);
   // Vault manager is lazy — created on first vault fetch, reused across client-session updates,
   // cleared on session teardown alongside `PrimerHeadlessUniversalCheckout.cleanUp()`.
@@ -877,10 +875,7 @@ export function PrimerCheckoutProvider({
   }, []);
 
   const clearPaymentOutcome = useCallback(() => {
-    // Also reset the Klarna lifecycle so a subsequent (incl. same-method) Klarna attempt re-arms:
-    // niling activeKlarnaMethod triggers the effect cleanup (cleanUp() the component + reset the
-    // finalize guard), and the next startKlarna re-provides a fresh session. (Klarna needs a fresh
-    // component per payment; unlike banks, a stale one can't be reused — KlarnaManager.ts.)
+    // Also nil activeKlarnaMethod so the effect cleanup runs — Klarna needs a fresh component per payment.
     setState((prev) =>
       prev.paymentOutcome === null && prev.activeKlarnaMethod === null
         ? prev
@@ -966,15 +961,7 @@ export function PrimerCheckoutProvider({
     };
   }, [state.activeBanksMethod, state.isReady]);
 
-  // -----------------------------------------------------------------------
-  // Klarna (KLARNA) lifecycle — categories → embedded view → authorize → (auto) finalize.
-  //
-  // Keyed on `activeKlarnaMethod` (set by `startKlarna`, via `usePrimerPaymentMethod`), it provides a
-  // KlarnaComponent, subscribes to its steps + errors, and starts the session. RN rides Headless
-  // (autoFinalize=false), so the host finalizes when the SDK requires it — we auto-finalize the
-  // prebuilt flow on `paymentSessionAuthorized` when `isFinalized === false`. The terminal outcome
-  // arrives through the shared onCheckoutComplete / onError wired at init.
-  // -----------------------------------------------------------------------
+  // Klarna (KLARNA) lifecycle — categories → embedded view → authorize → (auto) finalize; keyed on activeKlarnaMethod.
   useEffect(() => {
     if (!state.isReady || !state.activeKlarnaMethod) {
       return;
@@ -1004,12 +991,9 @@ export function PrimerCheckoutProvider({
                 break;
               case 'paymentSessionAuthorized':
                 if (step.isFinalized) {
-                  // Authorized + finalized in one shot — the Klarna flow is done; the terminal
-                  // outcome arrives via the shared onCheckoutComplete.
                   setState((prev) => (prev.isKlarnaLoading ? { ...prev, isKlarnaLoading: false } : prev));
                 } else if (!klarnaFinalizeIssuedRef.current) {
-                  // Headless autoFinalize=false: finalize when required (the shopper has already
-                  // authorised); guard against a double-finalize from the hook's finalize().
+                  // Headless autoFinalize=false: finalize here when required, once.
                   klarnaFinalizeIssuedRef.current = true;
                   void klarnaComponentRef.current
                     ?.finalizePayment()
@@ -1017,15 +1001,12 @@ export function PrimerCheckoutProvider({
                 }
                 break;
               case 'paymentSessionFinalized':
-                // Klarna flow complete; the terminal outcome arrives via the shared onCheckoutComplete.
                 setState((prev) => (prev.isKlarnaLoading ? { ...prev, isKlarnaLoading: false } : prev));
                 break;
             }
           },
           onError: (error) => {
             if (cancelled) return;
-            // Klarna errors (incl. user-not-approved → errorId 'klarna-user-not-approved') surface as
-            // a failure outcome; the merchant discriminates a cancel via errorId 'payment-cancelled'.
             setState((prev) =>
               prev.isReady
                 ? { ...prev, isKlarnaLoading: false, paymentOutcome: { status: 'error', error, data: null } }
@@ -1042,9 +1023,7 @@ export function PrimerCheckoutProvider({
       } catch (err) {
         console.warn(`${LOG} klarna provide/start failed ${fmt(err)}`);
         if (!cancelled) {
-          // Surface a startup failure as an error outcome (mirrors onError above) so
-          // PaymentOutcomeTransitioner routes to the error screen instead of stranding the shopper
-          // on the loading spinner forever (categories never arrive).
+          // Surface a startup failure as an error outcome so the shopper isn't stranded on the spinner.
           const error =
             err instanceof PrimerError
               ? err
@@ -1060,8 +1039,7 @@ export function PrimerCheckoutProvider({
 
     return () => {
       cancelled = true;
-      // Teardown is best-effort; a finished / never-fully-started component can reject on cleanUp,
-      // which is benign on normal completion — swallow it (matches the early-cancel path above).
+      // Best-effort teardown; cleanUp can reject benignly on a finished component.
       klarnaComponentRef.current?.cleanUp().catch(() => {});
       if (klarnaManagerRef.current === manager) {
         klarnaManagerRef.current = null;
@@ -1164,8 +1142,8 @@ export function PrimerCheckoutProvider({
   }, []);
 
   const submitBanks = useCallback(async () => {
-    // Hold isLoading from submit() until a terminal outcome (mirrors authorizeKlarna) so a custom
-    // Pay button disables during tokenise→redirect — onError/onCheckoutComplete clear it.
+    // Hold isLoading from submit() until a terminal outcome so a custom Pay button disables during
+    // tokenise→redirect — onError/onCheckoutComplete clear it.
     setState((prev) => ({ ...prev, isBanksLoading: true, paymentOutcome: null }));
     await banksComponentRef.current?.submit();
   }, []);
@@ -1180,9 +1158,7 @@ export function PrimerCheckoutProvider({
     );
   }, []);
 
-  // Disarm the Klarna flow on return to the method list (mirrors stopBanks): niling activeKlarnaMethod
-  // triggers the effect cleanup (cleanUp() the component + reset the finalize guard) so an abandoned
-  // session can't leak step/error callbacks into the rest of the checkout.
+  // Disarm on return to the method list (mirrors stopBanks); the effect cleanup tears down the component.
   const stopKlarna = useCallback(() => {
     setState((prev) =>
       prev.activeKlarnaMethod === null
@@ -1198,15 +1174,12 @@ export function PrimerCheckoutProvider({
     );
   }, []);
 
-  // Klarna actions (KLARNA). `startKlarna` arms the lifecycle effect above; select/authorize/finalize
-  // forward to the active KlarnaComponent. `returnIntentUrl` (Android) is sourced from settings so
-  // the merchant writes no Platform.OS check (iOS ignores it).
+  // Klarna actions: startKlarna arms the lifecycle effect; select/authorize/finalize forward to the component.
   const startKlarna = useCallback(async (paymentMethodType: string) => {
     setState((prev) => ({
       ...prev,
       activeKlarnaMethod: paymentMethodType,
-      // Re-arm even when the method is unchanged (e.g. back → re-open Klarna): activeKlarnaMethod
-      // alone wouldn't change, so without this bump the lifecycle effect wouldn't re-run.
+      // Bump so a same-method re-entry re-runs the lifecycle effect.
       klarnaSessionNonce: prev.klarnaSessionNonce + 1,
       klarnaPaymentCategories: [],
       selectedKlarnaCategoryId: null,
@@ -1223,10 +1196,7 @@ export function PrimerCheckoutProvider({
       return;
     }
     const returnIntentUrl = settingsRef.current?.paymentMethodOptions?.klarnaOptions?.returnIntentUrl;
-    // Android requires a return deep link to build the embedded Klarna view — the native bridge
-    // rejects (fire-and-forget, so it never reaches onError) and the view silently never loads.
-    // Surface a clear configuration signal instead of a dead screen with no Continue button.
-    // iOS does not use returnIntentUrl.
+    // Android needs returnIntentUrl to build the embedded view — fail clearly instead of a dead screen (iOS ignores it).
     if (Platform.OS === 'android' && !returnIntentUrl) {
       const error = new PrimerError(
         'klarna-return-url-missing',
@@ -1257,16 +1227,14 @@ export function PrimerCheckoutProvider({
   }, []);
 
   const authorizeKlarna = useCallback(async () => {
-    // Re-arm the double-finalize guard: a retry's auto-finalize (onStep) must be able to fire again
-    // even if the prior attempt already issued one without a re-provision.
+    // Re-arm the finalize guard so a retry's auto-finalize can fire again.
     klarnaFinalizeIssuedRef.current = false;
     setState((prev) => ({ ...prev, isKlarnaLoading: true, paymentOutcome: null }));
     await klarnaComponentRef.current?.submit();
   }, []);
 
   const finalizeKlarna = useCallback(async () => {
-    // Prebuilt auto-finalizes via onStep; this is the manual path for custom layouts. Guarded so it
-    // and the auto-finalize don't both fire (native errors on a double-finalize).
+    // Manual path for custom layouts; guarded against onStep's auto-finalize double-firing.
     if (klarnaFinalizeIssuedRef.current) return;
     klarnaFinalizeIssuedRef.current = true;
     await klarnaComponentRef.current?.finalizePayment();

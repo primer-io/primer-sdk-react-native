@@ -28,24 +28,12 @@ import { useBottomSafeArea } from './useBottomSafeArea';
 const DRAG_HANDLE_AREA = 20;
 // Matches CheckoutSheet's DEFAULT_HEIGHT_RATIO — the sheet never exceeds 92% of the screen.
 const MAX_SHEET_HEIGHT_RATIO = 0.92;
-// Compact height for the initial session-fetch state (matches LoadingScreen), so the sheet opens
-// small with a spinner instead of at the 92% default and then snapping down to content.
+// Compact initial height (matches LoadingScreen) so the sheet doesn't open at 92% then snap down.
 const LOADING_CONTENT_HEIGHT = 246;
-// NavigationHeader (with back button) is 72: headerBar spacing.xxlarge(24) + title marginTop
-// spacing.large(16) + titleXLarge lineHeight(32). Android's onLayout reports 0 for the wrapper
-// (view-flattening), so fall back to this — otherwise the uncounted header shrank the sheet.
+// NavigationHeader: 24+16+32; Android onLayout can report 0 for the wrapper, so fall back to this.
 const HEADER_FALLBACK_HEIGHT = 72;
 
-/**
- * Prebuilt Klarna screen (KLARNA category, ORC-6515). Starts the session, lists the payment
- * categories (Pay Now / Pay Later / …), and once a category is picked renders Klarna's own embedded
- * payment view; the authorize button submits. Finalization is automatic (the provider finalizes when
- * the SDK requires it). The outcome returns through the shared handling (→ processing → result), so
- * the native SDK owns authorize / finalize / tokenise.
- *
- * The embedded view sits in a ScrollView so Klarna's variable content (payment review, expanded
- * terms) is never clipped (FR-005).
- */
+// Prebuilt Klarna screen: session → categories → embedded Klarna view → authorize (auto-finalized).
 export function KlarnaScreen() {
   const tokens = usePrimerTheme();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
@@ -78,8 +66,7 @@ export function KlarnaScreen() {
 
   const bottomInsetClamped = Math.max(bottomInset, tokens.spacing.large);
   const loadingSheetHeight = LOADING_CONTENT_HEIGHT + bottomInsetClamped;
-  // Show the loading screen until categories arrive — not gated on isLoading, which is still false on
-  // the very first render (before the mount effect calls start()) and caused a 1-frame empty flash.
+  // Gate on categories, not isLoading (still false on the first render → 1-frame empty flash).
   const isInitialLoading = paymentCategories.length === 0;
 
   // Start the Klarna session on mount (fetches the payment categories).
@@ -87,16 +74,11 @@ export function KlarnaScreen() {
     void start();
   }, [start]);
 
-  // Size to content once the scroll body has measured; header/footer add in even if their onLayout
-  // transiently reports 0 (Android does this — treating that as "unmeasured" wrongly shrank the sheet
-  // to the loading height). Until the body is measured, hold the compact loading height (keeps the
-  // sheet off the 92% default so it never opens full then snaps).
+  // Size to content once the scroll body measures; until then hold the compact loading height.
   useEffect(() => {
     if (scrollContentHeight === 0) {
       return requestHeight(loadingSheetHeight);
     }
-    // Header onLayout is unreliable on Android (reports 0); fall back so the missing header height
-    // doesn't shrink the sheet and clip the content.
     const headerPx = headerHeight > 0 ? headerHeight : HEADER_FALLBACK_HEIGHT;
     const desired = DRAG_HANDLE_AREA + headerPx + scrollContentHeight + footerHeight;
     const cap = screenHeight * MAX_SHEET_HEIGHT_RATIO;
@@ -106,14 +88,12 @@ export function KlarnaScreen() {
 
   const handleAuthorize = () => {
     if (!isViewLoaded || isLoading) return;
-    // Mirror the card form / bank selection: jump to processing while the native authorize +
-    // finalize + tokenize run; PaymentOutcomeTransitioner navigates away once the outcome arrives.
+    // Jump to processing; PaymentOutcomeTransitioner navigates away once the outcome arrives.
     replace(CheckoutRoute.processing);
     void authorize().catch(() => {});
   };
 
-  // Continue is visible from the moment categories load: disabled until the embedded view is ready,
-  // spinning while the picked category's view builds (or an authorize is in flight).
+  // Disabled until the embedded view is ready; spins while it builds or an authorize is in flight.
   const showButtonSpinner = (selectedCategoryId != null && !isViewLoaded) || isLoading;
 
   return (
