@@ -118,12 +118,7 @@ export function usePrimerPaymentMethod(type: string): UsePrimerPaymentMethodRetu
     if (kind === 'card') {
       return { kind: 'card', isAvailable: isPresent, start: startCard, clearPaymentOutcome };
     }
-    if (kind === 'unsupported') {
-      return { kind: 'unsupported', isAvailable: false };
-    }
-    // Exhaustiveness: adding a kind without a branch above fails to compile (mirrors MethodSelectionScreen).
-    const _exhaustive: never = kind;
-    return _exhaustive;
+    return { kind: 'unsupported', isAvailable: false };
   }, [
     kind,
     type,
