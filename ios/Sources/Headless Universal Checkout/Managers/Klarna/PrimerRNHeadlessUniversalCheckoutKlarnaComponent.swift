@@ -131,7 +131,6 @@ class RNTPrimerHeadlessUniversalCheckoutKlarnaComponent: RCTEventEmitter {
       return
     }
 
-
     guard let klarnaComponent = self.klarnaComponent else {
       rejecter("UNINITIALIZED_ERROR", "Klarna component is uninitialized", nil)
       return
@@ -163,9 +162,7 @@ class RNTPrimerHeadlessUniversalCheckoutKlarnaComponent: RCTEventEmitter {
     let transformedDictionary = transformKey(for: dictionary)
     guard
       let jsonData = try? JSONSerialization.data(withJSONObject: transformedDictionary, options: [])
-    else {
-      return nil
-    }
+    else { return nil }
     let paymentCategory = try? JSONDecoder().decode(KlarnaPaymentCategory.self, from: jsonData)
     return paymentCategory
   }
@@ -184,9 +181,7 @@ class RNTPrimerHeadlessUniversalCheckoutKlarnaComponent: RCTEventEmitter {
 
 extension RNTPrimerHeadlessUniversalCheckoutKlarnaComponent: PrimerHeadlessSteppableDelegate {
   func didReceiveStep(step: PrimerSDK.PrimerHeadlessStep) {
-    guard let step = step as? KlarnaStep else {
-      return
-    }
+    guard let step = step as? KlarnaStep else { return }
 
     switch step {
     case .paymentSessionCreated(let clientToken, let categories):
@@ -259,9 +254,7 @@ extension RNTPrimerHeadlessUniversalCheckoutKlarnaComponent: PrimerHeadlessValid
   func didUpdate(
     validationStatus: PrimerSDK.PrimerValidationStatus, for data: PrimerSDK.PrimerCollectableData?
   ) {
-    guard let data = data as? KlarnaCollectableData else {
-      return
-    }
+    guard let data = data as? KlarnaCollectableData else { return }
 
     let eventName: String
     switch validationStatus {
