@@ -184,66 +184,39 @@ extension RNTPrimerHeadlessUniversalCheckoutKlarnaComponent: PrimerHeadlessStepp
     switch step {
     case .paymentSessionCreated(let clientToken, let categories):
       self.clientToken = clientToken
-      let rnSessionCreated = try? step.toPaymentSessionCreatedRN(categories: categories)
-        .toJsonObject()
-
-      sendEvent(
-        withName: PrimerHeadlessUniversalCheckoutComponentEvent.onStep.stringValue,
-        body: rnSessionCreated
-      )
+      sendStepEvent(try? step.toPaymentSessionCreatedRN(categories: categories).toJsonObject())
 
     case .paymentSessionAuthorized(_, let checkoutData):
-      let rnSessionAuthorized = try? step.toPaymentSessionAuthorizedRN(isFinalized: true)
-        .toJsonObject()
-
-      sendEvent(
-        withName: PrimerHeadlessUniversalCheckoutComponentEvent.onStep.stringValue,
-        body: rnSessionAuthorized
-      )
-
-      DispatchQueue.main.async {
-        PrimerHeadlessUniversalCheckout.current.delegate?
-          .primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(checkoutData)
-      }
+      sendStepEvent(try? step.toPaymentSessionAuthorizedRN(isFinalized: true).toJsonObject())
+      notifyCheckoutComplete(checkoutData)
 
     case .paymentSessionFinalizationRequired:
-      let rnSessionAuthorized = try? step.toPaymentSessionAuthorizedRN(isFinalized: false)
-        .toJsonObject()
-
-      sendEvent(
-        withName: PrimerHeadlessUniversalCheckoutComponentEvent.onStep.stringValue,
-        body: rnSessionAuthorized
-      )
+      sendStepEvent(try? step.toPaymentSessionAuthorizedRN(isFinalized: false).toJsonObject())
 
     case .paymentSessionFinalized(_, let checkoutData):
-      let rnSessionFinalized = try? step.toPaymentSessionFinalizedRN().toJsonObject()
-
-      sendEvent(
-        withName: PrimerHeadlessUniversalCheckoutComponentEvent.onStep.stringValue,
-        body: rnSessionFinalized
-      )
-
-      DispatchQueue.main.async {
-        PrimerHeadlessUniversalCheckout.current.delegate?
-          .primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(checkoutData)
-      }
+      sendStepEvent(try? step.toPaymentSessionFinalizedRN().toJsonObject())
+      notifyCheckoutComplete(checkoutData)
 
     case .viewLoaded(let view):
       DispatchQueue.main.async {
         RNTPrimerKlarnaPaymentViewManager.updatePrimerKlarnaPaymentView(view)
       }
-
-      let rnPaymentViewLoaded = try? step.toPaymentViewLoadedRN().toJsonObject()
-
-      sendEvent(
-        withName: PrimerHeadlessUniversalCheckoutComponentEvent.onStep.stringValue,
-        body: rnPaymentViewLoaded
-      )
+      sendStepEvent(try? step.toPaymentViewLoadedRN().toJsonObject())
 
     default:
       break
     }
+  }
 
+  private func sendStepEvent(_ body: Any?) {
+    sendEvent(withName: PrimerHeadlessUniversalCheckoutComponentEvent.onStep.stringValue, body: body)
+  }
+
+  private func notifyCheckoutComplete(_ checkoutData: PrimerCheckoutData) {
+    DispatchQueue.main.async {
+      PrimerHeadlessUniversalCheckout.current.delegate?
+        .primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(checkoutData)
+    }
   }
 }
 
