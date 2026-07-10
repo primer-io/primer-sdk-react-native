@@ -78,8 +78,6 @@ interface InternalState {
   selectedKlarnaCategoryId: string | null;
   isKlarnaViewLoaded: boolean;
   isKlarnaLoading: boolean;
-  // Bumped by startKlarna so a same-method re-entry re-runs the lifecycle effect.
-  klarnaSessionNonce: number;
   vaultedMethods: PrimerVaultedPaymentMethod[];
   vaultedIconUrisById: Record<string, string | undefined>;
   isLoadingVaulted: boolean;
@@ -115,7 +113,6 @@ const initialState: InternalState = {
   selectedKlarnaCategoryId: null,
   isKlarnaViewLoaded: false,
   isKlarnaLoading: false,
-  klarnaSessionNonce: 0,
   vaultedMethods: [],
   vaultedIconUrisById: {},
   isLoadingVaulted: false,
@@ -126,6 +123,13 @@ const initialState: InternalState = {
   requiresVaultedCardCvv: false,
   cvvInputVisible: false,
 };
+
+// Cleared on every terminal payment event so no per-method in-flight flag outlives an outcome.
+const PAYMENT_ATTEMPT_RESET = {
+  nativeUiInFlightType: null,
+  isBanksLoading: false,
+  isKlarnaLoading: false,
+} as const;
 
 /**
  * Native `onCheckoutComplete` fires for every terminal checkout, including
@@ -299,9 +303,7 @@ export function PrimerCheckoutProvider({
             if (prev.isReady) {
               return {
                 ...prev,
-                nativeUiInFlightType: null,
-                isBanksLoading: false,
-                isKlarnaLoading: false,
+                ...PAYMENT_ATTEMPT_RESET,
                 paymentOutcome: { status: 'error', error, data: checkoutData ?? null },
               };
             }
@@ -317,9 +319,7 @@ export function PrimerCheckoutProvider({
           // result screen to show. Backend statuses: SUCCESS | FAILED | PENDING.
           setState((prev) => ({
             ...prev,
-            nativeUiInFlightType: null,
-            isBanksLoading: false,
-            isKlarnaLoading: false,
+            ...PAYMENT_ATTEMPT_RESET,
             paymentOutcome: buildPaymentOutcome(checkoutData),
           }));
           onCheckoutCompleteRef.current?.(checkoutData);
@@ -1047,7 +1047,7 @@ export function PrimerCheckoutProvider({
       klarnaComponentRef.current = null;
       klarnaFinalizeIssuedRef.current = false;
     };
-  }, [state.activeKlarnaMethod, state.isReady, state.klarnaSessionNonce]);
+  }, [state.activeKlarnaMethod, state.isReady]);
 
   // NATIVE_UI methods (Google Pay today; Apple Pay / PayPal / web-redirect APMs later) ride the
   // existing Headless NATIVE_UI path: start the native flow by type; outcomes arrive through the
@@ -1179,8 +1179,6 @@ export function PrimerCheckoutProvider({
     setState((prev) => ({
       ...prev,
       activeKlarnaMethod: paymentMethodType,
-      // Bump so a same-method re-entry re-runs the lifecycle effect.
-      klarnaSessionNonce: prev.klarnaSessionNonce + 1,
       klarnaPaymentCategories: [],
       selectedKlarnaCategoryId: null,
       isKlarnaViewLoaded: false,

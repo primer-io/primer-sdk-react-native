@@ -1,13 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import {
-  ActivityIndicator,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  useWindowDimensions,
-} from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import type { TextStyle } from 'react-native';
 
 import { PrimerKlarnaPaymentView } from '../../../HeadlessUniversalCheckout/Components/PrimerKlarnaPaymentView';
@@ -21,15 +13,15 @@ import { useNavigation } from '../navigation/useNavigation';
 import { useRoute } from '../navigation/useRoute';
 import { usePrimerTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
+import { CheckoutButton } from '../ui/CheckoutButton';
 import { useSheetHeight } from '../checkout-sheet';
+import { CONTENT_HEIGHT as LOADING_CONTENT_HEIGHT } from './LoadingScreen';
 import { useBottomSafeArea } from './useBottomSafeArea';
 
 // CheckoutSheet drag-handle chrome above our content: paddingTop(12) + handle(4) + paddingBottom(4).
 const DRAG_HANDLE_AREA = 20;
 // Matches CheckoutSheet's DEFAULT_HEIGHT_RATIO — the sheet never exceeds 92% of the screen.
 const MAX_SHEET_HEIGHT_RATIO = 0.92;
-// Compact initial height (matches LoadingScreen) so the sheet doesn't open at 92% then snap down.
-const LOADING_CONTENT_HEIGHT = 246;
 // NavigationHeader: 24+16+32; Android onLayout can report 0 for the wrapper, so fall back to this.
 const HEADER_FALLBACK_HEIGHT = 72;
 
@@ -47,17 +39,7 @@ export function KlarnaScreen() {
 
   const method = usePrimerPaymentMethod(params.paymentMethodType);
   const klarna = method.kind === 'klarna' ? method : null;
-  // This screen is only routed to for Klarna; the fallback keeps hooks unconditional if not.
-  const { paymentCategories, selectedCategoryId, isViewLoaded, isLoading, start, selectCategory, authorize } =
-    klarna ?? {
-      paymentCategories: [],
-      selectedCategoryId: null,
-      isViewLoaded: false,
-      isLoading: false,
-      start: async () => {},
-      selectCategory: (_id: string) => {},
-      authorize: async () => {},
-    };
+  const start = klarna?.start;
 
   // Measured so the sheet shrinks to fit content (92% is just the cap), mirroring CardFormScreen.
   const [headerHeight, setHeaderHeight] = useState(0);
@@ -66,12 +48,10 @@ export function KlarnaScreen() {
 
   const bottomInsetClamped = Math.max(bottomInset, tokens.spacing.large);
   const loadingSheetHeight = LOADING_CONTENT_HEIGHT + bottomInsetClamped;
-  // Gate on categories, not isLoading (still false on the first render → 1-frame empty flash).
-  const isInitialLoading = paymentCategories.length === 0;
 
   // Start the Klarna session on mount (fetches the payment categories).
   useEffect(() => {
-    void start();
+    void start?.();
   }, [start]);
 
   // Size to content once the scroll body measures; until then hold the compact loading height.
@@ -85,6 +65,15 @@ export function KlarnaScreen() {
     const target = Math.min(desired, cap);
     return requestHeight(target);
   }, [headerHeight, scrollContentHeight, footerHeight, screenHeight, loadingSheetHeight, requestHeight]);
+
+  // Defensive: this screen is only routed to for Klarna.
+  if (!klarna) {
+    return null;
+  }
+
+  const { paymentCategories, selectedCategoryId, isViewLoaded, isLoading, selectCategory, authorize } = klarna;
+  // Gate on categories, not isLoading (still false on the first render → 1-frame empty flash).
+  const isInitialLoading = paymentCategories.length === 0;
 
   const handleAuthorize = () => {
     if (!isViewLoaded || isLoading) return;
@@ -154,22 +143,15 @@ export function KlarnaScreen() {
               onLayout={(e) => setFooterHeight(e.nativeEvent.layout.height)}
               style={[styles.footer, { paddingBottom: bottomInsetClamped }]}
             >
-              <TouchableOpacity
+              <CheckoutButton
+                title={t('primer_klarna_button_authorize')}
                 onPress={handleAuthorize}
+                variant="primary"
+                loading={showButtonSpinner}
                 disabled={!isViewLoaded || isLoading}
-                activeOpacity={0.7}
-                style={[styles.payButton, (!isViewLoaded || isLoading) && styles.payButtonDisabled]}
-                accessibilityRole="button"
                 accessibilityLabel={t('accessibility_payment_selection_pay_with_klarna')}
                 accessibilityHint={t('accessibility_klarna_authorize_hint')}
-                accessibilityState={{ disabled: !isViewLoaded || isLoading, busy: showButtonSpinner }}
-              >
-                {showButtonSpinner ? (
-                  <ActivityIndicator color={tokens.colors.background} />
-                ) : (
-                  <Text style={styles.payButtonText}>{t('primer_klarna_button_authorize')}</Text>
-                )}
-              </TouchableOpacity>
+              />
             </View>
           )}
         </>
@@ -222,27 +204,6 @@ function createStyles(tokens: PrimerTokens) {
     },
     loadingContainer: {
       justifyContent: 'center',
-    },
-    payButton: {
-      alignItems: 'center',
-      backgroundColor: colors.primary,
-      borderRadius: radii.medium,
-      justifyContent: 'center',
-      minHeight: 44,
-      padding: spacing.medium,
-      width: '100%',
-    },
-    payButtonDisabled: {
-      opacity: 0.5,
-    },
-    payButtonText: {
-      color: colors.background,
-      fontFamily: typography.titleLarge.fontFamily,
-      fontSize: typography.titleLarge.fontSize,
-      fontWeight: typography.titleLarge.fontWeight as TextStyle['fontWeight'],
-      letterSpacing: typography.titleLarge.letterSpacing,
-      lineHeight: typography.titleLarge.lineHeight,
-      textAlign: 'center',
     },
     radioCircle: {
       borderColor: colors.primary,
