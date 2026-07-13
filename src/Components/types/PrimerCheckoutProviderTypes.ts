@@ -17,6 +17,7 @@ import type { PrimerPaymentMethodAsset, PrimerPaymentMethodNativeView } from '..
 import type { PrimerVaultedPaymentMethod } from '../../models/PrimerVaultedPaymentMethod';
 import type { PrimerVaultedPaymentMethodAdditionalData } from '../../models/PrimerVaultedPaymentMethodAdditionalData';
 import type { IssuingBank } from '../../models/IssuingBank';
+import type { KlarnaPaymentCategory } from '../../models/klarna/KlarnaPaymentCategory';
 import type { PrimerThemeOverride } from '../internal/theme/types';
 import type { CardFormErrors } from './CardFormTypes';
 import type { CardNetworkId } from '../internal/cardNetwork';
@@ -99,6 +100,27 @@ export interface PrimerCheckoutContextValue {
   submitBanks: () => Promise<void>;
   /** Disarm the flow and tear down the redirect component (call on leaving the picker). */
   stopBanks: () => void;
+
+  // --- Klarna (KLARNA) ---
+  // Backs the `klarna` variant of `usePrimerPaymentMethod(type)`; merchants use that, not these.
+  /** Available Klarna payment categories; empty until `startKlarna` resolves. */
+  klarnaPaymentCategories: KlarnaPaymentCategory[];
+  /** The shopper's currently selected Klarna category id, or `null`. */
+  selectedKlarnaCategoryId: string | null;
+  /** True once the embedded Klarna payment view has loaded. */
+  isKlarnaViewLoaded: boolean;
+  /** True while the Klarna session is starting or an authorize/finalize is in flight. */
+  isKlarnaLoading: boolean;
+  /** Begin a Klarna session (fetches the payment categories). */
+  startKlarna: (paymentMethodType: string) => Promise<void>;
+  /** Select a Klarna category by id (loads the embedded view). */
+  selectKlarnaCategory: (categoryId: string) => void;
+  /** Authorize the Klarna payment. */
+  authorizeKlarna: () => Promise<void>;
+  /** Finalize the Klarna payment (prebuilt auto-finalizes; manual path for custom layouts). */
+  finalizeKlarna: () => Promise<void>;
+  /** Disarm the Klarna flow on return to the method list (mirrors stopBanks). */
+  stopKlarna: () => void;
 
   // --- Active payment attempt ---
   /** Outcome of the most recent payment attempt; `null` before any submit. */

@@ -33,6 +33,14 @@ export function usePrimerPaymentMethod(type: string): UsePrimerPaymentMethodRetu
     cardFormState,
     setRawData,
     submit,
+    klarnaPaymentCategories,
+    selectedKlarnaCategoryId,
+    isKlarnaViewLoaded,
+    isKlarnaLoading,
+    startKlarna,
+    selectKlarnaCategory,
+    authorizeKlarna,
+    finalizeKlarna,
   } = usePrimerCheckout();
 
   const method = availablePaymentMethods.find((m) => m.paymentMethodType === type);
@@ -46,6 +54,7 @@ export function usePrimerPaymentMethod(type: string): UsePrimerPaymentMethodRetu
   const startRawDataForm = useCallback(async () => {
     setActiveMethod(type);
   }, [setActiveMethod, type]);
+  const startKlarnaFlow = useCallback(() => startKlarna(type), [startKlarna, type]);
 
   return useMemo<UsePrimerPaymentMethodReturn>(() => {
     if (kind === 'nativeUi') {
@@ -90,6 +99,22 @@ export function usePrimerPaymentMethod(type: string): UsePrimerPaymentMethodRetu
         clearPaymentOutcome,
       };
     }
+    if (kind === 'klarna') {
+      return {
+        kind: 'klarna',
+        isAvailable: isPresent,
+        paymentCategories: klarnaPaymentCategories,
+        selectedCategoryId: selectedKlarnaCategoryId,
+        isViewLoaded: isKlarnaViewLoaded,
+        isLoading: isKlarnaLoading,
+        paymentOutcome,
+        start: startKlarnaFlow,
+        selectCategory: selectKlarnaCategory,
+        authorize: authorizeKlarna,
+        finalize: finalizeKlarna,
+        clearPaymentOutcome,
+      };
+    }
     if (kind === 'card') {
       return { kind: 'card', isAvailable: isPresent, start: startCard, clearPaymentOutcome };
     }
@@ -115,6 +140,14 @@ export function usePrimerPaymentMethod(type: string): UsePrimerPaymentMethodRetu
     setRawData,
     submit,
     startRawDataForm,
+    klarnaPaymentCategories,
+    selectedKlarnaCategoryId,
+    isKlarnaViewLoaded,
+    isKlarnaLoading,
+    startKlarnaFlow,
+    selectKlarnaCategory,
+    authorizeKlarna,
+    finalizeKlarna,
     clearPaymentOutcome,
   ]);
 }

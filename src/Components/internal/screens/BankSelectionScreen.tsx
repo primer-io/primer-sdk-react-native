@@ -50,7 +50,7 @@ export function BankSelectionScreen() {
     // Mirror the card form: jump to processing while the native redirect runs;
     // PaymentOutcomeTransitioner navigates away once the outcome arrives.
     replace(CheckoutRoute.processing);
-    void submit();
+    void submit().catch(() => {});
   };
 
   return (

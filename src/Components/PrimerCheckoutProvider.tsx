@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Platform } from 'react-native';
 
 import PrimerHeadlessUniversalCheckoutAssetsManager from '../HeadlessUniversalCheckout/Managers/AssetsManager';
 import PrimerHeadlessUniversalCheckoutRawDataManager from '../HeadlessUniversalCheckout/Managers/PaymentMethodManagers/RawDataManager';
 import PrimerHeadlessUniversalCheckoutPaymentMethodNativeUIManager from '../HeadlessUniversalCheckout/Managers/PaymentMethodManagers/NativeUIManager';
 import { PrimerHeadlessUniversalCheckoutComponentWithRedirectManager } from '../HeadlessUniversalCheckout/Managers/PaymentMethodManagers/ComponentWithRedirectManager';
+import { PrimerHeadlessUniversalCheckoutKlarnaManager } from '../HeadlessUniversalCheckout/Managers/PaymentMethodManagers/KlarnaManager';
 import PrimerHeadlessUniversalCheckoutVaultManager from '../HeadlessUniversalCheckout/Managers/VaultManager';
 import { PrimerHeadlessUniversalCheckout } from '../HeadlessUniversalCheckout/PrimerHeadlessUniversalCheckout';
 import { PrimerError } from '../models/PrimerError';
@@ -34,8 +36,11 @@ import type {
 import type { CardFormErrors, CardFormField } from './types/CardFormTypes';
 import type { CardNetworkId } from './internal/cardNetwork';
 import type { BanksComponent } from '../HeadlessUniversalCheckout/Managers/PaymentMethodManagers/ComponentWithRedirectManager';
+import type { KlarnaComponent } from '../HeadlessUniversalCheckout/Managers/PaymentMethodManagers/KlarnaManager';
 import type { BanksStep } from '../models/banks/BanksSteps';
 import type { IssuingBank } from '../models/IssuingBank';
+import type { KlarnaPaymentCategory } from '../models/klarna/KlarnaPaymentCategory';
+import type { KlarnaPaymentStep } from '../models/klarna/KlarnaPaymentSteps';
 
 const LOG = '[PrimerCheckoutProvider]';
 
@@ -67,6 +72,12 @@ interface InternalState {
   banks: IssuingBank[];
   selectedBankId: string | null;
   isBanksLoading: boolean;
+  /** Active KLARNA method, or null. Drives the Klarna component lifecycle. */
+  activeKlarnaMethod: string | null;
+  klarnaPaymentCategories: KlarnaPaymentCategory[];
+  selectedKlarnaCategoryId: string | null;
+  isKlarnaViewLoaded: boolean;
+  isKlarnaLoading: boolean;
   vaultedMethods: PrimerVaultedPaymentMethod[];
   vaultedIconUrisById: Record<string, string | undefined>;
   isLoadingVaulted: boolean;
@@ -97,6 +108,11 @@ const initialState: InternalState = {
   banks: [],
   selectedBankId: null,
   isBanksLoading: false,
+  activeKlarnaMethod: null,
+  klarnaPaymentCategories: [],
+  selectedKlarnaCategoryId: null,
+  isKlarnaViewLoaded: false,
+  isKlarnaLoading: false,
   vaultedMethods: [],
   vaultedIconUrisById: {},
   isLoadingVaulted: false,
@@ -107,6 +123,13 @@ const initialState: InternalState = {
   requiresVaultedCardCvv: false,
   cvvInputVisible: false,
 };
+
+// Cleared on every terminal payment event so no per-method in-flight flag outlives an outcome.
+const PAYMENT_ATTEMPT_RESET = {
+  nativeUiInFlightType: null,
+  isBanksLoading: false,
+  isKlarnaLoading: false,
+} as const;
 
 /**
  * Native `onCheckoutComplete` fires for every terminal checkout, including
@@ -213,6 +236,11 @@ export function PrimerCheckoutProvider({
   // `state.activeBanksMethod`, mirroring the raw-data manager above.
   const banksManagerRef = useRef<PrimerHeadlessUniversalCheckoutComponentWithRedirectManager | null>(null);
   const banksComponentRef = useRef<BanksComponent | null>(null);
+  // Klarna (KLARNA) manager + component. Lifecycle driven by `state.activeKlarnaMethod`.
+  const klarnaManagerRef = useRef<PrimerHeadlessUniversalCheckoutKlarnaManager | null>(null);
+  const klarnaComponentRef = useRef<KlarnaComponent | null>(null);
+  // finalizePayment() is issued at most once per authorize (onStep auto-finalize vs the hook's finalize()).
+  const klarnaFinalizeIssuedRef = useRef(false);
   // Vault manager is lazy — created on first vault fetch, reused across client-session updates,
   // cleared on session teardown alongside `PrimerHeadlessUniversalCheckout.cleanUp()`.
   const vaultManagerRef = useRef<PrimerHeadlessUniversalCheckoutVaultManager | null>(null);
@@ -275,8 +303,7 @@ export function PrimerCheckoutProvider({
             if (prev.isReady) {
               return {
                 ...prev,
-                nativeUiInFlightType: null,
-                isBanksLoading: false,
+                ...PAYMENT_ATTEMPT_RESET,
                 paymentOutcome: { status: 'error', error, data: checkoutData ?? null },
               };
             }
@@ -292,8 +319,7 @@ export function PrimerCheckoutProvider({
           // result screen to show. Backend statuses: SUCCESS | FAILED | PENDING.
           setState((prev) => ({
             ...prev,
-            nativeUiInFlightType: null,
-            isBanksLoading: false,
+            ...PAYMENT_ATTEMPT_RESET,
             paymentOutcome: buildPaymentOutcome(checkoutData),
           }));
           onCheckoutCompleteRef.current?.(checkoutData);
@@ -849,7 +875,20 @@ export function PrimerCheckoutProvider({
   }, []);
 
   const clearPaymentOutcome = useCallback(() => {
-    setState((prev) => (prev.paymentOutcome === null ? prev : { ...prev, paymentOutcome: null }));
+    // Also nil activeKlarnaMethod so the effect cleanup runs — Klarna needs a fresh component per payment.
+    setState((prev) =>
+      prev.paymentOutcome === null && prev.activeKlarnaMethod === null
+        ? prev
+        : {
+            ...prev,
+            paymentOutcome: null,
+            activeKlarnaMethod: null,
+            klarnaPaymentCategories: [],
+            selectedKlarnaCategoryId: null,
+            isKlarnaViewLoaded: false,
+            isKlarnaLoading: false,
+          }
+    );
   }, []);
 
   // --- Bank-selection (COMPONENT_WITH_REDIRECT) lifecycle — iDEAL, Android Dotpay ---
@@ -921,6 +960,94 @@ export function PrimerCheckoutProvider({
       banksComponentRef.current = null;
     };
   }, [state.activeBanksMethod, state.isReady]);
+
+  // Klarna (KLARNA) lifecycle — categories → embedded view → authorize → (auto) finalize; keyed on activeKlarnaMethod.
+  useEffect(() => {
+    if (!state.isReady || !state.activeKlarnaMethod) {
+      return;
+    }
+
+    let cancelled = false;
+    const manager = new PrimerHeadlessUniversalCheckoutKlarnaManager();
+    klarnaManagerRef.current = manager;
+    klarnaFinalizeIssuedRef.current = false;
+
+    void (async () => {
+      try {
+        const component: KlarnaComponent = await manager.provide({
+          primerSessionIntent: PrimerSessionIntent.CHECKOUT,
+          onStep: (step: KlarnaPaymentStep) => {
+            if (cancelled) return;
+            switch (step.stepName) {
+              case 'paymentSessionCreated':
+                setState((prev) => ({
+                  ...prev,
+                  klarnaPaymentCategories: step.paymentCategories,
+                  isKlarnaLoading: false,
+                }));
+                break;
+              case 'paymentViewLoaded':
+                setState((prev) => (prev.isKlarnaViewLoaded ? prev : { ...prev, isKlarnaViewLoaded: true }));
+                break;
+              case 'paymentSessionAuthorized':
+                if (step.isFinalized) {
+                  setState((prev) => (prev.isKlarnaLoading ? { ...prev, isKlarnaLoading: false } : prev));
+                } else if (!klarnaFinalizeIssuedRef.current) {
+                  // Headless autoFinalize=false: finalize here when required, once.
+                  klarnaFinalizeIssuedRef.current = true;
+                  void klarnaComponentRef.current
+                    ?.finalizePayment()
+                    .catch((err) => console.warn(`${LOG} klarna finalizePayment failed ${fmt(err)}`));
+                }
+                break;
+              case 'paymentSessionFinalized':
+                setState((prev) => (prev.isKlarnaLoading ? { ...prev, isKlarnaLoading: false } : prev));
+                break;
+            }
+          },
+          onError: (error) => {
+            if (cancelled) return;
+            setState((prev) =>
+              prev.isReady
+                ? { ...prev, isKlarnaLoading: false, paymentOutcome: { status: 'error', error, data: null } }
+                : { ...prev, isKlarnaLoading: false, error }
+            );
+          },
+        });
+        if (cancelled) {
+          await component.cleanUp().catch(() => {});
+          return;
+        }
+        klarnaComponentRef.current = component;
+        await component.start();
+      } catch (err) {
+        console.warn(`${LOG} klarna provide/start failed ${fmt(err)}`);
+        if (!cancelled) {
+          // Surface a startup failure as an error outcome so the shopper isn't stranded on the spinner.
+          const error =
+            err instanceof PrimerError
+              ? err
+              : new PrimerError('klarna-start-failed', undefined, toError(err).message, undefined, undefined);
+          setState((prev) =>
+            prev.isReady
+              ? { ...prev, isKlarnaLoading: false, paymentOutcome: { status: 'error', error, data: null } }
+              : { ...prev, isKlarnaLoading: false, error }
+          );
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      // Best-effort teardown; cleanUp can reject benignly on a finished component.
+      klarnaComponentRef.current?.cleanUp().catch(() => {});
+      if (klarnaManagerRef.current === manager) {
+        klarnaManagerRef.current = null;
+      }
+      klarnaComponentRef.current = null;
+      klarnaFinalizeIssuedRef.current = false;
+    };
+  }, [state.activeKlarnaMethod, state.isReady]);
 
   // NATIVE_UI methods (Google Pay today; Apple Pay / PayPal / web-redirect APMs later) ride the
   // existing Headless NATIVE_UI path: start the native flow by type; outcomes arrive through the
@@ -1029,6 +1156,86 @@ export function PrimerCheckoutProvider({
         ? prev
         : { ...prev, activeBanksMethod: null, banks: [], selectedBankId: null, isBanksLoading: false }
     );
+  }, []);
+
+  // Disarm on return to the method list (mirrors stopBanks); the effect cleanup tears down the component.
+  const stopKlarna = useCallback(() => {
+    setState((prev) =>
+      prev.activeKlarnaMethod === null
+        ? prev
+        : {
+            ...prev,
+            activeKlarnaMethod: null,
+            klarnaPaymentCategories: [],
+            selectedKlarnaCategoryId: null,
+            isKlarnaViewLoaded: false,
+            isKlarnaLoading: false,
+          }
+    );
+  }, []);
+
+  // Klarna actions: startKlarna arms the lifecycle effect; select/authorize/finalize forward to the component.
+  const startKlarna = useCallback(async (paymentMethodType: string) => {
+    setState((prev) => ({
+      ...prev,
+      activeKlarnaMethod: paymentMethodType,
+      klarnaPaymentCategories: [],
+      selectedKlarnaCategoryId: null,
+      isKlarnaViewLoaded: false,
+      isKlarnaLoading: true,
+      paymentOutcome: null,
+    }));
+  }, []);
+
+  const selectKlarnaCategory = useCallback((categoryId: string) => {
+    const category = stateRef.current.klarnaPaymentCategories.find((c) => c.identifier === categoryId);
+    if (!category) {
+      console.warn(`${LOG} selectKlarnaCategory: unknown category ${categoryId}`);
+      return;
+    }
+    const returnIntentUrl = settingsRef.current?.paymentMethodOptions?.klarnaOptions?.returnIntentUrl;
+    // Android needs returnIntentUrl to build the embedded view — fail clearly instead of a dead screen (iOS ignores it).
+    if (Platform.OS === 'android' && !returnIntentUrl) {
+      const error = new PrimerError(
+        'klarna-return-url-missing',
+        undefined,
+        'Klarna on Android requires paymentMethodOptions.klarnaOptions.returnIntentUrl to be set.',
+        undefined,
+        undefined
+      );
+      setState((prev) =>
+        prev.isReady
+          ? { ...prev, isKlarnaLoading: false, paymentOutcome: { status: 'error', error, data: null } }
+          : { ...prev, isKlarnaLoading: false, error }
+      );
+      return;
+    }
+    void klarnaComponentRef.current
+      ?.handlePaymentOptionsChange({
+        validatableDataName: 'klarnaPaymentOptions',
+        paymentCategory: category,
+        ...(returnIntentUrl ? { returnIntentUrl } : null),
+      })
+      .catch((err) => console.warn(`${LOG} klarna handlePaymentOptionsChange failed ${fmt(err)}`));
+    setState((prev) =>
+      prev.selectedKlarnaCategoryId === categoryId
+        ? prev
+        : { ...prev, selectedKlarnaCategoryId: categoryId, isKlarnaViewLoaded: false }
+    );
+  }, []);
+
+  const authorizeKlarna = useCallback(async () => {
+    // Re-arm the finalize guard so a retry's auto-finalize can fire again.
+    klarnaFinalizeIssuedRef.current = false;
+    setState((prev) => ({ ...prev, isKlarnaLoading: true, paymentOutcome: null }));
+    await klarnaComponentRef.current?.submit();
+  }, []);
+
+  const finalizeKlarna = useCallback(async () => {
+    // Manual path for custom layouts; guarded against onStep's auto-finalize double-firing.
+    if (klarnaFinalizeIssuedRef.current) return;
+    klarnaFinalizeIssuedRef.current = true;
+    await klarnaComponentRef.current?.finalizePayment();
   }, []);
 
   const selectVaultedMethodId = useCallback((id: string) => {
@@ -1173,6 +1380,10 @@ export function PrimerCheckoutProvider({
       banks: state.banks,
       selectedBankId: state.selectedBankId,
       isBanksLoading: state.isBanksLoading,
+      klarnaPaymentCategories: state.klarnaPaymentCategories,
+      selectedKlarnaCategoryId: state.selectedKlarnaCategoryId,
+      isKlarnaViewLoaded: state.isKlarnaViewLoaded,
+      isKlarnaLoading: state.isKlarnaLoading,
       vaultedMethods: state.vaultedMethods,
       vaultedIconUrisById: state.vaultedIconUrisById,
       isLoadingVaulted: state.isLoadingVaulted,
@@ -1196,6 +1407,11 @@ export function PrimerCheckoutProvider({
       selectBank,
       submitBanks,
       stopBanks,
+      startKlarna,
+      selectKlarnaCategory,
+      authorizeKlarna,
+      finalizeKlarna,
+      stopKlarna,
       payFromVault,
       selectVaultedMethodId,
       requestExpandedVaultDisplay,
@@ -1211,6 +1427,11 @@ export function PrimerCheckoutProvider({
     selectBank,
     submitBanks,
     stopBanks,
+    startKlarna,
+    selectKlarnaCategory,
+    authorizeKlarna,
+    finalizeKlarna,
+    stopKlarna,
     setActiveMethod,
     setRawData,
     setBillingAddress,

@@ -63,6 +63,9 @@ export function CheckoutComponentsListScreen() {
         requireShippingMethod: false,
         emailAddressRequired: true,
       },
+      klarnaOptions: {
+        returnIntentUrl: 'app://deeplink.return.activity.rn',
+      },
     },
     uiOptions: {
       appearanceMode: customAppearanceMode,

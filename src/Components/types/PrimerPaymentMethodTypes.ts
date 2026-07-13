@@ -2,6 +2,7 @@ import type { PaymentOutcome } from './PrimerCheckoutProviderTypes';
 import type { IssuingBank } from '../../models/IssuingBank';
 import type { PrimerInputElementType } from '../../models/PrimerInputElementType';
 import type { PrimerRawData } from '../../models/PrimerRawData';
+import type { KlarnaPaymentCategory } from '../../models/klarna/KlarnaPaymentCategory';
 
 /**
  * Why a payment method is unavailable. Coarse `{ code, message }`; the codes are method-specific
@@ -96,6 +97,35 @@ export interface RawDataFormPaymentMethod {
 }
 
 /**
+ * A Klarna method (`KLARNA`). `start()` begins the session and emits `paymentCategories`;
+ * `selectCategory` loads the embedded view (render the exported `PrimerKlarnaPaymentView` when
+ * `isViewLoaded`); `authorize()` authorises and the SDK auto-finalizes when required (call
+ * `finalize()` only for custom layouts that manage it). Outcome arrives via `paymentOutcome`.
+ */
+export interface KlarnaPaymentMethod {
+  kind: 'klarna';
+  readonly isAvailable: boolean;
+  /** Available Klarna payment categories (Pay Now / Pay Later / …); empty until `start()` resolves. */
+  readonly paymentCategories: KlarnaPaymentCategory[];
+  /** The shopper's currently selected category id, or `null`. */
+  readonly selectedCategoryId: string | null;
+  /** True once the embedded Klarna view has loaded — render `<PrimerKlarnaPaymentView/>`. */
+  readonly isViewLoaded: boolean;
+  /** True while the session is starting or an authorize/finalize is in flight. */
+  readonly isLoading: boolean;
+  readonly paymentOutcome: PaymentOutcome | null;
+  /** Start the Klarna session; emits the payment categories. */
+  start(): Promise<void>;
+  /** Select a payment category by id (loads the embedded view). */
+  selectCategory(categoryId: string): void;
+  /** Authorize the payment (after a category is selected and the view has loaded). */
+  authorize(): Promise<void>;
+  /** Manually finalize (the prebuilt flow finalizes automatically when the SDK requires it). */
+  finalize(): Promise<void>;
+  clearPaymentOutcome(): void;
+}
+
+/**
  * Can't be driven here: either a type not wired into Components yet, OR a known method that isn't
  * in the current session (its category is unknown). Either way it can't be started — render
  * nothing / disabled.
@@ -110,5 +140,6 @@ export type UsePrimerPaymentMethodReturn =
   | NativeUiPaymentMethod
   | BankSelectionPaymentMethod
   | RawDataFormPaymentMethod
+  | KlarnaPaymentMethod
   | CardPaymentMethod
   | UnsupportedPaymentMethod;

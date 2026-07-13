@@ -44,7 +44,7 @@ export function MethodSelectionScreen() {
   const { onCancel } = useCheckoutFlow();
   const { paymentMethods } = usePrimerPaymentMethods();
   const { push, replace } = useNavigation();
-  const { setActiveMethod, startNativeUI, stopBanks } = usePrimerCheckout();
+  const { setActiveMethod, startNativeUI, stopBanks, stopKlarna } = usePrimerCheckout();
   const {
     activeMethod: activeVaultedMethod,
     vaultDisplayMode,
@@ -52,11 +52,12 @@ export function MethodSelectionScreen() {
     cvvInputVisible,
   } = usePrimerVaultManager();
 
-  // Back on the method list means no bank flow is active: disarm so re-picking the same method
-  // re-fetches. Fires only here (not on bank-screen unmount), so an in-flight submit isn't torn down.
+  // Back on the method list means no bank/Klarna flow is active: disarm so re-picking the same method
+  // re-arms. Fires only here (not on the sub-screen unmount), so an in-flight submit isn't torn down.
   useEffect(() => {
     stopBanks();
-  }, [stopBanks]);
+    stopKlarna();
+  }, [stopBanks, stopKlarna]);
 
   const methodCount = paymentMethods.length;
   const buttonGap = tokens.spacing.small;
@@ -138,6 +139,10 @@ export function MethodSelectionScreen() {
       case 'rawDataForm':
         // Non-card RAW_DATA methods (Bancontact / MBWay / BLIK) — open the method's input form.
         push(CheckoutRoute.rawDataForm, { paymentMethodType: method.type });
+        return;
+      case 'klarna':
+        // Klarna — open the category / embedded-view screen.
+        push(CheckoutRoute.klarna, { paymentMethodType: method.type });
         return;
       case 'unsupported':
         console.warn(`${LOG} payment method ${method.type} not yet wired`);

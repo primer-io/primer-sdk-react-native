@@ -34,6 +34,28 @@ jest.mock(
           onBankSelected: jest.fn(),
           onBankFilterChange: jest.fn(),
         },
+        RNTPrimerHeadlessUniversalCheckoutKlarnaComponent: {
+          configure: jest.fn().mockResolvedValue(undefined),
+          start: jest.fn(),
+          submit: jest.fn(),
+          onSetPaymentOptions: jest.fn(),
+          onFinalizePayment: jest.fn(),
+          cleanUp: jest.fn().mockResolvedValue(undefined),
+        },
+        // Provider init effects touch these — mock them so init resolves cleanly instead of
+        // throwing async (unhandled rejections otherwise leak across parallel test suites).
+        RNTPrimerHeadlessUniversalCheckoutAssetsManager: {
+          getPaymentMethodResources: jest.fn().mockResolvedValue({ paymentMethodResources: [] }),
+          getPaymentMethodResource: jest.fn().mockResolvedValue({ paymentMethodResource: null }),
+          getOrderedAllowedCardNetworks: jest.fn().mockResolvedValue([]),
+          getCardNetworkImage: jest.fn().mockResolvedValue({}),
+          getCardNetworkTraits: jest.fn().mockResolvedValue({}),
+        },
+        RNPrimerHeadlessUniversalCheckoutVaultManager: {
+          configure: jest.fn().mockResolvedValue(undefined),
+          fetchVaultedPaymentMethods: jest.fn().mockResolvedValue({ paymentMethods: [] }),
+          requiresVaultedCardCvv: jest.fn().mockResolvedValue(false),
+        },
       },
       NativeEventEmitter: jest.fn().mockImplementation(() => ({
         addListener: mockAddListener,
@@ -53,6 +75,7 @@ import { usePrimerPaymentMethod } from '../../Components/hooks/usePrimerPaymentM
 import { PrimerError } from '../../models/PrimerError';
 import type {
   BankSelectionPaymentMethod,
+  KlarnaPaymentMethod,
   NativeUiPaymentMethod,
   RawDataFormPaymentMethod,
   UsePrimerPaymentMethodReturn,
@@ -62,6 +85,7 @@ const rnMock = require('react-native');
 const nativeModule = rnMock.NativeModules.PrimerHeadlessUniversalCheckout;
 const nativeUiManager = rnMock.NativeModules.RNTPrimerHeadlessUniversalPaymentMethodNativeUIManager;
 const banksNative = rnMock.NativeModules.RNTPrimerHeadlessUniversalCheckoutBanksComponent;
+const klarnaNative = rnMock.NativeModules.RNTPrimerHeadlessUniversalCheckoutKlarnaComponent;
 const mockAddListener: jest.Mock = rnMock.__mockAddListener;
 
 function findListener(eventName: string): ((...args: any[]) => void) | undefined {
@@ -89,6 +113,14 @@ function asBankSelection(c: UsePrimerPaymentMethodReturn): BankSelectionPaymentM
 function asRawDataForm(c: UsePrimerPaymentMethodReturn): RawDataFormPaymentMethod {
   if (c.kind !== 'rawDataForm') {
     throw new Error(`expected kind 'rawDataForm', got '${c.kind}'`);
+  }
+  return c;
+}
+
+/** Asserts the captured controller is the `klarna` variant and returns it typed. */
+function asKlarna(c: UsePrimerPaymentMethodReturn): KlarnaPaymentMethod {
+  if (c.kind !== 'klarna') {
+    throw new Error(`expected kind 'klarna', got '${c.kind}'`);
   }
   return c;
 }
@@ -151,6 +183,8 @@ describe('usePrimerPaymentMethod', () => {
     nativeModule.cleanUp.mockResolvedValue(undefined);
     nativeModule.setImplementedRNCallbacks.mockResolvedValue(undefined);
     banksNative.configure.mockResolvedValue(undefined);
+    klarnaNative.configure.mockResolvedValue(undefined);
+    klarnaNative.cleanUp.mockResolvedValue(undefined);
   });
 
   it('throws when used outside <PrimerCheckoutProvider> (FR-019)', async () => {
@@ -543,6 +577,51 @@ describe('usePrimerPaymentMethod', () => {
         'ADYEN_BANCONTACT_CARD'
       );
       expect(captures[captures.length - 1]!.kind).toBe('rawDataForm');
+    });
+  });
+
+  describe('Klarna (KLARNA)', () => {
+    const klarna = [{ paymentMethodType: 'KLARNA', categories: ['KLARNA'] }];
+
+    it('routes a KLARNA method to kind "klarna" with the controller shape', async () => {
+      const captures = await mountWithMethods(klarna, 'KLARNA');
+      const k = asKlarna(captures[captures.length - 1]!);
+      expect(k.isAvailable).toBe(true);
+      expect(k.paymentCategories).toEqual([]); // populated once start() opens the session
+      expect(k.selectedCategoryId).toBeNull();
+      expect(k.isViewLoaded).toBe(false);
+    });
+
+    it('auto-finalizes exactly once on paymentSessionAuthorized; a later manual finalize() is a no-op', async () => {
+      const captures = await mountWithMethods(klarna, 'KLARNA');
+      await act(async () => {
+        await asKlarna(captures[captures.length - 1]!).start();
+        await flushPromises();
+      });
+      // SDK authorized but not finalized (Headless autoFinalize=false) → provider finalizes once.
+      await act(async () => {
+        findListener('onStep')!({ stepName: 'paymentSessionAuthorized', isFinalized: false });
+        await flushPromises();
+      });
+      expect(klarnaNative.onFinalizePayment).toHaveBeenCalledTimes(1);
+      // The guard must stop a manual finalize() from double-firing (native errors on double-finalize).
+      await act(async () => {
+        await asKlarna(captures[captures.length - 1]!).finalize();
+      });
+      expect(klarnaNative.onFinalizePayment).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not finalize when the authorized step is already finalized', async () => {
+      const captures = await mountWithMethods(klarna, 'KLARNA');
+      await act(async () => {
+        await asKlarna(captures[captures.length - 1]!).start();
+        await flushPromises();
+      });
+      await act(async () => {
+        findListener('onStep')!({ stepName: 'paymentSessionAuthorized', isFinalized: true });
+        await flushPromises();
+      });
+      expect(klarnaNative.onFinalizePayment).not.toHaveBeenCalled();
     });
   });
 });

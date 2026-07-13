@@ -21,8 +21,14 @@ jest.mock(
 // stopBanks is the disarm we assert on; the rest of the context surface is stubbed.
 // `mock`-prefixed name so the hoisted jest.mock factory may reference it.
 const mockStopBanks = jest.fn();
+const mockStopKlarna = jest.fn();
 jest.mock('../../Components/hooks/usePrimerCheckout', () => ({
-  usePrimerCheckout: () => ({ setActiveMethod: jest.fn(), startNativeUI: jest.fn(), stopBanks: mockStopBanks }),
+  usePrimerCheckout: () => ({
+    setActiveMethod: jest.fn(),
+    startNativeUI: jest.fn(),
+    stopBanks: mockStopBanks,
+    stopKlarna: mockStopKlarna,
+  }),
 }));
 
 jest.mock('../../Components/hooks/usePrimerPaymentMethods', () => ({
@@ -91,7 +97,7 @@ jest.mock('../../Components/analytics', () => ({ PrimerAnalytics: { trackEvent: 
 
 import { MethodSelectionScreen } from '../../Components/internal/screens/MethodSelectionScreen';
 
-describe('MethodSelectionScreen — bank-selection disarm (ORC-6514)', () => {
+describe('MethodSelectionScreen — flow disarm on mount (ORC-6514/6515)', () => {
   beforeEach(() => jest.clearAllMocks());
 
   it('disarms any active bank flow on mount so re-picking the same method re-fetches', () => {
@@ -101,5 +107,12 @@ describe('MethodSelectionScreen — bank-selection disarm (ORC-6514)', () => {
     // Landing on the method list is the "shopper left the bank flow" signal — it must disarm,
     // and it must do so here (not on bank-screen unmount, which would fire mid-submit).
     expect(mockStopBanks).toHaveBeenCalledTimes(1);
+  });
+
+  it('disarms any active Klarna flow on mount so an abandoned session is torn down', () => {
+    act(() => {
+      renderer.create(createElement(MethodSelectionScreen));
+    });
+    expect(mockStopKlarna).toHaveBeenCalledTimes(1);
   });
 });

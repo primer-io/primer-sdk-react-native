@@ -10,9 +10,19 @@ export interface CheckoutButtonProps {
   variant: 'primary' | 'outlined';
   loading?: boolean;
   disabled?: boolean;
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
 }
 
-export function CheckoutButton({ title, onPress, variant, loading = false, disabled = false }: CheckoutButtonProps) {
+export function CheckoutButton({
+  title,
+  onPress,
+  variant,
+  loading = false,
+  disabled = false,
+  accessibilityLabel,
+  accessibilityHint,
+}: CheckoutButtonProps) {
   const tokens = usePrimerTheme();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
 
@@ -29,6 +39,8 @@ export function CheckoutButton({ title, onPress, variant, loading = false, disab
       disabled={!isInteractive}
       activeOpacity={0.7}
       accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
+      accessibilityHint={accessibilityHint}
       accessibilityState={{ disabled: !isInteractive, busy: loading }}
     >
       {loading ? <ActivityIndicator color={spinnerColor} /> : <Text style={textStyle}>{title}</Text>}

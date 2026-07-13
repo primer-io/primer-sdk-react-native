@@ -7,7 +7,7 @@ import { PrimerLoadingScreen } from '../../status';
 import { useStatusScreenHeight } from './useStatusScreenHeight';
 import { useBottomSafeArea } from './useBottomSafeArea';
 
-const CONTENT_HEIGHT = 246;
+export const CONTENT_HEIGHT = 246;
 
 export function LoadingScreen() {
   const tokens = usePrimerTheme();
