@@ -5,6 +5,7 @@ import type { ListRenderItemInfo, TextStyle } from 'react-native';
 import { PrimerAnalytics } from '../../analytics';
 import { usePrimerVaultManager } from '../../hooks/usePrimerVaultManager';
 import type { VaultedPaymentMethodItem } from '../../types/VaultedPaymentMethodTypes';
+import { getVaultRowDisplay } from '../vaultRowDisplay';
 import { usePrimerLocalization } from '../localization';
 import { NavigationHeader } from '../navigation/NavigationHeader';
 import type { NavigationHeaderAction } from '../navigation/NavigationHeader';
@@ -57,11 +58,7 @@ function VaultedMethodRow({
   );
   const { t } = usePrimerLocalization();
 
-  const maskedNumber = method.last4 != null ? t('primer_vault_format_masked', { last4: method.last4 }) : null;
-  const expiryText =
-    method.expiryMonth != null && method.expiryYear != null
-      ? t('primer_vault_format_expires', { month: method.expiryMonth, year: method.expiryYear })
-      : null;
+  const display = getVaultRowDisplay(method, t);
 
   const tile = (
     <Pressable
@@ -73,27 +70,27 @@ function VaultedMethodRow({
     >
       <View style={styles.row}>
         <View style={styles.leftCol}>
-          {method.cardholderName != null && (
+          {display.title != null && (
             <Text style={styles.primaryText} numberOfLines={1}>
-              {method.cardholderName}
+              {display.title}
             </Text>
           )}
           <View style={styles.brandRow}>
-            {method.brandIconUri != null && (
+            {display.iconUri != null && (
               <View style={styles.brandChip}>
-                <Image source={{ uri: method.brandIconUri }} style={styles.brandIcon} resizeMode="contain" />
+                <Image source={{ uri: display.iconUri }} style={styles.brandIcon} resizeMode="contain" />
               </View>
             )}
-            {method.brandName != null && (
+            {display.secondaryLabel != null && (
               <Text style={styles.secondaryText} numberOfLines={1}>
-                {method.brandName}
+                {display.secondaryLabel}
               </Text>
             )}
           </View>
         </View>
         <View style={styles.rightCol}>
-          {maskedNumber != null && <Text style={styles.mediumText}>{maskedNumber}</Text>}
-          {expiryText != null && <Text style={styles.secondaryText}>{expiryText}</Text>}
+          {display.maskedNumber != null && <Text style={styles.mediumText}>{display.maskedNumber}</Text>}
+          {display.expiryText != null && <Text style={styles.secondaryText}>{display.expiryText}</Text>}
         </View>
         {isActive && showActiveTreatment && (
           <View style={styles.checkIconBox} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
@@ -171,19 +168,7 @@ export function VaultedMethodsScreen() {
   }, [vaultedMethods.length, isDeleting, pop]);
 
   const buildRowAccessibilityLabel = useCallback(
-    (method: VaultedPaymentMethodItem) => {
-      if (method.brandName != null && method.last4 != null && method.expiryMonth != null && method.expiryYear != null) {
-        return t('accessibility_vaulted_card_full', {
-          cardNetwork: method.brandName,
-          last4: method.last4,
-          expiry: t('primer_vault_format_expires', { month: method.expiryMonth, year: method.expiryYear }),
-          cardholderName: method.cardholderName ?? '',
-        });
-      }
-      return t('accessibility_vaulted_payment_method', {
-        paymentMethodName: method.brandName ?? method.paymentMethodType,
-      });
-    },
+    (method: VaultedPaymentMethodItem) => getVaultRowDisplay(method, t).accessibilityLabel,
     [t]
   );
 

@@ -19,6 +19,8 @@ import { defaultDarkTokens, defaultLightTokens } from './internal/theme/tokens';
 import { toError } from './internal/utils/errors';
 import { GOOGLE_PAY, isGooglePaySupported } from './internal/googlePay';
 import { APPLE_PAY, isApplePaySupported } from './internal/applePay';
+import { titleCaseFromType } from './internal/utils/formatting';
+import { classifyVault } from './types/VaultedPaymentMethodTypes';
 
 import type { PrimerSettings } from '../models/PrimerSettings';
 import type { PrimerCheckoutData } from '../models/PrimerCheckoutData';
@@ -80,6 +82,7 @@ interface InternalState {
   isKlarnaLoading: boolean;
   vaultedMethods: PrimerVaultedPaymentMethod[];
   vaultedIconUrisById: Record<string, string | undefined>;
+  vaultedNamesById: Record<string, string | undefined>;
   isLoadingVaulted: boolean;
   vaultedError: Error | null;
   activeVaultedMethodId: string | null;
@@ -115,6 +118,7 @@ const initialState: InternalState = {
   isKlarnaLoading: false,
   vaultedMethods: [],
   vaultedIconUrisById: {},
+  vaultedNamesById: {},
   isLoadingVaulted: false,
   vaultedError: null,
   activeVaultedMethodId: null,
@@ -535,6 +539,7 @@ export function PrimerCheckoutProvider({
   const refreshVaultedMethods = useCallback(async (): Promise<{
     methods: PrimerVaultedPaymentMethod[];
     iconMap: Record<string, string | undefined>;
+    nameMap: Record<string, string | undefined>;
   }> => {
     if (!vaultManagerRef.current) {
       const vm = new PrimerHeadlessUniversalCheckoutVaultManager();
@@ -551,22 +556,34 @@ export function PrimerCheckoutProvider({
       );
     }
     const methods = await vaultManagerRef.current.fetchVaultedPaymentMethods();
-    const iconEntries = await Promise.all(
+    const entries = await Promise.all(
       methods.map(async (m) => {
-        const network = m.paymentInstrumentData?.network;
-        if (!network) return [m.id, undefined] as const;
+        const kind = classifyVault(m);
         try {
-          const uri = await assetsManager.getCardNetworkImageURL(network);
-          return [m.id, uri] as const;
-        } catch (iconErr) {
-          console.warn(`${LOG} vault icon resolve failed for ${network} ${fmt(iconErr)}`);
-          return [m.id, undefined] as const;
+          if (kind === 'card') {
+            const network = m.paymentInstrumentData?.network;
+            const iconUri = network ? await assetsManager.getCardNetworkImageURL(network) : undefined;
+            return [m.id, { iconUri, name: undefined }] as const;
+          }
+          const resource = await assetsManager.getPaymentMethodResource(m.paymentMethodType);
+          const logo = 'paymentMethodLogo' in resource ? resource.paymentMethodLogo : undefined;
+          const iconUri = logo?.colored ?? logo?.light ?? logo?.dark;
+          const name = resource.paymentMethodName || titleCaseFromType(m.paymentMethodType);
+          return [m.id, { iconUri, name }] as const;
+        } catch (resolveErr) {
+          console.warn(`${LOG} vault asset resolve failed for ${m.paymentMethodType} ${fmt(resolveErr)}`);
+          const name = kind === 'card' ? undefined : titleCaseFromType(m.paymentMethodType);
+          return [m.id, { iconUri: undefined, name }] as const;
         }
       })
     );
     const iconMap: Record<string, string | undefined> = {};
-    for (const [id, uri] of iconEntries) iconMap[id] = uri;
-    return { methods, iconMap };
+    const nameMap: Record<string, string | undefined> = {};
+    for (const [id, { iconUri, name }] of entries) {
+      iconMap[id] = iconUri;
+      nameMap[id] = name;
+    }
+    return { methods, iconMap, nameMap };
   }, []);
 
   // -----------------------------------------------------------------------
@@ -589,12 +606,13 @@ export function PrimerCheckoutProvider({
 
     void (async () => {
       try {
-        const { methods, iconMap } = await refreshVaultedMethods();
+        const { methods, iconMap, nameMap } = await refreshVaultedMethods();
         if (cancelled) return;
         setState((prev) => ({
           ...prev,
           vaultedMethods: methods,
           vaultedIconUrisById: iconMap,
+          vaultedNamesById: nameMap,
           isLoadingVaulted: false,
         }));
       } catch (err) {
@@ -1335,13 +1353,16 @@ export function PrimerCheckoutProvider({
       // actually succeeded.
       let methods: PrimerVaultedPaymentMethod[];
       let iconMap: Record<string, string | undefined>;
+      let nameMap: Record<string, string | undefined>;
       try {
-        ({ methods, iconMap } = await refreshVaultedMethods());
+        ({ methods, iconMap, nameMap } = await refreshVaultedMethods());
       } catch (refreshErr) {
         console.warn(`${LOG} deleteVaultedPaymentMethod refresh failed ${fmt(refreshErr)}`);
         methods = stateRef.current.vaultedMethods.filter((m) => m.id !== vaultedPaymentMethodId);
         iconMap = { ...stateRef.current.vaultedIconUrisById };
         delete iconMap[vaultedPaymentMethodId];
+        nameMap = { ...stateRef.current.vaultedNamesById };
+        delete nameMap[vaultedPaymentMethodId];
       }
       // Promotion rule (matches iOS VaultedPaymentMethodManager.swift:18-31 and Android
       // VaultViewModel.kt:136-148): if the deleted id was the user's explicit pick, replace it
@@ -1354,6 +1375,7 @@ export function PrimerCheckoutProvider({
           ...prev,
           vaultedMethods: methods,
           vaultedIconUrisById: iconMap,
+          vaultedNamesById: nameMap,
           activeVaultedMethodId: nextActiveId,
           vaultDisplayOverride: nextOverride,
         };
@@ -1386,6 +1408,7 @@ export function PrimerCheckoutProvider({
       isKlarnaLoading: state.isKlarnaLoading,
       vaultedMethods: state.vaultedMethods,
       vaultedIconUrisById: state.vaultedIconUrisById,
+      vaultedNamesById: state.vaultedNamesById,
       isLoadingVaulted: state.isLoadingVaulted,
       vaultedError: state.vaultedError,
       activeVaultedMethodId: state.activeVaultedMethodId,

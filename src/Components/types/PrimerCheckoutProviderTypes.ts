@@ -134,6 +134,8 @@ export interface PrimerCheckoutContextValue {
   vaultedMethods: PrimerVaultedPaymentMethod[];
   /** Brand-icon URIs keyed by vaulted-method id, resolved via AssetsManager at fetch time. */
   vaultedIconUrisById: Record<string, string | undefined>;
+  /** Display names keyed by vaulted-method id (the method glyph label); used by non-card rows. */
+  vaultedNamesById: Record<string, string | undefined>;
   isLoadingVaulted: boolean;
   vaultedError: Error | null;
   /** Id of the user-selected vaulted method, or `null` to fall back to the first method. */

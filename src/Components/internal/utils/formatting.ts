@@ -30,3 +30,13 @@ export function titleCaseFromType(type: string): string {
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join(' ');
 }
+
+// Mirrors the iOS SDK's maskEmail so vault rows read identically cross-platform (john@… → jo••••@…).
+export function maskEmail(email: string): string {
+  const atIndex = email.indexOf('@');
+  if (atIndex === -1) return email;
+  const localPart = email.slice(0, atIndex);
+  const domain = email.slice(atIndex);
+  const visiblePrefix = localPart.length <= 2 ? localPart : localPart.slice(0, 2);
+  return `${visiblePrefix}••••${domain}`;
+}

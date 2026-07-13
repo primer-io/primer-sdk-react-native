@@ -120,6 +120,7 @@ const readyContext: PrimerCheckoutContextValue = {
   },
   vaultedMethods: [],
   vaultedIconUrisById: {},
+  vaultedNamesById: {},
   isLoadingVaulted: false,
   vaultedError: null,
   setActiveMethod: () => {},

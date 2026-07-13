@@ -127,8 +127,11 @@ function makeRawCard(overrides: Partial<RawVaultedMethod> = {}): RawVaultedMetho
   };
 }
 
-function makeItem(raw: RawVaultedMethod, overrides: Partial<VaultedPaymentMethodItem> = {}): VaultedPaymentMethodItem {
+type CardVaultItem = Extract<VaultedPaymentMethodItem, { kind: 'card' }>;
+
+function makeItem(raw: RawVaultedMethod, overrides: Partial<CardVaultItem> = {}): CardVaultItem {
   return {
+    kind: 'card',
     id: raw.id,
     paymentMethodType: raw.paymentMethodType,
     paymentInstrumentType: raw.paymentInstrumentType,
@@ -137,6 +140,7 @@ function makeItem(raw: RawVaultedMethod, overrides: Partial<VaultedPaymentMethod
     expiryMonth: '05',
     expiryYear: '26',
     brandName: 'Mastercard',
+    network: raw.paymentInstrumentData?.network,
     rawMethod: raw,
     ...overrides,
   };
@@ -247,19 +251,56 @@ describe('PrimerVaultedPaymentMethod — US1 trigger', () => {
       paymentMethodType: 'PAYPAL',
       paymentInstrumentData: undefined,
     });
-    const paypal = makeItem(paypalRaw, {
-      brandName: undefined,
-      last4: undefined,
-      expiryMonth: undefined,
-      expiryYear: undefined,
-      cardholderName: undefined,
-    });
+    const paypal: VaultedPaymentMethodItem = {
+      kind: 'other',
+      id: paypalRaw.id,
+      paymentMethodType: paypalRaw.paymentMethodType,
+      paymentInstrumentType: paypalRaw.paymentInstrumentType,
+      detail: undefined,
+      rawMethod: paypalRaw,
+    };
     mockHookState.current = makeHook({
       requiresVaultedCardCvv: true,
       activeMethod: paypal,
       primaryMethod: paypal,
       originalDefault: paypal,
       vaultedMethods: [paypal],
+    });
+    let tree: any;
+    act(() => {
+      tree = renderer.create(createElement(PrimerVaultedPaymentMethod, {}));
+    });
+    const button = findCheckoutButton(tree.toJSON());
+    act(() => {
+      (button.props.onPress as () => void)();
+    });
+    expect(mockReplace).toHaveBeenCalledWith('processing');
+    expect(mockPay).toHaveBeenCalledWith();
+    expect(mockTrackEvent).not.toHaveBeenCalledWith('VAULT_CVV_REQUIRED_RENDERED', expect.anything());
+  });
+
+  it('bank (ACH) vaulted method bypasses CVV state even when flag is true', () => {
+    const bankRaw = makeRawCard({
+      id: 'vault-ach',
+      paymentInstrumentType: 'AUTOMATED_CLEARING_HOUSE',
+      paymentMethodType: 'STRIPE_ACH',
+      paymentInstrumentData: { bankName: 'STRIPE TEST BANK', accountNumberLast4Digits: 6789 },
+    });
+    const bank: VaultedPaymentMethodItem = {
+      kind: 'bank',
+      id: bankRaw.id,
+      paymentMethodType: bankRaw.paymentMethodType,
+      paymentInstrumentType: bankRaw.paymentInstrumentType,
+      bankName: 'STRIPE TEST BANK',
+      accountLast4: '6789',
+      rawMethod: bankRaw,
+    };
+    mockHookState.current = makeHook({
+      requiresVaultedCardCvv: true,
+      activeMethod: bank,
+      primaryMethod: bank,
+      originalDefault: bank,
+      vaultedMethods: [bank],
     });
     let tree: any;
     act(() => {

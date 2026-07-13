@@ -6,6 +6,7 @@ import { PrimerAnalytics } from './analytics';
 import { usePrimerTheme } from './internal/theme';
 import type { PrimerTokens } from './internal/theme';
 import { usePrimerLocalization } from './internal/localization';
+import { getVaultRowDisplay } from './internal/vaultRowDisplay';
 import { CheckoutRoute } from './internal/navigation/types';
 import { useNavigation } from './internal/navigation/useNavigation';
 import { CheckoutButton, VaultedCardCvvRow } from './internal/ui';
@@ -13,8 +14,6 @@ import { useCardNetworkDescriptor } from './hooks/useCardNetworkDescriptor';
 import { usePrimerVaultManager } from './hooks/usePrimerVaultManager';
 import { usePrimerCheckout } from './hooks/usePrimerCheckout';
 import type { PrimerVaultedPaymentMethodProps, VaultedPaymentMethodItem } from './types/VaultedPaymentMethodTypes';
-
-const CARD_PAYMENT_METHOD_TYPE = 'PAYMENT_CARD';
 
 export const VAULTED_PAYMENT_METHOD_ROW_HEIGHT = 68;
 
@@ -31,9 +30,8 @@ export function PrimerVaultedPaymentMethod({ data, onPay, style }: PrimerVaulted
   const requiresCvvInput = hook.cvvInputVisible;
   const [cvvValue, setCvvValue] = useState('');
 
-  const network = method?.rawMethod.paymentInstrumentData?.network ?? null;
-  const isCard = method?.paymentInstrumentType === CARD_PAYMENT_METHOD_TYPE;
-  const shouldRequireCvv = hook.requiresVaultedCardCvv && isCard;
+  const network = method?.kind === 'card' ? (method.network ?? null) : null;
+  const shouldRequireCvv = hook.requiresVaultedCardCvv && method?.kind === 'card';
   const descriptor = useCardNetworkDescriptor(network);
   const expectedCvvLength = descriptor.cvvLength;
   const isCvvComplete = !requiresCvvInput || cvvValue.length === expectedCvvLength;
@@ -107,36 +105,32 @@ export function PrimerVaultedPaymentMethod({ data, onPay, style }: PrimerVaulted
 
   if (!method) return null;
 
-  const maskedNumber = method.last4 != null ? t('primer_vault_format_masked', { last4: method.last4 }) : null;
-  const expiryText =
-    method.expiryMonth != null && method.expiryYear != null
-      ? t('primer_vault_format_expires', { month: method.expiryMonth, year: method.expiryYear })
-      : null;
+  const display = getVaultRowDisplay(method, t);
 
   return (
     <View style={[styles.outer, style]}>
       <View style={styles.tile}>
-        <View style={styles.row}>
+        <View style={styles.row} accessible accessibilityLabel={display.accessibilityLabel}>
           <View style={styles.leftCol}>
-            {method.cardholderName != null && (
+            {display.title != null && (
               <Text style={styles.primaryText} numberOfLines={1}>
-                {method.cardholderName}
+                {display.title}
               </Text>
             )}
             <View style={styles.brandRow}>
-              {method.brandIconUri != null && (
-                <Image source={{ uri: method.brandIconUri }} style={styles.brandIcon} resizeMode="contain" />
+              {display.iconUri != null && (
+                <Image source={{ uri: display.iconUri }} style={styles.brandIcon} resizeMode="contain" />
               )}
-              {method.brandName != null && (
+              {display.secondaryLabel != null && (
                 <Text style={styles.secondaryText} numberOfLines={1}>
-                  {method.brandName}
+                  {display.secondaryLabel}
                 </Text>
               )}
             </View>
           </View>
           <View style={styles.rightCol}>
-            {maskedNumber != null && <Text style={styles.mediumText}>{maskedNumber}</Text>}
-            {expiryText != null && <Text style={styles.secondaryText}>{expiryText}</Text>}
+            {display.maskedNumber != null && <Text style={styles.mediumText}>{display.maskedNumber}</Text>}
+            {display.expiryText != null && <Text style={styles.secondaryText}>{display.expiryText}</Text>}
           </View>
         </View>
         {requiresCvvInput && (

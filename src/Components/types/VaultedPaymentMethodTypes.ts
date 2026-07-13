@@ -2,25 +2,41 @@ import type { StyleProp, ViewStyle } from 'react-native';
 import type { PrimerVaultedPaymentMethod } from '../../models/PrimerVaultedPaymentMethod';
 import type { PrimerVaultedPaymentMethodAdditionalData } from '../../models/PrimerVaultedPaymentMethodAdditionalData';
 
-/** View-model for a single vaulted payment method, with derived display fields. */
-export interface VaultedPaymentMethodItem {
+const CARD_PAYMENT_METHOD_TYPE = 'PAYMENT_CARD';
+
+// New bank rails (SEPA, BACS, ACSS…) join this set — no new union arm needed.
+const BANK_INSTRUMENT_TYPES: ReadonlySet<string> = new Set(['AUTOMATED_CLEARING_HOUSE']);
+
+interface VaultBase {
   id: string;
   paymentMethodType: string;
   paymentInstrumentType: string;
-  /** Human-readable cardholder name (card vaults only). */
-  cardholderName?: string;
-  /** Last 4 digits as a string, masked-format ready. Card / bank-account vaults only. */
-  last4?: string;
-  /** Two-digit zero-padded expiry month. Card vaults only. */
-  expiryMonth?: string;
-  /** Two-digit expiry year (e.g. "26"). Card vaults only. */
-  expiryYear?: string;
-  /** Title-cased brand name for display (e.g. "Mastercard"). Card vaults only. */
-  brandName?: string;
-  /** Local file URI for the brand icon, resolved via AssetsManager. Card vaults only. */
-  brandIconUri?: string;
-  /** The underlying native method, preserved for consumers that need raw fields. */
+  /** Card-network logo OR payment-method glyph. */
+  iconUri?: string;
+  displayName?: string;
   rawMethod: PrimerVaultedPaymentMethod;
+}
+
+export type VaultedPaymentMethodItem =
+  | (VaultBase & {
+      kind: 'card';
+      cardholderName?: string;
+      last4?: string;
+      expiryMonth?: string;
+      expiryYear?: string;
+      network?: string;
+      brandName?: string;
+    })
+  | (VaultBase & { kind: 'bank'; bankName?: string; accountLast4?: string })
+  | (VaultBase & { kind: 'other'; detail?: string });
+
+export type VaultKind = VaultedPaymentMethodItem['kind'];
+
+// The single place a vaulted method's kind is decided.
+export function classifyVault(method: PrimerVaultedPaymentMethod): VaultKind {
+  if (method.paymentMethodType === CARD_PAYMENT_METHOD_TYPE) return 'card';
+  if (BANK_INSTRUMENT_TYPES.has(method.paymentInstrumentType)) return 'bank';
+  return 'other';
 }
 
 /** UI mode for the vault block on the method-selection surface. */

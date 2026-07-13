@@ -66,6 +66,7 @@ const baseContext: PrimerCheckoutContextValue = {
   cardFormState: { isValid: false, errors: {}, binData: null, metadata: null, requiredFields: [] },
   vaultedMethods: [],
   vaultedIconUrisById: {},
+  vaultedNamesById: {},
   isLoadingVaulted: false,
   vaultedError: null,
   setActiveMethod: () => {},

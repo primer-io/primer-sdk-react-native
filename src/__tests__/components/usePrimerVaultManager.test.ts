@@ -85,6 +85,7 @@ const baseContext: PrimerCheckoutContextValue = {
   cardFormState: { isValid: false, errors: {}, binData: null, metadata: null, requiredFields: [] },
   vaultedMethods: [],
   vaultedIconUrisById: {},
+  vaultedNamesById: {},
   isLoadingVaulted: false,
   vaultedError: null,
   setActiveMethod: () => {},
@@ -128,23 +129,38 @@ describe('usePrimerVaultManager', () => {
     };
     const { result } = renderHook(() => usePrimerVaultManager(), contextWrapper(ctx));
     const item = result.current.primaryMethod;
-    expect(item).not.toBeNull();
-    expect(item?.id).toBe('vault-1');
-    expect(item?.cardholderName).toBe('John Appleseed');
-    expect(item?.last4).toBe('1234');
-    expect(item?.expiryMonth).toBe('05');
-    expect(item?.expiryYear).toBe('26');
-    expect(item?.brandName).toBe('Mastercard');
-    expect(item?.brandIconUri).toBe('file:///tmp/mastercard.png');
+    expect(item?.kind).toBe('card');
+    if (item?.kind !== 'card') throw new Error('expected a card vault');
+    expect(item.id).toBe('vault-1');
+    expect(item.cardholderName).toBe('John Appleseed');
+    expect(item.last4).toBe('1234');
+    expect(item.expiryMonth).toBe('05');
+    expect(item.expiryYear).toBe('26');
+    expect(item.brandName).toBe('Mastercard');
+    expect(item.network).toBe('MASTERCARD');
+    expect(item.iconUri).toBe('file:///tmp/mastercard.png');
   });
 
-  it('falls back to accountNumberLast4Digits when last4Digits is missing', () => {
-    const vault = makeCardVault({
-      paymentInstrumentData: { last4Digits: undefined, accountNumberLast4Digits: 7890 },
-    });
-    const ctx: PrimerCheckoutContextValue = { ...baseContext, vaultedMethods: [vault] };
+  it('parses a bank (ACH) vault: kind, bankName, accountLast4, displayName', () => {
+    const bank: PrimerVaultedPaymentMethod = {
+      id: 'ach-1',
+      analyticsId: 'a',
+      paymentInstrumentType: 'AUTOMATED_CLEARING_HOUSE',
+      paymentMethodType: 'STRIPE_ACH',
+      paymentInstrumentData: { bankName: 'STRIPE TEST BANK', accountNumberLast4Digits: 6789 },
+    };
+    const ctx: PrimerCheckoutContextValue = {
+      ...baseContext,
+      vaultedMethods: [bank],
+      vaultedNamesById: { 'ach-1': 'ACH Direct Debit' },
+    };
     const { result } = renderHook(() => usePrimerVaultManager(), contextWrapper(ctx));
-    expect(result.current.primaryMethod?.last4).toBe('7890');
+    const item = result.current.primaryMethod;
+    expect(item?.kind).toBe('bank');
+    if (item?.kind !== 'bank') throw new Error('expected a bank vault');
+    expect(item.bankName).toBe('STRIPE TEST BANK');
+    expect(item.accountLast4).toBe('6789');
+    expect(item.displayName).toBe('ACH Direct Debit');
   });
 
   it('picks the first method as primary', () => {
@@ -188,7 +204,7 @@ describe('usePrimerVaultManager', () => {
     expect(result.current.error).toBe(err);
   });
 
-  it('leaves card fields undefined for non-card vaults (e.g. PayPal)', () => {
+  it('parses a non-card vault (PayPal) as kind "other" with detail + displayName', () => {
     const paypal: PrimerVaultedPaymentMethod = {
       id: 'pp-1',
       analyticsId: 'a',
@@ -196,12 +212,17 @@ describe('usePrimerVaultManager', () => {
       paymentMethodType: 'PAYPAL',
       paymentInstrumentData: { externalPayerInfo: { email: 'a@b.c' } },
     };
-    const ctx: PrimerCheckoutContextValue = { ...baseContext, vaultedMethods: [paypal] };
+    const ctx: PrimerCheckoutContextValue = {
+      ...baseContext,
+      vaultedMethods: [paypal],
+      vaultedNamesById: { 'pp-1': 'PayPal' },
+    };
     const { result } = renderHook(() => usePrimerVaultManager(), contextWrapper(ctx));
     const item = result.current.primaryMethod;
-    expect(item?.cardholderName).toBeUndefined();
-    expect(item?.expiryMonth).toBeUndefined();
-    expect(item?.brandName).toBeUndefined();
+    expect(item?.kind).toBe('other');
+    if (item?.kind !== 'other') throw new Error('expected an other-kind vault');
+    expect(item.detail).toBe('a••••@b.c');
+    expect(item.displayName).toBe('PayPal');
   });
 
   describe('originalDefault & activeMethod', () => {

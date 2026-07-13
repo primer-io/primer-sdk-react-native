@@ -1,5 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { usePrimerCheckout } from './usePrimerCheckout';
+import { classifyVault } from '../types/VaultedPaymentMethodTypes';
+import { maskEmail } from '../internal/utils/formatting';
 import type {
   UsePrimerVaultManagerReturn,
   VaultDisplayMode,
@@ -7,8 +9,6 @@ import type {
 } from '../types/VaultedPaymentMethodTypes';
 import type { PrimerVaultedPaymentMethod } from '../../models/PrimerVaultedPaymentMethod';
 import type { PrimerVaultedPaymentMethodAdditionalData } from '../../models/PrimerVaultedPaymentMethodAdditionalData';
-
-const CARD_PAYMENT_METHOD_TYPE = 'PAYMENT_CARD';
 
 function titleCase(value: string): string {
   const lower = value.toLowerCase();
@@ -20,35 +20,56 @@ function pad2(value: number | undefined): string | undefined {
   return value < 10 ? `0${value}` : String(value);
 }
 
-function toVaultedItem(method: PrimerVaultedPaymentMethod, iconUri: string | undefined): VaultedPaymentMethodItem {
-  const isCard = method.paymentMethodType === CARD_PAYMENT_METHOD_TYPE;
+function parseVaultedMethod(
+  method: PrimerVaultedPaymentMethod,
+  iconUri: string | undefined,
+  displayName: string | undefined
+): VaultedPaymentMethodItem {
   const instrument = method.paymentInstrumentData;
-
-  const last4Raw = instrument?.last4Digits ?? instrument?.accountNumberLast4Digits;
-  const last4 = last4Raw != null ? String(last4Raw) : undefined;
-
-  const yearRaw = instrument?.expirationYear;
-  // Year field is typed as `number` (e.g. 2026) — display the last two digits for the card row.
-  const expiryYear = yearRaw != null ? String(yearRaw).slice(-2) : undefined;
-
-  return {
+  const base = {
     id: method.id,
     paymentMethodType: method.paymentMethodType,
     paymentInstrumentType: method.paymentInstrumentType,
-    cardholderName: isCard ? instrument?.cardholderName : undefined,
-    last4,
-    expiryMonth: isCard ? pad2(instrument?.expirationMonth) : undefined,
-    expiryYear: isCard ? expiryYear : undefined,
-    brandName: isCard && instrument?.network ? titleCase(instrument.network) : undefined,
-    brandIconUri: iconUri,
+    iconUri,
+    displayName,
     rawMethod: method,
   };
+
+  switch (classifyVault(method)) {
+    case 'card': {
+      const yearRaw = instrument?.expirationYear;
+      return {
+        ...base,
+        kind: 'card',
+        cardholderName: instrument?.cardholderName,
+        last4: instrument?.last4Digits != null ? String(instrument.last4Digits) : undefined,
+        expiryMonth: pad2(instrument?.expirationMonth),
+        // Year field is typed as `number` (e.g. 2026) — display the last two digits.
+        expiryYear: yearRaw != null ? String(yearRaw).slice(-2) : undefined,
+        network: instrument?.network,
+        brandName: instrument?.network ? titleCase(instrument.network) : undefined,
+      };
+    }
+    case 'bank':
+      return {
+        ...base,
+        kind: 'bank',
+        bankName: instrument?.bankName,
+        accountLast4:
+          instrument?.accountNumberLast4Digits != null ? String(instrument.accountNumberLast4Digits) : undefined,
+      };
+    case 'other': {
+      const email = instrument?.externalPayerInfo?.email;
+      return { ...base, kind: 'other', detail: email ? maskEmail(email) : undefined };
+    }
+  }
 }
 
 export function usePrimerVaultManager(): UsePrimerVaultManagerReturn {
   const {
     vaultedMethods: rawMethods,
     vaultedIconUrisById,
+    vaultedNamesById,
     isLoadingVaulted,
     vaultedError,
     payFromVault,
@@ -62,8 +83,8 @@ export function usePrimerVaultManager(): UsePrimerVaultManagerReturn {
   } = usePrimerCheckout();
 
   const vaultedMethods = useMemo<VaultedPaymentMethodItem[]>(
-    () => rawMethods.map((m) => toVaultedItem(m, vaultedIconUrisById[m.id])),
-    [rawMethods, vaultedIconUrisById]
+    () => rawMethods.map((m) => parseVaultedMethod(m, vaultedIconUrisById[m.id], vaultedNamesById[m.id])),
+    [rawMethods, vaultedIconUrisById, vaultedNamesById]
   );
 
   const originalDefault = vaultedMethods[0] ?? null;
