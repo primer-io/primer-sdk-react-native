@@ -253,7 +253,7 @@ describe('PrimerCheckoutProvider — Stripe ACH slice', () => {
     act(() => {
       capturedAchProps?.onValidationError?.({
         data: { validatableDataName: 'emailAddress', value: 'broken' },
-        error: cancellationError,
+        errors: [{ description: 'Cancelled' }],
       });
     });
     expect(ctx().achIsValid).toBe(false);

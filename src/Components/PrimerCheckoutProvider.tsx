@@ -1330,7 +1330,7 @@ export function PrimerCheckoutProvider({
           onInvalid: (data) => applyValidation(data.data, false, firstValidationMessage(data.errors)),
           onValid: (data) => applyValidation(data.data, true),
           onValidating: () => {},
-          onValidationError: (data) => applyValidation(data.data, false, data.error?.description),
+          onValidationError: (data) => applyValidation(data.data, false, firstValidationMessage(data.errors)),
         });
         if (cancelled) {
           // Effect was torn down mid-provide (its cleanup ran before this component was assigned):
