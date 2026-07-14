@@ -7,8 +7,8 @@ import type {
   PrimerValidatingComponentData,
 } from '../../../models/PrimerComponentDataValidation';
 import { PrimerError } from '../../../models/PrimerError';
-import { eventTypes } from './Utils/EventType';
 import type { EventType } from './Utils/EventType';
+import { unwrapNativeError } from './Utils/unwrapNativeError';
 import type { AchStep } from '../../../models/ach/AchSteps';
 import type { AchValidatableData } from '../../../models/ach/AchCollectableData';
 
@@ -56,9 +56,18 @@ export interface StripeAchUserDetailsComponent {
    * last name and email address.
    */
   submit(): Promise<void>;
+
+  /**
+   * Tears down the underlying native component and releases the JS event
+   * subscriptions registered by {@link PrimerHeadlessUniversalCheckoutAchManager.provide},
+   * allowing consecutive Stripe ACH payments within the same app session.
+   */
+  cleanUp(): Promise<void>;
 }
 
 export class PrimerHeadlessUniversalCheckoutAchManager {
+  private subscriptions: EmitterSubscription[] = [];
+
   ///////////////////////////////////////////
   // Init
   ///////////////////////////////////////////
@@ -68,25 +77,31 @@ export class PrimerHeadlessUniversalCheckoutAchManager {
   // API
   ///////////////////////////////////////////
 
-  async provide(props: AchManagerProps): Promise<StripeAchUserDetailsComponent | any> {
+  async provide(props: AchManagerProps): Promise<StripeAchUserDetailsComponent | null> {
+    // Drain any subscriptions left over from a previous provide() on this instance.
+    this.drainSubscriptions();
     await this.configureListeners(props);
 
     if (props.paymentMethodType === 'STRIPE_ACH') {
       const component: StripeAchUserDetailsComponent = {
         start: async () => {
-          RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent.start();
+          await RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent.start();
         },
         submit: async () => {
-          RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent.submit();
+          await RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent.submit();
         },
         handleFirstNameChange: async (value: String) => {
-          RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent.onSetFirstName(value);
+          await RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent.onSetFirstName(value);
         },
         handleLastNameChange: async (value: String) => {
-          RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent.onSetLastName(value);
+          await RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent.onSetLastName(value);
         },
         handleEmailAddressChange: async (value: String) => {
-          RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent.onSetEmailAddress(value);
+          await RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent.onSetEmailAddress(value);
+        },
+        cleanUp: async () => {
+          await RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent.cleanUp();
+          this.drainSubscriptions();
         },
       };
       await RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent.configure();
@@ -98,39 +113,46 @@ export class PrimerHeadlessUniversalCheckoutAchManager {
 
   private async configureListeners(props: AchManagerProps): Promise<void> {
     if (props?.onStep) {
-      void this.addListener('onStep', (data) => {
+      const sub = await this.addListener('onStep', (data) => {
         props.onStep?.(data);
       });
+      this.subscriptions.push(sub);
     }
 
     if (props?.onInvalid) {
-      void this.addListener('onInvalid', (data) => {
+      const sub = await this.addListener('onInvalid', (data) => {
         props.onInvalid?.(data);
       });
+      this.subscriptions.push(sub);
     }
 
     if (props?.onError) {
-      void this.addListener('onError', (data) => {
-        props.onError?.(data);
+      const sub = await this.addListener('onError', (data) => {
+        const error = unwrapNativeError(data);
+        if (error) props.onError?.(error);
       });
+      this.subscriptions.push(sub);
     }
 
     if (props?.onValid) {
-      void this.addListener('onValid', (data) => {
+      const sub = await this.addListener('onValid', (data) => {
         props.onValid?.(data);
       });
+      this.subscriptions.push(sub);
     }
 
     if (props?.onValidating) {
-      void this.addListener('onValidating', (data) => {
+      const sub = await this.addListener('onValidating', (data) => {
         props.onValidating?.(data);
       });
+      this.subscriptions.push(sub);
     }
 
     if (props?.onValidationError) {
-      void this.addListener('onValidationError', (data) => {
+      const sub = await this.addListener('onValidationError', (data) => {
         props.onValidationError?.(data);
       });
+      this.subscriptions.push(sub);
     }
   }
 
@@ -143,14 +165,24 @@ export class PrimerHeadlessUniversalCheckoutAchManager {
   }
 
   removeListener(subscription: EmitterSubscription): void {
-    return subscription.remove();
+    subscription.remove();
+    this.subscriptions = this.subscriptions.filter((sub) => sub !== subscription);
   }
 
   removeAllListenersForEvent(eventType: EventType) {
     eventEmitter.removeAllListeners(eventType);
   }
 
+  // Routes through per-instance bookkeeping. Avoids the global-nuke approach
+  // (eventEmitter.removeAllListeners(eventName)) which on Android would also
+  // wipe other modules' listeners for overlapping event names like onError —
+  // those modules share the global RCTDeviceEventEmitter.
   removeAllListeners() {
-    eventTypes.forEach((eventType) => this.removeAllListenersForEvent(eventType));
+    this.drainSubscriptions();
+  }
+
+  private drainSubscriptions(): void {
+    this.subscriptions.forEach((subscription) => subscription.remove());
+    this.subscriptions = [];
   }
 }

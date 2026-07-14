@@ -18,16 +18,19 @@ jest.mock(
   { virtual: true }
 );
 
-// stopBanks is the disarm we assert on; the rest of the context surface is stubbed.
-// `mock`-prefixed name so the hoisted jest.mock factory may reference it.
+// stopBanks/stopAch are the disarms we assert on; the rest of the context surface is stubbed.
+// `mock`-prefixed names so the hoisted jest.mock factory may reference them.
 const mockStopBanks = jest.fn();
 const mockStopKlarna = jest.fn();
+const mockStopAch = jest.fn();
 jest.mock('../../Components/hooks/usePrimerCheckout', () => ({
   usePrimerCheckout: () => ({
     setActiveMethod: jest.fn(),
     startNativeUI: jest.fn(),
     stopBanks: mockStopBanks,
     stopKlarna: mockStopKlarna,
+    startAch: jest.fn().mockResolvedValue(undefined),
+    stopAch: mockStopAch,
   }),
 }));
 

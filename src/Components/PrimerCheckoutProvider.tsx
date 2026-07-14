@@ -6,6 +6,8 @@ import PrimerHeadlessUniversalCheckoutRawDataManager from '../HeadlessUniversalC
 import PrimerHeadlessUniversalCheckoutPaymentMethodNativeUIManager from '../HeadlessUniversalCheckout/Managers/PaymentMethodManagers/NativeUIManager';
 import { PrimerHeadlessUniversalCheckoutComponentWithRedirectManager } from '../HeadlessUniversalCheckout/Managers/PaymentMethodManagers/ComponentWithRedirectManager';
 import { PrimerHeadlessUniversalCheckoutKlarnaManager } from '../HeadlessUniversalCheckout/Managers/PaymentMethodManagers/KlarnaManager';
+import { PrimerHeadlessUniversalCheckoutAchManager } from '../HeadlessUniversalCheckout/Managers/PaymentMethodManagers/AchManager';
+import { PrimerHeadlessUniversalCheckoutAchMandateManager } from '../HeadlessUniversalCheckout/Managers/PaymentMethodManagers/AchMandateManager';
 import PrimerHeadlessUniversalCheckoutVaultManager from '../HeadlessUniversalCheckout/Managers/VaultManager';
 import { PrimerHeadlessUniversalCheckout } from '../HeadlessUniversalCheckout/PrimerHeadlessUniversalCheckout';
 import { PrimerError } from '../models/PrimerError';
@@ -17,6 +19,8 @@ import { mergeTokens } from './internal/theme/merge';
 import { ThemeContext } from './internal/theme/ThemeContext';
 import { defaultDarkTokens, defaultLightTokens } from './internal/theme/tokens';
 import { toError } from './internal/utils/errors';
+import { translate } from './internal/localization';
+import { resolveLocale } from './internal/localization/locale-resolver';
 import { GOOGLE_PAY, isGooglePaySupported } from './internal/googlePay';
 import { APPLE_PAY, isApplePaySupported } from './internal/applePay';
 import { titleCaseFromType } from './internal/utils/formatting';
@@ -34,6 +38,10 @@ import type {
   PrimerCheckoutContextValue,
   PaymentOutcome,
   CardFormState,
+  StripeAchStep,
+  StripeAchUserDetails,
+  StripeAchFieldErrors,
+  StripeAchMandateDisplay,
 } from './types/PrimerCheckoutProviderTypes';
 import type { CardFormErrors, CardFormField } from './types/CardFormTypes';
 import type { CardNetworkId } from './internal/cardNetwork';
@@ -43,6 +51,9 @@ import type { BanksStep } from '../models/banks/BanksSteps';
 import type { IssuingBank } from '../models/IssuingBank';
 import type { KlarnaPaymentCategory } from '../models/klarna/KlarnaPaymentCategory';
 import type { KlarnaPaymentStep } from '../models/klarna/KlarnaPaymentSteps';
+import type { StripeAchUserDetailsComponent } from '../HeadlessUniversalCheckout/Managers/PaymentMethodManagers/AchManager';
+import type { AchValidatableData } from '../models/ach/AchCollectableData';
+import type { PrimerValidationError } from '../models/PrimerValidationError';
 
 const LOG = '[PrimerCheckoutProvider]';
 
@@ -55,6 +66,25 @@ const initialCardFormState: CardFormState = {
   metadata: null,
   requiredFields: [],
 };
+
+const EMPTY_ACH_USER_DETAILS: StripeAchUserDetails = { firstName: '', lastName: '', emailAddress: '' };
+
+const ACH_FIELDS = ['firstName', 'lastName', 'emailAddress'] as const;
+type AchFieldName = (typeof ACH_FIELDS)[number];
+
+/** ACH slice reset, spread on every teardown path (terminal outcome, decline, stopAch, re-arm). */
+const ACH_RESET = {
+  activeAchMethod: null as string | null,
+  achStep: 'idle' as StripeAchStep,
+  achUserDetails: EMPTY_ACH_USER_DETAILS,
+  achFieldErrors: {} as StripeAchFieldErrors,
+  achFieldValidity: {} as Partial<Record<AchFieldName, boolean>>,
+  achMandate: null as StripeAchMandateDisplay | null,
+};
+
+// Fallback window for a mandate-decline confirmation that never arrives on any native channel
+// (cross-platform cancel codes are unverified) — long enough that a real confirmation always wins.
+const ACH_DECLINE_CONFIRM_TIMEOUT_MS = 8000;
 
 interface InternalState {
   isReady: boolean;
@@ -80,6 +110,14 @@ interface InternalState {
   selectedKlarnaCategoryId: string | null;
   isKlarnaViewLoaded: boolean;
   isKlarnaLoading: boolean;
+  /** Active Stripe ACH method, or null. Drives the ACH lifecycle effect. */
+  activeAchMethod: string | null;
+  achStep: StripeAchStep;
+  achUserDetails: StripeAchUserDetails;
+  achFieldErrors: StripeAchFieldErrors;
+  /** Per-field native validation verdicts; a field gates submit until it lands `true`. */
+  achFieldValidity: Partial<Record<AchFieldName, boolean>>;
+  achMandate: StripeAchMandateDisplay | null;
   vaultedMethods: PrimerVaultedPaymentMethod[];
   vaultedIconUrisById: Record<string, string | undefined>;
   vaultedNamesById: Record<string, string | undefined>;
@@ -116,6 +154,7 @@ const initialState: InternalState = {
   selectedKlarnaCategoryId: null,
   isKlarnaViewLoaded: false,
   isKlarnaLoading: false,
+  ...ACH_RESET,
   vaultedMethods: [],
   vaultedIconUrisById: {},
   vaultedNamesById: {},
@@ -138,10 +177,17 @@ const PAYMENT_ATTEMPT_RESET = {
 /**
  * Native `onCheckoutComplete` fires for every terminal checkout, including
  * FAILED ones — so we inspect `payment.status` to pick the result screen.
+ * ACH commonly authorizes now and settles later, so a PENDING result of an
+ * ACH attempt gets a dedicated `'pending'` outcome; other methods keep the
+ * legacy mapping (`checkoutData` carries no payment-method type, so the
+ * caller passes whether the last attempt was ACH).
  */
-function buildPaymentOutcome(checkoutData: PrimerCheckoutData): PaymentOutcome {
+function buildPaymentOutcome(checkoutData: PrimerCheckoutData, achAttempt: boolean): PaymentOutcome {
   const payment = checkoutData?.payment;
   if (payment?.status !== 'FAILED') {
+    if (achAttempt && payment?.status === 'PENDING') {
+      return { status: 'pending', data: checkoutData };
+    }
     return { status: 'success', data: checkoutData };
   }
   const errorCode = payment.paymentFailureReason ?? 'payment-failed';
@@ -151,6 +197,30 @@ function buildPaymentOutcome(checkoutData: PrimerCheckoutData): PaymentOutcome {
     error: new PrimerError('payment-failed', errorCode, description, undefined, undefined),
     data: checkoutData,
   };
+}
+
+/**
+ * Full text from settings wins; otherwise the localized template with the merchant name applied.
+ * Null when no usable mandate source is configured — never render legal text with blanks.
+ */
+function resolveMandateDisplay(settings: PrimerSettings | undefined): StripeAchMandateDisplay | null {
+  const mandateData = settings?.paymentMethodOptions?.stripeOptions?.mandateData;
+  if (!mandateData) return null;
+  if ('fullMandateText' in mandateData && mandateData.fullMandateText) {
+    return { text: mandateData.fullMandateText, source: 'fullMandateText' };
+  }
+  if ('merchantName' in mandateData && mandateData.merchantName) {
+    const { locale } = resolveLocale();
+    return {
+      text: translate('primer_ach_mandate_template', locale, { merchantName: mandateData.merchantName }),
+      source: 'template',
+    };
+  }
+  return null;
+}
+
+function firstValidationMessage(errors: PrimerValidationError[] | undefined): string | undefined {
+  return errors?.[0]?.description;
 }
 
 // Native validation errors carry a free-form `errorId` like `invalid-card-number`. The table
@@ -245,6 +315,50 @@ export function PrimerCheckoutProvider({
   const klarnaComponentRef = useRef<KlarnaComponent | null>(null);
   // finalizePayment() is issued at most once per authorize (onStep auto-finalize vs the hook's finalize()).
   const klarnaFinalizeIssuedRef = useRef(false);
+  // Stripe ACH manager + user-details component + mandate manager. Lifecycle driven by
+  // `state.activeAchMethod`, mirroring the banks flow above.
+  const achManagerRef = useRef<PrimerHeadlessUniversalCheckoutAchManager | null>(null);
+  const achComponentRef = useRef<StripeAchUserDetailsComponent | null>(null);
+  const achMandateManagerRef = useRef<PrimerHeadlessUniversalCheckoutAchMandateManager | null>(null);
+  // Armed while a mandate decline is in flight (shopper decline, or the mandate-misconfig
+  // auto-decline): the next native error is the decline confirmation to consume — no outcome
+  // (no error screen) while the merchant callbacks still fire.
+  const achDeclineInFlightRef = useRef(false);
+  // Backstops a decline confirmation that never lands, so the flow can't strand or swallow a
+  // later unrelated error.
+  const achDeclineTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const clearAchDeclineTimeout = useCallback(() => {
+    if (achDeclineTimeoutRef.current !== null) {
+      clearTimeout(achDeclineTimeoutRef.current);
+      achDeclineTimeoutRef.current = null;
+    }
+  }, []);
+
+  const armAchDeclineTimeout = useCallback(() => {
+    clearAchDeclineTimeout();
+    achDeclineTimeoutRef.current = setTimeout(() => {
+      achDeclineTimeoutRef.current = null;
+      if (!achDeclineInFlightRef.current) return;
+      console.warn(`${LOG} ACH decline confirmation timed out — force-resetting`);
+      achDeclineInFlightRef.current = false;
+      setState((prev) => (prev.activeAchMethod === null ? prev : { ...prev, ...ACH_RESET }));
+    }, ACH_DECLINE_CONFIRM_TIMEOUT_MS);
+  }, [clearAchDeclineTimeout]);
+
+  // Shopper-initiated mandate decline: consume the confirmation error on whichever native
+  // channel it arrives — no outcome (no error screen), merchant callbacks still informed.
+  const consumeAchDecline = useCallback(
+    (error: PrimerError, checkoutData: PrimerCheckoutData | null | undefined) => {
+      clearAchDeclineTimeout();
+      achDeclineInFlightRef.current = false;
+      console.warn(`${LOG} ACH mandate declined — consuming ${error.errorId ?? 'unknown'} (no outcome published)`);
+      setState((prev) => ({ ...prev, ...ACH_RESET }));
+      onErrorRef.current?.(error, checkoutData ?? null);
+      settingsRef.current?.headlessUniversalCheckoutCallbacks?.onError?.(error, checkoutData ?? null);
+    },
+    [clearAchDeclineTimeout]
+  );
   // Vault manager is lazy — created on first vault fetch, reused across client-session updates,
   // cleared on session teardown alongside `PrimerHeadlessUniversalCheckout.cleanUp()`.
   const vaultManagerRef = useRef<PrimerHeadlessUniversalCheckoutVaultManager | null>(null);
@@ -301,6 +415,11 @@ export function PrimerCheckoutProvider({
           settingsRef.current?.headlessUniversalCheckoutCallbacks?.onClientSessionUpdate?.(clientSession);
         },
         onError: (error, checkoutData) => {
+          if (achDeclineInFlightRef.current) {
+            consumeAchDecline(error, checkoutData);
+            return;
+          }
+          const achArmed = stateRef.current.activeAchMethod !== null;
           setState((prev) => {
             // Init-time errors → `error`. Payment-time errors → `paymentOutcome` → error
             // screen. This includes Google Pay's 'payment-cancelled', surfaced as a failure.
@@ -308,6 +427,7 @@ export function PrimerCheckoutProvider({
               return {
                 ...prev,
                 ...PAYMENT_ATTEMPT_RESET,
+                ...(achArmed ? ACH_RESET : null),
                 paymentOutcome: { status: 'error', error, data: checkoutData ?? null },
               };
             }
@@ -321,10 +441,18 @@ export function PrimerCheckoutProvider({
           // Native fires onCheckoutComplete for any finished checkout — including
           // FAILED payments — so we have to read `payment.status` to decide which
           // result screen to show. Backend statuses: SUCCESS | FAILED | PENDING.
+          const achArmed = stateRef.current.activeAchMethod !== null;
+          if (achArmed) {
+            achDeclineInFlightRef.current = false;
+          }
+          // The attempt tracker (set by every pay path) decides the ACH-only 'pending' mapping —
+          // it reflects the payment that actually completed, unlike the armed-flow flag.
+          const achAttempt = lastAttemptedMethodRef.current === 'STRIPE_ACH';
           setState((prev) => ({
             ...prev,
             ...PAYMENT_ATTEMPT_RESET,
-            paymentOutcome: buildPaymentOutcome(checkoutData),
+            ...(achArmed ? ACH_RESET : null),
+            paymentOutcome: buildPaymentOutcome(checkoutData, achAttempt),
           }));
           onCheckoutCompleteRef.current?.(checkoutData);
           settingsRef.current?.headlessUniversalCheckoutCallbacks?.onCheckoutComplete?.(checkoutData);
@@ -364,11 +492,56 @@ export function PrimerCheckoutProvider({
           settingsRef.current?.headlessUniversalCheckoutCallbacks?.onCheckoutPending?.(additionalInfo);
         };
       }
-      if (userCallbacks?.onCheckoutAdditionalInfo) {
-        callbacks.onCheckoutAdditionalInfo = (additionalInfo) => {
-          settingsRef.current?.headlessUniversalCheckoutCallbacks?.onCheckoutAdditionalInfo?.(additionalInfo);
-        };
-      }
+      // Always-subscribed: while a CC ACH flow is armed, CC owns the mandate event (never
+      // forwarded — answering it twice would race the one-shot native completion). Everything
+      // else forwards to the merchant callback; with none supplied, an unhandled event becomes a
+      // visible error outcome, matching the native bridges' old "callback not implemented" error.
+      callbacks.onCheckoutAdditionalInfo = (additionalInfo) => {
+        if (
+          additionalInfo?.additionalInfoName === 'DisplayStripeAchMandateAdditionalInfo' &&
+          stateRef.current.activeAchMethod !== null
+        ) {
+          const mandate = resolveMandateDisplay(settingsRef.current);
+          if (!mandate) {
+            // Misconfiguration (no usable stripeOptions.mandateData): release the native mandate
+            // and fail loud instead of rendering legal text with a blank merchant name.
+            achDeclineInFlightRef.current = true;
+            armAchDeclineTimeout();
+            void achMandateManagerRef.current?.declineMandate().catch((declineErr) => {
+              clearAchDeclineTimeout();
+              achDeclineInFlightRef.current = false;
+              console.warn(`${LOG} ACH mandate-config decline failed ${fmt(declineErr)}`);
+            });
+            const error = new PrimerError(
+              'stripe-ach-mandate-config',
+              'stripe-ach-mandate-config',
+              'stripeOptions.mandateData (merchantName or fullMandateText) is required to present the ACH mandate.',
+              undefined,
+              undefined
+            );
+            setState((prev) => ({ ...prev, ...ACH_RESET, paymentOutcome: { status: 'error', error, data: null } }));
+            onErrorRef.current?.(error, null);
+            settingsRef.current?.headlessUniversalCheckoutCallbacks?.onError?.(error, null);
+            return;
+          }
+          setState((prev) => ({ ...prev, achStep: 'mandatePending', achMandate: mandate }));
+          return;
+        }
+        const merchantCallback = settingsRef.current?.headlessUniversalCheckoutCallbacks?.onCheckoutAdditionalInfo;
+        if (merchantCallback) {
+          merchantCallback(additionalInfo);
+          return;
+        }
+        console.warn(`${LOG} unhandled additionalInfo ${additionalInfo?.additionalInfoName}`);
+        const error = new PrimerError(
+          'additional-info-unhandled',
+          'additional-info-unhandled',
+          `No handler for additionalInfo '${additionalInfo?.additionalInfoName}'. Provide headlessUniversalCheckoutCallbacks.onCheckoutAdditionalInfo.`,
+          undefined,
+          undefined
+        );
+        setState((prev) => (prev.isReady ? { ...prev, paymentOutcome: { status: 'error', error, data: null } } : prev));
+      };
       if (userCallbacks?.onBeforeClientSessionUpdate) {
         callbacks.onBeforeClientSessionUpdate = () => {
           settingsRef.current?.headlessUniversalCheckoutCallbacks?.onBeforeClientSessionUpdate?.();
@@ -449,6 +622,11 @@ export function PrimerCheckoutProvider({
       }
       // Vault manager is tied to the native session — let the next session recreate it.
       vaultManagerRef.current = null;
+      // Clear any pending ACH decline-confirmation backstop so it can't fire after teardown.
+      if (achDeclineTimeoutRef.current !== null) {
+        clearTimeout(achDeclineTimeoutRef.current);
+        achDeclineTimeoutRef.current = null;
+      }
       void PrimerHeadlessUniversalCheckout.cleanUp();
     };
   }, [clientToken]);
@@ -457,6 +635,8 @@ export function PrimerCheckoutProvider({
   useEffect(() => {
     const outcome = state.paymentOutcome;
     if (outcome === null) return;
+    // Authorized-awaiting-settlement (ACH) — mirrors the PENDING guard below: not a completed payment.
+    if (outcome.status === 'pending') return;
     const paymentMethod = lastAttemptedMethodRef.current ?? 'UNKNOWN';
     if (outcome.status === 'success') {
       // PENDING reaches the 'success' outcome but isn't a completed payment — don't count it.
@@ -851,7 +1031,12 @@ export function PrimerCheckoutProvider({
     const manager = managerRef.current;
     if (!method || !manager) {
       console.warn(`${LOG} retry: no active method or manager ${fmt({ method, hasManager: !!manager })}`);
-      return;
+      // Nothing card-retryable (e.g. an ACH/native-UI error routed to the shared ErrorScreen):
+      // reject so the caller re-shows the error instead of stranding on the processing spinner.
+      const outcome = stateRef.current.paymentOutcome;
+      throw outcome?.status === 'error'
+        ? outcome.error
+        : new PrimerError('retry-unavailable', undefined, 'Nothing to retry.', undefined, undefined);
     }
     // iOS workaround: the native iOS RawDataManager nullifies its delegate on successful
     // tokenization, so any post-tokenize failure would silently drop subsequent submit()
@@ -1067,6 +1252,133 @@ export function PrimerCheckoutProvider({
     };
   }, [state.activeKlarnaMethod, state.isReady]);
 
+  // --- Stripe ACH lifecycle — details collection + mandate ---
+  // Keyed on `activeAchMethod` (armed by startAch): provide the user-details component, subscribe
+  // to its step/validation events, and start it. The bank collector is native/Stripe-owned; the
+  // mandate arrives via the always-subscribed onCheckoutAdditionalInfo; the terminal outcome
+  // arrives through the shared onCheckoutComplete / onError.
+  useEffect(() => {
+    if (!state.isReady || !state.activeAchMethod) {
+      return;
+    }
+
+    const method = state.activeAchMethod;
+    let cancelled = false;
+    const manager = new PrimerHeadlessUniversalCheckoutAchManager();
+    achManagerRef.current = manager;
+
+    const applyValidation = (data: AchValidatableData, valid: boolean, message?: string) => {
+      if (cancelled) return;
+      const field = data.validatableDataName;
+      const nextError = valid ? undefined : (message ?? 'Invalid');
+      setState((prev) =>
+        // Identity bail-out: native re-validates per keystroke; skip the no-op verdicts.
+        prev.achFieldValidity[field] === valid && prev.achFieldErrors[field] === nextError
+          ? prev
+          : {
+              ...prev,
+              achFieldValidity: { ...prev.achFieldValidity, [field]: valid },
+              achFieldErrors: { ...prev.achFieldErrors, [field]: nextError },
+            }
+      );
+    };
+
+    const publishAchError = (error: PrimerError) => {
+      if (achDeclineInFlightRef.current) {
+        // Decline confirmations can surface through this channel too — same consume rule.
+        consumeAchDecline(error, null);
+        return;
+      }
+      setState((prev) =>
+        prev.isReady
+          ? { ...prev, ...ACH_RESET, paymentOutcome: { status: 'error', error, data: null } }
+          : { ...prev, ...ACH_RESET, error }
+      );
+    };
+
+    void (async () => {
+      try {
+        const component: StripeAchUserDetailsComponent | null = await manager.provide({
+          paymentMethodType: method,
+          onStep: (step) => {
+            if (cancelled) return;
+            if (step.stepName === 'userDetailsRetrieved') {
+              const details: StripeAchUserDetails = {
+                firstName: step.firstName ?? '',
+                lastName: step.lastName ?? '',
+                emailAddress: step.emailAddress ?? '',
+              };
+              setState((prev) => ({ ...prev, achStep: 'collectingDetails', achUserDetails: details }));
+              // Route prefills through native validation so a prefilled form gates and submits
+              // like a typed one. Empty fields stay unvalidated: the gate holds without showing
+              // premature errors.
+              const activeComponent = achComponentRef.current;
+              if (activeComponent) {
+                if (details.firstName) void activeComponent.handleFirstNameChange(details.firstName).catch(() => {});
+                if (details.lastName) void activeComponent.handleLastNameChange(details.lastName).catch(() => {});
+                if (details.emailAddress)
+                  void activeComponent.handleEmailAddressChange(details.emailAddress).catch(() => {});
+              }
+            } else if (step.stepName === 'userDetailsCollected') {
+              setState((prev) => ({ ...prev, achStep: 'awaitingBankLink' }));
+            }
+          },
+          onError: (error) => {
+            if (cancelled) return;
+            publishAchError(error);
+          },
+          onInvalid: (data) => applyValidation(data.data, false, firstValidationMessage(data.errors)),
+          onValid: (data) => applyValidation(data.data, true),
+          onValidating: () => {},
+          onValidationError: (data) => applyValidation(data.data, false, data.error?.description),
+        });
+        if (cancelled) {
+          // Effect was torn down mid-provide (its cleanup ran before this component was assigned):
+          // tear down the now-orphaned native component instead of starting/storing it.
+          await component?.cleanUp().catch(() => {});
+          return;
+        }
+        if (!component) {
+          throw new PrimerError(
+            'stripe-ach-unavailable',
+            undefined,
+            `AchManager did not provide a component for ${method}`,
+            undefined,
+            undefined
+          );
+        }
+        achComponentRef.current = component;
+        achMandateManagerRef.current = new PrimerHeadlessUniversalCheckoutAchMandateManager();
+        await component.start();
+      } catch (err) {
+        console.warn(`${LOG} ach provide/start failed ${fmt(err)}`);
+        if (!cancelled) {
+          // Covers native config failures too (e.g. a missing PrimerStripeSDK pod rejects here) —
+          // surfaced as an error outcome so the shopper gets an actionable message, not a stall.
+          const error =
+            err instanceof PrimerError
+              ? err
+              : new PrimerError('stripe-ach-start-failed', undefined, toError(err).message, undefined, undefined);
+          publishAchError(error);
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      // Native teardown so a subsequent ACH attempt starts clean (best-effort; can reject on a
+      // finished component). removeAllListeners drains this instance's JS subscriptions too,
+      // covering a teardown that races provide() before the component is assigned.
+      achComponentRef.current?.cleanUp().catch(() => {});
+      manager.removeAllListeners();
+      if (achManagerRef.current === manager) {
+        achManagerRef.current = null;
+      }
+      achComponentRef.current = null;
+      achMandateManagerRef.current = null;
+    };
+  }, [state.activeAchMethod, state.isReady, consumeAchDecline]);
+
   // NATIVE_UI methods (Google Pay today; Apple Pay / PayPal / web-redirect APMs later) ride the
   // existing Headless NATIVE_UI path: start the native flow by type; outcomes arrive through the
   // shared onCheckoutComplete/onError. Only one native-UI flow runs at a time.
@@ -1256,6 +1568,154 @@ export function PrimerCheckoutProvider({
     await klarnaComponentRef.current?.finalizePayment();
   }, []);
 
+  // Stripe ACH actions. `startAch` arms the lifecycle effect above; the setters forward to the
+  // active StripeAchUserDetailsComponent (native owns all validation).
+  const startAch = useCallback(
+    async (paymentMethodType: string) => {
+      if (stateRef.current.activeAchMethod === paymentMethodType) {
+        return; // already armed (double-tap)
+      }
+      trackSelection(paymentMethodType);
+      achDeclineInFlightRef.current = false;
+      setState((prev) => ({
+        ...prev,
+        ...ACH_RESET,
+        activeAchMethod: paymentMethodType,
+        achStep: 'starting',
+        paymentOutcome: null,
+      }));
+    },
+    [trackSelection]
+  );
+
+  const forwardAchField = useCallback(async (field: AchFieldName, value: string) => {
+    setState((prev) => ({ ...prev, achUserDetails: { ...prev.achUserDetails, [field]: value } }));
+    const component = achComponentRef.current;
+    if (!component) {
+      console.warn(`${LOG} setAch(${field}): no ACH component (activeAchMethod=${stateRef.current.activeAchMethod})`);
+      return;
+    }
+    try {
+      if (field === 'firstName') {
+        await component.handleFirstNameChange(value);
+      } else if (field === 'lastName') {
+        await component.handleLastNameChange(value);
+      } else {
+        await component.handleEmailAddressChange(value);
+      }
+    } catch (err) {
+      // A per-keystroke forward failing shouldn't error the flow; native just skips re-validation.
+      console.warn(`${LOG} setAch(${field}) failed ${fmt(err)}`);
+    }
+  }, []);
+
+  const setAchFirstName = useCallback((value: string) => forwardAchField('firstName', value), [forwardAchField]);
+  const setAchLastName = useCallback((value: string) => forwardAchField('lastName', value), [forwardAchField]);
+  const setAchEmailAddress = useCallback((value: string) => forwardAchField('emailAddress', value), [forwardAchField]);
+
+  const submitAchDetails = useCallback(async () => {
+    const component = achComponentRef.current;
+    if (!component) {
+      console.warn(`${LOG} submitAchDetails: no ACH component`);
+      return;
+    }
+    trackAttemptStart(stateRef.current.activeAchMethod ?? 'STRIPE_ACH', { submitted: true });
+    setState((prev) => ({ ...prev, achStep: 'submittingDetails', paymentOutcome: null }));
+    try {
+      await component.submit();
+    } catch (err) {
+      // A bridge-level rejection would otherwise wedge the flow in 'submittingDetails'
+      // (back disabled, spinner forever) — restore the form and surface the failure.
+      console.warn(`${LOG} submitAchDetails failed ${fmt(err)}`);
+      const error =
+        err instanceof PrimerError
+          ? err
+          : new PrimerError('stripe-ach-submit-failed', undefined, toError(err).message, undefined, undefined);
+      setState((prev) => ({
+        ...prev,
+        achStep: 'collectingDetails',
+        paymentOutcome: { status: 'error', error, data: null },
+      }));
+    }
+  }, [trackAttemptStart]);
+
+  const acceptAchMandate = useCallback(async () => {
+    if (stateRef.current.achStep !== 'mandatePending') {
+      console.warn(`${LOG} acceptAchMandate ignored (achStep=${stateRef.current.achStep})`);
+      return;
+    }
+    const mandateManager = achMandateManagerRef.current;
+    if (!mandateManager) {
+      console.warn(`${LOG} acceptAchMandate: no mandate manager`);
+      return;
+    }
+    setState((prev) => ({ ...prev, achStep: 'answeringMandate' }));
+    try {
+      await mandateManager.acceptMandate();
+    } catch (err) {
+      // Rejection means the native mandate is gone (bridge guard) — 'answeringMandate' would
+      // wedge every exit, so reset and surface the failure.
+      console.warn(`${LOG} acceptAchMandate failed ${fmt(err)}`);
+      const error =
+        err instanceof PrimerError
+          ? err
+          : new PrimerError('stripe-ach-mandate-failed', undefined, toError(err).message, undefined, undefined);
+      setState((prev) => ({ ...prev, ...ACH_RESET, paymentOutcome: { status: 'error', error, data: null } }));
+    }
+  }, []);
+
+  const declineAchMandate = useCallback(async () => {
+    if (stateRef.current.achStep !== 'mandatePending') {
+      console.warn(`${LOG} declineAchMandate ignored (achStep=${stateRef.current.achStep})`);
+      return;
+    }
+    const mandateManager = achMandateManagerRef.current;
+    if (!mandateManager) {
+      console.warn(`${LOG} declineAchMandate: no mandate manager`);
+      return;
+    }
+    achDeclineInFlightRef.current = true;
+    armAchDeclineTimeout();
+    setState((prev) => ({ ...prev, achStep: 'answeringMandate' }));
+    try {
+      await mandateManager.declineMandate();
+    } catch (err) {
+      // Rejection means the native mandate is gone. Reset, and still report the abandoned attempt
+      // through onError (per the declineMandate contract) — the shopper is returning to the list.
+      console.warn(`${LOG} declineAchMandate failed ${fmt(err)}`);
+      clearAchDeclineTimeout();
+      achDeclineInFlightRef.current = false;
+      const error =
+        err instanceof PrimerError
+          ? err
+          : new PrimerError('stripe-ach-decline-failed', undefined, toError(err).message, undefined, undefined);
+      setState((prev) => ({ ...prev, ...ACH_RESET }));
+      onErrorRef.current?.(error, null);
+      settingsRef.current?.headlessUniversalCheckoutCallbacks?.onError?.(error, null);
+    }
+  }, [armAchDeclineTimeout, clearAchDeclineTimeout]);
+
+  const stopAch = useCallback(() => {
+    const step = stateRef.current.achStep;
+    // Native work in flight (submit, bank link, or mandate): teardown happens on the terminal
+    // outcome instead, so a global back (Android hardware back) can't tear down mid-flow.
+    const deferred =
+      step === 'submittingDetails' ||
+      step === 'awaitingBankLink' ||
+      step === 'mandatePending' ||
+      step === 'answeringMandate';
+    if (deferred) {
+      console.warn(`${LOG} stopAch deferred during ${step}`);
+      return;
+    }
+    achDeclineInFlightRef.current = false;
+    // Clear a stale ACH attempt marker so a later non-ACH PENDING isn't shown the ACH pending screen.
+    if (lastAttemptedMethodRef.current === 'STRIPE_ACH') {
+      lastAttemptedMethodRef.current = null;
+    }
+    setState((prev) => (prev.activeAchMethod === null ? prev : { ...prev, ...ACH_RESET }));
+  }, []);
+
   const selectVaultedMethodId = useCallback((id: string) => {
     setState((prev) => {
       // The id must exist among the current methods to be honoured.
@@ -1406,6 +1866,11 @@ export function PrimerCheckoutProvider({
       selectedKlarnaCategoryId: state.selectedKlarnaCategoryId,
       isKlarnaViewLoaded: state.isKlarnaViewLoaded,
       isKlarnaLoading: state.isKlarnaLoading,
+      achStep: state.achStep,
+      achUserDetails: state.achUserDetails,
+      achFieldErrors: state.achFieldErrors,
+      achIsValid: ACH_FIELDS.every((field) => state.achFieldValidity[field] === true),
+      achMandate: state.achMandate,
       vaultedMethods: state.vaultedMethods,
       vaultedIconUrisById: state.vaultedIconUrisById,
       vaultedNamesById: state.vaultedNamesById,
@@ -1435,6 +1900,14 @@ export function PrimerCheckoutProvider({
       authorizeKlarna,
       finalizeKlarna,
       stopKlarna,
+      startAch,
+      setAchFirstName,
+      setAchLastName,
+      setAchEmailAddress,
+      submitAchDetails,
+      acceptAchMandate,
+      declineAchMandate,
+      stopAch,
       payFromVault,
       selectVaultedMethodId,
       requestExpandedVaultDisplay,
@@ -1455,6 +1928,14 @@ export function PrimerCheckoutProvider({
     authorizeKlarna,
     finalizeKlarna,
     stopKlarna,
+    startAch,
+    setAchFirstName,
+    setAchLastName,
+    setAchEmailAddress,
+    submitAchDetails,
+    acceptAchMandate,
+    declineAchMandate,
+    stopAch,
     setActiveMethod,
     setRawData,
     setBillingAddress,

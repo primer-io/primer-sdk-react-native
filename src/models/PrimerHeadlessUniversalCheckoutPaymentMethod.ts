@@ -3,7 +3,8 @@ export type PrimerPaymentMethodManagerCategoryName =
   | 'RAW_DATA'
   | 'CARD_COMPONENTS'
   | 'COMPONENT_WITH_REDIRECT'
-  | 'KLARNA';
+  | 'KLARNA'
+  | 'STRIPE_ACH';
 export type PrimerSessionIntentName = 'CHECKOUT' | 'VAULT';
 
 export interface IPrimerHeadlessUniversalCheckoutPaymentMethod {

@@ -27,13 +27,18 @@ export function PaymentOutcomeTransitioner() {
 
     const uiOptions = settings?.uiOptions;
 
-    if (paymentOutcome.status === 'success') {
+    if (paymentOutcome.status === 'success' || paymentOutcome.status === 'pending') {
+      // Success-screen toggle governs pending too.
       if (uiOptions?.isSuccessScreenEnabled === false) {
         clearPaymentOutcome();
         flow?.onCancel();
         return;
       }
-      replace(CheckoutRoute.success, { checkoutData: paymentOutcome.data });
+      if (paymentOutcome.status === 'pending') {
+        replace(CheckoutRoute.pending, { checkoutData: paymentOutcome.data });
+      } else {
+        replace(CheckoutRoute.success, { checkoutData: paymentOutcome.data });
+      }
     } else {
       if (uiOptions?.isErrorScreenEnabled === false) {
         clearPaymentOutcome();

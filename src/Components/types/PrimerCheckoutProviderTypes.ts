@@ -39,10 +39,45 @@ export interface PrimerCheckoutProviderProps {
   children?: ReactNode;
 }
 
-/** Outcome of the most recent payment attempt within a checkout session. */
+/**
+ * Outcome of the most recent payment attempt within a checkout session. `'pending'` means the
+ * payment was authorized and awaits settlement (`payment.status === 'PENDING'`) — emitted for the
+ * Stripe ACH flow today; other methods keep mapping non-FAILED results to `'success'`.
+ */
 export type PaymentOutcome =
   | { status: 'success'; data: PrimerCheckoutData }
+  | { status: 'pending'; data: PrimerCheckoutData }
   | { status: 'error'; error: PrimerError; data: PrimerCheckoutData | null };
+
+/** Flow position of the Stripe ACH payment method; `idle` when no ACH flow is armed. */
+export type StripeAchStep =
+  | 'idle'
+  | 'starting'
+  | 'collectingDetails'
+  | 'submittingDetails'
+  | 'awaitingBankLink'
+  | 'mandatePending'
+  | 'answeringMandate';
+
+/** The account holder's details collected before the bank link; prefilled from the client session when available. */
+export interface StripeAchUserDetails {
+  firstName: string;
+  lastName: string;
+  emailAddress: string;
+}
+
+/** Per-field native validation messages; a missing key means not-yet-validated or valid. */
+export interface StripeAchFieldErrors {
+  firstName?: string;
+  lastName?: string;
+  emailAddress?: string;
+}
+
+/** Resolved, shopper-renderable mandate text. `fullMandateText` from settings wins over the localized template. */
+export interface StripeAchMandateDisplay {
+  text: string;
+  source: 'fullMandateText' | 'template';
+}
 
 /** Validation + metadata state surfaced by the active raw-data manager. */
 export interface CardFormState {
@@ -121,6 +156,35 @@ export interface PrimerCheckoutContextValue {
   finalizeKlarna: () => Promise<void>;
   /** Disarm the Klarna flow on return to the method list (mirrors stopBanks). */
   stopKlarna: () => void;
+
+  // --- Stripe ACH (US bank-account) ---
+  // Backs the `stripeAch` variant of `usePrimerPaymentMethod(type)`; merchants use that, not these.
+  /** Flow position; `idle` when no ACH flow is armed. */
+  achStep: StripeAchStep;
+  /** Current field values — prefilled from the client session when available. */
+  achUserDetails: StripeAchUserDetails;
+  /** Per-field native validation messages. */
+  achFieldErrors: StripeAchFieldErrors;
+  /** True when all three fields have validated clean — the submit gate. */
+  achIsValid: boolean;
+  /** Resolved mandate display; non-null only while the mandate awaits (or is receiving) an answer. */
+  achMandate: StripeAchMandateDisplay | null;
+  /** Arm the ACH flow for the given method (provides the native component and starts it). */
+  startAch: (paymentMethodType: string) => Promise<void>;
+  setAchFirstName: (value: string) => Promise<void>;
+  setAchLastName: (value: string) => Promise<void>;
+  setAchEmailAddress: (value: string) => Promise<void>;
+  /** Submit the details; the native Stripe bank collector presents next. */
+  submitAchDetails: () => Promise<void>;
+  /** Accept the mandate — authorizes and completes the payment. One-shot per mandate. */
+  acceptAchMandate: () => Promise<void>;
+  /**
+   * Decline the mandate — cancels the attempt. No outcome is published (no error screen), but the
+   * merchant `onError` callbacks still report the cancellation. One-shot.
+   */
+  declineAchMandate: () => Promise<void>;
+  /** Disarm the ACH flow (deferred while the mandate awaits an answer). */
+  stopAch: () => void;
 
   // --- Active payment attempt ---
   /** Outcome of the most recent payment attempt; `null` before any submit. */
