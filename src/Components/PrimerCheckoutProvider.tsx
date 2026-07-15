@@ -78,13 +78,8 @@ const ACH_RESET = {
   achStep: 'idle' as StripeAchStep,
   achUserDetails: EMPTY_ACH_USER_DETAILS,
   achFieldErrors: {} as StripeAchFieldErrors,
-  achFieldValidity: {} as Partial<Record<AchFieldName, boolean>>,
   achMandate: null as StripeAchMandateDisplay | null,
 };
-
-// Fallback window for a mandate-decline confirmation that never arrives on any native channel
-// (cross-platform cancel codes are unverified) — long enough that a real confirmation always wins.
-const ACH_DECLINE_CONFIRM_TIMEOUT_MS = 8000;
 
 interface InternalState {
   isReady: boolean;
@@ -115,8 +110,6 @@ interface InternalState {
   achStep: StripeAchStep;
   achUserDetails: StripeAchUserDetails;
   achFieldErrors: StripeAchFieldErrors;
-  /** Per-field native validation verdicts; a field gates submit until it lands `true`. */
-  achFieldValidity: Partial<Record<AchFieldName, boolean>>;
   achMandate: StripeAchMandateDisplay | null;
   vaultedMethods: PrimerVaultedPaymentMethod[];
   vaultedIconUrisById: Record<string, string | undefined>;
@@ -320,45 +313,6 @@ export function PrimerCheckoutProvider({
   const achManagerRef = useRef<PrimerHeadlessUniversalCheckoutAchManager | null>(null);
   const achComponentRef = useRef<StripeAchUserDetailsComponent | null>(null);
   const achMandateManagerRef = useRef<PrimerHeadlessUniversalCheckoutAchMandateManager | null>(null);
-  // Armed while a mandate decline is in flight (shopper decline, or the mandate-misconfig
-  // auto-decline): the next native error is the decline confirmation to consume — no outcome
-  // (no error screen) while the merchant callbacks still fire.
-  const achDeclineInFlightRef = useRef(false);
-  // Backstops a decline confirmation that never lands, so the flow can't strand or swallow a
-  // later unrelated error.
-  const achDeclineTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const clearAchDeclineTimeout = useCallback(() => {
-    if (achDeclineTimeoutRef.current !== null) {
-      clearTimeout(achDeclineTimeoutRef.current);
-      achDeclineTimeoutRef.current = null;
-    }
-  }, []);
-
-  const armAchDeclineTimeout = useCallback(() => {
-    clearAchDeclineTimeout();
-    achDeclineTimeoutRef.current = setTimeout(() => {
-      achDeclineTimeoutRef.current = null;
-      if (!achDeclineInFlightRef.current) return;
-      console.warn(`${LOG} ACH decline confirmation timed out — force-resetting`);
-      achDeclineInFlightRef.current = false;
-      setState((prev) => (prev.activeAchMethod === null ? prev : { ...prev, ...ACH_RESET }));
-    }, ACH_DECLINE_CONFIRM_TIMEOUT_MS);
-  }, [clearAchDeclineTimeout]);
-
-  // Shopper-initiated mandate decline: consume the confirmation error on whichever native
-  // channel it arrives — no outcome (no error screen), merchant callbacks still informed.
-  const consumeAchDecline = useCallback(
-    (error: PrimerError, checkoutData: PrimerCheckoutData | null | undefined) => {
-      clearAchDeclineTimeout();
-      achDeclineInFlightRef.current = false;
-      console.warn(`${LOG} ACH mandate declined — consuming ${error.errorId ?? 'unknown'} (no outcome published)`);
-      setState((prev) => ({ ...prev, ...ACH_RESET }));
-      onErrorRef.current?.(error, checkoutData ?? null);
-      settingsRef.current?.headlessUniversalCheckoutCallbacks?.onError?.(error, checkoutData ?? null);
-    },
-    [clearAchDeclineTimeout]
-  );
   // Vault manager is lazy — created on first vault fetch, reused across client-session updates,
   // cleared on session teardown alongside `PrimerHeadlessUniversalCheckout.cleanUp()`.
   const vaultManagerRef = useRef<PrimerHeadlessUniversalCheckoutVaultManager | null>(null);
@@ -415,10 +369,6 @@ export function PrimerCheckoutProvider({
           settingsRef.current?.headlessUniversalCheckoutCallbacks?.onClientSessionUpdate?.(clientSession);
         },
         onError: (error, checkoutData) => {
-          if (achDeclineInFlightRef.current) {
-            consumeAchDecline(error, checkoutData);
-            return;
-          }
           const achArmed = stateRef.current.activeAchMethod !== null;
           setState((prev) => {
             // Init-time errors → `error`. Payment-time errors → `paymentOutcome` → error
@@ -442,9 +392,6 @@ export function PrimerCheckoutProvider({
           // FAILED payments — so we have to read `payment.status` to decide which
           // result screen to show. Backend statuses: SUCCESS | FAILED | PENDING.
           const achArmed = stateRef.current.activeAchMethod !== null;
-          if (achArmed) {
-            achDeclineInFlightRef.current = false;
-          }
           // The attempt tracker (set by every pay path) decides the ACH-only 'pending' mapping —
           // it reflects the payment that actually completed, unlike the armed-flow flag.
           const achAttempt = lastAttemptedMethodRef.current === 'STRIPE_ACH';
@@ -503,15 +450,9 @@ export function PrimerCheckoutProvider({
         ) {
           const mandate = resolveMandateDisplay(settingsRef.current);
           if (!mandate) {
-            // Misconfiguration (no usable stripeOptions.mandateData): release the native mandate
-            // and fail loud instead of rendering legal text with a blank merchant name.
-            achDeclineInFlightRef.current = true;
-            armAchDeclineTimeout();
-            void achMandateManagerRef.current?.declineMandate().catch((declineErr) => {
-              clearAchDeclineTimeout();
-              achDeclineInFlightRef.current = false;
-              console.warn(`${LOG} ACH mandate-config decline failed ${fmt(declineErr)}`);
-            });
+            // Misconfiguration (no usable stripeOptions.mandateData): fail loud instead of rendering
+            // legal text with a blank merchant name. The ACH_RESET below tears the flow down, which
+            // releases the native mandate.
             const error = new PrimerError(
               'stripe-ach-mandate-config',
               'stripe-ach-mandate-config',
@@ -622,11 +563,6 @@ export function PrimerCheckoutProvider({
       }
       // Vault manager is tied to the native session — let the next session recreate it.
       vaultManagerRef.current = null;
-      // Clear any pending ACH decline-confirmation backstop so it can't fire after teardown.
-      if (achDeclineTimeoutRef.current !== null) {
-        clearTimeout(achDeclineTimeoutRef.current);
-        achDeclineTimeoutRef.current = null;
-      }
       void PrimerHeadlessUniversalCheckout.cleanUp();
     };
   }, [clientToken]);
@@ -1271,24 +1207,15 @@ export function PrimerCheckoutProvider({
       if (cancelled) return;
       const field = data.validatableDataName;
       const nextError = valid ? undefined : (message ?? 'Invalid');
-      setState((prev) =>
+      setState((prev) => {
         // Identity bail-out: native re-validates per keystroke; skip the no-op verdicts.
-        prev.achFieldValidity[field] === valid && prev.achFieldErrors[field] === nextError
-          ? prev
-          : {
-              ...prev,
-              achFieldValidity: { ...prev.achFieldValidity, [field]: valid },
-              achFieldErrors: { ...prev.achFieldErrors, [field]: nextError },
-            }
-      );
+        if (prev.achFieldErrors[field] === nextError) return prev;
+        const achFieldErrors = { ...prev.achFieldErrors, [field]: nextError };
+        return { ...prev, achFieldErrors };
+      });
     };
 
     const publishAchError = (error: PrimerError) => {
-      if (achDeclineInFlightRef.current) {
-        // Decline confirmations can surface through this channel too — same consume rule.
-        consumeAchDecline(error, null);
-        return;
-      }
       setState((prev) =>
         prev.isReady
           ? { ...prev, ...ACH_RESET, paymentOutcome: { status: 'error', error, data: null } }
@@ -1309,16 +1236,6 @@ export function PrimerCheckoutProvider({
                 emailAddress: step.emailAddress ?? '',
               };
               setState((prev) => ({ ...prev, achStep: 'collectingDetails', achUserDetails: details }));
-              // Route prefills through native validation so a prefilled form gates and submits
-              // like a typed one. Empty fields stay unvalidated: the gate holds without showing
-              // premature errors.
-              const activeComponent = achComponentRef.current;
-              if (activeComponent) {
-                if (details.firstName) void activeComponent.handleFirstNameChange(details.firstName).catch(() => {});
-                if (details.lastName) void activeComponent.handleLastNameChange(details.lastName).catch(() => {});
-                if (details.emailAddress)
-                  void activeComponent.handleEmailAddressChange(details.emailAddress).catch(() => {});
-              }
             } else if (step.stepName === 'userDetailsCollected') {
               setState((prev) => ({ ...prev, achStep: 'awaitingBankLink' }));
             }
@@ -1377,7 +1294,7 @@ export function PrimerCheckoutProvider({
       achComponentRef.current = null;
       achMandateManagerRef.current = null;
     };
-  }, [state.activeAchMethod, state.isReady, consumeAchDecline]);
+  }, [state.activeAchMethod, state.isReady]);
 
   // NATIVE_UI methods (Google Pay today; Apple Pay / PayPal / web-redirect APMs later) ride the
   // existing Headless NATIVE_UI path: start the native flow by type; outcomes arrive through the
@@ -1576,7 +1493,6 @@ export function PrimerCheckoutProvider({
         return; // already armed (double-tap)
       }
       trackSelection(paymentMethodType);
-      achDeclineInFlightRef.current = false;
       setState((prev) => ({
         ...prev,
         ...ACH_RESET,
@@ -1674,26 +1590,22 @@ export function PrimerCheckoutProvider({
       console.warn(`${LOG} declineAchMandate: no mandate manager`);
       return;
     }
-    achDeclineInFlightRef.current = true;
-    armAchDeclineTimeout();
     setState((prev) => ({ ...prev, achStep: 'answeringMandate' }));
     try {
       await mandateManager.declineMandate();
+      // The decline surfaces through onError → normal error path → error screen.
     } catch (err) {
-      // Rejection means the native mandate is gone. Reset, and still report the abandoned attempt
-      // through onError (per the declineMandate contract) — the shopper is returning to the list.
+      // declineMandate() itself rejected: surface it as an error outcome directly.
       console.warn(`${LOG} declineAchMandate failed ${fmt(err)}`);
-      clearAchDeclineTimeout();
-      achDeclineInFlightRef.current = false;
       const error =
         err instanceof PrimerError
           ? err
           : new PrimerError('stripe-ach-decline-failed', undefined, toError(err).message, undefined, undefined);
-      setState((prev) => ({ ...prev, ...ACH_RESET }));
+      setState((prev) => ({ ...prev, ...ACH_RESET, paymentOutcome: { status: 'error', error, data: null } }));
       onErrorRef.current?.(error, null);
       settingsRef.current?.headlessUniversalCheckoutCallbacks?.onError?.(error, null);
     }
-  }, [armAchDeclineTimeout, clearAchDeclineTimeout]);
+  }, []);
 
   const stopAch = useCallback(() => {
     const step = stateRef.current.achStep;
@@ -1708,7 +1620,6 @@ export function PrimerCheckoutProvider({
       console.warn(`${LOG} stopAch deferred during ${step}`);
       return;
     }
-    achDeclineInFlightRef.current = false;
     // Clear a stale ACH attempt marker so a later non-ACH PENDING isn't shown the ACH pending screen.
     if (lastAttemptedMethodRef.current === 'STRIPE_ACH') {
       lastAttemptedMethodRef.current = null;
@@ -1869,7 +1780,7 @@ export function PrimerCheckoutProvider({
       achStep: state.achStep,
       achUserDetails: state.achUserDetails,
       achFieldErrors: state.achFieldErrors,
-      achIsValid: ACH_FIELDS.every((field) => state.achFieldValidity[field] === true),
+      achIsValid: ACH_FIELDS.every((field) => !state.achFieldErrors[field]),
       achMandate: state.achMandate,
       vaultedMethods: state.vaultedMethods,
       vaultedIconUrisById: state.vaultedIconUrisById,

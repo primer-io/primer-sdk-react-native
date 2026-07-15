@@ -1,10 +1,10 @@
 /**
  * Provider-level Stripe ACH tests (specs/004-stripe-ach-components):
- *   - arm/provide/start lifecycle + prefill push-through (FR-002/003)
- *   - validation reconciliation and the all-three-valid submit gate (FR-004)
+ *   - arm/provide/start lifecycle + prefill (FR-002/003)
+ *   - validation reconciliation and the error-based submit gate (FR-004)
  *   - mandate interception: consume exactly the ACH event, forward the rest (FR-008/015)
  *   - mandate text resolution: fullMandateText precedence over the template (FR-006)
- *   - accept/decline one-shot + decline outcome suppression with merchant onError intact (FR-007/009/011, C1)
+ *   - accept/decline one-shot + decline surfaces as an error outcome with merchant onError intact (FR-007/009/011, C1)
  *   - ACH-scoped 'pending' outcome with onCheckoutComplete unchanged (FR-010/011, D6/G1)
  */
 // @ts-expect-error -- React 19 concurrent act environment
@@ -208,26 +208,30 @@ describe('PrimerCheckoutProvider — Stripe ACH slice', () => {
 
     expect(ctx().achStep).toBe('collectingDetails');
     expect(ctx().achUserDetails).toEqual({ firstName: 'John', lastName: 'Smith', emailAddress: 'j@s.com' });
-    // Prefills are pushed back through native validation so the gate can open without edits.
-    expect(mockAchComponent.handleFirstNameChange).toHaveBeenCalledWith('John');
-    expect(mockAchComponent.handleLastNameChange).toHaveBeenCalledWith('Smith');
-    expect(mockAchComponent.handleEmailAddressChange).toHaveBeenCalledWith('j@s.com');
+    // Prefill opens the gate directly (no field has an error) — no native re-send.
+    expect(mockAchComponent.handleFirstNameChange).not.toHaveBeenCalled();
+    expect(mockAchComponent.handleLastNameChange).not.toHaveBeenCalled();
+    expect(mockAchComponent.handleEmailAddressChange).not.toHaveBeenCalled();
+    expect(ctx().achIsValid).toBe(true);
   });
 
-  it('does not push empty prefills through validation (no premature errors)', async () => {
+  it('empty prefill still opens the gate and triggers no native validation', async () => {
     const { ctx } = await renderProvider();
     await armAch(ctx);
 
     fireStep({ stepName: 'userDetailsRetrieved', firstName: '', lastName: '', emailAddress: '' });
 
     expect(mockAchComponent.handleFirstNameChange).not.toHaveBeenCalled();
-    expect(ctx().achIsValid).toBe(false);
+    expect(ctx().achIsValid).toBe(true);
     expect(ctx().achFieldErrors).toEqual({});
   });
 
-  it('reconciles validation: invalid sets the message, valid clears it, all-three-valid opens the gate', async () => {
+  it('gate tracks errors: defaults open, an error closes it, clearing the error reopens it', async () => {
     const { ctx } = await renderProvider();
     await armAch(ctx);
+
+    // No field has an error yet → gate open (matches headless and both native drop-ins).
+    expect(ctx().achIsValid).toBe(true);
 
     act(() => {
       capturedAchProps?.onInvalid?.({
@@ -240,14 +244,8 @@ describe('PrimerCheckoutProvider — Stripe ACH slice', () => {
 
     act(() => {
       capturedAchProps?.onValid?.({ data: { validatableDataName: 'firstName', value: 'John' } });
-      capturedAchProps?.onValid?.({ data: { validatableDataName: 'lastName', value: 'Smith' } });
     });
     expect(ctx().achFieldErrors.firstName).toBeUndefined();
-    expect(ctx().achIsValid).toBe(false); // email not validated yet
-
-    act(() => {
-      capturedAchProps?.onValid?.({ data: { validatableDataName: 'emailAddress', value: 'j@s.com' } });
-    });
     expect(ctx().achIsValid).toBe(true);
 
     act(() => {
@@ -334,7 +332,7 @@ describe('PrimerCheckoutProvider — Stripe ACH slice', () => {
     expect(mockAcceptMandate).toHaveBeenCalledTimes(1);
   });
 
-  it('decline publishes no outcome but still fires merchant onError once (C1), and resets the slice', async () => {
+  it('decline surfaces as an error outcome and fires merchant onError once, then resets the slice', async () => {
     const merchantOnError = jest.fn();
     const settingsOnError = jest.fn();
     const settings: PrimerSettings = {
@@ -355,7 +353,7 @@ describe('PrimerCheckoutProvider — Stripe ACH slice', () => {
     act(() => {
       capturedCallbacks?.onError?.(cancellationError, null);
     });
-    expect(ctx().paymentOutcome).toBeNull();
+    expect(ctx().paymentOutcome).toEqual({ status: 'error', error: cancellationError, data: null });
     expect(merchantOnError).toHaveBeenCalledTimes(1);
     expect(merchantOnError).toHaveBeenCalledWith(cancellationError, null);
     expect(settingsOnError).toHaveBeenCalledTimes(1);
@@ -438,14 +436,13 @@ describe('PrimerCheckoutProvider — Stripe ACH slice', () => {
     }
   });
 
-  it('fails loud (and releases the native mandate) when mandateData is missing', async () => {
+  it('fails loud when mandateData is missing', async () => {
     const merchantOnError = jest.fn();
     const { ctx } = await renderProvider({ onError: merchantOnError }); // no stripeOptions.mandateData
     await armAch(ctx);
     act(() => {
       capturedCallbacks?.onCheckoutAdditionalInfo?.({ additionalInfoName: 'DisplayStripeAchMandateAdditionalInfo' });
     });
-    expect(mockDeclineMandate).toHaveBeenCalledTimes(1);
     const outcome = ctx().paymentOutcome;
     expect(outcome?.status).toBe('error');
     if (outcome?.status === 'error') {
@@ -487,7 +484,7 @@ describe('PrimerCheckoutProvider — Stripe ACH slice', () => {
     expect(ctx().achStep).toBe('mandatePending');
   });
 
-  it('decline rejection still reports the abandoned attempt via onError and resets (contract honoured)', async () => {
+  it('decline rejection surfaces as an error outcome and resets', async () => {
     const merchantOnError = jest.fn();
     const settings: PrimerSettings = {
       paymentMethodOptions: { stripeOptions: { mandateData: { merchantName: 'M' } } },
@@ -502,53 +499,7 @@ describe('PrimerCheckoutProvider — Stripe ACH slice', () => {
       await ctx().declineAchMandate();
     });
     expect(ctx().achStep).toBe('idle');
-    expect(ctx().paymentOutcome).toBeNull(); // decline shows no error screen, even on rejection
+    expect(ctx().paymentOutcome?.status).toBe('error'); // rejection now surfaces as an error outcome
     expect(merchantOnError).toHaveBeenCalledTimes(1);
-  });
-
-  it('backstops a decline whose native confirmation never arrives — force-resets instead of stranding', async () => {
-    jest.useFakeTimers({ doNotFake: ['setImmediate'] });
-    try {
-      const { ctx } = await renderProvider({
-        settings: { paymentMethodOptions: { stripeOptions: { mandateData: { merchantName: 'M' } } } },
-      });
-      await armAch(ctx);
-      act(() => {
-        capturedCallbacks?.onCheckoutAdditionalInfo?.({ additionalInfoName: 'DisplayStripeAchMandateAdditionalInfo' });
-      });
-      await act(async () => {
-        await ctx().declineAchMandate();
-      });
-      // No native confirmation follows — the flow would otherwise strand in answeringMandate.
-      expect(ctx().achStep).toBe('answeringMandate');
-      act(() => {
-        jest.advanceTimersByTime(8000); // ACH_DECLINE_CONFIRM_TIMEOUT_MS
-      });
-      expect(ctx().achStep).toBe('idle');
-      expect(ctx().paymentOutcome).toBeNull();
-    } finally {
-      jest.useRealTimers();
-    }
-  });
-
-  it('config-missing path: a rejected native decline clears the in-flight flag so a later error is not swallowed', async () => {
-    const { ctx } = await renderProvider(); // no stripeOptions.mandateData → fail-loud config path
-    await armAch(ctx);
-    mockDeclineMandate.mockRejectedValueOnce(new Error('release failed'));
-    await act(async () => {
-      capturedCallbacks?.onCheckoutAdditionalInfo?.({ additionalInfoName: 'DisplayStripeAchMandateAdditionalInfo' });
-      await flushPromises();
-    });
-    expect(ctx().paymentOutcome?.status).toBe('error'); // the stripe-ach-mandate-config error itself
-
-    const laterError = new PrimerError('later-unrelated', 'later-unrelated', 'x', undefined, undefined);
-    act(() => {
-      capturedCallbacks?.onError?.(laterError, null);
-    });
-    const outcome = ctx().paymentOutcome;
-    expect(outcome?.status).toBe('error');
-    if (outcome?.status === 'error') {
-      expect(outcome.error.errorId).toBe('later-unrelated'); // not swallowed by a stuck decline flag
-    }
   });
 });
