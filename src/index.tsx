@@ -102,6 +102,7 @@ export type {
   UsePrimerPaymentMethodReturn,
   NativeUiPaymentMethod,
   CardPaymentMethod,
+  StripeAchPaymentMethod,
   UnsupportedPaymentMethod,
   PaymentMethodAvailabilityError,
 } from './Components';
@@ -149,6 +150,10 @@ export type {
   PrimerCheckoutContextValue,
   PaymentOutcome,
   CardFormState,
+  StripeAchStep,
+  StripeAchUserDetails,
+  StripeAchFieldErrors,
+  StripeAchMandateDisplay,
 } from './Components';
 export type {
   PaymentMethodItem,

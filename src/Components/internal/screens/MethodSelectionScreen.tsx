@@ -44,7 +44,7 @@ export function MethodSelectionScreen() {
   const { onCancel } = useCheckoutFlow();
   const { paymentMethods } = usePrimerPaymentMethods();
   const { push, replace } = useNavigation();
-  const { setActiveMethod, startNativeUI, stopBanks, stopKlarna } = usePrimerCheckout();
+  const { setActiveMethod, startNativeUI, stopBanks, stopKlarna, startAch, stopAch } = usePrimerCheckout();
   const {
     activeMethod: activeVaultedMethod,
     vaultDisplayMode,
@@ -52,12 +52,14 @@ export function MethodSelectionScreen() {
     cvvInputVisible,
   } = usePrimerVaultManager();
 
-  // Back on the method list means no bank/Klarna flow is active: disarm so re-picking the same method
-  // re-arms. Fires only here (not on the sub-screen unmount), so an in-flight submit isn't torn down.
+  // Back on the method list means no bank/Klarna/ACH flow is active: disarm so re-picking the same
+  // method re-runs its lifecycle. Fires only here (not on screen unmount), so an in-flight submit
+  // isn't torn down — and stopAch self-defers while a mandate awaits an answer.
   useEffect(() => {
     stopBanks();
     stopKlarna();
-  }, [stopBanks, stopKlarna]);
+    stopAch();
+  }, [stopBanks, stopKlarna, stopAch]);
 
   const methodCount = paymentMethods.length;
   const buttonGap = tokens.spacing.small;
@@ -143,6 +145,13 @@ export function MethodSelectionScreen() {
       case 'klarna':
         // Klarna — open the category / embedded-view screen.
         push(CheckoutRoute.klarna, { paymentMethodType: method.type });
+        return;
+      case 'stripeAch':
+        // Stripe ACH: arm the flow and open the details screen. startAch only arms state (it
+        // never rejects); native failures (e.g. a missing PrimerStripeSDK pod) surface as an
+        // error outcome → PaymentOutcomeTransitioner routes to the error screen.
+        void startAch(method.type);
+        push(CheckoutRoute.stripeAchUserDetails, { paymentMethodType: method.type });
         return;
       case 'unsupported':
         console.warn(`${LOG} payment method ${method.type} not yet wired`);

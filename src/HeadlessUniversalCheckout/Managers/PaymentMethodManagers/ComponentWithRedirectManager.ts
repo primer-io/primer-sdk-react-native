@@ -11,6 +11,7 @@ import { PrimerError } from '../../../models/PrimerError';
 import type { BanksStep } from '../../../models/banks/BanksSteps';
 import { eventTypes } from './Utils/EventType';
 import type { EventType } from './Utils/EventType';
+import { unwrapNativeError } from './Utils/unwrapNativeError';
 
 const { RNTPrimerHeadlessUniversalCheckoutBanksComponent } = NativeModules;
 
@@ -131,7 +132,8 @@ export class PrimerHeadlessUniversalCheckoutComponentWithRedirectManager {
 
     if (props?.onError) {
       void this.addListener('onError', (data) => {
-        props.onError?.(data);
+        const error = unwrapNativeError(data);
+        if (error) props.onError?.(error);
       });
     }
 

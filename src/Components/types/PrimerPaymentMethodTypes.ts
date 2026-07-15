@@ -1,4 +1,10 @@
-import type { PaymentOutcome } from './PrimerCheckoutProviderTypes';
+import type {
+  PaymentOutcome,
+  StripeAchStep,
+  StripeAchUserDetails,
+  StripeAchFieldErrors,
+  StripeAchMandateDisplay,
+} from './PrimerCheckoutProviderTypes';
 import type { IssuingBank } from '../../models/IssuingBank';
 import type { PrimerInputElementType } from '../../models/PrimerInputElementType';
 import type { PrimerRawData } from '../../models/PrimerRawData';
@@ -126,6 +132,42 @@ export interface KlarnaPaymentMethod {
 }
 
 /**
+ * Stripe ACH (US bank-account). Two-phase: collect the account holder's details, then answer the
+ * mandate after the native collector links a bank. `start()` arms; failures surface via
+ * `paymentOutcome`; the result commonly lands `'pending'`. Render nothing when `!isAvailable`.
+ */
+export interface StripeAchPaymentMethod {
+  kind: 'stripeAch';
+  readonly isAvailable: boolean;
+  /** Flow position; drives which surface to render (details form vs mandate). */
+  readonly step: StripeAchStep;
+  /** Current field values — prefilled from the client session when available. */
+  readonly userDetails: StripeAchUserDetails;
+  /** Per-field native validation messages; a missing key means not-yet-validated or valid. */
+  readonly fieldErrors: StripeAchFieldErrors;
+  /** True while no field has a validation error — the submit gate. Open on an untouched form. */
+  readonly isValid: boolean;
+  /** Resolved mandate text + source; non-null only while the mandate awaits an answer. */
+  readonly mandate: StripeAchMandateDisplay | null;
+  readonly paymentOutcome: PaymentOutcome | null;
+  /** Arm the flow (native configure + start). Failures surface via `paymentOutcome`. */
+  start(): Promise<void>;
+  setFirstName(value: string): Promise<void>;
+  setLastName(value: string): Promise<void>;
+  setEmailAddress(value: string): Promise<void>;
+  /** Submit the details; the native Stripe bank collector presents next. */
+  submit(): Promise<void>;
+  /** Accept the mandate — authorizes and completes the payment. One-shot per mandate. */
+  acceptMandate(): Promise<void>;
+  /**
+   * Decline the mandate — cancels the attempt. Surfaces via `onError` as an error outcome (error
+   * screen in the prebuilt flow); the app-level `onError` fires too. One-shot.
+   */
+  declineMandate(): Promise<void>;
+  clearPaymentOutcome(): void;
+}
+
+/**
  * Can't be driven here: either a type not wired into Components yet, OR a known method that isn't
  * in the current session (its category is unknown). Either way it can't be started — render
  * nothing / disabled.
@@ -142,4 +184,5 @@ export type UsePrimerPaymentMethodReturn =
   | RawDataFormPaymentMethod
   | KlarnaPaymentMethod
   | CardPaymentMethod
+  | StripeAchPaymentMethod
   | UnsupportedPaymentMethod;

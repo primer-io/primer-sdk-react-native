@@ -30,6 +30,18 @@ export function usePrimerPaymentMethod(type: string): UsePrimerPaymentMethodRetu
     filterBanks,
     selectBank,
     submitBanks,
+    achStep,
+    achUserDetails,
+    achFieldErrors,
+    achIsValid,
+    achMandate,
+    startAch,
+    setAchFirstName,
+    setAchLastName,
+    setAchEmailAddress,
+    submitAchDetails,
+    acceptAchMandate,
+    declineAchMandate,
     cardFormState,
     setRawData,
     submit,
@@ -51,6 +63,7 @@ export function usePrimerPaymentMethod(type: string): UsePrimerPaymentMethodRetu
   const cancel = useCallback(() => cancelNativeUI(type), [cancelNativeUI, type]);
   const startCard = useCallback(() => setActiveMethod(type), [setActiveMethod, type]);
   const startBank = useCallback(() => startBanks(type), [startBanks, type]);
+  const startStripeAch = useCallback(() => startAch(type), [startAch, type]);
   const startRawDataForm = useCallback(async () => {
     setActiveMethod(type);
   }, [setActiveMethod, type]);
@@ -115,6 +128,26 @@ export function usePrimerPaymentMethod(type: string): UsePrimerPaymentMethodRetu
         clearPaymentOutcome,
       };
     }
+    if (kind === 'stripeAch') {
+      return {
+        kind: 'stripeAch',
+        isAvailable: isPresent,
+        step: achStep,
+        userDetails: achUserDetails,
+        fieldErrors: achFieldErrors,
+        isValid: achIsValid,
+        mandate: achMandate,
+        paymentOutcome,
+        start: startStripeAch,
+        setFirstName: setAchFirstName,
+        setLastName: setAchLastName,
+        setEmailAddress: setAchEmailAddress,
+        submit: submitAchDetails,
+        acceptMandate: acceptAchMandate,
+        declineMandate: declineAchMandate,
+        clearPaymentOutcome,
+      };
+    }
     if (kind === 'card') {
       return { kind: 'card', isAvailable: isPresent, start: startCard, clearPaymentOutcome };
     }
@@ -136,6 +169,18 @@ export function usePrimerPaymentMethod(type: string): UsePrimerPaymentMethodRetu
     banks,
     selectedBankId,
     isBanksLoading,
+    achStep,
+    achUserDetails,
+    achFieldErrors,
+    achIsValid,
+    achMandate,
+    startStripeAch,
+    setAchFirstName,
+    setAchLastName,
+    setAchEmailAddress,
+    submitAchDetails,
+    acceptAchMandate,
+    declineAchMandate,
     cardFormState,
     setRawData,
     submit,
