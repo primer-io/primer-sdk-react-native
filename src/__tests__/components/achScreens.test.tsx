@@ -1,7 +1,7 @@
 /**
  * Prebuilt ACH screen tests (specs/004-stripe-ach-components):
  *   - user-details: gated Continue, waiting state during the native bank link,
- *     back is a no-op while waiting (U1), inline per-field errors + editable prefills (US3)
+ *     back and Cancel are hidden/no-op while waiting (U1), inline per-field errors + editable prefills (US3)
  *   - mandate: renders the resolved text, accept/decline wiring, buttons disable while answering
  *   - pending: distinct confirmation with the ported completion copy + auto-dismiss
  */
@@ -229,12 +229,16 @@ describe('StripeAchUserDetailsScreen', () => {
     (mockHeaderProps?.onBackPress as () => void)();
     expect(mockStopAch).not.toHaveBeenCalled();
     expect(mockPop).not.toHaveBeenCalled();
+
+    // Cancel is hidden too — no dismiss affordance while the native payment is in flight.
+    expect(mockHeaderProps?.rightAction).toBeUndefined();
   });
 
   it('back disarms the flow and pops while collecting', () => {
     mockAchVariant = baseVariant({ step: 'collectingDetails' });
     render(createElement(StripeAchUserDetailsScreen));
 
+    expect(mockHeaderProps?.rightAction).toBeDefined(); // Cancel is offered while editing
     (mockHeaderProps?.onBackPress as () => void)();
     expect(mockStopAch).toHaveBeenCalledTimes(1);
     expect(mockPop).toHaveBeenCalledTimes(1);

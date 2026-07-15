@@ -469,6 +469,23 @@ describe('PrimerCheckoutProvider — Stripe ACH slice', () => {
     expect(outcome?.status).toBe('error');
   });
 
+  it('recovers from a rejected submit instead of wedging submittingDetails', async () => {
+    const { ctx } = await renderProvider();
+    await armAch(ctx);
+    fireStep({ stepName: 'userDetailsRetrieved', firstName: 'J', lastName: 'S', emailAddress: 'j@s.com' });
+
+    mockAchComponent.submit.mockRejectedValueOnce(new Error('bridge dead'));
+    await act(async () => {
+      await ctx().submitAchDetails();
+    });
+    expect(ctx().achStep).toBe('collectingDetails'); // form restored, not stuck on the waiting spinner
+    const outcome = ctx().paymentOutcome;
+    expect(outcome?.status).toBe('error');
+    if (outcome?.status === 'error') {
+      expect(outcome.error.errorId).toBe('stripe-ach-submit-failed');
+    }
+  });
+
   it('stopAch defers while the mandate awaits an answer', async () => {
     const { ctx } = await renderProvider({
       settings: { paymentMethodOptions: { stripeOptions: { mandateData: { merchantName: 'M' } } } },

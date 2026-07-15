@@ -147,7 +147,7 @@ export interface StripeAchPaymentMethod {
   readonly userDetails: StripeAchUserDetails;
   /** Per-field native validation messages; a missing key means not-yet-validated or valid. */
   readonly fieldErrors: StripeAchFieldErrors;
-  /** True when all three fields validated clean — the submit gate. */
+  /** True while no field has a validation error — the submit gate. Open on an untouched form. */
   readonly isValid: boolean;
   /** Resolved mandate text + source; non-null only while the mandate awaits an answer. */
   readonly mandate: StripeAchMandateDisplay | null;
@@ -162,9 +162,9 @@ export interface StripeAchPaymentMethod {
   /** Accept the mandate — authorizes and completes the payment. One-shot per mandate. */
   acceptMandate(): Promise<void>;
   /**
-   * Decline the mandate — cancels the attempt. No error outcome is published (`paymentOutcome`
-   * stays null; `step` returns to `'idle'`), but the app-level `onError` callback fires with the
-   * cancellation so merchants can track the abandoned attempt. One-shot.
+   * Decline the mandate — cancels the attempt. Native reports the cancellation through `onError`,
+   * so an error outcome is published (`paymentOutcome` flips to `'error'`, the prebuilt flow shows
+   * the error screen) and the app-level `onError` callback fires. One-shot.
    */
   declineMandate(): Promise<void>;
   clearPaymentOutcome(): void;

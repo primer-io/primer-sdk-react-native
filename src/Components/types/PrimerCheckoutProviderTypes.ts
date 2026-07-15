@@ -165,7 +165,7 @@ export interface PrimerCheckoutContextValue {
   achUserDetails: StripeAchUserDetails;
   /** Per-field native validation messages. */
   achFieldErrors: StripeAchFieldErrors;
-  /** True when all three fields have validated clean — the submit gate. */
+  /** True while no field has a validation error — the submit gate. Open on an untouched form. */
   achIsValid: boolean;
   /** Resolved mandate display; non-null only while the mandate awaits (or is receiving) an answer. */
   achMandate: StripeAchMandateDisplay | null;
@@ -179,8 +179,9 @@ export interface PrimerCheckoutContextValue {
   /** Accept the mandate — authorizes and completes the payment. One-shot per mandate. */
   acceptAchMandate: () => Promise<void>;
   /**
-   * Decline the mandate — cancels the attempt. No outcome is published (no error screen), but the
-   * merchant `onError` callbacks still report the cancellation. One-shot.
+   * Decline the mandate — cancels the attempt. Native reports the cancellation through `onError`,
+   * so an error outcome is published (error screen in the prebuilt flow) and the merchant
+   * `onError` callbacks fire. One-shot.
    */
   declineAchMandate: () => Promise<void>;
   /** Disarm the ACH flow (deferred while the mandate awaits an answer). */

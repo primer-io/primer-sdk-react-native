@@ -11,6 +11,7 @@ import { NavigationContext } from '../../Components/internal/navigation/Navigati
 import type { NavigationContextValue } from '../../Components/internal/navigation/NavigationContext';
 import { CheckoutRoute } from '../../Components/internal/navigation/types';
 import { PaymentOutcomeTransitioner } from '../../Components/internal/checkout-flow/PaymentOutcomeTransitioner';
+import { CheckoutFlowContext } from '../../Components/internal/checkout-flow/CheckoutFlowContext';
 import { PrimerError } from '../../models/PrimerError';
 import type { PrimerCheckoutData } from '../../models/PrimerCheckoutData';
 import type { PrimerCheckoutContextValue } from '../../Components/types/PrimerCheckoutProviderTypes';
@@ -158,5 +159,49 @@ describe('PaymentOutcomeTransitioner', () => {
       );
     });
     expect(replace).toHaveBeenCalledWith(CheckoutRoute.success, { checkoutData: data });
+  });
+
+  it('navigates to the pending screen on a pending outcome (ACH: authorized, awaiting settlement)', () => {
+    const { value, replace } = makeNav();
+    const data = {} as PrimerCheckoutData;
+    act(() => {
+      create(
+        wrap(
+          { ...baseContext, paymentOutcome: { status: 'pending', data } },
+          value,
+          createElement(PaymentOutcomeTransitioner)
+        )
+      );
+    });
+    expect(replace).toHaveBeenCalledTimes(1);
+    expect(replace).toHaveBeenCalledWith(CheckoutRoute.pending, { checkoutData: data });
+  });
+
+  it('the success-screen toggle governs pending too: disabled → clears the outcome and dismisses', () => {
+    const { value, replace } = makeNav();
+    const clearPaymentOutcome = jest.fn();
+    const onCancel = jest.fn();
+    const data = {} as PrimerCheckoutData;
+    act(() => {
+      create(
+        wrap(
+          {
+            ...baseContext,
+            settings: { uiOptions: { isSuccessScreenEnabled: false } },
+            paymentOutcome: { status: 'pending', data },
+            clearPaymentOutcome,
+          },
+          value,
+          createElement(
+            CheckoutFlowContext.Provider,
+            { value: { onCancel } },
+            createElement(PaymentOutcomeTransitioner)
+          )
+        )
+      );
+    });
+    expect(replace).not.toHaveBeenCalled();
+    expect(clearPaymentOutcome).toHaveBeenCalledTimes(1);
+    expect(onCancel).toHaveBeenCalledTimes(1);
   });
 });

@@ -126,7 +126,7 @@ export function StripeAchUserDetailsScreen() {
           showBackButton={canGoBack && !isWaiting}
           backLabel={t('primer_common_back')}
           onBackPress={handleBack}
-          rightAction={{ label: t('primer_common_button_cancel'), onPress: onCancel }}
+          rightAction={isWaiting ? undefined : { label: t('primer_common_button_cancel'), onPress: onCancel }}
         />
       </View>
       {isStarting ? (
