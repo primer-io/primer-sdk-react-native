@@ -173,10 +173,7 @@ export class PrimerHeadlessUniversalCheckoutAchManager {
     eventEmitter.removeAllListeners(eventType);
   }
 
-  // Routes through per-instance bookkeeping. Avoids the global-nuke approach
-  // (eventEmitter.removeAllListeners(eventName)) which on Android would also
-  // wipe other modules' listeners for overlapping event names like onError —
-  // those modules share the global RCTDeviceEventEmitter.
+  // Per-instance drain, not eventEmitter.removeAllListeners — the global nuke wipes other modules' shared-emitter listeners on Android.
   removeAllListeners() {
     this.drainSubscriptions();
   }

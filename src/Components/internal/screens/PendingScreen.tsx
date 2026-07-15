@@ -8,12 +8,7 @@ import { useBottomSafeArea } from './useBottomSafeArea';
 // Taller than the success screen: the ported completion copy runs several lines.
 const CONTENT_HEIGHT = 320;
 
-/**
- * Pending confirmation for asynchronously-settling payments (Stripe ACH): the payment is
- * authorized and awaiting settlement — its own screen, distinct from the generic success,
- * carrying the completion copy the native SDKs ship. Dismissal is owned by the flow-level
- * wrapper in CheckoutFlow (which also clears the outcome) — no timer here.
- */
+// Pending confirmation for ACH (authorized, awaiting settlement); dismissal + outcome-clear owned by the flow-level wrapper.
 export function PendingScreen() {
   const tokens = usePrimerTheme();
   const { t } = usePrimerLocalization();

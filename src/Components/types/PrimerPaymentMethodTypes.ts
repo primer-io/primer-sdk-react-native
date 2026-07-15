@@ -132,11 +132,9 @@ export interface KlarnaPaymentMethod {
 }
 
 /**
- * Stripe ACH (US bank-account) method. Two-phase flow: collect the account holder's details, then
- * — after the native Stripe collector links a bank account — present the mandate and answer it.
- * `start()` arms the flow; config failures (e.g. a missing PrimerStripeSDK pod) surface via
- * `paymentOutcome`, and the final result commonly lands as `'pending'` (authorized, awaiting
- * settlement). Render nothing when `!isAvailable`.
+ * Stripe ACH (US bank-account). Two-phase: collect the account holder's details, then answer the
+ * mandate after the native collector links a bank. `start()` arms; failures surface via
+ * `paymentOutcome`; the result commonly lands `'pending'`. Render nothing when `!isAvailable`.
  */
 export interface StripeAchPaymentMethod {
   kind: 'stripeAch';
@@ -162,9 +160,8 @@ export interface StripeAchPaymentMethod {
   /** Accept the mandate — authorizes and completes the payment. One-shot per mandate. */
   acceptMandate(): Promise<void>;
   /**
-   * Decline the mandate — cancels the attempt. Native reports the cancellation through `onError`,
-   * so an error outcome is published (`paymentOutcome` flips to `'error'`, the prebuilt flow shows
-   * the error screen) and the app-level `onError` callback fires. One-shot.
+   * Decline the mandate — cancels the attempt. Surfaces via `onError` as an error outcome (error
+   * screen in the prebuilt flow); the app-level `onError` fires too. One-shot.
    */
   declineMandate(): Promise<void>;
   clearPaymentOutcome(): void;

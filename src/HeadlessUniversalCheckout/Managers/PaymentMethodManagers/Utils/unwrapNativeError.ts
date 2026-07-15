@@ -1,9 +1,6 @@
 import { PrimerError } from '../../../../models/PrimerError';
 
-/**
- * Native error events arrive as { errors: [...] } (component channel) or { error } (global
- * bridge); normalize either to a bare PrimerError. Undefined only if an errors array is empty.
- */
+// Native onError payloads: { errors: [...] } (component) or { error } (global) → bare PrimerError; undefined if errors is empty.
 export function unwrapNativeError(
   data: PrimerError | { error: PrimerError } | { errors: PrimerError[] }
 ): PrimerError | undefined {

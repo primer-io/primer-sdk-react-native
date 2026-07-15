@@ -31,13 +31,7 @@ const DRAG_HANDLE_AREA = 20;
 // Matches CheckoutSheet's DEFAULT_HEIGHT_RATIO — the sheet never exceeds 92% of the screen.
 const MAX_SHEET_HEIGHT_RATIO = 0.92;
 
-/**
- * Prebuilt Stripe ACH user-details screen: collects the account holder's first name, last name
- * and email address (prefilled from the client session when available), validated natively per
- * keystroke. Continue hands off to the native Stripe bank collector — this screen never renders
- * bank-account fields. The mandate then arrives flow-level (AchMandateTransitioner) and the
- * outcome through the shared handling. Dogfoods the public `usePrimerPaymentMethod` API.
- */
+// Prebuilt ACH user-details screen: collect name + email (native-validated); Continue hands off to the native bank collector.
 export function StripeAchUserDetailsScreen() {
   const tokens = usePrimerTheme();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
@@ -59,9 +53,7 @@ export function StripeAchUserDetailsScreen() {
   const method = usePrimerPaymentMethod(params.paymentMethodType);
   const ach = method.kind === 'stripeAch' ? method : null;
 
-  // Defensive arm: the selection screen normally arms the flow before pushing here, but a direct
-  // mount (custom navigation) still works. Arm once per mount — the outcome gate stops a terminal
-  // reset (error/decline) re-arming, and the ref stops a Back-tap disarm re-arming during the pop.
+  // Defensive arm for direct mounts; arm once per mount (the outcome gate + ref stop re-arming on reset/back).
   const start = ach?.start;
   const needsArm = ach?.step === 'idle' && !ach?.paymentOutcome;
   const hasArmedRef = useRef(false);
@@ -72,9 +64,7 @@ export function StripeAchUserDetailsScreen() {
     }
   }, [needsArm, start]);
 
-  // Size the sheet to header + form + footer, capped at 92%. scrollContentHeight already inflates
-  // by keyboardPadding, so an open keyboard grows the sheet and the area above it fits exactly.
-  // Only fires once the form is measured, so the brief starting spinner keeps the default height.
+  // Size the sheet to header + form + footer (capped at 92%); runs once measured.
   useEffect(() => {
     if (headerHeight === 0 || scrollContentHeight === 0 || footerHeight === 0) return;
     const desired = DRAG_HANDLE_AREA + headerHeight + scrollContentHeight + footerHeight;
@@ -92,10 +82,7 @@ export function StripeAchUserDetailsScreen() {
   const isWaiting = step === 'submittingDetails' || step === 'awaitingBankLink';
   const canSubmit = isValid && step === 'collectingDetails';
 
-  // Gap between the Continue button and the keyboard / system inset (mirrors CardFormScreen):
-  //   - keyboard closed: max(bottomInset, spacing.large) — clears the home indicator.
-  //   - iOS keyboard open: spacing.large; the keyboard height already includes the inset.
-  //   - Android keyboard open: spacing.large + bottomInset; Android omits the suggestion strip.
+  // Footer gap above the keyboard / system inset (mirrors CardFormScreen).
   const footerPaddingBottom =
     keyboardPadding === 0
       ? Math.max(bottomInset, tokens.spacing.large)

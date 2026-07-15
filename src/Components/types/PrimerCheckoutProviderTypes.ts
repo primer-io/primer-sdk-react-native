@@ -179,9 +179,8 @@ export interface PrimerCheckoutContextValue {
   /** Accept the mandate — authorizes and completes the payment. One-shot per mandate. */
   acceptAchMandate: () => Promise<void>;
   /**
-   * Decline the mandate — cancels the attempt. Native reports the cancellation through `onError`,
-   * so an error outcome is published (error screen in the prebuilt flow) and the merchant
-   * `onError` callbacks fire. One-shot.
+   * Decline the mandate — cancels the attempt. Surfaces via `onError` as an error outcome (error
+   * screen in the prebuilt flow) and the merchant `onError` fires. One-shot.
    */
   declineAchMandate: () => Promise<void>;
   /** Disarm the ACH flow (deferred while the mandate awaits an answer). */

@@ -10,12 +10,7 @@ import { usePrimerLocalization } from '../localization';
 import { usePrimerCheckout } from '../../hooks/usePrimerCheckout';
 import { useBottomSafeArea } from './useBottomSafeArea';
 
-/**
- * Prebuilt ACH mandate (authorization) screen — the dedicated in-flow step the native Drop-ins
- * show. Accept authorizes and completes the payment (outcome routing takes over); decline cancels
- * the attempt and the cancellation surfaces as an error outcome (error screen). No other dismiss
- * affordance: the payment is mid-flight until the mandate is answered.
- */
+// Prebuilt ACH mandate screen: accept completes the payment, decline cancels it (→ error screen); no dismiss while mid-flight.
 export function StripeAchMandateScreen() {
   const tokens = usePrimerTheme();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
