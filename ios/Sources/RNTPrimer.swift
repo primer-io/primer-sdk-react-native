@@ -67,7 +67,7 @@ enum PrimerEvents: Int, CaseIterable {
     // MARK: - INITIALIZATION & REACT NATIVE SUPPORT
 
   // In RNTPrimer.swift, add this property
-    @objc public weak var eventDelegate: RCTNativePrimer!
+    @objc public weak var eventDelegate: RCTNativePrimer?
 
     deinit {
         print("🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
@@ -308,7 +308,7 @@ enum PrimerEvents: Int, CaseIterable {
     }
 
     private func detectImplemetedCallbacks() {
-      eventDelegate.sendEvent(withName: PrimerEvents.detectImplementedRNCallbacks.stringValue, body: nil)
+      eventDelegate?.sendEvent(withName: PrimerEvents.detectImplementedRNCallbacks.stringValue, body: nil)
     }
 
     @objc
@@ -351,7 +351,7 @@ enum PrimerEvents: Int, CaseIterable {
                let json = try? JSONSerialization.jsonObject(with: data) {
                 body["checkoutData"] = json
             }
-            self.eventDelegate.sendEvent(withName: PrimerEvents.onError.stringValue, body: body)
+            self.eventDelegate?.sendEvent(withName: PrimerEvents.onError.stringValue, body: body)
         }
     }
 }
@@ -367,7 +367,10 @@ extension RNTPrimer: PrimerDelegate {
                 do {
                     let checkoutData = try JSONEncoder().encode(data)
                     let checkoutJson = try JSONSerialization.jsonObject(with: checkoutData, options: .allowFragments)
-                    self.eventDelegate.sendEvent(withName: PrimerEvents.onCheckoutComplete.stringValue, body: checkoutJson)
+                    self.eventDelegate?.sendEvent(
+                        withName: PrimerEvents.onCheckoutComplete.stringValue,
+                        body: checkoutJson
+                    )
                 } catch {
                     self.handleRNBridgeError(error, checkoutData: data, stopOnDebug: true)
                 }
@@ -390,7 +393,7 @@ extension RNTPrimer: PrimerDelegate {
                         with: checkoutAdditionalInfo,
                         options: .allowFragments
                     )
-                    self.eventDelegate.sendEvent(
+                    self.eventDelegate?.sendEvent(
                         withName: PrimerHeadlessUniversalCheckoutEvents.onCheckoutPending.stringValue,
                         body: checkoutAdditionalInfoJson
                     )
@@ -432,7 +435,7 @@ extension RNTPrimer: PrimerDelegate {
                   let checkoutPaymentmethodJson = try data
                         .toPrimerCheckoutPaymentMethodDataRN()
                         .toJsonObject()
-                  self.eventDelegate.sendEvent(
+                  self.eventDelegate?.sendEvent(
                         withName: PrimerEvents.onBeforePaymentCreate.stringValue,
                         body: checkoutPaymentmethodJson
                       )
@@ -451,7 +454,7 @@ extension RNTPrimer: PrimerDelegate {
   public func primerClientSessionWillUpdate() {
         if self.implementedRNCallbacks?.isOnBeforeClientSessionUpdateImplemented == true {
             DispatchQueue.main.async {
-              self.eventDelegate.sendEvent(withName: PrimerEvents.onBeforeClientSessionUpdate.stringValue, body: nil)
+              self.eventDelegate?.sendEvent(withName: PrimerEvents.onBeforeClientSessionUpdate.stringValue, body: nil)
             }
         } else {
             // RN Dev hasn't implemented this callback, ignore.
@@ -464,7 +467,7 @@ extension RNTPrimer: PrimerDelegate {
                 let data = try JSONEncoder().encode(clientSession)
                 let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
                 DispatchQueue.main.async {
-                  self.eventDelegate.sendEvent(withName: PrimerEvents.onClientSessionUpdate.stringValue, body: json)
+                  self.eventDelegate?.sendEvent(withName: PrimerEvents.onClientSessionUpdate.stringValue, body: json)
                 }
             } catch {
                 self.handleRNBridgeError(error, checkoutData: nil, stopOnDebug: true)
@@ -495,7 +498,7 @@ extension RNTPrimer: PrimerDelegate {
                 let data = try JSONEncoder().encode(paymentMethodTokenData)
                 let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
                 DispatchQueue.main.async {
-                  self.eventDelegate.sendEvent(withName: PrimerEvents.onTokenizeSuccess.stringValue, body: json)
+                  self.eventDelegate?.sendEvent(withName: PrimerEvents.onTokenizeSuccess.stringValue, body: json)
                 }
             } catch {
                 self.handleRNBridgeError(error, checkoutData: nil, stopOnDebug: true)
@@ -522,7 +525,10 @@ extension RNTPrimer: PrimerDelegate {
             }
 
             DispatchQueue.main.async {
-              self.eventDelegate.sendEvent(withName: PrimerEvents.onResumeSuccess.stringValue, body: ["resumeToken": resumeToken])
+              self.eventDelegate?.sendEvent(
+                  withName: PrimerEvents.onResumeSuccess.stringValue,
+                  body: ["resumeToken": resumeToken]
+              )
             }
         } else {
             // RN dev hasn't opted in on listening the tokenization callback.
@@ -533,7 +539,7 @@ extension RNTPrimer: PrimerDelegate {
   public func primerDidDismiss() {
         if self.implementedRNCallbacks?.isOnDismissImplemented == true {
             DispatchQueue.main.async {
-              self.eventDelegate.sendEvent(withName: PrimerEvents.onDismiss.stringValue, body: nil)
+              self.eventDelegate?.sendEvent(withName: PrimerEvents.onDismiss.stringValue, body: nil)
             }
         } else {
             // RN dev hasn't opted in on listening SDK dismiss.
