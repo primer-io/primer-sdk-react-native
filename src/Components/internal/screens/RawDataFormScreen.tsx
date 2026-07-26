@@ -30,7 +30,7 @@ const NUMERIC_FIELDS = new Set<string>(['PHONE_NUMBER', 'OTP', 'OTP_CODE', 'CARD
 type FieldValues = Record<string, string>;
 
 /**
- * Prebuilt input form for non-card RAW_DATA methods — MBWay (phone), Bancontact (card-fields),
+ * Prebuilt input form for non-card RAW_DATA methods — MBWay/OVO (phone), Bancontact (card-fields),
  * BLIK (one-time code). Renders exactly the fields the method reports (never the card form). On
  * submit the SDK tokenises; methods that redirect/poll are owned by the native flow. Dogfoods the
  * public `usePrimerPaymentMethod` API.
@@ -102,6 +102,9 @@ export function RawDataFormScreen() {
               autoCapitalize="none"
               accessibilityLabel={FIELD_LABEL[field] ?? field}
             />
+            {params.paymentMethodType === 'XENDIT_OVO' && field === 'PHONE_NUMBER' && (
+              <Text style={styles.hint}>{t('primer_form_redirect_ovo_phone_helper')}</Text>
+            )}
           </View>
         ))}
       </ScrollView>
@@ -132,6 +135,14 @@ function createStyles(tokens: PrimerTokens) {
       backgroundColor: colors.background,
       paddingHorizontal: spacing.large,
       paddingTop: spacing.small,
+    },
+    hint: {
+      color: colors.textSecondary,
+      fontFamily: typography.bodySmall.fontFamily,
+      fontSize: typography.bodySmall.fontSize,
+      fontWeight: typography.bodySmall.fontWeight as TextStyle['fontWeight'],
+      letterSpacing: typography.bodySmall.letterSpacing,
+      lineHeight: typography.bodySmall.lineHeight,
     },
     input: {
       borderColor: colors.border,
