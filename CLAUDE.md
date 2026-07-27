@@ -14,7 +14,7 @@ Two integration surfaces: **Universal Checkout** (prebuilt native UI, entry `Pri
 payment method).
 
 Native SDK versions are pinned in `primer-io-react-native.podspec` and `android/build.gradle` — read
-them there, don't copy the numbers. Runs on the RN New Architecture, with an old-arch fallback.
+them there, don't copy them. Runs on the RN New Architecture, old-arch fallback behind it.
 
 ## Repo structure
 
@@ -23,7 +23,7 @@ src/                        # the TypeScript SDK
   index.tsx                 #   public API barrel — nothing ships unless exported here
   Primer.ts                 #   Universal Checkout entry
   RNPrimer.ts               #   thin wrapper over the native module
-  Components/               #   Checkout Components — see the last section
+  Components/               #   Checkout Components  \ see .claude/rules/components.md
   HeadlessUniversalCheckout/
     Managers/               #   AssetsManager, VaultManager
       PaymentMethodManagers/#   Ach, AchMandate, ComponentWithRedirect (banks), Klarna,
@@ -44,23 +44,22 @@ example/                    # the only yarn workspace member; run vehicle. Holds
   the generated bindings — and regenerate afterwards, or the native interface goes stale at runtime.
   See `.claude/rules/native-bridge.md`.
 - `example/ios/Pods/` and any `build/` directory — build artifacts.
-- `example/src/Keys.ts` — gitignored, written by CI from a secret, so it is **absent on a fresh
-  clone** and example builds fail without it. Create it locally:
-  `export const STRIPE_ACH_PUBLISHABLE_KEY = '…'`
+- `example/src/Keys.ts` — gitignored, CI-written, so **absent on a fresh clone** and example builds
+  fail without it. Create it: `export const STRIPE_ACH_PUBLISHABLE_KEY = '…'`
 
 ## Setup & run
 
-Node ≥20 (`.nvmrc`), Yarn 3.6.1 via corepack. `CONTRIBUTING.md` has the walkthrough; the missable
-step is `yarn bootstrap` — `pod install` in `example/ios`, needed before the first iOS build.
+Node ≥20 (`engines`; `.nvmrc` pins `v20.19.0`), Yarn 3.6.1 via corepack. The step `CONTRIBUTING.md`
+omits from its walkthrough is `yarn bootstrap` — `pod install` in `example/ios`, required before the
+first iOS build.
 
 ```bash
 corepack enable && yarn && yarn bootstrap
 yarn example ios      # or: yarn example android / yarn example start
 ```
 
-`yarn bootstrap` runs a bare `pod install`, so it uses whatever CocoaPods your machine has. The
-`Gemfile` pins away from versions known to break this project and CI installs through bundler — if
-pods misbehave locally, use `cd example/ios && bundle exec pod install` instead.
+`yarn example ios` will **never** install pods for you — `yarn bootstrap` is the only pod install
+that happens. More example-app traps in `.claude/rules/example-app.md`.
 
 ## Tests
 
@@ -70,51 +69,61 @@ yarn typecheck       # tsc --noEmit  — note: on `master` this script is named 
 yarn lint            # eslint; add --fix to autofix
 ```
 
-`yarn test` takes `src/__tests__` as a **path argument**, so a test placed anywhere else is silently
-never run. Keep tests there. No root jest config — tests run through babel-jest. Native bridge tests
-run in CI only, via fastlane.
+`yarn test` takes `src/__tests__` as a **path argument** — a test placed anywhere else is silently
+never run. `__mocks__/react-native.js` is a global mock applied to every test; don't hand-mock
+`react-native` per file. Details in `.claude/rules/testing.md`.
 
 ## Acceptance gates (must pass before merge)
 
-All eight workflows in `.github/workflows/` run on every pull request (drafts are skipped):
+Eight of the nine workflows in `.github/workflows/` run on every pull request, drafts skipped
+(`sync-phrase-translations` is `workflow_dispatch` only):
 
 - **Danger JS** — `fail()`s on any ESLint finding in `src/**/*.{ts,tsx}` (warnings count too) and on
-  a PR title without a conventional-commit prefix (`release*` branches exempt). `eslint.config.mjs`
-  enables *every* `eslint-plugin-react-native` rule, so inline styles and colour literals fail too.
-- **Danger Kotlin / Danger Swift** — lint the native bridges.
+  a PR title without a conventional-commit prefix (`release*` exempt). Warns on >600 changed lines,
+  WIP titles, no assignee. Note `eslint-plugin-react-native`'s rules load through a compat shim and
+  do **not** currently fire — inline styles and colour literals pass despite being set to error.
+- **Danger Kotlin / Danger Swift** — fail on **any** detekt or SwiftLint finding. No local command;
+  see `.claude/rules/native-bridge.md`.
 - **Unit Tests and Code Quality** — RN, Android and iOS tests, then SonarCloud over merged coverage.
 - **Validate SDK** — `yarn typecheck`, `yarn build`, verify artifacts, confirm the package packs.
-- **RN Compat Build** — iOS on RN 0.79.6–0.83.1; Android on **0.81.1–0.83.1 only**.
-- **iOS / Android build-and-distribute** — build the example app, upload to Appetize, run the Appium
-  E2E suite, report to Slack. E2E is a per-PR gate here. Slowest and most fragile of the eight.
+- **RN Compat Build** — discrete versions, not ranges: iOS 0.79.6 / 0.80.1 / 0.81.1 / 0.82.1 /
+  0.83.1; Android **0.81.1 / 0.82.1 / 0.83.1 only**.
+- **iOS / Android build-and-distribute** — build the example app and upload to Appetize. Slowest and
+  most fragile. Their Appium E2E jobs are currently `if: false`, so **E2E does not gate anything**;
+  the Slack reporting only fires for PRs targeting `master`.
 
 **This branch installs git hooks** (`master` does not): `yarn install` wires `simple-git-hooks`, so
 `pre-commit` runs `lint-staged` (`eslint --fix` on staged `*.{ts,tsx}`) and `commit-msg` runs
-`commitlint`. They only see *staged* files though, while Danger lints all of `src/` — and
-`tsconfig.json`/`eslint.config.mjs` both exclude `example/`. Run `yarn lint` before pushing anyway.
+`commitlint`. They only see *staged* files, so run `yarn lint` before pushing anyway.
 
-Code, pull requests and every gate above live on **GitHub**. `.circleci/config.yml` is dead —
-untouched since 2021, pins Node 10; ignore it. `.gitlab-ci.yml` is a mirror's manual, tag-gated
-publish job, not a gate.
+**Nothing outside `src/` is checked by anything** — `eslint.config.mjs` ignores `example/`,
+`scripts/` and `*.mjs`; `tsconfig.json` excludes `example/` and `dangerfile.ts`; Danger lints only
+`src/`. Also `yarn install` runs a full `bob build`, so a type error in `src/` fails the *install*.
+
+Code, PRs and every gate live on **GitHub**. `.circleci/config.yml` pins Node 10 and nothing runs
+it. `.gitlab-ci.yml` is a mirror's manual, tag-gated publish job — not a gate, but the **only**
+place a pinned native version is checked for existence, so an unpublished pin stays green on all
+eight PR gates.
 
 ## Conventions & guardrails
 
 - **Conventional commits.** PR titles in practice read `type: description (ORC-1234)`, though
   Danger only checks the prefix.
-- **`src/index.tsx` is the public API.** Nothing is public unless exported there. Many exports are
-  re-aliased without the `Primer` prefix (`PrimerCardData as CardData`); plenty keep it. Match the
-  neighbours rather than assuming a rule.
+- **`src/index.tsx` is the public API** (see the tree above). Many exports are re-aliased without
+  the `Primer` prefix (`PrimerCardData as CardData`); plenty keep it. Match the neighbours rather
+  than assuming a rule.
 - A new payment method means: a manager under `HeadlessUniversalCheckout/Managers/`, types in
-  `models/`, both native bridges, and an `index.tsx` export. Missing the export ships dead code.
+  `models/`, both native bridges, and an `index.tsx` export.
 - Never commit `example/src/Keys.ts`, `local.properties`, or local Podfile `:path` overrides used to
   build against a sibling native checkout.
 - No AI attribution in commits, PRs or Jira tickets.
 
 ### PCI / security
 
-Raw card details reach the JavaScript layer: `PrimerCardData` (and the other `PrimerRawData`
-subtypes in `src/models/PrimerRawData.ts`) carry `cardNumber`, `expiryDate` and `cvv`, and
-`RawDataManager.setRawData` JSON-stringifies them across the bridge.
+Raw card details reach the JavaScript layer: `PrimerCardData` in `src/models/PrimerRawData.ts`
+carries `cardNumber`, `expiryDate` and `cvv` (other `PrimerRawData` subtypes carry less —
+`PrimerBancontactCardData` has no `cvv`), and `RawDataManager.setRawData` JSON-stringifies them
+across the bridge.
 
 Never log, persist, or forward that data to analytics or crash reporting — the `console.error`
 calls in `src/` are for bridge errors only, never payloads. Capture and tokenization stay native;
@@ -123,25 +132,15 @@ don't add JS-side storage or transformation of a PAN or CVV. All changes here ar
 
 ## Where to find more
 
-- `CONTRIBUTING.md` — contributor workflow. `README.md` is for merchants integrating the SDK, not
-  contributors; start with CONTRIBUTING.
-- `.github/workflows/` is the source of truth for the gates above; `dangerfile.ts` for PR rules.
-- Release notes are in GitHub Releases; `CHANGELOG.md` is a stub. Docs: <https://primer.io/docs>
+- `CONTRIBUTING.md` for workflow — `README.md` is for merchants, not contributors.
+- `.github/workflows/` and `dangerfile.ts` are the source of truth for the gates above. Release
+  notes are in GitHub Releases (`CHANGELOG.md` is a stub). Docs: <https://primer.io/docs>
 
-## Checkout Components (this branch)
+## This branch
 
-**You are on `ov/feat/components`**, where Checkout Components is built. It reaches `master` through
-umbrella PR #331 and is not released. Everything above describes this branch; where it differs from
+`ov/feat/components` and anything cut from it is where Checkout Components is built — unreleased,
+reaching `master` via umbrella PR #331. Everything above describes this line; where it differs from
 `master`, it says so.
 
-Components lives in `src/Components/`, re-exported from `src/index.tsx`. The three `io.primer:*`
-artifacts in `android/build.gradle` must stay pinned to the same version.
-
-## Scoped rules
-
-Depth lives beside the code, loaded only when relevant:
-
-- `.claude/rules/components.md` — public surface, `internal/` boundary, the API contract test,
-  native dep pinning. Loads in `src/Components/`, `src/__tests__/components/`.
-- `.claude/rules/native-bridge.md` — codegen and regeneration, bridge entry points, native tests.
-  Loads in `src/specs/`, `ios/Sources/`, `android/src/`.
+Depth lives beside the code in `.claude/rules/`, loading only when relevant — `components.md`,
+`native-bridge.md`, `testing.md`, `example-app.md`.

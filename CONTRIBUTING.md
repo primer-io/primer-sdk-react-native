@@ -77,15 +77,17 @@ We use [TypeScript](https://www.typescriptlang.org/) for type checking, [ESLint]
 
 A `pre-commit` hook runs `lint-staged`, which applies `eslint --fix` to staged `*.{ts,tsx}` files.
 That only covers what you stage, so still run the commands above before pushing — Danger fails the
-pull request on any ESLint finding in `src/`, warnings included. Note Danger lints only `src/`,
-while `yarn lint` covers the whole repo, so a violation elsewhere fails locally but not in Danger.
+pull request on any ESLint finding in `src/`, warnings included. Note that `eslint.config.mjs`
+ignores `example/`, `scripts/` and `report-scripts/`, so code there is checked by neither `yarn
+lint` nor Danger.
 
 ### Scripts
 
 The `package.json` file contains various scripts for common tasks:
 
-- `yarn bootstrap`: run `pod install` in `example/ios` (alias for `yarn example pods`). Run `yarn` first for dependencies.
+- `yarn bootstrap`: run `pod install --repo-update` in `example/ios` (alias for `yarn example pods`). Run `yarn` first for dependencies.
 - `yarn typecheck`: type-check files with TypeScript.
+- `yarn build`: build the publishable output into `lib/` with `react-native-builder-bob`.
 - `yarn lint`: lint files with ESLint.
 - `yarn test`: run unit tests with Jest.
 - `yarn example start`: start the Metro server for the example app.
