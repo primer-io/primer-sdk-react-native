@@ -5,16 +5,19 @@ README, or CI already states does not belong here.
 
 ## What this is
 
-Primer's official **React Native SDK**, published to npm as `@primer-io/react-native`. It is a
-**bridge, not a payments implementation**: the TypeScript layer forwards to the native Primer iOS
-and Android SDKs, which own tokenization, 3DS, vaulting and every payment method.
+Primer's official **React Native SDK**, on npm as `@primer-io/react-native`. It is a **bridge, not a
+payments implementation**: the TypeScript layer forwards to the native Primer iOS and Android SDKs,
+which own tokenization, 3DS, vaulting and every payment method.
 
-Two integration surfaces: **Universal Checkout** (prebuilt native UI, entry `Primer`) and
-**Headless Universal Checkout** (your own UI, entry `HeadlessUniversalCheckout` plus a manager per
-payment method).
+Three surfaces here — Components is **layered on Headless**, not parallel to it:
+
+- **Universal Checkout** (`Primer`) — prebuilt native UI.
+- **Headless** (`HeadlessUniversalCheckout`) — one manager per payment method, no UI.
+- **Checkout Components** (`PrimerCheckoutProvider` + hooks) — React UI driving those same managers,
+  so the native Headless ceiling bounds what it can do.
 
 Native SDK versions are pinned in `primer-io-react-native.podspec` and `android/build.gradle` — read
-them there, don't copy them. Runs on the RN New Architecture, old-arch fallback behind it.
+them there, don't copy them. RN New Architecture, old-arch fallback behind it.
 
 ## Repo structure
 
@@ -43,7 +46,7 @@ example/                    # the only yarn workspace member; run vehicle. Holds
 - Codegen output from `src/specs/` (`codegenConfig` emits `NativePrimerSpec`). Edit the spec, never
   the generated bindings — and regenerate afterwards, or the native interface goes stale at runtime.
   See `.claude/rules/native-bridge.md`.
-- `example/ios/Pods/` and any `build/` directory — build artifacts.
+- `example/ios/Pods/` and any `build/` dir — build artifacts.
 - `example/src/Keys.ts` — gitignored, CI-written, so **absent on a fresh clone** and example builds
   fail without it. Create it: `export const STRIPE_ACH_PUBLISHABLE_KEY = '…'`
 
@@ -82,8 +85,7 @@ Eight of the nine workflows in `.github/workflows/` run on every pull request, d
   a PR title without a conventional-commit prefix (`release*` exempt). Warns on >600 changed lines,
   WIP titles, no assignee. Note `eslint-plugin-react-native`'s rules load through a compat shim and
   do **not** currently fire — inline styles and colour literals pass despite being set to error.
-- **Danger Kotlin / Danger Swift** — fail on **any** detekt or SwiftLint finding. No local command;
-  see `.claude/rules/native-bridge.md`.
+- **Danger Kotlin / Swift** — fail on **any** detekt or SwiftLint finding. No local command.
 - **Unit Tests and Code Quality** — RN, Android and iOS tests, then SonarCloud over merged coverage.
 - **Validate SDK** — `yarn typecheck`, `yarn build`, verify artifacts, confirm the package packs.
 - **RN Compat Build** — discrete versions, not ranges: iOS 0.79.6 / 0.80.1 / 0.81.1 / 0.82.1 /
@@ -94,7 +96,7 @@ Eight of the nine workflows in `.github/workflows/` run on every pull request, d
 
 **This branch installs git hooks** (`master` does not): `yarn install` wires `simple-git-hooks`, so
 `pre-commit` runs `lint-staged` (`eslint --fix` on staged `*.{ts,tsx}`) and `commit-msg` runs
-`commitlint`. They only see *staged* files, so run `yarn lint` before pushing anyway.
+`commitlint`. Staged files only, so run `yarn lint` before pushing anyway.
 
 **Nothing outside `src/` is checked by anything** — `eslint.config.mjs` ignores `example/`,
 `scripts/` and `*.mjs`; `tsconfig.json` excludes `example/` and `dangerfile.ts`; Danger lints only
@@ -107,11 +109,9 @@ eight PR gates.
 
 ## Conventions & guardrails
 
-- **Conventional commits.** PR titles in practice read `type: description (ORC-1234)`, though
-  Danger only checks the prefix.
-- **`src/index.tsx` is the public API** (see the tree above). Many exports are re-aliased without
-  the `Primer` prefix (`PrimerCardData as CardData`); plenty keep it. Match the neighbours rather
-  than assuming a rule.
+- **Conventional commits.** PR titles read `type: description (ORC-1234)`; Danger checks the prefix.
+- **`src/index.tsx` is the public API.** Many exports are re-aliased without the `Primer` prefix
+  (`PrimerCardData as CardData`); plenty keep it. Match the neighbours, don't assume a rule.
 - A new payment method means: a manager under `HeadlessUniversalCheckout/Managers/`, types in
   `models/`, both native bridges, and an `index.tsx` export.
 - Never commit `example/src/Keys.ts`, `local.properties`, or local Podfile `:path` overrides used to
@@ -138,9 +138,9 @@ don't add JS-side storage or transformation of a PAN or CVV. All changes here ar
 
 ## This branch
 
-`ov/feat/components` and anything cut from it is where Checkout Components is built — unreleased,
-reaching `master` via umbrella PR #331. Everything above describes this line; where it differs from
-`master`, it says so.
+`ov/feat/components` and anything cut from it — unreleased, reaching `master` via umbrella PR #331.
+`master` has only the first two surfaces. Everything above describes this line; where it differs
+from `master`, it says so.
 
-Depth lives beside the code in `.claude/rules/`, loading only when relevant — `components.md`,
-`native-bridge.md`, `testing.md`, `example-app.md`.
+Depth lives in `.claude/rules/`, by path: `components.md`, `native-bridge.md`,
+`testing.md`, `example-app.md`.
