@@ -10,6 +10,7 @@ import type { PrimerPaymentMethodManagerCategoryName } from '../../models/Primer
  * - `bankSelection` — a `COMPONENT_WITH_REDIRECT` bank-redirect method (iDEAL; Android Dotpay).
  * - `rawDataForm` — a non-card `RAW_DATA` method that collects a small input (Bancontact/MBWay/BLIK).
  * - `klarna` — a `KLARNA` method (session → categories → embedded view → authorize → finalize).
+ * - `stripeAch` — Stripe ACH bank-account payments (details form → native bank link → mandate).
  * - `card` — the card form (`PAYMENT_CARD` only).
  * - `unsupported` — not yet wired into Components.
  *
@@ -39,6 +40,9 @@ export function routeMethodSelection(
   }
   if (categories.includes('KLARNA')) {
     return 'klarna';
+  }
+  if (categories.includes('STRIPE_ACH')) {
+    return 'stripeAch';
   }
   if (categories.includes('RAW_DATA') && RAW_DATA_FORM_TYPES.has(type)) {
     return 'rawDataForm';

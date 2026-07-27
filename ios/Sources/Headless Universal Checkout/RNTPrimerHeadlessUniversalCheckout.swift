@@ -425,8 +425,12 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
               .last { $0.isKeyWindow }
             DispatchQueue.main.async {
               if let rootViewController = keyWindow?.rootViewController {
-                rootViewController.present(
-                  info.collectorViewController, animated: true, completion: nil)
+                // Present over the top-most VC — root is already presenting the CC sheet modal.
+                var presenter = rootViewController
+                while let presented = presenter.presentedViewController {
+                  presenter = presented
+                }
+                presenter.present(info.collectorViewController, animated: true, completion: nil)
               } else {
                 let checkoutData = PrimerCheckoutData(payment: nil, additionalInfo: additionalInfo)
                 self.handleRNBridgeError(

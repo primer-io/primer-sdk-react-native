@@ -27,6 +27,15 @@ describe('routeMethodSelection', () => {
     expect(routeMethodSelection('ADYEN_BLIK', ['RAW_DATA'])).toBe('rawDataForm');
   });
 
+  it('routes STRIPE_ACH to stripeAch by its dedicated manager category', () => {
+    expect(routeMethodSelection('STRIPE_ACH', ['STRIPE_ACH'])).toBe('stripeAch');
+  });
+
+  it('leaves STRIPE_ACH unsupported when absent from the session (no categories)', () => {
+    // e.g. Android without io.primer:stripe-android — the method is never listed.
+    expect(routeMethodSelection('STRIPE_ACH', [])).toBe('unsupported');
+  });
+
   it('leaves other RAW_DATA methods (e.g. XENDIT_RETAIL_OUTLETS) unsupported', () => {
     // Retail-outlets needs a list picker, not the free-text form; OVO/others aren't wired yet.
     expect(routeMethodSelection('XENDIT_RETAIL_OUTLETS', ['RAW_DATA'])).toBe('unsupported');
