@@ -156,8 +156,7 @@ data class PrimerThreeDsAndroidOptionsRN(val threeDsAppRequestorUrl: String? = n
 @Serializable
 data class PrimerGooglePayOptionsRN(
     var merchantName: String? = null,
-    var allowedCardNetworks: List<String> =
-        listOf("AMEX", "DISCOVER", "JCB", "MASTERCARD", "VISA"),
+    var allowedCardTypes: List<String>? = null,
     var buttonStyle: GooglePayButtonStyle = GooglePayButtonStyle.BLACK,
     @SerialName("isCaptureBillingAddressEnabled")
     var captureBillingAddress: Boolean = false,

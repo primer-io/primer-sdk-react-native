@@ -29,10 +29,16 @@ fun PrimerPaymentMethodOptionsRN.toPrimerPaymentMethodOptions(context: Context) 
         stripeOptions.toPrimerStripeOptions(context),
     )
 
-fun PrimerGooglePayOptionsRN.toPrimerGooglePayOptions() =
-    PrimerGooglePayOptions(
+fun PrimerGooglePayOptionsRN.toPrimerGooglePayOptions(): PrimerGooglePayOptions {
+    val knownCardTypes = setOf("credit", "debit", "prepaid")
+    val cardTypes =
+        allowedCardTypes
+            ?.filter { it in knownCardTypes }
+            ?.takeIf { it.isNotEmpty() }
+    return PrimerGooglePayOptions(
         merchantName = merchantName,
-        allowedCardNetworks = allowedCardNetworks,
+        allowCreditCards = cardTypes?.contains("credit") ?: true,
+        allowPrepaidCards = cardTypes?.contains("prepaid") ?: true,
         buttonStyle = buttonStyle,
         captureBillingAddress = captureBillingAddress,
         existingPaymentMethodRequired = existingPaymentMethodRequired,
@@ -41,6 +47,7 @@ fun PrimerGooglePayOptionsRN.toPrimerGooglePayOptions() =
         emailAddressRequired = emailAddressRequired,
         buttonOptions = buttonOptions?.toPrimerGooglePayButtonOptions() ?: GooglePayButtonOptions(),
     )
+}
 
 fun PrimerGoogleShippingAddressParametersRN.toPrimerGoogleShippingAddressParameters() =
     PrimerGoogleShippingAddressParameters(phoneNumberRequired)
