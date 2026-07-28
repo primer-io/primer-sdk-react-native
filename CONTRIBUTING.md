@@ -64,10 +64,10 @@ We follow the [conventional commits specification](https://www.conventionalcommi
 - `test`: adding or updating tests, e.g. add integration tests using detox.
 - `chore`: tooling changes, e.g. change CI config.
 
-This repository installs no git hooks, so nothing validates your commit message locally. Danger
-fails the pull request when the **PR title** does not start with one of the prefixes above, or with
-`ci`, `perf`, `build`, `revert`, `style`, or `BREAKING CHANGE`. Branches starting `release` are
-exempt.
+A `commit-msg` hook runs `commitlint` against this format, so a non-conforming commit message is
+rejected locally. Danger also fails the pull request when the **PR title** does not start with one
+of the prefixes above, or with `ci`, `perf`, `build`, `revert`, `style`, or `BREAKING CHANGE`.
+Branches starting `release` are exempt from the title check.
 
 ### Linting and tests
 
@@ -75,17 +75,19 @@ exempt.
 
 We use [TypeScript](https://www.typescriptlang.org/) for type checking, [ESLint](https://eslint.org/) with [Prettier](https://prettier.io/) for linting and formatting the code, and [Jest](https://jestjs.io/) for testing.
 
-This repository installs no git hooks, so nothing runs on commit. Run the commands above yourself
-before pushing — Danger fails the pull request on any ESLint finding in `src/`, warnings included.
-Note it lints only `src/`, while `yarn lint` covers the whole repo, so a violation outside `src/`
-fails locally but not in Danger.
+A `pre-commit` hook runs `lint-staged`, which applies `eslint --fix` to staged `*.{ts,tsx}` files.
+That only covers what you stage, so still run the commands above before pushing — Danger fails the
+pull request on any ESLint finding in `src/`, warnings included. Note that `eslint.config.mjs`
+ignores `example/`, `scripts/` and `report-scripts/`, so code there is checked by neither `yarn
+lint` nor Danger.
 
 ### Scripts
 
 The `package.json` file contains various scripts for common tasks:
 
-- `yarn bootstrap`: run `pod install` in `example/ios` (alias for `yarn example pods`). Run `yarn` first for dependencies.
+- `yarn bootstrap`: run `pod install --repo-update` in `example/ios` (alias for `yarn example pods`). Run `yarn` first for dependencies.
 - `yarn typecheck`: type-check files with TypeScript.
+- `yarn build`: build the publishable output into `lib/` with `react-native-builder-bob`.
 - `yarn lint`: lint files with ESLint.
 - `yarn test`: run unit tests with Jest.
 - `yarn example start`: start the Metro server for the example app.
