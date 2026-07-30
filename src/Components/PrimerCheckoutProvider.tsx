@@ -9,6 +9,7 @@ import { PrimerHeadlessUniversalCheckoutKlarnaManager } from '../HeadlessUnivers
 import PrimerHeadlessUniversalCheckoutVaultManager from '../HeadlessUniversalCheckout/Managers/VaultManager';
 import { PrimerHeadlessUniversalCheckout } from '../HeadlessUniversalCheckout/PrimerHeadlessUniversalCheckout';
 import { PrimerError } from '../models/PrimerError';
+import type { PrimerInputValidationError } from '../models/PrimerValidationError';
 import { PrimerAnalytics } from './analytics';
 import { PrimerSessionIntent } from '../models/PrimerSessionIntent';
 import { fmt } from './internal/debug';
@@ -43,8 +44,9 @@ import type { BanksStep } from '../models/banks/BanksSteps';
 import type { IssuingBank } from '../models/IssuingBank';
 import type { KlarnaPaymentCategory } from '../models/klarna/KlarnaPaymentCategory';
 import type { KlarnaPaymentStep } from '../models/klarna/KlarnaPaymentSteps';
-import { resolveLocale } from './internal/localization/locale-resolver';
-import { translate } from './internal/localization/translate';
+import { usePrimerLocalization } from './internal/localization';
+
+type Translate = (key: string) => string;
 
 const LOG = '[PrimerCheckoutProvider]';
 
@@ -156,36 +158,30 @@ function buildPaymentOutcome(checkoutData: PrimerCheckoutData): PaymentOutcome {
   };
 }
 
-// Native validation errors carry a free-form `errorId` like `invalid-card-number`. The table
-// below routes each id to a `CardFormField` and/or a localized message. First match wins. When
-// native gains a typed `inputElementType` field on the error object, swap this for a direct
-// enum-keyed lookup. Phone has no card field — it is matched for its message only.
-const ERROR_TABLE: ReadonlyArray<{
-  test: (id: string) => boolean;
-  field?: CardFormField;
-  messageKey?: string;
-}> = [
-  {
-    test: (id) => id.includes('card') && id.includes('number'),
-    field: 'cardNumber',
-    messageKey: 'primer_card_form_error_number_invalid',
-  },
-  { test: (id) => id.includes('expir'), field: 'expiryDate', messageKey: 'primer_card_form_error_expiry_invalid' },
-  {
-    test: (id) => id.includes('cvv') || id.includes('cvc'),
-    field: 'cvv',
-    messageKey: 'primer_card_form_error_cvv_invalid',
-  },
-  {
-    test: (id) => id.includes('cardholder') || id.includes('card_holder'),
-    field: 'cardholderName',
-    messageKey: 'primer_card_form_error_name_invalid',
-  },
-  { test: (id) => id.includes('phone'), messageKey: 'primer_card_form_error_phone_invalid' },
-];
+// Keyed by native's `inputElementType`. iOS calls BLIK's code `OTP`, Android `OTP_CODE`.
+const FIELD_BY_ELEMENT: Record<string, CardFormField> = {
+  CARD_NUMBER: 'cardNumber',
+  EXPIRY_DATE: 'expiryDate',
+  CVV: 'cvv',
+  CARDHOLDER_NAME: 'cardholderName',
+};
 
-// iOS composes `description` as a diagnostic: "[errorId] message (diagnosticsId: …)". Shoppers
-// should never see either wrapper, so strip them when falling back to native's own wording.
+const COPY_BY_ELEMENT: Record<string, string> = {
+  CARD_NUMBER: 'primer_card_form_error_number_invalid',
+  EXPIRY_DATE: 'primer_card_form_error_expiry_invalid',
+  CVV: 'primer_card_form_error_cvv_invalid',
+  CARDHOLDER_NAME: 'primer_card_form_error_name_invalid',
+  PHONE_NUMBER: 'primer_card_form_error_phone_invalid',
+  OTP: 'primer_form_redirect_otp_code_invalid',
+  OTP_CODE: 'primer_form_redirect_otp_code_invalid',
+};
+
+// An unsupported brand is reported against CARD_NUMBER, but the digits are fine.
+const COPY_BY_ERROR_ID: Record<string, string> = {
+  'unsupported-card-type': 'primer_card_form_error_card_type_unsupported',
+};
+
+// iOS wraps `description` as "[errorId] message (diagnosticsId: …)".
 function stripDiagnostics(description: string): string {
   return description
     .replace(/^\[[^\]]*\]\s*/, '')
@@ -193,27 +189,42 @@ function stripDiagnostics(description: string): string {
     .trim();
 }
 
+// Native names the field it rejected. No name means it threw instead, so `description` is an
+// internal diagnostic ("Client token is not valid:") and must not reach the shopper. Never
+// returns empty — a disabled Pay with no stated reason is what this whole path exists to avoid.
+function resolveMessage(error: PrimerInputValidationError, t: Translate): string {
+  const element = error.inputElementType;
+  if (!element) return t('primer_common_error_generic');
+  const key = COPY_BY_ERROR_ID[error.errorId ?? ''] ?? COPY_BY_ELEMENT[element];
+  if (key) return t(key);
+  return stripDiagnostics(error.description ?? '') || t('primer_common_error_generic');
+}
+
+function sameMessages(a: string[], b: string[]): boolean {
+  return a.length === b.length && a.every((message, i) => message === b[i]);
+}
+
+function sameErrors(a: CardFormErrors, b: CardFormErrors): boolean {
+  const keys = Object.keys(a) as CardFormField[];
+  return keys.length === Object.keys(b).length && keys.every((key) => a[key] === b[key]);
+}
+
 /**
- * Map native validation errors to per-field typed errors the UI can render. Errors the table
- * cannot attribute to a card field (phone number, OTP) still come back in `messages` — dropping
- * them would leave non-card raw-data forms with a disabled Pay button and no stated reason.
+ * Map native validation errors to per-field typed errors plus every message the UI can render.
+ * `messages` carries errors no card field owns (phone number, OTP) — dropping those would leave
+ * non-card raw-data forms with a disabled Pay button and no stated reason.
  */
-function parseValidationErrors(errors: PrimerError[] | undefined): {
-  fieldErrors: CardFormErrors;
-  messages: string[];
-} {
+function parseValidationErrors(
+  errors: PrimerInputValidationError[] | undefined,
+  t: Translate
+): { fieldErrors: CardFormErrors; messages: string[] } {
   const fieldErrors: CardFormErrors = {};
   const messages: string[] = [];
   if (!errors) return { fieldErrors, messages };
-  const { locale } = resolveLocale();
   for (const error of errors) {
-    const id = (error.errorId ?? '').toLowerCase();
-    const match = ERROR_TABLE.find((entry) => entry.test(id));
-    // Prefer our own translated copy; native's wording is English-only and platform-specific.
-    const message = match?.messageKey
-      ? translate(match.messageKey, locale)
-      : stripDiagnostics(error.description ?? error.message ?? 'Invalid');
-    if (match?.field) fieldErrors[match.field] = message;
+    const message = resolveMessage(error, t);
+    const field = error.inputElementType ? FIELD_BY_ELEMENT[error.inputElementType] : undefined;
+    if (field) fieldErrors[field] = message;
     messages.push(message);
   }
   return { fieldErrors, messages };
@@ -230,6 +241,8 @@ export function PrimerCheckoutProvider({
   children,
 }: PrimerCheckoutProviderProps) {
   const [state, setState] = useState<InternalState>(initialState);
+  // Resolved once per mount; `onValidation` fires per keystroke and must not re-resolve the locale.
+  const { t } = usePrimerLocalization();
 
   const [lightTokens] = useState(() => mergeTokens(defaultLightTokens, theme?.light));
   const [darkTokens] = useState(() => mergeTokens(defaultDarkTokens, theme?.dark));
@@ -299,7 +312,7 @@ export function PrimerCheckoutProvider({
   // native-side state.
   const selectedCardNetworkRef = useRef<CardNetworkId | null>(null);
   const lastManagerCallbacksRef = useRef<{
-    onValidation: (isValid: boolean, errors: PrimerError[] | undefined) => void;
+    onValidation: (isValid: boolean, errors: PrimerInputValidationError[] | undefined) => void;
     onBinDataChange: (binData: PrimerBinData) => void;
     onMetadataChange: (metadata: unknown) => void;
   } | null>(null);
@@ -733,16 +746,25 @@ export function PrimerCheckoutProvider({
     let detailsEnteredFired = false;
 
     const callbacks = {
-      onValidation: (isValid: boolean, errors: PrimerError[] | undefined) => {
+      onValidation: (isValid: boolean, errors: PrimerInputValidationError[] | undefined) => {
         if (isValid && !detailsEnteredFired) {
           detailsEnteredFired = true;
           void PrimerAnalytics.trackEvent('PAYMENT_DETAILS_ENTERED', { paymentMethod: method });
         }
-        const { fieldErrors, messages } = parseValidationErrors(errors);
-        setState((prev) => ({
-          ...prev,
-          cardFormState: { ...prev.cardFormState, isValid, errors: fieldErrors, messages },
-        }));
+        const { fieldErrors, messages } = parseValidationErrors(errors, t);
+        setState((prev) => {
+          // Consecutive keystrokes usually re-report the same errors; returning `prev` skips a
+          // context rebuild that would re-render every themed component on the screen.
+          const card = prev.cardFormState;
+          if (
+            card.isValid === isValid &&
+            sameErrors(card.errors, fieldErrors) &&
+            sameMessages(card.messages, messages)
+          ) {
+            return prev;
+          }
+          return { ...prev, cardFormState: { ...card, isValid, errors: fieldErrors, messages } };
+        });
       },
       onBinDataChange: (binData: PrimerBinData) => {
         // A PAN edit can change the detected networks. If the shopper's co-badge
@@ -811,7 +833,8 @@ export function PrimerCheckoutProvider({
       selectedCardNetworkRef.current = null;
       setState((prev) => ({ ...prev, cardFormState: initialCardFormState, selectedCardNetwork: null }));
     };
-  }, [state.activeMethod, state.isReady]);
+    // `t` is memoized for the provider's lifetime, so it never retriggers this effect.
+  }, [state.activeMethod, state.isReady, t]);
 
   // -----------------------------------------------------------------------
   // Actions — stable identities.

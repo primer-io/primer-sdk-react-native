@@ -190,6 +190,7 @@
   "primer_country_placeholder_search": "搜索",
   "primer_country_selector_placeholder": "国家选择器",
   "primer_country_title": "选择国家",
+  "primer_form_redirect_otp_code_invalid": "Enter a valid 6-digit code",
   "primer_form_redirect_ovo_phone_helper": "Enter the phone number registered with your OVO account.",
   "primer_klarna_button_authorize": "继续",
   "primer_klarna_button_finalize": "支付",

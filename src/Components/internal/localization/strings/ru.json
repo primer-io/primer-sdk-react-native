@@ -190,6 +190,7 @@
   "primer_country_placeholder_search": "Поиск",
   "primer_country_selector_placeholder": "Выбор страны",
   "primer_country_title": "Выберите страну",
+  "primer_form_redirect_otp_code_invalid": "Enter a valid 6-digit code",
   "primer_form_redirect_ovo_phone_helper": "Enter the phone number registered with your OVO account.",
   "primer_klarna_button_authorize": "Продолжить",
   "primer_klarna_button_finalize": "Оплатить",

@@ -58,6 +58,8 @@ export type { IPrimerVaultedPaymentMethodAdditonalData as VaultedPaymentMethodAd
 
 export type { IPrimerValidationError as ValidationError } from './models/PrimerValidationError';
 
+export type { IPrimerInputValidationError as InputValidationError } from './models/PrimerValidationError';
+
 export { default as VaultManager } from './HeadlessUniversalCheckout/Managers/VaultManager';
 export { PrimerHeadlessUniversalCheckoutKlarnaManager as KlarnaManager } from './HeadlessUniversalCheckout/Managers/PaymentMethodManagers/KlarnaManager';
 export type {

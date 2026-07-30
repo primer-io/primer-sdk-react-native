@@ -190,6 +190,7 @@
   "primer_country_placeholder_search": "Издөө",
   "primer_country_selector_placeholder": "Өлкө тандагыч",
   "primer_country_title": "Өлкөнү тандоо",
+  "primer_form_redirect_otp_code_invalid": "Enter a valid 6-digit code",
   "primer_form_redirect_ovo_phone_helper": "Enter the phone number registered with your OVO account.",
   "primer_klarna_button_authorize": "Улантуу",
   "primer_klarna_button_finalize": "Төлөө",

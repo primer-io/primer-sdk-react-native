@@ -190,6 +190,7 @@
   "primer_country_placeholder_search": "جستجو",
   "primer_country_selector_placeholder": "انتخابگر کشور",
   "primer_country_title": "انتخاب کشور",
+  "primer_form_redirect_otp_code_invalid": "Enter a valid 6-digit code",
   "primer_form_redirect_ovo_phone_helper": "Enter the phone number registered with your OVO account.",
   "primer_klarna_button_authorize": "ادامه",
   "primer_klarna_button_finalize": "پرداخت",
