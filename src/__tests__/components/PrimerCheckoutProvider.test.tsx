@@ -1,6 +1,11 @@
 // @ts-expect-error -- React 19 concurrent act environment
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
+// Pin the locale so error-copy assertions don't depend on the host's device locale.
+jest.mock('../../Components/internal/localization/locale-resolver', () => ({
+  resolveLocale: () => ({ locale: 'en', source: 'fallback' }),
+}));
+
 jest.mock('../../specs/NativePrimer', () => ({
   __esModule: true,
   default: {
@@ -669,6 +674,57 @@ describe('PrimerCheckoutProvider card network selection', () => {
 
     expect(rawNative.setRawData.mock.calls.length).toBe(callsAfterClear);
     expect(ctx().selectedCardNetwork).toBeNull();
+  });
+
+  it('keeps validation errors it cannot attribute to a card field', async () => {
+    const ctx = await setupCardForm();
+    const onValidation = findListener('onValidation');
+
+    await act(async () => {
+      onValidation!({
+        isValid: false,
+        errors: [{ errorId: 'invalid-phone-number', description: 'Phone number is not valid.' }],
+      });
+      await flushPromises();
+    });
+
+    // No card field matches a phone error, so `errors` stays empty — but dropping the message
+    // entirely would leave non-card raw-data forms with no stated reason for a disabled Pay.
+    // The copy is ours, not native's: iOS says "[invalid-phone-number] Phone number is not
+    // valid.", Android says "Failed to parse phone number.".
+    expect(ctx().cardFormState.errors).toEqual({});
+    expect(ctx().cardFormState.messages).toEqual(['Enter a valid phone number']);
+  });
+
+  it('falls back to native wording without its diagnostic wrapper when nothing matches', async () => {
+    const ctx = await setupCardForm();
+    const onValidation = findListener('onValidation');
+
+    await act(async () => {
+      onValidation!({
+        isValid: false,
+        errors: [{ errorId: 'some-unmapped-thing', description: '[some-unmapped-thing] Bad. (diagnosticsId: abc-1)' }],
+      });
+      await flushPromises();
+    });
+
+    expect(ctx().cardFormState.messages).toEqual(['Bad.']);
+  });
+
+  it('still routes card-field validation errors to their field', async () => {
+    const ctx = await setupCardForm();
+    const onValidation = findListener('onValidation');
+
+    await act(async () => {
+      onValidation!({
+        isValid: false,
+        errors: [{ errorId: 'invalid-card-number', description: 'Card number is not valid.' }],
+      });
+      await flushPromises();
+    });
+
+    expect(ctx().cardFormState.errors).toEqual({ cardNumber: 'Invalid card number' });
+    expect(ctx().cardFormState.messages).toEqual(['Invalid card number']);
   });
 });
 

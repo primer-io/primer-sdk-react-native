@@ -11,6 +11,7 @@ import { CheckoutRoute } from '../navigation/types';
 import { usePrimerLocalization } from '../localization';
 import { useCheckoutFlow } from '../checkout-flow/CheckoutFlowContext';
 import { usePrimerPaymentMethod } from '../../hooks/usePrimerPaymentMethod';
+import { fmt } from '../debug';
 import { useBottomSafeArea } from './useBottomSafeArea';
 import { buildRawData } from './buildRawData';
 
@@ -59,12 +60,18 @@ export function RawDataFormScreen() {
     return null;
   }
 
-  const { requiredInputs, isValid, setData, submit } = form;
+  const { requiredInputs, isValid, validationErrors, setData, submit } = form;
+
+  // Pay stays disabled while invalid, so there is no tap that could reveal the reason —
+  // show it as soon as anything has been typed, and let it clear itself once valid.
+  const hasInput = requiredInputs.some((field) => (values[field] ?? '').trim().length > 0);
 
   const handleChange = (field: string, text: string) => {
     const next = { ...values, [field]: text };
     setValues(next);
-    void setData(buildRawData(params.paymentMethodType, next)).catch(() => {});
+    void setData(buildRawData(params.paymentMethodType, next)).catch((err) =>
+      console.warn(`[PrimerRawDataForm] setData failed ${fmt(err)}`)
+    );
   };
 
   const handleSubmit = () => {
@@ -109,6 +116,15 @@ export function RawDataFormScreen() {
         ))}
       </ScrollView>
       <View style={[styles.footer, { paddingBottom: Math.max(bottomInset, tokens.spacing.large) }]}>
+        {hasInput && validationErrors.length > 0 && (
+          <View style={styles.errorBlock}>
+            {validationErrors.map((message) => (
+              <Text key={message} style={styles.errorText}>
+                {message}
+              </Text>
+            ))}
+          </View>
+        )}
         <TouchableOpacity
           onPress={handleSubmit}
           disabled={!isValid}
@@ -128,6 +144,18 @@ function createStyles(tokens: PrimerTokens) {
   const { colors, radii, spacing, typography } = tokens;
   /* eslint-disable react-native/no-unused-styles */
   return StyleSheet.create({
+    errorBlock: {
+      gap: spacing.xsmall,
+      paddingBottom: spacing.small,
+    },
+    errorText: {
+      color: colors.textNegative,
+      fontFamily: typography.bodySmall.fontFamily,
+      fontSize: typography.bodySmall.fontSize,
+      fontWeight: typography.bodySmall.fontWeight as TextStyle['fontWeight'],
+      letterSpacing: typography.bodySmall.letterSpacing,
+      lineHeight: typography.bodySmall.lineHeight,
+    },
     field: {
       gap: spacing.xsmall,
     },

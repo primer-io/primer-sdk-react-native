@@ -63,7 +63,7 @@ const baseContext: PrimerCheckoutContextValue = {
   authorizeKlarna: async () => {},
   finalizeKlarna: async () => {},
   activeMethod: 'PAYMENT_CARD',
-  cardFormState: { isValid: false, errors: {}, binData: null, metadata: null, requiredFields: [] },
+  cardFormState: { isValid: false, errors: {}, messages: [], binData: null, metadata: null, requiredFields: [] },
   vaultedMethods: [],
   vaultedIconUrisById: {},
   vaultedNamesById: {},

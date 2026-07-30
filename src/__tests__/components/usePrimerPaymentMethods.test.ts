@@ -114,6 +114,7 @@ const readyContext: PrimerCheckoutContextValue = {
   cardFormState: {
     isValid: false,
     errors: {},
+    messages: [],
     binData: null,
     metadata: null,
     requiredFields: [],
