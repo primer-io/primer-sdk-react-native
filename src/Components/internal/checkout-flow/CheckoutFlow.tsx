@@ -10,6 +10,9 @@ import { CardFormScreen } from '../screens/CardFormScreen';
 import { BankSelectionScreen } from '../screens/BankSelectionScreen';
 import { RawDataFormScreen } from '../screens/RawDataFormScreen';
 import { KlarnaScreen } from '../screens/KlarnaScreen';
+import { StripeAchUserDetailsScreen } from '../screens/StripeAchUserDetailsScreen';
+import { StripeAchMandateScreen } from '../screens/StripeAchMandateScreen';
+import { PendingScreen } from '../screens/PendingScreen';
 import { CountrySelectorScreen } from '../screens/CountrySelectorScreen';
 import { ErrorScreen } from '../screens/ErrorScreen';
 import { SuccessScreen } from '../screens/SuccessScreen';
@@ -18,23 +21,31 @@ import { PrimerCardFormProvider, BillingAddressFormStateProvider } from '../form
 import { CheckoutFlowContext } from './CheckoutFlowContext';
 import { ReadinessTransitioner } from './ReadinessTransitioner';
 import { PaymentOutcomeTransitioner } from './PaymentOutcomeTransitioner';
+import { AchMandateTransitioner } from './AchMandateTransitioner';
 
 const SUCCESS_AUTO_DISMISS_MS = 3000;
 
-function CheckoutSuccessScreen() {
-  const flow = useContext(CheckoutFlowContext);
-  const { clearPaymentOutcome } = usePrimerCheckout();
+// Auto-dismiss wrapper shared by the success + pending routes: clear the outcome so the next
+// attempt re-fires the transitioner, then hand control back to the flow.
+function withOutcomeAutoDismiss(Screen: React.ComponentType) {
+  return function OutcomeAutoDismissScreen() {
+    const flow = useContext(CheckoutFlowContext);
+    const { clearPaymentOutcome } = usePrimerCheckout();
 
-  useEffect(() => {
-    const t = setTimeout(() => {
-      clearPaymentOutcome();
-      flow?.onCancel();
-    }, SUCCESS_AUTO_DISMISS_MS);
-    return () => clearTimeout(t);
-  }, [flow, clearPaymentOutcome]);
+    useEffect(() => {
+      const t = setTimeout(() => {
+        clearPaymentOutcome();
+        flow?.onCancel();
+      }, SUCCESS_AUTO_DISMISS_MS);
+      return () => clearTimeout(t);
+    }, [flow, clearPaymentOutcome]);
 
-  return <SuccessScreen />;
+    return <Screen />;
+  };
 }
+
+const CheckoutSuccessScreen = withOutcomeAutoDismiss(SuccessScreen);
+const CheckoutPendingScreen = withOutcomeAutoDismiss(PendingScreen);
 
 const screenMap: Partial<Record<CheckoutRouteType, React.ComponentType>> = {
   [CheckoutRoute.splash]: LoadingScreen,
@@ -43,8 +54,11 @@ const screenMap: Partial<Record<CheckoutRouteType, React.ComponentType>> = {
   [CheckoutRoute.bankSelection]: BankSelectionScreen,
   [CheckoutRoute.rawDataForm]: RawDataFormScreen,
   [CheckoutRoute.klarna]: KlarnaScreen,
+  [CheckoutRoute.stripeAchUserDetails]: StripeAchUserDetailsScreen,
+  [CheckoutRoute.stripeAchMandate]: StripeAchMandateScreen,
   [CheckoutRoute.countrySelector]: CountrySelectorScreen,
   [CheckoutRoute.processing]: LoadingScreen,
+  [CheckoutRoute.pending]: CheckoutPendingScreen,
   [CheckoutRoute.success]: CheckoutSuccessScreen,
   [CheckoutRoute.error]: ErrorScreen,
   [CheckoutRoute.vaultedMethods]: VaultedMethodsScreen,
@@ -62,6 +76,7 @@ export function CheckoutFlow({ onCancel }: CheckoutFlowProps = {}) {
       <NavigationProvider initialRoute={CheckoutRoute.splash}>
         <ReadinessTransitioner />
         <PaymentOutcomeTransitioner />
+        <AchMandateTransitioner />
         <PrimerCardFormProvider>
           <BillingAddressFormStateProvider>
             <NavigationContainer screenMap={screenMap} />

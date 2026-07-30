@@ -237,4 +237,23 @@ class RNTPrimerTests: XCTestCase {
         wait(for: [handlerExpectation, resolverExpectation], timeout: 2.0)
         XCTAssertNil(rnPrimer.primerDidFailWithErrorDecisionHandler)
     }
+
+    // MARK: - Delegate callbacks after native-module teardown (ESC-1055)
+
+    // Regression (ESC-1055): eventDelegate can be nil after RN tears down RCTNativePrimer.
+    func testPrimerDidDismissDoesNotCrashWhenEventDelegateIsNil() throws {
+        let json = "{\"onDismiss\": true}"
+        rnPrimer.implementedRNCallbacks = try JSONDecoder().decode(
+            ImplementedRNCallbacks.self,
+            from: json.data(using: .utf8)!
+        )
+        XCTAssertNil(rnPrimer.eventDelegate)
+
+        rnPrimer.primerDidDismiss()
+
+        // onDismiss emits on DispatchQueue.main.async — drain it, then assert we survived.
+        let drained = expectation(description: "main queue drained")
+        DispatchQueue.main.async { drained.fulfill() }
+        wait(for: [drained], timeout: 2.0)
+    }
 }

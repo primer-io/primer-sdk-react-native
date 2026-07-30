@@ -9,7 +9,10 @@ export enum CheckoutRoute {
   bankSelection = 'bankSelection',
   rawDataForm = 'rawDataForm',
   klarna = 'klarna',
+  stripeAchUserDetails = 'stripeAchUserDetails',
+  stripeAchMandate = 'stripeAchMandate',
   processing = 'processing',
+  pending = 'pending',
   success = 'success',
   error = 'error',
   countrySelector = 'countrySelector',
@@ -26,7 +29,10 @@ export type RouteParamMap = {
   [CheckoutRoute.bankSelection]: { paymentMethodType: string };
   [CheckoutRoute.rawDataForm]: { paymentMethodType: string };
   [CheckoutRoute.klarna]: { paymentMethodType: string };
+  [CheckoutRoute.stripeAchUserDetails]: { paymentMethodType: string };
+  [CheckoutRoute.stripeAchMandate]: undefined;
   [CheckoutRoute.processing]: undefined;
+  [CheckoutRoute.pending]: { checkoutData?: PrimerCheckoutData } | undefined;
   [CheckoutRoute.success]: { checkoutData?: PrimerCheckoutData; title?: string; subtitle?: string } | undefined;
   [CheckoutRoute.error]: { error?: PrimerError; title?: string; subtitle?: string } | undefined;
   [CheckoutRoute.countrySelector]: { selectedCountryCode?: string };

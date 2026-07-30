@@ -7,6 +7,10 @@ export type {
   PrimerCheckoutContextValue,
   PaymentOutcome,
   CardFormState,
+  StripeAchStep,
+  StripeAchUserDetails,
+  StripeAchFieldErrors,
+  StripeAchMandateDisplay,
 } from './types/PrimerCheckoutProviderTypes';
 export type { TranslationParams } from './internal/localization';
 export type {
@@ -22,6 +26,7 @@ export type {
   UsePrimerPaymentMethodReturn,
   NativeUiPaymentMethod,
   CardPaymentMethod,
+  StripeAchPaymentMethod,
   UnsupportedPaymentMethod,
   PaymentMethodAvailabilityError,
 } from './types/PrimerPaymentMethodTypes';

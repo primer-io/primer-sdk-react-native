@@ -1,3 +1,4 @@
+import PrimerFoundation
 import PrimerSDK
 
 extension PrimerSettings {
@@ -115,6 +116,17 @@ extension PrimerSettings {
           )
         }
 
+        var allowedCardTypes: [CardType]?
+        if let rnAllowedCardTypes = rnApplePayOptions["allowedCardTypes"] as? [String] {
+          let parsedCardTypes = rnAllowedCardTypes.compactMap { CardType(rawValue: $0) }
+          if parsedCardTypes.count != rnAllowedCardTypes.count {
+            PrimerLogging.shared.logger.warn(
+              message: "Some allowedCardTypes values cannot be filtered on Apple Pay and were ignored")
+          }
+          // empty maps to nil so Apple Pay falls open to all types
+          allowedCardTypes = parsedCardTypes.isEmpty ? nil : parsedCardTypes
+        }
+
         applePayOptions = PrimerApplePayOptions(
           merchantIdentifier: rnApplePayMerchantIdentifier,
           merchantName: rnApplePayMerchantName,
@@ -122,7 +134,8 @@ extension PrimerSettings {
           showApplePayForUnsupportedDevice: rnApplePayShowApplePayForUnsupportedDevice,
           checkProvidedNetworks: rnApplePayCheckProvidedNetworks,
           shippingOptions: shippingOptions,
-          billingOptions: billingOptions
+          billingOptions: billingOptions,
+          allowedCardTypes: allowedCardTypes
         )
       }
 
@@ -149,7 +162,8 @@ extension PrimerSettings {
         var cardFormUIOptions: PrimerCardFormUIOptions?
         if let rnCardFormUIOptions = rnUIOptions["cardFormUIOptions"] as? [String: Any] {
             let rnCardFormUIOptionsData = try (JSONSerialization.data(withJSONObject: rnCardFormUIOptions))
-            let rnCardFormUIOptions = try JSONDecoder().decode(PrimerCardFormUIOptionsRN.self, from: rnCardFormUIOptionsData)
+            let rnCardFormUIOptions = try JSONDecoder().decode(
+              PrimerCardFormUIOptionsRN.self, from: rnCardFormUIOptionsData)
             cardFormUIOptions = rnCardFormUIOptions.asPrimerCardFormUIOptions()
         }
 
