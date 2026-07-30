@@ -703,17 +703,19 @@ describe('PrimerCheckoutProvider card network selection', () => {
 
   // iOS calls BLIK's one-time code OTP, Android calls it OTP_CODE. Both must find our copy.
   it.each(['OTP', 'OTP_CODE'])('localizes BLIK’s one-time code error reported as %s', async (element) => {
-    const ctx = await validate([{ errorId: 'invalid-otp-code', inputElementType: element }]);
+    const ctx = await validate([
+      { errorId: 'invalid-otp-code', inputElementType: element, description: 'OTP is not valid.' },
+    ]);
 
     expect(ctx().cardFormState.messages).toEqual(['Enter a valid 6-digit code']);
   });
 
   it('routes each card field to its own error and copy', async () => {
     const ctx = await validate([
-      { errorId: 'invalid-card-number', inputElementType: 'CARD_NUMBER' },
-      { errorId: 'invalid-expiry-date', inputElementType: 'EXPIRY_DATE' },
-      { errorId: 'invalid-cvv', inputElementType: 'CVV' },
-      { errorId: 'invalid-cardholder-name', inputElementType: 'CARDHOLDER_NAME' },
+      { errorId: 'invalid-card-number', inputElementType: 'CARD_NUMBER', description: 'Card number is not valid.' },
+      { errorId: 'invalid-expiry-date', inputElementType: 'EXPIRY_DATE', description: 'Expiry date is not valid.' },
+      { errorId: 'invalid-cvv', inputElementType: 'CVV', description: 'CVV is not valid.' },
+      { errorId: 'invalid-cardholder-name', inputElementType: 'CARDHOLDER_NAME', description: 'Name is not valid.' },
     ]);
 
     expect(ctx().cardFormState.errors).toEqual({
@@ -726,7 +728,13 @@ describe('PrimerCheckoutProvider card network selection', () => {
 
   // Reported against CARD_NUMBER, but the digits are fine — only the brand is not accepted.
   it('distinguishes an unsupported card brand from an invalid number', async () => {
-    const ctx = await validate([{ errorId: 'unsupported-card-type', inputElementType: 'CARD_NUMBER' }]);
+    const ctx = await validate([
+      {
+        errorId: 'unsupported-card-type',
+        inputElementType: 'CARD_NUMBER',
+        description: 'Unsupported card type: Diners.',
+      },
+    ]);
 
     expect(ctx().cardFormState.errors).toEqual({ cardNumber: 'Unsupported card type' });
   });
@@ -752,13 +760,17 @@ describe('PrimerCheckoutProvider card network selection', () => {
 
   // Dropping it would put us back to a disabled Pay button with nothing on screen.
   it('still reports something when native names a field but gives no usable wording', async () => {
-    const ctx = await validate([{ inputElementType: 'RETAILER', description: '[x] (diagnosticsId: a-1)' }]);
+    const ctx = await validate([
+      { errorId: 'invalid-retailer', inputElementType: 'RETAILER', description: '[x] (diagnosticsId: a-1)' },
+    ]);
 
     expect(ctx().cardFormState.messages).toEqual(['An unknown error occurred.']);
   });
 
   it('clears messages once native reports the input valid', async () => {
-    const ctx = await validate([{ errorId: 'invalid-phone-number', inputElementType: 'PHONE_NUMBER' }]);
+    const ctx = await validate([
+      { errorId: 'invalid-phone-number', inputElementType: 'PHONE_NUMBER', description: 'Phone is not valid.' },
+    ]);
     expect(ctx().cardFormState.messages).toHaveLength(1);
     const onValidation = findListener('onValidation');
 

@@ -252,9 +252,9 @@ function stripDiagnostics(description: string): string {
 function resolveMessage(error: PrimerInputValidationError, t: Translate): string {
   const element = error.inputElementType;
   if (!element) return t('primer_common_error_generic');
-  const key = COPY_BY_ERROR_ID[error.errorId ?? ''] ?? COPY_BY_ELEMENT[element];
+  const key = COPY_BY_ERROR_ID[error.errorId] ?? COPY_BY_ELEMENT[element];
   if (key) return t(key);
-  return stripDiagnostics(error.description ?? '') || t('primer_common_error_generic');
+  return stripDiagnostics(error.description) || t('primer_common_error_generic');
 }
 
 function sameMessages(a: string[], b: string[]): boolean {
