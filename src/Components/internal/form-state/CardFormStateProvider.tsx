@@ -3,7 +3,13 @@ import { usePrimerCheckout } from '../../hooks/usePrimerCheckout';
 import { usePrimerCardNetwork } from '../../hooks/usePrimerCardNetwork';
 import { debounce, type DebouncedFunction } from '../../../utils/debounce';
 import { PrimerError } from '../../../models/PrimerError';
-import { formatDigitsWithGaps, maxFormattedCardNumberLength, maxPanDigits } from '../cardFormat';
+import {
+  expandExpiryYearForNative,
+  formatDigitsWithGaps,
+  formatExpiryDate,
+  maxFormattedCardNumberLength,
+  maxPanDigits,
+} from '../cardFormat';
 import type { CardFormField, CardFormErrors, UsePrimerCardFormReturn } from '../../types/CardFormTypes';
 
 const LOG = '[CardFormState]';
@@ -15,31 +21,12 @@ function formatCardNumber(value: string, gapPattern: readonly number[], maxDigit
   return formatDigitsWithGaps(digits, gapPattern);
 }
 
-function formatExpiryDate(value: string, previous: string): string {
-  const digits = value.replace(/\D/g, '').slice(0, 4);
-  if (value.length < previous.length) {
-    return digits;
-  }
-  if (digits.length >= 2) {
-    return digits.slice(0, 2) + '/' + digits.slice(2);
-  }
-  return digits;
-}
-
 function formatCVV(value: string, maxDigits: 3 | 4): string {
   return value.replace(/\D/g, '').slice(0, maxDigits);
 }
 
 function stripCardNumberForNative(formatted: string): string {
   return formatted.replace(/\s/g, '');
-}
-
-// Display is MM/YY but Android's validator requires MM/YYYY; iOS accepts both.
-// Expand only once the year is fully typed (4-char "MM/YY"); partial edits
-// pass through unchanged so native can keep reporting "cannot be blank".
-function expandExpiryYearForNative(formatted: string): string {
-  const match = /^(\d{2})\/(\d{2})$/.exec(formatted);
-  return match ? `${match[1]}/20${match[2]}` : formatted;
 }
 
 const INITIAL_FOCUS: Record<CardFormField, boolean> = {

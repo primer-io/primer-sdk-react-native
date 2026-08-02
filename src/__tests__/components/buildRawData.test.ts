@@ -18,14 +18,35 @@ describe('buildRawData', () => {
     expect(buildRawData('ADYEN_MBWAY', { PHONE_NUMBER: '+351912345678' })).toEqual({ phoneNumber: '+351912345678' });
   });
 
-  it('maps Bancontact card-fields to the card-data shape', () => {
+  // Android's validator accepts MM/YYYY only; the field displays MM/YY, so the year is expanded here.
+  it('maps Bancontact card-fields to the card-data shape, expanding the year', () => {
     expect(
       buildRawData('ADYEN_BANCONTACT_CARD', {
         CARD_NUMBER: '4111',
         EXPIRY_DATE: '03/30',
         CARDHOLDER_NAME: 'John Smith',
       })
-    ).toEqual({ cardNumber: '4111', expiryDate: '03/30', cardholderName: 'John Smith' });
+    ).toEqual({ cardNumber: '4111', expiryDate: '03/2030', cardholderName: 'John Smith' });
+  });
+
+  it('leaves an already four-digit Bancontact year untouched', () => {
+    expect(
+      buildRawData('ADYEN_BANCONTACT_CARD', {
+        CARD_NUMBER: '4111',
+        EXPIRY_DATE: '03/2030',
+        CARDHOLDER_NAME: 'John Smith',
+      })
+    ).toEqual({ cardNumber: '4111', expiryDate: '03/2030', cardholderName: 'John Smith' });
+  });
+
+  it('passes a partially typed Bancontact expiry through so native still reports it invalid', () => {
+    expect(
+      buildRawData('ADYEN_BANCONTACT_CARD', {
+        CARD_NUMBER: '4111',
+        EXPIRY_DATE: '03/',
+        CARDHOLDER_NAME: 'John Smith',
+      })
+    ).toEqual({ cardNumber: '4111', expiryDate: '03/', cardholderName: 'John Smith' });
   });
 
   it('defaults missing Bancontact fields to empty strings', () => {
