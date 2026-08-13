@@ -16,13 +16,22 @@ import { buildRawData } from './buildRawData';
 
 // Field keys are the SDK's input-element-type strings. NOTE the platform split for BLIK's
 // one-time code: iOS reports 'OTP', Android reports 'OTP_CODE' — both are handled.
-const FIELD_LABEL: Record<string, string> = {
-  PHONE_NUMBER: 'Phone number',
-  OTP: 'One-time code',
-  OTP_CODE: 'One-time code',
-  CARD_NUMBER: 'Card number',
-  EXPIRY_DATE: 'Expiry date (MM/YY)',
-  CARDHOLDER_NAME: 'Cardholder name',
+const FIELD_LABEL_KEY: Record<string, string> = {
+  PHONE_NUMBER: 'primer_card_form_label_phone',
+  OTP: 'primer_card_form_label_otp',
+  OTP_CODE: 'primer_card_form_label_otp',
+  CARD_NUMBER: 'primer_card_form_label_number',
+  EXPIRY_DATE: 'primer_card_form_label_expiry',
+  CARDHOLDER_NAME: 'primer_card_form_label_name',
+};
+
+const FIELD_PLACEHOLDER_KEY: Record<string, string> = {
+  PHONE_NUMBER: 'primer_card_form_placeholder_phone',
+  OTP: 'primer_card_form_placeholder_otp',
+  OTP_CODE: 'primer_card_form_placeholder_otp',
+  CARD_NUMBER: 'primer_card_form_placeholder_number',
+  EXPIRY_DATE: 'primer_card_form_placeholder_expiry',
+  CARDHOLDER_NAME: 'primer_card_form_placeholder_name',
 };
 
 const NUMERIC_FIELDS = new Set<string>(['PHONE_NUMBER', 'OTP', 'OTP_CODE', 'CARD_NUMBER', 'EXPIRY_DATE']);
@@ -89,21 +98,31 @@ export function RawDataFormScreen() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        {requiredInputs.map((field) => (
-          <View key={field} style={styles.field}>
-            <Text style={styles.label}>{FIELD_LABEL[field] ?? field}</Text>
-            <TextInput
-              style={styles.input}
-              value={values[field] ?? ''}
-              onChangeText={(text) => handleChange(field, text)}
-              keyboardType={
-                field === 'PHONE_NUMBER' ? 'phone-pad' : NUMERIC_FIELDS.has(field) ? 'number-pad' : 'default'
-              }
-              autoCapitalize="none"
-              accessibilityLabel={FIELD_LABEL[field] ?? field}
-            />
-          </View>
-        ))}
+        {requiredInputs.map((field) => {
+          const labelKey = FIELD_LABEL_KEY[field];
+          const placeholderKey = FIELD_PLACEHOLDER_KEY[field];
+          const placeholder = placeholderKey ? t(placeholderKey) : undefined;
+          const fieldLabel = labelKey ? t(labelKey) : field;
+          // the expiry field has no input mask, so the format has to stay visible while typing
+          const label = field === 'EXPIRY_DATE' && placeholder ? `${fieldLabel} (${placeholder})` : fieldLabel;
+          return (
+            <View key={field} style={styles.field}>
+              <Text style={styles.label}>{label}</Text>
+              <TextInput
+                style={styles.input}
+                value={values[field] ?? ''}
+                placeholder={placeholder}
+                placeholderTextColor={tokens.colors.textPlaceholder}
+                onChangeText={(text) => handleChange(field, text)}
+                keyboardType={
+                  field === 'PHONE_NUMBER' ? 'phone-pad' : NUMERIC_FIELDS.has(field) ? 'number-pad' : 'default'
+                }
+                autoCapitalize="none"
+                accessibilityLabel={label}
+              />
+            </View>
+          );
+        })}
       </ScrollView>
       <View style={[styles.footer, { paddingBottom: Math.max(bottomInset, tokens.spacing.large) }]}>
         <TouchableOpacity
