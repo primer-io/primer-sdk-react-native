@@ -8,11 +8,11 @@ export const defaultDarkTokens: PrimerTokens = {
     primary: '#2f98ff', // primerColorBrand — unchanged in dark (0.184, 0.596, 1.0)
     onPrimary: '#efefef', // dark gray900 — matches Android's onColoredSurface in dark
     background: '#171619', // dark primerColorGray000 (0.090, 0.086, 0.098)
-    backgroundOutlinedDefault: '#292929', // dark primerColorBackgroundOutlinedDefault (gray100)
+    backgroundOutlinedDefault: '#171619', // dark primerColorBackgroundOutlinedDefault -> background.primary
     surface: '#292929', // dark primerColorGray100 (0.161, 0.161, 0.161)
     overlay: 'rgba(0,0,0,0.7)',
     textPrimary: '#efefef', // dark primerColorGray900 (0.937, 0.937, 0.937)
-    textOutlinedDefault: '#efefef', // dark primerColorTextOutlinedDefault (gray900)
+    textOutlinedDefault: '#efefef', // dark primerColorTextOutlinedDefault -> text.primary
     textSecondary: '#c7c7c7', // dark primerColorGray600 (0.780, 0.780, 0.780)
     textPlaceholder: '#767577', // dark primerColorGray500 (0.463, 0.459, 0.467)
     textDisabled: '#858585', // dark primerColorGray400 (0.522, 0.522, 0.522)

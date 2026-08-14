@@ -138,10 +138,11 @@ function createStyles(tokens: PrimerTokens) {
       paddingTop: spacing.small,
     },
     input: {
+      backgroundColor: colors.backgroundOutlinedDefault,
       borderColor: colors.border,
       borderRadius: radii.medium,
       borderWidth: StyleSheet.hairlineWidth,
-      color: colors.textPrimary,
+      color: colors.textOutlinedDefault,
       fontSize: typography.titleLarge.fontSize,
       minHeight: 48,
       paddingHorizontal: spacing.medium,
