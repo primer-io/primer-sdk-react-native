@@ -7,9 +7,11 @@ export const defaultLightTokens: PrimerTokens = {
     primary: '#2f98ff', // primerColorBrand (0.184, 0.596, 1.0)
     onPrimary: '#ffffff', // gray000 — matches Android's onColoredSurface in light
     background: '#ffffff', // primerColorBackground (1.0, 1.0, 1.0)
+    backgroundOutlinedDefault: '#f5f5f5', // primerColorBackgroundOutlinedDefault (gray100)
     surface: '#f5f5f5', // primerColorGray100 (0.961, 0.961, 0.961)
     overlay: 'rgba(0,0,0,0.5)',
     textPrimary: '#212121', // primerColorTextPrimary (0.129, 0.129, 0.129)
+    textOutlinedDefault: '#212121', // primerColorTextOutlinedDefault (gray900)
     textSecondary: '#757575', // primerColorTextSecondary (0.459, 0.459, 0.459)
     textPlaceholder: '#9e9e9e', // primerColorTextPlaceholder (0.620, 0.620, 0.620)
     textDisabled: '#bdbdbd', // primerColorTextDisabled (0.741, 0.741, 0.741)
