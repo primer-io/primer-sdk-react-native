@@ -13,7 +13,7 @@ function resolveTheme(tokens: PrimerTokens, override?: PrimerTextInputTheme) {
   const borderWidth = override?.borderWidth ?? tokens.borders.input;
   const focusedBorderWidth = Math.max(override?.focusedBorderWidth ?? tokens.borders.strong, borderWidth);
   return {
-    backgroundColor: override?.backgroundColor ?? tokens.colors.background,
+    backgroundColor: override?.backgroundColor ?? tokens.colors.backgroundOutlinedDefault,
     borderColor: override?.borderColor ?? tokens.colors.border,
     borderRadius: override?.borderRadius ?? tokens.radii.small,
     borderWidth,
@@ -29,7 +29,7 @@ function resolveTheme(tokens: PrimerTokens, override?: PrimerTextInputTheme) {
     labelFontSize: override?.labelFontSize ?? tokens.typography.bodySmall.fontSize,
     placeholderColor: override?.placeholderColor ?? tokens.colors.textPlaceholder,
     primaryColor: override?.primaryColor ?? tokens.colors.borderFocused,
-    textColor: override?.textColor ?? tokens.colors.textPrimary,
+    textColor: override?.textColor ?? tokens.colors.textOutlinedDefault,
   };
 }
 

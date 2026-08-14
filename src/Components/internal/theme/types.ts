@@ -2,9 +2,11 @@ export interface PrimerColorTokens {
   primary: string;
   onPrimary: string;
   background: string;
+  backgroundOutlinedDefault: string;
   surface: string;
   overlay: string;
   textPrimary: string;
+  textOutlinedDefault: string;
   textSecondary: string;
   textPlaceholder: string;
   textDisabled: string;
