@@ -397,6 +397,7 @@ function createStyles(tokens: PrimerTokens) {
     },
     headerIcon: {
       height: HEADER_ICON_SIZE,
+      tintColor: colors.iconPrimary,
       width: HEADER_ICON_SIZE,
     },
     listContent: {
@@ -449,6 +450,7 @@ function createRowStyles(tokens: PrimerTokens, isActive: boolean) {
     },
     deleteIcon: {
       height: DELETE_ICON_SIZE,
+      tintColor: colors.iconPrimary,
       width: DELETE_ICON_SIZE,
     },
     leftCol: {
