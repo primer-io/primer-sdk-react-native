@@ -171,7 +171,7 @@ function createStyles(tokens: PrimerTokens) {
       opacity: 0.5,
     },
     payButtonText: {
-      color: colors.background,
+      color: colors.onPrimary,
       fontFamily: typography.titleLarge.fontFamily,
       fontSize: typography.titleLarge.fontSize,
       fontWeight: typography.titleLarge.fontWeight as TextStyle['fontWeight'],

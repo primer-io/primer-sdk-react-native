@@ -146,7 +146,7 @@ export function CardFormScreen() {
           testID="primer-card-form-submit"
         >
           {cardForm.isSubmitting ? (
-            <ActivityIndicator color={tokens.colors.background} />
+            <ActivityIndicator color={tokens.colors.onPrimary} />
           ) : (
             <Text style={styles.payButtonText}>{t('primer_common_button_pay')}</Text>
           )}
@@ -193,7 +193,7 @@ function createStyles(tokens: PrimerTokens) {
       opacity: 1,
     },
     payButtonText: {
-      color: colors.background,
+      color: colors.onPrimary,
       fontFamily: typography.titleLarge.fontFamily,
       fontSize: typography.titleLarge.fontSize,
       fontWeight: typography.titleLarge.fontWeight as TextStyle['fontWeight'],

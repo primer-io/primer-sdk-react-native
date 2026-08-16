@@ -5,6 +5,7 @@ import type { PrimerTokens } from '../types';
 export const defaultLightTokens: PrimerTokens = {
   colors: {
     primary: '#2f98ff', // primerColorBrand (0.184, 0.596, 1.0)
+    onPrimary: '#ffffff', // gray000 — matches Android's onColoredSurface in light
     background: '#ffffff', // primerColorBackground (1.0, 1.0, 1.0)
     surface: '#f5f5f5', // primerColorGray100 (0.961, 0.961, 0.961)
     overlay: 'rgba(0,0,0,0.5)',

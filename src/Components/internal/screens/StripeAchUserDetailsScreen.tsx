@@ -184,7 +184,7 @@ export function StripeAchUserDetailsScreen() {
           accessibilityHint={t('accessibility_ach_continue_hint')}
         >
           {isWaiting ? (
-            <ActivityIndicator color={tokens.colors.background} />
+            <ActivityIndicator color={tokens.colors.onPrimary} />
           ) : (
             <Text style={styles.continueButtonText}>{t('primer_ach_button_continue')}</Text>
           )}
@@ -211,7 +211,7 @@ function createStyles(tokens: PrimerTokens) {
       opacity: 0.5,
     },
     continueButtonText: {
-      color: colors.background,
+      color: colors.onPrimary,
       fontFamily: typography.titleLarge.fontFamily,
       fontSize: typography.titleLarge.fontSize,
       fontWeight: typography.titleLarge.fontWeight as TextStyle['fontWeight'],

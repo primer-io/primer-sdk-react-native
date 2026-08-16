@@ -119,7 +119,7 @@ function createStyles(tokens: PrimerTokens) {
       right: spacing.small,
     },
     surchargeLight: {
-      color: colors.background,
+      color: colors.onPrimary,
       fontFamily: typography.bodySmall.fontFamily,
       fontSize: typography.bodySmall.fontSize,
       fontWeight: typography.bodySmall.fontWeight as TextStyle['fontWeight'],

@@ -1,5 +1,6 @@
 export interface PrimerColorTokens {
   primary: string;
+  onPrimary: string;
   background: string;
   surface: string;
   overlay: string;

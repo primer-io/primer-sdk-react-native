@@ -56,7 +56,7 @@ export function StripeAchMandateScreen() {
           accessibilityHint={t('accessibility_ach_mandate_accept_hint')}
         >
           {answering ? (
-            <ActivityIndicator color={tokens.colors.background} />
+            <ActivityIndicator color={tokens.colors.onPrimary} />
           ) : (
             <Text style={styles.acceptButtonText}>{t('primer_ach_mandate_button_accept')}</Text>
           )}
@@ -91,7 +91,7 @@ function createStyles(tokens: PrimerTokens) {
       width: '100%',
     },
     acceptButtonText: {
-      color: colors.background,
+      color: colors.onPrimary,
       fontFamily: typography.titleLarge.fontFamily,
       fontSize: typography.titleLarge.fontSize,
       fontWeight: typography.titleLarge.fontWeight as TextStyle['fontWeight'],
