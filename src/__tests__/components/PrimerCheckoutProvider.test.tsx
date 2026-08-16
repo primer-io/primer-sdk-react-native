@@ -17,6 +17,7 @@ jest.mock(
     const mockAddListener = jest.fn().mockImplementation(() => ({ remove: jest.fn() }));
     return {
       Platform: { OS: 'android', select: (o: any) => o.android ?? o.default },
+      useColorScheme: () => 'light',
       NativeModules: {
         PrimerHeadlessUniversalCheckout: {
           startWithClientToken: jest.fn(),
@@ -60,6 +61,7 @@ import { createElement } from 'react';
 // @ts-expect-error -- react-test-renderer has no types for React 19
 import renderer, { act } from 'react-test-renderer';
 import { PrimerCheckoutProvider } from '../../Components/PrimerCheckoutProvider';
+import { usePrimerTheme } from '../../Components/internal/theme';
 import { usePrimerCheckout } from '../../Components/hooks/usePrimerCheckout';
 import { PrimerError } from '../../models/PrimerError';
 import type { PrimerCheckoutContextValue } from '../../Components/types/PrimerCheckoutProviderTypes';
@@ -943,5 +945,43 @@ describe('PrimerCheckoutProvider — requiresVaultedCardCvv flag wiring', () => 
       await flushPromises();
     });
     expect(ctx().paymentOutcome?.status).toBe('error');
+  });
+
+  it('applies a changed theme prop to the tokens it provides', async () => {
+    // Regression: tokens were built with useState(() => ...), which runs once, so a
+    // merchant swapping theme at runtime kept the first theme for the whole session.
+    const seen: string[] = [];
+
+    function ThemeProbe() {
+      seen.push(usePrimerTheme().colors.primary);
+      return null;
+    }
+
+    let root: renderer.ReactTestRenderer;
+    await act(async () => {
+      root = renderer.create(
+        createElement(
+          PrimerCheckoutProvider,
+          { clientToken: 'token-1', theme: { light: { colors: { primary: '#111111' } } } },
+          createElement(ThemeProbe)
+        )
+      );
+      await flushPromises();
+    });
+
+    expect(seen[seen.length - 1]).toBe('#111111');
+
+    await act(async () => {
+      root!.update(
+        createElement(
+          PrimerCheckoutProvider,
+          { clientToken: 'token-1', theme: { light: { colors: { primary: '#222222' } } } },
+          createElement(ThemeProbe)
+        )
+      );
+      await flushPromises();
+    });
+
+    expect(seen[seen.length - 1]).toBe('#222222');
   });
 });
