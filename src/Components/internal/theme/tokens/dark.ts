@@ -16,10 +16,10 @@ export const defaultDarkTokens: PrimerTokens = {
     textDisabled: '#858585', // dark primerColorGray400 (0.522, 0.522, 0.522)
     textNegative: '#f6bfbf', // dark primerColorRed900 (0.965, 0.749, 0.749)
     textLink: '#4aaeff', // dark primerColorBlue900 (0.290, 0.682, 1.0)
-    border: '#424242', // dark primerColorGray200 (0.259, 0.259, 0.259)
+    border: '#575757', // dark primerColorGray300 (0.341, 0.341, 0.341)
     borderFocused: '#2f98ff', // dark primerColorBrand — unchanged
     borderError: '#e46d70', // dark primerColorRed500 (0.894, 0.427, 0.439)
-    borderDisabled: '#292929', // dark primerColorGray100 (0.161, 0.161, 0.161)
+    borderDisabled: '#424242', // dark primerColorGray200 (0.259, 0.259, 0.259)
     iconPrimary: '#efefef', // dark primerColorGray900
     iconDisabled: '#858585', // dark primerColorGray400
     iconNegative: '#e46d70', // dark primerColorRed500
