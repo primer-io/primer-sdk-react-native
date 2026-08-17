@@ -61,7 +61,7 @@ const baseContext: PrimerCheckoutContextValue = {
   declineAchMandate: async () => {},
   stopAch: () => {},
   activeMethod: null,
-  cardFormState: { isValid: false, errors: {}, binData: null, metadata: null, requiredFields: [] },
+  cardFormState: { isValid: false, errors: {}, messages: [], binData: null, metadata: null, requiredFields: [] },
   vaultedMethods: [],
   vaultedIconUrisById: {},
   vaultedNamesById: {},

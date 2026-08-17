@@ -103,7 +103,7 @@ export function usePrimerPaymentMethod(type: string): UsePrimerPaymentMethodRetu
         kind: 'rawDataForm',
         isAvailable: isPresent,
         requiredInputs: cardFormState.requiredFields,
-        validationErrors: Object.values(cardFormState.errors).filter((e): e is string => Boolean(e)),
+        validationErrors: cardFormState.messages,
         isValid: cardFormState.isValid,
         paymentOutcome,
         start: startRawDataForm,
