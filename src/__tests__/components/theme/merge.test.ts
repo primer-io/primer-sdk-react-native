@@ -65,4 +65,34 @@ describe('mergeTokens', () => {
     expect(result.borders.strong).toBe(3);
     expect(result.borders.default).toBe(base.borders.default);
   });
+
+  it('carries a background override into the input fill so inputs keep matching the sheet', () => {
+    const result = mergeTokens(base, { colors: { background: '#101010' } });
+
+    expect(result.colors.background).toBe('#101010');
+    expect(result.colors.backgroundOutlinedDefault).toBe('#101010');
+  });
+
+  it('carries a text override into the input text', () => {
+    const result = mergeTokens(base, { colors: { textPrimary: '#fafafa' } });
+
+    expect(result.colors.textPrimary).toBe('#fafafa');
+    expect(result.colors.textOutlinedDefault).toBe('#fafafa');
+  });
+
+  it('lets an explicit input colour win over the one it would inherit', () => {
+    const result = mergeTokens(base, {
+      colors: { background: '#101010', backgroundOutlinedDefault: '#202020' },
+    });
+
+    expect(result.colors.background).toBe('#101010');
+    expect(result.colors.backgroundOutlinedDefault).toBe('#202020');
+  });
+
+  it('leaves the input colours alone when neither is overridden', () => {
+    const result = mergeTokens(base, { colors: { primary: '#aabbcc' } });
+
+    expect(result.colors.backgroundOutlinedDefault).toBe(base.colors.backgroundOutlinedDefault);
+    expect(result.colors.textOutlinedDefault).toBe(base.colors.textOutlinedDefault);
+  });
 });
