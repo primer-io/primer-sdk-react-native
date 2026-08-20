@@ -1,6 +1,6 @@
-import { mergeTokens } from '../merge';
-import { defaultLightTokens } from '../tokens';
-import type { PrimerTypographyStyle } from '../types';
+import { mergeTokens } from '../../../Components/internal/theme/merge';
+import { defaultLightTokens } from '../../../Components/internal/theme/tokens';
+import type { PrimerTypographyStyle } from '../../../Components/internal/theme/types';
 
 const base = defaultLightTokens;
 
