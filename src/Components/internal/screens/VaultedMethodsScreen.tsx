@@ -434,6 +434,7 @@ function createRowStyles(tokens: PrimerTokens, isActive: boolean) {
     },
     checkIcon: {
       height: CHECK_ICON_SIZE,
+      tintColor: colors.primary,
       width: CHECK_ICON_SIZE,
     },
     checkIconBox: {
