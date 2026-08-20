@@ -1,10 +1,10 @@
 import { createElement, type ReactNode } from 'react';
 // @ts-expect-error -- react-test-renderer has no types for React 19
 import { act, create } from 'react-test-renderer';
-import { ThemeContext } from '../../../Components/internal/theme/ThemeContext';
-import { defaultDarkTokens, defaultLightTokens } from '../../../Components/internal/theme/tokens';
-import { usePrimerTheme } from '../../../Components/internal/theme/usePrimerTheme';
-import type { PrimerTokens } from '../../../Components/internal/theme/types';
+import { ThemeContext } from '../ThemeContext';
+import { defaultDarkTokens, defaultLightTokens } from '../tokens';
+import { usePrimerTheme } from '../usePrimerTheme';
+import type { PrimerTokens } from '../types';
 
 let mockColorScheme: 'light' | 'dark' | null = 'light';
 

@@ -25,15 +25,6 @@ const FIELD_LABEL_KEY: Record<string, string> = {
   CARDHOLDER_NAME: 'primer_card_form_label_name',
 };
 
-const FIELD_PLACEHOLDER_KEY: Record<string, string> = {
-  PHONE_NUMBER: 'primer_card_form_placeholder_phone',
-  OTP: 'primer_card_form_placeholder_otp',
-  OTP_CODE: 'primer_card_form_placeholder_otp',
-  CARD_NUMBER: 'primer_card_form_placeholder_number',
-  EXPIRY_DATE: 'primer_card_form_placeholder_expiry',
-  CARDHOLDER_NAME: 'primer_card_form_placeholder_name',
-};
-
 const NUMERIC_FIELDS = new Set<string>(['PHONE_NUMBER', 'OTP', 'OTP_CODE', 'CARD_NUMBER', 'EXPIRY_DATE']);
 
 type FieldValues = Record<string, string>;
@@ -100,19 +91,13 @@ export function RawDataFormScreen() {
       >
         {requiredInputs.map((field) => {
           const labelKey = FIELD_LABEL_KEY[field];
-          const placeholderKey = FIELD_PLACEHOLDER_KEY[field];
-          const placeholder = placeholderKey ? t(placeholderKey) : undefined;
-          const fieldLabel = labelKey ? t(labelKey) : field;
-          // the expiry field has no input mask, so the format has to stay visible while typing
-          const label = field === 'EXPIRY_DATE' && placeholder ? `${fieldLabel} (${placeholder})` : fieldLabel;
+          const label = labelKey ? t(labelKey) : field;
           return (
             <View key={field} style={styles.field}>
               <Text style={styles.label}>{label}</Text>
               <TextInput
                 style={styles.input}
                 value={values[field] ?? ''}
-                placeholder={placeholder}
-                placeholderTextColor={tokens.colors.textPlaceholder}
                 onChangeText={(text) => handleChange(field, text)}
                 keyboardType={
                   field === 'PHONE_NUMBER' ? 'phone-pad' : NUMERIC_FIELDS.has(field) ? 'number-pad' : 'default'
