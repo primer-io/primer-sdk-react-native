@@ -12,9 +12,20 @@ function stripNullish<T extends object>(obj: Partial<T>): Partial<T> {
   return result;
 }
 
-// The input tokens alias their non-input counterparts, so a merchant who colours the sheet
-// without naming the input keeps matching inputs, as they did before the tokens were split.
+// Each entry says "this colour is derived from that one". A merchant who sets the source and
+// not the alias gets the alias moved for them, which is how the native SDKs behave. Ordered
+// palette-first so a grey override reaches the semantic names and then the input ones.
 const COLOR_ALIASES: ReadonlyArray<[keyof PrimerColorTokens, keyof PrimerColorTokens]> = [
+  ['background', 'gray000'],
+  ['surface', 'gray100'],
+  ['textPrimary', 'gray900'],
+  ['textSecondary', 'gray600'],
+  ['textPlaceholder', 'gray500'],
+  ['textDisabled', 'gray400'],
+  ['border', 'gray300'],
+  ['borderDisabled', 'gray200'],
+  ['iconPrimary', 'gray900'],
+  ['iconDisabled', 'gray400'],
   ['backgroundOutlinedDefault', 'background'],
   ['textOutlinedDefault', 'textPrimary'],
 ];
@@ -24,9 +35,9 @@ function mergeColors(base: PrimerColorTokens, override: Partial<PrimerColorToken
   const merged = { ...base, ...set };
 
   for (const [alias, source] of COLOR_ALIASES) {
-    if (set[alias] == null && set[source] != null) {
-      merged[alias] = set[source];
-    }
+    // An explicit value always wins, and an unmoved source has nothing to pass on.
+    if (set[alias] != null || merged[source] === base[source]) continue;
+    merged[alias] = merged[source];
   }
 
   return merged;

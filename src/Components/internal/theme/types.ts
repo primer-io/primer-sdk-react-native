@@ -1,4 +1,15 @@
 export interface PrimerColorTokens {
+  // Palette. Every grey below feeds the semantic names that follow, so setting one moves
+  // everything derived from it — the same base layer iOS, Android and web already have.
+  gray000: string;
+  gray100: string;
+  gray200: string;
+  gray300: string;
+  gray400: string;
+  gray500: string;
+  gray600: string;
+  gray900: string;
+
   primary: string;
   onPrimary: string;
   background: string;

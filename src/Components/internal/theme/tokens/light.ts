@@ -4,6 +4,14 @@ import type { PrimerTokens } from '../types';
 // Source: /Users/onurvar/Projects/primer-sdk-ios/Sources/PrimerSDK/Classes/CheckoutComponents/Internal/Tokens/DesignTokens.swift
 export const defaultLightTokens: PrimerTokens = {
   colors: {
+    gray000: '#ffffff',
+    gray100: '#f5f5f5',
+    gray200: '#eeeeee',
+    gray300: '#e0e0e0',
+    gray400: '#bdbdbd',
+    gray500: '#9e9e9e',
+    gray600: '#757575',
+    gray900: '#212121',
     primary: '#2f98ff', // primerColorBrand (0.184, 0.596, 1.0)
     onPrimary: '#ffffff', // gray000 — matches Android's onColoredSurface in light
     background: '#ffffff', // primerColorBackground (1.0, 1.0, 1.0)

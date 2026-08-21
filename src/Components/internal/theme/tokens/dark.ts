@@ -5,6 +5,14 @@ import type { PrimerTokens } from '../types';
 // Spacing, typography, radii, and borders are mode-independent and match light defaults.
 export const defaultDarkTokens: PrimerTokens = {
   colors: {
+    gray000: '#171619',
+    gray100: '#292929',
+    gray200: '#424242',
+    gray300: '#575757',
+    gray400: '#858585',
+    gray500: '#767577',
+    gray600: '#c7c7c7',
+    gray900: '#efefef',
     primary: '#2f98ff', // primerColorBrand — unchanged in dark (0.184, 0.596, 1.0)
     onPrimary: '#efefef', // dark gray900 — matches Android's onColoredSurface in dark
     background: '#171619', // dark primerColorGray000 (0.090, 0.086, 0.098)

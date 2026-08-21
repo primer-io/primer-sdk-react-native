@@ -95,4 +95,31 @@ describe('mergeTokens', () => {
     expect(result.colors.backgroundOutlinedDefault).toBe(base.colors.backgroundOutlinedDefault);
     expect(result.colors.textOutlinedDefault).toBe(base.colors.textOutlinedDefault);
   });
+
+  it('moves every border built on a grey when that grey is overridden', () => {
+    const result = mergeTokens(base, { colors: { gray300: '#123456' } });
+
+    expect(result.colors.gray300).toBe('#123456');
+    expect(result.colors.border).toBe('#123456');
+  });
+
+  it('carries a grey override two hops, through the semantic colour into the input one', () => {
+    const result = mergeTokens(base, { colors: { gray000: '#0b0b0b' } });
+
+    expect(result.colors.background).toBe('#0b0b0b');
+    expect(result.colors.backgroundOutlinedDefault).toBe('#0b0b0b');
+  });
+
+  it('lets an explicit semantic colour win over the grey it derives from', () => {
+    const result = mergeTokens(base, { colors: { gray300: '#123456', border: '#654321' } });
+
+    expect(result.colors.border).toBe('#654321');
+  });
+
+  it('leaves colours built on other greys untouched', () => {
+    const result = mergeTokens(base, { colors: { gray300: '#123456' } });
+
+    expect(result.colors.textPrimary).toBe(base.colors.textPrimary);
+    expect(result.colors.surface).toBe(base.colors.surface);
+  });
 });
