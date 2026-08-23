@@ -165,6 +165,13 @@ const EXAMPLES: Example[] = [
     description: 'No Primer UI at all — your inputs & network picker, driven by our hooks',
     present: { kind: 'screen', route: 'HooksOnly' },
   },
+  {
+    id: 'merchant-example-1',
+    title: 'Merchant Example #1',
+    tiers: ['T2', 'T3'],
+    description: "A real merchant's deposit screen — their rows and terms gate, our themed card form",
+    present: { kind: 'screen', route: 'MerchantExample1' },
+  },
 ];
 
 export function CheckoutComponentsListScreen({

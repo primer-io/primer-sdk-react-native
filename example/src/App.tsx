@@ -21,6 +21,7 @@ import {AccordionCheckoutScreen} from './screens/AccordionCheckoutScreen';
 import {CardPreviewScreen} from './screens/CardPreviewScreen';
 import {CoinTopUpScreen} from './screens/CoinTopUpScreen';
 import {HooksOnlyScreen} from './screens/HooksOnlyScreen';
+import {MerchantExample1Screen} from './screens/MerchantExample1Screen';
 import {LogBox} from 'react-native';
 import {
   SafeAreaProvider,
@@ -91,6 +92,11 @@ const App = () => {
             name="HooksOnly"
             component={HooksOnlyScreen}
             options={{title: 'Bring-your-own UI'}}
+          />
+          <Stack.Screen
+            name="MerchantExample1"
+            component={MerchantExample1Screen}
+            options={{title: 'Deposit Funds'}}
           />
           <Stack.Screen name="Klarna" component={HeadlessCheckoutKlarnaScreen} />
           <Stack.Screen
