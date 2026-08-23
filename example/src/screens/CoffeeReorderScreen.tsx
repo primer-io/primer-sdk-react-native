@@ -29,7 +29,10 @@ import {
   usePrimerVaultManager,
   usePrimerLocalization,
 } from '@primer-io/react-native';
-import type { PrimerSettings } from '@primer-io/react-native';
+import type {
+  PrimerSettings,
+  VaultedPaymentMethodItem,
+} from '@primer-io/react-native';
 
 import { appPaymentParameters } from '../models/IClientSessionRequestBody';
 import { getPaymentHandlingStringVal } from '../network/Environment';
@@ -40,6 +43,20 @@ import { customAppearanceMode } from './SettingsScreen';
 // belong to the hook; the merchant renders coffee. A "use another card" row
 // expands the Primer card form as the fallback (and is the default view when
 // the customer has nothing vaulted yet).
+
+type SavedCard = Extract<VaultedPaymentMethodItem, { kind: 'card' }>;
+
+const isSavedCard = (method: VaultedPaymentMethodItem): method is SavedCard =>
+  method.kind === 'card';
+
+function describeMethod(
+  method: VaultedPaymentMethodItem,
+  fallback: string,
+): string {
+  return isSavedCard(method)
+    ? `${method.brandName ?? fallback} ••${method.last4 ?? ''}`
+    : (method.displayName ?? fallback);
+}
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -190,7 +207,8 @@ function CoffeeReorderFlow({ onDone }: { onDone: () => void }) {
   const [earnedStars, setEarnedStars] = useState(0);
   const earnedRef = useRef(false);
 
-  const hasSavedCards = vault.vaultedMethods.length > 0;
+  const savedCards = vault.vaultedMethods.filter(isSavedCard);
+  const hasSavedCards = savedCards.length > 0;
   const showNewCardForm = usingNewCard || (!vault.isLoading && !hasSavedCards);
   const totalLabel =
     clientSession?.totalAmount != null && clientSession.currencyCode
@@ -230,7 +248,7 @@ function CoffeeReorderFlow({ onDone }: { onDone: () => void }) {
     const paidWith = showNewCardForm
       ? 'New card'
       : vault.activeMethod != null
-        ? `${vault.activeMethod.brandName ?? 'Card'} ••${vault.activeMethod.last4 ?? ''}`
+        ? describeMethod(vault.activeMethod, 'Card')
         : null;
 
     return (
@@ -302,7 +320,7 @@ function CoffeeReorderFlow({ onDone }: { onDone: () => void }) {
   const payTitle = showNewCardForm
     ? `Pay ${totalLabel}`
     : vault.activeMethod != null
-      ? `Pay with ${vault.activeMethod.brandName ?? 'saved card'} ••${vault.activeMethod.last4 ?? ''}`
+      ? `Pay with ${describeMethod(vault.activeMethod, 'saved card')}`
       : 'Select a card';
 
   const handlePay = () => {
@@ -339,7 +357,7 @@ function CoffeeReorderFlow({ onDone }: { onDone: () => void }) {
         ) : hasSavedCards ? (
           <>
             <Text style={styles.sectionLabel}>Pay with a saved card</Text>
-            {vault.vaultedMethods.map((method) => {
+            {savedCards.map((method) => {
               const isSelected = !usingNewCard && vault.activeMethod?.id === method.id;
               return (
                 <Pressable
@@ -351,8 +369,8 @@ function CoffeeReorderFlow({ onDone }: { onDone: () => void }) {
                     vault.selectVaultedMethodId(method.id);
                   }}
                 >
-                  {method.brandIconUri != null ? (
-                    <Image source={{ uri: method.brandIconUri }} style={styles.brandIcon} resizeMode="contain" />
+                  {method.iconUri != null ? (
+                    <Image source={{ uri: method.iconUri }} style={styles.brandIcon} resizeMode="contain" />
                   ) : (
                     <Text style={styles.brandIconFallback}>💳</Text>
                   )}
