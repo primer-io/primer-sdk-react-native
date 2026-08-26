@@ -102,4 +102,27 @@ describe('RawDataManager', () => {
       expect(nativeModule.configure).toHaveBeenCalledWith('PAYMENT_CARD');
     });
   });
+
+  describe('removeAllListeners — ESC-1131', () => {
+    it('removes exactly the subscriptions registered by configure, once', async () => {
+      const created: Array<{ remove: jest.Mock }> = [];
+      mockAddListener.mockImplementation(() => {
+        const subscription = { remove: jest.fn() };
+        created.push(subscription);
+        return subscription;
+      });
+      await manager.configure({
+        paymentMethodType: 'PAYMENT_CARD',
+        onMetadataChange: jest.fn(),
+        onValidation: jest.fn(),
+        onBinDataChange: jest.fn(),
+      });
+      expect(created).toHaveLength(3);
+
+      manager.removeAllListeners();
+      manager.removeAllListeners();
+
+      created.forEach((subscription) => expect(subscription.remove).toHaveBeenCalledTimes(1));
+    });
+  });
 });
