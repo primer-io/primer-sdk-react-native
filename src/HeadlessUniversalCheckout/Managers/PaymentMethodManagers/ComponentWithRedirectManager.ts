@@ -9,8 +9,8 @@ import type {
 } from '../../../models/PrimerComponentDataValidation';
 import { PrimerError } from '../../../models/PrimerError';
 import type { BanksStep } from '../../../models/banks/BanksSteps';
-import { eventTypes } from './Utils/EventType';
 import type { EventType } from './Utils/EventType';
+import { subscribeToComponentEvents } from './Utils/subscribeToComponentEvents';
 
 const { RNTPrimerHeadlessUniversalCheckoutBanksComponent } = NativeModules;
 
@@ -77,6 +77,8 @@ export interface BanksComponent {
 }
 
 export class PrimerHeadlessUniversalCheckoutComponentWithRedirectManager {
+  private subscriptions: EmitterSubscription[] = [];
+
   ///////////////////////////////////////////
   // Init
   ///////////////////////////////////////////
@@ -87,6 +89,7 @@ export class PrimerHeadlessUniversalCheckoutComponentWithRedirectManager {
   ///////////////////////////////////////////
 
   async provide(props: ComponentWithRedirectManagerProps): Promise<BanksComponent | any> {
+    this.removeAllListeners();
     await this.configureListeners(props);
 
     if (props.paymentMethodType === 'ADYEN_IDEAL') {
@@ -118,41 +121,11 @@ export class PrimerHeadlessUniversalCheckoutComponentWithRedirectManager {
   }
 
   private async configureListeners(props: ComponentWithRedirectManagerProps): Promise<void> {
-    if (props?.onStep) {
-      this.addListener('onStep', (data) => {
-        props.onStep?.(data);
-      });
-    }
-
-    if (props?.onInvalid) {
-      this.addListener('onInvalid', (data) => {
-        props.onInvalid?.(data);
-      });
-    }
-
-    if (props?.onError) {
-      this.addListener('onError', (data) => {
-        props.onError?.(data);
-      });
-    }
-
-    if (props?.onValid) {
-      this.addListener('onValid', (data) => {
-        props.onValid?.(data);
-      });
-    }
-
-    if (props?.onValidating) {
-      this.addListener('onValidating', (data) => {
-        props.onValidating?.(data);
-      });
-    }
-
-    if (props?.onValidationError) {
-      this.addListener('onValidationError', (data) => {
-        props.onValidationError?.(data);
-      });
-    }
+    const subscriptions = await subscribeToComponentEvents<BanksStep, BanksValidatableData>(
+      props,
+      (eventType, listener) => this.addListener(eventType, listener)
+    );
+    this.subscriptions.push(...subscriptions);
   }
 
   ///////////////////////////////////////////
@@ -172,6 +145,7 @@ export class PrimerHeadlessUniversalCheckoutComponentWithRedirectManager {
   }
 
   removeAllListeners() {
-    eventTypes.forEach((eventType) => this.removeAllListenersForEvent(eventType));
+    this.subscriptions.forEach((subscription) => subscription.remove());
+    this.subscriptions = [];
   }
 }
