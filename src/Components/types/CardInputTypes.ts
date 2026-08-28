@@ -17,6 +17,8 @@ export interface PrimerTextInputTheme {
   borderWidth?: number;
   focusedBorderWidth?: number;
   errorBorderWidth?: number;
+  errorFontFamily?: string;
+  errorFontSize?: number;
   borderRadius?: number;
   fontSize?: number;
   labelFontSize?: number;

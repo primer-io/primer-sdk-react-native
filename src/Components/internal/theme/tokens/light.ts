@@ -1,7 +1,7 @@
 import type { PrimerTokens } from '../types';
 
 // Values derived from iOS DesignTokens.swift (Style Dictionary generated, light theme).
-// Source: /Users/onurvar/Projects/primer-sdk-ios/Sources/PrimerSDK/Classes/CheckoutComponents/Internal/Tokens/DesignTokens.swift
+// Source: primer-sdk-ios: Sources/PrimerSDK/Classes/CheckoutComponents/Internal/Tokens/DesignTokens.swift
 export const defaultLightTokens: PrimerTokens = {
   colors: {
     gray000: '#ffffff',

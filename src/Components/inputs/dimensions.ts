@@ -1,5 +1,5 @@
-// Card-input dimension constants sourced from Figma. Field height and icon sizes
-// now come from the size tokens; what is left here has no token slot.
+// Card-input dimension constants sourced from Figma. Field height comes from the
+// size tokens now; the icon sizes below have no token slot yet.
 
 export const LINE_HEIGHT_RATIO = 1.25;
 

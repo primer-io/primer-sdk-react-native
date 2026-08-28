@@ -1,8 +1,8 @@
 import type { PrimerTokens } from '../types';
 
-// Values derived from iOS DesignTokensDark.swift (Style Dictionary generated, dark theme).
-// Source: /Users/onurvar/Projects/primer-sdk-ios/Sources/PrimerSDK/Classes/CheckoutComponents/Internal/Tokens/DesignTokensDark.swift
-// Spacing, typography, radii, and borders are mode-independent and match light defaults.
+// Values derived from iOS dark.json (Style Dictionary generated, dark theme).
+// Source: primer-sdk-ios: Modules/PrimerResources/.../JSONs/dark.json
+// Spacing, typography, radii, and widths are mode-independent and match light defaults.
 export const defaultDarkTokens: PrimerTokens = {
   colors: {
     gray000: '#171619',

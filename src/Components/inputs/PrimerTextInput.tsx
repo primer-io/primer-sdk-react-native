@@ -9,7 +9,8 @@ import type { PrimerTokens } from '../internal/theme/types';
 // Suppresses iOS's auto-added Previous/Next/Done navigation toolbar above the keyboard.
 export const PRIMER_EMPTY_ACCESSORY_ID = 'primer-empty-input-accessory';
 
-function resolveTheme(tokens: PrimerTokens, override?: PrimerTextInputTheme) {
+// Exported for tests: the override chain is easy to break silently.
+export function resolveTheme(tokens: PrimerTokens, override?: PrimerTextInputTheme) {
   const borderWidth = override?.borderWidth ?? tokens.widths.default;
   const focusedBorderWidth = Math.max(override?.focusedBorderWidth ?? tokens.widths.focus, borderWidth);
   const errorBorderWidth = Math.max(override?.errorBorderWidth ?? tokens.widths.error, borderWidth);
@@ -22,8 +23,10 @@ function resolveTheme(tokens: PrimerTokens, override?: PrimerTextInputTheme) {
     disabledBorderColor: override?.disabledBorderColor ?? tokens.colors.borderDisabled,
     errorColor: override?.errorColor ?? tokens.colors.borderError,
     errorTextColor: override?.errorTextColor ?? tokens.colors.textNegative,
-    errorFontFamily: tokens.typography.error.fontFamily,
-    errorFontSize: tokens.typography.error.fontSize,
+    // `fontFamily`/`labelFontSize` stay in the chain: they styled the error text before the
+    // error token existed, so a merchant already setting them keeps working.
+    errorFontFamily: override?.errorFontFamily ?? override?.fontFamily ?? tokens.typography.error.fontFamily,
+    errorFontSize: override?.errorFontSize ?? override?.labelFontSize ?? tokens.typography.error.fontSize,
     fieldHeight: override?.fieldHeight ?? tokens.sizes.xxlarge,
     errorBorderWidth,
     focusedBorderWidth,

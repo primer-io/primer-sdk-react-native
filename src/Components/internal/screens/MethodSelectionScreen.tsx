@@ -31,7 +31,7 @@ const LOG = '[MethodSelectionScreen]';
 // Outer grey padding + tile padding are added into sheetHeight separately below.
 const VAULT_TILE_CONTENT_HEIGHT = 44;
 
-// Matches `FIELD_HEIGHT` in `Components/inputs/dimensions.ts`.
+// Matches the `sizes.xxlarge` token, which drives input field height.
 const VAULT_TILE_CVV_ROW_HEIGHT = 44;
 
 const CHEVRON_ICON_SIZE = 20;
