@@ -83,6 +83,13 @@ export const defaultLightTokens: PrimerTokens = {
       letterSpacing: 0, // primerTypographyBodySmallLetterSpacing
       fontFamily: 'Inter', // primerTypographyBodySmallFont
     },
+    error: {
+      fontSize: 12, // primerTypographyErrorSize
+      fontWeight: '400', // primerTypographyErrorWeight
+      lineHeight: 16, // primerTypographyErrorLineHeight
+      letterSpacing: 0, // primerTypographyErrorLetterSpacing
+      fontFamily: 'Inter', // primerTypographyErrorFont
+    },
   },
   radii: {
     none: 0,
@@ -91,9 +98,9 @@ export const defaultLightTokens: PrimerTokens = {
     medium: 8, // primerRadiusMedium
     large: 12, // primerRadiusLarge
   },
-  borders: {
+  widths: {
     default: 1,
-    input: 1,
-    strong: 2,
+    focus: 2,
+    error: 2,
   },
 };

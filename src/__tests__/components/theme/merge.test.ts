@@ -51,7 +51,7 @@ describe('mergeTokens', () => {
       spacing: { large: 20 },
       typography: { fontFamily: 'Roboto' },
       radii: { medium: 10 },
-      borders: { strong: 3 },
+      widths: { focus: 3 },
     });
 
     expect(result.colors.primary).toBe('#aabbcc');
@@ -62,8 +62,19 @@ describe('mergeTokens', () => {
     expect(result.typography.titleXLarge).toBe(base.typography.titleXLarge);
     expect(result.radii.medium).toBe(10);
     expect(result.radii.small).toBe(base.radii.small);
-    expect(result.borders.strong).toBe(3);
-    expect(result.borders.default).toBe(base.borders.default);
+    expect(result.widths.focus).toBe(3);
+    expect(result.widths.default).toBe(base.widths.default);
+  });
+
+  it('keeps the error text style separate from the body-small label', () => {
+    const result = mergeTokens(base, { typography: { error: { ...base.typography.error, fontSize: 20 } } });
+
+    expect(result.typography.error.fontSize).toBe(20);
+    expect(result.typography.bodySmall.fontSize).toBe(base.typography.bodySmall.fontSize);
+  });
+
+  it('names the widths after the field state, matching the other SDKs', () => {
+    expect(base.widths).toEqual({ default: 1, focus: 2, error: 2 });
   });
 
   it('carries a background override into the input fill so inputs keep matching the sheet', () => {

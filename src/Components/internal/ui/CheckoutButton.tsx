@@ -49,7 +49,7 @@ export function CheckoutButton({
 }
 
 function createStyles(tokens: PrimerTokens) {
-  const { colors, spacing, typography, radii, borders } = tokens;
+  const { colors, spacing, typography, radii, widths } = tokens;
 
   const baseButton = {
     alignItems: 'center' as const,
@@ -80,7 +80,7 @@ function createStyles(tokens: PrimerTokens) {
       ...baseButton,
       backgroundColor: colors.background,
       borderColor: colors.border,
-      borderWidth: borders.default,
+      borderWidth: widths.default,
     },
     outlinedText: {
       ...baseText,

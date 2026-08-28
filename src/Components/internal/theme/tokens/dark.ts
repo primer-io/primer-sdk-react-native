@@ -84,6 +84,13 @@ export const defaultDarkTokens: PrimerTokens = {
       letterSpacing: 0,
       fontFamily: 'Inter',
     },
+    error: {
+      fontSize: 12,
+      fontWeight: '400',
+      lineHeight: 16,
+      letterSpacing: 0,
+      fontFamily: 'Inter',
+    },
   },
   radii: {
     none: 0,
@@ -92,9 +99,9 @@ export const defaultDarkTokens: PrimerTokens = {
     medium: 8,
     large: 12,
   },
-  borders: {
+  widths: {
     default: 1,
-    input: 1,
-    strong: 2,
+    focus: 2,
+    error: 2,
   },
 };

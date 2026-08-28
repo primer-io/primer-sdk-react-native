@@ -10,8 +10,9 @@ import type { PrimerTokens } from '../internal/theme/types';
 export const PRIMER_EMPTY_ACCESSORY_ID = 'primer-empty-input-accessory';
 
 function resolveTheme(tokens: PrimerTokens, override?: PrimerTextInputTheme) {
-  const borderWidth = override?.borderWidth ?? tokens.borders.input;
-  const focusedBorderWidth = Math.max(override?.focusedBorderWidth ?? tokens.borders.strong, borderWidth);
+  const borderWidth = override?.borderWidth ?? tokens.widths.default;
+  const focusedBorderWidth = Math.max(override?.focusedBorderWidth ?? tokens.widths.focus, borderWidth);
+  const errorBorderWidth = Math.max(override?.errorBorderWidth ?? tokens.widths.error, borderWidth);
   return {
     backgroundColor: override?.backgroundColor ?? tokens.colors.backgroundOutlinedDefault,
     borderColor: override?.borderColor ?? tokens.colors.border,
@@ -21,7 +22,10 @@ function resolveTheme(tokens: PrimerTokens, override?: PrimerTextInputTheme) {
     disabledBorderColor: override?.disabledBorderColor ?? tokens.colors.borderDisabled,
     errorColor: override?.errorColor ?? tokens.colors.borderError,
     errorTextColor: override?.errorTextColor ?? tokens.colors.textNegative,
+    errorFontFamily: tokens.typography.error.fontFamily,
+    errorFontSize: tokens.typography.error.fontSize,
     fieldHeight: override?.fieldHeight ?? FIELD_HEIGHT,
+    errorBorderWidth,
     focusedBorderWidth,
     fontFamily: override?.fontFamily ?? tokens.typography.fontFamily,
     fontSize: override?.fontSize ?? tokens.typography.bodyLarge.fontSize,
@@ -93,7 +97,11 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
   );
 
   const hasError = !!error;
-  const currentBorderWidth = isFocused || hasError ? resolved.focusedBorderWidth : resolved.borderWidth;
+  const currentBorderWidth = hasError
+    ? resolved.errorBorderWidth
+    : isFocused
+      ? resolved.focusedBorderWidth
+      : resolved.borderWidth;
   const borderWidthDiff = currentBorderWidth - resolved.borderWidth;
 
   // Error takes precedence over focus — the validation signal is more important than the
@@ -112,8 +120,8 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
         container: {},
         error: {
           color: resolved.errorTextColor,
-          fontFamily: resolved.fontFamily,
-          fontSize: resolved.labelFontSize,
+          fontFamily: resolved.errorFontFamily,
+          fontSize: resolved.errorFontSize,
           marginTop: tokens.spacing.xsmall,
         },
         input: {

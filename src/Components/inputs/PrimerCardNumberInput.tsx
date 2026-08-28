@@ -100,7 +100,7 @@ export const PrimerCardNumberInput = forwardRef<PrimerTextInputRef, PrimerCardNu
                 {
                   borderColor: tokens.colors.border,
                   borderRadius: tokens.radii.small,
-                  borderWidth: tokens.borders.input,
+                  borderWidth: tokens.widths.default,
                 },
               ]}
               testID={rest.testID ? `${rest.testID}-network-abbreviation` : undefined}

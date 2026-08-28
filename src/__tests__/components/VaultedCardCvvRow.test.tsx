@@ -37,10 +37,11 @@ jest.mock('../../Components/internal/theme', () => ({
     },
     spacing: { xsmall: 4, small: 8, medium: 12, large: 16, xlarge: 20 },
     radii: { small: 4, medium: 8, large: 12 },
-    borders: { input: 1, strong: 2 },
+    widths: { default: 1, focus: 2, error: 2 },
     typography: {
       fontFamily: 'system',
       bodySmall: { fontFamily: 'system', fontSize: 12, fontWeight: '400', letterSpacing: 0, lineHeight: 16 },
+      error: { fontFamily: 'system', fontSize: 12, fontWeight: '400', letterSpacing: 0, lineHeight: 16 },
       bodyLarge: { fontFamily: 'system', fontSize: 16, fontWeight: '400', letterSpacing: 0, lineHeight: 20 },
     },
   }),

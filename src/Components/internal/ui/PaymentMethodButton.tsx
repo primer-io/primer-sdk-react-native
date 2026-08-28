@@ -71,7 +71,7 @@ export function PaymentMethodButton({ item, onPress }: PaymentMethodButtonProps)
 }
 
 function createStyles(tokens: PrimerTokens) {
-  const { colors, spacing, radii, borders, typography } = tokens;
+  const { colors, spacing, radii, widths, typography } = tokens;
 
   /* eslint-disable react-native/no-unused-styles */
   return StyleSheet.create({
@@ -101,7 +101,7 @@ function createStyles(tokens: PrimerTokens) {
     outlinedButton: {
       backgroundColor: colors.background,
       borderColor: colors.border,
-      borderWidth: borders.default,
+      borderWidth: widths.default,
     },
     outlinedText: {
       color: colors.textPrimary,

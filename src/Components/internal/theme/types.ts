@@ -61,6 +61,7 @@ export interface PrimerTypographyTokens {
   bodyLarge: PrimerTypographyStyle;
   bodyMedium: PrimerTypographyStyle;
   bodySmall: PrimerTypographyStyle;
+  error: PrimerTypographyStyle;
 }
 
 export interface PrimerRadiusTokens {
@@ -71,10 +72,10 @@ export interface PrimerRadiusTokens {
   large: number;
 }
 
-export interface PrimerBorderTokens {
+export interface PrimerWidthTokens {
   default: number;
-  input: number;
-  strong: number;
+  focus: number;
+  error: number;
 }
 
 export interface PrimerTokens {
@@ -82,7 +83,7 @@ export interface PrimerTokens {
   spacing: PrimerSpacingTokens;
   typography: PrimerTypographyTokens;
   radii: PrimerRadiusTokens;
-  borders: PrimerBorderTokens;
+  widths: PrimerWidthTokens;
 }
 
 export interface PrimerThemeOverride {
@@ -91,13 +92,13 @@ export interface PrimerThemeOverride {
     spacing?: Partial<PrimerSpacingTokens>;
     typography?: Partial<PrimerTypographyTokens>;
     radii?: Partial<PrimerRadiusTokens>;
-    borders?: Partial<PrimerBorderTokens>;
+    widths?: Partial<PrimerWidthTokens>;
   };
   dark?: {
     colors?: Partial<PrimerColorTokens>;
     spacing?: Partial<PrimerSpacingTokens>;
     typography?: Partial<PrimerTypographyTokens>;
     radii?: Partial<PrimerRadiusTokens>;
-    borders?: Partial<PrimerBorderTokens>;
+    widths?: Partial<PrimerWidthTokens>;
   };
 }

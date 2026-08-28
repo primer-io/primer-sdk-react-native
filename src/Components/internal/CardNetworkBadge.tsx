@@ -84,7 +84,7 @@ export function CardNetworkBadge({ identifier, testID, marginLeft }: CardNetwork
             backgroundColor: tokens.colors.surface,
             borderColor: tokens.colors.border,
             borderRadius: tokens.radii.xsmall,
-            borderWidth: tokens.borders.input,
+            borderWidth: tokens.widths.default,
           },
         ]}
         testID={testID}

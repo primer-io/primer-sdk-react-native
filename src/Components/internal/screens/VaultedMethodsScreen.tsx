@@ -408,7 +408,7 @@ function createStyles(tokens: PrimerTokens) {
 }
 
 function createRowStyles(tokens: PrimerTokens, isActive: boolean) {
-  const { colors, spacing, radii, borders, typography } = tokens;
+  const { colors, spacing, radii, widths, typography } = tokens;
   // Match the overall tile size between active (2px border) and default (1px) by
   // compensating padding so inner content doesn't shift by 1px on toggle.
   const innerPadding = isActive ? spacing.medium - 1 : spacing.medium;
@@ -502,7 +502,7 @@ function createRowStyles(tokens: PrimerTokens, isActive: boolean) {
       backgroundColor: colors.background,
       borderColor: isActive ? colors.primary : colors.border,
       borderRadius: radii.medium,
-      borderWidth: isActive ? borders.strong : borders.default,
+      borderWidth: isActive ? widths.focus : widths.default,
       padding: innerPadding,
     },
     tileFull: {
