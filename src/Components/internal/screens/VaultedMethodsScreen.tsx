@@ -502,7 +502,7 @@ function createRowStyles(tokens: PrimerTokens, isActive: boolean) {
       backgroundColor: colors.background,
       borderColor: isActive ? colors.primary : colors.border,
       borderRadius: radii.medium,
-      borderWidth: isActive ? widths.focus : widths.default,
+      borderWidth: isActive ? widths.selected : widths.default,
       padding: innerPadding,
     },
     tileFull: {

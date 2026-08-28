@@ -102,6 +102,7 @@ export const defaultDarkTokens: PrimerTokens = {
   widths: {
     default: 1,
     focus: 2,
+    selected: 2,
     error: 2,
   },
 };

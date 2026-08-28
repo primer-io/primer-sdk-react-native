@@ -74,7 +74,7 @@ describe('mergeTokens', () => {
   });
 
   it('names the widths after the field state, matching the other SDKs', () => {
-    expect(base.widths).toEqual({ default: 1, focus: 2, error: 2 });
+    expect(base.widths).toEqual({ default: 1, focus: 2, selected: 2, error: 2 });
   });
 
   it('carries a background override into the input fill so inputs keep matching the sheet', () => {

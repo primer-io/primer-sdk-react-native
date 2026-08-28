@@ -75,6 +75,7 @@ export interface PrimerRadiusTokens {
 export interface PrimerWidthTokens {
   default: number;
   focus: number;
+  selected: number;
   error: number;
 }
 

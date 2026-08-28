@@ -217,7 +217,7 @@ function createStyles(tokens: PrimerTokens) {
       backgroundColor: colors.background,
       borderColor: colors.primary,
       borderRadius: radii.medium,
-      borderWidth: widths.focus,
+      borderWidth: widths.selected,
       gap: spacing.medium,
       padding: spacing.medium,
     },
