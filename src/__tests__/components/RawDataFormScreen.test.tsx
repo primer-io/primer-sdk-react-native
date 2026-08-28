@@ -104,6 +104,26 @@ describe('RawDataFormScreen (ORC-6514)', () => {
     expect(inputs.map((i: any) => i.props.keyboardType)).toEqual(['phone-pad', 'number-pad', 'default']);
   });
 
+  it('offers the right autofill hint per field', () => {
+    mockMethod = rawDataForm({ requiredInputs: ['PHONE_NUMBER', 'OTP', 'CARD_NUMBER', 'CARDHOLDER_NAME'] });
+    const inputs = textInputs(render().root);
+
+    expect(inputs.map((i: any) => i.props.autoComplete)).toEqual(['tel', 'one-time-code', 'cc-number', 'cc-name']);
+    expect(inputs.map((i: any) => i.props.textContentType)).toEqual([
+      'telephoneNumber',
+      'oneTimeCode',
+      'creditCardNumber',
+      'creditCardName',
+    ]);
+  });
+
+  it('capitalises the cardholder name and nothing else', () => {
+    mockMethod = rawDataForm({ requiredInputs: ['PHONE_NUMBER', 'CARDHOLDER_NAME'] });
+    const inputs = textInputs(render().root);
+
+    expect(inputs.map((i: any) => i.props.autoCapitalize)).toEqual(['none', 'words']);
+  });
+
   it('forwards typed input to the SDK in the right raw-data shape', () => {
     mockMethod = rawDataForm({ requiredInputs: ['PHONE_NUMBER'] });
     const root = render().root;

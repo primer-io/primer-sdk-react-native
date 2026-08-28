@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import type { TextStyle } from 'react-native';
+import type { TextInputProps, TextStyle } from 'react-native';
 
 import { usePrimerTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
@@ -26,6 +26,19 @@ const FIELD_LABEL_KEY: Record<string, string> = {
 };
 
 const NUMERIC_FIELDS = new Set<string>(['PHONE_NUMBER', 'OTP', 'OTP_CODE', 'CARD_NUMBER', 'EXPIRY_DATE']);
+
+// Autofill hints and capitalisation, per field. `autoComplete` drives Android, `textContentType`
+// drives iOS, and only the cardholder name wants capitalisation.
+type FieldInputProps = Pick<TextInputProps, 'autoComplete' | 'textContentType' | 'autoCapitalize'>;
+
+const FIELD_INPUT_PROPS: Record<string, FieldInputProps> = {
+  PHONE_NUMBER: { autoComplete: 'tel', textContentType: 'telephoneNumber' },
+  OTP: { autoComplete: 'one-time-code', textContentType: 'oneTimeCode' },
+  OTP_CODE: { autoComplete: 'one-time-code', textContentType: 'oneTimeCode' },
+  CARD_NUMBER: { autoComplete: 'cc-number', textContentType: 'creditCardNumber' },
+  EXPIRY_DATE: { autoComplete: 'cc-exp', textContentType: 'creditCardExpiration' },
+  CARDHOLDER_NAME: { autoComplete: 'cc-name', textContentType: 'creditCardName', autoCapitalize: 'words' },
+};
 
 type FieldValues = Record<string, string>;
 
@@ -103,6 +116,7 @@ export function RawDataFormScreen() {
                   field === 'PHONE_NUMBER' ? 'phone-pad' : NUMERIC_FIELDS.has(field) ? 'number-pad' : 'default'
                 }
                 autoCapitalize="none"
+                {...FIELD_INPUT_PROPS[field]}
                 accessibilityLabel={label}
               />
             </View>
