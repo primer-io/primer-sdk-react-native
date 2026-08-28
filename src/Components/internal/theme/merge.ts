@@ -53,6 +53,7 @@ export function mergeTokens(base: PrimerTokens, override: ModeOverride): PrimerT
     spacing: override.spacing ? { ...base.spacing, ...stripNullish(override.spacing) } : base.spacing,
     typography: override.typography ? { ...base.typography, ...stripNullish(override.typography) } : base.typography,
     radii: override.radii ? { ...base.radii, ...stripNullish(override.radii) } : base.radii,
+    sizes: override.sizes ? { ...base.sizes, ...stripNullish(override.sizes) } : base.sizes,
     widths: override.widths ? { ...base.widths, ...stripNullish(override.widths) } : base.widths,
   };
 }

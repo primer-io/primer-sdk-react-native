@@ -98,6 +98,15 @@ export const defaultLightTokens: PrimerTokens = {
     medium: 8, // primerRadiusMedium
     large: 12, // primerRadiusLarge
   },
+  sizes: {
+    small: 16, // primerSizeSmall
+    medium: 20, // primerSizeMedium
+    large: 24, // primerSizeLarge
+    xlarge: 32, // primerSizeXlarge
+    xxlarge: 44, // primerSizeXxlarge
+    xxxlarge: 56, // primerSizeXxxlarge
+    base: 4, // primerSizeBase
+  },
   widths: {
     default: 1,
     focus: 2,

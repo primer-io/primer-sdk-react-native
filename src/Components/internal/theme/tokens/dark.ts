@@ -99,6 +99,15 @@ export const defaultDarkTokens: PrimerTokens = {
     medium: 8,
     large: 12,
   },
+  sizes: {
+    small: 16, // primerSizeSmall
+    medium: 20, // primerSizeMedium
+    large: 24, // primerSizeLarge
+    xlarge: 32, // primerSizeXlarge
+    xxlarge: 44, // primerSizeXxlarge
+    xxxlarge: 56, // primerSizeXxxlarge
+    base: 4, // primerSizeBase
+  },
   widths: {
     default: 1,
     focus: 2,

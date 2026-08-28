@@ -6,6 +6,7 @@ export type {
   PrimerTypographyTokens,
   PrimerTypographyStyle,
   PrimerRadiusTokens,
+  PrimerSizeTokens,
   PrimerWidthTokens,
   PrimerThemeOverride,
 } from './types';

@@ -1,8 +1,6 @@
-// Card-input dimension constants. Sourced from Figma and not theme-driven
-// because the token system has no slot for icon size / field height. Keep all
-// design-spec numerics in this one file so any future spec change is local.
+// Card-input dimension constants sourced from Figma. Field height and icon sizes
+// now come from the size tokens; what is left here has no token slot.
 
-export const FIELD_HEIGHT = 44;
 export const LINE_HEIGHT_RATIO = 1.25;
 
 // Trailing glyph inside the input (expiry calendar, CVV hint). Square, 20×20,

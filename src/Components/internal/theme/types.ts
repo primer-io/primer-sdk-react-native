@@ -46,6 +46,16 @@ export interface PrimerSpacingTokens {
   xxxlarge: number;
 }
 
+export interface PrimerSizeTokens {
+  small: number;
+  medium: number;
+  large: number;
+  xlarge: number;
+  xxlarge: number;
+  xxxlarge: number;
+  base: number;
+}
+
 export interface PrimerTypographyStyle {
   fontSize: number;
   fontWeight: string;
@@ -84,6 +94,7 @@ export interface PrimerTokens {
   spacing: PrimerSpacingTokens;
   typography: PrimerTypographyTokens;
   radii: PrimerRadiusTokens;
+  sizes: PrimerSizeTokens;
   widths: PrimerWidthTokens;
 }
 
@@ -93,6 +104,7 @@ export interface PrimerThemeOverride {
     spacing?: Partial<PrimerSpacingTokens>;
     typography?: Partial<PrimerTypographyTokens>;
     radii?: Partial<PrimerRadiusTokens>;
+    sizes?: Partial<PrimerSizeTokens>;
     widths?: Partial<PrimerWidthTokens>;
   };
   dark?: {
@@ -100,6 +112,7 @@ export interface PrimerThemeOverride {
     spacing?: Partial<PrimerSpacingTokens>;
     typography?: Partial<PrimerTypographyTokens>;
     radii?: Partial<PrimerRadiusTokens>;
+    sizes?: Partial<PrimerSizeTokens>;
     widths?: Partial<PrimerWidthTokens>;
   };
 }
