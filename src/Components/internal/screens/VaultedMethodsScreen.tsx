@@ -416,7 +416,7 @@ function createRowStyles(tokens: PrimerTokens, isActive: boolean) {
   return StyleSheet.create({
     brandChip: {
       alignItems: 'center',
-      backgroundColor: colors.surface,
+      backgroundColor: colors.backgroundSecondary,
       borderRadius: radii.xsmall,
       height: BRAND_CHIP_HEIGHT,
       justifyContent: 'center',
@@ -434,7 +434,7 @@ function createRowStyles(tokens: PrimerTokens, isActive: boolean) {
     },
     checkIcon: {
       height: CHECK_ICON_SIZE,
-      tintColor: colors.primary,
+      tintColor: colors.brand,
       width: CHECK_ICON_SIZE,
     },
     checkIconBox: {
@@ -499,8 +499,8 @@ function createRowStyles(tokens: PrimerTokens, isActive: boolean) {
       lineHeight: typography.bodySmall.lineHeight,
     },
     tile: {
-      backgroundColor: colors.background,
-      borderColor: isActive ? colors.primary : colors.border,
+      backgroundColor: colors.backgroundPrimary,
+      borderColor: isActive ? colors.brand : colors.borderOutlinedDefault,
       borderRadius: radii.medium,
       borderWidth: isActive ? widths.selected : widths.default,
       padding: innerPadding,

@@ -182,7 +182,7 @@ function createStyles(tokens: PrimerTokens) {
       textAlign: 'right',
     },
     outer: {
-      backgroundColor: colors.surface,
+      backgroundColor: colors.backgroundSecondary,
       borderRadius: radii.large,
       gap: spacing.small,
       padding: spacing.small,
@@ -214,8 +214,8 @@ function createStyles(tokens: PrimerTokens) {
       lineHeight: typography.bodySmall.lineHeight,
     },
     tile: {
-      backgroundColor: colors.background,
-      borderColor: colors.primary,
+      backgroundColor: colors.backgroundPrimary,
+      borderColor: colors.brand,
       borderRadius: radii.medium,
       borderWidth: widths.selected,
       gap: spacing.medium,

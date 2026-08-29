@@ -1,6 +1,37 @@
 export interface PrimerColorTokens {
-  // Palette. Every grey below feeds the semantic names that follow, so setting one moves
-  // everything derived from it — the same base layer iOS, Android and web already have.
+  backgroundOutlinedActive: string;
+  backgroundOutlinedDefault: string;
+  backgroundOutlinedDisabled: string;
+  backgroundOutlinedError: string;
+  backgroundOutlinedHover: string;
+  backgroundOutlinedLoading: string;
+  backgroundOutlinedSelected: string;
+  backgroundPrimary: string;
+  backgroundSecondary: string;
+  backgroundTransparentActive: string;
+  backgroundTransparentDefault: string;
+  backgroundTransparentDisabled: string;
+  backgroundTransparentHover: string;
+  backgroundTransparentLoading: string;
+  backgroundTransparentSelected: string;
+  blue500: string;
+  blue900: string;
+  borderOutlinedActive: string;
+  borderOutlinedDefault: string;
+  borderOutlinedDisabled: string;
+  borderOutlinedError: string;
+  borderOutlinedFocus: string;
+  borderOutlinedHover: string;
+  borderOutlinedLoading: string;
+  borderOutlinedSelected: string;
+  borderTransparentActive: string;
+  borderTransparentDefault: string;
+  borderTransparentDisabled: string;
+  borderTransparentFocus: string;
+  borderTransparentHover: string;
+  borderTransparentSelected: string;
+  brand: string;
+  focus: string;
   gray000: string;
   gray100: string;
   gray200: string;
@@ -9,30 +40,24 @@ export interface PrimerColorTokens {
   gray500: string;
   gray600: string;
   gray900: string;
-
-  primary: string;
-  onPrimary: string;
-  background: string;
-  backgroundOutlinedDefault: string;
-  surface: string;
-  overlay: string;
-  textPrimary: string;
-  textOutlinedDefault: string;
-  textSecondary: string;
-  textPlaceholder: string;
-  textDisabled: string;
-  textNegative: string;
-  textLink: string;
-  border: string;
-  borderFocused: string;
-  borderError: string;
-  borderDisabled: string;
-  iconPrimary: string;
+  green500: string;
   iconDisabled: string;
   iconNegative: string;
   iconPositive: string;
-  error: string;
-  success: string;
+  iconPrimary: string;
+  loader: string;
+  red100: string;
+  red500: string;
+  red900: string;
+  textDisabled: string;
+  textLink: string;
+  textNegative: string;
+  textOutlinedDefault: string;
+  textPlaceholder: string;
+  textPrimary: string;
+  textSecondary: string;
+  onBrand: string;
+  overlay: string;
 }
 
 export interface PrimerSpacingTokens {

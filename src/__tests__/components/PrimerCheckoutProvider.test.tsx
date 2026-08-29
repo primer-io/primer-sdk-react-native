@@ -953,7 +953,7 @@ describe('PrimerCheckoutProvider — requiresVaultedCardCvv flag wiring', () => 
     const seen: string[] = [];
 
     function ThemeProbe() {
-      seen.push(usePrimerTheme().colors.primary);
+      seen.push(usePrimerTheme().colors.brand);
       return null;
     }
 
@@ -962,7 +962,7 @@ describe('PrimerCheckoutProvider — requiresVaultedCardCvv flag wiring', () => 
       root = renderer.create(
         createElement(
           PrimerCheckoutProvider,
-          { clientToken: 'token-1', theme: { light: { colors: { primary: '#111111' } } } },
+          { clientToken: 'token-1', theme: { light: { colors: { brand: '#111111' } } } },
           createElement(ThemeProbe)
         )
       );
@@ -975,7 +975,7 @@ describe('PrimerCheckoutProvider — requiresVaultedCardCvv flag wiring', () => 
       root!.update(
         createElement(
           PrimerCheckoutProvider,
-          { clientToken: 'token-1', theme: { light: { colors: { primary: '#222222' } } } },
+          { clientToken: 'token-1', theme: { light: { colors: { brand: '#222222' } } } },
           createElement(ThemeProbe)
         )
       );

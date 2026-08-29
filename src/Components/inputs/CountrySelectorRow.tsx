@@ -103,7 +103,7 @@ function createStyles(tokens: PrimerTokens) {
     row: {
       alignItems: 'center',
       backgroundColor: colors.backgroundOutlinedDefault,
-      borderColor: colors.border,
+      borderColor: colors.borderOutlinedDefault,
       borderRadius: radii.small,
       borderWidth: widths.default,
       flexDirection: 'row',
@@ -111,8 +111,8 @@ function createStyles(tokens: PrimerTokens) {
       paddingHorizontal: spacing.medium,
     },
     rowDisabled: {
-      backgroundColor: colors.surface,
-      borderColor: colors.borderDisabled,
+      backgroundColor: colors.backgroundSecondary,
+      borderColor: colors.borderOutlinedDisabled,
     },
     value: {
       color: colors.textOutlinedDefault,

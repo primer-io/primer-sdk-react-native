@@ -32,7 +32,7 @@ jest.mock('../../Components/hooks/usePrimerPaymentMethod', () => ({
 
 jest.mock('../../Components/internal/theme', () => ({
   usePrimerTheme: () => ({
-    colors: { background: '#fff', border: '#ccc', primary: '#08f', textPrimary: '#000' },
+    colors: { backgroundPrimary: '#fff', borderOutlinedDefault: '#ccc', brand: '#08f', textPrimary: '#000' },
     spacing: { xsmall: 4, small: 8, medium: 12, large: 16 },
     radii: { medium: 8 },
     typography: {

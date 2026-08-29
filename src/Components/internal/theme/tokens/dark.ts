@@ -5,6 +5,39 @@ import type { PrimerTokens } from '../types';
 // Spacing, typography, radii, and widths are mode-independent and match light defaults.
 export const defaultDarkTokens: PrimerTokens = {
   colors: {
+    backgroundOutlinedActive: '#171619',
+    backgroundOutlinedDefault: '#171619',
+    backgroundOutlinedDisabled: '#292929',
+    backgroundOutlinedError: '#171619',
+    backgroundOutlinedHover: '#171619',
+    backgroundOutlinedLoading: '#292929',
+    backgroundOutlinedSelected: '#171619',
+    backgroundPrimary: '#171619',
+    backgroundSecondary: '#292929',
+    backgroundTransparentActive: '#424242',
+    backgroundTransparentDefault: '#ffffff00',
+    backgroundTransparentDisabled: '#292929',
+    backgroundTransparentHover: '#292929',
+    backgroundTransparentLoading: '#292929',
+    backgroundTransparentSelected: '#292929',
+    blue500: '#3f93e4',
+    blue900: '#4aaeff',
+    borderOutlinedActive: '#767577',
+    borderOutlinedDefault: '#575757',
+    borderOutlinedDisabled: '#424242',
+    borderOutlinedError: '#e46d70',
+    borderOutlinedFocus: '#2f98ff',
+    borderOutlinedHover: '#858585',
+    borderOutlinedLoading: '#424242',
+    borderOutlinedSelected: '#2f98ff',
+    borderTransparentActive: '#ffffff00',
+    borderTransparentDefault: '#ffffff00',
+    borderTransparentDisabled: '#ffffff00',
+    borderTransparentFocus: '#2f98ff',
+    borderTransparentHover: '#ffffff00',
+    borderTransparentSelected: '#ffffff00',
+    brand: '#2f98ff',
+    focus: '#2f98ff',
     gray000: '#171619',
     gray100: '#292929',
     gray200: '#424242',
@@ -13,29 +46,24 @@ export const defaultDarkTokens: PrimerTokens = {
     gray500: '#767577',
     gray600: '#c7c7c7',
     gray900: '#efefef',
-    primary: '#2f98ff', // primerColorBrand — unchanged in dark (0.184, 0.596, 1.0)
-    onPrimary: '#efefef', // dark gray900 — matches Android's onColoredSurface in dark
-    background: '#171619', // dark primerColorGray000 (0.090, 0.086, 0.098)
-    backgroundOutlinedDefault: '#171619', // dark primerColorBackgroundOutlinedDefault -> background.primary
-    surface: '#292929', // dark primerColorGray100 (0.161, 0.161, 0.161)
-    overlay: 'rgba(0,0,0,0.7)',
-    textPrimary: '#efefef', // dark primerColorGray900 (0.937, 0.937, 0.937)
-    textOutlinedDefault: '#efefef', // dark primerColorTextOutlinedDefault -> text.primary
-    textSecondary: '#c7c7c7', // dark primerColorGray600 (0.780, 0.780, 0.780)
-    textPlaceholder: '#767577', // dark primerColorGray500 (0.463, 0.459, 0.467)
-    textDisabled: '#858585', // dark primerColorGray400 (0.522, 0.522, 0.522)
-    textNegative: '#f6bfbf', // dark primerColorRed900 (0.965, 0.749, 0.749)
-    textLink: '#4aaeff', // dark primerColorBlue900 (0.290, 0.682, 1.0)
-    border: '#575757', // dark primerColorGray300 (0.341, 0.341, 0.341)
-    borderFocused: '#2f98ff', // dark primerColorBrand — unchanged
-    borderError: '#e46d70', // dark primerColorRed500 (0.894, 0.427, 0.439)
-    borderDisabled: '#424242', // dark primerColorGray200 (0.259, 0.259, 0.259)
-    iconPrimary: '#efefef', // dark primerColorGray900
-    iconDisabled: '#858585', // dark primerColorGray400
-    iconNegative: '#e46d70', // dark primerColorRed500
-    iconPositive: '#27b17d', // dark primerColorGreen500 (0.153, 0.694, 0.490)
-    error: '#e46d70', // dark primerColorRed500
-    success: '#27b17d', // dark primerColorGreen500
+    green500: '#27b17d',
+    iconDisabled: '#858585',
+    iconNegative: '#e46d70',
+    iconPositive: '#27b17d',
+    iconPrimary: '#efefef',
+    loader: '#2f98ff',
+    red100: '#321c20',
+    red500: '#e46d70',
+    red900: '#f6bfbf',
+    textDisabled: '#858585',
+    textLink: '#4aaeff',
+    textNegative: '#f6bfbf',
+    textOutlinedDefault: '#efefef',
+    textPlaceholder: '#767577',
+    textPrimary: '#efefef',
+    textSecondary: '#c7c7c7',
+    onBrand: '#ffffff',
+    overlay: 'rgba(0,0,0,0.5)',
   },
   spacing: {
     xxsmall: 2,

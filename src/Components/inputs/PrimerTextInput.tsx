@@ -16,12 +16,12 @@ export function resolveTheme(tokens: PrimerTokens, override?: PrimerTextInputThe
   const errorBorderWidth = Math.max(override?.errorBorderWidth ?? tokens.widths.error, borderWidth);
   return {
     backgroundColor: override?.backgroundColor ?? tokens.colors.backgroundOutlinedDefault,
-    borderColor: override?.borderColor ?? tokens.colors.border,
+    borderColor: override?.borderColor ?? tokens.colors.borderOutlinedDefault,
     borderRadius: override?.borderRadius ?? tokens.radii.small,
     borderWidth,
-    disabledBackgroundColor: override?.disabledBackgroundColor ?? tokens.colors.surface,
-    disabledBorderColor: override?.disabledBorderColor ?? tokens.colors.borderDisabled,
-    errorColor: override?.errorColor ?? tokens.colors.borderError,
+    disabledBackgroundColor: override?.disabledBackgroundColor ?? tokens.colors.backgroundSecondary,
+    disabledBorderColor: override?.disabledBorderColor ?? tokens.colors.borderOutlinedDisabled,
+    errorColor: override?.errorColor ?? tokens.colors.borderOutlinedError,
     errorTextColor: override?.errorTextColor ?? tokens.colors.textNegative,
     // `fontFamily`/`labelFontSize` stay in the chain: they styled the error text before the
     // error token existed, so a merchant already setting them keeps working.
@@ -35,7 +35,7 @@ export function resolveTheme(tokens: PrimerTokens, override?: PrimerTextInputThe
     labelColor: override?.labelColor ?? tokens.colors.textPrimary,
     labelFontSize: override?.labelFontSize ?? tokens.typography.bodySmall.fontSize,
     placeholderColor: override?.placeholderColor ?? tokens.colors.textPlaceholder,
-    primaryColor: override?.primaryColor ?? tokens.colors.borderFocused,
+    primaryColor: override?.primaryColor ?? tokens.colors.borderOutlinedFocus,
     textColor: override?.textColor ?? tokens.colors.textOutlinedDefault,
   };
 }

@@ -31,10 +31,10 @@ jest.mock(
 jest.mock('../../Components/internal/theme', () => ({
   usePrimerTheme: () => ({
     colors: {
-      background: '#fff',
-      surface: '#fafafa',
-      border: '#ccc',
-      primary: '#08f',
+      backgroundPrimary: '#fff',
+      backgroundSecondary: '#fafafa',
+      borderOutlinedDefault: '#ccc',
+      brand: '#08f',
       textPrimary: '#000',
       textSecondary: '#666',
     },

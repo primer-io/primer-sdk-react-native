@@ -14,15 +14,15 @@ describe('mergeTokens', () => {
   });
 
   it('applies partial colors override — only specified fields change', () => {
-    const result = mergeTokens(base, { colors: { primary: '#ff0000' } });
-    expect(result.colors.primary).toBe('#ff0000');
-    expect(result.colors.background).toBe(base.colors.background);
+    const result = mergeTokens(base, { colors: { brand: '#ff0000' } });
+    expect(result.colors.brand).toBe('#ff0000');
+    expect(result.colors.backgroundPrimary).toBe(base.colors.backgroundPrimary);
     expect(result.colors.textPrimary).toBe(base.colors.textPrimary);
   });
 
   it('falls back to base value when override color field is null', () => {
-    const result = mergeTokens(base, { colors: { primary: null as any } });
-    expect(result.colors.primary).toBe(base.colors.primary);
+    const result = mergeTokens(base, { colors: { brand: null as any } });
+    expect(result.colors.brand).toBe(base.colors.brand);
   });
 
   it('applies partial spacing override — only specified fields change', () => {
@@ -47,7 +47,7 @@ describe('mergeTokens', () => {
 
   it('applies overrides across all five categories simultaneously', () => {
     const result = mergeTokens(base, {
-      colors: { primary: '#aabbcc' },
+      colors: { brand: '#aabbcc' },
       spacing: { large: 20 },
       typography: { fontFamily: 'Roboto' },
       radii: { medium: 10 },
@@ -55,8 +55,8 @@ describe('mergeTokens', () => {
       widths: { focus: 3 },
     });
 
-    expect(result.colors.primary).toBe('#aabbcc');
-    expect(result.colors.background).toBe(base.colors.background);
+    expect(result.colors.brand).toBe('#aabbcc');
+    expect(result.colors.backgroundPrimary).toBe(base.colors.backgroundPrimary);
     expect(result.spacing.large).toBe(20);
     expect(result.spacing.small).toBe(base.spacing.small);
     expect(result.typography.fontFamily).toBe('Roboto');
@@ -74,6 +74,22 @@ describe('mergeTokens', () => {
     expect(result.typography.bodySmall.fontSize).toBe(base.typography.bodySmall.fontSize);
   });
 
+  it('carries the same colour vocabulary as the other SDKs', () => {
+    // 57 shared tokens, plus onBrand and overlay which RN needs and the token files do not carry.
+    expect(Object.keys(base.colors)).toHaveLength(59);
+    expect(base.colors.backgroundPrimary).toBe(base.colors.gray000);
+    expect(base.colors.backgroundSecondary).toBe(base.colors.gray100);
+    expect(base.colors.borderOutlinedDefault).toBe(base.colors.gray300);
+    expect(base.colors.borderOutlinedFocus).toBe(base.colors.brand);
+  });
+
+  it('cascades a palette override through the new state variants', () => {
+    const result = mergeTokens(base, { colors: { gray300: '#123456' } });
+
+    expect(result.colors.borderOutlinedDefault).toBe('#123456');
+    expect(result.colors.gray400).toBe(base.colors.gray400);
+  });
+
   it('exposes size tokens so field height is themable', () => {
     expect(base.sizes).toEqual({ small: 16, medium: 20, large: 24, xlarge: 32, xxlarge: 40, xxxlarge: 56, base: 4 });
 
@@ -87,9 +103,9 @@ describe('mergeTokens', () => {
   });
 
   it('carries a background override into the input fill so inputs keep matching the sheet', () => {
-    const result = mergeTokens(base, { colors: { background: '#101010' } });
+    const result = mergeTokens(base, { colors: { backgroundPrimary: '#101010' } });
 
-    expect(result.colors.background).toBe('#101010');
+    expect(result.colors.backgroundPrimary).toBe('#101010');
     expect(result.colors.backgroundOutlinedDefault).toBe('#101010');
   });
 
@@ -102,15 +118,15 @@ describe('mergeTokens', () => {
 
   it('lets an explicit input colour win over the one it would inherit', () => {
     const result = mergeTokens(base, {
-      colors: { background: '#101010', backgroundOutlinedDefault: '#202020' },
+      colors: { backgroundPrimary: '#101010', backgroundOutlinedDefault: '#202020' },
     });
 
-    expect(result.colors.background).toBe('#101010');
+    expect(result.colors.backgroundPrimary).toBe('#101010');
     expect(result.colors.backgroundOutlinedDefault).toBe('#202020');
   });
 
   it('leaves the input colours alone when neither is overridden', () => {
-    const result = mergeTokens(base, { colors: { primary: '#aabbcc' } });
+    const result = mergeTokens(base, { colors: { brand: '#aabbcc' } });
 
     expect(result.colors.backgroundOutlinedDefault).toBe(base.colors.backgroundOutlinedDefault);
     expect(result.colors.textOutlinedDefault).toBe(base.colors.textOutlinedDefault);
@@ -120,26 +136,26 @@ describe('mergeTokens', () => {
     const result = mergeTokens(base, { colors: { gray300: '#123456' } });
 
     expect(result.colors.gray300).toBe('#123456');
-    expect(result.colors.border).toBe('#123456');
+    expect(result.colors.borderOutlinedDefault).toBe('#123456');
   });
 
   it('carries a grey override two hops, through the semantic colour into the input one', () => {
     const result = mergeTokens(base, { colors: { gray000: '#0b0b0b' } });
 
-    expect(result.colors.background).toBe('#0b0b0b');
+    expect(result.colors.backgroundPrimary).toBe('#0b0b0b');
     expect(result.colors.backgroundOutlinedDefault).toBe('#0b0b0b');
   });
 
   it('lets an explicit semantic colour win over the grey it derives from', () => {
-    const result = mergeTokens(base, { colors: { gray300: '#123456', border: '#654321' } });
+    const result = mergeTokens(base, { colors: { gray300: '#123456', borderOutlinedDefault: '#654321' } });
 
-    expect(result.colors.border).toBe('#654321');
+    expect(result.colors.borderOutlinedDefault).toBe('#654321');
   });
 
   it('leaves colours built on other greys untouched', () => {
     const result = mergeTokens(base, { colors: { gray300: '#123456' } });
 
     expect(result.colors.textPrimary).toBe(base.colors.textPrimary);
-    expect(result.colors.surface).toBe(base.colors.surface);
+    expect(result.colors.backgroundSecondary).toBe(base.colors.backgroundSecondary);
   });
 });

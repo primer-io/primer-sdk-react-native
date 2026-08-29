@@ -98,7 +98,7 @@ export const PrimerCardNumberInput = forwardRef<PrimerTextInputRef, PrimerCardNu
               style={[
                 styles.abbreviationChip,
                 {
-                  borderColor: tokens.colors.border,
+                  borderColor: tokens.colors.borderOutlinedDefault,
                   borderRadius: tokens.radii.small,
                   borderWidth: tokens.widths.default,
                 },

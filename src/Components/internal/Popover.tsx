@@ -43,8 +43,8 @@ export function Popover({ visible, onDismiss, children, anchor, testID }: Popove
   const cardStyle = [
     styles.card,
     {
-      backgroundColor: tokens.colors.background,
-      borderColor: tokens.colors.border,
+      backgroundColor: tokens.colors.backgroundPrimary,
+      borderColor: tokens.colors.borderOutlinedDefault,
       borderRadius: tokens.radii.medium,
     },
   ];

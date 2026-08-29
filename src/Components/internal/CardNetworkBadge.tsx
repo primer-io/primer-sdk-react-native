@@ -66,7 +66,7 @@ export function CardNetworkBadge({ identifier, testID, marginLeft }: CardNetwork
         style={[
           styles.chipImage,
           baseStyle,
-          { backgroundColor: tokens.colors.surface, borderRadius: tokens.radii.xsmall },
+          { backgroundColor: tokens.colors.backgroundSecondary, borderRadius: tokens.radii.xsmall },
         ]}
         resizeMode="contain"
         testID={testID}
@@ -81,8 +81,8 @@ export function CardNetworkBadge({ identifier, testID, marginLeft }: CardNetwork
           styles.chip,
           baseStyle,
           {
-            backgroundColor: tokens.colors.surface,
-            borderColor: tokens.colors.border,
+            backgroundColor: tokens.colors.backgroundSecondary,
+            borderColor: tokens.colors.borderOutlinedDefault,
             borderRadius: tokens.radii.xsmall,
             borderWidth: tokens.widths.default,
           },

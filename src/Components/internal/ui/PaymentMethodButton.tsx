@@ -99,8 +99,8 @@ function createStyles(tokens: PrimerTokens) {
       width: '100%',
     },
     outlinedButton: {
-      backgroundColor: colors.background,
-      borderColor: colors.border,
+      backgroundColor: colors.backgroundPrimary,
+      borderColor: colors.borderOutlinedDefault,
       borderWidth: widths.default,
     },
     outlinedText: {
