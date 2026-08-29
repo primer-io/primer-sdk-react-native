@@ -1,4 +1,5 @@
 import type { PrimerRawData } from '../../../models/PrimerRawData';
+import { expandExpiryYearForNative } from '../cardFormat';
 
 export type RawFieldValues = Record<string, string>;
 
@@ -16,7 +17,7 @@ export function buildRawData(type: string, values: RawFieldValues): PrimerRawDat
     case 'ADYEN_BANCONTACT_CARD':
       return {
         cardNumber: values.CARD_NUMBER ?? '',
-        expiryDate: values.EXPIRY_DATE ?? '',
+        expiryDate: expandExpiryYearForNative(values.EXPIRY_DATE ?? ''),
         cardholderName: values.CARDHOLDER_NAME ?? '',
       };
     default:
