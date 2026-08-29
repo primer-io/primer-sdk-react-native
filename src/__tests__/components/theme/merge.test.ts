@@ -51,7 +51,7 @@ describe('mergeTokens', () => {
       spacing: { large: 20 },
       typography: { fontFamily: 'Roboto' },
       radii: { medium: 10 },
-      sizes: { small: 16, medium: 20, large: 24, xlarge: 32, xxlarge: 44, xxxlarge: 56, base: 4 },
+      sizes: { small: 16, medium: 20, large: 24, xlarge: 32, xxlarge: 40, xxxlarge: 56, base: 4 },
       widths: { focus: 3 },
     });
 
@@ -75,7 +75,7 @@ describe('mergeTokens', () => {
   });
 
   it('exposes size tokens so field height is themable', () => {
-    expect(base.sizes).toEqual({ small: 16, medium: 20, large: 24, xlarge: 32, xxlarge: 44, xxxlarge: 56, base: 4 });
+    expect(base.sizes).toEqual({ small: 16, medium: 20, large: 24, xlarge: 32, xxlarge: 40, xxxlarge: 56, base: 4 });
 
     const result = mergeTokens(base, { sizes: { xxlarge: 60 } });
     expect(result.sizes.xxlarge).toBe(60);

@@ -40,7 +40,7 @@ jest.mock('../../Components/internal/theme', () => ({
     },
     spacing: { xxsmall: 2, xsmall: 4, small: 8, medium: 12, large: 16, xlarge: 20, xxlarge: 24 },
     radii: { small: 4, medium: 8, large: 12 },
-    sizes: { small: 16, medium: 20, large: 24, xlarge: 32, xxlarge: 44, xxxlarge: 56, base: 4 },
+    sizes: { small: 16, medium: 20, large: 24, xlarge: 32, xxlarge: 40, xxxlarge: 56, base: 4 },
     widths: { default: 1, focus: 2, selected: 2, error: 2 },
     typography: {
       fontFamily: 'system',
