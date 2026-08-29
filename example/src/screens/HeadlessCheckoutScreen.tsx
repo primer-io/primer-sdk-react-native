@@ -296,7 +296,7 @@ export const HeadlessCheckoutScreen = (props: any) => {
   if (appPaymentParameters.merchantName) {
     //@ts-ignore
     settings.paymentMethodOptions.applePayOptions = {
-      merchantIdentifier: 'merchant.checkout.team',
+      merchantIdentifier: 'merchant.acceptance.team',
       merchantName: appPaymentParameters.merchantName,
     };
   }

@@ -1,4 +1,4 @@
-import PrimerSDK
+@_spi(PrimerInternal) import PrimerSDK
 import React
 
 // swiftlint:disable type_name
@@ -104,5 +104,16 @@ class RNPrimerHeadlessUniversalCheckoutVaultManager: RCTEventEmitter {
     } catch {
       rejecter(error.rnError["errorId"]!, error.rnError["description"], error)
     }
+  }
+
+  @objc
+  func requiresVaultedCardCvv(
+    _ resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock
+  ) {
+    guard #available(iOS 15.0, *) else {
+      resolver(false)
+      return
+    }
+    resolver(ComponentsClientSessionBridge().getCaptureVaultedCardCvv())
   }
 }

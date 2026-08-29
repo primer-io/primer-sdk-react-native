@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import PrimerSDK
+@_spi(PrimerInternal) import PrimerSDK
 import React
 
 // swiftlint:disable file_length
@@ -265,6 +265,30 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
       self.sendEvent(
         withName: rnCallbackName,
         body: ["availablePaymentMethods": paymentMethods.compactMap({ $0.toJsonObject() })])
+
+      // The native SDK only fires `primerHeadlessUniversalCheckoutDidUpdateClientSession`
+      // on subsequent updates, never on initial load. Read the current session via
+      // `ComponentsClientSessionBridge` and synthesize the update event so JS receives
+      // the initial session at startup. iOS < 15 has no bridge access; the JS-side
+      // `onClientSessionUpdate` callback then fires only on subsequent updates.
+      if self.implementedRNCallbacks?.isOnClientSessionUpdateImplemented == true,
+         #available(iOS 15.0, *) {
+        let bridge = ComponentsClientSessionBridge()
+        if let initialClientSession = bridge.getClientSession() {
+          let updateCallbackName = PrimerHeadlessUniversalCheckoutEvents.onClientSessionUpdate.stringValue
+          do {
+            let payload = try Self.makeClientSessionPayload(
+              clientSession: initialClientSession,
+              checkoutModules: bridge.getCheckoutModules()
+            )
+            self.sendEvent(
+              withName: updateCallbackName,
+              body: [Self.clientSessionPayloadKey: payload])
+          } catch {
+            self.handleRNBridgeError(error, checkoutData: nil, stopOnDebug: true)
+          }
+        }
+      }
     }
   }
 
@@ -401,8 +425,12 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
               .last { $0.isKeyWindow }
             DispatchQueue.main.async {
               if let rootViewController = keyWindow?.rootViewController {
-                rootViewController.present(
-                  info.collectorViewController, animated: true, completion: nil)
+                // Present over the top-most VC — root is already presenting the CC sheet modal.
+                var presenter = rootViewController
+                while let presented = presenter.presentedViewController {
+                  presenter = presented
+                }
+                presenter.present(info.collectorViewController, animated: true, completion: nil)
               } else {
                 let checkoutData = PrimerCheckoutData(payment: nil, additionalInfo: additionalInfo)
                 self.handleRNBridgeError(
@@ -530,16 +558,50 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
     DispatchQueue.main.async {
       if self.implementedRNCallbacks?.isOnClientSessionUpdateImplemented == true {
         do {
-          let json = try clientSession.toJsonObject()
+          // Augment the SDK-provided `clientSession` with `checkoutModules` from the
+          // bridge — these are not surfaced on the public `PrimerClientSession` type.
+          var checkoutModules: [ComponentsCheckoutModule]?
+          if #available(iOS 15.0, *) {
+            checkoutModules = ComponentsClientSessionBridge().getCheckoutModules()
+          }
+          let payload = try Self.makeClientSessionPayload(
+            clientSession: clientSession,
+            checkoutModules: checkoutModules
+          )
           self.sendEvent(
             withName: rnCallbackName,
-            body: ["clientSession": json])
+            body: [Self.clientSessionPayloadKey: payload])
 
         } catch {
           self.handleRNBridgeError(error, checkoutData: nil, stopOnDebug: true)
         }
       }
     }
+  }
+
+  private static let clientSessionPayloadKey = "clientSession"
+
+  // Merges a `PrimerClientSession`'s JSON representation with `checkoutModules`
+  // surfaced by `ComponentsClientSessionBridge`. The bridge returns a value-typed
+  // `ComponentsCheckoutModule` parameter under SPI, so the parameter is `Any?` in
+  // the public signature to avoid leaking SPI types into call-site availability.
+  private static func makeClientSessionPayload(
+    clientSession: PrimerClientSession,
+    checkoutModules: Any?
+  ) throws -> [String: Any] {
+    let json = try clientSession.toJsonObject()
+    var dict = (json as? [String: Any]) ?? [:]
+
+    if #available(iOS 15.0, *), let modules = checkoutModules as? [ComponentsCheckoutModule] {
+      dict["checkoutModules"] = modules.map { module -> [String: Any] in
+        var moduleDict: [String: Any] = ["type": module.type]
+        if let options = module.options {
+          moduleDict["options"] = options
+        }
+        return moduleDict
+      }
+    }
+    return dict
   }
 
   // case onBeforePaymentCreate

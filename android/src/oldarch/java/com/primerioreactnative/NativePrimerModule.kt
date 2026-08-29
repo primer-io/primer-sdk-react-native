@@ -134,6 +134,38 @@ class NativePrimerModule(private val reactContext: ReactApplicationContext, priv
   }
 
   @ReactMethod
+  fun trackAnalyticsEvent(eventName: String, metadata: String?, promise: Promise) {
+    implementation.trackAnalyticsEvent(eventName = eventName, metadata = metadata, promise = promise)
+  }
+
+  @ReactMethod
+  fun sendLog(message: String, event: String, initDurationMs: Double?, promise: Promise) {
+    implementation.sendLog(message = message, event = event, initDurationMs = initDurationMs, promise = promise)
+  }
+
+  @ReactMethod
+  fun sendErrorLog(
+    message: String,
+    event: String?,
+    errorMessage: String?,
+    stack: String?,
+    promise: Promise
+  ) {
+    implementation.sendErrorLog(
+      message = message,
+      event = event,
+      errorMessage = errorMessage,
+      stack = stack,
+      promise = promise
+    )
+  }
+
+  @ReactMethod
+  fun setupAnalyticsLoggingBridge(clientToken: String, promise: Promise) {
+    implementation.setupAnalyticsLoggingBridge(clientToken = clientToken, promise = promise)
+  }
+
+  @ReactMethod
   fun addListener(eventName: String?) = Unit
 
   @ReactMethod

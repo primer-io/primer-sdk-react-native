@@ -1,0 +1,1 @@
+export const STATUS_SCREEN_ICON_SIZE = 56;

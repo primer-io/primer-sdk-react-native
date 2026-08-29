@@ -1,0 +1,7 @@
+pull:
+  targets:
+    - file: ./src/Components/internal/localization/strings/<locale_code>.json
+      params:
+        file_format: simple_json
+        tags: checkout-components
+        encoding: UTF-8

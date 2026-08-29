@@ -1,0 +1,276 @@
+import type { ReactNode } from 'react';
+import type { PrimerSettings } from '../../models/PrimerSettings';
+import type { PrimerError } from '../../models/PrimerError';
+import type { PrimerAddress, PrimerClientSession } from '../../models/PrimerClientSession';
+import type { PrimerCheckoutData } from '../../models/PrimerCheckoutData';
+import type { PrimerCheckoutPaymentMethodData } from '../../models/PrimerCheckoutPaymentMethodData';
+import type { PrimerPaymentMethodTokenData } from '../../models/PrimerPaymentMethodTokenData';
+import type { PrimerRawData } from '../../models/PrimerRawData';
+import type { PrimerBinData } from '../../models/PrimerBinData';
+import type { PrimerInputElementType } from '../../models/PrimerInputElementType';
+import type {
+  PrimerHeadlessUniversalCheckoutResumeHandler,
+  PrimerPaymentCreationHandler,
+} from '../../models/PrimerHandlers';
+import type { IPrimerHeadlessUniversalCheckoutPaymentMethod } from '../../models/PrimerHeadlessUniversalCheckoutPaymentMethod';
+import type { PrimerPaymentMethodAsset, PrimerPaymentMethodNativeView } from '../../models/PrimerPaymentMethodResource';
+import type { PrimerVaultedPaymentMethod } from '../../models/PrimerVaultedPaymentMethod';
+import type { PrimerVaultedPaymentMethodAdditionalData } from '../../models/PrimerVaultedPaymentMethodAdditionalData';
+import type { IssuingBank } from '../../models/IssuingBank';
+import type { KlarnaPaymentCategory } from '../../models/klarna/KlarnaPaymentCategory';
+import type { PrimerThemeOverride } from '../internal/theme/types';
+import type { CardFormErrors } from './CardFormTypes';
+import type { CardNetworkId } from '../internal/cardNetwork';
+
+export interface PrimerCheckoutProviderProps {
+  clientToken: string;
+  settings?: PrimerSettings;
+  theme?: PrimerThemeOverride;
+  onCheckoutComplete?: (checkoutData: PrimerCheckoutData) => void;
+  onTokenizationSuccess?: (
+    paymentMethodTokenData: PrimerPaymentMethodTokenData,
+    handler: PrimerHeadlessUniversalCheckoutResumeHandler
+  ) => void;
+  onBeforePaymentCreate?: (
+    checkoutPaymentMethodData: PrimerCheckoutPaymentMethodData,
+    handler: PrimerPaymentCreationHandler
+  ) => void;
+  onError?: (error: PrimerError, checkoutData: PrimerCheckoutData | null) => void;
+  children?: ReactNode;
+}
+
+/**
+ * Outcome of the most recent payment attempt within a checkout session. `'pending'` means the
+ * payment was authorized and awaits settlement (`payment.status === 'PENDING'`) — emitted for the
+ * Stripe ACH flow today; other methods keep mapping non-FAILED results to `'success'`.
+ */
+export type PaymentOutcome =
+  | { status: 'success'; data: PrimerCheckoutData }
+  | { status: 'pending'; data: PrimerCheckoutData }
+  | { status: 'error'; error: PrimerError; data: PrimerCheckoutData | null };
+
+/** Flow position of the Stripe ACH payment method; `idle` when no ACH flow is armed. */
+export type StripeAchStep =
+  | 'idle'
+  | 'starting'
+  | 'collectingDetails'
+  | 'submittingDetails'
+  | 'awaitingBankLink'
+  | 'mandatePending'
+  | 'answeringMandate';
+
+/** The account holder's details collected before the bank link; prefilled from the client session when available. */
+export interface StripeAchUserDetails {
+  firstName: string;
+  lastName: string;
+  emailAddress: string;
+}
+
+/** Per-field native validation messages; a missing key means not-yet-validated or valid. */
+export interface StripeAchFieldErrors {
+  firstName?: string;
+  lastName?: string;
+  emailAddress?: string;
+}
+
+/** Resolved, shopper-renderable mandate text. `fullMandateText` from settings wins over the localized template. */
+export interface StripeAchMandateDisplay {
+  text: string;
+  source: 'fullMandateText' | 'template';
+}
+
+/** Validation + metadata state surfaced by the active raw-data manager. */
+export interface CardFormState {
+  isValid: boolean;
+  errors: CardFormErrors;
+  binData: PrimerBinData | null;
+  metadata: unknown;
+  requiredFields: PrimerInputElementType[];
+}
+
+export interface PrimerCheckoutContextValue {
+  // --- Session state ---
+  isReady: boolean;
+  /** Init-time errors only (before `isReady`). Payment-time errors land in `paymentOutcome`. */
+  error: PrimerError | null;
+  clientSession: PrimerClientSession | null;
+  /**
+   * Ordered list of card networks the merchant accepts for the session, e.g. `['VISA', 'MASTERCARD']`.
+   * `null` until the bridge resolves or when the session has no `paymentMethod`; `[]` when explicitly empty.
+   */
+  acceptedCardNetworks: string[] | null;
+  availablePaymentMethods: IPrimerHeadlessUniversalCheckoutPaymentMethod[];
+  paymentMethodResources: Array<PrimerPaymentMethodAsset | PrimerPaymentMethodNativeView>;
+  isLoadingResources: boolean;
+  resourcesError: Error | null;
+  /** Settings the merchant passed to the provider. Needed for UI-option toggles. */
+  settings: PrimerSettings | undefined;
+
+  // --- Native-UI methods (Google Pay today; Apple Pay / PayPal / web-redirect APMs later) ---
+  /**
+   * Which native-UI method is currently in flight, or `null`. Backs each method's `isLoading` flag.
+   * Merchants use `usePrimerPaymentMethod(type)`, not this directly.
+   */
+  nativeUiInFlightType: string | null;
+  /** Start a native-UI method by payment-method type. Rejects if the method is unavailable. */
+  startNativeUI: (paymentMethodType: string) => Promise<void>;
+  /** Cancel an in-flight native-UI attempt (best-effort; cannot force-close the system sheet). */
+  cancelNativeUI: (paymentMethodType: string) => void;
+
+  // --- Bank selection (COMPONENT_WITH_REDIRECT — iDEAL, Android Dotpay) ---
+  // Backs the `bankSelection` variant of `usePrimerPaymentMethod(type)`; merchants use that, not these.
+  /** Issuer list for the active bank-selection method; empty until fetched. */
+  banks: IssuingBank[];
+  /** The shopper's currently selected bank id, or `null`. */
+  selectedBankId: string | null;
+  /** True while the issuer list is loading or a bank-redirect submit is in flight. */
+  isBanksLoading: boolean;
+  /** Begin a bank-selection flow for the given method (fetches the issuer list). */
+  startBanks: (paymentMethodType: string) => Promise<void>;
+  /** Filter the issuer list by name. */
+  filterBanks: (text: string) => void;
+  /** Select an issuer by id (triggers validation). */
+  selectBank: (bankId: string) => void;
+  /** Tokenise the selected bank and launch the redirect. */
+  submitBanks: () => Promise<void>;
+  /** Disarm the flow and tear down the redirect component (call on leaving the picker). */
+  stopBanks: () => void;
+
+  // --- Klarna (KLARNA) ---
+  // Backs the `klarna` variant of `usePrimerPaymentMethod(type)`; merchants use that, not these.
+  /** Available Klarna payment categories; empty until `startKlarna` resolves. */
+  klarnaPaymentCategories: KlarnaPaymentCategory[];
+  /** The shopper's currently selected Klarna category id, or `null`. */
+  selectedKlarnaCategoryId: string | null;
+  /** True once the embedded Klarna payment view has loaded. */
+  isKlarnaViewLoaded: boolean;
+  /** True while the Klarna session is starting or an authorize/finalize is in flight. */
+  isKlarnaLoading: boolean;
+  /** Begin a Klarna session (fetches the payment categories). */
+  startKlarna: (paymentMethodType: string) => Promise<void>;
+  /** Select a Klarna category by id (loads the embedded view). */
+  selectKlarnaCategory: (categoryId: string) => void;
+  /** Authorize the Klarna payment. */
+  authorizeKlarna: () => Promise<void>;
+  /** Finalize the Klarna payment (prebuilt auto-finalizes; manual path for custom layouts). */
+  finalizeKlarna: () => Promise<void>;
+  /** Disarm the Klarna flow on return to the method list (mirrors stopBanks). */
+  stopKlarna: () => void;
+
+  // --- Stripe ACH (US bank-account) ---
+  // Backs the `stripeAch` variant of `usePrimerPaymentMethod(type)`; merchants use that, not these.
+  /** Flow position; `idle` when no ACH flow is armed. */
+  achStep: StripeAchStep;
+  /** Current field values — prefilled from the client session when available. */
+  achUserDetails: StripeAchUserDetails;
+  /** Per-field native validation messages. */
+  achFieldErrors: StripeAchFieldErrors;
+  /** True while no field has a validation error — the submit gate. Open on an untouched form. */
+  achIsValid: boolean;
+  /** Resolved mandate display; non-null only while the mandate awaits (or is receiving) an answer. */
+  achMandate: StripeAchMandateDisplay | null;
+  /** Arm the ACH flow for the given method (provides the native component and starts it). */
+  startAch: (paymentMethodType: string) => Promise<void>;
+  setAchFirstName: (value: string) => Promise<void>;
+  setAchLastName: (value: string) => Promise<void>;
+  setAchEmailAddress: (value: string) => Promise<void>;
+  /** Submit the details; the native Stripe bank collector presents next. */
+  submitAchDetails: () => Promise<void>;
+  /** Accept the mandate — authorizes and completes the payment. One-shot per mandate. */
+  acceptAchMandate: () => Promise<void>;
+  /**
+   * Decline the mandate — cancels the attempt. Surfaces via `onError` as an error outcome (error
+   * screen in the prebuilt flow) and the merchant `onError` fires. One-shot.
+   */
+  declineAchMandate: () => Promise<void>;
+  /** Disarm the ACH flow (deferred while the mandate awaits an answer). */
+  stopAch: () => void;
+
+  // --- Active payment attempt ---
+  /** Outcome of the most recent payment attempt; `null` before any submit. */
+  paymentOutcome: PaymentOutcome | null;
+  /** The payment method whose raw-data manager is currently active. */
+  activeMethod: string | null;
+  /** Validation + metadata state from the active raw-data manager. */
+  cardFormState: CardFormState;
+
+  // --- Vaulted payment methods ---
+  vaultedMethods: PrimerVaultedPaymentMethod[];
+  /** Brand-icon URIs keyed by vaulted-method id, resolved via AssetsManager at fetch time. */
+  vaultedIconUrisById: Record<string, string | undefined>;
+  /** Display names keyed by vaulted-method id (the method glyph label); used by non-card rows. */
+  vaultedNamesById: Record<string, string | undefined>;
+  isLoadingVaulted: boolean;
+  vaultedError: Error | null;
+  /** Id of the user-selected vaulted method, or `null` to fall back to the first method. */
+  activeVaultedMethodId: string | null;
+  /** When set to `'expanded'`, force the method-selection view to show APMs even after the shopper has switched vaulted method. Cleared automatically on subsequent selection changes. */
+  vaultDisplayOverride: 'expanded' | null;
+  /**
+   * Whether the merchant's session has `paymentMethods.PAYMENT_CARD.options.captureVaultedCardCvv = true`.
+   * Read once after `vm.configure()` resolves and cached for the provider's lifetime — flag flips
+   * mid-session are picked up on the next provider re-initialization.
+   */
+  requiresVaultedCardCvv: boolean;
+  /**
+   * Whether the inline CVV input row is currently rendered inside the active vault tile.
+   * Lifted to the provider so the sheet-height calculation in `MethodSelectionScreen` can react
+   * (the entered CVV digits stay local to `PrimerVaultedPaymentMethod` for security).
+   */
+  cvvInputVisible: boolean;
+
+  // --- Actions ---
+  /** Register/deregister the active payment method. Pass `null` to tear down. */
+  setActiveMethod: (method: string | null) => void;
+  /**
+   * Shopper-picked card network for co-badged cards. `null` until the shopper makes
+   * a choice in the popover. Persists across re-renders / hook callers (lives on the
+   * provider, not on individual hook instances).
+   */
+  selectedCardNetwork: CardNetworkId | null;
+  /** Forward raw data to the active native manager. */
+  setRawData: (data: PrimerRawData) => Promise<void>;
+  /**
+   * Forward a billing address to the active native manager. Dispatched as a separate
+   * client-session action, independent of raw card data, before submit.
+   */
+  setBillingAddress: (address: PrimerAddress) => Promise<void>;
+  /**
+   * Set the shopper-chosen card network on the active card form (co-badged cards).
+   * The provider merges the pick into every subsequent `setRawData` payload, so the
+   * choice survives keystroke updates.
+   */
+  selectCardNetwork: (identifier: CardNetworkId) => Promise<void>;
+  /** Fire the active manager's submit. First-attempt path. */
+  submit: () => Promise<void>;
+  /**
+   * Retry the last submit. Reconfigures the manager, re-sends the last raw data, then submits.
+   * The reconfigure is defensive for iOS: `RawDataManager.swift:237` nullifies the delegate on
+   * successful tokenization, so any post-tokenize failure would otherwise have no delegate
+   * to surface a retry's outcome. Reconfigure rebuilds the delegate binding. Harmless on Android.
+   */
+  retry: () => Promise<void>;
+  /** Clear the last payment outcome (e.g., when leaving the error screen). */
+  clearPaymentOutcome: () => void;
+  /**
+   * Start the payment flow for a vaulted payment method by id.
+   * If `additionalData` is supplied (e.g. `{ cvv }` for CVV-recapture), the request is sent through
+   * the with-additional-data bridge path; otherwise the no-CVV bridge path is used.
+   */
+  payFromVault: (
+    vaultedPaymentMethodId: string,
+    additionalData?: PrimerVaultedPaymentMethodAdditionalData
+  ) => Promise<void>;
+  /** Make `id` the active vaulted method. No-op if it already matches the current active id. */
+  selectVaultedMethodId: (id: string) => void;
+  /** Force the method-selection view back to expanded layout while preserving the user's selection. */
+  requestExpandedVaultDisplay: () => void;
+  /** Toggle the inline CVV input row's visibility on the active vault tile. */
+  setCvvInputVisible: (visible: boolean) => void;
+  /**
+   * Delete a vaulted payment method server-side, refresh the local list, and promote the first
+   * remaining method into the active slot if the deleted one was active. Matches iOS / Android
+   * Checkout Components behaviour. Rejects with `{ errorId, description }` on bridge failure.
+   */
+  deleteVaultedPaymentMethod: (id: string) => Promise<void>;
+}

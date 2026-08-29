@@ -1276,22 +1276,40 @@ const SettingsScreen = ({navigation}) => {
   };
 
   return (
-    <ScrollView
-      contentInsetAdjustmentBehavior="automatic"
-      style={backgroundStyle}>
-      {/* <Header /> */}
-      <View
-        style={{
-          marginHorizontal: 24,
-        }}>
-        {renderRequiredSettings()}
-        {renderOptionalSettings()}
+    <>
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        style={backgroundStyle}>
+        {/* <Header /> */}
+        <View
+          style={{
+            marginHorizontal: 24,
+          }}>
+          <TouchableOpacity
+            style={{
+              ...styles.button,
+              marginTop: 12,
+              marginBottom: 8,
+              backgroundColor: '#2f98ff',
+            }}
+            onPress={() => {
+              updateAppPaymentParameters();
+              navigation.navigate('CheckoutComponentsList');
+            }}>
+            <Text style={{...styles.buttonText, color: 'white'}}>
+              Checkout Components
+            </Text>
+          </TouchableOpacity>
 
-        <View style={{marginVertical: 5}} />
+          {renderRequiredSettings()}
+          {renderOptionalSettings()}
 
-        {renderActions()}
-      </View>
-    </ScrollView>
+          <View style={{marginVertical: 5}} />
+
+          {renderActions()}
+        </View>
+      </ScrollView>
+    </>
   );
 };
 
