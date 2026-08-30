@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import type { TextInputProps, TextStyle } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import type { TextInputProps } from 'react-native';
 
 import { usePrimerTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
@@ -11,6 +11,7 @@ import { CheckoutRoute } from '../navigation/types';
 import { usePrimerLocalization } from '../localization';
 import { useCheckoutFlow } from '../checkout-flow/CheckoutFlowContext';
 import { usePrimerPaymentMethod } from '../../hooks/usePrimerPaymentMethod';
+import { PrimerTextInput } from '../../inputs/PrimerTextInput';
 import { CheckoutButton } from '../ui/CheckoutButton';
 import { useBottomSafeArea } from './useBottomSafeArea';
 import { buildRawData } from './buildRawData';
@@ -107,20 +108,17 @@ export function RawDataFormScreen() {
           const labelKey = FIELD_LABEL_KEY[field];
           const label = labelKey ? t(labelKey) : field;
           return (
-            <View key={field} style={styles.field}>
-              <Text style={styles.label}>{label}</Text>
-              <TextInput
-                style={styles.input}
-                value={values[field] ?? ''}
-                onChangeText={(text) => handleChange(field, text)}
-                keyboardType={
-                  field === 'PHONE_NUMBER' ? 'phone-pad' : NUMERIC_FIELDS.has(field) ? 'number-pad' : 'default'
-                }
-                autoCapitalize="none"
-                {...FIELD_INPUT_PROPS[field]}
-                accessibilityLabel={label}
-              />
-            </View>
+            <PrimerTextInput
+              key={field}
+              label={label}
+              value={values[field] ?? ''}
+              onChangeText={(text) => handleChange(field, text)}
+              keyboardType={
+                field === 'PHONE_NUMBER' ? 'phone-pad' : NUMERIC_FIELDS.has(field) ? 'number-pad' : 'default'
+              }
+              autoCapitalize="none"
+              {...FIELD_INPUT_PROPS[field]}
+            />
           );
         })}
       </ScrollView>
@@ -137,35 +135,13 @@ export function RawDataFormScreen() {
 }
 
 function createStyles(tokens: PrimerTokens) {
-  const { colors, radii, spacing, typography, widths } = tokens;
+  const { colors, spacing } = tokens;
   /* eslint-disable react-native/no-unused-styles */
   return StyleSheet.create({
-    field: {
-      gap: spacing.xsmall,
-    },
     footer: {
       backgroundColor: colors.backgroundPrimary,
       paddingHorizontal: spacing.large,
       paddingTop: spacing.small,
-    },
-    input: {
-      backgroundColor: colors.backgroundOutlinedDefault,
-      borderColor: colors.borderOutlinedDefault,
-      borderRadius: radii.medium,
-      borderWidth: widths.default,
-      color: colors.textOutlinedDefault,
-      fontSize: typography.titleLarge.fontSize,
-      minHeight: 48,
-      paddingHorizontal: spacing.medium,
-      paddingVertical: spacing.small,
-    },
-    label: {
-      color: colors.textPrimary,
-      fontFamily: typography.titleLarge.fontFamily,
-      fontSize: typography.titleLarge.fontSize,
-      fontWeight: typography.titleLarge.fontWeight as TextStyle['fontWeight'],
-      letterSpacing: typography.titleLarge.letterSpacing,
-      lineHeight: typography.titleLarge.lineHeight,
     },
     root: {
       flex: 1,
