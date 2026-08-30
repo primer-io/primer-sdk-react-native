@@ -3,7 +3,6 @@ export interface PrimerColorTokens {
   backgroundOutlinedDefault: string;
   backgroundOutlinedDisabled: string;
   backgroundOutlinedError: string;
-  backgroundOutlinedHover: string;
   backgroundOutlinedLoading: string;
   backgroundOutlinedSelected: string;
   backgroundPrimary: string;
@@ -11,7 +10,6 @@ export interface PrimerColorTokens {
   backgroundTransparentActive: string;
   backgroundTransparentDefault: string;
   backgroundTransparentDisabled: string;
-  backgroundTransparentHover: string;
   backgroundTransparentLoading: string;
   backgroundTransparentSelected: string;
   blue500: string;
@@ -21,14 +19,12 @@ export interface PrimerColorTokens {
   borderOutlinedDisabled: string;
   borderOutlinedError: string;
   borderOutlinedFocus: string;
-  borderOutlinedHover: string;
   borderOutlinedLoading: string;
   borderOutlinedSelected: string;
   borderTransparentActive: string;
   borderTransparentDefault: string;
   borderTransparentDisabled: string;
   borderTransparentFocus: string;
-  borderTransparentHover: string;
   borderTransparentSelected: string;
   brand: string;
   focus: string;
