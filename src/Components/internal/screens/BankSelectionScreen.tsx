@@ -113,7 +113,7 @@ export function BankSelectionScreen() {
 }
 
 function createStyles(tokens: PrimerTokens) {
-  const { colors, radii, spacing, typography } = tokens;
+  const { colors, radii, spacing, typography, widths } = tokens;
   /* eslint-disable react-native/no-unused-styles */
   return StyleSheet.create({
     bankIcon: {
@@ -132,7 +132,7 @@ function createStyles(tokens: PrimerTokens) {
       alignItems: 'center',
       borderColor: colors.borderOutlinedDefault,
       borderRadius: radii.medium,
-      borderWidth: StyleSheet.hairlineWidth,
+      borderWidth: widths.default,
       flexDirection: 'row',
       gap: spacing.medium,
       minHeight: 56,
@@ -143,7 +143,7 @@ function createStyles(tokens: PrimerTokens) {
     },
     bankRowSelected: {
       borderColor: colors.brand,
-      borderWidth: 2,
+      borderWidth: widths.selected,
     },
     footer: {
       backgroundColor: colors.backgroundPrimary,

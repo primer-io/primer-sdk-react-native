@@ -137,7 +137,7 @@ export function RawDataFormScreen() {
 }
 
 function createStyles(tokens: PrimerTokens) {
-  const { colors, radii, spacing, typography } = tokens;
+  const { colors, radii, spacing, typography, widths } = tokens;
   /* eslint-disable react-native/no-unused-styles */
   return StyleSheet.create({
     field: {
@@ -152,7 +152,7 @@ function createStyles(tokens: PrimerTokens) {
       backgroundColor: colors.backgroundOutlinedDefault,
       borderColor: colors.borderOutlinedDefault,
       borderRadius: radii.medium,
-      borderWidth: StyleSheet.hairlineWidth,
+      borderWidth: widths.default,
       color: colors.textOutlinedDefault,
       fontSize: typography.titleLarge.fontSize,
       minHeight: 48,
