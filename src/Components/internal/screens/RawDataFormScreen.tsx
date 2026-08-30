@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import type { TextInputProps, TextStyle } from 'react-native';
 
 import { usePrimerTheme } from '../theme';
@@ -11,6 +11,7 @@ import { CheckoutRoute } from '../navigation/types';
 import { usePrimerLocalization } from '../localization';
 import { useCheckoutFlow } from '../checkout-flow/CheckoutFlowContext';
 import { usePrimerPaymentMethod } from '../../hooks/usePrimerPaymentMethod';
+import { CheckoutButton } from '../ui/CheckoutButton';
 import { useBottomSafeArea } from './useBottomSafeArea';
 import { buildRawData } from './buildRawData';
 
@@ -124,16 +125,12 @@ export function RawDataFormScreen() {
         })}
       </ScrollView>
       <View style={[styles.footer, { paddingBottom: Math.max(bottomInset, tokens.spacing.large) }]}>
-        <TouchableOpacity
+        <CheckoutButton
+          title={t('primer_common_button_pay')}
           onPress={handleSubmit}
+          variant="primary"
           disabled={!isValid}
-          activeOpacity={0.7}
-          style={[styles.payButton, !isValid && styles.payButtonDisabled]}
-          accessibilityRole="button"
-          accessibilityState={{ disabled: !isValid }}
-        >
-          <Text style={styles.payButtonText}>{t('primer_common_button_pay')}</Text>
-        </TouchableOpacity>
+        />
       </View>
     </View>
   );
@@ -169,27 +166,6 @@ function createStyles(tokens: PrimerTokens) {
       fontWeight: typography.titleLarge.fontWeight as TextStyle['fontWeight'],
       letterSpacing: typography.titleLarge.letterSpacing,
       lineHeight: typography.titleLarge.lineHeight,
-    },
-    payButton: {
-      alignItems: 'center',
-      backgroundColor: colors.brand,
-      borderRadius: radii.medium,
-      justifyContent: 'center',
-      minHeight: 44,
-      padding: spacing.medium,
-      width: '100%',
-    },
-    payButtonDisabled: {
-      opacity: 0.5,
-    },
-    payButtonText: {
-      color: colors.onBrand,
-      fontFamily: typography.titleLarge.fontFamily,
-      fontSize: typography.titleLarge.fontSize,
-      fontWeight: typography.titleLarge.fontWeight as TextStyle['fontWeight'],
-      letterSpacing: typography.titleLarge.letterSpacing,
-      lineHeight: typography.titleLarge.lineHeight,
-      textAlign: 'center',
     },
     root: {
       flex: 1,

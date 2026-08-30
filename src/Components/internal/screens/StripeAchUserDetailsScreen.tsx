@@ -1,14 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import {
-  ActivityIndicator,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  useWindowDimensions,
-} from 'react-native';
+import { ActivityIndicator, Platform, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import type { TextStyle } from 'react-native';
 
 import { usePrimerTheme } from '../theme';
@@ -22,6 +13,7 @@ import { useCheckoutFlow } from '../checkout-flow/CheckoutFlowContext';
 import { usePrimerCheckout } from '../../hooks/usePrimerCheckout';
 import { usePrimerPaymentMethod } from '../../hooks/usePrimerPaymentMethod';
 import { PrimerTextInput } from '../../inputs';
+import { CheckoutButton } from '../ui/CheckoutButton';
 import { useSheetHeight } from '../checkout-sheet';
 import { useBottomSafeArea } from './useBottomSafeArea';
 import { useKeyboardPadding } from './useKeyboardPadding';
@@ -174,51 +166,23 @@ export function StripeAchUserDetailsScreen() {
         onLayout={(e) => setFooterHeight(e.nativeEvent.layout.height)}
         style={[styles.footer, { paddingBottom: footerPaddingBottom, transform: [{ translateY: -keyboardPadding }] }]}
       >
-        <TouchableOpacity
+        <CheckoutButton
+          title={t('primer_ach_button_continue')}
           onPress={handleContinue}
+          variant="primary"
+          loading={isWaiting}
           disabled={!canSubmit}
-          activeOpacity={0.7}
-          style={[styles.continueButton, !canSubmit && styles.continueButtonDisabled]}
-          accessibilityRole="button"
-          accessibilityState={{ disabled: !canSubmit, busy: isWaiting }}
           accessibilityHint={t('accessibility_ach_continue_hint')}
-        >
-          {isWaiting ? (
-            <ActivityIndicator color={tokens.colors.onBrand} />
-          ) : (
-            <Text style={styles.continueButtonText}>{t('primer_ach_button_continue')}</Text>
-          )}
-        </TouchableOpacity>
+        />
       </View>
     </View>
   );
 }
 
 function createStyles(tokens: PrimerTokens) {
-  const { colors, radii, spacing, typography } = tokens;
+  const { colors, spacing, typography } = tokens;
   /* eslint-disable react-native/no-unused-styles */
   return StyleSheet.create({
-    continueButton: {
-      alignItems: 'center',
-      backgroundColor: colors.brand,
-      borderRadius: radii.medium,
-      justifyContent: 'center',
-      minHeight: 44,
-      padding: spacing.medium,
-      width: '100%',
-    },
-    continueButtonDisabled: {
-      opacity: 0.5,
-    },
-    continueButtonText: {
-      color: colors.onBrand,
-      fontFamily: typography.titleLarge.fontFamily,
-      fontSize: typography.titleLarge.fontSize,
-      fontWeight: typography.titleLarge.fontWeight as TextStyle['fontWeight'],
-      letterSpacing: typography.titleLarge.letterSpacing,
-      lineHeight: typography.titleLarge.lineHeight,
-      textAlign: 'center',
-    },
     disclaimer: {
       color: colors.textSecondary,
       fontFamily: typography.bodySmall.fontFamily,

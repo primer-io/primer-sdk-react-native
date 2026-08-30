@@ -32,9 +32,18 @@ jest.mock('../../Components/hooks/usePrimerPaymentMethod', () => ({
 
 jest.mock('../../Components/internal/theme', () => ({
   usePrimerTheme: () => ({
-    colors: { backgroundPrimary: '#fff', borderOutlinedDefault: '#ccc', brand: '#08f', textPrimary: '#000' },
+    colors: {
+      backgroundPrimary: '#fff',
+      backgroundOutlinedDisabled: '#eee',
+      borderOutlinedDefault: '#ccc',
+      brand: '#08f',
+      onBrand: '#fff',
+      textDisabled: '#aaa',
+      textPrimary: '#000',
+    },
     spacing: { xsmall: 4, small: 8, medium: 12, large: 16 },
     radii: { medium: 8 },
+    widths: { default: 1, focus: 2, selected: 2, error: 2 },
     typography: {
       titleLarge: { fontFamily: 'system', fontSize: 16, fontWeight: '500', letterSpacing: 0, lineHeight: 20 },
     },
@@ -137,6 +146,9 @@ describe('RawDataFormScreen (ORC-6514)', () => {
     const root = render().root;
 
     expect(payButton(root).props.disabled).toBe(true);
+    // Disabled reads as the grey fill, not a faded brand (ORC-8229).
+    expect(payButton(root).props.style[0].backgroundColor).toBe('#eee');
+    expect(payButton(root).props.style[1]).toEqual({ opacity: 1 });
     act(() => payButton(root).props.onPress());
     expect(mockSubmit).not.toHaveBeenCalled();
     expect(mockReplace).not.toHaveBeenCalled();
@@ -147,6 +159,7 @@ describe('RawDataFormScreen (ORC-6514)', () => {
     const root = render().root;
 
     expect(payButton(root).props.disabled).toBe(false);
+    expect(payButton(root).props.style[0].backgroundColor).toBe('#08f');
     act(() => payButton(root).props.onPress());
     expect(mockReplace).toHaveBeenCalledWith('processing');
     expect(mockSubmit).toHaveBeenCalledTimes(1);

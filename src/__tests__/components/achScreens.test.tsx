@@ -32,9 +32,12 @@ jest.mock('../../Components/internal/theme', () => ({
   usePrimerTheme: () => ({
     colors: {
       backgroundPrimary: '#fff',
+      backgroundOutlinedDisabled: '#eee',
       backgroundSecondary: '#fafafa',
       borderOutlinedDefault: '#ccc',
       brand: '#08f',
+      onBrand: '#fff',
+      textDisabled: '#aaa',
       textPrimary: '#000',
       textSecondary: '#666',
     },
@@ -184,6 +187,8 @@ describe('StripeAchUserDetailsScreen', () => {
     const root = render(createElement(StripeAchUserDetailsScreen));
     const button = continueButton(root);
     expect(button.props.disabled).toBe(true);
+    // Invalid reads as the grey fill, not a faded brand (ORC-8229).
+    expect((button.props.style as Array<Record<string, unknown>>)[0]!.backgroundColor).toBe('#eee');
 
     (button.props.onPress as () => void)();
     expect(mockAchVariant.submit).not.toHaveBeenCalled();
@@ -221,9 +226,12 @@ describe('StripeAchUserDetailsScreen', () => {
     mockAchVariant = baseVariant({ isValid: true, step: 'awaitingBankLink' });
     const root = render(createElement(StripeAchUserDetailsScreen));
 
-    // Spinner replaces the Continue label; the button is disabled.
+    // Spinner replaces the Continue label; the button is disabled but keeps the brand fill (ORC-8229).
     const button = continueButton(root);
     expect(button.props.disabled).toBe(true);
+    const style = button.props.style as Array<Record<string, unknown>>;
+    expect(style[0]!.backgroundColor).toBe('#08f');
+    expect(style[1]).toEqual({ opacity: 1 });
     expect(root.findAllByType('ActivityIndicator')).toHaveLength(1);
 
     // Back affordance is hidden, and a stray back press is a no-op.
@@ -264,6 +272,7 @@ describe('StripeAchMandateScreen', () => {
 
     const [accept, decline] = root.findAllByType('TouchableOpacity');
     expect(accept!.props.disabled).toBe(false);
+    expect((accept!.props.style as Array<Record<string, unknown>>)[0]!.backgroundColor).toBe('#08f');
     (accept!.props.onPress as () => void)();
     expect(acceptAchMandate).toHaveBeenCalledTimes(1);
 
@@ -285,6 +294,11 @@ describe('StripeAchMandateScreen', () => {
     for (const button of buttons) {
       expect(button.props.disabled).toBe(true);
     }
+    // Accept is loading, so it keeps the brand fill; decline is genuinely disabled and dims (ORC-8229).
+    const [accept, decline] = buttons;
+    expect((accept!.props.style as Array<Record<string, unknown>>)[0]!.backgroundColor).toBe('#08f');
+    expect((accept!.props.style as Array<Record<string, unknown>>)[1]).toEqual({ opacity: 1 });
+    expect((decline!.props.style as Array<Record<string, unknown>>)[1]).toEqual({ opacity: 0.5 });
   });
 
   it('renders nothing without a mandate (defensive)', () => {

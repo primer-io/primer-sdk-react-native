@@ -12,6 +12,7 @@ export interface CheckoutButtonProps {
   disabled?: boolean;
   accessibilityLabel?: string;
   accessibilityHint?: string;
+  testID?: string;
 }
 
 export function CheckoutButton({
@@ -22,6 +23,7 @@ export function CheckoutButton({
   disabled = false,
   accessibilityLabel,
   accessibilityHint,
+  testID,
 }: CheckoutButtonProps) {
   const tokens = usePrimerTheme();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
@@ -52,6 +54,7 @@ export function CheckoutButton({
       accessibilityLabel={accessibilityLabel}
       accessibilityHint={accessibilityHint}
       accessibilityState={{ disabled: !isInteractive, busy: loading }}
+      testID={testID}
     >
       {loading ? <ActivityIndicator color={spinnerColor} /> : <Text style={textStyle}>{title}</Text>}
     </TouchableOpacity>
