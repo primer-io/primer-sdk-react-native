@@ -1,7 +1,7 @@
 import { forwardRef, useImperativeHandle, useMemo, useRef, useState, type ComponentRef } from 'react';
 import { Platform, StyleSheet, Text, TextInput, View, type TextStyle } from 'react-native';
 import { usePrimerTheme } from '../internal/theme';
-import { FIELD_HEIGHT, LINE_HEIGHT_RATIO } from './dimensions';
+import { LINE_HEIGHT_RATIO } from './dimensions';
 import type { PrimerTextInputProps, PrimerTextInputRef, PrimerTextInputTheme } from '../types/CardInputTypes';
 import type { PrimerTokens } from '../internal/theme/types';
 
@@ -21,7 +21,7 @@ function resolveTheme(tokens: PrimerTokens, override?: PrimerTextInputTheme) {
     disabledBorderColor: override?.disabledBorderColor ?? tokens.colors.borderOutlinedDisabled,
     errorColor: override?.errorColor ?? tokens.colors.borderOutlinedError,
     errorTextColor: override?.errorTextColor ?? tokens.colors.textNegative,
-    fieldHeight: override?.fieldHeight ?? FIELD_HEIGHT,
+    fieldHeight: override?.fieldHeight ?? tokens.sizes.xxlarge,
     focusedBorderWidth,
     fontFamily: override?.fontFamily ?? tokens.typography.fontFamily,
     fontSize: override?.fontSize ?? tokens.typography.bodyLarge.fontSize,
