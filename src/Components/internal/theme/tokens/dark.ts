@@ -1,3 +1,4 @@
+import { resolveTypography } from '../typography';
 import type { PrimerTokens } from '../types';
 
 // Values derived from iOS dark.json (Style Dictionary generated, dark theme).
@@ -71,51 +72,46 @@ export const defaultDarkTokens: PrimerTokens = {
     xxlarge: 24,
     xxxlarge: 32,
   },
-  typography: {
+  // Each style's font comes from the brand font above unless it names its own.
+  typography: resolveTypography({
     fontFamily: 'Inter',
     titleXLarge: {
       fontSize: 24,
       fontWeight: '600',
       lineHeight: 32,
       letterSpacing: -0.6,
-      fontFamily: 'Inter',
     },
     titleLarge: {
       fontSize: 16,
       fontWeight: '600',
       lineHeight: 20,
       letterSpacing: -0.2,
-      fontFamily: 'Inter',
     },
     bodyLarge: {
       fontSize: 16,
       fontWeight: '400',
       lineHeight: 20,
       letterSpacing: -0.2,
-      fontFamily: 'Inter',
     },
     bodyMedium: {
       fontSize: 14,
       fontWeight: '400',
       lineHeight: 20,
       letterSpacing: 0,
-      fontFamily: 'Inter',
     },
     bodySmall: {
       fontSize: 12,
       fontWeight: '400',
       lineHeight: 16,
       letterSpacing: 0,
-      fontFamily: 'Inter',
     },
     error: {
       fontSize: 12,
       fontWeight: '400',
       lineHeight: 16,
       letterSpacing: 0,
-      fontFamily: 'Inter',
     },
-  },
+  }),
   radii: {
     none: 0,
     xsmall: 2,
