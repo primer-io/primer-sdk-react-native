@@ -92,6 +92,7 @@ export interface PrimerTypographyTokens {
   bodyLarge: PrimerTypographyStyle;
   bodyMedium: PrimerTypographyStyle;
   bodySmall: PrimerTypographyStyle;
+  error: PrimerTypographyStyle;
 }
 
 export interface PrimerRadiusTokens {

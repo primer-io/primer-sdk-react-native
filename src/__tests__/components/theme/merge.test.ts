@@ -67,6 +67,12 @@ describe('mergeTokens', () => {
     expect(result.widths.default).toBe(base.widths.default);
   });
 
+  it('keeps the error text style separate from the body-small label', () => {
+    const result = mergeTokens(base, { typography: { error: { ...base.typography.error, fontSize: 20 } } });
+    expect(result.typography.error.fontSize).toBe(20);
+    expect(result.typography.bodySmall.fontSize).toBe(base.typography.bodySmall.fontSize);
+  });
+
   it('carries the same colour vocabulary as the other SDKs', () => {
     // 53 shared tokens, plus onBrand and overlay which RN needs and the token files do not carry.
     expect(Object.keys(base.colors)).toHaveLength(55);
