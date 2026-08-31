@@ -14,7 +14,7 @@ export function resolveTheme(tokens: PrimerTokens, override?: PrimerTextInputThe
   const borderWidth = override?.borderWidth ?? tokens.widths.default;
   const focusedBorderWidth = Math.max(override?.focusedBorderWidth ?? tokens.widths.focus, borderWidth);
   return {
-    backgroundColor: override?.backgroundColor ?? tokens.colors.backgroundPrimary,
+    backgroundColor: override?.backgroundColor ?? tokens.colors.backgroundOutlinedDefault,
     borderColor: override?.borderColor ?? tokens.colors.borderOutlinedDefault,
     borderRadius: override?.borderRadius ?? tokens.radii.small,
     borderWidth,
@@ -34,7 +34,7 @@ export function resolveTheme(tokens: PrimerTokens, override?: PrimerTextInputThe
     labelFontSize: override?.labelFontSize ?? tokens.typography.bodySmall.fontSize,
     placeholderColor: override?.placeholderColor ?? tokens.colors.textPlaceholder,
     primaryColor: override?.primaryColor ?? tokens.colors.borderOutlinedFocus,
-    textColor: override?.textColor ?? tokens.colors.textPrimary,
+    textColor: override?.textColor ?? tokens.colors.textOutlinedDefault,
   };
 }
 
