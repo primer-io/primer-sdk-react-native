@@ -85,7 +85,14 @@ export interface PrimerTypographyStyle {
   fontFamily: string;
 }
 
+/**
+ * A style a merchant sets. Every field is optional: set only what you want to change and the rest
+ * keeps its default. Leave `fontFamily` out and the style follows the brand font.
+ */
+export type PrimerTypographyStyleOverride = Partial<PrimerTypographyStyle>;
+
 export interface PrimerTypographyTokens {
+  /** The brand font — the default typeface for all six styles. */
   fontFamily: string;
   titleXLarge: PrimerTypographyStyle;
   titleLarge: PrimerTypographyStyle;
@@ -93,6 +100,17 @@ export interface PrimerTypographyTokens {
   bodyMedium: PrimerTypographyStyle;
   bodySmall: PrimerTypographyStyle;
   error: PrimerTypographyStyle;
+}
+
+export interface PrimerTypographyOverride {
+  /** Set once to change the typeface of every style that does not name its own. */
+  fontFamily?: string;
+  titleXLarge?: PrimerTypographyStyleOverride;
+  titleLarge?: PrimerTypographyStyleOverride;
+  bodyLarge?: PrimerTypographyStyleOverride;
+  bodyMedium?: PrimerTypographyStyleOverride;
+  bodySmall?: PrimerTypographyStyleOverride;
+  error?: PrimerTypographyStyleOverride;
 }
 
 export interface PrimerRadiusTokens {
@@ -123,7 +141,7 @@ export interface PrimerThemeOverride {
   light?: {
     colors?: Partial<PrimerColorTokens>;
     spacing?: Partial<PrimerSpacingTokens>;
-    typography?: Partial<PrimerTypographyTokens>;
+    typography?: PrimerTypographyOverride;
     radii?: Partial<PrimerRadiusTokens>;
     sizes?: Partial<PrimerSizeTokens>;
     widths?: Partial<PrimerWidthTokens>;
@@ -131,7 +149,7 @@ export interface PrimerThemeOverride {
   dark?: {
     colors?: Partial<PrimerColorTokens>;
     spacing?: Partial<PrimerSpacingTokens>;
-    typography?: Partial<PrimerTypographyTokens>;
+    typography?: PrimerTypographyOverride;
     radii?: Partial<PrimerRadiusTokens>;
     sizes?: Partial<PrimerSizeTokens>;
     widths?: Partial<PrimerWidthTokens>;
