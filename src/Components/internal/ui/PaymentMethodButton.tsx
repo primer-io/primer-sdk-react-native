@@ -9,6 +9,9 @@ import type { PaymentMethodButtonProps } from '../../types/PrimerPaymentMethodLi
 
 export const PAYMENT_METHOD_BUTTON_HEIGHT = 44;
 const BUTTON_HEIGHT = PAYMENT_METHOD_BUTTON_HEIGHT;
+// the surcharge badge sits on the payment method's own brand colour, which merchant theming
+// doesn't control, so it stays a fixed light value
+const ON_BRAND_SURFACE_TEXT = '#ffffff';
 
 export function PaymentMethodButton({ item, onPress }: PaymentMethodButtonProps) {
   const tokens = usePrimerTheme();
@@ -119,7 +122,7 @@ function createStyles(tokens: PrimerTokens) {
       right: spacing.small,
     },
     surchargeLight: {
-      color: colors.backgroundPrimary,
+      color: ON_BRAND_SURFACE_TEXT,
       fontFamily: typography.bodySmall.fontFamily,
       fontSize: typography.bodySmall.fontSize,
       fontWeight: typography.bodySmall.fontWeight as TextStyle['fontWeight'],
