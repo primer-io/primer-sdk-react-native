@@ -1,5 +1,5 @@
 import { mergeTokens } from '../../../Components/internal/theme/merge';
-import { defaultLightTokens } from '../../../Components/internal/theme/tokens';
+import { defaultDarkTokens, defaultLightTokens } from '../../../Components/internal/theme/tokens';
 import type { PrimerTypographyStyle } from '../../../Components/internal/theme/types';
 
 const base = defaultLightTokens;
@@ -60,7 +60,7 @@ describe('mergeTokens', () => {
     expect(result.spacing.large).toBe(20);
     expect(result.spacing.small).toBe(base.spacing.small);
     expect(result.typography.fontFamily).toBe('Roboto');
-    expect(result.typography.titleXLarge).toEqual(base.typography.titleXLarge);
+    expect(result.typography.titleXLarge).toEqual({ ...base.typography.titleXLarge, fontFamily: 'Roboto' });
     expect(result.radii.medium).toBe(10);
     expect(result.radii.small).toBe(base.radii.small);
     expect(result.widths.focus).toBe(3);
@@ -156,5 +156,58 @@ describe('mergeTokens', () => {
 
     expect(result.colors.textPrimary).toBe(base.colors.textPrimary);
     expect(result.colors.backgroundSecondary).toBe(base.colors.backgroundSecondary);
+  });
+});
+
+describe('brand font', () => {
+  const STYLES = ['titleXLarge', 'titleLarge', 'bodyLarge', 'bodyMedium', 'bodySmall', 'error'] as const;
+
+  const withoutFont = ({ fontSize, fontWeight, lineHeight, letterSpacing }: PrimerTypographyStyle) => ({
+    fontSize,
+    fontWeight,
+    lineHeight,
+    letterSpacing,
+  });
+
+  it('leaves every style on Inter when nothing is set', () => {
+    for (const tokens of [defaultLightTokens, defaultDarkTokens]) {
+      expect(tokens.typography.fontFamily).toBe('Inter');
+      for (const style of STYLES) {
+        expect(tokens.typography[style].fontFamily).toBe('Inter');
+      }
+    }
+
+    expect(mergeTokens(base, { colors: { brand: '#ff0000' } }).typography).toBe(base.typography);
+  });
+
+  it('moves every style the merchant left alone to the brand font', () => {
+    const result = mergeTokens(base, { typography: { fontFamily: 'Roboto' } });
+
+    expect(result.typography.fontFamily).toBe('Roboto');
+    for (const style of STYLES) {
+      expect(result.typography[style]).toEqual({ ...base.typography[style], fontFamily: 'Roboto' });
+    }
+  });
+
+  it("lets a style's own font win over the brand font", () => {
+    const result = mergeTokens(base, {
+      typography: { fontFamily: 'Roboto', error: { ...base.typography.error, fontFamily: 'Menlo' } },
+    });
+
+    expect(result.typography.error.fontFamily).toBe('Menlo');
+    expect(result.typography.bodySmall.fontFamily).toBe('Roboto');
+  });
+
+  it('gives a style set without a font the brand font', () => {
+    const metrics = withoutFont(base.typography.bodyLarge);
+    const result = mergeTokens(base, { typography: { fontFamily: 'Roboto', bodyLarge: { ...metrics, fontSize: 18 } } });
+
+    expect(result.typography.bodyLarge).toEqual({ ...metrics, fontSize: 18, fontFamily: 'Roboto' });
+  });
+
+  it('gives a style set without a font the default font when the brand font is not set', () => {
+    const result = mergeTokens(base, { typography: { bodyLarge: withoutFont(base.typography.bodyLarge) } });
+
+    expect(result.typography.bodyLarge.fontFamily).toBe('Inter');
   });
 });

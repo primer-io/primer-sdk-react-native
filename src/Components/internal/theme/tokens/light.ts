@@ -1,3 +1,4 @@
+import { resolveTypography } from '../typography';
 import type { PrimerTokens } from '../types';
 
 // Values derived from iOS DesignTokens.swift (Style Dictionary generated, light theme).
@@ -70,51 +71,46 @@ export const defaultLightTokens: PrimerTokens = {
     xxlarge: 24, // primerSpaceXxlarge
     xxxlarge: 32, // primerSizeXlarge (scale extension: 8×base)
   },
-  typography: {
+  // Each style's font comes from the brand font above unless it names its own.
+  typography: resolveTypography({
     fontFamily: 'Inter', // primerTypographyBrand
     titleXLarge: {
-      fontFamily: 'Inter', // primerTypographyTitleXlargeFont
       fontSize: 24, // primerTypographyTitleXlargeSize
       fontWeight: '600', // primerTypographyTitleXlargeWeight 550 → nearest RN value
       lineHeight: 32, // primerTypographyTitleXlargeLineHeight
       letterSpacing: -0.6, // primerTypographyTitleXlargeLetterSpacing
     },
     titleLarge: {
-      fontFamily: 'Inter', // primerTypographyTitleLargeFont
       fontSize: 16, // primerTypographyTitleLargeSize
       fontWeight: '600', // primerTypographyTitleLargeWeight 550 → nearest RN value
       lineHeight: 20, // primerTypographyTitleLargeLineHeight
       letterSpacing: -0.2, // primerTypographyTitleLargeLetterSpacing
     },
     bodyLarge: {
-      fontFamily: 'Inter', // primerTypographyBodyLargeFont
       fontSize: 16, // primerTypographyBodyLargeSize
       fontWeight: '400', // primerTypographyBodyLargeWeight
       lineHeight: 20, // primerTypographyBodyLargeLineHeight
       letterSpacing: -0.2, // primerTypographyBodyLargeLetterSpacing
     },
     bodyMedium: {
-      fontFamily: 'Inter', // primerTypographyBodyMediumFont
       fontSize: 14, // primerTypographyBodyMediumSize
       fontWeight: '400', // primerTypographyBodyMediumWeight
       lineHeight: 20, // primerTypographyBodyMediumLineHeight
       letterSpacing: 0, // primerTypographyBodyMediumLetterSpacing
     },
     bodySmall: {
-      fontFamily: 'Inter', // primerTypographyBodySmallFont
       fontSize: 12, // primerTypographyBodySmallSize
       fontWeight: '400', // primerTypographyBodySmallWeight
       lineHeight: 16, // primerTypographyBodySmallLineHeight
       letterSpacing: 0, // primerTypographyBodySmallLetterSpacing
     },
     error: {
-      fontFamily: 'Inter', // primerTypographyErrorFont
       fontSize: 12, // primerTypographyErrorSize
       fontWeight: '400', // primerTypographyErrorWeight
       lineHeight: 16, // primerTypographyErrorLineHeight
       letterSpacing: 0, // primerTypographyErrorLetterSpacing
     },
-  },
+  }),
   radii: {
     none: 0,
     xsmall: 2, // primerRadiusXsmall
