@@ -3,7 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View, type StyleProp, type ViewStyl
 import { usePrimerTheme } from '../internal/theme';
 import type { PrimerTokens } from '../internal/theme';
 import { flagEmoji } from '../internal/flags';
-import { FIELD_HEIGHT, LINE_HEIGHT_RATIO } from './dimensions';
+import { LINE_HEIGHT_RATIO } from './dimensions';
 
 export interface CountrySelectorRowProps {
   /** ISO country code currently selected, or empty if none. */
@@ -76,13 +76,13 @@ export function CountrySelectorRow({
 }
 
 function createStyles(tokens: PrimerTokens) {
-  const { colors, radii, spacing, typography, widths } = tokens;
+  const { colors, radii, sizes, spacing, typography, widths } = tokens;
   /* eslint-disable react-native/no-unused-styles */
   return StyleSheet.create({
     chevron: {
       color: tokens.colors.textSecondary,
       fontSize: typography.bodyLarge.fontSize + 4,
-      lineHeight: FIELD_HEIGHT,
+      lineHeight: sizes.xxlarge,
       marginLeft: spacing.small,
     },
     container: {},
@@ -107,7 +107,7 @@ function createStyles(tokens: PrimerTokens) {
       borderRadius: radii.small,
       borderWidth: widths.default,
       flexDirection: 'row',
-      height: FIELD_HEIGHT,
+      height: sizes.xxlarge,
       paddingHorizontal: spacing.medium,
     },
     rowDisabled: {
