@@ -68,6 +68,9 @@ function createStyles(tokens: PrimerTokens) {
     alignItems: 'center' as const,
     borderRadius: radii.medium,
     justifyContent: 'center' as const,
+    // padding + label line-height already come to 44 at the default tokens, but both are
+    // themable, so the touch-target floor has to be pinned independently
+    minHeight: 44,
     padding: spacing.medium,
     width: '100%' as const,
   };
