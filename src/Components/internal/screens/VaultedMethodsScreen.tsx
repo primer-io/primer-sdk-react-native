@@ -397,6 +397,7 @@ function createStyles(tokens: PrimerTokens) {
     },
     headerIcon: {
       height: HEADER_ICON_SIZE,
+      tintColor: colors.iconPrimary,
       width: HEADER_ICON_SIZE,
     },
     listContent: {
@@ -433,6 +434,7 @@ function createRowStyles(tokens: PrimerTokens, isActive: boolean) {
     },
     checkIcon: {
       height: CHECK_ICON_SIZE,
+      tintColor: colors.brand,
       width: CHECK_ICON_SIZE,
     },
     checkIconBox: {
@@ -449,6 +451,7 @@ function createRowStyles(tokens: PrimerTokens, isActive: boolean) {
     },
     deleteIcon: {
       height: DELETE_ICON_SIZE,
+      tintColor: colors.iconPrimary,
       width: DELETE_ICON_SIZE,
     },
     leftCol: {
@@ -499,7 +502,7 @@ function createRowStyles(tokens: PrimerTokens, isActive: boolean) {
       backgroundColor: colors.backgroundPrimary,
       borderColor: isActive ? colors.brand : colors.borderOutlinedDefault,
       borderRadius: radii.medium,
-      borderWidth: isActive ? widths.focus : widths.default,
+      borderWidth: isActive ? widths.selected : widths.default,
       padding: innerPadding,
     },
     tileFull: {
