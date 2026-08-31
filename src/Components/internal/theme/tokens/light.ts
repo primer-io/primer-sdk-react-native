@@ -107,6 +107,13 @@ export const defaultLightTokens: PrimerTokens = {
       lineHeight: 16, // primerTypographyBodySmallLineHeight
       letterSpacing: 0, // primerTypographyBodySmallLetterSpacing
     },
+    error: {
+      fontFamily: 'Inter', // primerTypographyErrorFont
+      fontSize: 12, // primerTypographyErrorSize
+      fontWeight: '400', // primerTypographyErrorWeight
+      lineHeight: 16, // primerTypographyErrorLineHeight
+      letterSpacing: 0, // primerTypographyErrorLetterSpacing
+    },
   },
   radii: {
     none: 0,
