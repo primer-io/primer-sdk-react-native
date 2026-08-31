@@ -69,6 +69,7 @@ describe('mergeTokens', () => {
 
   it('keeps the error text style separate from the body-small label', () => {
     const result = mergeTokens(base, { typography: { error: { ...base.typography.error, fontSize: 20 } } });
+
     expect(result.typography.error.fontSize).toBe(20);
     expect(result.typography.bodySmall.fontSize).toBe(base.typography.bodySmall.fontSize);
   });

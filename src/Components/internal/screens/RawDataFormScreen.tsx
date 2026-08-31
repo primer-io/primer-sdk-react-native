@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
+import type { TextInputProps } from 'react-native';
 
 import { usePrimerTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
@@ -17,16 +18,29 @@ import { buildRawData } from './buildRawData';
 
 // Field keys are the SDK's input-element-type strings. NOTE the platform split for BLIK's
 // one-time code: iOS reports 'OTP', Android reports 'OTP_CODE' — both are handled.
-const FIELD_LABEL: Record<string, string> = {
-  PHONE_NUMBER: 'Phone number',
-  OTP: 'One-time code',
-  OTP_CODE: 'One-time code',
-  CARD_NUMBER: 'Card number',
-  EXPIRY_DATE: 'Expiry date (MM/YY)',
-  CARDHOLDER_NAME: 'Cardholder name',
+const FIELD_LABEL_KEY: Record<string, string> = {
+  PHONE_NUMBER: 'primer_card_form_label_phone',
+  OTP: 'primer_card_form_label_otp',
+  OTP_CODE: 'primer_card_form_label_otp',
+  CARD_NUMBER: 'primer_card_form_label_number',
+  EXPIRY_DATE: 'primer_card_form_label_expiry',
+  CARDHOLDER_NAME: 'primer_card_form_label_name',
 };
 
 const NUMERIC_FIELDS = new Set<string>(['PHONE_NUMBER', 'OTP', 'OTP_CODE', 'CARD_NUMBER', 'EXPIRY_DATE']);
+
+// Autofill hints and capitalisation, per field. `autoComplete` drives Android, `textContentType`
+// drives iOS, and only the cardholder name wants capitalisation.
+type FieldInputProps = Pick<TextInputProps, 'autoComplete' | 'textContentType' | 'autoCapitalize'>;
+
+const FIELD_INPUT_PROPS: Record<string, FieldInputProps> = {
+  PHONE_NUMBER: { autoComplete: 'tel', textContentType: 'telephoneNumber' },
+  OTP: { autoComplete: 'one-time-code', textContentType: 'oneTimeCode' },
+  OTP_CODE: { autoComplete: 'one-time-code', textContentType: 'oneTimeCode' },
+  CARD_NUMBER: { autoComplete: 'cc-number', textContentType: 'creditCardNumber' },
+  EXPIRY_DATE: { autoComplete: 'cc-exp', textContentType: 'creditCardExpiration' },
+  CARDHOLDER_NAME: { autoComplete: 'cc-name', textContentType: 'creditCardName', autoCapitalize: 'words' },
+};
 
 type FieldValues = Record<string, string>;
 
@@ -91,7 +105,8 @@ export function RawDataFormScreen() {
         showsVerticalScrollIndicator={false}
       >
         {requiredInputs.map((field) => {
-          const label = FIELD_LABEL[field] ?? field;
+          const labelKey = FIELD_LABEL_KEY[field];
+          const label = labelKey ? t(labelKey) : field;
           return (
             <PrimerTextInput
               key={field}
@@ -102,6 +117,7 @@ export function RawDataFormScreen() {
                 field === 'PHONE_NUMBER' ? 'phone-pad' : NUMERIC_FIELDS.has(field) ? 'number-pad' : 'default'
               }
               autoCapitalize="none"
+              {...FIELD_INPUT_PROPS[field]}
             />
           );
         })}
