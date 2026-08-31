@@ -26,15 +26,24 @@ export function CheckoutButton({
   const tokens = usePrimerTheme();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
 
-  const buttonStyle = variant === 'primary' ? styles.primaryButton : styles.outlinedButton;
-  const textStyle = variant === 'primary' ? styles.primaryText : styles.outlinedText;
-  const spinnerColor = variant === 'primary' ? tokens.colors.onBrand : tokens.colors.textPrimary;
   const isInteractive = !disabled && !loading;
   const showDisabledTint = disabled && !loading;
+  const isPrimary = variant === 'primary';
+  const buttonStyle = isPrimary
+    ? showDisabledTint
+      ? styles.primaryButtonDisabled
+      : styles.primaryButton
+    : styles.outlinedButton;
+  const textStyle = isPrimary
+    ? showDisabledTint
+      ? styles.primaryTextDisabled
+      : styles.primaryText
+    : styles.outlinedText;
+  const spinnerColor = isPrimary ? tokens.colors.onBrand : tokens.colors.textPrimary;
 
   return (
     <TouchableOpacity
-      style={[buttonStyle, showDisabledTint ? styles.dimmed : styles.opaque]}
+      style={[buttonStyle, !isPrimary && showDisabledTint ? styles.dimmed : styles.opaque]}
       onPress={onPress}
       disabled={!isInteractive}
       activeOpacity={0.7}
@@ -90,9 +99,17 @@ function createStyles(tokens: PrimerTokens) {
       ...baseButton,
       backgroundColor: colors.brand,
     },
+    primaryButtonDisabled: {
+      ...baseButton,
+      backgroundColor: colors.backgroundOutlinedDisabled,
+    },
     primaryText: {
       ...baseText,
       color: colors.onBrand,
+    },
+    primaryTextDisabled: {
+      ...baseText,
+      color: colors.textDisabled,
     },
   });
   /* eslint-enable react-native/no-unused-styles */
