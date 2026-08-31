@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import type { TextStyle } from 'react-native';
 
 import { usePrimerTheme } from '../theme';
@@ -8,6 +8,7 @@ import { NavigationHeader } from '../navigation/NavigationHeader';
 import { useNavigation } from '../navigation/useNavigation';
 import { usePrimerLocalization } from '../localization';
 import { usePrimerCheckout } from '../../hooks/usePrimerCheckout';
+import { CheckoutButton } from '../ui/CheckoutButton';
 import { useBottomSafeArea } from './useBottomSafeArea';
 
 // Prebuilt ACH mandate screen: accept completes the payment, decline cancels it (→ error screen); no dismiss while mid-flight.
@@ -46,81 +47,29 @@ export function StripeAchMandateScreen() {
         <Text style={styles.mandateText}>{achMandate.text}</Text>
       </ScrollView>
       <View style={[styles.footer, { paddingBottom: Math.max(bottomInset, tokens.spacing.large) }]}>
-        <TouchableOpacity
+        <CheckoutButton
+          title={t('primer_ach_mandate_button_accept')}
           onPress={handleAccept}
-          disabled={answering}
-          activeOpacity={0.7}
-          style={[styles.acceptButton, answering && styles.buttonDisabled]}
-          accessibilityRole="button"
-          accessibilityState={{ disabled: answering, busy: answering }}
+          variant="primary"
+          loading={answering}
           accessibilityHint={t('accessibility_ach_mandate_accept_hint')}
-        >
-          {answering ? (
-            <ActivityIndicator color={tokens.colors.backgroundPrimary} />
-          ) : (
-            <Text style={styles.acceptButtonText}>{t('primer_ach_mandate_button_accept')}</Text>
-          )}
-        </TouchableOpacity>
-        <TouchableOpacity
+        />
+        <CheckoutButton
+          title={t('primer_ach_mandate_button_decline')}
           onPress={handleDecline}
+          variant="outlined"
           disabled={answering}
-          activeOpacity={0.7}
-          style={[styles.declineButton, answering && styles.buttonDisabled]}
-          accessibilityRole="button"
-          accessibilityState={{ disabled: answering }}
           accessibilityHint={t('accessibility_ach_mandate_decline_hint')}
-        >
-          <Text style={styles.declineButtonText}>{t('primer_ach_mandate_button_decline')}</Text>
-        </TouchableOpacity>
+        />
       </View>
     </View>
   );
 }
 
 function createStyles(tokens: PrimerTokens) {
-  const { colors, radii, spacing, typography } = tokens;
+  const { colors, spacing, typography } = tokens;
   /* eslint-disable react-native/no-unused-styles */
   return StyleSheet.create({
-    acceptButton: {
-      alignItems: 'center',
-      backgroundColor: colors.brand,
-      borderRadius: radii.medium,
-      justifyContent: 'center',
-      minHeight: 44,
-      padding: spacing.medium,
-      width: '100%',
-    },
-    acceptButtonText: {
-      color: colors.backgroundPrimary,
-      fontFamily: typography.titleLarge.fontFamily,
-      fontSize: typography.titleLarge.fontSize,
-      fontWeight: typography.titleLarge.fontWeight as TextStyle['fontWeight'],
-      letterSpacing: typography.titleLarge.letterSpacing,
-      lineHeight: typography.titleLarge.lineHeight,
-      textAlign: 'center',
-    },
-    buttonDisabled: {
-      opacity: 0.5,
-    },
-    declineButton: {
-      alignItems: 'center',
-      borderColor: colors.borderOutlinedDefault,
-      borderRadius: radii.medium,
-      borderWidth: StyleSheet.hairlineWidth,
-      justifyContent: 'center',
-      minHeight: 44,
-      padding: spacing.medium,
-      width: '100%',
-    },
-    declineButtonText: {
-      color: colors.textPrimary,
-      fontFamily: typography.titleLarge.fontFamily,
-      fontSize: typography.titleLarge.fontSize,
-      fontWeight: typography.titleLarge.fontWeight as TextStyle['fontWeight'],
-      letterSpacing: typography.titleLarge.letterSpacing,
-      lineHeight: typography.titleLarge.lineHeight,
-      textAlign: 'center',
-    },
     footer: {
       backgroundColor: colors.backgroundPrimary,
       gap: spacing.small,
