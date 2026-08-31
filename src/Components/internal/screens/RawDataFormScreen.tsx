@@ -129,12 +129,12 @@ function createStyles(tokens: PrimerTokens) {
       gap: spacing.xsmall,
     },
     footer: {
-      backgroundColor: colors.background,
+      backgroundColor: colors.backgroundPrimary,
       paddingHorizontal: spacing.large,
       paddingTop: spacing.small,
     },
     input: {
-      borderColor: colors.border,
+      borderColor: colors.borderOutlinedDefault,
       borderRadius: radii.medium,
       borderWidth: StyleSheet.hairlineWidth,
       color: colors.textPrimary,
@@ -153,7 +153,7 @@ function createStyles(tokens: PrimerTokens) {
     },
     payButton: {
       alignItems: 'center',
-      backgroundColor: colors.primary,
+      backgroundColor: colors.brand,
       borderRadius: radii.medium,
       justifyContent: 'center',
       minHeight: 44,
@@ -164,7 +164,7 @@ function createStyles(tokens: PrimerTokens) {
       opacity: 0.5,
     },
     payButtonText: {
-      color: colors.background,
+      color: colors.backgroundPrimary,
       fontFamily: typography.titleLarge.fontFamily,
       fontSize: typography.titleLarge.fontSize,
       fontWeight: typography.titleLarge.fontWeight as TextStyle['fontWeight'],

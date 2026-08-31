@@ -56,7 +56,7 @@ export function StripeAchMandateScreen() {
           accessibilityHint={t('accessibility_ach_mandate_accept_hint')}
         >
           {answering ? (
-            <ActivityIndicator color={tokens.colors.background} />
+            <ActivityIndicator color={tokens.colors.backgroundPrimary} />
           ) : (
             <Text style={styles.acceptButtonText}>{t('primer_ach_mandate_button_accept')}</Text>
           )}
@@ -83,7 +83,7 @@ function createStyles(tokens: PrimerTokens) {
   return StyleSheet.create({
     acceptButton: {
       alignItems: 'center',
-      backgroundColor: colors.primary,
+      backgroundColor: colors.brand,
       borderRadius: radii.medium,
       justifyContent: 'center',
       minHeight: 44,
@@ -91,7 +91,7 @@ function createStyles(tokens: PrimerTokens) {
       width: '100%',
     },
     acceptButtonText: {
-      color: colors.background,
+      color: colors.backgroundPrimary,
       fontFamily: typography.titleLarge.fontFamily,
       fontSize: typography.titleLarge.fontSize,
       fontWeight: typography.titleLarge.fontWeight as TextStyle['fontWeight'],
@@ -104,7 +104,7 @@ function createStyles(tokens: PrimerTokens) {
     },
     declineButton: {
       alignItems: 'center',
-      borderColor: colors.border,
+      borderColor: colors.borderOutlinedDefault,
       borderRadius: radii.medium,
       borderWidth: StyleSheet.hairlineWidth,
       justifyContent: 'center',
@@ -122,7 +122,7 @@ function createStyles(tokens: PrimerTokens) {
       textAlign: 'center',
     },
     footer: {
-      backgroundColor: colors.background,
+      backgroundColor: colors.backgroundPrimary,
       gap: spacing.small,
       paddingHorizontal: spacing.large,
       paddingTop: spacing.small,

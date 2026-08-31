@@ -6,7 +6,8 @@ export type {
   PrimerTypographyTokens,
   PrimerTypographyStyle,
   PrimerRadiusTokens,
-  PrimerBorderTokens,
+  PrimerSizeTokens,
+  PrimerWidthTokens,
   PrimerThemeOverride,
 } from './types';
 // NOTE: ThemeContext is intentionally NOT exported — internal to the theme module only
