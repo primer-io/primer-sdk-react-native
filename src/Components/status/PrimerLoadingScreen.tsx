@@ -23,7 +23,7 @@ export function PrimerLoadingScreen({ title, subtitle, icon }: PrimerLoadingScre
   const resolvedSubtitle = subtitle ?? t('primer_checkout_loading_subtitle');
   const resolvedIcon = icon ?? (
     <View style={styles.iconWrapper}>
-      <ActivityIndicator size="large" color={tokens.colors.brand} style={styles.spinner} />
+      <ActivityIndicator size="large" color={tokens.colors.loader} style={styles.spinner} />
     </View>
   );
 
