@@ -65,7 +65,7 @@ export function BankSelectionScreen() {
       />
       {isLoading && banks.length === 0 ? (
         <View style={styles.loading}>
-          <ActivityIndicator color={tokens.colors.brand} />
+          <ActivityIndicator color={tokens.colors.loader} />
         </View>
       ) : (
         <ScrollView

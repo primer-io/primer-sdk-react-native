@@ -110,7 +110,7 @@ export function StripeAchUserDetailsScreen() {
       </View>
       {isStarting ? (
         <View style={styles.loading}>
-          <ActivityIndicator color={tokens.colors.brand} />
+          <ActivityIndicator color={tokens.colors.loader} />
         </View>
       ) : (
         <ScrollView
