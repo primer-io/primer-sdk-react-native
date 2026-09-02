@@ -102,7 +102,7 @@ function createStyles(tokens: PrimerTokens) {
     },
     row: {
       alignItems: 'center',
-      backgroundColor: colors.backgroundPrimary,
+      backgroundColor: colors.backgroundOutlinedDefault,
       borderColor: colors.borderOutlinedDefault,
       borderRadius: radii.small,
       borderWidth: widths.default,
@@ -115,7 +115,7 @@ function createStyles(tokens: PrimerTokens) {
       borderColor: colors.borderOutlinedDisabled,
     },
     value: {
-      color: colors.textPrimary,
+      color: colors.textOutlinedDefault,
       flex: 1,
       fontFamily: typography.fontFamily,
       fontSize: typography.bodyLarge.fontSize,
