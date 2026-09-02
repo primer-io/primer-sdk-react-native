@@ -50,19 +50,21 @@ jest.mock('../../Components/hooks/usePrimerVaultManager', () => ({
 jest.mock('../../Components/internal/theme', () => ({
   usePrimerTheme: () => ({
     colors: {
-      background: '#fff',
-      surface: '#fafafa',
-      border: '#ccc',
-      primary: '#08f',
+      backgroundPrimary: '#fff',
+      backgroundSecondary: '#fafafa',
+      borderOutlinedDefault: '#ccc',
+      brand: '#08f',
       textPrimary: '#000',
       textSecondary: '#666',
     },
     spacing: { xxsmall: 2, xsmall: 4, small: 8, medium: 12, large: 16, xlarge: 20, xxlarge: 24 },
     radii: { small: 4, medium: 8, large: 12 },
-    borders: { input: 1, default: 1, strong: 2 },
+    sizes: { small: 16, medium: 20, large: 24, xlarge: 32, xxlarge: 40, xxxlarge: 56, base: 4 },
+    widths: { default: 1, focus: 2, selected: 2, error: 2 },
     typography: {
       fontFamily: 'system',
       bodySmall: { fontFamily: 'system', fontSize: 12, fontWeight: '400', letterSpacing: 0, lineHeight: 16 },
+      error: { fontFamily: 'system', fontSize: 12, fontWeight: '400', letterSpacing: 0, lineHeight: 16 },
       bodyMedium: { fontFamily: 'system', fontSize: 14, fontWeight: '400', letterSpacing: 0, lineHeight: 18 },
       bodyLarge: { fontFamily: 'system', fontSize: 16, fontWeight: '400', letterSpacing: 0, lineHeight: 20 },
       titleLarge: { fontFamily: 'system', fontSize: 16, fontWeight: '500', letterSpacing: 0, lineHeight: 20 },

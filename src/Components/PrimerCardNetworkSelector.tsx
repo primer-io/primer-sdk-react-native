@@ -92,7 +92,10 @@ export function PrimerCardNetworkSelector({ testID }: PrimerCardNetworkSelectorP
                     console.warn(`${LOG} selectNetwork failed: ${String(err)}`);
                   }
                 }}
-                style={({ pressed }) => [styles.option, pressed ? { backgroundColor: tokens.colors.surface } : null]}
+                style={({ pressed }) => [
+                  styles.option,
+                  pressed ? { backgroundColor: tokens.colors.backgroundSecondary } : null,
+                ]}
                 accessibilityRole="button"
                 accessibilityState={{ selected: isSelected }}
                 accessibilityLabel={n.displayName}

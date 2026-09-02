@@ -38,7 +38,10 @@ export function PrimerAcceptedCardNetworks({
       {chips.map((chip) => (
         <View
           key={chip.network}
-          style={[styles.chip, { backgroundColor: tokens.colors.surface, borderRadius: tokens.radii.xsmall }]}
+          style={[
+            styles.chip,
+            { backgroundColor: tokens.colors.backgroundSecondary, borderRadius: tokens.radii.xsmall },
+          ]}
           testID={`${testID}-chip-${chip.network}`}
         >
           {chip.iconUri ? (
