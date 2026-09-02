@@ -38,6 +38,8 @@ export interface PrimerTextInputProps {
   maxLength?: number;
   secureTextEntry?: boolean;
   autoComplete?: TextInputProps['autoComplete'];
+  /** iOS autofill hint; `autoComplete` covers Android. */
+  textContentType?: TextInputProps['textContentType'];
   autoCapitalize?: TextInputProps['autoCapitalize'];
   label?: string;
   showLabel?: boolean;
