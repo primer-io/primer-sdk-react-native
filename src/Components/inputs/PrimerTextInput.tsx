@@ -13,6 +13,7 @@ export const PRIMER_EMPTY_ACCESSORY_ID = 'primer-empty-input-accessory';
 export function resolveTheme(tokens: PrimerTokens, override?: PrimerTextInputTheme) {
   const borderWidth = override?.borderWidth ?? tokens.widths.default;
   const focusedBorderWidth = Math.max(override?.focusedBorderWidth ?? tokens.widths.focus, borderWidth);
+  const errorBorderWidth = Math.max(override?.errorBorderWidth ?? tokens.widths.error, borderWidth);
   return {
     backgroundColor: override?.backgroundColor ?? tokens.colors.backgroundOutlinedDefault,
     borderColor: override?.borderColor ?? tokens.colors.borderOutlinedDefault,
@@ -27,6 +28,7 @@ export function resolveTheme(tokens: PrimerTokens, override?: PrimerTextInputThe
     errorFontFamily: override?.errorFontFamily ?? override?.fontFamily ?? tokens.typography.error.fontFamily,
     errorFontSize: override?.errorFontSize ?? override?.labelFontSize ?? tokens.typography.error.fontSize,
     fieldHeight: override?.fieldHeight ?? tokens.sizes.xxlarge,
+    errorBorderWidth,
     focusedBorderWidth,
     fontFamily: override?.fontFamily ?? tokens.typography.fontFamily,
     fontSize: override?.fontSize ?? tokens.typography.bodyLarge.fontSize,
@@ -98,7 +100,11 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
   );
 
   const hasError = !!error;
-  const currentBorderWidth = isFocused || hasError ? resolved.focusedBorderWidth : resolved.borderWidth;
+  const currentBorderWidth = hasError
+    ? resolved.errorBorderWidth
+    : isFocused
+      ? resolved.focusedBorderWidth
+      : resolved.borderWidth;
   const borderWidthDiff = currentBorderWidth - resolved.borderWidth;
 
   // Error takes precedence over focus — the validation signal is more important than the

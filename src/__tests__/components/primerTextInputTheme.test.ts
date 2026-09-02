@@ -27,4 +27,11 @@ describe('PrimerTextInput resolveTheme', () => {
     expect(r.errorFontFamily).toBe('Menlo');
     expect(r.errorFontSize).toBe(9);
   });
+
+  it('gives error and focus their own widths, both clamped to at least the resting width', () => {
+    const r = resolveTheme(defaultLightTokens, { borderWidth: 5 });
+
+    expect(r.errorBorderWidth).toBe(5);
+    expect(r.focusedBorderWidth).toBe(5);
+  });
 });
