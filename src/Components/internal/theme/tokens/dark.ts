@@ -1,3 +1,4 @@
+import { resolveTypography } from '../typography';
 import type { PrimerTokens } from '../types';
 
 // Values derived from iOS dark.json (Style Dictionary generated, dark theme).
@@ -71,51 +72,46 @@ export const defaultDarkTokens: PrimerTokens = {
     xxlarge: 24,
     xxxlarge: 32,
   },
-  typography: {
-    fontFamily: 'Inter', // primerTypographyBrand
+  // Each style's font comes from the brand font above unless it names its own.
+  typography: resolveTypography({
+    fontFamily: 'Inter',
     titleXLarge: {
-      fontFamily: 'Inter', // primerTypographyTitleXlargeFont
       fontSize: 24,
       fontWeight: '600',
       lineHeight: 32,
       letterSpacing: -0.6,
     },
     titleLarge: {
-      fontFamily: 'Inter', // primerTypographyTitleLargeFont
       fontSize: 16,
       fontWeight: '600',
       lineHeight: 20,
       letterSpacing: -0.2,
     },
     bodyLarge: {
-      fontFamily: 'Inter', // primerTypographyBodyLargeFont
       fontSize: 16,
       fontWeight: '400',
       lineHeight: 20,
       letterSpacing: -0.2,
     },
     bodyMedium: {
-      fontFamily: 'Inter', // primerTypographyBodyMediumFont
       fontSize: 14,
       fontWeight: '400',
       lineHeight: 20,
       letterSpacing: 0,
     },
     bodySmall: {
-      fontFamily: 'Inter', // primerTypographyBodySmallFont
       fontSize: 12,
       fontWeight: '400',
       lineHeight: 16,
       letterSpacing: 0,
     },
     error: {
-      fontFamily: 'Inter', // primerTypographyErrorFont
-      fontSize: 12, // primerTypographyErrorSize
-      fontWeight: '400', // primerTypographyErrorWeight
-      lineHeight: 16, // primerTypographyErrorLineHeight
-      letterSpacing: 0, // primerTypographyErrorLetterSpacing
+      fontSize: 12,
+      fontWeight: '400',
+      lineHeight: 16,
+      letterSpacing: 0,
     },
-  },
+  }),
   radii: {
     none: 0,
     xsmall: 2,

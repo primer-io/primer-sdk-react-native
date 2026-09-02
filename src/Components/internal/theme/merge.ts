@@ -1,4 +1,13 @@
-import type { PrimerTokens, PrimerThemeOverride, PrimerColorTokens } from './types';
+import { resolveTypography, TYPOGRAPHY_STYLES } from './typography';
+import type { PrimerTypographyStyleName, PrimerTypographySource } from './typography';
+import type {
+  PrimerTokens,
+  PrimerThemeOverride,
+  PrimerColorTokens,
+  PrimerTypographyOverride,
+  PrimerTypographyStyleOverride,
+  PrimerTypographyTokens,
+} from './types';
 
 type ModeOverride = PrimerThemeOverride['light'];
 
@@ -66,6 +75,21 @@ function mergeColors(base: PrimerColorTokens, override: Partial<PrimerColorToken
   return merged;
 }
 
+function mergeTypography(base: PrimerTypographyTokens, override: PrimerTypographyOverride): PrimerTypographyTokens {
+  const set = stripNullish(override);
+  const fontFamily = set.fontFamily ?? base.fontFamily;
+  const styles = {} as Record<PrimerTypographyStyleName, PrimerTypographyStyleOverride>;
+
+  for (const name of TYPOGRAPHY_STYLES) {
+    // A style that was following the brand font keeps following it, so drop its font and re-resolve.
+    const { fontFamily: current, ...metrics } = base[name];
+    styles[name] = set[name] ?? (current === base.fontFamily ? metrics : base[name]);
+  }
+
+  const source: PrimerTypographySource = { fontFamily, ...styles };
+  return resolveTypography(source);
+}
+
 export function mergeTokens(base: PrimerTokens, override: ModeOverride): PrimerTokens {
   if (override == null) {
     return base;
@@ -74,7 +98,7 @@ export function mergeTokens(base: PrimerTokens, override: ModeOverride): PrimerT
   return {
     colors: override.colors ? mergeColors(base.colors, override.colors) : base.colors,
     spacing: override.spacing ? { ...base.spacing, ...stripNullish(override.spacing) } : base.spacing,
-    typography: override.typography ? { ...base.typography, ...stripNullish(override.typography) } : base.typography,
+    typography: override.typography ? mergeTypography(base.typography, override.typography) : base.typography,
     radii: override.radii ? { ...base.radii, ...stripNullish(override.radii) } : base.radii,
     sizes: override.sizes ? { ...base.sizes, ...stripNullish(override.sizes) } : base.sizes,
     widths: override.widths ? { ...base.widths, ...stripNullish(override.widths) } : base.widths,
