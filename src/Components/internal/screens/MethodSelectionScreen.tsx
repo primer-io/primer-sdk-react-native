@@ -264,6 +264,7 @@ function createStyles(tokens: PrimerTokens) {
     },
     showAllIcon: {
       height: CHEVRON_ICON_SIZE,
+      tintColor: colors.iconPrimary,
       width: CHEVRON_ICON_SIZE,
     },
     showAllLabel: {

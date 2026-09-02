@@ -4,6 +4,7 @@ import { PrimerTextInput } from './PrimerTextInput';
 import { caretFromDigitIndex, countDigits, countDigitsBefore, targetDigitIndex } from './caret';
 import { TRAILING_ICON_MARGIN, TRAILING_ICON_SIZE } from './dimensions';
 import { usePrimerLocalization } from '../internal/localization';
+import { usePrimerTheme } from '../internal/theme';
 import { usePrimerCardForm } from '../hooks/usePrimerCardForm';
 import type { PrimerExpiryDateInputProps, PrimerTextInputRef } from '../types/CardInputTypes';
 
@@ -15,6 +16,7 @@ export const PrimerExpiryDateInput = forwardRef<PrimerTextInputRef, PrimerExpiry
   function PrimerExpiryDateInput({ placeholder, label, ...rest }, ref) {
     const cardForm = usePrimerCardForm();
     const { t } = usePrimerLocalization();
+    const tokens = usePrimerTheme();
     const resolvedLabel = label ?? t('primer_card_form_label_expiry');
     const resolvedPlaceholder = placeholder ?? t('primer_card_form_placeholder_expiry');
     const innerRef = useRef<PrimerTextInputRef>(null);
@@ -81,7 +83,7 @@ export const PrimerExpiryDateInput = forwardRef<PrimerTextInputRef, PrimerExpiry
         trailingContent={
           <Image
             source={calendarSource}
-            style={styles.icon}
+            style={[styles.icon, { tintColor: tokens.colors.iconPrimary }]}
             resizeMode="contain"
             testID={rest.testID ? `${rest.testID}-calendar-icon` : undefined}
           />
