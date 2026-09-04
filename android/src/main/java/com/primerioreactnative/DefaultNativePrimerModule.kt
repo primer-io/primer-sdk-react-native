@@ -33,7 +33,6 @@ internal open class DefaultNativePrimerModule(
         mListener.sendEvent = { eventName, paramsJson -> sendEvent(eventName, paramsJson) }
         mListener.sendError = { paramsJson -> onError(paramsJson) }
         mListener.sendErrorWithCheckoutData = { paramsJson, checkoutData -> onError(paramsJson, checkoutData) }
-        mListener.onDismissedEvent = { Primer.instance.dismiss(true) }
     }
 
     open fun sendEvent(
@@ -141,12 +140,12 @@ internal open class DefaultNativePrimerModule(
     }
 
     fun dismiss(promise: Promise) {
-        Primer.instance.dismiss(true)
+        Primer.instance.dismiss(false)
         promise.resolve(null)
     }
 
     fun cleanUp(promise: Promise) {
-        Primer.instance.dismiss(true)
+        Primer.instance.dismiss(false)
         promise.resolve(null)
     }
 
