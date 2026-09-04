@@ -33,6 +33,7 @@ class PrimerHeadlessUniversalCheckoutRawDataManager {
   ///////////////////////////////////////////
 
   async configure(options: RawDataManagerProps): Promise<{ initializationData: PrimerInitializationData } | void> {
+    this.removeAllListeners();
     return new Promise(async (resolve, reject) => {
       try {
         this.options = options;

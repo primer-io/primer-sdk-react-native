@@ -124,5 +124,27 @@ describe('RawDataManager', () => {
 
       created.forEach((subscription) => expect(subscription.remove).toHaveBeenCalledTimes(1));
     });
+
+    it('a second configure() drains the first one instead of stacking a duplicate listener set', async () => {
+      const created: Array<{ remove: jest.Mock }> = [];
+      mockAddListener.mockImplementation(() => {
+        const subscription = { remove: jest.fn() };
+        created.push(subscription);
+        return subscription;
+      });
+      const props = {
+        paymentMethodType: 'PAYMENT_CARD',
+        onMetadataChange: jest.fn(),
+        onValidation: jest.fn(),
+        onBinDataChange: jest.fn(),
+      };
+
+      await manager.configure(props);
+      await manager.configure(props);
+
+      expect(created).toHaveLength(6);
+      created.slice(0, 3).forEach((subscription) => expect(subscription.remove).toHaveBeenCalledTimes(1));
+      created.slice(3).forEach((subscription) => expect(subscription.remove).not.toHaveBeenCalled());
+    });
   });
 });
