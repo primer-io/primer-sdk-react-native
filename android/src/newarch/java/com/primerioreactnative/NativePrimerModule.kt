@@ -118,4 +118,9 @@ class NativePrimerModule(private val reactContext: ReactApplicationContext, priv
     const val EVENT_TYPE_KEY = "eventType"
     const val DATA_KEY = "data"
   }
+
+  override fun invalidate() {
+    super.invalidate()
+    implementation.invalidate()
+  }
 }

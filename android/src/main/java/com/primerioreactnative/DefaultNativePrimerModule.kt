@@ -28,6 +28,7 @@ internal open class DefaultNativePrimerModule(
     private val eventSender: (String, WritableMap) -> Unit,
 ) {
     private val mListener = PrimerRNEventListener()
+    private var listenerAttached = false
 
     init {
         mListener.sendEvent = { eventName, paramsJson -> sendEvent(eventName, paramsJson) }
@@ -140,13 +141,21 @@ internal open class DefaultNativePrimerModule(
     }
 
     fun dismiss(promise: Promise) {
-        Primer.instance.dismiss(false)
+        Primer.instance.dismiss()
         promise.resolve(null)
     }
 
     fun cleanUp(promise: Promise) {
-        Primer.instance.dismiss(false)
+        Primer.instance.dismiss()
         promise.resolve(null)
+    }
+
+    // The SDK holds this module's listener until told otherwise, so release it when
+    // React Native disposes the module.
+    fun invalidate() {
+        if (!listenerAttached) return
+        listenerAttached = false
+        Primer.instance.cleanup(cleanClientSessionCache = false)
     }
 
     // region tokenization handlers
@@ -239,6 +248,7 @@ internal open class DefaultNativePrimerModule(
 
     private fun startSdk(settings: PrimerSettings) {
         Primer.instance.configure(settings, mListener)
+        listenerAttached = true
     }
 
     private fun onError(

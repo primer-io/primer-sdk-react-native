@@ -138,4 +138,9 @@ class NativePrimerModule(private val reactContext: ReactApplicationContext, priv
 
   @ReactMethod
   fun removeListeners(count: Int?) = Unit
+
+  override fun invalidate() {
+    super.invalidate()
+    implementation.invalidate()
+  }
 }
