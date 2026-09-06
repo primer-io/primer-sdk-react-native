@@ -9,7 +9,7 @@ import kotlinx.serialization.json.Json
 @ReactModule(name = DefaultNativePrimerModule.NAME)
 class NativePrimerModule(private val reactContext: ReactApplicationContext, private val json: Json) :
   NativePrimerSpec(reactContext) {
-  private val implementation by lazy {
+  private val lazyImplementation = lazy {
     DefaultNativePrimerModule(
       reactContext = reactContext,
       json = json,
@@ -20,6 +20,7 @@ class NativePrimerModule(private val reactContext: ReactApplicationContext, priv
       }
     )
   }
+  private val implementation by lazyImplementation
 
   override fun configure(settings: String?, promise: Promise) {
     implementation.configure(settingsStr = settings, promise = promise)
@@ -121,6 +122,6 @@ class NativePrimerModule(private val reactContext: ReactApplicationContext, priv
 
   override fun invalidate() {
     super.invalidate()
-    implementation.invalidate()
+    if (lazyImplementation.isInitialized()) implementation.invalidate()
   }
 }

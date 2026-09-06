@@ -150,8 +150,7 @@ internal open class DefaultNativePrimerModule(
         promise.resolve(null)
     }
 
-    // The SDK holds this module's listener until told otherwise, so release it when
-    // React Native disposes the module.
+    // The SDK holds our listener until told otherwise.
     fun invalidate() {
         if (!listenerAttached) return
         listenerAttached = false
