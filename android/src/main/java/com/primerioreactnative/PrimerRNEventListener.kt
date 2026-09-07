@@ -42,7 +42,6 @@ class PrimerRNEventListener : PrimerCheckoutListener {
     var sendError: ((error: PrimerErrorRN) -> Unit)? = null
     var sendErrorWithCheckoutData: ((error: PrimerErrorRN, checkoutData: PrimerCheckoutDataRN?) -> Unit)? =
         null
-    var onDismissedEvent: (() -> Unit)? = null
 
     override fun onCheckoutCompleted(checkoutData: PrimerCheckoutData) {
         if (implementedRNCallbacks?.isOnCheckoutCompleteImplemented == true) {
@@ -201,7 +200,6 @@ class PrimerRNEventListener : PrimerCheckoutListener {
             )
         }
 
-        onDismissedEvent?.invoke()
         removeCallbacksAndHandlers()
     }
 

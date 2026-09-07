@@ -11,7 +11,7 @@ import kotlinx.serialization.json.Json
 @ReactModule(name = DefaultNativePrimerModule.NAME)
 class NativePrimerModule(private val reactContext: ReactApplicationContext, private val json: Json) :
   ReactContextBaseJavaModule(reactContext) {
-  private val implementation by lazy {
+  private val lazyImplementation = lazy {
     DefaultNativePrimerModule(
       reactContext = reactContext,
       json = json,
@@ -22,6 +22,7 @@ class NativePrimerModule(private val reactContext: ReactApplicationContext, priv
       }
     )
   }
+  private val implementation by lazyImplementation
 
   override fun getName(): String {
     return DefaultNativePrimerModule.NAME
@@ -138,4 +139,9 @@ class NativePrimerModule(private val reactContext: ReactApplicationContext, priv
 
   @ReactMethod
   fun removeListeners(count: Int?) = Unit
+
+  override fun invalidate() {
+    super.invalidate()
+    if (lazyImplementation.isInitialized()) implementation.invalidate()
+  }
 }
