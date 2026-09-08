@@ -7,8 +7,8 @@ import type {
   PrimerValidatingComponentData,
 } from '../../../models/PrimerComponentDataValidation';
 import { PrimerError } from '../../../models/PrimerError';
-import { eventTypes } from './Utils/EventType';
 import type { EventType } from './Utils/EventType';
+import { subscribeToComponentEvents } from './Utils/subscribeToComponentEvents';
 import type { AchStep } from '../../../models/ach/AchSteps';
 import type { AchValidatableData } from '../../../models/ach/AchCollectableData';
 
@@ -59,6 +59,8 @@ export interface StripeAchUserDetailsComponent {
 }
 
 export class PrimerHeadlessUniversalCheckoutAchManager {
+  private subscriptions: EmitterSubscription[] = [];
+
   ///////////////////////////////////////////
   // Init
   ///////////////////////////////////////////
@@ -69,6 +71,7 @@ export class PrimerHeadlessUniversalCheckoutAchManager {
   ///////////////////////////////////////////
 
   async provide(props: AchManagerProps): Promise<StripeAchUserDetailsComponent | any> {
+    this.removeAllListeners();
     await this.configureListeners(props);
 
     if (props.paymentMethodType === 'STRIPE_ACH') {
@@ -97,41 +100,10 @@ export class PrimerHeadlessUniversalCheckoutAchManager {
   }
 
   private async configureListeners(props: AchManagerProps): Promise<void> {
-    if (props?.onStep) {
-      this.addListener('onStep', (data) => {
-        props.onStep?.(data);
-      });
-    }
-
-    if (props?.onInvalid) {
-      this.addListener('onInvalid', (data) => {
-        props.onInvalid?.(data);
-      });
-    }
-
-    if (props?.onError) {
-      this.addListener('onError', (data) => {
-        props.onError?.(data);
-      });
-    }
-
-    if (props?.onValid) {
-      this.addListener('onValid', (data) => {
-        props.onValid?.(data);
-      });
-    }
-
-    if (props?.onValidating) {
-      this.addListener('onValidating', (data) => {
-        props.onValidating?.(data);
-      });
-    }
-
-    if (props?.onValidationError) {
-      this.addListener('onValidationError', (data) => {
-        props.onValidationError?.(data);
-      });
-    }
+    const subscriptions = await subscribeToComponentEvents<AchStep, AchValidatableData>(props, (eventType, listener) =>
+      this.addListener(eventType, listener)
+    );
+    this.subscriptions.push(...subscriptions);
   }
 
   ///////////////////////////////////////////
@@ -151,6 +123,7 @@ export class PrimerHeadlessUniversalCheckoutAchManager {
   }
 
   removeAllListeners() {
-    eventTypes.forEach((eventType) => this.removeAllListenersForEvent(eventType));
+    this.subscriptions.forEach((subscription) => subscription.remove());
+    this.subscriptions = [];
   }
 }

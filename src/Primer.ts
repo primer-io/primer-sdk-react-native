@@ -308,14 +308,12 @@ export const Primer: IPrimer = {
   cleanUp(): void {
     RNPrimerHeadlessUniversalCheckout.removeAllListeners();
     RNPrimer.removeAllListeners();
-    primerSettings = undefined;
     RNPrimer.dismiss();
   },
 
   dismiss(): void {
     RNPrimerHeadlessUniversalCheckout.removeAllListeners();
     RNPrimer.removeAllListeners();
-    primerSettings = undefined;
     RNPrimer.dismiss();
   },
 };

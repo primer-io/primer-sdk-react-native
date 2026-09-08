@@ -21,43 +21,25 @@ type EventType =
   | 'onPreparationStart'
   | 'onPaymentMethodShow';
 
-const eventTypes: EventType[] = [
-  'onAvailablePaymentMethodsLoad',
-  'onTokenizationStart',
-  'onTokenizationSuccess',
-
-  'onCheckoutResume',
-  'onCheckoutPending',
-  'onCheckoutAdditionalInfo',
-
-  'onError',
-  'onCheckoutComplete',
-  'onBeforeClientSessionUpdate',
-
-  'onClientSessionUpdate',
-  'onBeforePaymentCreate',
-  'onPreparationStart',
-
-  'onPaymentMethodShow',
-];
+let subscriptions: EventSubscription[] = [];
 
 const RNPrimerHeadlessUniversalCheckout = {
   ///////////////////////////////////////////
   // Event Emitter
   ///////////////////////////////////////////
   addListener(eventType: EventType, listener: (...args: any[]) => any): EventSubscription {
-    return eventEmitter.addListener(eventType, listener);
+    const subscription = eventEmitter.addListener(eventType, listener);
+    subscriptions.push(subscription);
+    return subscription;
   },
 
   removeListener(subscription: EmitterSubscription): void {
     return subscription.remove();
   },
-  removeAllListenersForEvent(eventType: EventType) {
-    eventEmitter.removeAllListeners(eventType);
-  },
 
   removeAllListeners() {
-    eventTypes.forEach((eventType) => RNPrimerHeadlessUniversalCheckout.removeAllListenersForEvent(eventType));
+    subscriptions.forEach((subscription) => subscription.remove());
+    subscriptions = [];
   },
 
   ///////////////////////////////////////////
