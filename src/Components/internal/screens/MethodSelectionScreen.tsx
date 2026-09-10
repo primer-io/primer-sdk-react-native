@@ -31,9 +31,6 @@ const LOG = '[MethodSelectionScreen]';
 // Outer grey padding + tile padding are added into sheetHeight separately below.
 const VAULT_TILE_CONTENT_HEIGHT = 44;
 
-// Matches `FIELD_HEIGHT` in `Components/inputs/dimensions.ts`.
-const VAULT_TILE_CVV_ROW_HEIGHT = 44;
-
 const CHEVRON_ICON_SIZE = 20;
 const chevronDownIcon = require('./assets/chevron-down.png');
 
@@ -75,7 +72,8 @@ export function MethodSelectionScreen() {
   //   (+ inner-tile gap + CVV row, when CVV state is open)
   //   + tile-to-button gap + Pay button (CheckoutButton: padding.medium*2 + titleLarge lineHeight)
   //   + section-to-APM gap.
-  const cvvExtraHeight = cvvInputVisible ? tokens.spacing.medium + VAULT_TILE_CVV_ROW_HEIGHT : 0;
+  // CVV row height is the height of the input field it wraps.
+  const cvvExtraHeight = cvvInputVisible ? tokens.spacing.medium + tokens.sizes.xxlarge : 0;
   const vaultSectionHeight =
     activeVaultedMethod != null
       ? titleArea +
