@@ -124,7 +124,9 @@ export function PrimerCardNetworkSelector({ testID }: PrimerCardNetworkSelectorP
                   {n.displayName}
                 </Text>
               </Pressable>
-              {isLast ? null : <View style={styles.separator} />}
+              {isLast ? null : (
+                <View style={[styles.separator, { backgroundColor: tokens.colors.borderOutlinedDefault }]} />
+              )}
             </View>
           );
         })}
@@ -154,9 +156,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
   },
-  // eslint-disable-next-line react-native/no-color-literals
   separator: {
-    backgroundColor: '#8080808C',
     height: StyleSheet.hairlineWidth,
     marginLeft: 16,
   },
