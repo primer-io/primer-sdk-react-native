@@ -194,6 +194,8 @@
   "primer_country_placeholder_search": "Hľadať",
   "primer_country_selector_placeholder": "Výber krajiny",
   "primer_country_title": "Vybrať krajinu",
+  "primer_form_redirect_otp_code_invalid": "Enter a valid 6-digit code",
+  "primer_form_redirect_ovo_phone_helper": "Enter the phone number registered with your OVO account.",
   "primer_klarna_button_authorize": "Pokračovať",
   "primer_klarna_button_finalize": "Zaplatiť",
   "primer_klarna_loading_subtitle": "Môže to trvať niekoľko sekúnd.",
