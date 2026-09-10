@@ -174,7 +174,7 @@ function createStyles(tokens: PrimerTokens) {
     },
     categoryRow: {
       alignItems: 'center',
-      borderColor: colors.border,
+      borderColor: colors.borderOutlinedDefault,
       borderRadius: radii.medium,
       borderWidth: StyleSheet.hairlineWidth,
       flexDirection: 'row',
@@ -183,7 +183,7 @@ function createStyles(tokens: PrimerTokens) {
       padding: spacing.medium,
     },
     categoryRowSelected: {
-      borderColor: colors.primary,
+      borderColor: colors.brand,
       borderWidth: 2,
     },
     description: {
@@ -194,7 +194,7 @@ function createStyles(tokens: PrimerTokens) {
       lineHeight: typography.bodyMedium.lineHeight,
     },
     footer: {
-      backgroundColor: colors.background,
+      backgroundColor: colors.backgroundPrimary,
       paddingHorizontal: spacing.large,
       paddingTop: spacing.small,
     },
@@ -206,14 +206,14 @@ function createStyles(tokens: PrimerTokens) {
       justifyContent: 'center',
     },
     radioCircle: {
-      borderColor: colors.primary,
+      borderColor: colors.brand,
       borderRadius: 10,
       borderWidth: 2,
       height: 20,
       width: 20,
     },
     radioCircleSelected: {
-      backgroundColor: colors.primary,
+      backgroundColor: colors.brand,
     },
     root: {
       flex: 1,

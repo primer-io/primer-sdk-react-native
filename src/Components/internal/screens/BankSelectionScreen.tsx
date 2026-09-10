@@ -64,7 +64,7 @@ export function BankSelectionScreen() {
       />
       {isLoading && banks.length === 0 ? (
         <View style={styles.loading}>
-          <ActivityIndicator color={tokens.colors.primary} />
+          <ActivityIndicator color={tokens.colors.brand} />
         </View>
       ) : (
         <ScrollView
@@ -133,7 +133,7 @@ function createStyles(tokens: PrimerTokens) {
     },
     bankRow: {
       alignItems: 'center',
-      borderColor: colors.border,
+      borderColor: colors.borderOutlinedDefault,
       borderRadius: radii.medium,
       borderWidth: StyleSheet.hairlineWidth,
       flexDirection: 'row',
@@ -145,11 +145,11 @@ function createStyles(tokens: PrimerTokens) {
       opacity: 0.4,
     },
     bankRowSelected: {
-      borderColor: colors.primary,
+      borderColor: colors.brand,
       borderWidth: 2,
     },
     footer: {
-      backgroundColor: colors.background,
+      backgroundColor: colors.backgroundPrimary,
       paddingHorizontal: spacing.large,
       paddingTop: spacing.small,
     },
@@ -160,7 +160,7 @@ function createStyles(tokens: PrimerTokens) {
     },
     payButton: {
       alignItems: 'center',
-      backgroundColor: colors.primary,
+      backgroundColor: colors.brand,
       borderRadius: radii.medium,
       justifyContent: 'center',
       minHeight: 44,
@@ -171,7 +171,7 @@ function createStyles(tokens: PrimerTokens) {
       opacity: 0.5,
     },
     payButtonText: {
-      color: colors.background,
+      color: colors.backgroundPrimary,
       fontFamily: typography.titleLarge.fontFamily,
       fontSize: typography.titleLarge.fontSize,
       fontWeight: typography.titleLarge.fontWeight as TextStyle['fontWeight'],

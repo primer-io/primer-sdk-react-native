@@ -10,7 +10,7 @@ export interface PrimerTextInputTheme {
   disabledBackgroundColor?: string;
   borderColor?: string;
   disabledBorderColor?: string;
-  /** Border color used when the input has an error. Falls back to the semantic `colors.borderError` token. */
+  /** Border color used when the input has an error. Falls back to the semantic `colors.borderOutlinedError` token. */
   errorColor?: string;
   /** Color for the helper/error text below the input. Falls back to the semantic `colors.textNegative` token. */
   errorTextColor?: string;

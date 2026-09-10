@@ -42,7 +42,7 @@ export function PrimerPaymentMethodList({
   if (isLoading) {
     return (
       <View style={[styles.centered, style]}>
-        <ActivityIndicator size="small" color={tokens.colors.primary} />
+        <ActivityIndicator size="small" color={tokens.colors.brand} />
       </View>
     );
   }

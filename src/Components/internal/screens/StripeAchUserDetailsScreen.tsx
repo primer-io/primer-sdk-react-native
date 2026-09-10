@@ -118,7 +118,7 @@ export function StripeAchUserDetailsScreen() {
       </View>
       {isStarting ? (
         <View style={styles.loading}>
-          <ActivityIndicator color={tokens.colors.primary} />
+          <ActivityIndicator color={tokens.colors.brand} />
         </View>
       ) : (
         <ScrollView
@@ -184,7 +184,7 @@ export function StripeAchUserDetailsScreen() {
           accessibilityHint={t('accessibility_ach_continue_hint')}
         >
           {isWaiting ? (
-            <ActivityIndicator color={tokens.colors.background} />
+            <ActivityIndicator color={tokens.colors.backgroundPrimary} />
           ) : (
             <Text style={styles.continueButtonText}>{t('primer_ach_button_continue')}</Text>
           )}
@@ -200,7 +200,7 @@ function createStyles(tokens: PrimerTokens) {
   return StyleSheet.create({
     continueButton: {
       alignItems: 'center',
-      backgroundColor: colors.primary,
+      backgroundColor: colors.brand,
       borderRadius: radii.medium,
       justifyContent: 'center',
       minHeight: 44,
@@ -211,7 +211,7 @@ function createStyles(tokens: PrimerTokens) {
       opacity: 0.5,
     },
     continueButtonText: {
-      color: colors.background,
+      color: colors.backgroundPrimary,
       fontFamily: typography.titleLarge.fontFamily,
       fontSize: typography.titleLarge.fontSize,
       fontWeight: typography.titleLarge.fontWeight as TextStyle['fontWeight'],
@@ -228,12 +228,12 @@ function createStyles(tokens: PrimerTokens) {
       lineHeight: typography.bodySmall.lineHeight,
     },
     footer: {
-      backgroundColor: colors.background,
+      backgroundColor: colors.backgroundPrimary,
       paddingHorizontal: spacing.large,
       paddingTop: spacing.small,
     },
     keyboardOverlay: {
-      backgroundColor: colors.background,
+      backgroundColor: colors.backgroundPrimary,
       bottom: 0,
       left: 0,
       position: 'absolute',

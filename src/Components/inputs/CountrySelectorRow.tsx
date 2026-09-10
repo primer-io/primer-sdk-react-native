@@ -76,7 +76,7 @@ export function CountrySelectorRow({
 }
 
 function createStyles(tokens: PrimerTokens) {
-  const { colors, radii, spacing, typography, borders } = tokens;
+  const { colors, radii, spacing, typography, widths } = tokens;
   /* eslint-disable react-native/no-unused-styles */
   return StyleSheet.create({
     chevron: {
@@ -102,17 +102,17 @@ function createStyles(tokens: PrimerTokens) {
     },
     row: {
       alignItems: 'center',
-      backgroundColor: colors.background,
-      borderColor: colors.border,
+      backgroundColor: colors.backgroundPrimary,
+      borderColor: colors.borderOutlinedDefault,
       borderRadius: radii.small,
-      borderWidth: borders.input,
+      borderWidth: widths.default,
       flexDirection: 'row',
       height: FIELD_HEIGHT,
       paddingHorizontal: spacing.medium,
     },
     rowDisabled: {
-      backgroundColor: colors.surface,
-      borderColor: colors.borderDisabled,
+      backgroundColor: colors.backgroundSecondary,
+      borderColor: colors.borderOutlinedDisabled,
     },
     value: {
       color: colors.textPrimary,

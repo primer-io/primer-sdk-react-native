@@ -1,30 +1,65 @@
 import type { PrimerTokens } from '../types';
 
-// Values derived from iOS DesignTokensDark.swift (Style Dictionary generated, dark theme).
-// Source: /Users/onurvar/Projects/primer-sdk-ios/Sources/PrimerSDK/Classes/CheckoutComponents/Internal/Tokens/DesignTokensDark.swift
-// Spacing, typography, radii, and borders are mode-independent and match light defaults.
+// Values derived from iOS dark.json (Style Dictionary generated, dark theme).
+// Source: primer-sdk-ios: Modules/PrimerResources/.../JSONs/dark.json
+// Spacing, typography, radii, and widths are mode-independent and match light defaults.
 export const defaultDarkTokens: PrimerTokens = {
   colors: {
-    primary: '#2f98ff', // primerColorBrand — unchanged in dark (0.184, 0.596, 1.0)
-    background: '#171619', // dark primerColorGray000 (0.090, 0.086, 0.098)
-    surface: '#292929', // dark primerColorGray100 (0.161, 0.161, 0.161)
-    overlay: 'rgba(0,0,0,0.7)',
-    textPrimary: '#efefef', // dark primerColorGray900 (0.937, 0.937, 0.937)
-    textSecondary: '#c7c7c7', // dark primerColorGray600 (0.780, 0.780, 0.780)
-    textPlaceholder: '#767577', // dark primerColorGray500 (0.463, 0.459, 0.467)
-    textDisabled: '#858585', // dark primerColorGray400 (0.522, 0.522, 0.522)
-    textNegative: '#f6bfbf', // dark primerColorRed900 (0.965, 0.749, 0.749)
-    textLink: '#4aaeff', // dark primerColorBlue900 (0.290, 0.682, 1.0)
-    border: '#424242', // dark primerColorGray200 (0.259, 0.259, 0.259)
-    borderFocused: '#2f98ff', // dark primerColorBrand — unchanged
-    borderError: '#e46d70', // dark primerColorRed500 (0.894, 0.427, 0.439)
-    borderDisabled: '#292929', // dark primerColorGray100 (0.161, 0.161, 0.161)
-    iconPrimary: '#efefef', // dark primerColorGray900
-    iconDisabled: '#858585', // dark primerColorGray400
-    iconNegative: '#e46d70', // dark primerColorRed500
-    iconPositive: '#27b17d', // dark primerColorGreen500 (0.153, 0.694, 0.490)
-    error: '#e46d70', // dark primerColorRed500
-    success: '#27b17d', // dark primerColorGreen500
+    backgroundOutlinedActive: '#171619',
+    backgroundOutlinedDefault: '#171619',
+    backgroundOutlinedDisabled: '#efefef0a',
+    backgroundOutlinedError: '#171619',
+    backgroundOutlinedLoading: '#efefef0a',
+    backgroundOutlinedSelected: '#171619',
+    backgroundPrimary: '#171619',
+    backgroundSecondary: '#efefef0a',
+    backgroundTransparentActive: '#efefef12',
+    backgroundTransparentDefault: '#ffffff00',
+    backgroundTransparentDisabled: '#efefef0a',
+    backgroundTransparentLoading: '#efefef0a',
+    backgroundTransparentSelected: '#efefef0a',
+    blue500: '#3f93e4',
+    blue900: '#4aaeff',
+    borderOutlinedActive: '#efefef70',
+    borderOutlinedDefault: '#efefef24',
+    borderOutlinedDisabled: '#efefef12',
+    borderOutlinedError: '#e46d70',
+    borderOutlinedFocus: '#2f98ff',
+    borderOutlinedLoading: '#efefef12',
+    borderOutlinedSelected: '#2f98ff',
+    borderTransparentActive: '#ffffff00',
+    borderTransparentDefault: '#ffffff00',
+    borderTransparentDisabled: '#ffffff00',
+    borderTransparentFocus: '#2f98ff',
+    borderTransparentSelected: '#ffffff00',
+    brand: '#2f98ff',
+    focus: '#2f98ff',
+    gray000: '#171619',
+    gray100: '#efefef0a',
+    gray200: '#efefef12',
+    gray300: '#efefef24',
+    gray400: '#efefef4d',
+    gray500: '#efefef70',
+    gray600: '#efefef9e',
+    gray900: '#efefef',
+    green500: '#27b17d',
+    iconDisabled: '#efefef4d',
+    iconNegative: '#e46d70',
+    iconPositive: '#27b17d',
+    iconPrimary: '#efefef',
+    loader: '#2f98ff',
+    onBrand: '#ffffff',
+    overlay: 'rgba(0,0,0,0.5)',
+    red100: '#321c20',
+    red500: '#e46d70',
+    red900: '#f6bfbf',
+    textDisabled: '#efefef4d',
+    textLink: '#4aaeff',
+    textNegative: '#f6bfbf',
+    textOutlinedDefault: '#efefef',
+    textPlaceholder: '#efefef70',
+    textPrimary: '#efefef',
+    textSecondary: '#efefef9e',
   },
   spacing: {
     xxsmall: 2,
@@ -37,41 +72,41 @@ export const defaultDarkTokens: PrimerTokens = {
     xxxlarge: 32,
   },
   typography: {
-    fontFamily: 'Inter',
+    fontFamily: 'Inter', // primerTypographyBrand
     titleXLarge: {
+      fontFamily: 'Inter', // primerTypographyTitleXlargeFont
       fontSize: 24,
       fontWeight: '600',
       lineHeight: 32,
       letterSpacing: -0.6,
-      fontFamily: 'Inter',
     },
     titleLarge: {
+      fontFamily: 'Inter', // primerTypographyTitleLargeFont
       fontSize: 16,
       fontWeight: '600',
       lineHeight: 20,
       letterSpacing: -0.2,
-      fontFamily: 'Inter',
     },
     bodyLarge: {
+      fontFamily: 'Inter', // primerTypographyBodyLargeFont
       fontSize: 16,
       fontWeight: '400',
       lineHeight: 20,
       letterSpacing: -0.2,
-      fontFamily: 'Inter',
     },
     bodyMedium: {
+      fontFamily: 'Inter', // primerTypographyBodyMediumFont
       fontSize: 14,
       fontWeight: '400',
       lineHeight: 20,
       letterSpacing: 0,
-      fontFamily: 'Inter',
     },
     bodySmall: {
+      fontFamily: 'Inter', // primerTypographyBodySmallFont
       fontSize: 12,
       fontWeight: '400',
       lineHeight: 16,
       letterSpacing: 0,
-      fontFamily: 'Inter',
     },
   },
   radii: {
@@ -81,9 +116,19 @@ export const defaultDarkTokens: PrimerTokens = {
     medium: 8,
     large: 12,
   },
-  borders: {
+  sizes: {
+    small: 16, // primerSizeSmall
+    medium: 20, // primerSizeMedium
+    large: 24, // primerSizeLarge
+    xlarge: 32, // primerSizeXlarge
+    xxlarge: 40, // primerSizeXxlarge
+    xxxlarge: 56, // primerSizeXxxlarge
+    base: 4, // primerSizeBase
+  },
+  widths: {
     default: 1,
-    input: 1,
-    strong: 2,
+    focus: 2,
+    selected: 2,
+    error: 2,
   },
 };

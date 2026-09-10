@@ -146,7 +146,7 @@ export function CardFormScreen() {
           testID="primer-card-form-submit"
         >
           {cardForm.isSubmitting ? (
-            <ActivityIndicator color={tokens.colors.background} />
+            <ActivityIndicator color={tokens.colors.backgroundPrimary} />
           ) : (
             <Text style={styles.payButtonText}>{t('primer_common_button_pay')}</Text>
           )}
@@ -161,17 +161,17 @@ function createStyles(tokens: PrimerTokens) {
   /* eslint-disable react-native/no-unused-styles */
   return StyleSheet.create({
     divider: {
-      backgroundColor: colors.border,
+      backgroundColor: colors.borderOutlinedDefault,
       height: StyleSheet.hairlineWidth,
       marginVertical: spacing.small,
     },
     footer: {
-      backgroundColor: colors.background,
+      backgroundColor: colors.backgroundPrimary,
       paddingHorizontal: spacing.large,
       paddingTop: spacing.small,
     },
     keyboardOverlay: {
-      backgroundColor: colors.background,
+      backgroundColor: colors.backgroundPrimary,
       bottom: 0,
       left: 0,
       position: 'absolute',
@@ -179,7 +179,7 @@ function createStyles(tokens: PrimerTokens) {
     },
     payButton: {
       alignItems: 'center',
-      backgroundColor: colors.primary,
+      backgroundColor: colors.brand,
       borderRadius: radii.medium,
       justifyContent: 'center',
       minHeight: 44,
@@ -193,7 +193,7 @@ function createStyles(tokens: PrimerTokens) {
       opacity: 1,
     },
     payButtonText: {
-      color: colors.background,
+      color: colors.backgroundPrimary,
       fontFamily: typography.titleLarge.fontFamily,
       fontSize: typography.titleLarge.fontSize,
       fontWeight: typography.titleLarge.fontWeight as TextStyle['fontWeight'],
