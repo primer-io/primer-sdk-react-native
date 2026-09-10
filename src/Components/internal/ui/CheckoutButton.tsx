@@ -28,7 +28,7 @@ export function CheckoutButton({
 
   const buttonStyle = variant === 'primary' ? styles.primaryButton : styles.outlinedButton;
   const textStyle = variant === 'primary' ? styles.primaryText : styles.outlinedText;
-  const spinnerColor = variant === 'primary' ? tokens.colors.backgroundPrimary : tokens.colors.textPrimary;
+  const spinnerColor = variant === 'primary' ? tokens.colors.onBrand : tokens.colors.textPrimary;
   const isInteractive = !disabled && !loading;
   const showDisabledTint = disabled && !loading;
 
@@ -92,7 +92,7 @@ function createStyles(tokens: PrimerTokens) {
     },
     primaryText: {
       ...baseText,
-      color: colors.backgroundPrimary,
+      color: colors.onBrand,
     },
   });
   /* eslint-enable react-native/no-unused-styles */
