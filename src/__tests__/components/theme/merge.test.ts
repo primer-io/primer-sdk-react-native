@@ -75,19 +75,16 @@ describe('mergeTokens', () => {
   });
 
   it('carries the same colour vocabulary as the other SDKs', () => {
-    // 53 shared tokens, plus onBrand and overlay which RN needs and the token files do not carry.
-    expect(Object.keys(base.colors)).toHaveLength(55);
-    expect(base.colors.backgroundPrimary).toBe(base.colors.gray000);
-    expect(base.colors.backgroundSecondary).toBe(base.colors.gray100);
-    expect(base.colors.borderOutlinedDefault).toBe(base.colors.gray300);
+    // 39 shared tokens, plus onBrand and overlay which RN needs and the token files do not carry.
+    expect(Object.keys(base.colors)).toHaveLength(41);
     expect(base.colors.borderOutlinedFocus).toBe(base.colors.brand);
+    expect(base.colors.backgroundOutlinedDefault).toBe(base.colors.backgroundPrimary);
   });
 
-  it('cascades a palette override through the new state variants', () => {
-    const result = mergeTokens(base, { colors: { gray300: '#123456' } });
+  it('offers no colour named after the palette rather than its job', () => {
+    const palette = /^(gray\d{3}|blue\d{3}|green\d{3}|red\d{3})$/;
 
-    expect(result.colors.borderOutlinedDefault).toBe('#123456');
-    expect(result.colors.gray400).toBe(base.colors.gray400);
+    expect(Object.keys(base.colors).filter((name) => palette.test(name))).toEqual([]);
   });
 
   it('exposes size tokens so field height is themable', () => {
@@ -132,28 +129,29 @@ describe('mergeTokens', () => {
     expect(result.colors.textOutlinedDefault).toBe(base.colors.textOutlinedDefault);
   });
 
-  it('moves every border built on a grey when that grey is overridden', () => {
-    const result = mergeTokens(base, { colors: { gray300: '#123456' } });
+  it('moves every colour built on the brand when the brand is overridden', () => {
+    const result = mergeTokens(base, { colors: { brand: '#123456' } });
 
-    expect(result.colors.gray300).toBe('#123456');
-    expect(result.colors.borderOutlinedDefault).toBe('#123456');
+    expect(result.colors.focus).toBe('#123456');
+    expect(result.colors.loader).toBe('#123456');
+    expect(result.colors.borderOutlinedSelected).toBe('#123456');
   });
 
-  it('carries a grey override two hops, through the semantic colour into the input one', () => {
-    const result = mergeTokens(base, { colors: { gray000: '#0b0b0b' } });
+  it('carries a brand override two hops, through focus into the field border', () => {
+    const result = mergeTokens(base, { colors: { brand: '#0b0b0b' } });
 
-    expect(result.colors.backgroundPrimary).toBe('#0b0b0b');
-    expect(result.colors.backgroundOutlinedDefault).toBe('#0b0b0b');
+    expect(result.colors.focus).toBe('#0b0b0b');
+    expect(result.colors.borderOutlinedFocus).toBe('#0b0b0b');
   });
 
-  it('lets an explicit semantic colour win over the grey it derives from', () => {
-    const result = mergeTokens(base, { colors: { gray300: '#123456', borderOutlinedDefault: '#654321' } });
+  it('lets an explicit colour win over the brand it derives from', () => {
+    const result = mergeTokens(base, { colors: { brand: '#123456', focus: '#654321' } });
 
-    expect(result.colors.borderOutlinedDefault).toBe('#654321');
+    expect(result.colors.focus).toBe('#654321');
   });
 
-  it('leaves colours built on other greys untouched', () => {
-    const result = mergeTokens(base, { colors: { gray300: '#123456' } });
+  it('leaves colours built on something else untouched', () => {
+    const result = mergeTokens(base, { colors: { brand: '#123456' } });
 
     expect(result.colors.textPrimary).toBe(base.colors.textPrimary);
     expect(result.colors.backgroundSecondary).toBe(base.colors.backgroundSecondary);
