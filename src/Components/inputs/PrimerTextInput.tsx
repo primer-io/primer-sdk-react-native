@@ -51,6 +51,7 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
     maxLength,
     secureTextEntry = false,
     autoComplete,
+    textContentType,
     autoCapitalize = 'none',
     label,
     showLabel = true,
@@ -183,6 +184,7 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
           maxLength={maxLength}
           secureTextEntry={secureTextEntry}
           autoComplete={autoComplete}
+          textContentType={textContentType}
           autoCapitalize={autoCapitalize}
           placeholder={placeholder}
           placeholderTextColor={resolved.placeholderColor}
