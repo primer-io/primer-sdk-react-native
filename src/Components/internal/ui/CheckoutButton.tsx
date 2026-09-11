@@ -12,6 +12,7 @@ export interface CheckoutButtonProps {
   disabled?: boolean;
   accessibilityLabel?: string;
   accessibilityHint?: string;
+  testID?: string;
 }
 
 export function CheckoutButton({
@@ -22,13 +23,14 @@ export function CheckoutButton({
   disabled = false,
   accessibilityLabel,
   accessibilityHint,
-}: CheckoutButtonProps) {
+  testID,
+}: Readonly<CheckoutButtonProps>) {
   const tokens = usePrimerTheme();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
 
+  const isPrimary = variant === 'primary';
   const isInteractive = !disabled && !loading;
   const showDisabledTint = disabled && !loading;
-  const isPrimary = variant === 'primary';
   // Button and text always move together, so resolve them as a pair.
   const { button: buttonStyle, text: textStyle } = useMemo(() => {
     if (!isPrimary) {
@@ -51,6 +53,7 @@ export function CheckoutButton({
       accessibilityLabel={accessibilityLabel}
       accessibilityHint={accessibilityHint}
       accessibilityState={{ disabled: !isInteractive, busy: loading }}
+      testID={testID}
     >
       {loading ? <ActivityIndicator color={spinnerColor} /> : <Text style={textStyle}>{title}</Text>}
     </TouchableOpacity>
@@ -64,6 +67,9 @@ function createStyles(tokens: PrimerTokens) {
     alignItems: 'center' as const,
     borderRadius: radii.medium,
     justifyContent: 'center' as const,
+    // padding + label line-height already come to 44 at the default tokens, but both are
+    // themable, so the touch-target floor has to be pinned independently
+    minHeight: 44,
     padding: spacing.medium,
     width: '100%' as const,
   };
