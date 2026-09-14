@@ -63,10 +63,10 @@ export function MethodSelectionScreen() {
   const listHeight = methodCount > 0 ? methodCount * PAYMENT_METHOD_BUTTON_HEIGHT + (methodCount - 1) * buttonGap : 0;
   const rawBottomInset = useBottomSafeArea();
   const bottomInset = Math.max(rawBottomInset, tokens.spacing.large);
-  // Container paddingTop + NavigationHeader (singleRow paddingVertical + titleXLarge lineHeight)
+  // Container paddingTop + NavigationHeader (singleRow paddingVertical + titleXlarge lineHeight)
   //   + content paddingTop + sectionTitle lineHeight + content gap + list + bottom safe area
   //   + spacing.xlarge for the sheet's drag-handle area (not part of screen content).
-  const headerArea = tokens.spacing.xxsmall * 2 + tokens.typography.titleXLarge.lineHeight;
+  const headerArea = tokens.spacing.xxsmall * 2 + tokens.typography.titleXlarge.lineHeight;
   const titleArea = tokens.typography.titleLarge.lineHeight;
   // Vault section = section title + content gap + outer padding*2 + tile padding*2 + tile content
   //   (+ inner-tile gap + CVV row, when CVV state is open)

@@ -52,7 +52,7 @@ jest.mock('../../Components/internal/theme', () => ({
       bodyMedium: { fontFamily: 'system', fontSize: 14, fontWeight: '400', letterSpacing: 0, lineHeight: 18 },
       bodyLarge: { fontFamily: 'system', fontSize: 16, fontWeight: '400', letterSpacing: 0, lineHeight: 20 },
       titleLarge: { fontFamily: 'system', fontSize: 16, fontWeight: '500', letterSpacing: 0, lineHeight: 20 },
-      titleXLarge: { fontFamily: 'system', fontSize: 18, fontWeight: '600', letterSpacing: 0, lineHeight: 22 },
+      titleXlarge: { fontFamily: 'system', fontSize: 18, fontWeight: '600', letterSpacing: 0, lineHeight: 22 },
     },
   }),
 }));

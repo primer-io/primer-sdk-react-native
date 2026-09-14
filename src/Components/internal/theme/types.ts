@@ -57,6 +57,7 @@ export interface PrimerColorTokens {
 }
 
 export interface PrimerSpacingTokens {
+  base: number;
   xxsmall: number;
   xsmall: number;
   small: number;
@@ -64,7 +65,6 @@ export interface PrimerSpacingTokens {
   large: number;
   xlarge: number;
   xxlarge: number;
-  xxxlarge: number;
 }
 
 export interface PrimerSizeTokens {
@@ -77,9 +77,13 @@ export interface PrimerSizeTokens {
   base: number;
 }
 
+// React Native rejects any weight outside this list. 550, the design value the other three
+// SDKs use, logs an error and renders 400, so it must not be spellable here.
+export type PrimerFontWeight = '100' | '200' | '300' | '400' | '500' | '600' | '700' | '800' | '900';
+
 export interface PrimerTypographyStyle {
   fontSize: number;
-  fontWeight: string;
+  fontWeight: PrimerFontWeight;
   lineHeight: number;
   letterSpacing: number;
   fontFamily: string;
@@ -94,7 +98,7 @@ export type PrimerTypographyStyleOverride = Partial<PrimerTypographyStyle>;
 export interface PrimerTypographyTokens {
   /** The brand font — the default typeface for all six styles. */
   fontFamily: string;
-  titleXLarge: PrimerTypographyStyle;
+  titleXlarge: PrimerTypographyStyle;
   titleLarge: PrimerTypographyStyle;
   bodyLarge: PrimerTypographyStyle;
   bodyMedium: PrimerTypographyStyle;
@@ -105,7 +109,7 @@ export interface PrimerTypographyTokens {
 export interface PrimerTypographyOverride {
   /** Set once to change the typeface of every style that does not name its own. */
   fontFamily?: string;
-  titleXLarge?: PrimerTypographyStyleOverride;
+  titleXlarge?: PrimerTypographyStyleOverride;
   titleLarge?: PrimerTypographyStyleOverride;
   bodyLarge?: PrimerTypographyStyleOverride;
   bodyMedium?: PrimerTypographyStyleOverride;
@@ -114,7 +118,7 @@ export interface PrimerTypographyOverride {
 }
 
 export interface PrimerRadiusTokens {
-  none: number;
+  base: number;
   xsmall: number;
   small: number;
   medium: number;

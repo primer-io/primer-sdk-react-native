@@ -139,7 +139,7 @@ export function VaultedMethodsScreen() {
   // instead of the default 92%. Figma 366:69230.
   const confirmationSheetHeight = useMemo(() => {
     const headerArea =
-      tokens.spacing.large + tokens.spacing.xxlarge + tokens.spacing.large + tokens.typography.titleXLarge.lineHeight;
+      tokens.spacing.large + tokens.spacing.xxlarge + tokens.spacing.large + tokens.typography.titleXlarge.lineHeight;
     const tileHeight = tokens.spacing.medium * 2 + tokens.typography.bodyLarge.lineHeight + tokens.spacing.xsmall + 16;
     const buttonsRowHeight = tokens.spacing.medium * 2 + tokens.typography.titleLarge.lineHeight;
     const contentArea =
