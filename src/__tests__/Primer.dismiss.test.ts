@@ -167,6 +167,90 @@ const resetCounter = (module: CountedModule) => {
 const lastImplementedCallbacks = (): Record<string, boolean> =>
   JSON.parse(dropInModule.setImplementedRNCallbacks.mock.lastCall?.[0] ?? '{}');
 
+describe('Primer.dismiss onDismiss — ORC-8227', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    registry.length = 0;
+    [dropInModule, headlessModule, hostModule].forEach(resetCounter);
+  });
+
+  afterEach(async () => {
+    Primer.cleanUp();
+    await PrimerHeadlessUniversalCheckout.cleanUp();
+  });
+
+  it('fires onDismiss when the app closes checkout with dismiss()', async () => {
+    const onDismiss = jest.fn();
+    await Primer.configure({ onDismiss });
+    await Primer.showUniversalCheckout('tok-1');
+
+    Primer.dismiss();
+    // native reports the close after the call returns
+    emit('onDismiss', {});
+
+    expect(onDismiss).toHaveBeenCalledTimes(1);
+  });
+
+  it('cleanUp() switches everything off, including onDismiss', async () => {
+    const onDismiss = jest.fn();
+    const onError = jest.fn();
+    await Primer.configure({ onDismiss, onError });
+    await Primer.showUniversalCheckout('tok-1');
+
+    Primer.cleanUp();
+    emit('onDismiss', {});
+    emit('onError', payloadError);
+
+    expect(onDismiss).not.toHaveBeenCalled();
+    expect(onError).not.toHaveBeenCalled();
+    expect(registry).toHaveLength(0);
+    expect(dropInModule.listenerCount).toBe(0);
+    expect(dropInModule.overRemovals).toBe(0);
+  });
+
+  it('dismiss() leaves a running Headless session alone', async () => {
+    const headlessOnError = jest.fn();
+    await PrimerHeadlessUniversalCheckout.startWithClientToken('tok-h', {
+      headlessUniversalCheckoutCallbacks: { onError: headlessOnError },
+    });
+
+    Primer.dismiss();
+    emit('onError', payloadError);
+
+    expect(headlessOnError).toHaveBeenCalledTimes(1);
+    expect(headlessModule.listenerCount).toBe(1);
+  });
+
+  it.each<[string, () => Promise<void>]>([
+    ['showUniversalCheckout', () => Primer.showUniversalCheckout('tok-d')],
+    ['showVaultManager', () => Primer.showVaultManager('tok-d')],
+    ['showPaymentMethod', () => Primer.showPaymentMethod('PAYMENT_CARD', 'CHECKOUT', 'tok-d')],
+  ])('%s() clears the previous session before registering its own', async (_label, show) => {
+    await PrimerHeadlessUniversalCheckout.startWithClientToken('tok-h', {
+      headlessUniversalCheckoutCallbacks: { onError: jest.fn() },
+    });
+    expect(headlessModule.listenerCount).toBe(1);
+
+    await Primer.configure({ onError: jest.fn() });
+    await show();
+
+    expect(headlessModule.listenerCount).toBe(0);
+    expect(dropInModule.listenerCount).toBe(1);
+    expect(dropInModule.overRemovals).toBe(0);
+    expect(headlessModule.overRemovals).toBe(0);
+  });
+
+  it('fires onDismiss when the shopper closes the sheet', async () => {
+    const onDismiss = jest.fn();
+    await Primer.configure({ onDismiss });
+    await Primer.showUniversalCheckout('tok-1');
+
+    emit('onDismiss', {});
+
+    expect(onDismiss).toHaveBeenCalledTimes(1);
+  });
+});
+
 describe('Primer.dismiss / cleanUp listener teardown — ESC-1131', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -175,11 +259,29 @@ describe('Primer.dismiss / cleanUp listener teardown — ESC-1131', () => {
   });
 
   afterEach(async () => {
-    Primer.dismiss();
+    Primer.cleanUp();
     await PrimerHeadlessUniversalCheckout.cleanUp();
   });
 
-  it('Drop-in only: dismiss() removes only Drop-in listeners and never touches the Headless native counter', async () => {
+  it('repeated show/dismiss cycles leave nothing behind', async () => {
+    await Primer.configure({ onError: jest.fn(), onCheckoutComplete: jest.fn() });
+
+    for (let i = 0; i < 10; i++) {
+      await Primer.showUniversalCheckout(`tok-${i}`);
+      Primer.dismiss();
+    }
+
+    await Primer.showUniversalCheckout('tok-last');
+
+    expect(registry).toHaveLength(2);
+    expect(dropInModule.listenerCount).toBe(2);
+    expect(dropInModule.overRemovals).toBe(0);
+    expect(headlessModule.listenerCount).toBe(0);
+    expect(headlessModule.overRemovals).toBe(0);
+    expect(hostModule.overRemovals).toBe(0);
+  });
+
+  it('Drop-in only: dismiss() never touches the Headless native counter', async () => {
     await Primer.configure({ onError: jest.fn(), onCheckoutComplete: jest.fn() });
     await Primer.showUniversalCheckout('tok-1');
     expect(dropInModule.listenerCount).toBe(2);
@@ -189,8 +291,11 @@ describe('Primer.dismiss / cleanUp listener teardown — ESC-1131', () => {
     expect(headlessModule.removeListeners).not.toHaveBeenCalled();
     expect(headlessModule.overRemovals).toBe(0);
     expect(dropInModule.overRemovals).toBe(0);
-    expect(dropInModule.listenerCount).toBe(0);
-    expect(registry).toHaveLength(0);
+
+    // the next show drains and re-registers, so nothing accumulates
+    await Primer.showUniversalCheckout('tok-2');
+    expect(dropInModule.listenerCount).toBe(2);
+    expect(dropInModule.overRemovals).toBe(0);
   });
 
   it.each<[string, () => void]>([

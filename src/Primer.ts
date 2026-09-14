@@ -312,8 +312,6 @@ export const Primer: IPrimer = {
   },
 
   dismiss(): void {
-    RNPrimerHeadlessUniversalCheckout.removeAllListeners();
-    RNPrimer.removeAllListeners();
     RNPrimer.dismiss();
   },
 };
