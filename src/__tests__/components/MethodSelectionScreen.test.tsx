@@ -96,7 +96,7 @@ jest.mock('../../Components/internal/screens/useStatusScreenHeight', () => ({ us
 jest.mock('../../Components/PrimerPaymentMethodList', () => ({ PrimerPaymentMethodList: () => null }));
 jest.mock('../../Components/PrimerVaultedPaymentMethod', () => ({ PrimerVaultedPaymentMethod: () => null }));
 jest.mock('../../Components/internal/navigation/NavigationHeader', () => ({ NavigationHeader: () => null }));
-jest.mock('../../Components/internal/ui/CheckoutButton', () => ({ CheckoutButton: () => null }));
+jest.mock('../../Components/internal/ui/PrimerButton', () => ({ PrimerButton: () => null }));
 jest.mock('../../Components/internal/ui/PaymentMethodButton', () => ({ PAYMENT_METHOD_BUTTON_HEIGHT: 56 }));
 jest.mock('../../Components/analytics', () => ({ PrimerAnalytics: { trackEvent: jest.fn() } }));
 
