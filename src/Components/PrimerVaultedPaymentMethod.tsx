@@ -9,7 +9,7 @@ import { usePrimerLocalization } from './internal/localization';
 import { getVaultRowDisplay } from './internal/vaultRowDisplay';
 import { CheckoutRoute } from './internal/navigation/types';
 import { useNavigation } from './internal/navigation/useNavigation';
-import { CheckoutButton, VaultedCardCvvRow } from './internal/ui';
+import { PrimerButton, VaultedCardCvvRow } from './internal/ui';
 import { useCardNetworkDescriptor } from './hooks/useCardNetworkDescriptor';
 import { usePrimerVaultManager } from './hooks/usePrimerVaultManager';
 import { usePrimerCheckout } from './hooks/usePrimerCheckout';
@@ -143,7 +143,7 @@ export function PrimerVaultedPaymentMethod({ data, onPay, style }: PrimerVaulted
           />
         )}
       </View>
-      <CheckoutButton
+      <PrimerButton
         title={t('primer_common_button_pay')}
         variant="primary"
         onPress={handlePress}

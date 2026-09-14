@@ -13,7 +13,7 @@ import { useCheckoutFlow } from '../checkout-flow/CheckoutFlowContext';
 import { usePrimerCheckout } from '../../hooks/usePrimerCheckout';
 import { usePrimerPaymentMethod } from '../../hooks/usePrimerPaymentMethod';
 import { PrimerTextInput } from '../../inputs';
-import { CheckoutButton } from '../ui/CheckoutButton';
+import { PrimerButton } from '../ui/PrimerButton';
 import { useSheetHeight } from '../checkout-sheet';
 import { useBottomSafeArea } from './useBottomSafeArea';
 import { useKeyboardPadding } from './useKeyboardPadding';
@@ -169,7 +169,7 @@ export function StripeAchUserDetailsScreen() {
         onLayout={(e) => setFooterHeight(e.nativeEvent.layout.height)}
         style={[styles.footer, { paddingBottom: footerPaddingBottom, transform: [{ translateY: -keyboardPadding }] }]}
       >
-        <CheckoutButton
+        <PrimerButton
           title={t('primer_ach_button_continue')}
           onPress={handleContinue}
           variant="primary"

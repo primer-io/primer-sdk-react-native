@@ -31,7 +31,7 @@ export function resolveTheme(tokens: PrimerTokens, override?: PrimerTextInputThe
     borderColor: override?.borderColor ?? tokens.colors.borderOutlinedDefault,
     borderRadius: override?.borderRadius ?? tokens.radii.small,
     borderWidth,
-    disabledBackgroundColor: override?.disabledBackgroundColor ?? tokens.colors.backgroundSecondary,
+    disabledBackgroundColor: override?.disabledBackgroundColor ?? tokens.colors.backgroundOutlinedDisabled,
     disabledBorderColor: override?.disabledBorderColor ?? tokens.colors.borderOutlinedDisabled,
     errorColor: override?.errorColor ?? tokens.colors.borderOutlinedError,
     errorTextColor: override?.errorTextColor ?? tokens.colors.textNegative,
@@ -181,7 +181,7 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
           paddingHorizontal: tokens.spacing.medium - borderWidthDiff,
         },
         label: {
-          color: resolved.labelColor,
+          color: editable ? resolved.labelColor : tokens.colors.textDisabled,
           fontFamily: resolved.labelFontFamily,
           fontSize: resolved.labelFontSize,
           fontWeight: resolved.labelFontWeight,

@@ -12,7 +12,7 @@ import type { NavigationHeaderAction } from '../navigation/NavigationHeader';
 import { useNavigation } from '../navigation/useNavigation';
 import { usePrimerTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
-import { CheckoutButton } from '../ui/CheckoutButton';
+import { PrimerButton } from '../ui/PrimerButton';
 import { useBottomSafeArea } from './useBottomSafeArea';
 import { useStatusScreenHeight } from './useStatusScreenHeight';
 
@@ -319,7 +319,7 @@ export function VaultedMethodsScreen() {
           <Text style={styles.confirmationCaption}>{t('primer_vault_delete_message')}</Text>
           <View style={styles.confirmationButtons}>
             <View style={styles.confirmationButtonHalf}>
-              <CheckoutButton
+              <PrimerButton
                 title={t('primer_vault_delete_button_cancel')}
                 variant="outlined"
                 onPress={handleCancelDelete}
@@ -327,7 +327,7 @@ export function VaultedMethodsScreen() {
               />
             </View>
             <View style={styles.confirmationButtonHalf}>
-              <CheckoutButton
+              <PrimerButton
                 title={t('primer_vault_delete_button_confirm')}
                 variant="primary"
                 onPress={handleConfirmDelete}

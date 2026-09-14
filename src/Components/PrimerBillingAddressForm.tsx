@@ -25,6 +25,7 @@ export function PrimerBillingAddressForm({
   billingForm,
   style,
   testID = 'primer-billing-address-form',
+  editable = true,
 }: PrimerBillingAddressFormProps) {
   const tokens = usePrimerTheme();
   const { t, locale } = usePrimerLocalization();
@@ -52,6 +53,7 @@ export function PrimerBillingAddressForm({
           label={t('primer_card_form_label_country')}
           placeholder={t('primer_card_form_placeholder_country_code')}
           onPress={handleCountryPress}
+          editable={editable}
           testID={`${testID}-country`}
         />
       )}
@@ -61,6 +63,7 @@ export function PrimerBillingAddressForm({
           {visibleFields.firstName && (
             <View style={styles.halfField}>
               <PrimerTextInput
+                editable={editable}
                 value={billingForm.firstName}
                 onChangeText={billingForm.updateFirstName}
                 onBlur={() => billingForm.markFieldTouched('firstName')}
@@ -78,6 +81,7 @@ export function PrimerBillingAddressForm({
           {visibleFields.lastName && (
             <View style={styles.halfField}>
               <PrimerTextInput
+                editable={editable}
                 value={billingForm.lastName}
                 onChangeText={billingForm.updateLastName}
                 onBlur={() => billingForm.markFieldTouched('lastName')}
@@ -97,6 +101,7 @@ export function PrimerBillingAddressForm({
 
       {visibleFields.addressLine1 && (
         <PrimerTextInput
+          editable={editable}
           value={billingForm.addressLine1}
           onChangeText={billingForm.updateAddressLine1}
           onBlur={() => billingForm.markFieldTouched('addressLine1')}
@@ -113,6 +118,7 @@ export function PrimerBillingAddressForm({
 
       {visibleFields.addressLine2 && (
         <PrimerTextInput
+          editable={editable}
           value={billingForm.addressLine2}
           onChangeText={billingForm.updateAddressLine2}
           onBlur={() => billingForm.markFieldTouched('addressLine2')}
@@ -132,6 +138,7 @@ export function PrimerBillingAddressForm({
           {visibleFields.postalCode && (
             <View style={styles.halfField}>
               <PrimerTextInput
+                editable={editable}
                 value={billingForm.postalCode}
                 onChangeText={billingForm.updatePostalCode}
                 onBlur={() => billingForm.markFieldTouched('postalCode')}
@@ -149,6 +156,7 @@ export function PrimerBillingAddressForm({
           {visibleFields.city && (
             <View style={styles.halfField}>
               <PrimerTextInput
+                editable={editable}
                 value={billingForm.city}
                 onChangeText={billingForm.updateCity}
                 onBlur={() => billingForm.markFieldTouched('city')}
@@ -168,6 +176,7 @@ export function PrimerBillingAddressForm({
 
       {visibleFields.state && (
         <PrimerTextInput
+          editable={editable}
           value={billingForm.state}
           onChangeText={billingForm.updateState}
           onBlur={() => billingForm.markFieldTouched('state')}

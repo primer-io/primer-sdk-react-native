@@ -15,7 +15,7 @@ import { CheckoutRoute } from '../navigation/types';
 import { useNavigation } from '../navigation/useNavigation';
 import { routeMethodSelection } from '../routeMethodSelection';
 import { usePrimerTheme } from '../theme';
-import { CheckoutButton } from '../ui/CheckoutButton';
+import { PrimerButton } from '../ui/PrimerButton';
 import { PAYMENT_METHOD_BUTTON_HEIGHT } from '../ui/PaymentMethodButton';
 import { useBottomSafeArea } from './useBottomSafeArea';
 import { getLastSeenKeyboardHeight, useKeyboardHeight } from './useKeyboardHeight';
@@ -70,7 +70,7 @@ export function MethodSelectionScreen() {
   const titleArea = tokens.typography.titleLarge.lineHeight;
   // Vault section = section title + content gap + outer padding*2 + tile padding*2 + tile content
   //   (+ inner-tile gap + CVV row, when CVV state is open)
-  //   + tile-to-button gap + Pay button (CheckoutButton: padding.medium*2 + titleLarge lineHeight)
+  //   + tile-to-button gap + Pay button (PrimerButton: padding.medium*2 + titleLarge lineHeight)
   //   + section-to-APM gap.
   // CVV row height is the height of the input field it wraps.
   const cvvExtraHeight = cvvInputVisible ? tokens.spacing.medium + tokens.sizes.xxlarge : 0;
@@ -86,10 +86,10 @@ export function MethodSelectionScreen() {
         (tokens.spacing.medium * 2 + tokens.typography.titleLarge.lineHeight) +
         tokens.spacing.medium
       : 0;
-  // CheckoutButton intrinsic height = padding.medium*2 + titleLarge lineHeight (matches Pay button).
-  const checkoutButtonHeight = tokens.spacing.medium * 2 + tokens.typography.titleLarge.lineHeight;
+  // PrimerButton intrinsic height = padding.medium*2 + titleLarge lineHeight (matches Pay button).
+  const primerButtonHeight = tokens.spacing.medium * 2 + tokens.typography.titleLarge.lineHeight;
   const apmSectionHeight =
-    vaultDisplayMode === 'lite' ? checkoutButtonHeight : titleArea + tokens.spacing.medium + listHeight;
+    vaultDisplayMode === 'lite' ? primerButtonHeight : titleArea + tokens.spacing.medium + listHeight;
   // Grow the sheet by `keyboardHeight - bottomInset` so content stays above the keyboard.
   // When CVV opens we use the last-seen height as an estimate to avoid a shrink-then-grow
   // jump during the ~74ms gap before `keyboardWillShow` fires.
@@ -207,7 +207,7 @@ export function MethodSelectionScreen() {
           </View>
         )}
         {vaultDisplayMode === 'lite' ? (
-          <CheckoutButton
+          <PrimerButton
             title={t('primer_vault_selected_button_other')}
             variant="outlined"
             onPress={handleRequestExpanded}
