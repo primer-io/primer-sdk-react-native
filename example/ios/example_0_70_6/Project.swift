@@ -6,7 +6,7 @@ enum BaseSettings {
 
     static let settingsDictionary: [String: SettingValue] = [
         "DEVELOPMENT_TEAM": .string("N8UN9TR5DY"),
-        "IPHONEOS_DEPLOYMENT_TARGET": .string("11.0")
+        "IPHONEOS_DEPLOYMENT_TARGET": .string("15.1")
     ]
 }
 
