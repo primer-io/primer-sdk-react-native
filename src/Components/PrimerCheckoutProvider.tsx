@@ -15,7 +15,7 @@ import { PrimerAnalytics } from './analytics';
 import { PrimerSessionIntent } from '../models/PrimerSessionIntent';
 import { fmt } from './internal/debug';
 import { PrimerCheckoutContext } from './internal/PrimerCheckoutContext';
-import { mergeTokens } from './internal/theme/merge';
+import { mergeTokens, resolveDarkOverride } from './internal/theme/merge';
 import { ThemeContext } from './internal/theme/ThemeContext';
 import { defaultDarkTokens, defaultLightTokens } from './internal/theme/tokens';
 import { toError } from './internal/utils/errors';
@@ -246,7 +246,7 @@ export function PrimerCheckoutProvider({
   const [state, setState] = useState<InternalState>(initialState);
 
   const lightTokens = useMemo(() => mergeTokens(defaultLightTokens, theme?.light), [theme?.light]);
-  const darkTokens = useMemo(() => mergeTokens(defaultDarkTokens, theme?.dark), [theme?.dark]);
+  const darkTokens = useMemo(() => mergeTokens(defaultDarkTokens, resolveDarkOverride(theme)), [theme]);
   const themeContextValue = useMemo(() => ({ lightTokens, darkTokens }), [lightTokens, darkTokens]);
 
   // Refs keep init useEffect deps to [clientToken] only.

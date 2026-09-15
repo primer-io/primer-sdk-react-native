@@ -1,4 +1,4 @@
-import { mergeTokens } from '../../../Components/internal/theme/merge';
+import { mergeTokens, resolveDarkOverride } from '../../../Components/internal/theme/merge';
 import { defaultDarkTokens, defaultLightTokens } from '../../../Components/internal/theme/tokens';
 import type { PrimerTypographyStyle } from '../../../Components/internal/theme/types';
 
@@ -279,5 +279,47 @@ describe('error typography follows bodySmall', () => {
     const result = mergeTokens(base, { colors: { brand: '#ff0000' } });
 
     expect(result.typography.error).toEqual(base.typography.error);
+  });
+});
+
+describe('resolveDarkOverride', () => {
+  it('reads the dark set alone by default, so light colours never reach dark mode', () => {
+    const resolved = resolveDarkOverride({
+      light: { colors: { brand: '#ff0000', textPrimary: '#00ff00' } },
+      dark: { colors: { brand: '#0000ff' } },
+    });
+
+    expect(resolved?.colors?.brand).toBe('#0000ff');
+    expect(resolved?.colors?.textPrimary).toBeUndefined();
+  });
+
+  it('fills the gaps from the light set when opted in', () => {
+    const resolved = resolveDarkOverride({
+      usesLightColorsInDark: true,
+      light: { colors: { brand: '#ff0000', textPrimary: '#00ff00' } },
+      dark: { colors: { brand: '#0000ff' } },
+    });
+
+    expect(resolved?.colors?.brand).toBe('#0000ff');
+    expect(resolved?.colors?.textPrimary).toBe('#00ff00');
+  });
+
+  it('carries the whole light colour set when there is no dark set', () => {
+    const resolved = resolveDarkOverride({
+      usesLightColorsInDark: true,
+      light: { colors: { brand: '#ff0000' } },
+    });
+
+    expect(resolved?.colors?.brand).toBe('#ff0000');
+  });
+
+  it('opting in does not carry anything but colours', () => {
+    const resolved = resolveDarkOverride({
+      usesLightColorsInDark: true,
+      light: { radii: { medium: 99 } },
+      dark: { colors: { brand: '#0000ff' } },
+    });
+
+    expect(resolved?.radii).toBeUndefined();
   });
 });

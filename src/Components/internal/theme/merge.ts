@@ -89,3 +89,15 @@ export function mergeTokens(base: PrimerTokens, override: ModeOverride): PrimerT
     widths: override.widths ? { ...base.widths, ...stripNullish(override.widths) } : base.widths,
   };
 }
+
+/**
+ * What dark mode reads. By default that is the dark override alone: anything it leaves unset uses
+ * Primer's dark default, because a colour picked against white is a guess on a dark background.
+ *
+ * `usesLightColorsInDark` opts back in, and only for colours, so a palette that works in both modes
+ * does not have to be written twice.
+ */
+export function resolveDarkOverride(theme?: PrimerThemeOverride): ModeOverride {
+  if (!theme?.usesLightColorsInDark) return theme?.dark;
+  return { ...theme.dark, colors: { ...theme.light?.colors, ...theme.dark?.colors } };
+}
