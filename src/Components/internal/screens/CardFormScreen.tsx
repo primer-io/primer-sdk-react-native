@@ -12,7 +12,7 @@ import { PrimerCardForm } from '../../PrimerCardForm';
 import { PrimerBillingAddressForm } from '../../PrimerBillingAddressForm';
 import { usePrimerCardForm } from '../../hooks/usePrimerCardForm';
 import { usePrimerBillingAddressForm } from '../../hooks/usePrimerBillingAddressForm';
-import { CheckoutButton } from '../ui/CheckoutButton';
+import { PrimerButton } from '../ui/PrimerButton';
 import { useSheetHeight } from '../checkout-sheet';
 import { useBottomSafeArea } from './useBottomSafeArea';
 import { useKeyboardPadding } from './useKeyboardPadding';
@@ -101,7 +101,7 @@ export function CardFormScreen() {
           <>
             <View style={styles.divider} />
             <Text style={styles.sectionTitle}>{t('primer_card_form_billing_address_title')}</Text>
-            <PrimerBillingAddressForm billingForm={billingForm} />
+            <PrimerBillingAddressForm billingForm={billingForm} editable={!cardForm.isSubmitting} />
           </>
         )}
       </ScrollView>
@@ -120,7 +120,7 @@ export function CardFormScreen() {
           },
         ]}
       >
-        <CheckoutButton
+        <PrimerButton
           title={t('primer_common_button_pay')}
           onPress={handlePay}
           variant="primary"

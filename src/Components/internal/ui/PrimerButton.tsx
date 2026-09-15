@@ -4,7 +4,7 @@ import type { TextStyle } from 'react-native';
 import { usePrimerTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
 
-export interface CheckoutButtonProps {
+export interface PrimerButtonProps {
   title: string;
   onPress: () => void;
   variant: 'primary' | 'outlined';
@@ -15,7 +15,7 @@ export interface CheckoutButtonProps {
   testID?: string;
 }
 
-export function CheckoutButton({
+export function PrimerButton({
   title,
   onPress,
   variant,
@@ -24,7 +24,7 @@ export function CheckoutButton({
   accessibilityLabel,
   accessibilityHint,
   testID,
-}: Readonly<CheckoutButtonProps>) {
+}: Readonly<PrimerButtonProps>) {
   const tokens = usePrimerTheme();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
 
