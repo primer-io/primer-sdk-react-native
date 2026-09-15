@@ -19,9 +19,18 @@ export interface PrimerTextInputTheme {
   errorBorderWidth?: number;
   errorFontFamily?: string;
   errorFontSize?: number;
+  errorFontWeight?: TextStyle['fontWeight'];
+  errorLetterSpacing?: number;
+  errorLineHeight?: number;
   borderRadius?: number;
   fontSize?: number;
+  fontWeight?: TextStyle['fontWeight'];
+  letterSpacing?: number;
+  lineHeight?: number;
   labelFontSize?: number;
+  labelFontWeight?: TextStyle['fontWeight'];
+  labelLetterSpacing?: number;
+  labelLineHeight?: number;
   fontFamily?: string;
   fieldHeight?: number;
 }

@@ -1,9 +1,8 @@
 import { useMemo } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, type StyleProp, type ViewStyle } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, type StyleProp, type ViewStyle, type TextStyle } from 'react-native';
 import { usePrimerTheme } from '../internal/theme';
 import type { PrimerTokens } from '../internal/theme';
 import { flagEmoji } from '../internal/flags';
-import { LINE_HEIGHT_RATIO } from './dimensions';
 
 export interface CountrySelectorRowProps {
   /** ISO country code currently selected, or empty if none. */
@@ -93,8 +92,11 @@ function createStyles(tokens: PrimerTokens) {
     },
     label: {
       color: colors.textPrimary,
-      fontFamily: typography.fontFamily,
+      fontFamily: typography.bodySmall.fontFamily,
       fontSize: typography.bodySmall.fontSize,
+      fontWeight: typography.bodySmall.fontWeight as TextStyle['fontWeight'],
+      letterSpacing: typography.bodySmall.letterSpacing,
+      lineHeight: typography.bodySmall.lineHeight,
       marginBottom: spacing.xsmall,
     },
     placeholder: {
@@ -117,10 +119,11 @@ function createStyles(tokens: PrimerTokens) {
     value: {
       color: colors.textOutlinedDefault,
       flex: 1,
-      fontFamily: typography.fontFamily,
+      fontFamily: typography.bodyLarge.fontFamily,
       fontSize: typography.bodyLarge.fontSize,
+      fontWeight: typography.bodyLarge.fontWeight as TextStyle['fontWeight'],
       letterSpacing: typography.bodyLarge.letterSpacing,
-      lineHeight: Math.round(typography.bodyLarge.fontSize * LINE_HEIGHT_RATIO),
+      lineHeight: typography.bodyLarge.lineHeight,
     },
   });
   /* eslint-enable react-native/no-unused-styles */

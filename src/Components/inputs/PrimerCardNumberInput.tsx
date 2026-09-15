@@ -1,5 +1,5 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
-import { Image, StyleSheet, Text, View, type TextInputProps } from 'react-native';
+import { Image, StyleSheet, Text, View, type TextInputProps, type TextStyle } from 'react-native';
 import { PrimerTextInput } from './PrimerTextInput';
 import { caretFromDigitIndex, countDigits, countDigitsBefore, targetDigitIndex } from './caret';
 import { PLACEHOLDER_ICON_HEIGHT, PLACEHOLDER_ICON_WIDTH, TRAILING_ICON_MARGIN } from './dimensions';
@@ -100,8 +100,11 @@ export const PrimerCardNumberInput = forwardRef<PrimerTextInputRef, PrimerCardNu
             <Text
               style={{
                 color: tokens.colors.textPrimary,
-                fontFamily: tokens.typography.fontFamily,
+                fontFamily: tokens.typography.bodySmall.fontFamily,
                 fontSize: tokens.typography.bodySmall.fontSize,
+                fontWeight: tokens.typography.bodySmall.fontWeight as TextStyle['fontWeight'],
+                letterSpacing: tokens.typography.bodySmall.letterSpacing,
+                lineHeight: tokens.typography.bodySmall.lineHeight,
               }}
             >
               {abbreviation}
