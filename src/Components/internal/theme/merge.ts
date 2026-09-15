@@ -22,40 +22,17 @@ function stripNullish<T extends object>(obj: Partial<T>): Partial<T> {
 
 // Each entry says "this colour is derived from that one". A merchant who sets the source and
 // not the alias gets the alias moved for them, which is how the native SDKs behave. Ordered
-// palette-first so a grey override reaches the semantic names and then the input ones.
+// so a source is resolved before anything that follows it.
 const COLOR_ALIASES: ReadonlyArray<[keyof PrimerColorTokens, keyof PrimerColorTokens]> = [
-  // Semantic tokens follow the palette entry they alias, matching the other SDKs' token files.
-  ['backgroundPrimary', 'gray000'],
-  ['backgroundSecondary', 'gray100'],
-  ['textPrimary', 'gray900'],
-  ['textSecondary', 'gray600'],
-  ['textPlaceholder', 'gray500'],
-  ['textDisabled', 'gray400'],
-  ['textNegative', 'red900'],
-  ['textLink', 'blue900'],
-  ['borderOutlinedDefault', 'gray300'],
-  ['borderOutlinedActive', 'gray500'],
-  ['borderOutlinedDisabled', 'gray200'],
-  ['borderOutlinedLoading', 'gray200'],
   ['borderOutlinedSelected', 'brand'],
-  ['borderOutlinedError', 'red500'],
-  ['iconPrimary', 'gray900'],
-  ['iconDisabled', 'gray400'],
-  ['iconNegative', 'red500'],
-  ['iconPositive', 'green500'],
   ['focus', 'brand'],
   ['loader', 'brand'],
-  // Two hops: these follow a semantic token that itself follows the palette.
   ['backgroundOutlinedDefault', 'backgroundPrimary'],
   ['backgroundOutlinedActive', 'backgroundOutlinedDefault'],
   ['backgroundOutlinedSelected', 'backgroundOutlinedDefault'],
   ['backgroundOutlinedError', 'backgroundOutlinedDefault'],
-  ['backgroundOutlinedDisabled', 'gray100'],
   ['backgroundOutlinedLoading', 'backgroundOutlinedDisabled'],
-  ['backgroundTransparentActive', 'gray200'],
-  ['backgroundTransparentDisabled', 'gray100'],
   ['backgroundTransparentLoading', 'backgroundTransparentDisabled'],
-  ['backgroundTransparentSelected', 'gray100'],
   ['borderOutlinedFocus', 'focus'],
   ['borderTransparentFocus', 'focus'],
   ['textOutlinedDefault', 'textPrimary'],
