@@ -1,4 +1,5 @@
 export { usePrimerTheme } from './usePrimerTheme';
+export { useIsDarkAppearance } from './useAppearanceMode';
 export type {
   PrimerTokens,
   PrimerColorTokens,
