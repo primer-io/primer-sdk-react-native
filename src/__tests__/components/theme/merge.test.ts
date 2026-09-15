@@ -168,6 +168,13 @@ describe('brand font', () => {
     letterSpacing,
   });
 
+  it('paints the pay button label on the sheet it sits on, per mode', () => {
+    // Light label on a light sheet, dark label on a dark one, which is what the design file
+    // has. A fixed white in dark mode was off spec and harder to read.
+    expect(defaultLightTokens.colors.onBrand).toBe(defaultLightTokens.colors.backgroundPrimary);
+    expect(defaultDarkTokens.colors.onBrand).toBe(defaultDarkTokens.colors.backgroundPrimary);
+  });
+
   it('leaves every style on Inter when nothing is set', () => {
     for (const tokens of [defaultLightTokens, defaultDarkTokens]) {
       expect(tokens.typography.fontFamily).toBe('Inter');
