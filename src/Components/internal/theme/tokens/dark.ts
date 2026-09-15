@@ -38,7 +38,7 @@ export const defaultDarkTokens: PrimerTokens = {
     iconPositive: '#27b17d',
     iconPrimary: '#efefef',
     loader: '#2f98ff',
-    onBrand: '#ffffff',
+    onBrand: '#171619',
     overlay: 'rgba(0,0,0,0.5)',
     textDisabled: '#efefef4d',
     textLink: '#4aaeff',
