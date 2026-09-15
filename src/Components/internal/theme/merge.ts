@@ -64,8 +64,32 @@ function mergeTypography(base: PrimerTypographyTokens, override: PrimerTypograph
     styles[name] = { ...inherited, ...stripNullish(set[name] ?? {}) };
   }
 
+  // Error text defaults to the bodySmall values, the way the design file and web have it. The token
+  // file spells those out as literals, so without this a merchant who moves bodySmall gets it on
+  // every label and not on the error line underneath. Per field, and only where they said nothing
+  // about error, so setting error alone still wins.
+  styles.error = {
+    ...styles.error,
+    ...inheritedErrorMetrics(base, stripNullish(set.bodySmall ?? {}), stripNullish(set.error ?? {})),
+  };
+
   const source: PrimerTypographySource = { fontFamily, ...styles };
   return resolveTypography(source);
+}
+
+// Whatever the merchant moved on bodySmall and did not spell out on error.
+function inheritedErrorMetrics(
+  base: PrimerTypographyTokens,
+  bodySmall: Partial<PrimerTypographyStyleSource>,
+  error: Partial<PrimerTypographyStyleSource>
+): Partial<PrimerTypographyStyleSource> {
+  const inherited: Partial<PrimerTypographyStyleSource> = {};
+  for (const key of Object.keys(bodySmall) as (keyof PrimerTypographyStyleSource)[]) {
+    if (error[key] == null && bodySmall[key] !== base.bodySmall[key]) {
+      Object.assign(inherited, { [key]: bodySmall[key] });
+    }
+  }
+  return inherited;
 }
 
 export function mergeTokens(base: PrimerTokens, override: ModeOverride): PrimerTokens {
