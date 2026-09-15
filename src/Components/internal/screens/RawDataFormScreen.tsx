@@ -39,7 +39,7 @@ const FIELD_INPUT_PROPS: Record<string, FieldInputProps> = {
   OTP_CODE: { autoComplete: 'one-time-code', textContentType: 'oneTimeCode' },
   CARD_NUMBER: { autoComplete: 'cc-number', textContentType: 'creditCardNumber' },
   EXPIRY_DATE: { autoComplete: 'cc-exp', textContentType: 'creditCardExpiration' },
-  CARDHOLDER_NAME: { autoComplete: 'cc-name', textContentType: 'creditCardName', autoCapitalize: 'words' },
+  CARDHOLDER_NAME: { autoComplete: 'name', textContentType: 'creditCardName', autoCapitalize: 'words' },
 };
 
 type FieldValues = Record<string, string>;
