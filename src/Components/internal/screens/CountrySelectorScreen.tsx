@@ -210,8 +210,11 @@ function createStyles(tokens: PrimerTokens) {
     },
     emptyText: {
       color: colors.textSecondary,
-      fontFamily: typography.fontFamily,
+      fontFamily: typography.bodyLarge.fontFamily,
       fontSize: typography.bodyLarge.fontSize,
+      fontWeight: typography.bodyLarge.fontWeight as TextStyle['fontWeight'],
+      letterSpacing: typography.bodyLarge.letterSpacing,
+      lineHeight: typography.bodyLarge.lineHeight,
     },
     flag: {
       fontSize: typography.bodyLarge.fontSize + 4,
@@ -236,8 +239,9 @@ function createStyles(tokens: PrimerTokens) {
     rowLabel: {
       color: colors.textPrimary,
       flex: 1,
-      fontFamily: typography.fontFamily,
+      fontFamily: typography.bodyLarge.fontFamily,
       fontSize: typography.bodyLarge.fontSize,
+      fontWeight: typography.bodyLarge.fontWeight as TextStyle['fontWeight'],
       letterSpacing: typography.bodyLarge.letterSpacing,
       lineHeight: typography.bodyLarge.lineHeight,
     },
