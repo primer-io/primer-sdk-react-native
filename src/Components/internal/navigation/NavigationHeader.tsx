@@ -165,11 +165,11 @@ function createStyles(tokens: PrimerTokens) {
     },
     title: {
       color: colors.textPrimary,
-      fontFamily: typography.titleXLarge.fontFamily,
-      fontSize: typography.titleXLarge.fontSize,
-      fontWeight: typography.titleXLarge.fontWeight as TextStyle['fontWeight'],
-      letterSpacing: typography.titleXLarge.letterSpacing,
-      lineHeight: typography.titleXLarge.lineHeight,
+      fontFamily: typography.titleXlarge.fontFamily,
+      fontSize: typography.titleXlarge.fontSize,
+      fontWeight: typography.titleXlarge.fontWeight as TextStyle['fontWeight'],
+      letterSpacing: typography.titleXlarge.letterSpacing,
+      lineHeight: typography.titleXlarge.lineHeight,
     },
     titleFlex: {
       flex: 1,
