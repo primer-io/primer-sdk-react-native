@@ -124,6 +124,15 @@ export interface PrimerTokens {
 }
 
 export interface PrimerThemeOverride {
+  /**
+   * By default dark mode reads `dark` alone, and anything left unset there uses Primer's dark
+   * default. A colour picked against white is a guess on a dark background, and a white sheet
+   * colour carried into dark would remove dark mode entirely.
+   *
+   * Set this true for a palette that genuinely works in both modes: `light.colors` then fills in
+   * whatever `dark.colors` leaves unset.
+   */
+  usesLightColorsInDark?: boolean;
   light?: {
     colors?: Partial<PrimerColorTokens>;
     spacing?: Partial<PrimerSpacingTokens>;
