@@ -168,6 +168,11 @@ describe('brand font', () => {
     letterSpacing,
   });
 
+  it('paints the pay button label on the sheet it sits on, per mode', () => {
+    expect(defaultLightTokens.colors.onBrand).toBe(defaultLightTokens.colors.backgroundPrimary);
+    expect(defaultDarkTokens.colors.onBrand).toBe(defaultDarkTokens.colors.backgroundPrimary);
+  });
+
   it('leaves every style on Inter when nothing is set', () => {
     for (const tokens of [defaultLightTokens, defaultDarkTokens]) {
       expect(tokens.typography.fontFamily).toBe('Inter');
