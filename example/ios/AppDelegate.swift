@@ -4,7 +4,7 @@ import React_RCTAppDelegate
 import ReactAppDependencyProvider
 
 @main
-class AppDelegate: UIResponder, UIApplicationDelegate {
+final class AppDelegate: UIResponder, UIApplicationDelegate {
   var reactNativeDelegate: ReactNativeDelegate?
   var reactNativeFactory: RCTReactNativeFactory?
 
@@ -23,7 +23,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   }
 }
 
-class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   var window: UIWindow?
 
   func scene(
