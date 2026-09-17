@@ -11,7 +11,6 @@ import { CheckoutRoute } from '../navigation/types';
 import { usePrimerLocalization } from '../localization';
 import { useCheckoutFlow } from '../checkout-flow/CheckoutFlowContext';
 import { usePrimerPaymentMethod } from '../../hooks/usePrimerPaymentMethod';
-import { CheckoutButton } from '../ui/CheckoutButton';
 import { useBottomSafeArea } from './useBottomSafeArea';
 
 /**
@@ -65,7 +64,7 @@ export function BankSelectionScreen() {
       />
       {isLoading && banks.length === 0 ? (
         <View style={styles.loading}>
-          <ActivityIndicator color={tokens.colors.loader} />
+          <ActivityIndicator color={tokens.colors.primary} />
         </View>
       ) : (
         <ScrollView
@@ -101,19 +100,23 @@ export function BankSelectionScreen() {
         </ScrollView>
       )}
       <View style={[styles.footer, { paddingBottom: Math.max(bottomInset, tokens.spacing.large) }]}>
-        <CheckoutButton
-          title={t('primer_common_button_pay')}
+        <TouchableOpacity
           onPress={handleSubmit}
-          variant="primary"
           disabled={!canSubmit}
-        />
+          activeOpacity={0.7}
+          style={[styles.payButton, !canSubmit && styles.payButtonDisabled]}
+          accessibilityRole="button"
+          accessibilityState={{ disabled: !canSubmit }}
+        >
+          <Text style={styles.payButtonText}>{t('primer_common_button_pay')}</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
 }
 
 function createStyles(tokens: PrimerTokens) {
-  const { colors, radii, spacing, typography, widths } = tokens;
+  const { colors, radii, spacing, typography } = tokens;
   /* eslint-disable react-native/no-unused-styles */
   return StyleSheet.create({
     bankIcon: {
@@ -130,9 +133,9 @@ function createStyles(tokens: PrimerTokens) {
     },
     bankRow: {
       alignItems: 'center',
-      borderColor: colors.borderOutlinedDefault,
+      borderColor: colors.border,
       borderRadius: radii.medium,
-      borderWidth: widths.default,
+      borderWidth: StyleSheet.hairlineWidth,
       flexDirection: 'row',
       gap: spacing.medium,
       minHeight: 56,
@@ -142,11 +145,11 @@ function createStyles(tokens: PrimerTokens) {
       opacity: 0.4,
     },
     bankRowSelected: {
-      borderColor: colors.brand,
-      borderWidth: widths.selected,
+      borderColor: colors.primary,
+      borderWidth: 2,
     },
     footer: {
-      backgroundColor: colors.backgroundPrimary,
+      backgroundColor: colors.background,
       paddingHorizontal: spacing.large,
       paddingTop: spacing.small,
     },
@@ -154,6 +157,27 @@ function createStyles(tokens: PrimerTokens) {
       alignItems: 'center',
       flex: 1,
       justifyContent: 'center',
+    },
+    payButton: {
+      alignItems: 'center',
+      backgroundColor: colors.primary,
+      borderRadius: radii.medium,
+      justifyContent: 'center',
+      minHeight: 44,
+      padding: spacing.medium,
+      width: '100%',
+    },
+    payButtonDisabled: {
+      opacity: 0.5,
+    },
+    payButtonText: {
+      color: colors.background,
+      fontFamily: typography.titleLarge.fontFamily,
+      fontSize: typography.titleLarge.fontSize,
+      fontWeight: typography.titleLarge.fontWeight as TextStyle['fontWeight'],
+      letterSpacing: typography.titleLarge.letterSpacing,
+      lineHeight: typography.titleLarge.lineHeight,
+      textAlign: 'center',
     },
     root: {
       flex: 1,

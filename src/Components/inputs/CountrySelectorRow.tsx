@@ -3,7 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View, type StyleProp, type ViewStyl
 import { usePrimerTheme } from '../internal/theme';
 import type { PrimerTokens } from '../internal/theme';
 import { flagEmoji } from '../internal/flags';
-import { LINE_HEIGHT_RATIO } from './dimensions';
+import { FIELD_HEIGHT, LINE_HEIGHT_RATIO } from './dimensions';
 
 export interface CountrySelectorRowProps {
   /** ISO country code currently selected, or empty if none. */
@@ -76,13 +76,13 @@ export function CountrySelectorRow({
 }
 
 function createStyles(tokens: PrimerTokens) {
-  const { colors, radii, sizes, spacing, typography, widths } = tokens;
+  const { colors, radii, spacing, typography, borders } = tokens;
   /* eslint-disable react-native/no-unused-styles */
   return StyleSheet.create({
     chevron: {
       color: tokens.colors.textSecondary,
       fontSize: typography.bodyLarge.fontSize + 4,
-      lineHeight: sizes.xxlarge,
+      lineHeight: FIELD_HEIGHT,
       marginLeft: spacing.small,
     },
     container: {},
@@ -102,20 +102,20 @@ function createStyles(tokens: PrimerTokens) {
     },
     row: {
       alignItems: 'center',
-      backgroundColor: colors.backgroundOutlinedDefault,
-      borderColor: colors.borderOutlinedDefault,
+      backgroundColor: colors.background,
+      borderColor: colors.border,
       borderRadius: radii.small,
-      borderWidth: widths.default,
+      borderWidth: borders.input,
       flexDirection: 'row',
-      height: sizes.xxlarge,
+      height: FIELD_HEIGHT,
       paddingHorizontal: spacing.medium,
     },
     rowDisabled: {
-      backgroundColor: colors.backgroundSecondary,
-      borderColor: colors.borderOutlinedDisabled,
+      backgroundColor: colors.surface,
+      borderColor: colors.borderDisabled,
     },
     value: {
-      color: colors.textOutlinedDefault,
+      color: colors.textPrimary,
       flex: 1,
       fontFamily: typography.fontFamily,
       fontSize: typography.bodyLarge.fontSize,

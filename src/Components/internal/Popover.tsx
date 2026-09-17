@@ -43,10 +43,9 @@ export function Popover({ visible, onDismiss, children, anchor, testID }: Popove
   const cardStyle = [
     styles.card,
     {
-      backgroundColor: tokens.colors.backgroundPrimary,
-      borderColor: tokens.colors.borderOutlinedDefault,
+      backgroundColor: tokens.colors.background,
+      borderColor: tokens.colors.border,
       borderRadius: tokens.radii.medium,
-      borderWidth: tokens.widths.default,
     },
   ];
 
@@ -77,6 +76,7 @@ export function Popover({ visible, onDismiss, children, anchor, testID }: Popove
 
 const styles = StyleSheet.create({
   card: {
+    borderWidth: StyleSheet.hairlineWidth,
     overflow: 'hidden',
     width: '100%',
   },

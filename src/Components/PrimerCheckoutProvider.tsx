@@ -245,9 +245,8 @@ export function PrimerCheckoutProvider({
 }: PrimerCheckoutProviderProps) {
   const [state, setState] = useState<InternalState>(initialState);
 
-  const lightTokens = useMemo(() => mergeTokens(defaultLightTokens, theme?.light), [theme?.light]);
-  const darkTokens = useMemo(() => mergeTokens(defaultDarkTokens, theme?.dark), [theme?.dark]);
-  const themeContextValue = useMemo(() => ({ lightTokens, darkTokens }), [lightTokens, darkTokens]);
+  const [lightTokens] = useState(() => mergeTokens(defaultLightTokens, theme?.light));
+  const [darkTokens] = useState(() => mergeTokens(defaultDarkTokens, theme?.dark));
 
   // Refs keep init useEffect deps to [clientToken] only.
   const settingsRef = useRef(settings);
@@ -1838,7 +1837,7 @@ export function PrimerCheckoutProvider({
   ]);
 
   return (
-    <ThemeContext.Provider value={themeContextValue}>
+    <ThemeContext.Provider value={{ lightTokens, darkTokens }}>
       <PrimerCheckoutContext.Provider value={contextValue}>{children}</PrimerCheckoutContext.Provider>
     </ThemeContext.Provider>
   );

@@ -242,7 +242,7 @@ function createStyles(tokens: PrimerTokens) {
       lineHeight: typography.bodyLarge.lineHeight,
     },
     rowSelected: {
-      backgroundColor: colors.backgroundSecondary,
+      backgroundColor: colors.surface,
     },
     searchWrapper: {
       paddingBottom: spacing.medium,
