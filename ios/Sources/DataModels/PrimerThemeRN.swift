@@ -72,7 +72,6 @@ extension ColorThemeRN {
         )
     }
 
-    @available(iOS 13.0, *)
     var primerDarkModeTheme: ColorTheme {
         return PrimerDefaultTheme(
             text1: text?.uiColor ?? .white,
