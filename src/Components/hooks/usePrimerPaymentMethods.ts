@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
-import { useColorScheme } from 'react-native';
+import { useIsDarkAppearance } from '../internal/theme';
 import { usePrimerCheckout } from './usePrimerCheckout';
 import { titleCaseFromType } from '../internal/utils/formatting';
 import { toError } from '../internal/utils/errors';
@@ -56,7 +56,7 @@ export function usePrimerPaymentMethods(options: UsePrimerPaymentMethodsOptions 
   } = usePrimerCheckout();
 
   const [selectedType, setSelectedType] = useState<string | null>(null);
-  const colorScheme = useColorScheme();
+  const isDark = useIsDarkAppearance();
 
   const onLoadRef = useRef(onLoad);
   onLoadRef.current = onLoad;
@@ -69,8 +69,6 @@ export function usePrimerPaymentMethods(options: UsePrimerPaymentMethodsOptions 
     if (isLoading) {
       return { items: [], error: null };
     }
-
-    const isDark = colorScheme === 'dark';
 
     try {
       const resourceMap = new Map(paymentMethodResources.map((r) => [r.paymentMethodType, r]));
@@ -120,7 +118,7 @@ export function usePrimerPaymentMethods(options: UsePrimerPaymentMethodsOptions 
     } catch (err) {
       return { items: [], error: toError(err) };
     }
-  }, [availablePaymentMethods, paymentMethodResources, isLoading, clientSession, include, exclude, colorScheme]);
+  }, [availablePaymentMethods, paymentMethodResources, isLoading, clientSession, include, exclude, isDark]);
 
   // Fires onLoad once per distinct set of payment-method types, after resources load.
   // Re-fires if the set of types changes (e.g. client-session update adds/removes a method).

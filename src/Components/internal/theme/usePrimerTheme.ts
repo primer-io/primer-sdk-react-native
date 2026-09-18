@@ -1,15 +1,15 @@
 import { useContext } from 'react';
-import { useColorScheme } from 'react-native';
 import { ThemeContext } from './ThemeContext';
+import { useIsDarkAppearance } from './useAppearanceMode';
 import { defaultDarkTokens, defaultLightTokens } from './tokens';
 import type { PrimerTokens } from './types';
 
 export function usePrimerTheme(): PrimerTokens {
   const theme = useContext(ThemeContext);
-  const colorScheme = useColorScheme();
+  const isDark = useIsDarkAppearance();
 
   const light = theme?.lightTokens ?? defaultLightTokens;
   const dark = theme?.darkTokens ?? defaultDarkTokens;
 
-  return colorScheme === 'dark' ? dark : light;
+  return isDark ? dark : light;
 }

@@ -247,7 +247,11 @@ export function PrimerCheckoutProvider({
 
   const lightTokens = useMemo(() => mergeTokens(defaultLightTokens, theme?.light), [theme?.light]);
   const darkTokens = useMemo(() => mergeTokens(defaultDarkTokens, theme?.dark), [theme?.dark]);
-  const themeContextValue = useMemo(() => ({ lightTokens, darkTokens }), [lightTokens, darkTokens]);
+  const appearanceMode = settings?.uiOptions?.appearanceMode;
+  const themeContextValue = useMemo(
+    () => ({ lightTokens, darkTokens, appearanceMode }),
+    [lightTokens, darkTokens, appearanceMode]
+  );
 
   // Refs keep init useEffect deps to [clientToken] only.
   const settingsRef = useRef(settings);
