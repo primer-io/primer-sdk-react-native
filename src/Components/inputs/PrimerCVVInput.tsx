@@ -30,6 +30,7 @@ export const PrimerCVVInput = forwardRef<PrimerTextInputRef, PrimerCVVInputProps
       maxLength={cardForm.descriptor.cvvLength}
       secureTextEntry
       autoComplete="cc-csc"
+      textContentType="creditCardSecurityCode"
       label={resolvedLabel}
       placeholder={resolvedPlaceholder}
       error={cardForm.errors.cvv}

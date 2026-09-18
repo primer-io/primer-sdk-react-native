@@ -130,7 +130,8 @@ export function StripeAchUserDetailsScreen() {
               onChangeText={(text) => void ach.setFirstName(text)}
               error={fieldErrors.firstName}
               autoCapitalize="words"
-              autoComplete="name-given"
+              autoComplete="given-name"
+              textContentType="givenName"
               editable={!isWaiting}
             />
             <PrimerTextInput
@@ -140,7 +141,8 @@ export function StripeAchUserDetailsScreen() {
               onChangeText={(text) => void ach.setLastName(text)}
               error={fieldErrors.lastName}
               autoCapitalize="words"
-              autoComplete="name-family"
+              autoComplete="family-name"
+              textContentType="familyName"
               editable={!isWaiting}
             />
           </View>
@@ -152,6 +154,7 @@ export function StripeAchUserDetailsScreen() {
             keyboardType="email-address"
             autoCapitalize="none"
             autoComplete="email"
+            textContentType="emailAddress"
             editable={!isWaiting}
           />
           <Text style={styles.disclaimer}>{t('primer_ach_email_disclaimer')}</Text>

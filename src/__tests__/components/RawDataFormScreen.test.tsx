@@ -133,7 +133,9 @@ describe('RawDataFormScreen (ORC-6514)', () => {
     mockMethod = rawDataForm({ requiredInputs: ['PHONE_NUMBER', 'OTP', 'CARD_NUMBER', 'CARDHOLDER_NAME'] });
     const inputs = textInputs(render().root);
 
-    expect(inputs.map((i: any) => i.props.autoComplete)).toEqual(['tel', 'one-time-code', 'cc-number', 'cc-name']);
+    // `cc-name` is not an Android autofill value, and an unrecognised one switches autofill off for
+    // that field, so it was worse than leaving it blank. `name` is what the card form uses.
+    expect(inputs.map((i: any) => i.props.autoComplete)).toEqual(['tel', 'one-time-code', 'cc-number', 'name']);
     expect(inputs.map((i: any) => i.props.textContentType)).toEqual([
       'telephoneNumber',
       'oneTimeCode',
