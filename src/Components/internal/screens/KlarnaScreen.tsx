@@ -161,7 +161,7 @@ export function KlarnaScreen() {
 }
 
 function createStyles(tokens: PrimerTokens) {
-  const { colors, radii, spacing, typography } = tokens;
+  const { colors, radii, spacing, typography, widths } = tokens;
   /* eslint-disable react-native/no-unused-styles */
   return StyleSheet.create({
     categoryName: {
@@ -174,17 +174,17 @@ function createStyles(tokens: PrimerTokens) {
     },
     categoryRow: {
       alignItems: 'center',
-      borderColor: colors.border,
+      borderColor: colors.borderOutlinedDefault,
       borderRadius: radii.medium,
-      borderWidth: StyleSheet.hairlineWidth,
+      borderWidth: widths.default,
       flexDirection: 'row',
       gap: spacing.medium,
       minHeight: 56,
       padding: spacing.medium,
     },
     categoryRowSelected: {
-      borderColor: colors.primary,
-      borderWidth: 2,
+      borderColor: colors.brand,
+      borderWidth: widths.selected,
     },
     description: {
       color: colors.textSecondary,
@@ -194,7 +194,7 @@ function createStyles(tokens: PrimerTokens) {
       lineHeight: typography.bodyMedium.lineHeight,
     },
     footer: {
-      backgroundColor: colors.background,
+      backgroundColor: colors.backgroundPrimary,
       paddingHorizontal: spacing.large,
       paddingTop: spacing.small,
     },
@@ -206,14 +206,14 @@ function createStyles(tokens: PrimerTokens) {
       justifyContent: 'center',
     },
     radioCircle: {
-      borderColor: colors.primary,
+      borderColor: colors.brand,
       borderRadius: 10,
       borderWidth: 2,
       height: 20,
       width: 20,
     },
     radioCircleSelected: {
-      backgroundColor: colors.primary,
+      backgroundColor: colors.brand,
     },
     root: {
       flex: 1,

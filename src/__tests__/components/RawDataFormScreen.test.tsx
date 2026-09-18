@@ -8,6 +8,7 @@ import renderer, { act } from 'react-test-renderer';
 jest.mock(
   'react-native',
   () => ({
+    Platform: { OS: 'ios', select: (o: { ios?: unknown; default?: unknown }) => o.ios ?? o.default },
     ScrollView: 'ScrollView',
     StyleSheet: { create: (s: unknown) => s, flatten: (s: unknown) => s, hairlineWidth: 1 },
     Text: 'Text',
@@ -32,10 +33,32 @@ jest.mock('../../Components/hooks/usePrimerPaymentMethod', () => ({
 
 jest.mock('../../Components/internal/theme', () => ({
   usePrimerTheme: () => ({
-    colors: { background: '#fff', border: '#ccc', primary: '#08f', textPrimary: '#000' },
+    colors: {
+      backgroundPrimary: '#fff',
+      backgroundOutlinedDefault: '#fdfdfd',
+      backgroundOutlinedDisabled: '#eee',
+      backgroundSecondary: '#fafafa',
+      borderOutlinedDefault: '#ccc',
+      borderOutlinedDisabled: '#ddd',
+      borderOutlinedError: '#f00',
+      borderOutlinedFocus: '#08c',
+      brand: '#08f',
+      onBrand: '#fff',
+      textDisabled: '#aaa',
+      textNegative: '#c00',
+      textOutlinedDefault: '#111',
+      textPlaceholder: '#999',
+      textPrimary: '#000',
+    },
     spacing: { xsmall: 4, small: 8, medium: 12, large: 16 },
-    radii: { medium: 8 },
+    radii: { small: 4, medium: 8, large: 12 },
+    sizes: { small: 16, medium: 20, large: 24, xlarge: 32, xxlarge: 40, xxxlarge: 56, base: 4 },
+    widths: { default: 1, focus: 2, selected: 2, error: 2 },
     typography: {
+      fontFamily: 'system',
+      bodySmall: { fontFamily: 'system', fontSize: 12, fontWeight: '400', letterSpacing: 0, lineHeight: 16 },
+      bodyLarge: { fontFamily: 'system', fontSize: 16, fontWeight: '400', letterSpacing: 0, lineHeight: 20 },
+      error: { fontFamily: 'system', fontSize: 12, fontWeight: '400', letterSpacing: 0, lineHeight: 16 },
       titleLarge: { fontFamily: 'system', fontSize: 16, fontWeight: '500', letterSpacing: 0, lineHeight: 20 },
     },
   }),
@@ -88,6 +111,8 @@ function render() {
 }
 
 const textInputs = (root: any) => root.findAll((n: any) => n.type === 'TextInput');
+// The bordered View PrimerTextInput wraps each field in — carries the focus/error/disabled border.
+const fieldBorder = (root: any, index = 0) => textInputs(root)[index].parent.props.style;
 const payButton = (root: any) => root.findAll((n: any) => n.type === 'TouchableOpacity')[0];
 
 describe('RawDataFormScreen (ORC-6514)', () => {
@@ -104,6 +129,39 @@ describe('RawDataFormScreen (ORC-6514)', () => {
     expect(inputs.map((i: any) => i.props.keyboardType)).toEqual(['phone-pad', 'number-pad', 'default']);
   });
 
+  it('offers the right autofill hint per field', () => {
+    mockMethod = rawDataForm({ requiredInputs: ['PHONE_NUMBER', 'OTP', 'CARD_NUMBER', 'CARDHOLDER_NAME'] });
+    const inputs = textInputs(render().root);
+
+    expect(inputs.map((i: any) => i.props.autoComplete)).toEqual(['tel', 'one-time-code', 'cc-number', 'cc-name']);
+    expect(inputs.map((i: any) => i.props.textContentType)).toEqual([
+      'telephoneNumber',
+      'oneTimeCode',
+      'creditCardNumber',
+      'creditCardName',
+    ]);
+  });
+
+  it('capitalises the cardholder name and nothing else', () => {
+    mockMethod = rawDataForm({ requiredInputs: ['PHONE_NUMBER', 'CARDHOLDER_NAME'] });
+    const inputs = textInputs(render().root);
+
+    expect(inputs.map((i: any) => i.props.autoCapitalize)).toEqual(['none', 'words']);
+  });
+
+  it('draws the focus border while a field is focused (ORC-8178)', () => {
+    mockMethod = rawDataForm({ requiredInputs: ['PHONE_NUMBER'] });
+    const root = render().root;
+
+    expect(fieldBorder(root)).toMatchObject({ borderColor: '#ccc', borderWidth: 1 });
+
+    act(() => textInputs(root)[0].props.onFocus());
+    expect(fieldBorder(root)).toMatchObject({ borderColor: '#08c', borderWidth: 2 });
+
+    act(() => textInputs(root)[0].props.onBlur());
+    expect(fieldBorder(root)).toMatchObject({ borderColor: '#ccc', borderWidth: 1 });
+  });
+
   it('forwards typed input to the SDK in the right raw-data shape', () => {
     mockMethod = rawDataForm({ requiredInputs: ['PHONE_NUMBER'] });
     const root = render().root;
@@ -117,6 +175,9 @@ describe('RawDataFormScreen (ORC-6514)', () => {
     const root = render().root;
 
     expect(payButton(root).props.disabled).toBe(true);
+    // Disabled reads as the grey fill, not a faded brand (ORC-8265).
+    expect(payButton(root).props.style[0].backgroundColor).toBe('#eee');
+    expect(payButton(root).props.style[1]).toEqual({ opacity: 1 });
     act(() => payButton(root).props.onPress());
     expect(mockSubmit).not.toHaveBeenCalled();
     expect(mockReplace).not.toHaveBeenCalled();
@@ -127,6 +188,7 @@ describe('RawDataFormScreen (ORC-6514)', () => {
     const root = render().root;
 
     expect(payButton(root).props.disabled).toBe(false);
+    expect(payButton(root).props.style[0].backgroundColor).toBe('#08f');
     act(() => payButton(root).props.onPress());
     expect(mockReplace).toHaveBeenCalledWith('processing');
     expect(mockSubmit).toHaveBeenCalledTimes(1);

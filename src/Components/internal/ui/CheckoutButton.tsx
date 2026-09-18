@@ -12,6 +12,7 @@ export interface CheckoutButtonProps {
   disabled?: boolean;
   accessibilityLabel?: string;
   accessibilityHint?: string;
+  testID?: string;
 }
 
 export function CheckoutButton({
@@ -22,19 +23,29 @@ export function CheckoutButton({
   disabled = false,
   accessibilityLabel,
   accessibilityHint,
-}: CheckoutButtonProps) {
+  testID,
+}: Readonly<CheckoutButtonProps>) {
   const tokens = usePrimerTheme();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
 
-  const buttonStyle = variant === 'primary' ? styles.primaryButton : styles.outlinedButton;
-  const textStyle = variant === 'primary' ? styles.primaryText : styles.outlinedText;
-  const spinnerColor = variant === 'primary' ? tokens.colors.background : tokens.colors.textPrimary;
+  const isPrimary = variant === 'primary';
   const isInteractive = !disabled && !loading;
   const showDisabledTint = disabled && !loading;
+  // Button and text always move together, so resolve them as a pair.
+  const { button: buttonStyle, text: textStyle } = useMemo(() => {
+    if (!isPrimary) {
+      return { button: styles.outlinedButton, text: styles.outlinedText };
+    }
+    if (showDisabledTint) {
+      return { button: styles.primaryButtonDisabled, text: styles.primaryTextDisabled };
+    }
+    return { button: styles.primaryButton, text: styles.primaryText };
+  }, [isPrimary, showDisabledTint, styles]);
+  const spinnerColor = isPrimary ? tokens.colors.onBrand : tokens.colors.textPrimary;
 
   return (
     <TouchableOpacity
-      style={[buttonStyle, showDisabledTint ? styles.dimmed : styles.opaque]}
+      style={[buttonStyle, !isPrimary && showDisabledTint ? styles.dimmed : styles.opaque]}
       onPress={onPress}
       disabled={!isInteractive}
       activeOpacity={0.7}
@@ -42,6 +53,7 @@ export function CheckoutButton({
       accessibilityLabel={accessibilityLabel}
       accessibilityHint={accessibilityHint}
       accessibilityState={{ disabled: !isInteractive, busy: loading }}
+      testID={testID}
     >
       {loading ? <ActivityIndicator color={spinnerColor} /> : <Text style={textStyle}>{title}</Text>}
     </TouchableOpacity>
@@ -49,12 +61,15 @@ export function CheckoutButton({
 }
 
 function createStyles(tokens: PrimerTokens) {
-  const { colors, spacing, typography, radii, borders } = tokens;
+  const { colors, spacing, typography, radii, widths } = tokens;
 
   const baseButton = {
     alignItems: 'center' as const,
     borderRadius: radii.medium,
     justifyContent: 'center' as const,
+    // padding + label line-height already come to 44 at the default tokens, but both are
+    // themable, so the touch-target floor has to be pinned independently
+    minHeight: 44,
     padding: spacing.medium,
     width: '100%' as const,
   };
@@ -78,9 +93,9 @@ function createStyles(tokens: PrimerTokens) {
     },
     outlinedButton: {
       ...baseButton,
-      backgroundColor: colors.background,
-      borderColor: colors.border,
-      borderWidth: borders.default,
+      backgroundColor: colors.backgroundPrimary,
+      borderColor: colors.borderOutlinedDefault,
+      borderWidth: widths.default,
     },
     outlinedText: {
       ...baseText,
@@ -88,11 +103,19 @@ function createStyles(tokens: PrimerTokens) {
     },
     primaryButton: {
       ...baseButton,
-      backgroundColor: colors.primary,
+      backgroundColor: colors.brand,
+    },
+    primaryButtonDisabled: {
+      ...baseButton,
+      backgroundColor: colors.backgroundOutlinedDisabled,
     },
     primaryText: {
       ...baseText,
-      color: colors.background,
+      color: colors.onBrand,
+    },
+    primaryTextDisabled: {
+      ...baseText,
+      color: colors.textDisabled,
     },
   });
   /* eslint-enable react-native/no-unused-styles */

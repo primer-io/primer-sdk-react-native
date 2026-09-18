@@ -1,10 +1,10 @@
 import { createElement, type ReactNode } from 'react';
 // @ts-expect-error -- react-test-renderer has no types for React 19
 import { act, create } from 'react-test-renderer';
-import { ThemeContext } from '../ThemeContext';
-import { defaultDarkTokens, defaultLightTokens } from '../tokens';
-import { usePrimerTheme } from '../usePrimerTheme';
-import type { PrimerTokens } from '../types';
+import { ThemeContext } from '../../../Components/internal/theme/ThemeContext';
+import { defaultDarkTokens, defaultLightTokens } from '../../../Components/internal/theme/tokens';
+import { usePrimerTheme } from '../../../Components/internal/theme/usePrimerTheme';
+import type { PrimerTokens } from '../../../Components/internal/theme/types';
 
 let mockColorScheme: 'light' | 'dark' | null = 'light';
 
@@ -76,7 +76,7 @@ describe('usePrimerTheme', () => {
   describe('inside provider with light override', () => {
     const customLightTokens: PrimerTokens = {
       ...defaultLightTokens,
-      colors: { ...defaultLightTokens.colors, primary: '#ff6b35' },
+      colors: { ...defaultLightTokens.colors, brand: '#ff6b35' },
     };
 
     function Wrapper({ children }: { children: ReactNode }) {
@@ -89,24 +89,24 @@ describe('usePrimerTheme', () => {
     it('applies light override in light mode', () => {
       mockColorScheme = 'light';
       const { result } = renderHook(() => usePrimerTheme(), Wrapper);
-      expect(result.current.colors.primary).toBe('#ff6b35');
+      expect(result.current.colors.brand).toBe('#ff6b35');
     });
 
     it('does not apply light override in dark mode', () => {
       mockColorScheme = 'dark';
       const { result } = renderHook(() => usePrimerTheme(), Wrapper);
-      expect(result.current.colors.primary).toBe(defaultDarkTokens.colors.primary);
+      expect(result.current.colors.brand).toBe(defaultDarkTokens.colors.brand);
     });
   });
 
   describe('inside provider with both mode overrides', () => {
     const customLightTokens: PrimerTokens = {
       ...defaultLightTokens,
-      colors: { ...defaultLightTokens.colors, primary: '#ff6b35' },
+      colors: { ...defaultLightTokens.colors, brand: '#ff6b35' },
     };
     const customDarkTokens: PrimerTokens = {
       ...defaultDarkTokens,
-      colors: { ...defaultDarkTokens.colors, primary: '#ff8c5a' },
+      colors: { ...defaultDarkTokens.colors, brand: '#ff8c5a' },
     };
 
     function Wrapper({ children }: { children: ReactNode }) {
@@ -119,13 +119,13 @@ describe('usePrimerTheme', () => {
     it('returns light override in light mode', () => {
       mockColorScheme = 'light';
       const { result } = renderHook(() => usePrimerTheme(), Wrapper);
-      expect(result.current.colors.primary).toBe('#ff6b35');
+      expect(result.current.colors.brand).toBe('#ff6b35');
     });
 
     it('returns dark override in dark mode', () => {
       mockColorScheme = 'dark';
       const { result } = renderHook(() => usePrimerTheme(), Wrapper);
-      expect(result.current.colors.primary).toBe('#ff8c5a');
+      expect(result.current.colors.brand).toBe('#ff8c5a');
     });
   });
 });

@@ -1,7 +1,7 @@
 import { forwardRef, useImperativeHandle, useMemo, useRef, useState, type ComponentRef } from 'react';
 import { Platform, StyleSheet, Text, TextInput, View, type TextStyle } from 'react-native';
 import { usePrimerTheme } from '../internal/theme';
-import { FIELD_HEIGHT, LINE_HEIGHT_RATIO } from './dimensions';
+import { LINE_HEIGHT_RATIO } from './dimensions';
 import type { PrimerTextInputProps, PrimerTextInputRef, PrimerTextInputTheme } from '../types/CardInputTypes';
 import type { PrimerTokens } from '../internal/theme/types';
 
@@ -9,27 +9,34 @@ import type { PrimerTokens } from '../internal/theme/types';
 // Suppresses iOS's auto-added Previous/Next/Done navigation toolbar above the keyboard.
 export const PRIMER_EMPTY_ACCESSORY_ID = 'primer-empty-input-accessory';
 
-function resolveTheme(tokens: PrimerTokens, override?: PrimerTextInputTheme) {
-  const borderWidth = override?.borderWidth ?? tokens.borders.input;
-  const focusedBorderWidth = Math.max(override?.focusedBorderWidth ?? tokens.borders.strong, borderWidth);
+// Exported for tests: the override chain is easy to break silently.
+export function resolveTheme(tokens: PrimerTokens, override?: PrimerTextInputTheme) {
+  const borderWidth = override?.borderWidth ?? tokens.widths.default;
+  const focusedBorderWidth = Math.max(override?.focusedBorderWidth ?? tokens.widths.focus, borderWidth);
+  const errorBorderWidth = Math.max(override?.errorBorderWidth ?? tokens.widths.error, borderWidth);
   return {
-    backgroundColor: override?.backgroundColor ?? tokens.colors.background,
-    borderColor: override?.borderColor ?? tokens.colors.border,
+    backgroundColor: override?.backgroundColor ?? tokens.colors.backgroundOutlinedDefault,
+    borderColor: override?.borderColor ?? tokens.colors.borderOutlinedDefault,
     borderRadius: override?.borderRadius ?? tokens.radii.small,
     borderWidth,
-    disabledBackgroundColor: override?.disabledBackgroundColor ?? tokens.colors.surface,
-    disabledBorderColor: override?.disabledBorderColor ?? tokens.colors.borderDisabled,
-    errorColor: override?.errorColor ?? tokens.colors.borderError,
+    disabledBackgroundColor: override?.disabledBackgroundColor ?? tokens.colors.backgroundSecondary,
+    disabledBorderColor: override?.disabledBorderColor ?? tokens.colors.borderOutlinedDisabled,
+    errorColor: override?.errorColor ?? tokens.colors.borderOutlinedError,
     errorTextColor: override?.errorTextColor ?? tokens.colors.textNegative,
-    fieldHeight: override?.fieldHeight ?? FIELD_HEIGHT,
+    // `fontFamily`/`labelFontSize` stay in the chain: they styled the error text before the
+    // error token existed, so a merchant already setting them keeps working.
+    errorFontFamily: override?.errorFontFamily ?? override?.fontFamily ?? tokens.typography.error.fontFamily,
+    errorFontSize: override?.errorFontSize ?? override?.labelFontSize ?? tokens.typography.error.fontSize,
+    fieldHeight: override?.fieldHeight ?? tokens.sizes.xxlarge,
+    errorBorderWidth,
     focusedBorderWidth,
     fontFamily: override?.fontFamily ?? tokens.typography.fontFamily,
     fontSize: override?.fontSize ?? tokens.typography.bodyLarge.fontSize,
     labelColor: override?.labelColor ?? tokens.colors.textPrimary,
     labelFontSize: override?.labelFontSize ?? tokens.typography.bodySmall.fontSize,
     placeholderColor: override?.placeholderColor ?? tokens.colors.textPlaceholder,
-    primaryColor: override?.primaryColor ?? tokens.colors.borderFocused,
-    textColor: override?.textColor ?? tokens.colors.textPrimary,
+    primaryColor: override?.primaryColor ?? tokens.colors.borderOutlinedFocus,
+    textColor: override?.textColor ?? tokens.colors.textOutlinedDefault,
   };
 }
 
@@ -44,6 +51,7 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
     maxLength,
     secureTextEntry = false,
     autoComplete,
+    textContentType,
     autoCapitalize = 'none',
     label,
     showLabel = true,
@@ -93,7 +101,12 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
   );
 
   const hasError = !!error;
-  const currentBorderWidth = isFocused || hasError ? resolved.focusedBorderWidth : resolved.borderWidth;
+  // Error beats focus beats resting.
+  const currentBorderWidth = useMemo(() => {
+    if (hasError) return resolved.errorBorderWidth;
+    if (isFocused) return resolved.focusedBorderWidth;
+    return resolved.borderWidth;
+  }, [hasError, isFocused, resolved]);
   const borderWidthDiff = currentBorderWidth - resolved.borderWidth;
 
   // Error takes precedence over focus — the validation signal is more important than the
@@ -112,8 +125,8 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
         container: {},
         error: {
           color: resolved.errorTextColor,
-          fontFamily: resolved.fontFamily,
-          fontSize: resolved.labelFontSize,
+          fontFamily: resolved.errorFontFamily,
+          fontSize: resolved.errorFontSize,
           marginTop: tokens.spacing.xsmall,
         },
         input: {
@@ -171,6 +184,7 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
           maxLength={maxLength}
           secureTextEntry={secureTextEntry}
           autoComplete={autoComplete}
+          textContentType={textContentType}
           autoCapitalize={autoCapitalize}
           placeholder={placeholder}
           placeholderTextColor={resolved.placeholderColor}

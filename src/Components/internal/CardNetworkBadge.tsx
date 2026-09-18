@@ -63,11 +63,7 @@ export function CardNetworkBadge({ identifier, testID, marginLeft }: CardNetwork
     return (
       <Image
         source={{ uri }}
-        style={[
-          styles.chipImage,
-          baseStyle,
-          { backgroundColor: tokens.colors.surface, borderRadius: tokens.radii.xsmall },
-        ]}
+        style={[styles.chipImage, baseStyle, { borderRadius: tokens.radii.xsmall }]}
         resizeMode="contain"
         testID={testID}
       />
@@ -81,10 +77,9 @@ export function CardNetworkBadge({ identifier, testID, marginLeft }: CardNetwork
           styles.chip,
           baseStyle,
           {
-            backgroundColor: tokens.colors.surface,
-            borderColor: tokens.colors.border,
+            borderColor: tokens.colors.borderOutlinedDefault,
             borderRadius: tokens.radii.xsmall,
-            borderWidth: tokens.borders.input,
+            borderWidth: tokens.widths.default,
           },
         ]}
         testID={testID}

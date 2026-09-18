@@ -397,6 +397,7 @@ function createStyles(tokens: PrimerTokens) {
     },
     headerIcon: {
       height: HEADER_ICON_SIZE,
+      tintColor: colors.iconPrimary,
       width: HEADER_ICON_SIZE,
     },
     listContent: {
@@ -407,7 +408,7 @@ function createStyles(tokens: PrimerTokens) {
 }
 
 function createRowStyles(tokens: PrimerTokens, isActive: boolean) {
-  const { colors, spacing, radii, borders, typography } = tokens;
+  const { colors, spacing, radii, widths, typography } = tokens;
   // Match the overall tile size between active (2px border) and default (1px) by
   // compensating padding so inner content doesn't shift by 1px on toggle.
   const innerPadding = isActive ? spacing.medium - 1 : spacing.medium;
@@ -415,7 +416,7 @@ function createRowStyles(tokens: PrimerTokens, isActive: boolean) {
   return StyleSheet.create({
     brandChip: {
       alignItems: 'center',
-      backgroundColor: colors.surface,
+      backgroundColor: colors.backgroundSecondary,
       borderRadius: radii.xsmall,
       height: BRAND_CHIP_HEIGHT,
       justifyContent: 'center',
@@ -433,6 +434,7 @@ function createRowStyles(tokens: PrimerTokens, isActive: boolean) {
     },
     checkIcon: {
       height: CHECK_ICON_SIZE,
+      tintColor: colors.brand,
       width: CHECK_ICON_SIZE,
     },
     checkIconBox: {
@@ -449,6 +451,7 @@ function createRowStyles(tokens: PrimerTokens, isActive: boolean) {
     },
     deleteIcon: {
       height: DELETE_ICON_SIZE,
+      tintColor: colors.iconPrimary,
       width: DELETE_ICON_SIZE,
     },
     leftCol: {
@@ -496,10 +499,10 @@ function createRowStyles(tokens: PrimerTokens, isActive: boolean) {
       lineHeight: typography.bodySmall.lineHeight,
     },
     tile: {
-      backgroundColor: colors.background,
-      borderColor: isActive ? colors.primary : colors.border,
+      backgroundColor: colors.backgroundPrimary,
+      borderColor: isActive ? colors.brand : colors.borderOutlinedDefault,
       borderRadius: radii.medium,
-      borderWidth: isActive ? borders.strong : borders.default,
+      borderWidth: isActive ? widths.selected : widths.default,
       padding: innerPadding,
     },
     tileFull: {

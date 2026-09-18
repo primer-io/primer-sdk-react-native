@@ -10,12 +10,15 @@ export interface PrimerTextInputTheme {
   disabledBackgroundColor?: string;
   borderColor?: string;
   disabledBorderColor?: string;
-  /** Border color used when the input has an error. Falls back to the semantic `colors.borderError` token. */
+  /** Border color used when the input has an error. Falls back to the semantic `colors.borderOutlinedError` token. */
   errorColor?: string;
   /** Color for the helper/error text below the input. Falls back to the semantic `colors.textNegative` token. */
   errorTextColor?: string;
   borderWidth?: number;
   focusedBorderWidth?: number;
+  errorBorderWidth?: number;
+  errorFontFamily?: string;
+  errorFontSize?: number;
   borderRadius?: number;
   fontSize?: number;
   labelFontSize?: number;
@@ -35,6 +38,8 @@ export interface PrimerTextInputProps {
   maxLength?: number;
   secureTextEntry?: boolean;
   autoComplete?: TextInputProps['autoComplete'];
+  /** iOS autofill hint; `autoComplete` covers Android. */
+  textContentType?: TextInputProps['textContentType'];
   autoCapitalize?: TextInputProps['autoCapitalize'];
   label?: string;
   showLabel?: boolean;

@@ -18,6 +18,8 @@ import {
   PrimerErrorScreen,
 } from '../../../Components/status';
 import { CheckoutButton } from '../../../Components/internal/ui';
+import { ThemeContext } from '../../../Components/internal/theme/ThemeContext';
+import { defaultDarkTokens, defaultLightTokens } from '../../../Components/internal/theme/tokens';
 
 function render(element: ReturnType<typeof createElement>) {
   let testRenderer: ReturnType<typeof create>;
@@ -47,6 +49,20 @@ describe('public status components (standalone, no checkout/navigation provider)
   it('PrimerLoadingScreen renders with overridden copy', () => {
     const r = render(createElement(PrimerLoadingScreen, { title: 'Wait', subtitle: 'Almost there' }));
     expect(r.toJSON()).not.toBeNull();
+  });
+
+  it('PrimerLoadingScreen paints its spinner from the loader colour, not from brand', () => {
+    const tokens = {
+      ...defaultLightTokens,
+      colors: { ...defaultLightTokens.colors, brand: '#ff0000', loader: '#00ff00' },
+    };
+    const r = render(
+      createElement(ThemeContext.Provider, {
+        value: { lightTokens: tokens, darkTokens: defaultDarkTokens },
+        children: createElement(PrimerLoadingScreen, {}),
+      })
+    );
+    expect(r.root.findByType('ActivityIndicator').props.color).toBe('#00ff00');
   });
 
   it('PrimerSuccessScreen renders without throwing', () => {

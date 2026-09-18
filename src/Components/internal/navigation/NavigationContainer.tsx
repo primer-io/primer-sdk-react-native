@@ -90,7 +90,7 @@ export function NavigationContainer({ screenMap }: NavigationContainerProps) {
   // The outgoing screen is rendered as a sibling only during transitions. Consequence: the
   // current screen's component instance is preserved across transition start/end — no remount,
   // no useEffect re-runs caused by the container swapping tree shapes.
-  const bg = { backgroundColor: tokens.colors.background };
+  const bg = { backgroundColor: tokens.colors.backgroundPrimary };
   const currentZIndex = transition.type === 'pop' ? 1 : 2;
   const outgoingZIndex = transition.type === 'pop' ? 2 : 1;
   const showOutgoing = transition.type !== 'none' && !!OutgoingComponent && !!transition.outgoingEntry;
