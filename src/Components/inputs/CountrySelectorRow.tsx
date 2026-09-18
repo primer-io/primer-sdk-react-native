@@ -43,7 +43,7 @@ export function CountrySelectorRow({
 
   return (
     <View style={[styles.container, style]} testID={testID}>
-      <Text style={styles.label}>{label}</Text>
+      <Text style={[styles.label, !editable && styles.textDisabled]}>{label}</Text>
       <TouchableOpacity
         onPress={onPress}
         disabled={!editable}
@@ -61,7 +61,7 @@ export function CountrySelectorRow({
           </Text>
         )}
         <Text
-          style={[styles.value, !hasValue && styles.placeholder]}
+          style={[styles.value, !hasValue && styles.placeholder, !editable && styles.textDisabled]}
           numberOfLines={1}
           testID={testID ? `${testID}-value` : undefined}
         >
@@ -111,8 +111,11 @@ function createStyles(tokens: PrimerTokens) {
       paddingHorizontal: spacing.medium,
     },
     rowDisabled: {
-      backgroundColor: colors.backgroundSecondary,
+      backgroundColor: colors.backgroundOutlinedDisabled,
       borderColor: colors.borderOutlinedDisabled,
+    },
+    textDisabled: {
+      color: colors.textDisabled,
     },
     value: {
       color: colors.textOutlinedDefault,

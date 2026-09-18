@@ -8,7 +8,7 @@ import { NavigationHeader } from '../navigation/NavigationHeader';
 import { useNavigation } from '../navigation/useNavigation';
 import { usePrimerLocalization } from '../localization';
 import { usePrimerCheckout } from '../../hooks/usePrimerCheckout';
-import { CheckoutButton } from '../ui/CheckoutButton';
+import { PrimerButton } from '../ui/PrimerButton';
 import { useBottomSafeArea } from './useBottomSafeArea';
 
 // Prebuilt ACH mandate screen: accept completes the payment, decline cancels it (→ error screen); no dismiss while mid-flight.
@@ -47,14 +47,14 @@ export function StripeAchMandateScreen() {
         <Text style={styles.mandateText}>{achMandate.text}</Text>
       </ScrollView>
       <View style={[styles.footer, { paddingBottom: Math.max(bottomInset, tokens.spacing.large) }]}>
-        <CheckoutButton
+        <PrimerButton
           title={t('primer_ach_mandate_button_accept')}
           onPress={handleAccept}
           variant="primary"
           loading={answering}
           accessibilityHint={t('accessibility_ach_mandate_accept_hint')}
         />
-        <CheckoutButton
+        <PrimerButton
           title={t('primer_ach_mandate_button_decline')}
           onPress={handleDecline}
           variant="outlined"
