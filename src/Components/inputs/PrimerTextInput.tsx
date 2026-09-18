@@ -3,11 +3,23 @@ import { Platform, StyleSheet, Text, TextInput, View, type TextStyle } from 'rea
 import { usePrimerTheme } from '../internal/theme';
 import { LINE_HEIGHT_RATIO } from './dimensions';
 import type { PrimerTextInputProps, PrimerTextInputRef, PrimerTextInputTheme } from '../types/CardInputTypes';
-import type { PrimerTokens } from '../internal/theme/types';
+import type { PrimerTokens, PrimerTypographyStyle } from '../internal/theme/types';
 
 // Shared nativeID for an empty InputAccessoryView rendered once in CheckoutSheet.
 // Suppresses iOS's auto-added Previous/Next/Done navigation toolbar above the keyboard.
 export const PRIMER_EMPTY_ACCESSORY_ID = 'primer-empty-input-accessory';
+
+// A line height set by the merchant wins. Otherwise the style's own token, unless the merchant
+// sized this one input by hand, in which case the line grows with the text rather than clipping it.
+function scaledLineHeight(
+  override: number | undefined,
+  overriddenFontSize: number | undefined,
+  style: PrimerTypographyStyle
+): number {
+  if (override != null) return override;
+  if (overriddenFontSize != null) return Math.round(overriddenFontSize * LINE_HEIGHT_RATIO);
+  return style.lineHeight;
+}
 
 // Exported for tests: the override chain is easy to break silently.
 export function resolveTheme(tokens: PrimerTokens, override?: PrimerTextInputTheme) {
@@ -27,13 +39,29 @@ export function resolveTheme(tokens: PrimerTokens, override?: PrimerTextInputThe
     // error token existed, so a merchant already setting them keeps working.
     errorFontFamily: override?.errorFontFamily ?? override?.fontFamily ?? tokens.typography.error.fontFamily,
     errorFontSize: override?.errorFontSize ?? override?.labelFontSize ?? tokens.typography.error.fontSize,
+    errorFontWeight: (override?.errorFontWeight ?? tokens.typography.error.fontWeight) as TextStyle['fontWeight'],
+    errorLetterSpacing: override?.errorLetterSpacing ?? tokens.typography.error.letterSpacing,
+    errorLineHeight: scaledLineHeight(
+      override?.errorLineHeight,
+      override?.errorFontSize ?? override?.labelFontSize,
+      tokens.typography.error
+    ),
     fieldHeight: override?.fieldHeight ?? tokens.sizes.xxlarge,
     errorBorderWidth,
     focusedBorderWidth,
-    fontFamily: override?.fontFamily ?? tokens.typography.fontFamily,
+    // The per-style font, not the brand font, so a merchant setting only bodyLarge.fontFamily
+    // reaches the field. The brand font still reaches it, through the style's own default.
+    fontFamily: override?.fontFamily ?? tokens.typography.bodyLarge.fontFamily,
     fontSize: override?.fontSize ?? tokens.typography.bodyLarge.fontSize,
+    fontWeight: (override?.fontWeight ?? tokens.typography.bodyLarge.fontWeight) as TextStyle['fontWeight'],
+    letterSpacing: override?.letterSpacing ?? tokens.typography.bodyLarge.letterSpacing,
+    lineHeight: scaledLineHeight(override?.lineHeight, override?.fontSize, tokens.typography.bodyLarge),
     labelColor: override?.labelColor ?? tokens.colors.textPrimary,
+    labelFontFamily: override?.fontFamily ?? tokens.typography.bodySmall.fontFamily,
     labelFontSize: override?.labelFontSize ?? tokens.typography.bodySmall.fontSize,
+    labelFontWeight: (override?.labelFontWeight ?? tokens.typography.bodySmall.fontWeight) as TextStyle['fontWeight'],
+    labelLetterSpacing: override?.labelLetterSpacing ?? tokens.typography.bodySmall.letterSpacing,
+    labelLineHeight: scaledLineHeight(override?.labelLineHeight, override?.labelFontSize, tokens.typography.bodySmall),
     placeholderColor: override?.placeholderColor ?? tokens.colors.textPlaceholder,
     primaryColor: override?.primaryColor ?? tokens.colors.borderOutlinedFocus,
     textColor: override?.textColor ?? tokens.colors.textOutlinedDefault,
@@ -127,6 +155,9 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
           color: resolved.errorTextColor,
           fontFamily: resolved.errorFontFamily,
           fontSize: resolved.errorFontSize,
+          fontWeight: resolved.errorFontWeight,
+          letterSpacing: resolved.errorLetterSpacing,
+          lineHeight: resolved.errorLineHeight,
           marginTop: tokens.spacing.xsmall,
         },
         input: {
@@ -134,8 +165,9 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
           flex: 1,
           fontFamily: resolved.fontFamily,
           fontSize: resolved.fontSize,
-          letterSpacing: tokens.typography.bodyLarge.letterSpacing,
-          lineHeight: Math.round(resolved.fontSize * LINE_HEIGHT_RATIO),
+          fontWeight: resolved.fontWeight,
+          letterSpacing: resolved.letterSpacing,
+          lineHeight: resolved.lineHeight,
           padding: 0,
         },
         inputContainer: {
@@ -150,8 +182,11 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
         },
         label: {
           color: resolved.labelColor,
-          fontFamily: resolved.fontFamily,
+          fontFamily: resolved.labelFontFamily,
           fontSize: resolved.labelFontSize,
+          fontWeight: resolved.labelFontWeight,
+          letterSpacing: resolved.labelLetterSpacing,
+          lineHeight: resolved.labelLineHeight,
           marginBottom: tokens.spacing.xsmall,
         },
       }),

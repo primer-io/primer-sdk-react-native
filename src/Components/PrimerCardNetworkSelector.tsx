@@ -1,5 +1,5 @@
 import { useRef, useState, type ComponentRef } from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View, type TextStyle } from 'react-native';
 import { usePrimerCardNetworkSelection } from './hooks/usePrimerCardNetworkSelection';
 import { Popover, type PopoverAnchor } from './internal/Popover';
 import { CardNetworkBadge } from './internal/CardNetworkBadge';
@@ -106,7 +106,8 @@ export function PrimerCardNetworkSelector({ testID }: PrimerCardNetworkSelectorP
                     <Text
                       style={{
                         color: tokens.colors.textPrimary,
-                        fontFamily: tokens.typography.fontFamily,
+                        // A glyph, not text, so only the typeface follows the style.
+                        fontFamily: tokens.typography.bodyLarge.fontFamily,
                         fontSize: tokens.typography.bodyLarge.fontSize,
                       }}
                     >
@@ -117,8 +118,11 @@ export function PrimerCardNetworkSelector({ testID }: PrimerCardNetworkSelectorP
                 <Text
                   style={{
                     color: tokens.colors.textPrimary,
-                    fontFamily: tokens.typography.fontFamily,
+                    fontFamily: tokens.typography.bodyLarge.fontFamily,
                     fontSize: tokens.typography.bodyLarge.fontSize,
+                    fontWeight: tokens.typography.bodyLarge.fontWeight as TextStyle['fontWeight'],
+                    letterSpacing: tokens.typography.bodyLarge.letterSpacing,
+                    lineHeight: tokens.typography.bodyLarge.lineHeight,
                   }}
                 >
                   {n.displayName}
