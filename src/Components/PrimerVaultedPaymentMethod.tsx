@@ -215,7 +215,7 @@ function createStyles(tokens: PrimerTokens) {
     },
     tile: {
       backgroundColor: colors.backgroundPrimary,
-      borderColor: colors.brand,
+      borderColor: colors.borderOutlinedSelected,
       borderRadius: radii.medium,
       borderWidth: widths.selected,
       gap: spacing.medium,

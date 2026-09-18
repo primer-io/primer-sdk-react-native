@@ -142,7 +142,7 @@ function createStyles(tokens: PrimerTokens) {
       opacity: 0.4,
     },
     bankRowSelected: {
-      borderColor: colors.brand,
+      borderColor: colors.borderOutlinedSelected,
       borderWidth: widths.selected,
     },
     footer: {
