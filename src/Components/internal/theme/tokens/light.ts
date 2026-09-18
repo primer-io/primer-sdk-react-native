@@ -48,6 +48,7 @@ export const defaultLightTokens: PrimerTokens = {
     overlay: 'rgba(0,0,0,0.5)',
   },
   spacing: {
+    base: 4, // primerSpaceBase
     xxsmall: 2, // primerSpaceXxsmall
     xsmall: 4, // primerSpaceXsmall
     small: 8, // primerSpaceSmall
@@ -55,20 +56,19 @@ export const defaultLightTokens: PrimerTokens = {
     large: 16, // primerSpaceLarge
     xlarge: 20, // primerSpaceXlarge
     xxlarge: 24, // primerSpaceXxlarge
-    xxxlarge: 32, // primerSizeXlarge (scale extension: 8×base)
   },
   // Each style's font comes from the brand font above unless it names its own.
   typography: resolveTypography({
     fontFamily: 'Inter', // primerTypographyBrand
-    titleXLarge: {
+    titleXlarge: {
       fontSize: 24, // primerTypographyTitleXlargeSize
-      fontWeight: '600', // primerTypographyTitleXlargeWeight 550 → nearest RN value
+      fontWeight: '500', // primerTypographyTitleXlargeWeight 550, the closest React Native renders
       lineHeight: 32, // primerTypographyTitleXlargeLineHeight
       letterSpacing: -0.6, // primerTypographyTitleXlargeLetterSpacing
     },
     titleLarge: {
       fontSize: 16, // primerTypographyTitleLargeSize
-      fontWeight: '600', // primerTypographyTitleLargeWeight 550 → nearest RN value
+      fontWeight: '500', // primerTypographyTitleLargeWeight 550, the closest React Native renders
       lineHeight: 20, // primerTypographyTitleLargeLineHeight
       letterSpacing: -0.2, // primerTypographyTitleLargeLetterSpacing
     },
@@ -98,7 +98,7 @@ export const defaultLightTokens: PrimerTokens = {
     },
   }),
   radii: {
-    none: 0,
+    base: 4, // primerRadiusBase
     xsmall: 2, // primerRadiusXsmall
     small: 4, // primerRadiusSmall / primerRadiusBase
     medium: 8, // primerRadiusMedium

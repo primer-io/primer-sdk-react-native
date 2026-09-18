@@ -1,7 +1,7 @@
 import type { PrimerTypographyStyle, PrimerTypographyTokens } from './types';
 
 export const TYPOGRAPHY_STYLES = [
-  'titleXLarge',
+  'titleXlarge',
   'titleLarge',
   'bodyLarge',
   'bodyMedium',

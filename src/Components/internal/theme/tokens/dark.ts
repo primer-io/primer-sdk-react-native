@@ -49,6 +49,7 @@ export const defaultDarkTokens: PrimerTokens = {
     textSecondary: '#efefef9e',
   },
   spacing: {
+    base: 4, // primerSpaceBase
     xxsmall: 2,
     xsmall: 4,
     small: 8,
@@ -56,20 +57,19 @@ export const defaultDarkTokens: PrimerTokens = {
     large: 16,
     xlarge: 20,
     xxlarge: 24,
-    xxxlarge: 32,
   },
   // Each style's font comes from the brand font above unless it names its own.
   typography: resolveTypography({
     fontFamily: 'Inter',
-    titleXLarge: {
+    titleXlarge: {
       fontSize: 24,
-      fontWeight: '600',
+      fontWeight: '500',
       lineHeight: 32,
       letterSpacing: -0.6,
     },
     titleLarge: {
       fontSize: 16,
-      fontWeight: '600',
+      fontWeight: '500',
       lineHeight: 20,
       letterSpacing: -0.2,
     },
@@ -99,7 +99,7 @@ export const defaultDarkTokens: PrimerTokens = {
     },
   }),
   radii: {
-    none: 0,
+    base: 4,
     xsmall: 2,
     small: 4,
     medium: 8,
