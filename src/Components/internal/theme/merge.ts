@@ -64,6 +64,13 @@ function mergeTypography(base: PrimerTypographyTokens, override: PrimerTypograph
     styles[name] = { ...inherited, ...stripNullish(set[name] ?? {}) };
   }
 
+  // Error defaults to bodySmall, but the token file spells it out as literals, so relayer it here.
+  styles.error = {
+    ...styles.error,
+    ...stripNullish(set.bodySmall ?? {}),
+    ...stripNullish(set.error ?? {}),
+  };
+
   const source: PrimerTypographySource = { fontFamily, ...styles };
   return resolveTypography(source);
 }
