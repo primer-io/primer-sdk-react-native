@@ -60,7 +60,7 @@ export function PrimerErrorScreen({
 }
 
 function createStyles(tokens: PrimerTokens) {
-  const { colors, spacing } = tokens;
+  const { spacing } = tokens;
 
   /* eslint-disable react-native/no-unused-styles */
   return StyleSheet.create({
@@ -70,7 +70,6 @@ function createStyles(tokens: PrimerTokens) {
     },
     icon: {
       height: STATUS_SCREEN_ICON_SIZE,
-      tintColor: colors.iconNegative,
       width: STATUS_SCREEN_ICON_SIZE,
     },
   });

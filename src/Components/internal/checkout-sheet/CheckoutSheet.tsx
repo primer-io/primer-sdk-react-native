@@ -288,13 +288,13 @@ function createStyles(tokens: PrimerTokens) {
       ...StyleSheet.absoluteFillObject,
       // Matches sheetContent so no dark gap flashes below it: on resize sheetContent's
       // height shrinks instantly while translateY animates to catch up.
-      backgroundColor: colors.backgroundPrimary,
+      backgroundColor: colors.background,
       borderTopLeftRadius: radii.large,
       borderTopRightRadius: radii.large,
       overflow: 'hidden',
     },
     sheetContent: {
-      backgroundColor: colors.backgroundPrimary,
+      backgroundColor: colors.background,
     },
   });
 }

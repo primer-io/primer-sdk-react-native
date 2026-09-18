@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { Image, StyleSheet } from 'react-native';
 
 import { usePrimerLocalization } from '../internal/localization';
-import { usePrimerTheme } from '../internal/theme';
 import { STATUS_SCREEN_ICON_SIZE } from '../internal/screens/constants';
 import { PrimerStatusScreenLayout } from './PrimerStatusScreenLayout';
 
@@ -25,12 +24,9 @@ export function PrimerSuccessScreen({ title, subtitle, icon, onDismiss, autoDism
     return () => clearTimeout(id);
   }, [onDismiss, autoDismissMs]);
 
-  const tokens = usePrimerTheme();
   const resolvedTitle = title ?? t('primer_checkout_success_title');
   const resolvedSubtitle = subtitle ?? t('primer_checkout_success_subtitle');
-  const resolvedIcon = icon ?? (
-    <Image source={checkCircleIcon} style={[styles.icon, { tintColor: tokens.colors.iconPositive }]} />
-  );
+  const resolvedIcon = icon ?? <Image source={checkCircleIcon} style={styles.icon} />;
 
   return <PrimerStatusScreenLayout icon={resolvedIcon} title={resolvedTitle} subtitle={resolvedSubtitle} />;
 }

@@ -9,9 +9,6 @@ import type { PaymentMethodButtonProps } from '../../types/PrimerPaymentMethodLi
 
 export const PAYMENT_METHOD_BUTTON_HEIGHT = 44;
 const BUTTON_HEIGHT = PAYMENT_METHOD_BUTTON_HEIGHT;
-// the surcharge badge sits on the payment method's own brand colour, which merchant theming
-// doesn't control, so it stays a fixed light value
-const ON_BRAND_SURFACE_TEXT = '#ffffff';
 
 export function PaymentMethodButton({ item, onPress }: PaymentMethodButtonProps) {
   const tokens = usePrimerTheme();
@@ -71,7 +68,7 @@ export function PaymentMethodButton({ item, onPress }: PaymentMethodButtonProps)
 }
 
 function createStyles(tokens: PrimerTokens) {
-  const { colors, spacing, radii, widths, typography } = tokens;
+  const { colors, spacing, radii, borders, typography } = tokens;
 
   /* eslint-disable react-native/no-unused-styles */
   return StyleSheet.create({
@@ -99,9 +96,9 @@ function createStyles(tokens: PrimerTokens) {
       width: '100%',
     },
     outlinedButton: {
-      backgroundColor: colors.backgroundPrimary,
-      borderColor: colors.borderOutlinedDefault,
-      borderWidth: widths.default,
+      backgroundColor: colors.background,
+      borderColor: colors.border,
+      borderWidth: borders.default,
     },
     outlinedText: {
       color: colors.textPrimary,
@@ -122,7 +119,7 @@ function createStyles(tokens: PrimerTokens) {
       right: spacing.small,
     },
     surchargeLight: {
-      color: ON_BRAND_SURFACE_TEXT,
+      color: colors.background,
       fontFamily: typography.bodySmall.fontFamily,
       fontSize: typography.bodySmall.fontSize,
       fontWeight: typography.bodySmall.fontWeight as TextStyle['fontWeight'],

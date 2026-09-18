@@ -92,10 +92,7 @@ export function PrimerCardNetworkSelector({ testID }: PrimerCardNetworkSelectorP
                     console.warn(`${LOG} selectNetwork failed: ${String(err)}`);
                   }
                 }}
-                style={({ pressed }) => [
-                  styles.option,
-                  pressed ? { backgroundColor: tokens.colors.backgroundSecondary } : null,
-                ]}
+                style={({ pressed }) => [styles.option, pressed ? { backgroundColor: tokens.colors.surface } : null]}
                 accessibilityRole="button"
                 accessibilityState={{ selected: isSelected }}
                 accessibilityLabel={n.displayName}
@@ -124,9 +121,7 @@ export function PrimerCardNetworkSelector({ testID }: PrimerCardNetworkSelectorP
                   {n.displayName}
                 </Text>
               </Pressable>
-              {isLast ? null : (
-                <View style={[styles.separator, { backgroundColor: tokens.colors.borderOutlinedDefault }]} />
-              )}
+              {isLast ? null : <View style={styles.separator} />}
             </View>
           );
         })}
@@ -156,7 +151,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
   },
+  // eslint-disable-next-line react-native/no-color-literals
   separator: {
+    backgroundColor: '#8080808C',
     height: StyleSheet.hairlineWidth,
     marginLeft: 16,
   },

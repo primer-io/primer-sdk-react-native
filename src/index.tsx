@@ -217,11 +217,8 @@ export type {
   PrimerSpacingTokens,
   PrimerTypographyTokens,
   PrimerTypographyStyle,
-  PrimerTypographyStyleOverride,
-  PrimerTypographyOverride,
   PrimerRadiusTokens,
-  PrimerSizeTokens,
-  PrimerWidthTokens,
+  PrimerBorderTokens,
   PrimerThemeOverride,
 } from './Components/internal/theme';
 

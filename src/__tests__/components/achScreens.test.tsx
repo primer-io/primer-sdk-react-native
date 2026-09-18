@@ -31,24 +31,19 @@ jest.mock(
 jest.mock('../../Components/internal/theme', () => ({
   usePrimerTheme: () => ({
     colors: {
-      backgroundPrimary: '#fff',
-      backgroundOutlinedDisabled: '#eee',
-      backgroundSecondary: '#fafafa',
-      borderOutlinedDefault: '#ccc',
-      brand: '#08f',
-      onBrand: '#fff',
-      textDisabled: '#aaa',
+      background: '#fff',
+      surface: '#fafafa',
+      border: '#ccc',
+      primary: '#08f',
       textPrimary: '#000',
       textSecondary: '#666',
     },
     spacing: { xxsmall: 2, xsmall: 4, small: 8, medium: 12, large: 16, xlarge: 20, xxlarge: 24 },
     radii: { small: 4, medium: 8, large: 12 },
-    sizes: { small: 16, medium: 20, large: 24, xlarge: 32, xxlarge: 40, xxxlarge: 56, base: 4 },
-    widths: { default: 1, focus: 2, selected: 2, error: 2 },
+    borders: { input: 1, default: 1, strong: 2 },
     typography: {
       fontFamily: 'system',
       bodySmall: { fontFamily: 'system', fontSize: 12, fontWeight: '400', letterSpacing: 0, lineHeight: 16 },
-      error: { fontFamily: 'system', fontSize: 12, fontWeight: '400', letterSpacing: 0, lineHeight: 16 },
       bodyMedium: { fontFamily: 'system', fontSize: 14, fontWeight: '400', letterSpacing: 0, lineHeight: 18 },
       bodyLarge: { fontFamily: 'system', fontSize: 16, fontWeight: '400', letterSpacing: 0, lineHeight: 20 },
       titleLarge: { fontFamily: 'system', fontSize: 16, fontWeight: '500', letterSpacing: 0, lineHeight: 20 },
@@ -187,8 +182,6 @@ describe('StripeAchUserDetailsScreen', () => {
     const root = render(createElement(StripeAchUserDetailsScreen));
     const button = continueButton(root);
     expect(button.props.disabled).toBe(true);
-    // Invalid reads as the grey fill, not a faded brand (ORC-8265).
-    expect((button.props.style as Array<Record<string, unknown>>)[0]!.backgroundColor).toBe('#eee');
 
     (button.props.onPress as () => void)();
     expect(mockAchVariant.submit).not.toHaveBeenCalled();
@@ -226,12 +219,9 @@ describe('StripeAchUserDetailsScreen', () => {
     mockAchVariant = baseVariant({ isValid: true, step: 'awaitingBankLink' });
     const root = render(createElement(StripeAchUserDetailsScreen));
 
-    // Spinner replaces the Continue label; the button is disabled but keeps the brand fill (ORC-8265).
+    // Spinner replaces the Continue label; the button is disabled.
     const button = continueButton(root);
     expect(button.props.disabled).toBe(true);
-    const style = button.props.style as Array<Record<string, unknown>>;
-    expect(style[0]!.backgroundColor).toBe('#08f');
-    expect(style[1]).toEqual({ opacity: 1 });
     expect(root.findAllByType('ActivityIndicator')).toHaveLength(1);
 
     // Back affordance is hidden, and a stray back press is a no-op.
@@ -272,7 +262,6 @@ describe('StripeAchMandateScreen', () => {
 
     const [accept, decline] = root.findAllByType('TouchableOpacity');
     expect(accept!.props.disabled).toBe(false);
-    expect((accept!.props.style as Array<Record<string, unknown>>)[0]!.backgroundColor).toBe('#08f');
     (accept!.props.onPress as () => void)();
     expect(acceptAchMandate).toHaveBeenCalledTimes(1);
 
@@ -294,11 +283,6 @@ describe('StripeAchMandateScreen', () => {
     for (const button of buttons) {
       expect(button.props.disabled).toBe(true);
     }
-    // Accept is loading, so it keeps the brand fill; decline is genuinely disabled and dims (ORC-8265).
-    const [accept, decline] = buttons;
-    expect((accept!.props.style as Array<Record<string, unknown>>)[0]!.backgroundColor).toBe('#08f');
-    expect((accept!.props.style as Array<Record<string, unknown>>)[1]).toEqual({ opacity: 1 });
-    expect((decline!.props.style as Array<Record<string, unknown>>)[1]).toEqual({ opacity: 0.5 });
   });
 
   it('renders nothing without a mandate (defensive)', () => {
