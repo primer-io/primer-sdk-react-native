@@ -25,6 +25,8 @@ const mockSubmit = jest.fn().mockResolvedValue(undefined);
 const mockReplace = jest.fn();
 // The payment-method hook's return value — swapped per test.
 let mockMethod: any;
+// The active method type, read by the mocked useRoute — swapped per test.
+let mockPaymentMethodType = 'ADYEN_MBWAY';
 
 jest.mock('../../Components/hooks/usePrimerPaymentMethod', () => ({
   usePrimerPaymentMethod: () => mockMethod,
@@ -32,11 +34,19 @@ jest.mock('../../Components/hooks/usePrimerPaymentMethod', () => ({
 
 jest.mock('../../Components/internal/theme', () => ({
   usePrimerTheme: () => ({
-    colors: { background: '#fff', border: '#ccc', primary: '#08f', textPrimary: '#000' },
+    colors: {
+      background: '#fff',
+      border: '#ccc',
+      primary: '#08f',
+      textNegative: '#c00',
+      textPrimary: '#000',
+      textSecondary: '#666',
+    },
     spacing: { xsmall: 4, small: 8, medium: 12, large: 16 },
     radii: { medium: 8 },
     typography: {
       titleLarge: { fontFamily: 'system', fontSize: 16, fontWeight: '500', letterSpacing: 0, lineHeight: 20 },
+      bodySmall: { fontFamily: 'system', fontSize: 12, fontWeight: '400', letterSpacing: 0, lineHeight: 16 },
     },
   }),
 }));
@@ -46,7 +56,7 @@ jest.mock('../../Components/internal/localization', () => ({
 }));
 
 jest.mock('../../Components/internal/navigation/useRoute', () => ({
-  useRoute: () => ({ params: { paymentMethodType: 'ADYEN_MBWAY' } }),
+  useRoute: () => ({ params: { paymentMethodType: mockPaymentMethodType } }),
 }));
 
 jest.mock('../../Components/internal/navigation/useNavigation', () => ({
@@ -89,9 +99,16 @@ function render() {
 
 const textInputs = (root: any) => root.findAll((n: any) => n.type === 'TextInput');
 const payButton = (root: any) => root.findAll((n: any) => n.type === 'TouchableOpacity')[0];
+const ovoHints = (root: any) =>
+  root.findAll((n: any) => n.type === 'Text' && n.props.children === 'primer_form_redirect_ovo_phone_helper');
+const errorTexts = (root: any, message: string) =>
+  root.findAll((n: any) => n.type === 'Text' && n.props.children === message);
 
 describe('RawDataFormScreen (ORC-6514)', () => {
-  beforeEach(() => jest.clearAllMocks());
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockPaymentMethodType = 'ADYEN_MBWAY';
+  });
 
   it('activates the raw-data manager on mount and picks a keyboard per field', () => {
     mockMethod = rawDataForm({ requiredInputs: ['PHONE_NUMBER', 'OTP', 'CARDHOLDER_NAME'] });
@@ -137,5 +154,80 @@ describe('RawDataFormScreen (ORC-6514)', () => {
 
     expect(render().toJSON()).toBeNull();
     expect(mockStart).not.toHaveBeenCalled();
+  });
+
+  it('shows the OVO phone helper hint for a phone-number form', () => {
+    mockPaymentMethodType = 'XENDIT_OVO';
+    mockMethod = rawDataForm({ requiredInputs: ['PHONE_NUMBER'] });
+
+    expect(ovoHints(render().root)).toHaveLength(1);
+  });
+
+  it('renders the OVO hint once, grouped with the phone field, when OVO reports several fields', () => {
+    mockPaymentMethodType = 'XENDIT_OVO';
+    mockMethod = rawDataForm({ requiredInputs: ['PHONE_NUMBER', 'OTP'] });
+    const hints = ovoHints(render().root);
+
+    expect(hints).toHaveLength(1);
+    // Guards against the hint being lifted out of the per-field loop and rendered under another field.
+    expect(hints[0].parent.findByType('TextInput').props.keyboardType).toBe('phone-pad');
+  });
+
+  it('does not show the OVO hint for other raw-data methods (e.g. MBWay)', () => {
+    mockMethod = rawDataForm({ requiredInputs: ['PHONE_NUMBER'] });
+
+    expect(ovoHints(render().root)).toHaveLength(0);
+  });
+
+  const INVALID_PHONE = 'Phone number is not valid.';
+
+  it('shows no validation error on an untouched form', () => {
+    mockMethod = rawDataForm({ validationErrors: [INVALID_PHONE] });
+
+    expect(errorTexts(render().root, INVALID_PHONE)).toHaveLength(0);
+  });
+
+  it('surfaces the validation error as soon as the shopper types', () => {
+    mockMethod = rawDataForm({ validationErrors: [INVALID_PHONE] });
+    const root = render().root;
+
+    // Pay is disabled while invalid, so nothing the shopper can tap would reveal this.
+    act(() => textInputs(root)[0].props.onChangeText('+1226'));
+    expect(errorTexts(root, INVALID_PHONE)).toHaveLength(1);
+  });
+
+  it('hides the error again once the field is cleared', () => {
+    mockMethod = rawDataForm({ validationErrors: [INVALID_PHONE] });
+    const root = render().root;
+
+    act(() => textInputs(root)[0].props.onChangeText('+1226'));
+    act(() => textInputs(root)[0].props.onChangeText(''));
+    expect(errorTexts(root, INVALID_PHONE)).toHaveLength(0);
+  });
+
+  it('renders every reported error, not just the first (multi-field methods)', () => {
+    mockMethod = rawDataForm({
+      requiredInputs: ['CARD_NUMBER', 'EXPIRY_DATE'],
+      validationErrors: ['Card number is not valid.', 'Expiry date is not valid.'],
+    });
+    const root = render().root;
+
+    act(() => textInputs(root)[0].props.onChangeText('4111'));
+    expect(errorTexts(root, 'Card number is not valid.')).toHaveLength(1);
+    expect(errorTexts(root, 'Expiry date is not valid.')).toHaveLength(1);
+  });
+
+  it('warns rather than failing silently when the SDK rejects the raw data', async () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    mockSetData.mockRejectedValueOnce(new Error('manager not initialized'));
+    mockMethod = rawDataForm({ requiredInputs: ['PHONE_NUMBER'] });
+    const root = render().root;
+
+    await act(async () => {
+      textInputs(root)[0].props.onChangeText('628123456789');
+    });
+
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('manager not initialized'));
+    warn.mockRestore();
   });
 });

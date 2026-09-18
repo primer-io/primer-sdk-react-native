@@ -1,6 +1,11 @@
 // @ts-expect-error -- React 19 concurrent act environment
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
+// Pin the locale so error-copy assertions don't depend on the host's device locale.
+jest.mock('../../Components/internal/localization/locale-resolver', () => ({
+  resolveLocale: () => ({ locale: 'en', source: 'fallback' }),
+}));
+
 jest.mock('../../specs/NativePrimer', () => ({
   __esModule: true,
   default: {
@@ -63,6 +68,7 @@ import { PrimerCheckoutProvider } from '../../Components/PrimerCheckoutProvider'
 import { usePrimerCheckout } from '../../Components/hooks/usePrimerCheckout';
 import { PrimerError } from '../../models/PrimerError';
 import type { PrimerCheckoutContextValue } from '../../Components/types/PrimerCheckoutProviderTypes';
+import type { PrimerInputValidationError } from '../../models/PrimerValidationError';
 
 const rnMock = require('react-native');
 const nativeModule = rnMock.NativeModules.PrimerHeadlessUniversalCheckout;
@@ -669,6 +675,113 @@ describe('PrimerCheckoutProvider card network selection', () => {
 
     expect(rawNative.setRawData.mock.calls.length).toBe(callsAfterClear);
     expect(ctx().selectedCardNetwork).toBeNull();
+  });
+
+  // Feeds `onValidation` the shape both bridges actually send, then reads back what the UI gets.
+  const validate = async (errors: PrimerInputValidationError[]) => {
+    const ctx = await setupCardForm();
+    const onValidation = findListener('onValidation');
+    await act(async () => {
+      onValidation!({ isValid: false, errors });
+      await flushPromises();
+    });
+    return ctx;
+  };
+
+  it('keeps validation errors it cannot attribute to a card field', async () => {
+    const ctx = await validate([
+      { errorId: 'invalid-phone-number', inputElementType: 'PHONE_NUMBER', description: 'Phone number is not valid.' },
+    ]);
+
+    // No card field owns a phone error, so `errors` stays empty — but dropping the message
+    // entirely would leave non-card raw-data forms with no stated reason for a disabled Pay.
+    // The copy is ours, not native's: iOS says "[invalid-phone-number] Phone number is not
+    // valid.", Android says "Failed to parse phone number.".
+    expect(ctx().cardFormState.errors).toEqual({});
+    expect(ctx().cardFormState.messages).toEqual(['Enter a valid phone number']);
+  });
+
+  // iOS calls BLIK's one-time code OTP, Android calls it OTP_CODE. Both must find our copy.
+  it.each(['OTP', 'OTP_CODE'])('localizes BLIK’s one-time code error reported as %s', async (element) => {
+    const ctx = await validate([
+      { errorId: 'invalid-otp-code', inputElementType: element, description: 'OTP is not valid.' },
+    ]);
+
+    expect(ctx().cardFormState.messages).toEqual(['Enter a valid 6-digit code']);
+  });
+
+  it('routes each card field to its own error and copy', async () => {
+    const ctx = await validate([
+      { errorId: 'invalid-card-number', inputElementType: 'CARD_NUMBER', description: 'Card number is not valid.' },
+      { errorId: 'invalid-expiry-date', inputElementType: 'EXPIRY_DATE', description: 'Expiry date is not valid.' },
+      { errorId: 'invalid-cvv', inputElementType: 'CVV', description: 'CVV is not valid.' },
+      { errorId: 'invalid-cardholder-name', inputElementType: 'CARDHOLDER_NAME', description: 'Name is not valid.' },
+    ]);
+
+    expect(ctx().cardFormState.errors).toEqual({
+      cardNumber: 'Invalid card number',
+      expiryDate: 'Invalid date',
+      cvv: 'Invalid CVV',
+      cardholderName: 'Invalid Cardholder name',
+    });
+  });
+
+  // Reported against CARD_NUMBER, but the digits are fine — only the brand is not accepted.
+  it('distinguishes an unsupported card brand from an invalid number', async () => {
+    const ctx = await validate([
+      {
+        errorId: 'unsupported-card-type',
+        inputElementType: 'CARD_NUMBER',
+        description: 'Unsupported card type: Diners.',
+      },
+    ]);
+
+    expect(ctx().cardFormState.errors).toEqual({ cardNumber: 'Unsupported card type' });
+  });
+
+  // No inputElementType means native threw rather than rejecting a field. iOS sends its own
+  // PrimerErrors down this callback — a failed phone lookup, an expired client token.
+  it('shows generic copy rather than an SDK diagnostic when native threw', async () => {
+    const ctx = await validate([
+      { errorId: 'invalid-client-token', description: '[invalid-client-token] Client token is not valid:' },
+    ]);
+
+    expect(ctx().cardFormState.messages).toEqual(['An unknown error occurred.']);
+    expect(ctx().cardFormState.errors).toEqual({});
+  });
+
+  it('falls back to native wording, minus its diagnostic wrapper, for a field we have no copy for', async () => {
+    const ctx = await validate([
+      { errorId: 'invalid-postal-code', inputElementType: 'POSTAL_CODE', description: '[x] Bad. (diagnosticsId: a-1)' },
+    ]);
+
+    expect(ctx().cardFormState.messages).toEqual(['Bad.']);
+  });
+
+  // Dropping it would put us back to a disabled Pay button with nothing on screen.
+  it('still reports something when native names a field but gives no usable wording', async () => {
+    const ctx = await validate([
+      { errorId: 'invalid-retailer', inputElementType: 'RETAILER', description: '[x] (diagnosticsId: a-1)' },
+    ]);
+
+    expect(ctx().cardFormState.messages).toEqual(['An unknown error occurred.']);
+  });
+
+  it('clears messages once native reports the input valid', async () => {
+    const ctx = await validate([
+      { errorId: 'invalid-phone-number', inputElementType: 'PHONE_NUMBER', description: 'Phone is not valid.' },
+    ]);
+    expect(ctx().cardFormState.messages).toHaveLength(1);
+    const onValidation = findListener('onValidation');
+
+    await act(async () => {
+      onValidation!({ isValid: true, errors: [] });
+      await flushPromises();
+    });
+
+    // Otherwise the red line stays under a Pay button that has just gone enabled.
+    expect(ctx().cardFormState.messages).toEqual([]);
+    expect(ctx().cardFormState.errors).toEqual({});
   });
 });
 

@@ -3,6 +3,7 @@ import { NativeEventEmitter, NativeModules } from 'react-native';
 import type { EmitterSubscription, EventSubscription } from 'react-native';
 import type { PrimerInitializationData } from '../../../models/PrimerInitializationData';
 import { PrimerError } from '../../../models/PrimerError';
+import type { PrimerInputValidationError } from '../../../models/PrimerValidationError';
 import type { PrimerInputElementType } from '../../../models/PrimerInputElementType';
 import type { PrimerBinData } from '../../../models/PrimerBinData';
 import type { PrimerAddress } from '../../../models/PrimerClientSession';
@@ -17,7 +18,7 @@ const eventTypes: EventType[] = ['onMetadataChange', 'onValidation', 'onBinDataC
 export interface RawDataManagerProps {
   paymentMethodType: string;
   onMetadataChange?: (metadata: any) => void;
-  onValidation?: (isValid: boolean, errors: PrimerError[] | undefined) => void;
+  onValidation?: (isValid: boolean, errors: PrimerInputValidationError[] | undefined) => void;
   onBinDataChange?: (binData: PrimerBinData) => void;
 }
 

@@ -100,6 +100,7 @@ jest.mock('../../Components/analytics', () => ({
 jest.mock('../../Components/internal/localization', () => ({
   translate: (key: string, _locale: string, params?: Record<string, string | number>) =>
     key === 'primer_ach_mandate_template' ? `TPL:${params?.merchantName ?? ''}` : key,
+  usePrimerLocalization: () => ({ t: (key: string) => key }),
 }));
 jest.mock('../../Components/internal/localization/locale-resolver', () => ({
   resolveLocale: () => ({ locale: 'en' }),

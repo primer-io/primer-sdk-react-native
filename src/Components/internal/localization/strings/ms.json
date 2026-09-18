@@ -194,6 +194,8 @@
   "primer_country_placeholder_search": "Cari",
   "primer_country_selector_placeholder": "Pemilih Negara",
   "primer_country_title": "Pilih Negara",
+  "primer_form_redirect_otp_code_invalid": "Enter a valid 6-digit code",
+  "primer_form_redirect_ovo_phone_helper": "Enter the phone number registered with your OVO account.",
   "primer_klarna_button_authorize": "Teruskan",
   "primer_klarna_button_finalize": "Bayar",
   "primer_klarna_loading_subtitle": "Ini mungkin mengambil masa beberapa saat.",
