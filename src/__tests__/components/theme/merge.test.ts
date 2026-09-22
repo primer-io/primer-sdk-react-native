@@ -240,3 +240,44 @@ describe('brand font', () => {
     expect(result.typography.bodyLarge.fontFamily).toBe('Inter');
   });
 });
+
+describe('error typography follows bodySmall', () => {
+  it('carries a bodySmall change onto the error text', () => {
+    const result = mergeTokens(base, { typography: { bodySmall: { fontSize: 14, lineHeight: 18 } } });
+
+    expect(result.typography.bodySmall.fontSize).toBe(14);
+    expect(result.typography.error.fontSize).toBe(14);
+    expect(result.typography.error.lineHeight).toBe(18);
+  });
+
+  it('lets an explicit error value win over the bodySmall one', () => {
+    const result = mergeTokens(base, {
+      typography: { bodySmall: { fontSize: 14 }, error: { fontSize: 10 } },
+    });
+
+    expect(result.typography.bodySmall.fontSize).toBe(14);
+    expect(result.typography.error.fontSize).toBe(10);
+  });
+
+  it('is per field, so error keeps inheriting what it did not override', () => {
+    const result = mergeTokens(base, {
+      typography: { bodySmall: { fontSize: 14, lineHeight: 18 }, error: { fontSize: 10 } },
+    });
+
+    expect(result.typography.error.fontSize).toBe(10);
+    expect(result.typography.error.lineHeight).toBe(18);
+  });
+
+  it('leaves error alone when only the error style moves', () => {
+    const result = mergeTokens(base, { typography: { error: { fontSize: 10 } } });
+
+    expect(result.typography.bodySmall.fontSize).toBe(base.typography.bodySmall.fontSize);
+    expect(result.typography.error.fontSize).toBe(10);
+  });
+
+  it('does not touch error when nothing typographic moves', () => {
+    const result = mergeTokens(base, { colors: { brand: '#ff0000' } });
+
+    expect(result.typography.error).toEqual(base.typography.error);
+  });
+});
