@@ -40,8 +40,8 @@ describe('mergeTokens', () => {
       letterSpacing: -1,
       fontFamily: 'Roboto',
     };
-    const result = mergeTokens(base, { typography: { titleXLarge: customStyle } });
-    expect(result.typography.titleXLarge).toEqual(customStyle);
+    const result = mergeTokens(base, { typography: { titleXlarge: customStyle } });
+    expect(result.typography.titleXlarge).toEqual(customStyle);
     expect(result.typography.titleLarge).toEqual(base.typography.titleLarge);
   });
 
@@ -60,7 +60,7 @@ describe('mergeTokens', () => {
     expect(result.spacing.large).toBe(20);
     expect(result.spacing.small).toBe(base.spacing.small);
     expect(result.typography.fontFamily).toBe('Roboto');
-    expect(result.typography.titleXLarge).toEqual({ ...base.typography.titleXLarge, fontFamily: 'Roboto' });
+    expect(result.typography.titleXlarge).toEqual({ ...base.typography.titleXlarge, fontFamily: 'Roboto' });
     expect(result.radii.medium).toBe(10);
     expect(result.radii.small).toBe(base.radii.small);
     expect(result.widths.focus).toBe(3);
@@ -159,7 +159,7 @@ describe('mergeTokens', () => {
 });
 
 describe('brand font', () => {
-  const STYLES = ['titleXLarge', 'titleLarge', 'bodyLarge', 'bodyMedium', 'bodySmall', 'error'] as const;
+  const STYLES = ['titleXlarge', 'titleLarge', 'bodyLarge', 'bodyMedium', 'bodySmall', 'error'] as const;
 
   const withoutFont = ({ fontSize, fontWeight, lineHeight, letterSpacing }: PrimerTypographyStyle) => ({
     fontSize,
