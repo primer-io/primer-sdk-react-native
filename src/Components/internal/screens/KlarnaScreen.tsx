@@ -206,14 +206,16 @@ function createStyles(tokens: PrimerTokens) {
       justifyContent: 'center',
     },
     radioCircle: {
-      borderColor: colors.borderOutlinedSelected,
+      borderColor: colors.borderOutlinedDefault,
       borderRadius: sizes.medium / 2,
-      borderWidth: widths.selected,
+      borderWidth: widths.default,
       height: sizes.medium,
       width: sizes.medium,
     },
     radioCircleSelected: {
       backgroundColor: colors.borderOutlinedSelected,
+      borderColor: colors.borderOutlinedSelected,
+      borderWidth: widths.selected,
     },
     root: {
       flex: 1,
