@@ -411,7 +411,7 @@ function createRowStyles(tokens: PrimerTokens, isActive: boolean) {
   const { colors, spacing, radii, widths, typography } = tokens;
   // Match the overall tile size between active (2px border) and default (1px) by
   // compensating padding so inner content doesn't shift by 1px on toggle.
-  const innerPadding = isActive ? spacing.medium - 1 : spacing.medium;
+  const innerPadding = isActive ? spacing.medium - (widths.selected - widths.default) : spacing.medium;
   /* eslint-disable react-native/no-unused-styles */
   return StyleSheet.create({
     brandChip: {
@@ -500,7 +500,7 @@ function createRowStyles(tokens: PrimerTokens, isActive: boolean) {
     },
     tile: {
       backgroundColor: colors.backgroundPrimary,
-      borderColor: isActive ? colors.brand : colors.borderOutlinedDefault,
+      borderColor: isActive ? colors.borderOutlinedSelected : colors.borderOutlinedDefault,
       borderRadius: radii.medium,
       borderWidth: isActive ? widths.selected : widths.default,
       padding: innerPadding,

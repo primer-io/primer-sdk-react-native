@@ -35,6 +35,7 @@ jest.mock('../../Components/internal/theme', () => ({
       borderOutlinedDisabled: '#eee',
       borderOutlinedError: '#f00',
       borderOutlinedFocus: '#08f',
+      borderOutlinedSelected: '#08f',
       brand: '#08f',
       textPrimary: '#000',
       textSecondary: '#666',
