@@ -76,6 +76,7 @@ export const PrimerExpiryDateInput = forwardRef<PrimerTextInputRef, PrimerExpiry
         keyboardType="number-pad"
         maxLength={5}
         autoComplete="cc-exp"
+        textContentType="creditCardExpiration"
         label={resolvedLabel}
         placeholder={resolvedPlaceholder}
         error={cardForm.errors.expiryDate}

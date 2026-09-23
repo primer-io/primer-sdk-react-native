@@ -133,6 +133,7 @@ export const PrimerCardNumberInput = forwardRef<PrimerTextInputRef, PrimerCardNu
         keyboardType="number-pad"
         maxLength={cardForm.cardNumberMaxLength}
         autoComplete="cc-number"
+        textContentType="creditCardNumber"
         label={resolvedLabel}
         placeholder={resolvedPlaceholder}
         error={cardForm.errors.cardNumber}
