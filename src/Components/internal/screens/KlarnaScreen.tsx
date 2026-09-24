@@ -13,7 +13,7 @@ import { useNavigation } from '../navigation/useNavigation';
 import { useRoute } from '../navigation/useRoute';
 import { usePrimerTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
-import { CheckoutButton } from '../ui/CheckoutButton';
+import { PrimerButton } from '../ui/PrimerButton';
 import { useSheetHeight } from '../checkout-sheet';
 import { CONTENT_HEIGHT as LOADING_CONTENT_HEIGHT } from './LoadingScreen';
 import { useBottomSafeArea } from './useBottomSafeArea';
@@ -143,7 +143,7 @@ export function KlarnaScreen() {
               onLayout={(e) => setFooterHeight(e.nativeEvent.layout.height)}
               style={[styles.footer, { paddingBottom: bottomInsetClamped }]}
             >
-              <CheckoutButton
+              <PrimerButton
                 title={t('primer_klarna_button_authorize')}
                 onPress={handleAuthorize}
                 variant="primary"

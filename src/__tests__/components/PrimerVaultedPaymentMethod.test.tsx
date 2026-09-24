@@ -187,7 +187,7 @@ function findFirstByType(tree: any, type: string): any | null {
   return findByType(tree, type)[0] ?? null;
 }
 
-function findCheckoutButton(tree: any): any | null {
+function findPrimerButton(tree: any): any | null {
   const tos = findByType(tree, 'TouchableOpacity');
   return tos.find((t) => t.props?.accessibilityRole === 'button') ?? null;
 }
@@ -215,7 +215,7 @@ describe('PrimerVaultedPaymentMethod — US1 trigger', () => {
     act(() => {
       tree = renderer.create(createElement(PrimerVaultedPaymentMethod, {}));
     });
-    const button = findCheckoutButton(tree.toJSON());
+    const button = findPrimerButton(tree.toJSON());
     expect(button).toBeTruthy();
     act(() => {
       (button.props.onPress as () => void)();
@@ -231,7 +231,7 @@ describe('PrimerVaultedPaymentMethod — US1 trigger', () => {
     act(() => {
       tree = renderer.create(createElement(PrimerVaultedPaymentMethod, {}));
     });
-    const button = findCheckoutButton(tree.toJSON());
+    const button = findPrimerButton(tree.toJSON());
     act(() => {
       (button.props.onPress as () => void)();
     });
@@ -273,7 +273,7 @@ describe('PrimerVaultedPaymentMethod — US1 trigger', () => {
     act(() => {
       tree = renderer.create(createElement(PrimerVaultedPaymentMethod, {}));
     });
-    const button = findCheckoutButton(tree.toJSON());
+    const button = findPrimerButton(tree.toJSON());
     act(() => {
       (button.props.onPress as () => void)();
     });
@@ -309,7 +309,7 @@ describe('PrimerVaultedPaymentMethod — US1 trigger', () => {
     act(() => {
       tree = renderer.create(createElement(PrimerVaultedPaymentMethod, {}));
     });
-    const button = findCheckoutButton(tree.toJSON());
+    const button = findPrimerButton(tree.toJSON());
     act(() => {
       (button.props.onPress as () => void)();
     });
@@ -326,24 +326,24 @@ describe('PrimerVaultedPaymentMethod — US2 submit', () => {
     act(() => {
       tree = renderer.create(createElement(PrimerVaultedPaymentMethod, {}));
     });
-    let button = findCheckoutButton(tree.toJSON());
+    let button = findPrimerButton(tree.toJSON());
     expect(button.props.accessibilityState?.disabled).toBe(false);
     act(() => {
       (button.props.onPress as () => void)();
     });
     rerender(tree);
-    button = findCheckoutButton(tree.toJSON());
+    button = findPrimerButton(tree.toJSON());
     expect(button.props.accessibilityState?.disabled).toBe(true);
     const input = findFirstByType(tree.toJSON(), 'TextInput');
     act(() => {
       (input.props.onChangeText as (s: string) => void)('12');
     });
-    button = findCheckoutButton(tree.toJSON());
+    button = findPrimerButton(tree.toJSON());
     expect(button.props.accessibilityState?.disabled).toBe(true);
     act(() => {
       (input.props.onChangeText as (s: string) => void)('123');
     });
-    button = findCheckoutButton(tree.toJSON());
+    button = findPrimerButton(tree.toJSON());
     expect(button.props.accessibilityState?.disabled).toBe(false);
   });
 
@@ -353,7 +353,7 @@ describe('PrimerVaultedPaymentMethod — US2 submit', () => {
     act(() => {
       tree = renderer.create(createElement(PrimerVaultedPaymentMethod, {}));
     });
-    let button = findCheckoutButton(tree.toJSON());
+    let button = findPrimerButton(tree.toJSON());
     act(() => {
       (button.props.onPress as () => void)();
     });
@@ -362,7 +362,7 @@ describe('PrimerVaultedPaymentMethod — US2 submit', () => {
     act(() => {
       (input.props.onChangeText as (s: string) => void)('123');
     });
-    button = findCheckoutButton(tree.toJSON());
+    button = findPrimerButton(tree.toJSON());
     act(() => {
       (button.props.onPress as () => void)();
     });
@@ -380,13 +380,13 @@ describe('PrimerVaultedPaymentMethod — US2 submit', () => {
     act(() => {
       tree = renderer.create(createElement(PrimerVaultedPaymentMethod, {}));
     });
-    let button = findCheckoutButton(tree.toJSON());
+    let button = findPrimerButton(tree.toJSON());
     act(() => {
       (button.props.onPress as () => void)();
     });
     rerender(tree);
     // TouchableOpacity gates onPress on `disabled`, so asserting disabled covers the gate.
-    button = findCheckoutButton(tree.toJSON());
+    button = findPrimerButton(tree.toJSON());
     expect(button.props.accessibilityState?.disabled).toBe(true);
     expect(mockPay).not.toHaveBeenCalled();
   });
@@ -412,7 +412,7 @@ describe('PrimerVaultedPaymentMethod — US2 submit', () => {
     act(() => {
       tree = renderer.create(createElement(PrimerVaultedPaymentMethod, {}));
     });
-    let button = findCheckoutButton(tree.toJSON());
+    let button = findPrimerButton(tree.toJSON());
     // First tap opens CVV state and legitimately commits the active method (forces lite layout).
     act(() => {
       (button.props.onPress as () => void)();
@@ -426,7 +426,7 @@ describe('PrimerVaultedPaymentMethod — US2 submit', () => {
     act(() => {
       (input.props.onChangeText as (s: string) => void)('123');
     });
-    button = findCheckoutButton(tree.toJSON());
+    button = findPrimerButton(tree.toJSON());
     await act(async () => {
       (button.props.onPress as () => void)();
       await Promise.resolve();
@@ -457,7 +457,7 @@ describe('PrimerVaultedPaymentMethod — US2 submit', () => {
     act(() => {
       tree = renderer.create(createElement(PrimerVaultedPaymentMethod, {}));
     });
-    let button = findCheckoutButton(tree.toJSON());
+    let button = findPrimerButton(tree.toJSON());
     act(() => {
       (button.props.onPress as () => void)();
     });
@@ -466,12 +466,12 @@ describe('PrimerVaultedPaymentMethod — US2 submit', () => {
     act(() => {
       (input.props.onChangeText as (s: string) => void)('123');
     });
-    button = findCheckoutButton(tree.toJSON());
+    button = findPrimerButton(tree.toJSON());
     expect(button.props.accessibilityState?.disabled).toBe(true);
     act(() => {
       (input.props.onChangeText as (s: string) => void)('1234');
     });
-    button = findCheckoutButton(tree.toJSON());
+    button = findPrimerButton(tree.toJSON());
     expect(button.props.accessibilityState?.disabled).toBe(false);
   });
 });
@@ -483,7 +483,7 @@ describe('PrimerVaultedPaymentMethod — US3 exit', () => {
     act(() => {
       tree = renderer.create(createElement(PrimerVaultedPaymentMethod, {}));
     });
-    const button = findCheckoutButton(tree.toJSON());
+    const button = findPrimerButton(tree.toJSON());
     act(() => {
       (button.props.onPress as () => void)();
     });
@@ -504,7 +504,7 @@ describe('PrimerVaultedPaymentMethod — US3 exit', () => {
     act(() => {
       tree = renderer.create(createElement(PrimerVaultedPaymentMethod, {}));
     });
-    let button = findCheckoutButton(tree.toJSON());
+    let button = findPrimerButton(tree.toJSON());
     act(() => {
       (button.props.onPress as () => void)();
     });
@@ -521,7 +521,7 @@ describe('PrimerVaultedPaymentMethod — US3 exit', () => {
     act(() => {
       tree.update(createElement(PrimerVaultedPaymentMethod, {}));
     });
-    button = findCheckoutButton(tree.toJSON());
+    button = findPrimerButton(tree.toJSON());
     act(() => {
       (button.props.onPress as () => void)();
     });
@@ -536,7 +536,7 @@ describe('PrimerVaultedPaymentMethod — US3 exit', () => {
     act(() => {
       tree = renderer.create(createElement(PrimerVaultedPaymentMethod, {}));
     });
-    const button = findCheckoutButton(tree.toJSON());
+    const button = findPrimerButton(tree.toJSON());
     act(() => {
       (button.props.onPress as () => void)();
     });

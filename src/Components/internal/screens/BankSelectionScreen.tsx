@@ -11,7 +11,7 @@ import { CheckoutRoute } from '../navigation/types';
 import { usePrimerLocalization } from '../localization';
 import { useCheckoutFlow } from '../checkout-flow/CheckoutFlowContext';
 import { usePrimerPaymentMethod } from '../../hooks/usePrimerPaymentMethod';
-import { CheckoutButton } from '../ui/CheckoutButton';
+import { PrimerButton } from '../ui/PrimerButton';
 import { useBottomSafeArea } from './useBottomSafeArea';
 
 /**
@@ -101,7 +101,7 @@ export function BankSelectionScreen() {
         </ScrollView>
       )}
       <View style={[styles.footer, { paddingBottom: Math.max(bottomInset, tokens.spacing.large) }]}>
-        <CheckoutButton
+        <PrimerButton
           title={t('primer_common_button_pay')}
           onPress={handleSubmit}
           variant="primary"
