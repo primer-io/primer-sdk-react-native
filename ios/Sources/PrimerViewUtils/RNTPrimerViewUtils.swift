@@ -20,4 +20,17 @@ import UIKit
       resolve(bottom)
     }
   }
+
+  @objc public func isFontAvailable(
+    _ fontFamily: String,
+    resolver resolve: @escaping RCTPromiseResolveBlock,
+    rejecter reject: @escaping RCTPromiseRejectBlock
+  ) {
+    // React Native accepts a family name or a font name, and maps these names to the system font.
+    let systemNames: Set<String> = ["System", "system-ui", "ui-sans-serif", "ui-serif", "ui-rounded", "ui-monospace"]
+    let available = systemNames.contains(fontFamily)
+      || !UIFont.fontNames(forFamilyName: fontFamily).isEmpty
+      || UIFont(name: fontFamily, size: UIFont.systemFontSize) != nil
+    resolve(available)
+  }
 }

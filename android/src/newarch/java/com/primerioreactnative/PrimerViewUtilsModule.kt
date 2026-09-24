@@ -18,6 +18,10 @@ class PrimerViewUtilsModule(reactContext: ReactApplicationContext) :
         implementation.getBottomSafeAreaInset(promise)
     }
 
+    override fun isFontAvailable(fontFamily: String, promise: Promise) {
+        implementation.isFontAvailable(fontFamily, promise)
+    }
+
     companion object {
         const val NAME = "PrimerViewUtils"
     }

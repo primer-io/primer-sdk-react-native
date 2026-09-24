@@ -16,6 +16,7 @@ import { PrimerSessionIntent } from '../models/PrimerSessionIntent';
 import { fmt } from './internal/debug';
 import { PrimerCheckoutContext } from './internal/PrimerCheckoutContext';
 import { mergeTokens } from './internal/theme/merge';
+import { warnAboutMissingFonts } from './internal/theme/missingFonts';
 import { ThemeContext } from './internal/theme/ThemeContext';
 import { defaultDarkTokens, defaultLightTokens } from './internal/theme/tokens';
 import { toError } from './internal/utils/errors';
@@ -248,6 +249,10 @@ export function PrimerCheckoutProvider({
   const lightTokens = useMemo(() => mergeTokens(defaultLightTokens, theme?.light), [theme?.light]);
   const darkTokens = useMemo(() => mergeTokens(defaultDarkTokens, theme?.dark), [theme?.dark]);
   const themeContextValue = useMemo(() => ({ lightTokens, darkTokens }), [lightTokens, darkTokens]);
+
+  useEffect(() => {
+    warnAboutMissingFonts([lightTokens, darkTokens]);
+  }, [lightTokens, darkTokens]);
 
   // Refs keep init useEffect deps to [clientToken] only.
   const settingsRef = useRef(settings);

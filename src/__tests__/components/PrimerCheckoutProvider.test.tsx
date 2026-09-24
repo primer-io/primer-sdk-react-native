@@ -1,6 +1,11 @@
 // @ts-expect-error -- React 19 concurrent act environment
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
+const mockIsFontAvailable = jest.fn<Promise<boolean>, [string]>().mockResolvedValue(true);
+jest.mock('../../specs/NativePrimerViewUtils', () => ({
+  __esModule: true,
+  default: { isFontAvailable: (family: string) => mockIsFontAvailable(family) },
+}));
 jest.mock('../../specs/NativePrimer', () => ({
   __esModule: true,
   default: {
@@ -983,5 +988,35 @@ describe('PrimerCheckoutProvider — requiresVaultedCardCvv flag wiring', () => 
     });
 
     expect(seen[seen.length - 1]).toBe('#222222');
+  });
+
+  it('checks the fonts a merchant sets, including ones set later', async () => {
+    const child = createElement(TestConsumer, { onContext: () => undefined });
+    let root: renderer.ReactTestRenderer;
+    await act(async () => {
+      root = renderer.create(
+        createElement(
+          PrimerCheckoutProvider,
+          { clientToken: 'token-1', theme: { light: { typography: { fontFamily: 'ProviderFontA' } } } },
+          child
+        )
+      );
+      await flushPromises();
+    });
+
+    expect(mockIsFontAvailable).toHaveBeenCalledWith('ProviderFontA');
+
+    await act(async () => {
+      root!.update(
+        createElement(
+          PrimerCheckoutProvider,
+          { clientToken: 'token-1', theme: { light: { typography: { fontFamily: 'ProviderFontB' } } } },
+          child
+        )
+      );
+      await flushPromises();
+    });
+
+    expect(mockIsFontAvailable).toHaveBeenCalledWith('ProviderFontB');
   });
 });

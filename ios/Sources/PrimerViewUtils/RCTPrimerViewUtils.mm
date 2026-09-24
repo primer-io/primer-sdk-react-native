@@ -25,10 +25,22 @@ RCT_EXPORT_METHOD(getBottomSafeAreaInset:(RCTPromiseResolveBlock)resolve
     [self.viewUtils getBottomSafeAreaInset:resolve rejecter:reject];
 }
 
+RCT_EXPORT_METHOD(isFontAvailable:(NSString *)fontFamily
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
+    [self.viewUtils isFontAvailable:fontFamily resolver:resolve rejecter:reject];
+}
+
 #ifdef RCT_NEW_ARCH_ENABLED
 - (void)getBottomSafeAreaInset:(RCTPromiseResolveBlock)resolve
                         reject:(RCTPromiseRejectBlock)reject {
     [self.viewUtils getBottomSafeAreaInset:resolve rejecter:reject];
+}
+
+- (void)isFontAvailable:(NSString *)fontFamily
+                resolve:(RCTPromiseResolveBlock)resolve
+                 reject:(RCTPromiseRejectBlock)reject {
+    [self.viewUtils isFontAvailable:fontFamily resolver:resolve rejecter:reject];
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
