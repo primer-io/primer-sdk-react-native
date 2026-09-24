@@ -105,7 +105,6 @@ export function BankSelectionScreen() {
           title={t('primer_common_button_pay')}
           onPress={handleSubmit}
           variant="primary"
-          loading={isLoading}
           disabled={!canSubmit}
         />
       </View>
