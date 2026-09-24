@@ -1,11 +1,12 @@
 import { createContext } from 'react';
+import { defaultLightTokens } from './tokens';
 import type { PrimerTokens } from './types';
-import type { PrimerAppearanceMode } from '../../../models/PrimerSettings';
+
+export type PrimerColorScheme = 'light' | 'dark';
 
 interface ThemeContextValue {
-  lightTokens: PrimerTokens;
-  darkTokens: PrimerTokens;
-  appearanceMode?: PrimerAppearanceMode;
+  scheme: PrimerColorScheme;
+  tokens: PrimerTokens;
 }
 
-export const ThemeContext = createContext<ThemeContextValue | null>(null);
+export const ThemeContext = createContext<ThemeContextValue>({ scheme: 'light', tokens: defaultLightTokens });

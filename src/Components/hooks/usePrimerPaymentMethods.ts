@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
-import { useIsDarkAppearance } from '../internal/theme';
+import { usePrimerColorScheme } from '../internal/theme';
 import { usePrimerCheckout } from './usePrimerCheckout';
 import { titleCaseFromType } from '../internal/utils/formatting';
 import { toError } from '../internal/utils/errors';
@@ -56,7 +56,7 @@ export function usePrimerPaymentMethods(options: UsePrimerPaymentMethodsOptions 
   } = usePrimerCheckout();
 
   const [selectedType, setSelectedType] = useState<string | null>(null);
-  const isDark = useIsDarkAppearance();
+  const scheme = usePrimerColorScheme();
 
   const onLoadRef = useRef(onLoad);
   onLoadRef.current = onLoad;
@@ -85,11 +85,11 @@ export function usePrimerPaymentMethods(options: UsePrimerPaymentMethodsOptions 
           // Prefer colored when available; otherwise pick by color scheme.
           // Consumers wanting a different variant can read `resource.paymentMethodLogo` directly.
           const asset = resource.paymentMethodLogo;
-          const themeVariant = isDark ? asset.dark : asset.light;
+          const themeVariant = scheme === 'dark' ? asset.dark : asset.light;
           logo = asset.colored ?? themeVariant ?? asset.light ?? asset.dark;
 
           const bg = resource.paymentMethodBackgroundColor;
-          const bgThemeVariant = isDark ? bg?.dark : bg?.light;
+          const bgThemeVariant = scheme === 'dark' ? bg?.dark : bg?.light;
           backgroundColor = bg?.colored ?? bgThemeVariant ?? bg?.light ?? bg?.dark;
         }
 
@@ -118,7 +118,7 @@ export function usePrimerPaymentMethods(options: UsePrimerPaymentMethodsOptions 
     } catch (err) {
       return { items: [], error: toError(err) };
     }
-  }, [availablePaymentMethods, paymentMethodResources, isLoading, clientSession, include, exclude, isDark]);
+  }, [availablePaymentMethods, paymentMethodResources, isLoading, clientSession, include, exclude, scheme]);
 
   // Fires onLoad once per distinct set of payment-method types, after resources load.
   // Re-fires if the set of types changes (e.g. client-session update adds/removes a method).

@@ -17,6 +17,7 @@ import { fmt } from './internal/debug';
 import { PrimerCheckoutContext } from './internal/PrimerCheckoutContext';
 import { mergeTokens } from './internal/theme/merge';
 import { ThemeContext } from './internal/theme/ThemeContext';
+import { useResolvedScheme } from './internal/theme/useResolvedScheme';
 import { defaultDarkTokens, defaultLightTokens } from './internal/theme/tokens';
 import { toError } from './internal/utils/errors';
 import { translate } from './internal/localization';
@@ -247,10 +248,10 @@ export function PrimerCheckoutProvider({
 
   const lightTokens = useMemo(() => mergeTokens(defaultLightTokens, theme?.light), [theme?.light]);
   const darkTokens = useMemo(() => mergeTokens(defaultDarkTokens, theme?.dark), [theme?.dark]);
-  const appearanceMode = settings?.uiOptions?.appearanceMode;
+  const scheme = useResolvedScheme(settings?.uiOptions?.appearanceMode);
   const themeContextValue = useMemo(
-    () => ({ lightTokens, darkTokens, appearanceMode }),
-    [lightTokens, darkTokens, appearanceMode]
+    () => ({ scheme, tokens: scheme === 'dark' ? darkTokens : lightTokens }),
+    [scheme, lightTokens, darkTokens]
   );
 
   // Refs keep init useEffect deps to [clientToken] only.

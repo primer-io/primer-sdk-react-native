@@ -2,6 +2,8 @@ import { createElement, useState, type ReactNode } from 'react';
 // @ts-expect-error -- react-test-renderer has no types for React 19
 import { act, create } from 'react-test-renderer';
 import { PrimerCheckoutContext } from '../../Components/internal/PrimerCheckoutContext';
+import { ThemeContext, type PrimerColorScheme } from '../../Components/internal/theme/ThemeContext';
+import { defaultLightTokens } from '../../Components/internal/theme/tokens';
 import { usePrimerPaymentMethods } from '../../Components/hooks/usePrimerPaymentMethods';
 import type { PrimerCheckoutContextValue } from '../../Components/types/PrimerCheckoutProviderTypes';
 import type { IPrimerHeadlessUniversalCheckoutPaymentMethod } from '../../models/PrimerHeadlessUniversalCheckoutPaymentMethod';
@@ -11,11 +13,12 @@ import type { UsePrimerPaymentMethodsReturn } from '../../Components/types/Payme
 // @ts-expect-error -- React 19 concurrent act environment
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
-let mockColorScheme: 'light' | 'dark' | null = 'light';
-jest.mock('react-native', () => ({ useColorScheme: () => mockColorScheme }), { virtual: true });
+// The scheme the provider decided; the hook reads it from the theme, not from the phone.
+let scheme: PrimerColorScheme = 'light';
+jest.mock('react-native', () => ({}), { virtual: true });
 
 beforeEach(() => {
-  mockColorScheme = 'light';
+  scheme = 'light';
 });
 
 function renderHook<T>(hook: () => T, Wrapper?: (props: { children: ReactNode }) => ReactNode | null) {
@@ -72,7 +75,12 @@ function makeNativeViewResource(type: string, name: string, nativeViewName: stri
 }
 
 function contextWrapper(value: PrimerCheckoutContextValue) {
-  return ({ children }: { children: ReactNode }) => createElement(PrimerCheckoutContext.Provider, { value }, children);
+  return ({ children }: { children: ReactNode }) =>
+    createElement(
+      ThemeContext.Provider,
+      { value: { scheme, tokens: defaultLightTokens } },
+      createElement(PrimerCheckoutContext.Provider, { value }, children)
+    );
 }
 
 const readyContext: PrimerCheckoutContextValue = {
@@ -468,7 +476,7 @@ describe('usePrimerPaymentMethods', () => {
   });
 
   it('prefers colored logo when available regardless of color scheme', () => {
-    mockColorScheme = 'dark';
+    scheme = 'dark';
     const ctx: PrimerCheckoutContextValue = {
       ...readyContext,
       availablePaymentMethods: [makeMethod('PAYPAL')],
@@ -481,7 +489,7 @@ describe('usePrimerPaymentMethods', () => {
   });
 
   it('picks dark logo when color scheme is dark and colored is absent', () => {
-    mockColorScheme = 'dark';
+    scheme = 'dark';
     const ctx: PrimerCheckoutContextValue = {
       ...readyContext,
       availablePaymentMethods: [makeMethod('PAYPAL')],
@@ -492,7 +500,7 @@ describe('usePrimerPaymentMethods', () => {
   });
 
   it('picks light logo when color scheme is light and colored is absent', () => {
-    mockColorScheme = 'light';
+    scheme = 'light';
     const ctx: PrimerCheckoutContextValue = {
       ...readyContext,
       availablePaymentMethods: [makeMethod('PAYPAL')],
@@ -503,7 +511,7 @@ describe('usePrimerPaymentMethods', () => {
   });
 
   it('falls back across variants when theme-matching variant is missing', () => {
-    mockColorScheme = 'dark';
+    scheme = 'dark';
     const ctx: PrimerCheckoutContextValue = {
       ...readyContext,
       availablePaymentMethods: [makeMethod('PAYPAL')],
