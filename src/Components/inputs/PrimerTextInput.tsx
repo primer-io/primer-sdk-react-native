@@ -85,6 +85,7 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
     showLabel = true,
     placeholder,
     error,
+    leadingContent,
     trailingContent,
     onSelectionChange,
     selectionColor,
@@ -207,6 +208,7 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
     <View style={[styles.container, style]} testID={testID}>
       {showLabel && label != null && <Text style={[styles.label, labelStyle]}>{label}</Text>}
       <View style={styles.inputContainer}>
+        {leadingContent}
         <TextInput
           ref={inputRef}
           style={[styles.input, inputStyle] as TextStyle[]}

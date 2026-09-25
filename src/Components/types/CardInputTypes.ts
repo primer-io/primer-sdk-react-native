@@ -59,6 +59,7 @@ export interface PrimerTextInputProps {
    * to clear the error state.
    */
   error?: string;
+  leadingContent?: ReactNode;
   trailingContent?: ReactNode;
   onSelectionChange?: TextInputProps['onSelectionChange'];
   selectionColor?: string;
