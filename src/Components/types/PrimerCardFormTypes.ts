@@ -12,6 +12,11 @@ export interface PrimerCardFormProps {
    * the keyboard opens after any nav transition, not during it.
    */
   autoFocus?: boolean;
+  /**
+   * Whether the fields accept input. Pass false while a payment is running. The form also locks
+   * on its own while `submit()` runs.
+   */
+  editable?: boolean;
   /** Optional outer container style. */
   style?: StyleProp<ViewStyle>;
   /** Test ID root for the form. Nested elements derive suffixed IDs. */

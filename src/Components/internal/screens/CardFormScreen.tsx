@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Platform, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import type { TextStyle } from 'react-native';
 import { usePrimerTheme } from '../theme';
@@ -64,13 +64,20 @@ export function CardFormScreen() {
         : tokens.spacing.large + Math.max(bottomInset, tokens.spacing.large);
   const styles = useMemo(() => createStyles(tokens), [tokens]);
 
-  const canSubmit = cardForm.isValid && billingForm.isValid && !cardForm.isSubmitting;
+  // Locked from the tap, not from submit(): the billing address call below takes about a second,
+  // and the form must not stay live, with a Pay button that shows nothing, while it runs.
+  const [paying, setPaying] = useState(false);
+  const payingRef = useRef(false);
+  const locked = paying || cardForm.isSubmitting;
+  const canSubmit = cardForm.isValid && billingForm.isValid && !locked;
 
   // Flush pending billing-address debounce before navigating so native has the full address;
   // if anything fails before submit dispatches, the user stays on the form instead of stranded
   // on the processing screen with nothing in flight.
   const handlePay = useCallback(async () => {
-    if (!canSubmit) return;
+    if (!canSubmit || payingRef.current) return;
+    payingRef.current = true;
+    setPaying(true);
     if (billingForm.sectionVisible) {
       await billingForm.flush();
     }
@@ -96,12 +103,12 @@ export function CardFormScreen() {
         showsVerticalScrollIndicator={false}
         onContentSizeChange={(_, h) => setScrollContentHeight(h)}
       >
-        <PrimerCardForm autoFocus onSubmit={handlePay} />
+        <PrimerCardForm autoFocus onSubmit={handlePay} editable={!locked} />
         {billingForm.sectionVisible && (
           <>
             <View style={styles.divider} />
             <Text style={styles.sectionTitle}>{t('primer_card_form_billing_address_title')}</Text>
-            <PrimerBillingAddressForm billingForm={billingForm} editable={!cardForm.isSubmitting} />
+            <PrimerBillingAddressForm billingForm={billingForm} editable={!locked} />
           </>
         )}
       </ScrollView>
@@ -124,11 +131,11 @@ export function CardFormScreen() {
           title={t('primer_common_button_pay')}
           onPress={handlePay}
           variant="primary"
-          loading={cardForm.isSubmitting}
+          loading={locked}
           disabled={!canSubmit}
           accessibilityLabel={t('accessibility_card_form_submit_label')}
           accessibilityHint={
-            cardForm.isSubmitting
+            locked
               ? t('accessibility_card_form_submit_loading')
               : canSubmit
                 ? t('accessibility_card_form_submit_hint')
