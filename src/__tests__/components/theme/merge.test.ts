@@ -106,6 +106,18 @@ describe('mergeTokens', () => {
     expect(result.colors.backgroundOutlinedDefault).toBe('#101010');
   });
 
+  it('paints the pay button label in a background override when onBrand is not set', () => {
+    const result = mergeTokens(base, { colors: { backgroundPrimary: '#101010' } });
+
+    expect(result.colors.onBrand).toBe('#101010');
+  });
+
+  it('lets an explicit onBrand win over the background it would follow', () => {
+    const result = mergeTokens(base, { colors: { backgroundPrimary: '#101010', onBrand: '#000000' } });
+
+    expect(result.colors.onBrand).toBe('#000000');
+  });
+
   it('carries a text override into the input text', () => {
     const result = mergeTokens(base, { colors: { textPrimary: '#fafafa' } });
 

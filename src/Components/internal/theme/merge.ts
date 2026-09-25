@@ -28,6 +28,7 @@ const COLOR_ALIASES: ReadonlyArray<[keyof PrimerColorTokens, keyof PrimerColorTo
   ['focus', 'brand'],
   ['loader', 'brand'],
   ['backgroundOutlinedDefault', 'backgroundPrimary'],
+  ['onBrand', 'backgroundPrimary'],
   ['backgroundOutlinedActive', 'backgroundOutlinedDefault'],
   ['backgroundOutlinedSelected', 'backgroundOutlinedDefault'],
   ['backgroundOutlinedError', 'backgroundOutlinedDefault'],
