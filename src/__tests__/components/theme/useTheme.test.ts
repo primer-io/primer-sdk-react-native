@@ -1,4 +1,5 @@
 import { createElement, type ReactNode } from 'react';
+import { useColorScheme } from 'react-native';
 // @ts-expect-error -- react-test-renderer has no types for React 19
 import { act, create } from 'react-test-renderer';
 import { ThemeContext } from '../../../Components/internal/theme/ThemeContext';
@@ -23,11 +24,19 @@ function renderHook<T>(hook: () => T, Wrapper?: (props: { children: ReactNode })
 const readTheme = () => ({ tokens: usePrimerTheme(), scheme: usePrimerColorScheme() });
 
 describe('usePrimerTheme and usePrimerColorScheme', () => {
-  it('return the light defaults outside a provider', () => {
-    const { result } = renderHook(readTheme);
+  afterEach(() => {
+    jest.mocked(useColorScheme).mockReturnValue('light');
+  });
 
-    expect(result.current.tokens).toBe(defaultLightTokens);
-    expect(result.current.scheme).toBe('light');
+  it('follow the phone outside a provider', () => {
+    const light = renderHook(readTheme).result;
+    expect(light.current.tokens).toBe(defaultLightTokens);
+    expect(light.current.scheme).toBe('light');
+
+    jest.mocked(useColorScheme).mockReturnValue('dark');
+    const dark = renderHook(readTheme).result;
+    expect(dark.current.tokens).toBe(defaultDarkTokens);
+    expect(dark.current.scheme).toBe('dark');
   });
 
   it('return what the provider decided', () => {

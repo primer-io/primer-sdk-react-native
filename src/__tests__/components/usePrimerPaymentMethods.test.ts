@@ -15,8 +15,6 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
 // The scheme the provider decided; the hook reads it from the theme, not from the phone.
 let scheme: PrimerColorScheme = 'light';
-jest.mock('react-native', () => ({}), { virtual: true });
-
 beforeEach(() => {
   scheme = 'light';
 });

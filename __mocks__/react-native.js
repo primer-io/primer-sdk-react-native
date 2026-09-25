@@ -1,3 +1,4 @@
+/* global jest */
 // Global manual mock for react-native. Jest auto-applies manual mocks placed in a
 // __mocks__ dir adjacent to node_modules to EVERY test — no jest.mock() call needed.
 //
@@ -96,7 +97,7 @@ const reactNative = {
       ),
   },
   requireNativeComponent: (name) => makeComponent(name),
-  useColorScheme: () => 'light',
+  useColorScheme: jest.fn(() => 'light'),
   useWindowDimensions: () => ({ width: 375, height: 812, scale: 2, fontScale: 1 }),
 };
 

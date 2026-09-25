@@ -1,12 +1,12 @@
 import { createContext } from 'react';
-import { defaultLightTokens } from './tokens';
 import type { PrimerTokens } from './types';
 
 export type PrimerColorScheme = 'light' | 'dark';
 
-interface ThemeContextValue {
+export interface ThemeContextValue {
   scheme: PrimerColorScheme;
   tokens: PrimerTokens;
 }
 
-export const ThemeContext = createContext<ThemeContextValue>({ scheme: 'light', tokens: defaultLightTokens });
+// null outside PrimerCheckoutProvider, where the theme hooks follow the phone instead.
+export const ThemeContext = createContext<ThemeContextValue | null>(null);
