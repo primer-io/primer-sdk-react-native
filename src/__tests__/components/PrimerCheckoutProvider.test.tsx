@@ -61,7 +61,7 @@ import { createElement } from 'react';
 // @ts-expect-error -- react-test-renderer has no types for React 19
 import renderer, { act } from 'react-test-renderer';
 import { PrimerCheckoutProvider } from '../../Components/PrimerCheckoutProvider';
-import { usePrimerTheme } from '../../Components/internal/theme';
+import { usePrimerColorScheme, usePrimerTheme } from '../../Components/internal/theme';
 import { usePrimerCheckout } from '../../Components/hooks/usePrimerCheckout';
 import { PrimerError } from '../../models/PrimerError';
 import type { PrimerCheckoutContextValue } from '../../Components/types/PrimerCheckoutProviderTypes';
@@ -983,5 +983,32 @@ describe('PrimerCheckoutProvider — requiresVaultedCardCvv flag wiring', () => 
     });
 
     expect(seen[seen.length - 1]).toBe('#222222');
+  });
+
+  it('hands components the dark tokens when appearanceMode is DARK', async () => {
+    let seen: { brand: string; scheme: string } | undefined;
+
+    function Probe() {
+      seen = { brand: usePrimerTheme().colors.brand, scheme: usePrimerColorScheme() };
+      return null;
+    }
+
+    await act(async () => {
+      renderer.create(
+        createElement(
+          PrimerCheckoutProvider,
+          {
+            clientToken: 'token-1',
+            settings: { uiOptions: { appearanceMode: 'DARK' } },
+            theme: { light: { colors: { brand: '#111111' } }, dark: { colors: { brand: '#222222' } } },
+          },
+          createElement(Probe)
+        )
+      );
+      await flushPromises();
+    });
+
+    // The phone is light in this suite, so only the setting can make it dark.
+    expect(seen).toEqual({ brand: '#222222', scheme: 'dark' });
   });
 });

@@ -19,7 +19,7 @@ import {
 } from '../../../Components/status';
 import { PrimerButton } from '../../../Components/internal/ui';
 import { ThemeContext } from '../../../Components/internal/theme/ThemeContext';
-import { defaultDarkTokens, defaultLightTokens } from '../../../Components/internal/theme/tokens';
+import { defaultLightTokens } from '../../../Components/internal/theme/tokens';
 
 function render(element: ReturnType<typeof createElement>) {
   let testRenderer: ReturnType<typeof create>;
@@ -58,7 +58,7 @@ describe('public status components (standalone, no checkout/navigation provider)
     };
     const r = render(
       createElement(ThemeContext.Provider, {
-        value: { lightTokens: tokens, darkTokens: defaultDarkTokens },
+        value: { scheme: 'light', tokens },
         children: createElement(PrimerLoadingScreen, {}),
       })
     );
