@@ -194,6 +194,8 @@
   "primer_country_placeholder_search": "Buscar",
   "primer_country_selector_placeholder": "Selector de país",
   "primer_country_title": "Seleccionar país",
+  "primer_form_redirect_otp_code_invalid": "Enter a valid 6-digit code",
+  "primer_form_redirect_ovo_phone_helper": "Enter the phone number registered with your OVO account.",
   "primer_klarna_button_authorize": "Continuar",
   "primer_klarna_button_finalize": "Pagar",
   "primer_klarna_loading_subtitle": "Esto puede tardar unos segundos.",

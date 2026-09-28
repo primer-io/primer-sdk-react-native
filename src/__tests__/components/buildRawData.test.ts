@@ -18,6 +18,10 @@ describe('buildRawData', () => {
     expect(buildRawData('ADYEN_MBWAY', { PHONE_NUMBER: '+351912345678' })).toEqual({ phoneNumber: '+351912345678' });
   });
 
+  it('maps an OVO phone number to { phoneNumber } (same shape as MBWay)', () => {
+    expect(buildRawData('XENDIT_OVO', { PHONE_NUMBER: '+6281234567890' })).toEqual({ phoneNumber: '+6281234567890' });
+  });
+
   it('maps Bancontact card-fields to the card-data shape', () => {
     expect(
       buildRawData('ADYEN_BANCONTACT_CARD', {

@@ -1,6 +1,11 @@
 // @ts-expect-error -- React 19 concurrent act environment
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
+// Pin the locale so error-copy assertions don't depend on the host's device locale.
+jest.mock('../../Components/internal/localization/locale-resolver', () => ({
+  resolveLocale: () => ({ locale: 'en', source: 'fallback' }),
+}));
+
 jest.mock('../../specs/NativePrimer', () => ({
   __esModule: true,
   default: {
@@ -26,6 +31,12 @@ jest.mock(
         RNTPrimerHeadlessUniversalPaymentMethodNativeUIManager: {
           configure: jest.fn().mockResolvedValue(undefined),
           showPaymentMethod: jest.fn().mockResolvedValue(undefined),
+        },
+        RNTPrimerHeadlessUniversalCheckoutRawDataManager: {
+          configure: jest.fn(),
+          listRequiredInputElementTypes: jest.fn(),
+          setRawData: jest.fn(),
+          cleanUp: jest.fn(),
         },
         RNTPrimerHeadlessUniversalCheckoutBanksComponent: {
           configure: jest.fn().mockResolvedValue(undefined),
@@ -560,11 +571,10 @@ describe('usePrimerPaymentMethod', () => {
   });
 
   describe('raw-data form methods (Bancontact/MBWay/BLIK)', () => {
+    const mbway = [{ paymentMethodType: 'ADYEN_MBWAY', categories: ['RAW_DATA'] }];
+
     it('routes a non-card RAW_DATA method (MBWay) to kind "rawDataForm" with the form contract', async () => {
-      const captures = await mountWithMethods(
-        [{ paymentMethodType: 'ADYEN_MBWAY', categories: ['RAW_DATA'] }],
-        'ADYEN_MBWAY'
-      );
+      const captures = await mountWithMethods(mbway, 'ADYEN_MBWAY');
       const form = asRawDataForm(captures[captures.length - 1]!);
       expect(form.isAvailable).toBe(true);
       expect(form.requiredInputs).toEqual([]); // populated once start() activates the raw-data manager
@@ -577,6 +587,26 @@ describe('usePrimerPaymentMethod', () => {
         'ADYEN_BANCONTACT_CARD'
       );
       expect(captures[captures.length - 1]!.kind).toBe('rawDataForm');
+    });
+
+    // The one line that carries native's messages to the form. Without it the shopper gets a
+    // disabled Pay button and no stated reason, which is the whole bug this contract exists for.
+    it('surfaces native validation messages as validationErrors', async () => {
+      const captures = await mountWithMethods(mbway, 'ADYEN_MBWAY');
+      await act(async () => {
+        await asRawDataForm(captures[captures.length - 1]!).start();
+        await flushPromises();
+      });
+
+      await act(async () => {
+        findListener('onValidation')!({
+          isValid: false,
+          errors: [{ errorId: 'invalid-phone-number', inputElementType: 'PHONE_NUMBER' }],
+        });
+        await flushPromises();
+      });
+
+      expect(asRawDataForm(captures[captures.length - 1]!).validationErrors).toEqual(['Enter a valid phone number']);
     });
   });
 

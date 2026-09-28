@@ -194,6 +194,8 @@
   "primer_country_placeholder_search": "검색",
   "primer_country_selector_placeholder": "국가 선택기",
   "primer_country_title": "국가 선택",
+  "primer_form_redirect_otp_code_invalid": "Enter a valid 6-digit code",
+  "primer_form_redirect_ovo_phone_helper": "Enter the phone number registered with your OVO account.",
   "primer_klarna_button_authorize": "계속",
   "primer_klarna_button_finalize": "결제",
   "primer_klarna_loading_subtitle": "몇 초 정도 걸릴 수 있습니다.",

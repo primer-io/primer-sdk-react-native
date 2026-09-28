@@ -83,6 +83,11 @@ export interface StripeAchMandateDisplay {
 export interface CardFormState {
   isValid: boolean;
   errors: CardFormErrors;
+  /**
+   * Every validation message native reported, including those `errors` cannot attribute to a
+   * card field (phone number, OTP). Non-card raw-data forms render these.
+   */
+  messages: string[];
   binData: PrimerBinData | null;
   metadata: unknown;
   requiredFields: PrimerInputElementType[];

@@ -8,7 +8,7 @@ import type { PrimerPaymentMethodManagerCategoryName } from '../../models/Primer
  * - `nativeUi` — a native-sheet / browser-redirect method (Google/Apple Pay, PayPal), started via
  *   `startNativeUI(type)`.
  * - `bankSelection` — a `COMPONENT_WITH_REDIRECT` bank-redirect method (iDEAL; Android Dotpay).
- * - `rawDataForm` — a non-card `RAW_DATA` method that collects a small input (Bancontact/MBWay/BLIK).
+ * - `rawDataForm` — a non-card `RAW_DATA` method that collects a small input (Bancontact/MBWay/BLIK/OVO).
  * - `klarna` — a `KLARNA` method (session → categories → embedded view → authorize → finalize).
  * - `stripeAch` — Stripe ACH bank-account payments (details form → native bank link → mandate).
  * - `card` — the card form (`PAYMENT_CARD` only).
@@ -23,7 +23,7 @@ export type PaymentMethodKind = UsePrimerPaymentMethodReturn['kind'];
 const PAYMENT_CARD_TYPE = 'PAYMENT_CARD';
 
 // RAW_DATA methods with a working form here; others (e.g. XENDIT_RETAIL_OUTLETS, a list picker) stay unsupported.
-const RAW_DATA_FORM_TYPES = new Set(['ADYEN_BANCONTACT_CARD', 'ADYEN_MBWAY', 'ADYEN_BLIK']);
+const RAW_DATA_FORM_TYPES = new Set(['ADYEN_BANCONTACT_CARD', 'ADYEN_MBWAY', 'ADYEN_BLIK', 'XENDIT_OVO']);
 
 export function routeMethodSelection(
   type: string,
