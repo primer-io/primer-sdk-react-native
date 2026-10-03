@@ -37,11 +37,19 @@ const chevronDownIcon = require('./assets/chevron-down.png');
 export function MethodSelectionScreen() {
   const tokens = usePrimerTheme();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
-  const { t } = usePrimerLocalization();
+  const { t, formatCurrency } = usePrimerLocalization();
   const { onCancel } = useCheckoutFlow();
   const { paymentMethods } = usePrimerPaymentMethods();
   const { push, replace } = useNavigation();
-  const { setActiveMethod, startNativeUI, stopBanks, stopKlarna, startAch, stopAch } = usePrimerCheckout();
+  const { clientSession, setActiveMethod, startNativeUI, stopBanks, stopKlarna, startAch, stopAch } =
+    usePrimerCheckout();
+  const totalAmount = clientSession?.totalAmount;
+  const currencyCode = clientSession?.currencyCode;
+  // The native SDKs title the list with the amount; "Checkout" only until the session arrives.
+  const title =
+    totalAmount != null && currencyCode
+      ? t('primer_common_button_pay_amount', { amount: formatCurrency(totalAmount, currencyCode) })
+      : t('primer_checkout_title');
   const {
     activeMethod: activeVaultedMethod,
     vaultDisplayMode,
@@ -178,10 +186,7 @@ export function MethodSelectionScreen() {
 
   return (
     <View style={[styles.root, { paddingBottom: bottomInset }]}>
-      <NavigationHeader
-        title={t('primer_checkout_title')}
-        rightAction={{ label: t('primer_common_button_cancel'), onPress: onCancel }}
-      />
+      <NavigationHeader title={title} rightAction={{ label: t('primer_common_button_cancel'), onPress: onCancel }} />
       <View style={styles.content}>
         {activeVaultedMethod != null && (
           <View style={styles.section}>
