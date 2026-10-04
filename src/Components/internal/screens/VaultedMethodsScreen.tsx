@@ -275,7 +275,8 @@ export function VaultedMethodsScreen() {
     };
   }, [editMode, t, styles.headerIcon, handleEnterEditMode, handleExitEditMode]);
 
-  const headerBackHandler = isDeleting ? noop : undefined;
+  // On the delete question, Back acts like Cancel: the list comes back still in edit mode.
+  const headerBackHandler = isDeleting ? noop : pendingDeletion != null ? handleCancelDelete : undefined;
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<VaultedPaymentMethodItem>) => (
