@@ -22,8 +22,8 @@ import { useBottomSafeArea } from './useBottomSafeArea';
 const DRAG_HANDLE_AREA = 20;
 // Matches CheckoutSheet's DEFAULT_HEIGHT_RATIO — the sheet never exceeds 92% of the screen.
 const MAX_SHEET_HEIGHT_RATIO = 0.92;
-// NavigationHeader: 24+16+32; Android onLayout can report 0 for the wrapper, so fall back to this.
-const HEADER_FALLBACK_HEIGHT = 72;
+// NavigationHeader with a centred title is only its 24 back row; Android onLayout can report 0 for the wrapper.
+const HEADER_FALLBACK_HEIGHT = 24;
 
 // Prebuilt Klarna screen: session → categories → embedded Klarna view → authorize (auto-finalized).
 export function KlarnaScreen() {
@@ -101,6 +101,7 @@ export function KlarnaScreen() {
           <View collapsable={false} onLayout={(e) => setHeaderHeight(e.nativeEvent.layout.height)}>
             <NavigationHeader
               title={t('primer_vault_default_klarna')}
+              titleAlignment="center"
               showBackButton={canGoBack}
               backLabel={t('primer_common_back')}
               onBackPress={pop}

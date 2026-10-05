@@ -18,6 +18,8 @@ export interface NavigationHeaderProps {
   onBackPress?: () => void;
   rightAction?: NavigationHeaderAction;
   rightComponent?: React.ReactNode;
+  /** 'below' (default): a large title under the back row. 'center': a smaller title centred in the top row. */
+  titleAlignment?: 'below' | 'center';
 }
 
 const ICON_SIZE = 20;
@@ -72,6 +74,7 @@ export function NavigationHeader({
   onBackPress,
   rightAction,
   rightComponent,
+  titleAlignment = 'below',
 }: NavigationHeaderProps) {
   const { pop } = useNavigation();
   const tokens = usePrimerTheme();
@@ -88,6 +91,15 @@ export function NavigationHeader({
     [tokens.spacing.medium, tokens.spacing.small]
   );
 
+  const centeredTitle =
+    title != null && titleAlignment === 'center' ? (
+      <View style={styles.centeredTitleBox} pointerEvents="none">
+        <Text style={styles.centeredTitle} numberOfLines={1}>
+          {title}
+        </Text>
+      </View>
+    ) : null;
+
   const rightElement = rightAction ? (
     <ActionButton action={rightAction} styles={styles} hitSlop={hitSlop} />
   ) : (
@@ -98,6 +110,7 @@ export function NavigationHeader({
     return (
       <View style={styles.container}>
         <View style={styles.headerBar}>
+          {centeredTitle}
           <TouchableOpacity onPress={handleBackPress} style={styles.actionButton} hitSlop={hitSlop}>
             <ChevronLeftIcon size={ICON_SIZE} color={tokens.colors.iconPrimary} />
             {backLabel != null && (
@@ -110,7 +123,23 @@ export function NavigationHeader({
           <View style={styles.spacer} />
           {rightElement}
         </View>
-        {title != null && <Text style={[styles.title, styles.titleTopMargin]}>{title}</Text>}
+        {title != null && titleAlignment === 'below' && (
+          <Text style={[styles.title, styles.titleTopMargin]}>{title}</Text>
+        )}
+      </View>
+    );
+  }
+
+  // Also reached while a screen slides out after Back (the stack no longer allows going back), so a
+  // centred title keeps its place instead of jumping to the large layout.
+  if (titleAlignment === 'center') {
+    return (
+      <View style={styles.container}>
+        <View style={styles.headerBar}>
+          {centeredTitle}
+          <View style={styles.spacer} />
+          {rightElement}
+        </View>
       </View>
     );
   }
@@ -146,6 +175,19 @@ function createStyles(tokens: PrimerTokens) {
       fontWeight: typography.titleLarge.fontWeight as TextStyle['fontWeight'],
       letterSpacing: typography.titleLarge.letterSpacing,
       lineHeight: typography.titleLarge.lineHeight,
+    },
+    centeredTitle: {
+      color: colors.textPrimary,
+      fontFamily: typography.titleLarge.fontFamily,
+      fontSize: typography.titleLarge.fontSize,
+      fontWeight: typography.titleLarge.fontWeight as TextStyle['fontWeight'],
+      letterSpacing: typography.titleLarge.letterSpacing,
+      lineHeight: typography.titleLarge.lineHeight,
+    },
+    centeredTitleBox: {
+      ...StyleSheet.absoluteFillObject,
+      alignItems: 'center',
+      justifyContent: 'center',
     },
     container: {
       paddingHorizontal: spacing.large,

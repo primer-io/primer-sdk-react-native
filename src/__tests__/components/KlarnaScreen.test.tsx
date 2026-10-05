@@ -63,12 +63,13 @@ jest.mock('../../Components/internal/screens/useBottomSafeArea', () => ({ useBot
 import { KlarnaScreen } from '../../Components/internal/screens/KlarnaScreen';
 
 describe('KlarnaScreen — header', () => {
-  it('titles the screen "Klarna", like the native SDKs, instead of "Checkout"', () => {
+  it('titles the screen "Klarna" in the middle of the back row, like the native SDKs', () => {
     let tree: any;
     act(() => {
       tree = renderer.create(createElement(KlarnaScreen));
     });
 
     expect(tree.root.findByType('NavigationHeader').props.title).toBe('primer_vault_default_klarna');
+    expect(tree.root.findByType('NavigationHeader').props.titleAlignment).toBe('center');
   });
 });
