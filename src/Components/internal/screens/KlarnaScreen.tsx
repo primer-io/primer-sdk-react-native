@@ -100,7 +100,7 @@ export function KlarnaScreen() {
               reports 0 — which collapsed the sheet height. Keep it in the native tree to measure. */}
           <View collapsable={false} onLayout={(e) => setHeaderHeight(e.nativeEvent.layout.height)}>
             <NavigationHeader
-              title={t('primer_checkout_title')}
+              title={t('primer_vault_default_klarna')}
               showBackButton={canGoBack}
               backLabel={t('primer_common_back')}
               onBackPress={pop}
