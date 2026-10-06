@@ -60,9 +60,7 @@ target 'example_0_70_6' do
 
     fix_code_signing(installer)
 
-    # Xcode 27 rejects deployment targets below 15.0. react_native_post_install raises the pod
-    # targets to 15.1 but not their resource bundles, so PrimerResources-PrimerResources keeps
-    # the podspec's 13.0. Upstream fix: facebook/react-native#58687, not in 0.81.
+    # Xcode 27 needs iOS 15+; RN's post_install misses resource bundles (PrimerResources is 13.0).
     installer.generated_projects.each do |project|
       project.targets.each do |target|
         target.build_configurations.each do |config|

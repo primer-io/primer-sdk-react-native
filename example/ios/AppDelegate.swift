@@ -5,9 +5,7 @@ import ReactAppDependencyProvider
 
 @main
 final class AppDelegate: UIResponder, UIApplicationDelegate {
-  // React Native still asks the app delegate for its window (RCTLogBoxView, and RCTDeviceInfo
-  // before 0.81.5) and crashes with an unrecognized selector without one. It mirrors the
-  // scene's window, set by SceneDelegate.
+  // React Native still reads the app delegate's window (LogBox); without it, it crashes.
   var window: UIWindow?
   var reactNativeDelegate: ReactNativeDelegate?
   var reactNativeFactory: RCTReactNativeFactory?
