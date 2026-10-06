@@ -15,7 +15,7 @@ PODS:
     - fmt
     - glog
     - hermes-engine
-    - PrimerSDK (= 2.52.0)
+    - PrimerSDK (= 2.53.0)
     - RCT-Folly
     - RCT-Folly/Fabric
     - RCTRequired
@@ -38,41 +38,41 @@ PODS:
     - SocketRocket
     - Yoga
   - Primer3DS (2.8.0)
-  - PrimerBDCCore (2.52.0):
-    - PrimerBDCEngine (= 2.52.0)
-    - PrimerFoundation (= 2.52.0)
-    - PrimerStepResolver (= 2.52.0)
-  - PrimerBDCEngine (2.52.0):
-    - PrimerFoundation (= 2.52.0)
-    - PrimerStepResolver (= 2.52.0)
-  - PrimerCore (2.52.0):
+  - PrimerBDCCore (2.53.0):
+    - PrimerBDCEngine (= 2.53.0)
+    - PrimerFoundation (= 2.53.0)
+    - PrimerStepResolver (= 2.53.0)
+  - PrimerBDCEngine (2.53.0):
+    - PrimerFoundation (= 2.53.0)
+    - PrimerStepResolver (= 2.53.0)
+  - PrimerCore (2.53.0):
     - Primer3DS
-    - PrimerFoundation (= 2.52.0)
-    - PrimerResources (= 2.52.0)
-  - PrimerFoundation (2.52.0)
+    - PrimerFoundation (= 2.53.0)
+    - PrimerResources (= 2.53.0)
+  - PrimerFoundation (2.53.0)
   - PrimerIPay88MYSDK (0.1.7)
   - PrimerKlarnaSDK (1.3.1)
-  - PrimerNetworking (2.52.0):
-    - PrimerFoundation (= 2.52.0)
-  - PrimerResources (2.52.0)
-  - PrimerSDK (2.52.0):
-    - PrimerSDK/Core (= 2.52.0)
-  - PrimerSDK/Core (2.52.0):
-    - PrimerBDCCore (= 2.52.0)
-    - PrimerBDCEngine (= 2.52.0)
-    - PrimerCore (= 2.52.0)
-    - PrimerFoundation (= 2.52.0)
-    - PrimerNetworking (= 2.52.0)
-    - PrimerResources (= 2.52.0)
-    - PrimerStepResolver (= 2.52.0)
-    - PrimerUI (= 2.52.0)
-  - PrimerStepResolver (2.52.0):
-    - PrimerFoundation (= 2.52.0)
+  - PrimerNetworking (2.53.0):
+    - PrimerFoundation (= 2.53.0)
+  - PrimerResources (2.53.0)
+  - PrimerSDK (2.53.0):
+    - PrimerSDK/Core (= 2.53.0)
+  - PrimerSDK/Core (2.53.0):
+    - PrimerBDCCore (= 2.53.0)
+    - PrimerBDCEngine (= 2.53.0)
+    - PrimerCore (= 2.53.0)
+    - PrimerFoundation (= 2.53.0)
+    - PrimerNetworking (= 2.53.0)
+    - PrimerResources (= 2.53.0)
+    - PrimerStepResolver (= 2.53.0)
+    - PrimerUI (= 2.53.0)
+  - PrimerStepResolver (2.53.0):
+    - PrimerFoundation (= 2.53.0)
   - PrimerStripeSDK (1.0.0)
-  - PrimerUI (2.52.0):
-    - PrimerCore (= 2.52.0)
-    - PrimerFoundation (= 2.52.0)
-    - PrimerResources (= 2.52.0)
+  - PrimerUI (2.53.0):
+    - PrimerCore (= 2.53.0)
+    - PrimerFoundation (= 2.53.0)
+    - PrimerResources (= 2.53.0)
   - RCT-Folly (2024.11.18.00):
     - boost
     - DoubleConversion
@@ -2731,20 +2731,20 @@ SPEC CHECKSUMS:
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
   glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
   hermes-engine: 4f8246b1f6d79f625e0d99472d1f3a71da4d28ca
-  primer-io-react-native: 51816f1d7259c680159e22654a2021e1727f5de2
+  primer-io-react-native: d75540c12b9a9813ee2101a3ff2906c508d1c821
   Primer3DS: b8b583ef260f703180870358bc55069de74f8f51
-  PrimerBDCCore: 921d389c971db69581303dc00da249a5aaa0047a
-  PrimerBDCEngine: f9ceef77aca400dae63e72409bbc8e1b2b215c06
-  PrimerCore: 9e8ccf62265e798993fe7433ce68b965fdd5fb87
-  PrimerFoundation: f0a9f4905426ed147e06342a22033b9039d50923
+  PrimerBDCCore: 73d3a3b83dd5a924d914c8715920787aee57f1d6
+  PrimerBDCEngine: d847f277dd0d5bae6c86349700a52372e3ef2e40
+  PrimerCore: a024d57ed16f735ea896c82ac505d09273b82e60
+  PrimerFoundation: 1cfb4f3ce1a7f718a1f7aad555087a8b43c6c726
   PrimerIPay88MYSDK: 436ee0be7e2c97e4e81456ccddee20175e9e3c4d
   PrimerKlarnaSDK: 104962584ac6baad20424f73ee8493c8503fd487
-  PrimerNetworking: 98540f4a8e1ffe3ac0745e10c90483cf32dd6e34
-  PrimerResources: f46427580a327fc4180dbd4c9e14ef5ca13f6c1f
-  PrimerSDK: 38b476e3508eb10267c587c8c62b77611bfdc8e2
-  PrimerStepResolver: 552e4dfa3c957b3e50c1c276902e520679c21640
+  PrimerNetworking: b6c12d7ee4057ccbb2c8e446b2817946951b3356
+  PrimerResources: 3ce2ce0d0ea23f91667b3e56f79d45c1254da0b7
+  PrimerSDK: a1bf08fd1c76057672e5baf2823e6e08b35bac41
+  PrimerStepResolver: babced653ea6cd3f622af0788d5843ddc75c77c6
   PrimerStripeSDK: c37d4e7c1b5256d67d4890c4cc4b38ddc9427489
-  PrimerUI: 6d8c0335e6af54077fc83750f8524fe54d959504
+  PrimerUI: 0142f75868aa8c4c959a1b58334cfbb4bcf22650
   RCT-Folly: 846fda9475e61ec7bcbf8a3fe81edfcaeb090669
   RCTDeprecation: c4b9e2fd0ab200e3af72b013ed6113187c607077
   RCTRequired: e97dd5dafc1db8094e63bc5031e0371f092ae92a
