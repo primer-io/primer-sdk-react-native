@@ -8,7 +8,7 @@ PODS:
   - hermes-engine (0.81.6):
     - hermes-engine/Pre-built (= 0.81.6)
   - hermes-engine/Pre-built (0.81.6)
-  - primer-io-react-native (2.47.1):
+  - primer-io-react-native (2.48.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -2731,7 +2731,7 @@ SPEC CHECKSUMS:
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
   glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
   hermes-engine: 7219f6e751ad6ec7f3d7ec121830ee34dae40749
-  primer-io-react-native: d75540c12b9a9813ee2101a3ff2906c508d1c821
+  primer-io-react-native: a45eb71768cee21c2915b9dad0f4d0d9bfc30d3c
   Primer3DS: b8b583ef260f703180870358bc55069de74f8f51
   PrimerBDCCore: 73d3a3b83dd5a924d914c8715920787aee57f1d6
   PrimerBDCEngine: d847f277dd0d5bae6c86349700a52372e3ef2e40
