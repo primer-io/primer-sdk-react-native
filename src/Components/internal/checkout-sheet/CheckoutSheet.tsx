@@ -17,6 +17,8 @@ import type { PrimerTokens } from '../theme';
 import { PRIMER_EMPTY_ACCESSORY_ID } from '../../inputs/PrimerTextInput';
 import { SheetHeightContext } from './SheetHeightContext';
 import type { SheetHeightContextValue } from './SheetHeightContext';
+import { SheetBackContext } from './SheetBackContext';
+import type { SetSheetBackAction } from './SheetBackContext';
 import type { CheckoutSheetProps } from './types';
 
 const ANIMATION_DURATION = 300;
@@ -153,9 +155,26 @@ export function CheckoutSheet({
     }
   }, [dismissOnBackdropPress, onRequestDismiss]);
 
+  const backActionRef = useRef<(() => void) | null>(null);
+  const setBackAction = useCallback<SetSheetBackAction>((action) => {
+    backActionRef.current = action;
+    return () => {
+      if (backActionRef.current === action) {
+        backActionRef.current = null;
+      }
+    };
+  }, []);
+
   const handleRequestClose = useCallback(() => {
+    // Android back arrives only here: the Modal's window takes the key, so BackHandler never fires.
+    // While open, the top screen's Back runs; with none (the first screen), ask to close.
+    const backAction = backActionRef.current;
+    if (visible && backAction) {
+      backAction();
+      return;
+    }
     onRequestDismiss?.();
-  }, [onRequestDismiss]);
+  }, [visible, onRequestDismiss]);
 
   const panResponder = useMemo(
     () =>
@@ -247,7 +266,9 @@ export function CheckoutSheet({
               </View>
             )}
             <SheetHeightContext.Provider value={sheetHeightContextValue}>
-              <View style={styles.childrenContainer}>{children}</View>
+              <SheetBackContext.Provider value={setBackAction}>
+                <View style={styles.childrenContainer}>{children}</View>
+              </SheetBackContext.Provider>
             </SheetHeightContext.Provider>
           </View>
         </Animated.View>
