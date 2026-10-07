@@ -60,7 +60,12 @@ const Animated = {
   parallel: () => ({ start: (cb) => cb && cb({ finished: true }) }),
   sequence: () => ({ start: (cb) => cb && cb({ finished: true }) }),
   subtract: (a, b) => ({ __sub: [a, b] }),
+  add: (a, b) => ({ __add: [a, b] }),
+  multiply: (a, b) => ({ __mul: [a, b] }),
 };
+
+// CheckoutSheet's curves. Identity is enough: timing() above finishes at once.
+const Easing = { in: (easing) => easing, out: (easing) => easing, cubic: (t) => t };
 
 const reactNative = {
   // Components
@@ -78,9 +83,11 @@ const reactNative = {
   Alert: { alert: () => {} },
   Animated,
   BackHandler: { addEventListener: () => subscription, exitApp: () => {} },
+  Easing,
   Keyboard: { addListener: () => subscription, removeAllListeners: () => {}, dismiss: () => {} },
   NativeEventEmitter,
   NativeModules: {},
+  PanResponder: { create: () => ({ panHandlers: {} }) },
   Platform,
   StyleSheet,
   // Every TurboModule method resolves as an async no-op so a new spec method can never

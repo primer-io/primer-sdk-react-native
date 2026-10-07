@@ -6,7 +6,7 @@ export interface PrimerCheckoutSheetProps {
   visible: boolean;
   /** Called when the sheet finishes its dismiss animation (fully hidden). */
   onDismiss?: () => void;
-  /** Called when the user requests dismissal (backdrop tap, Android back). */
+  /** Called when the user requests dismissal (backdrop tap, or Android back on a screen without a Back button). */
   onRequestDismiss?: () => void;
   /** Whether tapping the backdrop dismisses the sheet. Default: true. */
   dismissOnBackdropPress?: boolean;

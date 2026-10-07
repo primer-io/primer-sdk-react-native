@@ -1,6 +1,8 @@
-import React, { useMemo } from 'react';
+import React, { useContext, useLayoutEffect, useMemo } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import type { TextStyle } from 'react-native';
+import { SheetBackContext } from '../checkout-sheet/SheetBackContext';
+import { NavigationContext, RouteEntryContext } from './NavigationContext';
 import { useNavigation } from './useNavigation';
 import { usePrimerTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
@@ -78,6 +80,18 @@ export function NavigationHeader({
   const styles = useMemo(() => createStyles(tokens), [tokens]);
 
   const handleBackPress = onBackPress ?? pop;
+
+  // Android back in the sheet runs this same action while the button shows on the top screen, so a
+  // screen sliding out never answers. A layout effect, so it changes in the same commit as the button.
+  const setSheetBackAction = useContext(SheetBackContext);
+  const entryKey = useContext(RouteEntryContext)?.key;
+  const stack = useContext(NavigationContext)?.state.stack;
+  const isTop = entryKey != null && entryKey === stack?.[stack.length - 1]?.key;
+  useLayoutEffect(() => {
+    if (!showBackButton || !isTop || !setSheetBackAction) return;
+    // A fresh wrapper per registration: screens share `pop`, and a release clears only its own.
+    return setSheetBackAction(() => handleBackPress());
+  }, [showBackButton, isTop, setSheetBackAction, handleBackPress]);
   const hitSlop = useMemo(
     () => ({
       top: tokens.spacing.medium,

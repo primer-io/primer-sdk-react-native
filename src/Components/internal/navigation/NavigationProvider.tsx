@@ -1,5 +1,4 @@
-import React, { useCallback, useEffect, useReducer, useRef } from 'react';
-import { BackHandler, Platform } from 'react-native';
+import React, { useCallback, useReducer, useRef } from 'react';
 import { NavigationContext } from './NavigationContext';
 import { navigationReducer } from './navigationReducer';
 import type { CheckoutRoute, NavigationState, RouteParamMap } from './types';
@@ -69,21 +68,6 @@ export function NavigationProvider<R extends CheckoutRoute>({
   const setAnimating = useCallback((isAnimating: boolean) => {
     dispatch({ type: 'setAnimating', isAnimating });
   }, []);
-
-  // Android hardware back button
-  useEffect(() => {
-    if (Platform.OS !== 'android') return;
-
-    const handler = BackHandler.addEventListener('hardwareBackPress', () => {
-      if (stateRef.current.stack.length > 1) {
-        pop();
-        return true;
-      }
-      return false;
-    });
-
-    return () => handler.remove();
-  }, [pop]);
 
   const contextValue = React.useMemo(
     () => ({ state, push, pop, replace, popToRoot, setAnimating }),
