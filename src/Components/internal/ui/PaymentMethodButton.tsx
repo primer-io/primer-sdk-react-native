@@ -3,6 +3,7 @@ import { Image, Platform, Text, TouchableOpacity, StyleSheet, View } from 'react
 import type { TextStyle } from 'react-native';
 import { PrimerGooglePayButton as PrimerGooglePayNativeButton } from '../../../HeadlessUniversalCheckout/Components/PrimerGooglePayButton';
 import { APPLE_PAY } from '../applePay';
+import { splitKlarnaLabel } from '../klarnaLabel';
 import { partnerAssets } from '../paymentMethodAssetVariant';
 import { usePrimerColorScheme, usePrimerTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
@@ -96,20 +97,24 @@ export function PaymentMethodButton({ item, onPress }: PaymentMethodButtonProps)
     );
   }
 
-  // Drawn by the SDK, not from the backend's assets: "Pay with" and the pink badge on Klarna's black.
+  // Drawn by the SDK, not from the backend's assets: "Pay with Klarna" on Klarna's black, the pink
+  // badge in the word's place, so the language's own word order holds.
   if (item.type === KLARNA_TYPE) {
+    const label = t('accessibility_payment_selection_pay_with_klarna');
+    const { before, after } = splitKlarnaLabel(label);
     return (
       <TouchableOpacity
         accessibilityRole="button"
-        accessibilityLabel={withSurcharge(t('accessibility_payment_selection_pay_with_klarna'))}
+        accessibilityLabel={withSurcharge(label)}
         style={[styles.button, styles.klarnaButton]}
         onPress={onPress}
         activeOpacity={0.7}
       >
-        <Text style={styles.klarnaText}>{t('primer_klarna_pay_with')}</Text>
+        {before != null && <Text style={[styles.klarnaText, styles.klarnaTextBefore]}>{before}</Text>}
         <View style={styles.klarnaBadge}>
           <Image source={klarnaWordmark} style={styles.klarnaWordmark} />
         </View>
+        {after != null && <Text style={[styles.klarnaText, styles.klarnaTextAfter]}>{after}</Text>}
         {surchargeLabel != null && <Text style={styles.surchargeLight}>{surchargeLabel}</Text>}
       </TouchableOpacity>
     );
@@ -186,6 +191,11 @@ function createStyles(tokens: PrimerTokens) {
       ...titleLarge,
       color: KLARNA_ON_BLACK,
       flexShrink: 1,
+    },
+    klarnaTextAfter: {
+      marginLeft: spacing.small,
+    },
+    klarnaTextBefore: {
       marginRight: spacing.small,
     },
     // The bundled wordmark is one colour, so it takes Klarna's black, as the iOS SDK tints it.

@@ -6,6 +6,7 @@ import { createElement } from 'react';
 import renderer, { act } from 'react-test-renderer';
 
 import { PaymentMethodButton } from '../../Components/internal/ui/PaymentMethodButton';
+import { splitKlarnaLabel } from '../../Components/internal/klarnaLabel';
 import { resolveLocale } from '../../Components/internal/localization/locale-resolver';
 import { translate } from '../../Components/internal/localization/translate';
 import type { TranslationParams } from '../../Components/internal/localization/types';
@@ -26,7 +27,9 @@ const tr = (key: string, params?: TranslationParams) => translate(key, locale, p
 // react-test-renderer instance — typed loosely because the package ships no React 19 types.
 type Props = Record<string, any>;
 type TestInstance = {
+  type: unknown;
   props: Props;
+  children: TestInstance[];
   findAllByType: (type: string) => TestInstance[];
   findByType: (type: string) => TestInstance;
 };
@@ -233,15 +236,18 @@ describe('PaymentMethodButton — card', () => {
 describe('PaymentMethodButton — Klarna', () => {
   const klarna = withAssets('KLARNA', 'Klarna', { colored: 'file:///backend-klarna.png' }, { colored: '#ffb3c7' });
 
-  it.each(['light', 'dark'] as const)('draws "Pay with" and the pink badge on Klarna black (%s)', (scheme) => {
+  const label = tr('accessibility_payment_selection_pay_with_klarna');
+  const { before, after } = splitKlarnaLabel(label);
+  const words = [before, after].filter((word) => word != null);
+
+  it.each(['light', 'dark'] as const)('draws "Pay with Klarna" with the pink badge on Klarna black (%s)', (scheme) => {
     const root = render(klarna, { scheme });
     const tokens = scheme === 'dark' ? defaultDarkTokens : defaultLightTokens;
 
     expect(rowStyle(root).backgroundColor).toBe('#0b051d');
-    const [payWith] = texts(root);
-    expect(payWith!.props.children).toBe(tr('primer_klarna_pay_with'));
-    expect(payWith!.props.children).not.toBe('primer_klarna_pay_with');
-    expect(flat(payWith!.props.style).color).toBe('#ffffff');
+    expect(words.length).toBeGreaterThan(0);
+    expect(texts(root).map((text) => text.props.children)).toEqual(words);
+    texts(root).forEach((text) => expect(flat(text.props.style).color).toBe('#ffffff'));
     expect(flat(root.findByType('View').props.style)).toEqual({
       backgroundColor: '#ffa8cd',
       borderRadius: tokens.radii.medium,
@@ -250,20 +256,47 @@ describe('PaymentMethodButton — Klarna', () => {
     const wordmark = root.findByType('Image');
     expect(wordmark.props.source).toBe(klarnaWordmark);
     expect(flat(wordmark.props.style).tintColor).toBe('#0b051d');
-    expect(row(root).props.accessibilityLabel).toBe(tr('accessibility_payment_selection_pay_with_klarna'));
+    expect(row(root).props.accessibilityLabel).toBe(label);
+  });
+
+  // Turkish puts the word first, German in the middle; the badge takes its place in each.
+  it.each([
+    ['tr', ['View', 'Text'], [{ marginLeft: defaultLightTokens.spacing.small }]],
+    [
+      'de',
+      ['Text', 'View', 'Text'],
+      [{ marginRight: defaultLightTokens.spacing.small }, { marginLeft: defaultLightTokens.spacing.small }],
+    ],
+  ])('puts the badge where %s puts the word', (deviceLocale, order, margins) => {
+    const localeLabel = translate('accessibility_payment_selection_pay_with_klarna', deviceLocale);
+    const pieces = splitKlarnaLabel(localeLabel);
+    const dateTimeFormat = jest
+      .spyOn(Intl, 'DateTimeFormat')
+      .mockImplementation(() => ({ resolvedOptions: () => ({ locale: deviceLocale }) }) as Intl.DateTimeFormat);
+    let root: TestInstance;
+    try {
+      root = render(klarna);
+    } finally {
+      dateTimeFormat.mockRestore();
+    }
+
+    expect(row(root).children.map((child) => child.type)).toEqual(order.map((name) => rnMock[name]));
+    expect(texts(root).map((text) => text.props.children)).toEqual(
+      [pieces.before, pieces.after].filter((word) => word != null)
+    );
+    texts(root).forEach((text, i) => expect(flat(text.props.style)).toMatchObject(margins[i]!));
+    expect(row(root).props.accessibilityLabel).toBe(localeLabel);
   });
 
   it('shows a flat surcharge in white on the black, and reads it after the label', () => {
     const root = render({ ...klarna, surcharge: { kind: 'flat', amount: 50 } });
     const surcharge = texts(root).find((t) => t.props.children === '+50');
     expect(flat(surcharge!.props.style)).toMatchObject({ color: '#ffffff', opacity: 0.8 });
-    expect(row(root).props.accessibilityLabel).toBe(`${tr('accessibility_payment_selection_pay_with_klarna')}, +50`);
+    expect(row(root).props.accessibilityLabel).toBe(`${label}, +50`);
   });
 
-  it('lets "Pay with" shrink so large text wraps instead of being cut off', () => {
-    const payWith = texts(render(klarna)).find((t) => t.props.children === tr('primer_klarna_pay_with'));
-
-    expect(flat(payWith!.props.style).flexShrink).toBe(1);
+  it('lets the words shrink so large text wraps instead of being cut off', () => {
+    texts(render(klarna)).forEach((text) => expect(flat(text.props.style).flexShrink).toBe(1));
   });
 });
 

@@ -1,5 +1,3 @@
-import { readdirSync, readFileSync } from 'fs';
-import { join } from 'path';
 import { translate } from '../../../Components/internal/localization/translate';
 
 const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
@@ -73,27 +71,5 @@ describe('accessibility string localization', () => {
       const frValue = translate(key, 'fr');
       expect(frValue).not.toBe(enValue);
     }
-  });
-});
-
-// Added by hand from the native SDKs' strings (ORC-8543). A Phrase sync without the key would drop it
-// and the Klarna button would show the raw key, so this fails that sync's PR.
-describe('primer_klarna_pay_with', () => {
-  const stringsDir = join(__dirname, '../../../Components/internal/localization/strings');
-  const files = readdirSync(stringsDir).filter((file) => file.endsWith('.json'));
-
-  it('is in every locale file', () => {
-    expect(files).toHaveLength(57);
-    const missing = files.filter((file) => {
-      const strings = JSON.parse(readFileSync(join(stringsDir, file), 'utf8')) as Record<string, string>;
-      return !strings.primer_klarna_pay_with?.trim();
-    });
-    expect(missing).toEqual([]);
-  });
-
-  it('matches the native SDKs in English and German', () => {
-    expect(translate('primer_klarna_pay_with', 'en')).toBe('Pay with');
-    expect(translate('primer_klarna_pay_with', 'de')).toBe('Bezahlen mit');
-    expect(warnSpy).not.toHaveBeenCalled();
   });
 });
