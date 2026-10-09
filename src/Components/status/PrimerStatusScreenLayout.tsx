@@ -30,7 +30,7 @@ export function PrimerStatusScreenLayout({ icon, title, subtitle, children }: Pr
 }
 
 function createStyles(tokens: PrimerTokens) {
-  const { colors, spacing, typography } = tokens;
+  const { colors, sizes, spacing, typography } = tokens;
 
   /* eslint-disable react-native/no-unused-styles */
   return StyleSheet.create({
@@ -46,7 +46,7 @@ function createStyles(tokens: PrimerTokens) {
     messageArea: {
       alignItems: 'center',
       gap: spacing.small,
-      paddingHorizontal: spacing.xxxlarge,
+      paddingHorizontal: sizes.xlarge,
       paddingVertical: spacing.xlarge,
     },
     subtitle: {

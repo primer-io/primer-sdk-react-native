@@ -1,24 +1,36 @@
 export interface PrimerColorTokens {
-  primary: string;
-  background: string;
-  surface: string;
-  overlay: string;
-  textPrimary: string;
-  textSecondary: string;
-  textPlaceholder: string;
-  textDisabled: string;
-  textNegative: string;
-  textLink: string;
-  border: string;
-  borderFocused: string;
-  borderError: string;
-  borderDisabled: string;
-  iconPrimary: string;
+  backgroundOutlinedDefault: string;
+  backgroundOutlinedDisabled: string;
+  backgroundPrimary: string;
+  backgroundSecondary: string;
+  borderOutlinedActive: string;
+  borderOutlinedDefault: string;
+  borderOutlinedDisabled: string;
+  borderOutlinedError: string;
+  borderOutlinedFocus: string;
+  borderOutlinedLoading: string;
+  borderOutlinedSelected: string;
+  borderTransparentActive: string;
+  borderTransparentDefault: string;
+  borderTransparentDisabled: string;
+  borderTransparentFocus: string;
+  borderTransparentSelected: string;
+  brand: string;
+  focus: string;
   iconDisabled: string;
   iconNegative: string;
   iconPositive: string;
-  error: string;
-  success: string;
+  iconPrimary: string;
+  loader: string;
+  textDisabled: string;
+  textLink: string;
+  textNegative: string;
+  textOutlinedDefault: string;
+  textPlaceholder: string;
+  textPrimary: string;
+  textSecondary: string;
+  onBrand: string;
+  overlay: string;
 }
 
 export interface PrimerSpacingTokens {
@@ -29,38 +41,69 @@ export interface PrimerSpacingTokens {
   large: number;
   xlarge: number;
   xxlarge: number;
+}
+
+export interface PrimerSizeTokens {
+  small: number;
+  medium: number;
+  large: number;
+  xlarge: number;
+  xxlarge: number;
   xxxlarge: number;
 }
 
+// React Native rejects any weight outside this list. 550, the design value the other three
+// SDKs use, logs an error and renders 400, so it must not be spellable here.
+export type PrimerFontWeight = '100' | '200' | '300' | '400' | '500' | '600' | '700' | '800' | '900';
+
 export interface PrimerTypographyStyle {
   fontSize: number;
-  fontWeight: string;
+  fontWeight: PrimerFontWeight;
   lineHeight: number;
   letterSpacing: number;
   fontFamily: string;
 }
 
+/**
+ * A style a merchant sets. Every field is optional: set only what you want to change and the rest
+ * keeps its default. Leave `fontFamily` out and the style follows the brand font.
+ */
+export type PrimerTypographyStyleOverride = Partial<PrimerTypographyStyle>;
+
 export interface PrimerTypographyTokens {
+  /** The brand font — the default typeface for all six styles. */
   fontFamily: string;
-  titleXLarge: PrimerTypographyStyle;
+  titleXlarge: PrimerTypographyStyle;
   titleLarge: PrimerTypographyStyle;
   bodyLarge: PrimerTypographyStyle;
   bodyMedium: PrimerTypographyStyle;
   bodySmall: PrimerTypographyStyle;
+  error: PrimerTypographyStyle;
+}
+
+export interface PrimerTypographyOverride {
+  /** Set once to change the typeface of every style that does not name its own. */
+  fontFamily?: string;
+  titleXlarge?: PrimerTypographyStyleOverride;
+  titleLarge?: PrimerTypographyStyleOverride;
+  bodyLarge?: PrimerTypographyStyleOverride;
+  bodyMedium?: PrimerTypographyStyleOverride;
+  bodySmall?: PrimerTypographyStyleOverride;
+  error?: PrimerTypographyStyleOverride;
 }
 
 export interface PrimerRadiusTokens {
-  none: number;
   xsmall: number;
   small: number;
   medium: number;
   large: number;
 }
 
-export interface PrimerBorderTokens {
+export interface PrimerWidthTokens {
   default: number;
-  input: number;
-  strong: number;
+  focus: number;
+  selected: number;
+  error: number;
 }
 
 export interface PrimerTokens {
@@ -68,22 +111,25 @@ export interface PrimerTokens {
   spacing: PrimerSpacingTokens;
   typography: PrimerTypographyTokens;
   radii: PrimerRadiusTokens;
-  borders: PrimerBorderTokens;
+  sizes: PrimerSizeTokens;
+  widths: PrimerWidthTokens;
 }
 
 export interface PrimerThemeOverride {
   light?: {
     colors?: Partial<PrimerColorTokens>;
     spacing?: Partial<PrimerSpacingTokens>;
-    typography?: Partial<PrimerTypographyTokens>;
+    typography?: PrimerTypographyOverride;
     radii?: Partial<PrimerRadiusTokens>;
-    borders?: Partial<PrimerBorderTokens>;
+    sizes?: Partial<PrimerSizeTokens>;
+    widths?: Partial<PrimerWidthTokens>;
   };
   dark?: {
     colors?: Partial<PrimerColorTokens>;
     spacing?: Partial<PrimerSpacingTokens>;
-    typography?: Partial<PrimerTypographyTokens>;
+    typography?: PrimerTypographyOverride;
     radii?: Partial<PrimerRadiusTokens>;
-    borders?: Partial<PrimerBorderTokens>;
+    sizes?: Partial<PrimerSizeTokens>;
+    widths?: Partial<PrimerWidthTokens>;
   };
 }

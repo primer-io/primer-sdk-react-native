@@ -1,35 +1,70 @@
 import { forwardRef, useImperativeHandle, useMemo, useRef, useState, type ComponentRef } from 'react';
 import { Platform, StyleSheet, Text, TextInput, View, type TextStyle } from 'react-native';
 import { usePrimerTheme } from '../internal/theme';
-import { FIELD_HEIGHT, LINE_HEIGHT_RATIO } from './dimensions';
+import { LINE_HEIGHT_RATIO } from './dimensions';
 import type { PrimerTextInputProps, PrimerTextInputRef, PrimerTextInputTheme } from '../types/CardInputTypes';
-import type { PrimerTokens } from '../internal/theme/types';
+import type { PrimerTokens, PrimerTypographyStyle } from '../internal/theme/types';
 
 // Shared nativeID for an empty InputAccessoryView rendered once in CheckoutSheet.
 // Suppresses iOS's auto-added Previous/Next/Done navigation toolbar above the keyboard.
 export const PRIMER_EMPTY_ACCESSORY_ID = 'primer-empty-input-accessory';
 
-function resolveTheme(tokens: PrimerTokens, override?: PrimerTextInputTheme) {
-  const borderWidth = override?.borderWidth ?? tokens.borders.input;
-  const focusedBorderWidth = Math.max(override?.focusedBorderWidth ?? tokens.borders.strong, borderWidth);
+// A line height set by the merchant wins. Otherwise the style's own token, unless the merchant
+// sized this one input by hand, in which case the line grows with the text rather than clipping it.
+function scaledLineHeight(
+  override: number | undefined,
+  overriddenFontSize: number | undefined,
+  style: PrimerTypographyStyle
+): number {
+  if (override != null) return override;
+  if (overriddenFontSize != null) return Math.round(overriddenFontSize * LINE_HEIGHT_RATIO);
+  return style.lineHeight;
+}
+
+// Exported for tests: the override chain is easy to break silently.
+export function resolveTheme(tokens: PrimerTokens, override?: PrimerTextInputTheme) {
+  const borderWidth = override?.borderWidth ?? tokens.widths.default;
+  const focusedBorderWidth = Math.max(override?.focusedBorderWidth ?? tokens.widths.focus, borderWidth);
+  const errorBorderWidth = Math.max(override?.errorBorderWidth ?? tokens.widths.error, borderWidth);
   return {
-    backgroundColor: override?.backgroundColor ?? tokens.colors.background,
-    borderColor: override?.borderColor ?? tokens.colors.border,
+    backgroundColor: override?.backgroundColor ?? tokens.colors.backgroundOutlinedDefault,
+    borderColor: override?.borderColor ?? tokens.colors.borderOutlinedDefault,
     borderRadius: override?.borderRadius ?? tokens.radii.small,
     borderWidth,
-    disabledBackgroundColor: override?.disabledBackgroundColor ?? tokens.colors.surface,
-    disabledBorderColor: override?.disabledBorderColor ?? tokens.colors.borderDisabled,
-    errorColor: override?.errorColor ?? tokens.colors.borderError,
+    disabledBackgroundColor: override?.disabledBackgroundColor ?? tokens.colors.backgroundOutlinedDisabled,
+    disabledBorderColor: override?.disabledBorderColor ?? tokens.colors.borderOutlinedDisabled,
+    errorColor: override?.errorColor ?? tokens.colors.borderOutlinedError,
     errorTextColor: override?.errorTextColor ?? tokens.colors.textNegative,
-    fieldHeight: override?.fieldHeight ?? FIELD_HEIGHT,
+    // `fontFamily`/`labelFontSize` stay in the chain: they styled the error text before the
+    // error token existed, so a merchant already setting them keeps working.
+    errorFontFamily: override?.errorFontFamily ?? override?.fontFamily ?? tokens.typography.error.fontFamily,
+    errorFontSize: override?.errorFontSize ?? override?.labelFontSize ?? tokens.typography.error.fontSize,
+    errorFontWeight: (override?.errorFontWeight ?? tokens.typography.error.fontWeight) as TextStyle['fontWeight'],
+    errorLetterSpacing: override?.errorLetterSpacing ?? tokens.typography.error.letterSpacing,
+    errorLineHeight: scaledLineHeight(
+      override?.errorLineHeight,
+      override?.errorFontSize ?? override?.labelFontSize,
+      tokens.typography.error
+    ),
+    fieldHeight: override?.fieldHeight ?? tokens.sizes.xxlarge,
+    errorBorderWidth,
     focusedBorderWidth,
-    fontFamily: override?.fontFamily ?? tokens.typography.fontFamily,
+    // The per-style font, not the brand font, so a merchant setting only bodyLarge.fontFamily
+    // reaches the field. The brand font still reaches it, through the style's own default.
+    fontFamily: override?.fontFamily ?? tokens.typography.bodyLarge.fontFamily,
     fontSize: override?.fontSize ?? tokens.typography.bodyLarge.fontSize,
+    fontWeight: (override?.fontWeight ?? tokens.typography.bodyLarge.fontWeight) as TextStyle['fontWeight'],
+    letterSpacing: override?.letterSpacing ?? tokens.typography.bodyLarge.letterSpacing,
+    lineHeight: scaledLineHeight(override?.lineHeight, override?.fontSize, tokens.typography.bodyLarge),
     labelColor: override?.labelColor ?? tokens.colors.textPrimary,
+    labelFontFamily: override?.fontFamily ?? tokens.typography.bodySmall.fontFamily,
     labelFontSize: override?.labelFontSize ?? tokens.typography.bodySmall.fontSize,
+    labelFontWeight: (override?.labelFontWeight ?? tokens.typography.bodySmall.fontWeight) as TextStyle['fontWeight'],
+    labelLetterSpacing: override?.labelLetterSpacing ?? tokens.typography.bodySmall.letterSpacing,
+    labelLineHeight: scaledLineHeight(override?.labelLineHeight, override?.labelFontSize, tokens.typography.bodySmall),
     placeholderColor: override?.placeholderColor ?? tokens.colors.textPlaceholder,
-    primaryColor: override?.primaryColor ?? tokens.colors.borderFocused,
-    textColor: override?.textColor ?? tokens.colors.textPrimary,
+    primaryColor: override?.primaryColor ?? tokens.colors.borderOutlinedFocus,
+    textColor: override?.textColor ?? tokens.colors.textOutlinedDefault,
   };
 }
 
@@ -44,11 +79,13 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
     maxLength,
     secureTextEntry = false,
     autoComplete,
+    textContentType,
     autoCapitalize = 'none',
     label,
     showLabel = true,
     placeholder,
     error,
+    leadingContent,
     trailingContent,
     onSelectionChange,
     selectionColor,
@@ -93,7 +130,12 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
   );
 
   const hasError = !!error;
-  const currentBorderWidth = isFocused || hasError ? resolved.focusedBorderWidth : resolved.borderWidth;
+  // Error beats focus beats resting.
+  const currentBorderWidth = useMemo(() => {
+    if (hasError) return resolved.errorBorderWidth;
+    if (isFocused) return resolved.focusedBorderWidth;
+    return resolved.borderWidth;
+  }, [hasError, isFocused, resolved]);
   const borderWidthDiff = currentBorderWidth - resolved.borderWidth;
 
   // Error takes precedence over focus — the validation signal is more important than the
@@ -112,8 +154,11 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
         container: {},
         error: {
           color: resolved.errorTextColor,
-          fontFamily: resolved.fontFamily,
-          fontSize: resolved.labelFontSize,
+          fontFamily: resolved.errorFontFamily,
+          fontSize: resolved.errorFontSize,
+          fontWeight: resolved.errorFontWeight,
+          letterSpacing: resolved.errorLetterSpacing,
+          lineHeight: resolved.errorLineHeight,
           marginTop: tokens.spacing.xsmall,
         },
         input: {
@@ -121,8 +166,9 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
           flex: 1,
           fontFamily: resolved.fontFamily,
           fontSize: resolved.fontSize,
-          letterSpacing: tokens.typography.bodyLarge.letterSpacing,
-          lineHeight: Math.round(resolved.fontSize * LINE_HEIGHT_RATIO),
+          fontWeight: resolved.fontWeight,
+          letterSpacing: resolved.letterSpacing,
+          lineHeight: resolved.lineHeight,
           padding: 0,
         },
         inputContainer: {
@@ -136,9 +182,12 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
           paddingHorizontal: tokens.spacing.medium - borderWidthDiff,
         },
         label: {
-          color: resolved.labelColor,
-          fontFamily: resolved.fontFamily,
+          color: editable ? resolved.labelColor : tokens.colors.textDisabled,
+          fontFamily: resolved.labelFontFamily,
           fontSize: resolved.labelFontSize,
+          fontWeight: resolved.labelFontWeight,
+          letterSpacing: resolved.labelLetterSpacing,
+          lineHeight: resolved.labelLineHeight,
           marginBottom: tokens.spacing.xsmall,
         },
       }),
@@ -159,6 +208,7 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
     <View style={[styles.container, style]} testID={testID}>
       {showLabel && label != null && <Text style={[styles.label, labelStyle]}>{label}</Text>}
       <View style={styles.inputContainer}>
+        {leadingContent}
         <TextInput
           ref={inputRef}
           style={[styles.input, inputStyle] as TextStyle[]}
@@ -171,6 +221,7 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
           maxLength={maxLength}
           secureTextEntry={secureTextEntry}
           autoComplete={autoComplete}
+          textContentType={textContentType}
           autoCapitalize={autoCapitalize}
           placeholder={placeholder}
           placeholderTextColor={resolved.placeholderColor}

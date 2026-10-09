@@ -5,7 +5,7 @@ import { usePrimerTheme } from '../internal/theme';
 import type { PrimerTokens } from '../internal/theme';
 import { usePrimerLocalization } from '../internal/localization';
 import { STATUS_SCREEN_ICON_SIZE } from '../internal/screens/constants';
-import { CheckoutButton } from '../internal/ui';
+import { PrimerButton } from '../internal/ui';
 import { PrimerStatusScreenLayout } from './PrimerStatusScreenLayout';
 
 const errorIcon = require('../internal/screens/assets/error-large.png');
@@ -44,10 +44,10 @@ export function PrimerErrorScreen({
       {hasButtons && (
         <View style={styles.buttonGroup}>
           {onRetry != null && (
-            <CheckoutButton title={retryLabel ?? t('primer_common_button_retry')} variant="primary" onPress={onRetry} />
+            <PrimerButton title={retryLabel ?? t('primer_common_button_retry')} variant="primary" onPress={onRetry} />
           )}
           {onChooseOtherMethod != null && (
-            <CheckoutButton
+            <PrimerButton
               title={otherMethodLabel ?? t('primer_checkout_error_button_other_methods')}
               variant="outlined"
               onPress={onChooseOtherMethod}
@@ -60,7 +60,7 @@ export function PrimerErrorScreen({
 }
 
 function createStyles(tokens: PrimerTokens) {
-  const { spacing } = tokens;
+  const { colors, spacing } = tokens;
 
   /* eslint-disable react-native/no-unused-styles */
   return StyleSheet.create({
@@ -70,6 +70,7 @@ function createStyles(tokens: PrimerTokens) {
     },
     icon: {
       height: STATUS_SCREEN_ICON_SIZE,
+      tintColor: colors.iconNegative,
       width: STATUS_SCREEN_ICON_SIZE,
     },
   });

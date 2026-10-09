@@ -1,5 +1,5 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
-import { Image, StyleSheet, Text, View, type TextInputProps } from 'react-native';
+import { Image, StyleSheet, Text, View, type TextInputProps, type TextStyle } from 'react-native';
 import { PrimerTextInput } from './PrimerTextInput';
 import { caretFromDigitIndex, countDigits, countDigitsBefore, targetDigitIndex } from './caret';
 import { PLACEHOLDER_ICON_HEIGHT, PLACEHOLDER_ICON_WIDTH, TRAILING_ICON_MARGIN } from './dimensions';
@@ -76,6 +76,53 @@ export const PrimerCardNumberInput = forwardRef<PrimerTextInputRef, PrimerCardNu
       lastSelectionRef.current = e.nativeEvent.selection;
     };
 
+    // Three mutually exclusive trailing states, read top to bottom.
+    const renderTrailingContent = () => {
+      const testID = (suffix: string) => (rest.testID ? `${rest.testID}-${suffix}` : undefined);
+
+      if (showSelector) {
+        return <PrimerCardNetworkSelector testID={testID('network-selector')} />;
+      }
+
+      if (abbreviation) {
+        return (
+          <View
+            style={[
+              styles.abbreviationChip,
+              {
+                borderColor: tokens.colors.borderOutlinedDefault,
+                borderRadius: tokens.radii.small,
+                borderWidth: tokens.widths.default,
+              },
+            ]}
+            testID={testID('network-abbreviation')}
+          >
+            <Text
+              style={{
+                color: tokens.colors.textPrimary,
+                fontFamily: tokens.typography.bodySmall.fontFamily,
+                fontSize: tokens.typography.bodySmall.fontSize,
+                fontWeight: tokens.typography.bodySmall.fontWeight as TextStyle['fontWeight'],
+                letterSpacing: tokens.typography.bodySmall.letterSpacing,
+                lineHeight: tokens.typography.bodySmall.lineHeight,
+              }}
+            >
+              {abbreviation}
+            </Text>
+          </View>
+        );
+      }
+
+      return (
+        <Image
+          source={iconSource ?? placeholderSource}
+          style={styles.placeholder}
+          resizeMode="contain"
+          testID={testID('network-icon')}
+        />
+      );
+    };
+
     return (
       <PrimerTextInput
         ref={innerRef}
@@ -86,44 +133,12 @@ export const PrimerCardNumberInput = forwardRef<PrimerTextInputRef, PrimerCardNu
         keyboardType="number-pad"
         maxLength={cardForm.cardNumberMaxLength}
         autoComplete="cc-number"
+        textContentType="creditCardNumber"
         label={resolvedLabel}
         placeholder={resolvedPlaceholder}
         error={cardForm.errors.cardNumber}
         onSelectionChange={handleSelectionChange}
-        trailingContent={
-          showSelector ? (
-            <PrimerCardNetworkSelector testID={rest.testID ? `${rest.testID}-network-selector` : undefined} />
-          ) : abbreviation ? (
-            <View
-              style={[
-                styles.abbreviationChip,
-                {
-                  borderColor: tokens.colors.border,
-                  borderRadius: tokens.radii.small,
-                  borderWidth: tokens.borders.input,
-                },
-              ]}
-              testID={rest.testID ? `${rest.testID}-network-abbreviation` : undefined}
-            >
-              <Text
-                style={{
-                  color: tokens.colors.textPrimary,
-                  fontFamily: tokens.typography.fontFamily,
-                  fontSize: tokens.typography.bodySmall.fontSize,
-                }}
-              >
-                {abbreviation}
-              </Text>
-            </View>
-          ) : (
-            <Image
-              source={iconSource ?? placeholderSource}
-              style={styles.placeholder}
-              resizeMode="contain"
-              testID={rest.testID ? `${rest.testID}-network-icon` : undefined}
-            />
-          )
-        }
+        trailingContent={renderTrailingContent()}
         {...rest}
       />
     );

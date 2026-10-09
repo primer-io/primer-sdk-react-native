@@ -13,7 +13,7 @@ import { useNavigation } from '../navigation/useNavigation';
 import { useRoute } from '../navigation/useRoute';
 import { usePrimerTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
-import { CheckoutButton } from '../ui/CheckoutButton';
+import { PrimerButton } from '../ui/PrimerButton';
 import { useSheetHeight } from '../checkout-sheet';
 import { CONTENT_HEIGHT as LOADING_CONTENT_HEIGHT } from './LoadingScreen';
 import { useBottomSafeArea } from './useBottomSafeArea';
@@ -22,8 +22,8 @@ import { useBottomSafeArea } from './useBottomSafeArea';
 const DRAG_HANDLE_AREA = 20;
 // Matches CheckoutSheet's DEFAULT_HEIGHT_RATIO — the sheet never exceeds 92% of the screen.
 const MAX_SHEET_HEIGHT_RATIO = 0.92;
-// NavigationHeader: 24+16+32; Android onLayout can report 0 for the wrapper, so fall back to this.
-const HEADER_FALLBACK_HEIGHT = 72;
+// NavigationHeader with a centred title is only its 24 back row; Android onLayout can report 0 for the wrapper.
+const HEADER_FALLBACK_HEIGHT = 24;
 
 // Prebuilt Klarna screen: session → categories → embedded Klarna view → authorize (auto-finalized).
 export function KlarnaScreen() {
@@ -100,7 +100,8 @@ export function KlarnaScreen() {
               reports 0 — which collapsed the sheet height. Keep it in the native tree to measure. */}
           <View collapsable={false} onLayout={(e) => setHeaderHeight(e.nativeEvent.layout.height)}>
             <NavigationHeader
-              title={t('primer_checkout_title')}
+              title={t('primer_vault_default_klarna')}
+              titleAlignment="center"
               showBackButton={canGoBack}
               backLabel={t('primer_common_back')}
               onBackPress={pop}
@@ -143,7 +144,7 @@ export function KlarnaScreen() {
               onLayout={(e) => setFooterHeight(e.nativeEvent.layout.height)}
               style={[styles.footer, { paddingBottom: bottomInsetClamped }]}
             >
-              <CheckoutButton
+              <PrimerButton
                 title={t('primer_klarna_button_authorize')}
                 onPress={handleAuthorize}
                 variant="primary"
@@ -161,7 +162,7 @@ export function KlarnaScreen() {
 }
 
 function createStyles(tokens: PrimerTokens) {
-  const { colors, radii, spacing, typography } = tokens;
+  const { colors, radii, sizes, spacing, typography, widths } = tokens;
   /* eslint-disable react-native/no-unused-styles */
   return StyleSheet.create({
     categoryName: {
@@ -174,17 +175,17 @@ function createStyles(tokens: PrimerTokens) {
     },
     categoryRow: {
       alignItems: 'center',
-      borderColor: colors.border,
+      borderColor: colors.borderOutlinedDefault,
       borderRadius: radii.medium,
-      borderWidth: StyleSheet.hairlineWidth,
+      borderWidth: widths.default,
       flexDirection: 'row',
       gap: spacing.medium,
       minHeight: 56,
       padding: spacing.medium,
     },
     categoryRowSelected: {
-      borderColor: colors.primary,
-      borderWidth: 2,
+      borderColor: colors.borderOutlinedSelected,
+      borderWidth: widths.selected,
     },
     description: {
       color: colors.textSecondary,
@@ -194,7 +195,7 @@ function createStyles(tokens: PrimerTokens) {
       lineHeight: typography.bodyMedium.lineHeight,
     },
     footer: {
-      backgroundColor: colors.background,
+      backgroundColor: colors.backgroundPrimary,
       paddingHorizontal: spacing.large,
       paddingTop: spacing.small,
     },
@@ -206,14 +207,16 @@ function createStyles(tokens: PrimerTokens) {
       justifyContent: 'center',
     },
     radioCircle: {
-      borderColor: colors.primary,
-      borderRadius: 10,
-      borderWidth: 2,
-      height: 20,
-      width: 20,
+      borderColor: colors.borderOutlinedDefault,
+      borderRadius: sizes.medium / 2,
+      borderWidth: widths.default,
+      height: sizes.medium,
+      width: sizes.medium,
     },
     radioCircleSelected: {
-      backgroundColor: colors.primary,
+      backgroundColor: colors.borderOutlinedSelected,
+      borderColor: colors.borderOutlinedSelected,
+      borderWidth: widths.selected,
     },
     root: {
       flex: 1,

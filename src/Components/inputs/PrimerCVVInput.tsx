@@ -3,6 +3,7 @@ import { Image, StyleSheet } from 'react-native';
 import { PrimerTextInput } from './PrimerTextInput';
 import { TRAILING_ICON_MARGIN, TRAILING_ICON_SIZE } from './dimensions';
 import { usePrimerLocalization } from '../internal/localization';
+import { usePrimerTheme } from '../internal/theme';
 import { usePrimerCardForm } from '../hooks/usePrimerCardForm';
 import type { PrimerCVVInputProps, PrimerTextInputRef } from '../types/CardInputTypes';
 
@@ -14,6 +15,7 @@ export const PrimerCVVInput = forwardRef<PrimerTextInputRef, PrimerCVVInputProps
 ) {
   const cardForm = usePrimerCardForm();
   const { t } = usePrimerLocalization();
+  const tokens = usePrimerTheme();
   const resolvedLabel = label ?? t('primer_card_form_label_cvv');
   const resolvedPlaceholder = placeholder ?? t('primer_card_form_placeholder_cvv');
 
@@ -28,13 +30,14 @@ export const PrimerCVVInput = forwardRef<PrimerTextInputRef, PrimerCVVInputProps
       maxLength={cardForm.descriptor.cvvLength}
       secureTextEntry
       autoComplete="cc-csc"
+      textContentType="creditCardSecurityCode"
       label={resolvedLabel}
       placeholder={resolvedPlaceholder}
       error={cardForm.errors.cvv}
       trailingContent={
         <Image
           source={cvvSource}
-          style={styles.icon}
+          style={[styles.icon, { tintColor: tokens.colors.iconPrimary }]}
           resizeMode="contain"
           testID={rest.testID ? `${rest.testID}-hint-icon` : undefined}
         />

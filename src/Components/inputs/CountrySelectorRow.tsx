@@ -1,9 +1,8 @@
 import { useMemo } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, type StyleProp, type ViewStyle } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, type StyleProp, type ViewStyle, type TextStyle } from 'react-native';
 import { usePrimerTheme } from '../internal/theme';
 import type { PrimerTokens } from '../internal/theme';
 import { flagEmoji } from '../internal/flags';
-import { FIELD_HEIGHT, LINE_HEIGHT_RATIO } from './dimensions';
 
 export interface CountrySelectorRowProps {
   /** ISO country code currently selected, or empty if none. */
@@ -43,7 +42,7 @@ export function CountrySelectorRow({
 
   return (
     <View style={[styles.container, style]} testID={testID}>
-      <Text style={styles.label}>{label}</Text>
+      <Text style={[styles.label, !editable && styles.textDisabled]}>{label}</Text>
       <TouchableOpacity
         onPress={onPress}
         disabled={!editable}
@@ -61,7 +60,7 @@ export function CountrySelectorRow({
           </Text>
         )}
         <Text
-          style={[styles.value, !hasValue && styles.placeholder]}
+          style={[styles.value, !hasValue && styles.placeholder, !editable && styles.textDisabled]}
           numberOfLines={1}
           testID={testID ? `${testID}-value` : undefined}
         >
@@ -76,13 +75,13 @@ export function CountrySelectorRow({
 }
 
 function createStyles(tokens: PrimerTokens) {
-  const { colors, radii, spacing, typography, borders } = tokens;
+  const { colors, radii, sizes, spacing, typography, widths } = tokens;
   /* eslint-disable react-native/no-unused-styles */
   return StyleSheet.create({
     chevron: {
       color: tokens.colors.textSecondary,
       fontSize: typography.bodyLarge.fontSize + 4,
-      lineHeight: FIELD_HEIGHT,
+      lineHeight: sizes.xxlarge,
       marginLeft: spacing.small,
     },
     container: {},
@@ -93,8 +92,11 @@ function createStyles(tokens: PrimerTokens) {
     },
     label: {
       color: colors.textPrimary,
-      fontFamily: typography.fontFamily,
+      fontFamily: typography.bodySmall.fontFamily,
       fontSize: typography.bodySmall.fontSize,
+      fontWeight: typography.bodySmall.fontWeight as TextStyle['fontWeight'],
+      letterSpacing: typography.bodySmall.letterSpacing,
+      lineHeight: typography.bodySmall.lineHeight,
       marginBottom: spacing.xsmall,
     },
     placeholder: {
@@ -102,25 +104,29 @@ function createStyles(tokens: PrimerTokens) {
     },
     row: {
       alignItems: 'center',
-      backgroundColor: colors.background,
-      borderColor: colors.border,
+      backgroundColor: colors.backgroundOutlinedDefault,
+      borderColor: colors.borderOutlinedDefault,
       borderRadius: radii.small,
-      borderWidth: borders.input,
+      borderWidth: widths.default,
       flexDirection: 'row',
-      height: FIELD_HEIGHT,
+      height: sizes.xxlarge,
       paddingHorizontal: spacing.medium,
     },
     rowDisabled: {
-      backgroundColor: colors.surface,
-      borderColor: colors.borderDisabled,
+      backgroundColor: colors.backgroundOutlinedDisabled,
+      borderColor: colors.borderOutlinedDisabled,
+    },
+    textDisabled: {
+      color: colors.textDisabled,
     },
     value: {
-      color: colors.textPrimary,
+      color: colors.textOutlinedDefault,
       flex: 1,
-      fontFamily: typography.fontFamily,
+      fontFamily: typography.bodyLarge.fontFamily,
       fontSize: typography.bodyLarge.fontSize,
+      fontWeight: typography.bodyLarge.fontWeight as TextStyle['fontWeight'],
       letterSpacing: typography.bodyLarge.letterSpacing,
-      lineHeight: Math.round(typography.bodyLarge.fontSize * LINE_HEIGHT_RATIO),
+      lineHeight: typography.bodyLarge.lineHeight,
     },
   });
   /* eslint-enable react-native/no-unused-styles */

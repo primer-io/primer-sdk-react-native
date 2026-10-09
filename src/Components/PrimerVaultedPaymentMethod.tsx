@@ -9,7 +9,7 @@ import { usePrimerLocalization } from './internal/localization';
 import { getVaultRowDisplay } from './internal/vaultRowDisplay';
 import { CheckoutRoute } from './internal/navigation/types';
 import { useNavigation } from './internal/navigation/useNavigation';
-import { CheckoutButton, VaultedCardCvvRow } from './internal/ui';
+import { PrimerButton, VaultedCardCvvRow } from './internal/ui';
 import { useCardNetworkDescriptor } from './hooks/useCardNetworkDescriptor';
 import { usePrimerVaultManager } from './hooks/usePrimerVaultManager';
 import { usePrimerCheckout } from './hooks/usePrimerCheckout';
@@ -143,7 +143,7 @@ export function PrimerVaultedPaymentMethod({ data, onPay, style }: PrimerVaulted
           />
         )}
       </View>
-      <CheckoutButton
+      <PrimerButton
         title={t('primer_common_button_pay')}
         variant="primary"
         onPress={handlePress}
@@ -154,7 +154,7 @@ export function PrimerVaultedPaymentMethod({ data, onPay, style }: PrimerVaulted
 }
 
 function createStyles(tokens: PrimerTokens) {
-  const { colors, spacing, radii, borders, typography } = tokens;
+  const { colors, spacing, radii, widths, typography } = tokens;
 
   /* eslint-disable react-native/no-unused-styles */
   return StyleSheet.create({
@@ -182,7 +182,7 @@ function createStyles(tokens: PrimerTokens) {
       textAlign: 'right',
     },
     outer: {
-      backgroundColor: colors.surface,
+      backgroundColor: colors.backgroundSecondary,
       borderRadius: radii.large,
       gap: spacing.small,
       padding: spacing.small,
@@ -214,10 +214,10 @@ function createStyles(tokens: PrimerTokens) {
       lineHeight: typography.bodySmall.lineHeight,
     },
     tile: {
-      backgroundColor: colors.background,
-      borderColor: colors.primary,
+      backgroundColor: colors.backgroundPrimary,
+      borderColor: colors.borderOutlinedSelected,
       borderRadius: radii.medium,
-      borderWidth: borders.strong,
+      borderWidth: widths.selected,
       gap: spacing.medium,
       padding: spacing.medium,
     },
