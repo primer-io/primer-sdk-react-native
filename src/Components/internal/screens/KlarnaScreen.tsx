@@ -1,6 +1,15 @@
-import { useEffect, useMemo, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
-import type { TextStyle } from 'react-native';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  ActivityIndicator,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  useWindowDimensions,
+} from 'react-native';
+import type { NativeSyntheticEvent, TextStyle } from 'react-native';
 
 import { PrimerKlarnaPaymentView } from '../../../HeadlessUniversalCheckout/Components/PrimerKlarnaPaymentView';
 import { usePrimerPaymentMethod } from '../../hooks/usePrimerPaymentMethod';
@@ -25,6 +34,41 @@ const MAX_SHEET_HEIGHT_RATIO = 0.92;
 // NavigationHeader with a centred title is only its 24 back row; Android onLayout can report 0 for the wrapper.
 const HEADER_FALLBACK_HEIGHT = 24;
 
+const checkIcon = require('./assets/check.png');
+const klarnaBadge = require('./assets/klarna-badge.png');
+
+const KLARNA_HEIGHT_TIMEOUT_MS = 1500;
+const KLARNA_FALLBACK_HEIGHT = 250;
+const KLARNA_RETRY_AFTER_MS = 3000;
+
+function useKlarnaWidgetHeight(loadedViewKey: string | null) {
+  const [state, setState] = useState({ viewKey: loadedViewKey, height: 0 });
+  if (state.viewKey !== loadedViewKey) {
+    setState({ viewKey: loadedViewKey, height: 0 });
+  }
+
+  useEffect(() => {
+    if (loadedViewKey == null) return;
+    const timer = setTimeout(
+      () =>
+        setState((s) => (s.viewKey === loadedViewKey && s.height === 0 ? { ...s, height: KLARNA_FALLBACK_HEIGHT } : s)),
+      KLARNA_HEIGHT_TIMEOUT_MS
+    );
+    return () => clearTimeout(timer);
+  }, [loadedViewKey]);
+
+  const onContentHeightChange = useCallback(
+    (e: NativeSyntheticEvent<{ height: number }>) => {
+      const height = Math.ceil(e.nativeEvent.height);
+      if (height <= 0) return;
+      setState((s) => (s.viewKey === loadedViewKey && s.height !== height ? { ...s, height } : s));
+    },
+    [loadedViewKey]
+  );
+
+  return { height: state.viewKey === loadedViewKey ? state.height : 0, onContentHeightChange };
+}
+
 // Prebuilt Klarna screen: session → categories → embedded Klarna view → authorize (auto-finalized).
 export function KlarnaScreen() {
   const tokens = usePrimerTheme();
@@ -40,6 +84,12 @@ export function KlarnaScreen() {
   const method = usePrimerPaymentMethod(params.paymentMethodType);
   const klarna = method.kind === 'klarna' ? method : null;
   const start = klarna?.start;
+
+  const loadedViewKey = klarna?.isViewLoaded ? klarna.selectedCategoryId : null;
+  const widget = useKlarnaWidgetHeight(loadedViewKey);
+  const isOptionReady = widget.height > 0;
+
+  const lastSelection = useRef<{ categoryId: string; at: number } | null>(null);
 
   // Measured so the sheet shrinks to fit content (92% is just the cap), mirroring CardFormScreen.
   const [headerHeight, setHeaderHeight] = useState(0);
@@ -75,15 +125,22 @@ export function KlarnaScreen() {
   // Gate on categories, not isLoading (still false on the first render → 1-frame empty flash).
   const isInitialLoading = paymentCategories.length === 0;
 
+  const handleSelect = (categoryId: string) => {
+    if (categoryId === selectedCategoryId) {
+      if (isViewLoaded) return;
+      const last = lastSelection.current;
+      if (last?.categoryId === categoryId && Date.now() - last.at < KLARNA_RETRY_AFTER_MS) return;
+    }
+    lastSelection.current = { categoryId, at: Date.now() };
+    selectCategory(categoryId);
+  };
+
   const handleAuthorize = () => {
-    if (!isViewLoaded || isLoading) return;
+    if (!isOptionReady || isLoading) return;
     // Jump to processing; PaymentOutcomeTransitioner navigates away once the outcome arrives.
     replace(CheckoutRoute.processing);
     void authorize().catch(() => {});
   };
-
-  // Disabled until the embedded view is ready; spins while it builds or an authorize is in flight.
-  const showButtonSpinner = (selectedCategoryId != null && !isViewLoaded) || isLoading;
 
   return (
     <View style={styles.root}>
@@ -114,30 +171,52 @@ export function KlarnaScreen() {
             showsVerticalScrollIndicator={false}
             onContentSizeChange={(_, h) => setScrollContentHeight(h)}
           >
-            <Text style={styles.description}>{t('primer_klarna_select_category_description')}</Text>
             {paymentCategories.map((category) => {
               const selected = category.identifier === selectedCategoryId;
               return (
-                <TouchableOpacity
-                  key={category.identifier}
-                  onPress={() => {
-                    selectCategory(category.identifier);
-                  }}
-                  activeOpacity={0.7}
-                  accessibilityRole="radio"
-                  accessibilityState={{ selected }}
-                  accessibilityLabel={t(
-                    selected ? 'accessibility_klarna_category_selected' : 'accessibility_klarna_category',
-                    { categoryName: category.name }
+                <View key={category.identifier} style={[styles.categoryCard, selected && styles.categoryCardSelected]}>
+                  <TouchableOpacity
+                    onPress={() => handleSelect(category.identifier)}
+                    activeOpacity={0.7}
+                    accessibilityRole="radio"
+                    accessibilityState={{ checked: selected }}
+                    accessibilityLabel={t(
+                      selected ? 'accessibility_klarna_category_selected' : 'accessibility_klarna_category',
+                      { categoryName: category.name }
+                    )}
+                    style={styles.categoryHeader}
+                  >
+                    <Image
+                      source={klarnaBadge}
+                      style={styles.badge}
+                      accessibilityElementsHidden
+                      importantForAccessibility="no-hide-descendants"
+                    />
+                    <Text style={styles.categoryName}>{category.name}</Text>
+                    {selected && (
+                      <View
+                        style={styles.trailing}
+                        accessibilityElementsHidden
+                        importantForAccessibility="no-hide-descendants"
+                      >
+                        {isOptionReady ? (
+                          <Image source={checkIcon} style={styles.checkIcon} resizeMode="contain" />
+                        ) : (
+                          <ActivityIndicator size="small" color={tokens.colors.loader} />
+                        )}
+                      </View>
+                    )}
+                  </TouchableOpacity>
+                  {/* Outside the touchable: on Android a tap on it goes to its parent and re-selects. */}
+                  {selected && isViewLoaded && (
+                    <PrimerKlarnaPaymentView
+                      style={[styles.klarnaView, { height: widget.height }, isOptionReady && styles.klarnaViewExpanded]}
+                      onContentHeightChange={widget.onContentHeightChange}
+                    />
                   )}
-                  style={[styles.categoryRow, selected && styles.categoryRowSelected]}
-                >
-                  <View style={[styles.radioCircle, selected && styles.radioCircleSelected]} />
-                  <Text style={styles.categoryName}>{category.name}</Text>
-                </TouchableOpacity>
+                </View>
               );
             })}
-            {isViewLoaded && <PrimerKlarnaPaymentView style={styles.klarnaView} />}
           </ScrollView>
           {paymentCategories.length > 0 && (
             <View
@@ -148,8 +227,8 @@ export function KlarnaScreen() {
                 title={t('primer_klarna_button_authorize')}
                 onPress={handleAuthorize}
                 variant="primary"
-                loading={showButtonSpinner}
-                disabled={!isViewLoaded || isLoading}
+                loading={isLoading}
+                disabled={!isOptionReady}
                 accessibilityLabel={t('accessibility_payment_selection_pay_with_klarna')}
                 accessibilityHint={t('accessibility_klarna_authorize_hint')}
               />
@@ -165,34 +244,40 @@ function createStyles(tokens: PrimerTokens) {
   const { colors, radii, sizes, spacing, typography, widths } = tokens;
   /* eslint-disable react-native/no-unused-styles */
   return StyleSheet.create({
-    categoryName: {
-      color: colors.textPrimary,
-      fontFamily: typography.titleLarge.fontFamily,
-      fontSize: typography.titleLarge.fontSize,
-      fontWeight: typography.titleLarge.fontWeight as TextStyle['fontWeight'],
-      letterSpacing: typography.titleLarge.letterSpacing,
-      lineHeight: typography.titleLarge.lineHeight,
+    badge: {
+      height: sizes.large,
+      width: sizes.xxxlarge,
     },
-    categoryRow: {
-      alignItems: 'center',
+    categoryCard: {
       borderColor: colors.borderOutlinedDefault,
       borderRadius: radii.medium,
       borderWidth: widths.default,
-      flexDirection: 'row',
-      gap: spacing.medium,
-      minHeight: 56,
-      padding: spacing.medium,
+      padding: spacing.medium - widths.default,
     },
-    categoryRowSelected: {
+    categoryCardSelected: {
       borderColor: colors.borderOutlinedSelected,
       borderWidth: widths.selected,
+      padding: spacing.medium - widths.selected,
     },
-    description: {
-      color: colors.textSecondary,
-      fontFamily: typography.bodyMedium.fontFamily,
-      fontSize: typography.bodyMedium.fontSize,
-      fontWeight: typography.bodyMedium.fontWeight as TextStyle['fontWeight'],
-      lineHeight: typography.bodyMedium.lineHeight,
+    categoryHeader: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      gap: spacing.medium,
+      minHeight: sizes.xxlarge,
+    },
+    categoryName: {
+      color: colors.textPrimary,
+      flex: 1,
+      fontFamily: typography.bodyLarge.fontFamily,
+      fontSize: typography.bodyLarge.fontSize,
+      fontWeight: typography.bodyLarge.fontWeight as TextStyle['fontWeight'],
+      letterSpacing: typography.bodyLarge.letterSpacing,
+      lineHeight: typography.bodyLarge.lineHeight,
+    },
+    checkIcon: {
+      height: sizes.medium,
+      tintColor: colors.brand,
+      width: sizes.medium,
     },
     footer: {
       backgroundColor: colors.backgroundPrimary,
@@ -200,23 +285,13 @@ function createStyles(tokens: PrimerTokens) {
       paddingTop: spacing.small,
     },
     klarnaView: {
-      minHeight: 250,
       width: '100%',
+    },
+    klarnaViewExpanded: {
+      marginTop: spacing.medium,
     },
     loadingContainer: {
       justifyContent: 'center',
-    },
-    radioCircle: {
-      borderColor: colors.borderOutlinedDefault,
-      borderRadius: sizes.medium / 2,
-      borderWidth: widths.default,
-      height: sizes.medium,
-      width: sizes.medium,
-    },
-    radioCircleSelected: {
-      backgroundColor: colors.borderOutlinedSelected,
-      borderColor: colors.borderOutlinedSelected,
-      borderWidth: widths.selected,
     },
     root: {
       flex: 1,
@@ -228,6 +303,12 @@ function createStyles(tokens: PrimerTokens) {
     },
     scrollView: {
       flex: 1,
+    },
+    trailing: {
+      alignItems: 'center',
+      height: sizes.medium,
+      justifyContent: 'center',
+      width: sizes.medium,
     },
   });
   /* eslint-enable react-native/no-unused-styles */

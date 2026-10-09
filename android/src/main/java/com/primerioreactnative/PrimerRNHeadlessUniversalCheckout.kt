@@ -10,6 +10,7 @@ import com.facebook.react.bridge.WritableMap
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.primerioreactnative.components.events.PrimerHeadlessUniversalCheckoutEvent
+import com.primerioreactnative.components.manager.klarna.PrimerRNHeadlessUniversalCheckoutKlarnaComponent
 import com.primerioreactnative.datamodels.ErrorTypeRN
 import com.primerioreactnative.datamodels.PrimerCheckoutDataRN
 import com.primerioreactnative.datamodels.PrimerErrorRN
@@ -61,10 +62,12 @@ class PrimerRNHeadlessUniversalCheckout(
                         settingsStr,
                     )
                 }
+            val appearanceMode = settings.uiOptions.appearanceMode
+            PrimerRNHeadlessUniversalCheckoutKlarnaComponent.appearanceMode = appearanceMode
             PrimerHeadlessUniversalCheckout.current.start(
                 reactContext,
                 clientToken,
-                settings.toPrimerSettings(reactContext),
+                settings.toPrimerSettings(reactContext, appearanceMode),
                 listener,
                 listener,
             )
