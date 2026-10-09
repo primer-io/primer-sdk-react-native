@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { PrimerError } from '../../../models/PrimerError';
@@ -66,9 +66,14 @@ export function MethodSelectionScreen() {
     stopAch();
   }, [stopBanks, stopKlarna, stopAch]);
 
+  // The buttons grow with large text, so once the list has laid out its measured height replaces
+  // the estimate. At the default text size the two agree, so the sheet doesn't jump.
+  const [measuredListHeight, setMeasuredListHeight] = useState<number | null>(null);
   const methodCount = paymentMethods.length;
   const buttonGap = tokens.spacing.small;
-  const listHeight = methodCount > 0 ? methodCount * PAYMENT_METHOD_BUTTON_HEIGHT + (methodCount - 1) * buttonGap : 0;
+  const estimatedListHeight =
+    methodCount > 0 ? methodCount * PAYMENT_METHOD_BUTTON_HEIGHT + (methodCount - 1) * buttonGap : 0;
+  const listHeight = measuredListHeight ?? estimatedListHeight;
   const rawBottomInset = useBottomSafeArea();
   const bottomInset = Math.max(rawBottomInset, tokens.spacing.large);
   // Container paddingTop + NavigationHeader (singleRow paddingVertical + titleXlarge lineHeight)
@@ -220,7 +225,11 @@ export function MethodSelectionScreen() {
         ) : (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>{t('primer_payment_selection_header')}</Text>
-            <PrimerPaymentMethodList data={paymentMethods} onSelect={handleSelect} />
+            {/* collapsable={false}: a style-less wrapper gets view-flattened on Android, so its onLayout
+                reports 0, as on the Klarna screen. Keep it in the native tree to measure. */}
+            <View collapsable={false} onLayout={(e) => setMeasuredListHeight(e.nativeEvent.layout.height)}>
+              <PrimerPaymentMethodList data={paymentMethods} onSelect={handleSelect} />
+            </View>
           </View>
         )}
       </View>
