@@ -39,7 +39,6 @@ export const defaultLightTokens: PrimerTokens = {
     overlay: 'rgba(0,0,0,0.5)',
   },
   spacing: {
-    base: 4, // primerSpaceBase
     xxsmall: 2, // primerSpaceXxsmall
     xsmall: 4, // primerSpaceXsmall
     small: 8, // primerSpaceSmall
@@ -89,9 +88,8 @@ export const defaultLightTokens: PrimerTokens = {
     },
   }),
   radii: {
-    base: 4, // primerRadiusBase
     xsmall: 2, // primerRadiusXsmall
-    small: 4, // primerRadiusSmall / primerRadiusBase
+    small: 4, // primerRadiusSmall
     medium: 8, // primerRadiusMedium
     large: 12, // primerRadiusLarge
   },
@@ -102,7 +100,6 @@ export const defaultLightTokens: PrimerTokens = {
     xlarge: 32, // primerSizeXlarge
     xxlarge: 40, // primerSizeXxlarge
     xxxlarge: 56, // primerSizeXxxlarge
-    base: 4, // primerSizeBase
   },
   widths: {
     default: 1,

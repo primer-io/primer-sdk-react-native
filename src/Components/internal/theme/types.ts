@@ -34,7 +34,6 @@ export interface PrimerColorTokens {
 }
 
 export interface PrimerSpacingTokens {
-  base: number;
   xxsmall: number;
   xsmall: number;
   small: number;
@@ -51,7 +50,6 @@ export interface PrimerSizeTokens {
   xlarge: number;
   xxlarge: number;
   xxxlarge: number;
-  base: number;
 }
 
 // React Native rejects any weight outside this list. 550, the design value the other three
@@ -95,7 +93,6 @@ export interface PrimerTypographyOverride {
 }
 
 export interface PrimerRadiusTokens {
-  base: number;
   xsmall: number;
   small: number;
   medium: number;

@@ -40,7 +40,6 @@ export const defaultDarkTokens: PrimerTokens = {
     textSecondary: '#efefef9e',
   },
   spacing: {
-    base: 4, // primerSpaceBase
     xxsmall: 2,
     xsmall: 4,
     small: 8,
@@ -90,7 +89,6 @@ export const defaultDarkTokens: PrimerTokens = {
     },
   }),
   radii: {
-    base: 4,
     xsmall: 2,
     small: 4,
     medium: 8,
@@ -103,7 +101,6 @@ export const defaultDarkTokens: PrimerTokens = {
     xlarge: 32, // primerSizeXlarge
     xxlarge: 40, // primerSizeXxlarge
     xxxlarge: 56, // primerSizeXxxlarge
-    base: 4, // primerSizeBase
   },
   widths: {
     default: 1,
