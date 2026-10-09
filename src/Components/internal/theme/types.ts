@@ -1,17 +1,8 @@
 export interface PrimerColorTokens {
-  backgroundOutlinedActive: string;
   backgroundOutlinedDefault: string;
   backgroundOutlinedDisabled: string;
-  backgroundOutlinedError: string;
-  backgroundOutlinedLoading: string;
-  backgroundOutlinedSelected: string;
   backgroundPrimary: string;
   backgroundSecondary: string;
-  backgroundTransparentActive: string;
-  backgroundTransparentDefault: string;
-  backgroundTransparentDisabled: string;
-  backgroundTransparentLoading: string;
-  backgroundTransparentSelected: string;
   borderOutlinedActive: string;
   borderOutlinedDefault: string;
   borderOutlinedDisabled: string;

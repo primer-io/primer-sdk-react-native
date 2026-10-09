@@ -6,19 +6,10 @@ import type { PrimerTokens } from '../types';
 // Spacing, typography, radii, and widths are mode-independent and match light defaults.
 export const defaultDarkTokens: PrimerTokens = {
   colors: {
-    backgroundOutlinedActive: '#171619',
     backgroundOutlinedDefault: '#171619',
     backgroundOutlinedDisabled: '#efefef0a',
-    backgroundOutlinedError: '#171619',
-    backgroundOutlinedLoading: '#efefef0a',
-    backgroundOutlinedSelected: '#171619',
     backgroundPrimary: '#171619',
     backgroundSecondary: '#efefef0a',
-    backgroundTransparentActive: '#efefef12',
-    backgroundTransparentDefault: '#ffffff00',
-    backgroundTransparentDisabled: '#efefef0a',
-    backgroundTransparentLoading: '#efefef0a',
-    backgroundTransparentSelected: '#efefef0a',
     borderOutlinedActive: '#efefef70',
     borderOutlinedDefault: '#efefef24',
     borderOutlinedDisabled: '#efefef12',

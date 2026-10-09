@@ -75,8 +75,8 @@ describe('mergeTokens', () => {
   });
 
   it('carries the same colour vocabulary as the other SDKs', () => {
-    // 39 shared tokens, plus onBrand and overlay which RN needs and the token files do not carry.
-    expect(Object.keys(base.colors)).toHaveLength(41);
+    // 30 shared tokens, plus onBrand and overlay which RN needs and the token files do not carry.
+    expect(Object.keys(base.colors)).toHaveLength(32);
     expect(base.colors.borderOutlinedFocus).toBe(base.colors.brand);
     expect(base.colors.backgroundOutlinedDefault).toBe(base.colors.backgroundPrimary);
   });

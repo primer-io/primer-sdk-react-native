@@ -5,19 +5,10 @@ import type { PrimerTokens } from '../types';
 // Source: primer-sdk-ios: Sources/PrimerSDK/Classes/CheckoutComponents/Internal/Tokens/DesignTokens.swift
 export const defaultLightTokens: PrimerTokens = {
   colors: {
-    backgroundOutlinedActive: '#ffffff',
     backgroundOutlinedDefault: '#ffffff',
     backgroundOutlinedDisabled: '#2121210a',
-    backgroundOutlinedError: '#ffffff',
-    backgroundOutlinedLoading: '#2121210a',
-    backgroundOutlinedSelected: '#ffffff',
     backgroundPrimary: '#ffffff',
     backgroundSecondary: '#2121210a',
-    backgroundTransparentActive: '#21212112',
-    backgroundTransparentDefault: '#ffffff00',
-    backgroundTransparentDisabled: '#2121210a',
-    backgroundTransparentLoading: '#2121210a',
-    backgroundTransparentSelected: '#2121210a',
     borderOutlinedActive: '#21212170',
     borderOutlinedDefault: '#21212124',
     borderOutlinedDisabled: '#21212112',
