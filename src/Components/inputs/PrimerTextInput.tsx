@@ -1,5 +1,5 @@
-import { forwardRef, useImperativeHandle, useMemo, useRef, useState, type ComponentRef } from 'react';
-import { Platform, StyleSheet, Text, TextInput, View, type TextStyle } from 'react-native';
+import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState, type ComponentRef } from 'react';
+import { AccessibilityInfo, Platform, StyleSheet, Text, TextInput, View, type TextStyle } from 'react-native';
 import { usePrimerTheme } from '../internal/theme';
 import { LINE_HEIGHT_RATIO } from './dimensions';
 import type { PrimerTextInputProps, PrimerTextInputRef, PrimerTextInputTheme } from '../types/CardInputTypes';
@@ -130,6 +130,15 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
   );
 
   const hasError = !!error;
+  const fieldLabel = accessibilityLabel ?? label;
+  // Read with the field, so the error is heard whenever the field is focused, not only when it appears.
+  const spokenLabel = hasError ? [fieldLabel, error].filter(Boolean).join(', ') : fieldLabel;
+
+  // The error text's live region is Android only, so on iOS VoiceOver would never announce it.
+  useEffect(() => {
+    if (Platform.OS === 'ios' && error) AccessibilityInfo.announceForAccessibility(error);
+  }, [error]);
+
   // Error beats focus beats resting.
   const currentBorderWidth = useMemo(() => {
     if (hasError) return resolved.errorBorderWidth;
@@ -232,7 +241,7 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
           blurOnSubmit={returnKeyType !== 'next'}
           inputAccessoryViewID={Platform.OS === 'ios' ? PRIMER_EMPTY_ACCESSORY_ID : undefined}
           accessibilityState={{ disabled: !editable }}
-          accessibilityLabel={accessibilityLabel ?? label}
+          accessibilityLabel={spokenLabel}
           aria-invalid={hasError}
           testID={testID ? `${testID}-input` : undefined}
         />

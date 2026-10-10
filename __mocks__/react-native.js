@@ -76,6 +76,7 @@ const reactNative = {
   TouchableOpacity: makeComponent('TouchableOpacity'),
   View: makeComponent('View'),
   // APIs
+  AccessibilityInfo: { announceForAccessibility: jest.fn() },
   Alert: { alert: () => {} },
   Animated,
   BackHandler: { addEventListener: () => subscription, exitApp: () => {} },
