@@ -1011,4 +1011,21 @@ describe('PrimerCheckoutProvider — requiresVaultedCardCvv flag wiring', () => 
     // The phone is light in this suite, so only the setting can make it dark.
     expect(seen).toEqual({ brand: '#222222', scheme: 'dark' });
   });
+
+  it('sends appearanceMode to native with the settings', async () => {
+    await act(async () => {
+      renderer.create(
+        createElement(
+          PrimerCheckoutProvider,
+          { clientToken: 'token-1', settings: { uiOptions: { appearanceMode: 'DARK' } } },
+          null
+        )
+      );
+      await flushPromises();
+    });
+
+    expect(nativeModule.startWithClientToken).toHaveBeenCalledTimes(1);
+    const [, settingsJson] = nativeModule.startWithClientToken.mock.calls[0];
+    expect(JSON.parse(settingsJson).uiOptions.appearanceMode).toBe('DARK');
+  });
 });
