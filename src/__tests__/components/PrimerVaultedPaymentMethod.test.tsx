@@ -347,6 +347,31 @@ describe('PrimerVaultedPaymentMethod — US2 submit', () => {
     expect(button.props.accessibilityState?.disabled).toBe(false);
   });
 
+  it('Pay is named by its title and gets the disabled hint only while the CVV is incomplete', () => {
+    mockHookState.current = makeHook({ requiresVaultedCardCvv: true });
+    let tree: any;
+    act(() => {
+      tree = renderer.create(createElement(PrimerVaultedPaymentMethod, {}));
+    });
+    let button = findPrimerButton(tree.toJSON());
+    expect(button.props.accessibilityLabel).toBe('primer_common_button_pay');
+    expect(button.props.accessibilityHint).toBeUndefined();
+    act(() => {
+      (button.props.onPress as () => void)();
+    });
+    rerender(tree);
+    button = findPrimerButton(tree.toJSON());
+    expect(button.props.accessibilityLabel).toBe('primer_common_button_pay');
+    expect(button.props.accessibilityHint).toBe('accessibility_card_form_submit_disabled');
+    expect(button.props.accessibilityValue).toBeUndefined();
+    const input = findFirstByType(tree.toJSON(), 'TextInput');
+    act(() => {
+      (input.props.onChangeText as (s: string) => void)('123');
+    });
+    button = findPrimerButton(tree.toJSON());
+    expect(button.props.accessibilityHint).toBeUndefined();
+  });
+
   it('submits with CVV on second Pay tap; emits VAULT_CVV_SUBMITTED', () => {
     mockHookState.current = makeHook({ requiresVaultedCardCvv: true });
     let tree: any;

@@ -68,8 +68,9 @@ jest.mock('../../Components/internal/screens/useKeyboardPadding', () => ({
   useKeyboardPadding: () => 0,
 }));
 
+let mockCardFormValid = true;
 jest.mock('../../Components/hooks/usePrimerCardForm', () => ({
-  usePrimerCardForm: () => ({ isValid: true, isSubmitting: false, submit: mockSubmit }),
+  usePrimerCardForm: () => ({ isValid: mockCardFormValid, isSubmitting: false, submit: mockSubmit }),
 }));
 
 jest.mock('../../Components/hooks/usePrimerBillingAddressForm', () => ({
@@ -87,6 +88,7 @@ import { CardFormScreen } from '../../Components/internal/screens/CardFormScreen
 describe('CardFormScreen Pay', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockCardFormValid = true;
   });
 
   function render() {
@@ -142,5 +144,36 @@ describe('CardFormScreen Pay', () => {
     expect(mockFlush).toHaveBeenCalledTimes(1);
     expect(mockReplace).toHaveBeenCalledTimes(1);
     expect(mockSubmit).toHaveBeenCalledTimes(1);
+  });
+
+  it('is named by its Pay title, with no hint, when enabled', () => {
+    const pay = render().pay();
+
+    expect(pay.title).toBe('primer_common_button_pay');
+    expect(pay.loading).toBe(false);
+    expect(pay.accessibilityLabel).toBeUndefined();
+    expect(pay.accessibilityHint).toBeUndefined();
+  });
+
+  it('gets the disabled hint while the form is incomplete', () => {
+    mockCardFormValid = false;
+    const pay = render().pay();
+
+    expect(pay.disabled).toBe(true);
+    expect(pay.accessibilityLabel).toBeUndefined();
+    expect(pay.accessibilityHint).toBe('accessibility_card_form_submit_disabled');
+  });
+
+  it('reads processing as its value, with no hint, while the payment is starting', async () => {
+    const screen = render();
+
+    await act(async () => {
+      void screen.pay().onPress();
+    });
+
+    expect(screen.pay().loading).toBe(true);
+    expect(screen.pay().accessibilityLabel).toBeUndefined();
+    expect(screen.pay().accessibilityHint).toBeUndefined();
+    expect(screen.pay().loadingAccessibilityValue).toBe('accessibility_card_form_submit_loading');
   });
 });

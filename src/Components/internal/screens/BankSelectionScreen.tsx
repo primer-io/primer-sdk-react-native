@@ -106,6 +106,7 @@ export function BankSelectionScreen() {
           onPress={handleSubmit}
           variant="primary"
           disabled={!canSubmit}
+          accessibilityHint={canSubmit ? undefined : t('accessibility_card_form_submit_disabled')}
         />
       </View>
     </View>

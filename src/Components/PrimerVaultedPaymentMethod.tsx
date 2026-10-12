@@ -148,6 +148,7 @@ export function PrimerVaultedPaymentMethod({ data, onPay, style }: PrimerVaulted
         variant="primary"
         onPress={handlePress}
         disabled={!isCvvComplete}
+        accessibilityHint={isCvvComplete ? undefined : t('accessibility_card_form_submit_disabled')}
       />
     </View>
   );

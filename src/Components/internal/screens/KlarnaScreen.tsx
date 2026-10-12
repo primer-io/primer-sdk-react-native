@@ -150,8 +150,12 @@ export function KlarnaScreen() {
                 variant="primary"
                 loading={showButtonSpinner}
                 disabled={!isViewLoaded || isLoading}
-                accessibilityLabel={t('accessibility_payment_selection_pay_with_klarna')}
-                accessibilityHint={t('accessibility_klarna_authorize_hint')}
+                accessibilityHint={
+                  !showButtonSpinner && !isViewLoaded ? t('accessibility_card_form_submit_disabled') : undefined
+                }
+                loadingAccessibilityValue={t(
+                  isLoading ? 'accessibility_card_form_submit_loading' : 'accessibility_common_loading'
+                )}
               />
             </View>
           )}

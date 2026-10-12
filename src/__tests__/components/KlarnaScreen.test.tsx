@@ -5,6 +5,7 @@ import { createElement } from 'react';
 // @ts-expect-error -- react-test-renderer has no types for React 19
 import renderer, { act } from 'react-test-renderer';
 
+let mockKlarnaState: Record<string, unknown> = {};
 jest.mock('../../Components/hooks/usePrimerPaymentMethod', () => ({
   usePrimerPaymentMethod: () => ({
     kind: 'klarna',
@@ -15,6 +16,7 @@ jest.mock('../../Components/hooks/usePrimerPaymentMethod', () => ({
     isLoading: false,
     selectCategory: jest.fn(),
     authorize: jest.fn(),
+    ...mockKlarnaState,
   }),
 }));
 
@@ -62,14 +64,58 @@ jest.mock('../../Components/internal/screens/useBottomSafeArea', () => ({ useBot
 
 import { KlarnaScreen } from '../../Components/internal/screens/KlarnaScreen';
 
+function render() {
+  let tree: any;
+  act(() => {
+    tree = renderer.create(createElement(KlarnaScreen));
+  });
+  return tree;
+}
+
+beforeEach(() => {
+  mockKlarnaState = {};
+});
+
 describe('KlarnaScreen — header', () => {
   it('titles the screen "Klarna" in the middle of the back row, like the native SDKs', () => {
-    let tree: any;
-    act(() => {
-      tree = renderer.create(createElement(KlarnaScreen));
-    });
+    const tree = render();
 
     expect(tree.root.findByType('NavigationHeader').props.title).toBe('primer_vault_default_klarna');
     expect(tree.root.findByType('NavigationHeader').props.titleAlignment).toBe('center');
+  });
+});
+
+describe('KlarnaScreen — Continue button', () => {
+  const button = () => render().root.findByType('PrimerButton').props;
+
+  it('is named by its title, with no hint, once the Klarna view is ready', () => {
+    mockKlarnaState = { selectedCategoryId: 'pay_later', isViewLoaded: true };
+
+    expect(button().title).toBe('primer_klarna_button_authorize');
+    expect(button().loading).toBe(false);
+    expect(button().accessibilityLabel).toBeUndefined();
+    expect(button().accessibilityHint).toBeUndefined();
+  });
+
+  it('gets the disabled hint before a category is chosen', () => {
+    expect(button().disabled).toBe(true);
+    expect(button().loading).toBe(false);
+    expect(button().accessibilityHint).toBe('accessibility_card_form_submit_disabled');
+  });
+
+  it('reads loading, not processing, as its value while the Klarna view builds', () => {
+    mockKlarnaState = { selectedCategoryId: 'pay_later', isViewLoaded: false };
+
+    expect(button().loading).toBe(true);
+    expect(button().accessibilityHint).toBeUndefined();
+    expect(button().loadingAccessibilityValue).toBe('accessibility_common_loading');
+  });
+
+  it('reads processing as its value while it pays', () => {
+    mockKlarnaState = { selectedCategoryId: 'pay_later', isViewLoaded: true, isLoading: true };
+
+    expect(button().loading).toBe(true);
+    expect(button().accessibilityHint).toBeUndefined();
+    expect(button().loadingAccessibilityValue).toBe('accessibility_card_form_submit_loading');
   });
 });
