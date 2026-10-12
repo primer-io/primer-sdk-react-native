@@ -110,7 +110,12 @@ export function PrimerVaultedPaymentMethod({ data, onPay, style }: PrimerVaulted
   return (
     <View style={[styles.outer, style]}>
       <View style={styles.tile}>
-        <View style={styles.row} accessible accessibilityLabel={display.accessibilityLabel}>
+        <View
+          style={styles.row}
+          accessible
+          accessibilityLabel={display.accessibilityLabel}
+          accessibilityState={{ selected: true }}
+        >
           <View style={styles.leftCol}>
             {display.title != null && (
               <Text style={styles.primaryText} numberOfLines={1}>

@@ -320,6 +320,20 @@ describe('PrimerVaultedPaymentMethod — US1 trigger', () => {
   });
 });
 
+describe('PrimerVaultedPaymentMethod — screen readers', () => {
+  it('reads the saved method as selected, as its border shows', () => {
+    mockHookState.current = makeHook({ requiresVaultedCardCvv: false });
+    let tree: any;
+    act(() => {
+      tree = renderer.create(createElement(PrimerVaultedPaymentMethod, {}));
+    });
+    const row = tree.root.find(
+      (node: any) => node.props.accessible === true && typeof node.props.accessibilityLabel === 'string'
+    );
+    expect(row.props.accessibilityState).toEqual({ selected: true });
+  });
+});
+
 describe('PrimerVaultedPaymentMethod — US2 submit', () => {
   it('Pay button is disabled until CVV is complete', () => {
     mockHookState.current = makeHook({ requiresVaultedCardCvv: true });
