@@ -87,7 +87,7 @@ describe('mergeTokens', () => {
     expect(Object.keys(base.colors).filter((name) => palette.test(name))).toEqual([]);
   });
 
-  it('exposes size tokens so field height is themable', () => {
+  it('exposes size tokens and merges a partial override', () => {
     expect(base.sizes).toEqual({ small: 16, medium: 20, large: 24, xlarge: 32, xxlarge: 40, xxxlarge: 56 });
 
     const result = mergeTokens(base, { sizes: { xxlarge: 60 } });

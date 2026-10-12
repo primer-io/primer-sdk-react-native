@@ -1,7 +1,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState, type ComponentRef } from 'react';
 import { AccessibilityInfo, Platform, StyleSheet, Text, TextInput, View, type TextStyle } from 'react-native';
 import { usePrimerTheme } from '../internal/theme';
-import { LINE_HEIGHT_RATIO } from './dimensions';
+import { LINE_HEIGHT_RATIO, defaultFieldHeight } from './dimensions';
 import type { PrimerTextInputProps, PrimerTextInputRef, PrimerTextInputTheme } from '../types/CardInputTypes';
 import type { PrimerTokens, PrimerTypographyStyle } from '../internal/theme/types';
 
@@ -46,7 +46,7 @@ export function resolveTheme(tokens: PrimerTokens, override?: PrimerTextInputThe
       override?.errorFontSize ?? override?.labelFontSize,
       tokens.typography.error
     ),
-    fieldHeight: override?.fieldHeight ?? tokens.sizes.xxlarge,
+    fieldHeight: override?.fieldHeight ?? defaultFieldHeight(tokens),
     errorBorderWidth,
     focusedBorderWidth,
     // The per-style font, not the brand font, so a merchant setting only bodyLarge.fontFamily
@@ -171,6 +171,7 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
           marginTop: tokens.spacing.xsmall,
         },
         input: {
+          alignSelf: 'stretch',
           color: editable ? resolved.textColor : tokens.colors.textDisabled,
           flex: 1,
           fontFamily: resolved.fontFamily,
@@ -178,7 +179,9 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
           fontWeight: resolved.fontWeight,
           letterSpacing: resolved.letterSpacing,
           lineHeight: resolved.lineHeight,
-          padding: 0,
+          paddingHorizontal: 0,
+          // The border is drawn inside the box, so a thicker one eats into the padding, not the height.
+          paddingVertical: tokens.spacing.medium - currentBorderWidth,
         },
         inputContainer: {
           alignItems: 'center',
@@ -187,7 +190,7 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
           borderRadius: resolved.borderRadius,
           borderWidth: currentBorderWidth,
           flexDirection: 'row',
-          height: resolved.fieldHeight,
+          minHeight: resolved.fieldHeight,
           paddingHorizontal: tokens.spacing.medium - borderWidthDiff,
         },
         label: {
