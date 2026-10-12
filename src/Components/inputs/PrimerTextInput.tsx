@@ -1,6 +1,6 @@
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState, type ComponentRef } from 'react';
 import { AccessibilityInfo, Platform, StyleSheet, Text, TextInput, View, type TextStyle } from 'react-native';
-import { usePrimerTheme } from '../internal/theme';
+import { usePrimerColorScheme, usePrimerTheme } from '../internal/theme';
 import { LINE_HEIGHT_RATIO, defaultFieldHeight } from './dimensions';
 import type { PrimerTextInputProps, PrimerTextInputRef, PrimerTextInputTheme } from '../types/CardInputTypes';
 import type { PrimerTokens, PrimerTypographyStyle } from '../internal/theme/types';
@@ -102,6 +102,7 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
   ref
 ) {
   const tokens = usePrimerTheme();
+  const scheme = usePrimerColorScheme();
   const resolved = useMemo(() => resolveTheme(tokens, themeOverride), [tokens, themeOverride]);
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<ComponentRef<typeof TextInput>>(null);
@@ -237,6 +238,7 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
           autoCapitalize={autoCapitalize}
           placeholder={placeholder}
           placeholderTextColor={resolved.placeholderColor}
+          keyboardAppearance={scheme}
           onSelectionChange={onSelectionChange}
           selectionColor={selectionColor ?? resolved.primaryColor}
           returnKeyType={returnKeyType}

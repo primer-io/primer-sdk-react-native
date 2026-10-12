@@ -32,6 +32,7 @@ jest.mock('../../Components/hooks/usePrimerPaymentMethod', () => ({
 }));
 
 jest.mock('../../Components/internal/theme', () => ({
+  usePrimerColorScheme: () => 'light',
   usePrimerTheme: () => ({
     colors: {
       backgroundPrimary: '#fff',
