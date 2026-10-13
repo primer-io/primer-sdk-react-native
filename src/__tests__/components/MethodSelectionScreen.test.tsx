@@ -36,8 +36,9 @@ jest.mock('../../Components/hooks/usePrimerCheckout', () => ({
   }),
 }));
 
+let mockPaymentMethods: Array<{ type: string }> = [];
 jest.mock('../../Components/hooks/usePrimerPaymentMethods', () => ({
-  usePrimerPaymentMethods: () => ({ paymentMethods: [] }),
+  usePrimerPaymentMethods: () => ({ paymentMethods: mockPaymentMethods }),
 }));
 
 jest.mock('../../Components/hooks/usePrimerVaultManager', () => ({
@@ -95,7 +96,13 @@ jest.mock('../../Components/internal/screens/useKeyboardHeight', () => ({
   useKeyboardHeight: () => 0,
   getLastSeenKeyboardHeight: () => 0,
 }));
-jest.mock('../../Components/internal/screens/useStatusScreenHeight', () => ({ useStatusScreenHeight: () => {} }));
+// Every sheet height the screen asks for, in order.
+const mockHeights: number[] = [];
+jest.mock('../../Components/internal/screens/useStatusScreenHeight', () => ({
+  useStatusScreenHeight: (height: number) => {
+    mockHeights.push(height);
+  },
+}));
 
 // Child components + analytics are irrelevant to the disarm wiring — stub them out.
 jest.mock('../../Components/PrimerPaymentMethodList', () => ({ PrimerPaymentMethodList: () => null }));
@@ -152,5 +159,34 @@ describe('MethodSelectionScreen — sheet title', () => {
       renderer.create(createElement(MethodSelectionScreen));
     });
     expect(mockHeaderTitles.at(-1)).toBe('primer_checkout_title');
+  });
+});
+
+describe('MethodSelectionScreen — sheet height', () => {
+  beforeEach(() => {
+    mockHeights.length = 0;
+    mockPaymentMethods = [{ type: 'PAYMENT_CARD' }, { type: 'PAYPAL' }];
+  });
+
+  afterEach(() => {
+    mockPaymentMethods = [];
+  });
+
+  it('sizes the sheet from the measured list once it has laid out, so taller buttons fit', () => {
+    let tree: any;
+    act(() => {
+      tree = renderer.create(createElement(MethodSelectionScreen));
+    });
+    const estimated = mockHeights[mockHeights.length - 1] ?? NaN;
+    const wrapper = tree.root.find(
+      (node: any) => node.type === 'View' && node.props.collapsable === false && node.props.onLayout != null
+    );
+
+    act(() => {
+      wrapper.props.onLayout({ nativeEvent: { layout: { height: 300 } } });
+    });
+
+    // The estimate is two buttons of the mocked 56 plus one gap of spacing.small (8).
+    expect((mockHeights[mockHeights.length - 1] ?? NaN) - estimated).toBe(300 - (2 * 56 + 8));
   });
 });
