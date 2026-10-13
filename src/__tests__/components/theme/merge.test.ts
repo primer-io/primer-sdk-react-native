@@ -1,4 +1,5 @@
 import { mergeTokens } from '../../../Components/internal/theme/merge';
+import { INTER_FONT_FAMILY } from '../../../Components/internal/theme/typography';
 import { defaultDarkTokens, defaultLightTokens } from '../../../Components/internal/theme/tokens';
 import type { PrimerTypographyStyle } from '../../../Components/internal/theme/types';
 
@@ -187,9 +188,9 @@ describe('brand font', () => {
 
   it('leaves every style on Inter when nothing is set', () => {
     for (const tokens of [defaultLightTokens, defaultDarkTokens]) {
-      expect(tokens.typography.fontFamily).toBe('Inter');
+      expect(tokens.typography.fontFamily).toBe(INTER_FONT_FAMILY);
       for (const style of STYLES) {
-        expect(tokens.typography[style].fontFamily).toBe('Inter');
+        expect(tokens.typography[style].fontFamily).toBe(INTER_FONT_FAMILY);
       }
     }
 
@@ -249,7 +250,7 @@ describe('brand font', () => {
   it('gives a style set without a font the default font when the brand font is not set', () => {
     const result = mergeTokens(base, { typography: { bodyLarge: withoutFont(base.typography.bodyLarge) } });
 
-    expect(result.typography.bodyLarge.fontFamily).toBe('Inter');
+    expect(result.typography.bodyLarge.fontFamily).toBe(INTER_FONT_FAMILY);
   });
 });
 

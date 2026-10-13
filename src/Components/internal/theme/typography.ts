@@ -1,4 +1,8 @@
+import { Platform } from 'react-native';
 import type { PrimerTypographyStyle, PrimerTypographyTokens } from './types';
+
+// The family each platform registers for the bundled font: iOS names the variable font, Android names the resource.
+export const INTER_FONT_FAMILY = Platform.select({ ios: 'Inter Variable', default: 'Inter' });
 
 export const TYPOGRAPHY_STYLES = [
   'titleXlarge',
