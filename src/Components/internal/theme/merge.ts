@@ -10,11 +10,21 @@ import type {
 
 type ModeOverride = PrimerThemeOverride['light'];
 
+function isNonFiniteNumber(value: unknown): boolean {
+  return typeof value === 'number' && !Number.isFinite(value);
+}
+
+function hasNonFiniteNumber(value: unknown): boolean {
+  if (value == null || typeof value !== 'object') return isNonFiniteNumber(value);
+  return Object.values(value).some(hasNonFiniteNumber);
+}
+
 function stripNullish<T extends object>(obj: Partial<T>): Partial<T> {
   const result: Partial<T> = {};
   for (const key in obj) {
-    if (obj[key] != null) {
-      result[key] = obj[key];
+    const value = obj[key];
+    if (value != null && !isNonFiniteNumber(value)) {
+      result[key] = value;
     }
   }
   return result;
@@ -29,11 +39,6 @@ const COLOR_ALIASES: ReadonlyArray<[keyof PrimerColorTokens, keyof PrimerColorTo
   ['loader', 'brand'],
   ['backgroundOutlinedDefault', 'backgroundPrimary'],
   ['onBrand', 'backgroundPrimary'],
-  ['backgroundOutlinedActive', 'backgroundOutlinedDefault'],
-  ['backgroundOutlinedSelected', 'backgroundOutlinedDefault'],
-  ['backgroundOutlinedError', 'backgroundOutlinedDefault'],
-  ['backgroundOutlinedLoading', 'backgroundOutlinedDisabled'],
-  ['backgroundTransparentLoading', 'backgroundTransparentDisabled'],
   ['borderOutlinedFocus', 'focus'],
   ['borderTransparentFocus', 'focus'],
   ['textOutlinedDefault', 'textPrimary'],
@@ -79,6 +84,10 @@ function mergeTypography(base: PrimerTypographyTokens, override: PrimerTypograph
 export function mergeTokens(base: PrimerTokens, override: ModeOverride): PrimerTokens {
   if (override == null) {
     return base;
+  }
+
+  if (hasNonFiniteNumber(override)) {
+    console.warn('[PrimerCheckoutTheme] A NaN or infinite theme number is ignored.');
   }
 
   return {

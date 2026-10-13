@@ -6,6 +6,7 @@ import { PrimerAnalytics } from '../../analytics';
 import { usePrimerPaymentMethods } from '../../hooks/usePrimerPaymentMethods';
 import { usePrimerCheckout } from '../../hooks/usePrimerCheckout';
 import { usePrimerVaultManager } from '../../hooks/usePrimerVaultManager';
+import { defaultFieldHeight } from '../../inputs/dimensions';
 import { PrimerPaymentMethodList } from '../../PrimerPaymentMethodList';
 import { PrimerVaultedPaymentMethod } from '../../PrimerVaultedPaymentMethod';
 import { useCheckoutFlow } from '../checkout-flow/CheckoutFlowContext';
@@ -86,7 +87,7 @@ export function MethodSelectionScreen() {
   //   + tile-to-button gap + Pay button (PrimerButton: padding.medium*2 + titleLarge lineHeight)
   //   + section-to-APM gap.
   // CVV row height is the height of the input field it wraps.
-  const cvvExtraHeight = cvvInputVisible ? tokens.spacing.medium + tokens.sizes.xxlarge : 0;
+  const cvvExtraHeight = cvvInputVisible ? tokens.spacing.medium + defaultFieldHeight(tokens) : 0;
   const vaultSectionHeight =
     activeVaultedMethod != null
       ? titleArea +

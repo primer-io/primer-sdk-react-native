@@ -1,23 +1,14 @@
-import { resolveTypography } from '../typography';
+import { INTER_FONT_FAMILY, resolveTypography } from '../typography';
 import type { PrimerTokens } from '../types';
 
 // Values derived from iOS DesignTokens.swift (Style Dictionary generated, light theme).
 // Source: primer-sdk-ios: Sources/PrimerSDK/Classes/CheckoutComponents/Internal/Tokens/DesignTokens.swift
 export const defaultLightTokens: PrimerTokens = {
   colors: {
-    backgroundOutlinedActive: '#ffffff',
     backgroundOutlinedDefault: '#ffffff',
     backgroundOutlinedDisabled: '#2121210a',
-    backgroundOutlinedError: '#ffffff',
-    backgroundOutlinedLoading: '#2121210a',
-    backgroundOutlinedSelected: '#ffffff',
     backgroundPrimary: '#ffffff',
     backgroundSecondary: '#2121210a',
-    backgroundTransparentActive: '#21212112',
-    backgroundTransparentDefault: '#ffffff00',
-    backgroundTransparentDisabled: '#2121210a',
-    backgroundTransparentLoading: '#2121210a',
-    backgroundTransparentSelected: '#2121210a',
     borderOutlinedActive: '#21212170',
     borderOutlinedDefault: '#21212124',
     borderOutlinedDisabled: '#21212112',
@@ -48,7 +39,6 @@ export const defaultLightTokens: PrimerTokens = {
     overlay: 'rgba(0,0,0,0.5)',
   },
   spacing: {
-    base: 4, // primerSpaceBase
     xxsmall: 2, // primerSpaceXxsmall
     xsmall: 4, // primerSpaceXsmall
     small: 8, // primerSpaceSmall
@@ -59,7 +49,7 @@ export const defaultLightTokens: PrimerTokens = {
   },
   // Each style's font comes from the brand font above unless it names its own.
   typography: resolveTypography({
-    fontFamily: 'Inter', // primerTypographyBrand
+    fontFamily: INTER_FONT_FAMILY, // primerTypographyBrand
     titleXlarge: {
       fontSize: 24, // primerTypographyTitleXlargeSize
       fontWeight: '500', // primerTypographyTitleXlargeWeight 550, the closest React Native renders
@@ -98,9 +88,8 @@ export const defaultLightTokens: PrimerTokens = {
     },
   }),
   radii: {
-    base: 4, // primerRadiusBase
     xsmall: 2, // primerRadiusXsmall
-    small: 4, // primerRadiusSmall / primerRadiusBase
+    small: 4, // primerRadiusSmall
     medium: 8, // primerRadiusMedium
     large: 12, // primerRadiusLarge
   },
@@ -111,7 +100,6 @@ export const defaultLightTokens: PrimerTokens = {
     xlarge: 32, // primerSizeXlarge
     xxlarge: 40, // primerSizeXxlarge
     xxxlarge: 56, // primerSizeXxxlarge
-    base: 4, // primerSizeBase
   },
   widths: {
     default: 1,

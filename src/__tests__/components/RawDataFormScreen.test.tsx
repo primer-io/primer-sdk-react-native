@@ -32,6 +32,7 @@ jest.mock('../../Components/hooks/usePrimerPaymentMethod', () => ({
 }));
 
 jest.mock('../../Components/internal/theme', () => ({
+  usePrimerColorScheme: () => 'light',
   usePrimerTheme: () => ({
     colors: {
       backgroundPrimary: '#fff',
@@ -194,6 +195,24 @@ describe('RawDataFormScreen (ORC-6514)', () => {
     act(() => payButton(root).props.onPress());
     expect(mockReplace).toHaveBeenCalledWith('processing');
     expect(mockSubmit).toHaveBeenCalledTimes(1);
+  });
+
+  it('names Pay by its title and gives it the disabled hint until the data is valid', () => {
+    mockMethod = rawDataForm({ isValid: false });
+    const root = render().root;
+
+    expect(payButton(root).props.accessibilityLabel).toBe('primer_common_button_pay');
+    expect(payButton(root).props.accessibilityHint).toBe('accessibility_card_form_submit_disabled');
+    expect(payButton(root).props.accessibilityValue).toBeUndefined();
+  });
+
+  it('drops the hint once the data is valid', () => {
+    mockMethod = rawDataForm({ isValid: true });
+    const root = render().root;
+
+    expect(payButton(root).props.accessibilityLabel).toBe('primer_common_button_pay');
+    expect(payButton(root).props.accessibilityHint).toBeUndefined();
+    expect(payButton(root).props.accessibilityValue).toBeUndefined();
   });
 
   it('renders nothing when the method is not a raw-data form', () => {

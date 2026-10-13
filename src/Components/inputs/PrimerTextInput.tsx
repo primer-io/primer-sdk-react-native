@@ -1,7 +1,7 @@
-import { forwardRef, useImperativeHandle, useMemo, useRef, useState, type ComponentRef } from 'react';
-import { Platform, StyleSheet, Text, TextInput, View, type TextStyle } from 'react-native';
-import { usePrimerTheme } from '../internal/theme';
-import { LINE_HEIGHT_RATIO } from './dimensions';
+import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState, type ComponentRef } from 'react';
+import { AccessibilityInfo, Platform, StyleSheet, Text, TextInput, View, type TextStyle } from 'react-native';
+import { usePrimerColorScheme, usePrimerTheme } from '../internal/theme';
+import { LINE_HEIGHT_RATIO, defaultFieldHeight } from './dimensions';
 import type { PrimerTextInputProps, PrimerTextInputRef, PrimerTextInputTheme } from '../types/CardInputTypes';
 import type { PrimerTokens, PrimerTypographyStyle } from '../internal/theme/types';
 
@@ -46,7 +46,7 @@ export function resolveTheme(tokens: PrimerTokens, override?: PrimerTextInputThe
       override?.errorFontSize ?? override?.labelFontSize,
       tokens.typography.error
     ),
-    fieldHeight: override?.fieldHeight ?? tokens.sizes.xxlarge,
+    fieldHeight: override?.fieldHeight ?? defaultFieldHeight(tokens),
     errorBorderWidth,
     focusedBorderWidth,
     // The per-style font, not the brand font, so a merchant setting only bodyLarge.fontFamily
@@ -102,6 +102,7 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
   ref
 ) {
   const tokens = usePrimerTheme();
+  const scheme = usePrimerColorScheme();
   const resolved = useMemo(() => resolveTheme(tokens, themeOverride), [tokens, themeOverride]);
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<ComponentRef<typeof TextInput>>(null);
@@ -130,6 +131,15 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
   );
 
   const hasError = !!error;
+  const fieldLabel = accessibilityLabel ?? label;
+  // Read with the field, so the error is heard whenever the field is focused, not only when it appears.
+  const spokenLabel = hasError ? [fieldLabel, error].filter(Boolean).join(', ') : fieldLabel;
+
+  // The error text's live region is Android only, so on iOS VoiceOver would never announce it.
+  useEffect(() => {
+    if (Platform.OS === 'ios' && error) AccessibilityInfo.announceForAccessibility(error);
+  }, [error]);
+
   // Error beats focus beats resting.
   const currentBorderWidth = useMemo(() => {
     if (hasError) return resolved.errorBorderWidth;
@@ -162,6 +172,7 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
           marginTop: tokens.spacing.xsmall,
         },
         input: {
+          alignSelf: 'stretch',
           color: editable ? resolved.textColor : tokens.colors.textDisabled,
           flex: 1,
           fontFamily: resolved.fontFamily,
@@ -169,7 +180,9 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
           fontWeight: resolved.fontWeight,
           letterSpacing: resolved.letterSpacing,
           lineHeight: resolved.lineHeight,
-          padding: 0,
+          paddingHorizontal: 0,
+          // The border is drawn inside the box, so a thicker one eats into the padding, not the height.
+          paddingVertical: tokens.spacing.medium - currentBorderWidth,
         },
         inputContainer: {
           alignItems: 'center',
@@ -178,7 +191,7 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
           borderRadius: resolved.borderRadius,
           borderWidth: currentBorderWidth,
           flexDirection: 'row',
-          height: resolved.fieldHeight,
+          minHeight: resolved.fieldHeight,
           paddingHorizontal: tokens.spacing.medium - borderWidthDiff,
         },
         label: {
@@ -225,6 +238,7 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
           autoCapitalize={autoCapitalize}
           placeholder={placeholder}
           placeholderTextColor={resolved.placeholderColor}
+          keyboardAppearance={scheme}
           onSelectionChange={onSelectionChange}
           selectionColor={selectionColor ?? resolved.primaryColor}
           returnKeyType={returnKeyType}
@@ -232,7 +246,7 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
           blurOnSubmit={returnKeyType !== 'next'}
           inputAccessoryViewID={Platform.OS === 'ios' ? PRIMER_EMPTY_ACCESSORY_ID : undefined}
           accessibilityState={{ disabled: !editable }}
-          accessibilityLabel={accessibilityLabel ?? label}
+          accessibilityLabel={spokenLabel}
           aria-invalid={hasError}
           testID={testID ? `${testID}-input` : undefined}
         />

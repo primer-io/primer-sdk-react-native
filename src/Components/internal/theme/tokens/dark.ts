@@ -1,4 +1,4 @@
-import { resolveTypography } from '../typography';
+import { INTER_FONT_FAMILY, resolveTypography } from '../typography';
 import type { PrimerTokens } from '../types';
 
 // Values derived from iOS dark.json (Style Dictionary generated, dark theme).
@@ -6,19 +6,10 @@ import type { PrimerTokens } from '../types';
 // Spacing, typography, radii, and widths are mode-independent and match light defaults.
 export const defaultDarkTokens: PrimerTokens = {
   colors: {
-    backgroundOutlinedActive: '#171619',
     backgroundOutlinedDefault: '#171619',
     backgroundOutlinedDisabled: '#efefef0a',
-    backgroundOutlinedError: '#171619',
-    backgroundOutlinedLoading: '#efefef0a',
-    backgroundOutlinedSelected: '#171619',
     backgroundPrimary: '#171619',
     backgroundSecondary: '#efefef0a',
-    backgroundTransparentActive: '#efefef12',
-    backgroundTransparentDefault: '#ffffff00',
-    backgroundTransparentDisabled: '#efefef0a',
-    backgroundTransparentLoading: '#efefef0a',
-    backgroundTransparentSelected: '#efefef0a',
     borderOutlinedActive: '#efefef70',
     borderOutlinedDefault: '#efefef24',
     borderOutlinedDisabled: '#efefef12',
@@ -49,7 +40,6 @@ export const defaultDarkTokens: PrimerTokens = {
     textSecondary: '#efefef9e',
   },
   spacing: {
-    base: 4, // primerSpaceBase
     xxsmall: 2,
     xsmall: 4,
     small: 8,
@@ -60,7 +50,7 @@ export const defaultDarkTokens: PrimerTokens = {
   },
   // Each style's font comes from the brand font above unless it names its own.
   typography: resolveTypography({
-    fontFamily: 'Inter',
+    fontFamily: INTER_FONT_FAMILY,
     titleXlarge: {
       fontSize: 24,
       fontWeight: '500',
@@ -99,7 +89,6 @@ export const defaultDarkTokens: PrimerTokens = {
     },
   }),
   radii: {
-    base: 4,
     xsmall: 2,
     small: 4,
     medium: 8,
@@ -112,7 +101,6 @@ export const defaultDarkTokens: PrimerTokens = {
     xlarge: 32, // primerSizeXlarge
     xxlarge: 40, // primerSizeXxlarge
     xxxlarge: 56, // primerSizeXxxlarge
-    base: 4, // primerSizeBase
   },
   widths: {
     default: 1,
