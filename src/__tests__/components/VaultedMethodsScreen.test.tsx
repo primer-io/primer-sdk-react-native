@@ -58,7 +58,9 @@ jest.mock('../../Components/analytics', () => ({ PrimerAnalytics: { trackEvent: 
 
 import { VaultedMethodsScreen } from '../../Components/internal/screens/VaultedMethodsScreen';
 
-function renderOnDeleteQuestion() {
+const rnMock = require('react-native');
+
+function renderInEditMode() {
   let tree: any;
   act(() => {
     tree = renderer.create(createElement(VaultedMethodsScreen));
@@ -72,6 +74,11 @@ function renderOnDeleteQuestion() {
     row = renderer.create(list.props.renderItem({ item: list.props.data[1], index: 1 }));
   });
   const deleteButton = row.root.findByProps({ accessibilityLabel: 'accessibility_vault_delete_payment_method' });
+  return { tree, header, deleteButton };
+}
+
+function renderOnDeleteQuestion() {
+  const { tree, header, deleteButton } = renderInEditMode();
   act(() => deleteButton.props.onPress());
   const isOnQuestion = () =>
     tree.root.findAll((node: any) => node.type === 'Text' && node.props.children === 'primer_vault_delete_message')
@@ -101,5 +108,34 @@ describe('VaultedMethodsScreen — leaving the delete question', () => {
     act(() => header().props.onBackPress()); // closes the question
 
     expect(header().props.onBackPress).toBeUndefined();
+  });
+});
+
+describe('VaultedMethodsScreen — delete button touch area', () => {
+  afterEach(() => {
+    rnMock.Platform.OS = 'ios';
+  });
+
+  function touchArea() {
+    const { deleteButton } = renderInEditMode();
+    const { style, hitSlop } = deleteButton.props;
+    return {
+      width: style.width + hitSlop.left + hitSlop.right,
+      height: style.height + hitSlop.top + hitSlop.bottom,
+      left: hitSlop.left,
+    };
+  }
+
+  it.each([
+    ['ios', 44],
+    ['android', 48],
+  ])('is at least the %s minimum and stays out of the card next to it', (os, minimum) => {
+    rnMock.Platform.OS = os;
+
+    const area = touchArea();
+
+    expect(area.width).toBeGreaterThanOrEqual(minimum);
+    expect(area.height).toBeGreaterThanOrEqual(minimum);
+    expect(area.left).toBeLessThanOrEqual(12); // the gap between the card and the button
   });
 });

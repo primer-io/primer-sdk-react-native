@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert, FlatList, Image, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import type { ListRenderItemInfo, TextStyle } from 'react-native';
+import { Alert, FlatList, Image, Platform, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import type { Insets, ListRenderItemInfo, TextStyle } from 'react-native';
 
 import { PrimerAnalytics } from '../../analytics';
 import { usePrimerVaultManager } from '../../hooks/usePrimerVaultManager';
@@ -20,11 +20,22 @@ const BRAND_CHIP_WIDTH = 22.4;
 const BRAND_CHIP_HEIGHT = 16;
 const CHECK_ICON_SIZE = 20;
 const DELETE_ICON_SIZE = 20;
+const IOS_MIN_TOUCH_TARGET = 44;
+const ANDROID_MIN_TOUCH_TARGET = 48;
 const HEADER_ICON_SIZE = 20;
 const closeIcon = require('./assets/close.png');
 const checkIcon = require('./assets/check.png'); // blue — active-row indicator
 const doneIcon = require('./assets/done.png'); // black — header Done button
 const editIcon = require('./assets/edit.png');
+
+// The icon stays 20; the slop grows it to the platform's minimum, reaching left only across the gap so
+// a tap on the card's edge still selects the card.
+function deleteHitSlop(gapToCard: number): Insets {
+  const target = Platform.OS === 'android' ? ANDROID_MIN_TOUCH_TARGET : IOS_MIN_TOUCH_TARGET;
+  const extra = target - DELETE_ICON_SIZE;
+  const left = Math.min(gapToCard, extra);
+  return { top: extra / 2, bottom: extra / 2, left, right: extra - left };
+}
 
 interface VaultedMethodRowProps {
   method: VaultedPaymentMethodItem;
@@ -114,7 +125,7 @@ function VaultedMethodRow({
         onPress={onDeletePress}
         disabled={!isInteractive}
         style={styles.deleteButton}
-        hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}
+        hitSlop={deleteHitSlop(tokens.spacing.medium)}
       >
         <Image source={closeIcon} style={styles.deleteIcon} resizeMode="contain" />
       </TouchableOpacity>
