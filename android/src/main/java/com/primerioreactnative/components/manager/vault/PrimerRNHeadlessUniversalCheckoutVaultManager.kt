@@ -14,6 +14,7 @@ import com.primerioreactnative.components.datamodels.manager.vault.toPrimerVault
 import com.primerioreactnative.datamodels.ErrorTypeRN
 import com.primerioreactnative.utils.errorTo
 import com.primerioreactnative.utils.toWritableMap
+import io.primer.android.components.bridge.clientsession.ComponentsClientSessionBridge
 import io.primer.android.components.manager.vault.PrimerHeadlessUniversalCheckoutVaultManager
 import io.primer.android.components.manager.vault.PrimerHeadlessUniversalCheckoutVaultManagerInterface
 import kotlinx.coroutines.CoroutineScope
@@ -169,6 +170,11 @@ class PrimerRNHeadlessUniversalCheckoutVaultManager(
                 )
             }
         }
+    }
+
+    @ReactMethod
+    fun requiresVaultedCardCvv(promise: Promise) {
+        promise.resolve(ComponentsClientSessionBridge.create().getCaptureVaultedCardCvv())
     }
 
     companion object {

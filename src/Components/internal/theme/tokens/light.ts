@@ -1,0 +1,110 @@
+import { INTER_FONT_FAMILY, resolveTypography } from '../typography';
+import type { PrimerTokens } from '../types';
+
+// Values derived from iOS DesignTokens.swift (Style Dictionary generated, light theme).
+// Source: primer-sdk-ios: Sources/PrimerSDK/Classes/CheckoutComponents/Internal/Tokens/DesignTokens.swift
+export const defaultLightTokens: PrimerTokens = {
+  colors: {
+    backgroundOutlinedDefault: '#ffffff',
+    backgroundOutlinedDisabled: '#2121210a',
+    backgroundPrimary: '#ffffff',
+    backgroundSecondary: '#2121210a',
+    borderOutlinedActive: '#21212170',
+    borderOutlinedDefault: '#21212124',
+    borderOutlinedDisabled: '#21212112',
+    borderOutlinedError: '#ff7279',
+    borderOutlinedFocus: '#2f98ff',
+    borderOutlinedLoading: '#21212112',
+    borderOutlinedSelected: '#2f98ff',
+    borderTransparentActive: '#ffffff00',
+    borderTransparentDefault: '#ffffff00',
+    borderTransparentDisabled: '#ffffff00',
+    borderTransparentFocus: '#2f98ff',
+    borderTransparentSelected: '#ffffff00',
+    brand: '#2f98ff',
+    focus: '#2f98ff',
+    iconDisabled: '#2121214d',
+    iconNegative: '#ff7279',
+    iconPositive: '#3eb68f',
+    iconPrimary: '#212121',
+    loader: '#2f98ff',
+    textDisabled: '#2121214d',
+    textLink: '#2270f4',
+    textNegative: '#b4324b',
+    textOutlinedDefault: '#212121',
+    textPlaceholder: '#21212170',
+    textPrimary: '#212121',
+    textSecondary: '#2121219e',
+    onBrand: '#ffffff',
+    overlay: 'rgba(0,0,0,0.5)',
+  },
+  spacing: {
+    xxsmall: 2, // primerSpaceXxsmall
+    xsmall: 4, // primerSpaceXsmall
+    small: 8, // primerSpaceSmall
+    medium: 12, // primerSpaceMedium
+    large: 16, // primerSpaceLarge
+    xlarge: 20, // primerSpaceXlarge
+    xxlarge: 24, // primerSpaceXxlarge
+  },
+  // Each style's font comes from the brand font above unless it names its own.
+  typography: resolveTypography({
+    fontFamily: INTER_FONT_FAMILY, // primerTypographyBrand
+    titleXlarge: {
+      fontSize: 24, // primerTypographyTitleXlargeSize
+      fontWeight: '500', // primerTypographyTitleXlargeWeight 550, the closest React Native renders
+      lineHeight: 32, // primerTypographyTitleXlargeLineHeight
+      letterSpacing: -0.6, // primerTypographyTitleXlargeLetterSpacing
+    },
+    titleLarge: {
+      fontSize: 16, // primerTypographyTitleLargeSize
+      fontWeight: '500', // primerTypographyTitleLargeWeight 550, the closest React Native renders
+      lineHeight: 20, // primerTypographyTitleLargeLineHeight
+      letterSpacing: -0.2, // primerTypographyTitleLargeLetterSpacing
+    },
+    bodyLarge: {
+      fontSize: 16, // primerTypographyBodyLargeSize
+      fontWeight: '400', // primerTypographyBodyLargeWeight
+      lineHeight: 20, // primerTypographyBodyLargeLineHeight
+      letterSpacing: -0.2, // primerTypographyBodyLargeLetterSpacing
+    },
+    bodyMedium: {
+      fontSize: 14, // primerTypographyBodyMediumSize
+      fontWeight: '400', // primerTypographyBodyMediumWeight
+      lineHeight: 20, // primerTypographyBodyMediumLineHeight
+      letterSpacing: 0, // primerTypographyBodyMediumLetterSpacing
+    },
+    bodySmall: {
+      fontSize: 12, // primerTypographyBodySmallSize
+      fontWeight: '400', // primerTypographyBodySmallWeight
+      lineHeight: 16, // primerTypographyBodySmallLineHeight
+      letterSpacing: 0, // primerTypographyBodySmallLetterSpacing
+    },
+    error: {
+      fontSize: 12, // primerTypographyErrorSize
+      fontWeight: '400', // primerTypographyErrorWeight
+      lineHeight: 16, // primerTypographyErrorLineHeight
+      letterSpacing: 0, // primerTypographyErrorLetterSpacing
+    },
+  }),
+  radii: {
+    xsmall: 2, // primerRadiusXsmall
+    small: 4, // primerRadiusSmall
+    medium: 8, // primerRadiusMedium
+    large: 12, // primerRadiusLarge
+  },
+  sizes: {
+    small: 16, // primerSizeSmall
+    medium: 20, // primerSizeMedium
+    large: 24, // primerSizeLarge
+    xlarge: 32, // primerSizeXlarge
+    xxlarge: 40, // primerSizeXxlarge
+    xxxlarge: 56, // primerSizeXxxlarge
+  },
+  widths: {
+    default: 1,
+    focus: 2,
+    selected: 2,
+    error: 2,
+  },
+};

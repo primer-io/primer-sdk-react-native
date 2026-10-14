@@ -1,6 +1,7 @@
 package com.primerioreactnative.components.manager.asset
 
 import androidx.core.content.ContextCompat
+import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
@@ -21,6 +22,7 @@ import com.primerioreactnative.datamodels.ErrorTypeRN
 import com.primerioreactnative.utils.errorTo
 import com.primerioreactnative.utils.toWritableMap
 import io.primer.android.components.SdkUninitializedException
+import io.primer.android.components.bridge.clientsession.ComponentsClientSessionBridge
 import io.primer.android.components.ui.assets.PrimerHeadlessUniversalCheckoutAssetsManager
 import io.primer.android.components.ui.assets.PrimerPaymentMethodAsset
 import io.primer.android.components.ui.assets.PrimerPaymentMethodNativeView
@@ -36,6 +38,34 @@ internal class PrimerRNHeadlessUniversalCheckoutAssetManager(
     private val reactContext: ReactApplicationContext,
 ) : ReactContextBaseJavaModule(reactContext) {
     override fun getName() = "RNTPrimerHeadlessUniversalCheckoutAssetsManager"
+
+    @ReactMethod
+    fun getCardNetworkTraits(
+        cardNetworkStr: String,
+        promise: Promise,
+    ) {
+        // Android always returns a Descriptor (Type.OTHER fallback for unknown strings).
+        // JS normalises cardNetwork == "OTHER" to DEFAULT_DESCRIPTOR, matching iOS nil semantics.
+        val descriptor = CardNetwork.lookupByCardNetwork(cardNetworkStr)
+        val panLengthsArray =
+            Arguments.createArray().apply {
+                descriptor.lengths.forEach { pushInt(it) }
+            }
+        val gapPatternArray =
+            Arguments.createArray().apply {
+                descriptor.gaps.forEach { pushInt(it) }
+            }
+        val result =
+            Arguments.createMap().apply {
+                putString("cardNetwork", descriptor.type.name)
+                putString("displayName", descriptor.type.displayName)
+                putArray("panLengths", panLengthsArray)
+                putArray("gapPattern", gapPatternArray)
+                putInt("cvvLength", descriptor.cvvLength)
+                putString("cvvLabel", descriptor.cvvLabel)
+            }
+        promise.resolve(result)
+    }
 
     @ReactMethod
     fun getCardNetworkImage(
@@ -73,6 +103,25 @@ internal class PrimerRNHeadlessUniversalCheckoutAssetManager(
                 } catch (e: Exception) {
                     promise.reject(ErrorTypeRN.NativeBridgeFailed.errorId, e.message, e)
                 }
+        }
+    }
+
+    @ReactMethod
+    fun getOrderedAllowedCardNetworks(promise: Promise) {
+        try {
+            val networks = ComponentsClientSessionBridge.create().getOrderedAllowedCardNetworks()
+            val map = Arguments.createMap()
+            if (networks == null) {
+                map.putNull("networks")
+            } else {
+                val array = Arguments.createArray()
+                networks.forEach { array.pushString(it) }
+                map.putArray("networks", array)
+            }
+            promise.resolve(map)
+        } catch (e: Exception) {
+            val exception = ErrorTypeRN.NativeBridgeFailed errorTo e.message.orEmpty()
+            promise.reject(exception.errorId, exception.description, e)
         }
     }
 
