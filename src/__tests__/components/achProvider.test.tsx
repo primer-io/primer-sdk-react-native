@@ -24,6 +24,7 @@ jest.mock(
   'react-native',
   () => ({
     Platform: { OS: 'android', select: (o: { android?: unknown; default?: unknown }) => o.android ?? o.default },
+    useColorScheme: () => 'light',
     NativeModules: {},
     NativeEventEmitter: jest.fn().mockImplementation(() => ({
       addListener: jest.fn().mockImplementation(() => ({ remove: jest.fn() })),

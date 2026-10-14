@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import type { ListRenderItemInfo, TextStyle } from 'react-native';
 import { usePrimerTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
@@ -16,6 +16,9 @@ import { COUNTRIES, getLocalizedCountryName, type CountryCode } from '../countri
 import { flagEmoji } from '../flags';
 
 const ROW_HEIGHT = 44;
+const SEARCH_ICON_SIZE = 20;
+
+const searchIcon = require('./assets/search.png');
 
 // Row shape used inside the picker: code + the (localized) display name plus
 // the English fallback we keep for searching while the locale is non-English.
@@ -171,6 +174,16 @@ export function CountrySelectorScreen() {
           placeholder={t('primer_country_placeholder_search')}
           autoCapitalize="none"
           autoComplete="off"
+          leadingContent={
+            <Image
+              source={searchIcon}
+              style={styles.searchIcon}
+              resizeMode="contain"
+              accessibilityElementsHidden
+              importantForAccessibility="no"
+              testID="primer-country-selector-search-icon"
+            />
+          }
           trailingContent={searchClearButton}
           testID="primer-country-selector-search"
         />
@@ -201,7 +214,7 @@ function createStyles(tokens: PrimerTokens) {
       marginLeft: spacing.small,
     },
     clear: {
-      color: colors.textSecondary,
+      color: colors.iconPrimary,
       fontSize: typography.bodyLarge.fontSize,
     },
     empty: {
@@ -210,8 +223,11 @@ function createStyles(tokens: PrimerTokens) {
     },
     emptyText: {
       color: colors.textSecondary,
-      fontFamily: typography.fontFamily,
+      fontFamily: typography.bodyLarge.fontFamily,
       fontSize: typography.bodyLarge.fontSize,
+      fontWeight: typography.bodyLarge.fontWeight as TextStyle['fontWeight'],
+      letterSpacing: typography.bodyLarge.letterSpacing,
+      lineHeight: typography.bodyLarge.lineHeight,
     },
     flag: {
       fontSize: typography.bodyLarge.fontSize + 4,
@@ -236,13 +252,20 @@ function createStyles(tokens: PrimerTokens) {
     rowLabel: {
       color: colors.textPrimary,
       flex: 1,
-      fontFamily: typography.fontFamily,
+      fontFamily: typography.bodyLarge.fontFamily,
       fontSize: typography.bodyLarge.fontSize,
+      fontWeight: typography.bodyLarge.fontWeight as TextStyle['fontWeight'],
       letterSpacing: typography.bodyLarge.letterSpacing,
       lineHeight: typography.bodyLarge.lineHeight,
     },
     rowSelected: {
-      backgroundColor: colors.surface,
+      backgroundColor: colors.backgroundSecondary,
+    },
+    searchIcon: {
+      height: SEARCH_ICON_SIZE,
+      marginRight: spacing.small,
+      tintColor: colors.iconPrimary,
+      width: SEARCH_ICON_SIZE,
     },
     searchWrapper: {
       paddingBottom: spacing.medium,

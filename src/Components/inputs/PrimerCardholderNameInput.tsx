@@ -19,6 +19,7 @@ export const PrimerCardholderNameInput = forwardRef<PrimerTextInputRef, PrimerCa
         onFocus={() => cardForm.markFieldFocused('cardholderName')}
         onBlur={() => cardForm.markFieldBlurred('cardholderName')}
         autoComplete="name"
+        textContentType="name"
         autoCapitalize="words"
         label={resolvedLabel}
         placeholder={resolvedPlaceholder}

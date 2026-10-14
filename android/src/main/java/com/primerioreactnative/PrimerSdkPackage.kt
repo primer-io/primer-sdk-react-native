@@ -3,6 +3,7 @@ package com.primerioreactnative
 import com.facebook.react.BaseReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.common.assets.ReactFontManager
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.module.annotations.ReactModuleList
 import com.facebook.react.module.model.ReactModuleInfo
@@ -50,8 +51,18 @@ class PrimerSdkPackage : BaseReactPackage() {
         PrimerViewUtilsModule::class.java,
     )
 
-    override fun getModule(name: String, reactContext: ReactApplicationContext): NativeModule? =
-        when (name) {
+    private var fontRegistered = false
+
+    // A custom font is looked up before the system one, so registering once here is enough.
+    private fun registerFont(reactContext: ReactApplicationContext) {
+        if (fontRegistered) return
+        fontRegistered = true
+        ReactFontManager.getInstance().addCustomFont(reactContext, INTER_FONT_FAMILY, R.font.primer_inter)
+    }
+
+    override fun getModule(name: String, reactContext: ReactApplicationContext): NativeModule? {
+        registerFont(reactContext)
+        return when (name) {
             DefaultNativePrimerModule.NAME -> NativePrimerModule(reactContext, json)
             PrimerRNHeadlessUniversalCheckout.NAME -> PrimerRNHeadlessUniversalCheckout(reactContext, json)
             PrimerRNHeadlessUniversalCheckoutRawManager.NAME -> PrimerRNHeadlessUniversalCheckoutRawManager(
@@ -89,6 +100,7 @@ class PrimerSdkPackage : BaseReactPackage() {
             PrimerViewUtilsModule.NAME -> PrimerViewUtilsModule(reactContext)
             else -> null
         }
+    }
 
     override fun getReactModuleInfoProvider() = ReactModuleInfoProvider {
         val moduleList = newArchModules + oldArchModules
@@ -111,9 +123,14 @@ class PrimerSdkPackage : BaseReactPackage() {
     }
 
     override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
+        registerFont(reactContext)
         return mutableListOf(
             PrimerKlarnaPaymentViewManager(),
             PrimerGooglePayButtonManager(),
         )
+    }
+
+    private companion object {
+        const val INTER_FONT_FAMILY = "Inter"
     }
 }
