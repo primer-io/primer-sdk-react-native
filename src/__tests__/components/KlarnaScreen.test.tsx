@@ -275,3 +275,39 @@ describe('KlarnaScreen — option list', () => {
     expect(button().props.loading).toBe(true);
   });
 });
+
+describe('KlarnaScreen — Continue button', () => {
+  it('is named by its title, with no hint, once the chosen option is ready', () => {
+    const { button, reportHeight } = render({ selectedCategoryId: 'pay_later', isViewLoaded: true });
+    reportHeight(53);
+
+    expect(button().props.title).toBe('primer_klarna_button_authorize');
+    expect(button().props.loading).toBe(false);
+    expect(button().props.accessibilityLabel).toBeUndefined();
+    expect(button().props.accessibilityHint).toBeUndefined();
+  });
+
+  it('gets the disabled hint before an option is chosen', () => {
+    const { button } = render();
+
+    expect(button().props.disabled).toBe(true);
+    expect(button().props.loading).toBe(false);
+    expect(button().props.accessibilityHint).toBe('accessibility_card_form_submit_disabled');
+  });
+
+  it('keeps the disabled hint while the chosen option loads, since the spinner is in the row', () => {
+    const { button } = render({ selectedCategoryId: 'pay_later', isViewLoaded: true });
+
+    expect(button().props.disabled).toBe(true);
+    expect(button().props.loading).toBe(false);
+    expect(button().props.accessibilityHint).toBe('accessibility_card_form_submit_disabled');
+  });
+
+  it('reads processing as its value while it pays', () => {
+    const { button } = render({ selectedCategoryId: 'pay_later', isViewLoaded: true, isLoading: true });
+
+    expect(button().props.loading).toBe(true);
+    expect(button().props.accessibilityHint).toBeUndefined();
+    expect(button().props.loadingAccessibilityValue).toBe('accessibility_card_form_submit_loading');
+  });
+});

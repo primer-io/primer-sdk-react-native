@@ -20,6 +20,7 @@ jest.mock(
 );
 
 jest.mock('../../Components/internal/theme', () => ({
+  usePrimerColorScheme: () => 'light',
   usePrimerTheme: () => ({
     colors: {
       backgroundPrimary: '#fff',

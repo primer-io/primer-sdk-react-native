@@ -128,6 +128,7 @@ export function RawDataFormScreen() {
           onPress={handleSubmit}
           variant="primary"
           disabled={!isValid}
+          accessibilityHint={isValid ? undefined : t('accessibility_card_form_submit_disabled')}
         />
       </View>
     </View>

@@ -28,6 +28,17 @@ describe('PrimerTextInput resolveTheme', () => {
     expect(r.errorFontSize).toBe(9);
   });
 
+  it('builds the field height from the spacing and body line height tokens', () => {
+    expect(resolveTheme(defaultLightTokens).fieldHeight).toBe(44);
+
+    const roomy = { ...defaultLightTokens, spacing: { ...defaultLightTokens.spacing, medium: 16 } };
+    expect(resolveTheme(roomy).fieldHeight).toBe(52);
+  });
+
+  it('lets a merchant fieldHeight win over the token-built one', () => {
+    expect(resolveTheme(defaultLightTokens, { fieldHeight: 56 }).fieldHeight).toBe(56);
+  });
+
   it('gives error and focus their own widths, both clamped to at least the resting width', () => {
     const r = resolveTheme(defaultLightTokens, { borderWidth: 5 });
 

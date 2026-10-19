@@ -133,14 +133,8 @@ export function CardFormScreen() {
           variant="primary"
           loading={locked}
           disabled={!canSubmit}
-          accessibilityLabel={t('accessibility_card_form_submit_label')}
-          accessibilityHint={
-            locked
-              ? t('accessibility_card_form_submit_loading')
-              : canSubmit
-                ? t('accessibility_card_form_submit_hint')
-                : t('accessibility_card_form_submit_disabled')
-          }
+          accessibilityHint={locked || canSubmit ? undefined : t('accessibility_card_form_submit_disabled')}
+          loadingAccessibilityValue={t('accessibility_card_form_submit_loading')}
           testID="primer-card-form-submit"
         />
       </View>

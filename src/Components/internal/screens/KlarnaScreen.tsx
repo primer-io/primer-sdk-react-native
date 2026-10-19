@@ -229,8 +229,10 @@ export function KlarnaScreen() {
                 variant="primary"
                 loading={isLoading}
                 disabled={!isOptionReady}
-                accessibilityLabel={t('accessibility_payment_selection_pay_with_klarna')}
-                accessibilityHint={t('accessibility_klarna_authorize_hint')}
+                accessibilityHint={
+                  isLoading || isOptionReady ? undefined : t('accessibility_card_form_submit_disabled')
+                }
+                loadingAccessibilityValue={t('accessibility_card_form_submit_loading')}
               />
             </View>
           )}

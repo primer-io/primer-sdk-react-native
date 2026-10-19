@@ -1,4 +1,4 @@
-import { resolveTypography } from '../typography';
+import { INTER_FONT_FAMILY, resolveTypography } from '../typography';
 import type { PrimerTokens } from '../types';
 
 // Values derived from iOS dark.json (Style Dictionary generated, dark theme).
@@ -50,7 +50,7 @@ export const defaultDarkTokens: PrimerTokens = {
   },
   // Each style's font comes from the brand font above unless it names its own.
   typography: resolveTypography({
-    fontFamily: 'Inter',
+    fontFamily: INTER_FONT_FAMILY,
     titleXlarge: {
       fontSize: 24,
       fontWeight: '500',

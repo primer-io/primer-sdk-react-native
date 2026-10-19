@@ -49,7 +49,7 @@ describe('accessibility string localization', () => {
     'accessibility_card_form_expiry_label',
     'accessibility_card_form_cvc_label',
     'accessibility_card_form_cardholder_name_label',
-    'accessibility_card_form_submit_label',
+    'accessibility_card_form_submit_disabled',
     'accessibility_common_close',
   ] as const;
 

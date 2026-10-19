@@ -1,4 +1,5 @@
 import { mergeTokens } from '../../../Components/internal/theme/merge';
+import { INTER_FONT_FAMILY } from '../../../Components/internal/theme/typography';
 import { defaultDarkTokens, defaultLightTokens } from '../../../Components/internal/theme/tokens';
 import type { PrimerTypographyStyle } from '../../../Components/internal/theme/types';
 
@@ -87,7 +88,7 @@ describe('mergeTokens', () => {
     expect(Object.keys(base.colors).filter((name) => palette.test(name))).toEqual([]);
   });
 
-  it('exposes size tokens so field height is themable', () => {
+  it('exposes size tokens and merges a partial override', () => {
     expect(base.sizes).toEqual({ small: 16, medium: 20, large: 24, xlarge: 32, xxlarge: 40, xxxlarge: 56 });
 
     const result = mergeTokens(base, { sizes: { xxlarge: 60 } });
@@ -187,9 +188,9 @@ describe('brand font', () => {
 
   it('leaves every style on Inter when nothing is set', () => {
     for (const tokens of [defaultLightTokens, defaultDarkTokens]) {
-      expect(tokens.typography.fontFamily).toBe('Inter');
+      expect(tokens.typography.fontFamily).toBe(INTER_FONT_FAMILY);
       for (const style of STYLES) {
-        expect(tokens.typography[style].fontFamily).toBe('Inter');
+        expect(tokens.typography[style].fontFamily).toBe(INTER_FONT_FAMILY);
       }
     }
 
@@ -249,7 +250,7 @@ describe('brand font', () => {
   it('gives a style set without a font the default font when the brand font is not set', () => {
     const result = mergeTokens(base, { typography: { bodyLarge: withoutFont(base.typography.bodyLarge) } });
 
-    expect(result.typography.bodyLarge.fontFamily).toBe('Inter');
+    expect(result.typography.bodyLarge.fontFamily).toBe(INTER_FONT_FAMILY);
   });
 });
 
@@ -291,5 +292,80 @@ describe('error typography follows bodySmall', () => {
     const result = mergeTokens(base, { colors: { brand: '#ff0000' } });
 
     expect(result.typography.error).toEqual(base.typography.error);
+  });
+});
+
+describe('non-finite theme numbers', () => {
+  const WARNING = '[PrimerCheckoutTheme] A NaN or infinite theme number is ignored.';
+  const BAD_VALUES = [NaN, Infinity, -Infinity];
+  let warn: jest.SpyInstance;
+
+  beforeEach(() => {
+    warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    warn.mockRestore();
+  });
+
+  const poison = (tokens: object, bad: number) => Object.fromEntries(Object.keys(tokens).map((key) => [key, bad]));
+
+  it.each(BAD_VALUES)('ignores %p in spacing, radii, sizes and widths and keeps the defaults', (bad) => {
+    const result = mergeTokens(base, {
+      spacing: poison(base.spacing, bad),
+      radii: poison(base.radii, bad),
+      sizes: poison(base.sizes, bad),
+      widths: poison(base.widths, bad),
+    });
+
+    expect(result.spacing).toEqual(base.spacing);
+    expect(result.radii).toEqual(base.radii);
+    expect(result.sizes).toEqual(base.sizes);
+    expect(result.widths).toEqual(base.widths);
+    expect(warn).toHaveBeenCalledTimes(1);
+    expect(warn).toHaveBeenCalledWith(WARNING);
+  });
+
+  it.each(BAD_VALUES)('ignores %p in typography numbers and keeps the defaults', (bad) => {
+    const style = { fontSize: bad, lineHeight: bad, letterSpacing: bad };
+    const result = mergeTokens(base, {
+      typography: {
+        titleXlarge: style,
+        titleLarge: style,
+        bodyLarge: style,
+        bodyMedium: style,
+        bodySmall: style,
+        error: style,
+      },
+    });
+
+    expect(result.typography).toEqual(base.typography);
+    expect(warn).toHaveBeenCalledTimes(1);
+    expect(warn).toHaveBeenCalledWith(WARNING);
+  });
+
+  it('keeps the finite values set next to a bad one', () => {
+    const result = mergeTokens(base, { spacing: { small: NaN, large: 24 } });
+
+    expect(result.spacing.small).toBe(base.spacing.small);
+    expect(result.spacing.large).toBe(24);
+  });
+
+  it('warns once per merge even when every category carries a bad number', () => {
+    mergeTokens(base, {
+      spacing: { small: NaN },
+      radii: { small: Infinity },
+      sizes: { small: -Infinity },
+      widths: { focus: NaN },
+      typography: { bodyLarge: { fontSize: NaN } },
+    });
+
+    expect(warn).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not warn for finite numbers or colours', () => {
+    mergeTokens(base, { spacing: { small: 0 }, colors: { brand: '#ff0000' } });
+
+    expect(warn).not.toHaveBeenCalled();
   });
 });

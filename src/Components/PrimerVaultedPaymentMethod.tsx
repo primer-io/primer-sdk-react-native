@@ -110,7 +110,12 @@ export function PrimerVaultedPaymentMethod({ data, onPay, style }: PrimerVaulted
   return (
     <View style={[styles.outer, style]}>
       <View style={styles.tile}>
-        <View style={styles.row} accessible accessibilityLabel={display.accessibilityLabel}>
+        <View
+          style={styles.row}
+          accessible
+          accessibilityLabel={display.accessibilityLabel}
+          accessibilityState={{ selected: true }}
+        >
           <View style={styles.leftCol}>
             {display.title != null && (
               <Text style={styles.primaryText} numberOfLines={1}>
@@ -148,6 +153,7 @@ export function PrimerVaultedPaymentMethod({ data, onPay, style }: PrimerVaulted
         variant="primary"
         onPress={handlePress}
         disabled={!isCvvComplete}
+        accessibilityHint={isCvvComplete ? undefined : t('accessibility_card_form_submit_disabled')}
       />
     </View>
   );

@@ -6,6 +6,7 @@ import { createElement } from 'react';
 import renderer, { act } from 'react-test-renderer';
 
 jest.mock('../../Components/internal/theme', () => ({
+  usePrimerColorScheme: () => 'light',
   usePrimerTheme: () => ({
     colors: {
       backgroundOutlinedDefault: '#fdfdfd',
