@@ -284,7 +284,7 @@ function createStyles(tokens: PrimerTokens) {
     footer: {
       backgroundColor: colors.backgroundPrimary,
       paddingHorizontal: spacing.large,
-      paddingTop: spacing.small,
+      paddingTop: spacing.large,
     },
     klarnaView: {
       width: '100%',
