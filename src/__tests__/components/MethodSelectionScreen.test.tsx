@@ -14,6 +14,8 @@ jest.mock(
     TouchableOpacity: 'TouchableOpacity',
     View: 'View',
     Platform: { OS: 'ios', select: (o: any) => o.ios ?? o.default },
+    ScrollView: 'ScrollView',
+    useWindowDimensions: () => ({ width: 400, height: 800 }),
   }),
   { virtual: true }
 );
