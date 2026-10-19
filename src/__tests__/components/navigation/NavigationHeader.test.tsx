@@ -53,7 +53,7 @@ describe('NavigationHeader — title placement', () => {
     const title = renderTitle({ showBackButton: true });
 
     expect(flatten(title.props.style).fontSize).toBe(24);
-    expect(ancestors(title).some((view) => view.style.height === BACK_ROW_HEIGHT)).toBe(false);
+    expect(ancestors(title).some((view) => view.style.minHeight === BACK_ROW_HEIGHT)).toBe(false);
   });
 
   it.each([
@@ -66,6 +66,6 @@ describe('NavigationHeader — title placement', () => {
     expect(flatten(title.props.style).fontSize).toBe(16);
     expect(title.props.numberOfLines).toBe(1);
     expect(box).toMatchObject({ pointerEvents: 'none', style: { alignItems: 'center', justifyContent: 'center' } });
-    expect(row?.style.height).toBe(BACK_ROW_HEIGHT);
+    expect(row?.style.minHeight).toBe(BACK_ROW_HEIGHT);
   });
 });

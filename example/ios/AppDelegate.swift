@@ -5,6 +5,8 @@ import ReactAppDependencyProvider
 
 @main
 final class AppDelegate: UIResponder, UIApplicationDelegate {
+  // React Native still reads the app delegate's window (LogBox); without it, it crashes.
+  var window: UIWindow?
   var reactNativeDelegate: ReactNativeDelegate?
   var reactNativeFactory: RCTReactNativeFactory?
 
@@ -38,6 +40,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     let window = UIWindow(windowScene: windowScene)
     self.window = window
+    appDelegate.window = window
 
     factory.startReactNative(
       withModuleName: "example",

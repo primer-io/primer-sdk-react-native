@@ -195,7 +195,7 @@ function createStyles(tokens: PrimerTokens) {
     headerBar: {
       alignItems: 'center',
       flexDirection: 'row',
-      height: spacing.xxlarge,
+      minHeight: spacing.xxlarge,
     },
     singleRow: {
       alignItems: 'flex-start',

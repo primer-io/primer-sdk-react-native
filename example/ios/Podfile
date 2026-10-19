@@ -60,6 +60,18 @@ target 'example_0_70_6' do
 
     fix_code_signing(installer)
 
+    # Xcode 27 needs iOS 15+; RN's post_install misses resource bundles (PrimerResources is 13.0).
+    installer.generated_projects.each do |project|
+      project.targets.each do |target|
+        target.build_configurations.each do |config|
+          deployment_target = config.build_settings['IPHONEOS_DEPLOYMENT_TARGET']
+          if deployment_target && Gem::Version.new(deployment_target) < Gem::Version.new('15.1')
+            config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.1'
+          end
+        end
+      end
+    end
+
     installer.pods_project.targets.each do |target|
       if target.name == "primer-io-react-native" || target.name == "PrimerSDK"
         target.build_configurations.each do |config|

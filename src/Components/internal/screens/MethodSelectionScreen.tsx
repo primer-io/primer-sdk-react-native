@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 
 import { PrimerError } from '../../../models/PrimerError';
 import { PrimerAnalytics } from '../../analytics';
@@ -31,6 +31,9 @@ const LOG = '[MethodSelectionScreen]';
 // Inner vault tile content height (cardholder line + brand row + inner gap).
 // Outer grey padding + tile padding are added into sheetHeight separately below.
 const VAULT_TILE_CONTENT_HEIGHT = 44;
+
+// Matches CheckoutSheet's DEFAULT_HEIGHT_RATIO: the sheet never exceeds 92% of the screen.
+const MAX_SHEET_HEIGHT_RATIO = 0.92;
 
 const CHEVRON_ICON_SIZE = 20;
 const chevronDownIcon = require('./assets/chevron-down.png');
@@ -109,17 +112,18 @@ export function MethodSelectionScreen() {
   // Extra breathing room above the keyboard when CVV is open, so the input isn't flush
   // against the keyboard's top edge.
   const cvvBreathingRoom = cvvInputVisible ? tokens.spacing.xlarge : 0;
-  const sheetHeight =
-    tokens.spacing.large +
-    headerArea +
-    tokens.spacing.xxlarge +
-    vaultSectionHeight +
-    apmSectionHeight +
-    bottomInset +
-    tokens.spacing.xlarge +
-    keyboardSheetGrowth +
-    cvvBreathingRoom;
-  useStatusScreenHeight(sheetHeight);
+  // Everything around the header and content: container paddingTop, bottom safe area,
+  // drag-handle area and the keyboard growth.
+  const sheetChrome =
+    tokens.spacing.large + bottomInset + tokens.spacing.xlarge + keyboardSheetGrowth + cvvBreathingRoom;
+  const sheetHeight = sheetChrome + headerArea + tokens.spacing.xxlarge + vaultSectionHeight + apmSectionHeight;
+  // Large system text makes the real header and list taller than the estimate: the sheet then
+  // grows to fit them, up to the cap, and the list scrolls past it.
+  const { height: screenHeight } = useWindowDimensions();
+  const [headerHeight, setHeaderHeight] = useState(0);
+  const [contentHeight, setContentHeight] = useState(0);
+  const measuredSheetHeight = sheetChrome + headerHeight + contentHeight;
+  useStatusScreenHeight(Math.max(sheetHeight, Math.min(measuredSheetHeight, screenHeight * MAX_SHEET_HEIGHT_RATIO)));
 
   const handleSelect = (method: PaymentMethodItem) => {
     // Route through the shared classifier (the same map the hook uses), so a new kind can't be
@@ -187,8 +191,16 @@ export function MethodSelectionScreen() {
 
   return (
     <View style={[styles.root, { paddingBottom: bottomInset }]}>
-      <NavigationHeader title={title} rightAction={{ label: t('primer_common_button_cancel'), onPress: onCancel }} />
-      <View style={styles.content}>
+      <View onLayout={(e) => setHeaderHeight(e.nativeEvent.layout.height)}>
+        <NavigationHeader title={title} rightAction={{ label: t('primer_common_button_cancel'), onPress: onCancel }} />
+      </View>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        alwaysBounceVertical={false}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+        onContentSizeChange={(_, h) => setContentHeight(h)}
+      >
         {activeVaultedMethod != null && (
           <View style={styles.section}>
             <View style={styles.sectionHeaderRow}>
@@ -224,7 +236,7 @@ export function MethodSelectionScreen() {
             <PrimerPaymentMethodList data={paymentMethods} onSelect={handleSelect} />
           </View>
         )}
-      </View>
+      </ScrollView>
     </View>
   );
 }
