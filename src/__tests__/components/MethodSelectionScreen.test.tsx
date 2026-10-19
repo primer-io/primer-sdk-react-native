@@ -174,21 +174,22 @@ describe('MethodSelectionScreen — sheet height', () => {
     mockPaymentMethods = [];
   });
 
-  it('sizes the sheet from the measured list once it has laid out, so taller buttons fit', () => {
+  it('grows the sheet with the measured content so taller buttons fit, up to 92% of the screen', () => {
     let tree: any;
     act(() => {
       tree = renderer.create(createElement(MethodSelectionScreen));
     });
-    const estimated = mockHeights[mockHeights.length - 1] ?? NaN;
-    const wrapper = tree.root.find(
-      (node: any) => node.type === 'View' && node.props.collapsable === false && node.props.onLayout != null
-    );
+    const lastHeight = () => mockHeights[mockHeights.length - 1] ?? NaN;
+    const reportContentHeight = (height: number) =>
+      act(() => tree.root.findByType('ScrollView').props.onContentSizeChange(0, height));
 
-    act(() => {
-      wrapper.props.onLayout({ nativeEvent: { layout: { height: 300 } } });
-    });
+    reportContentHeight(400);
+    const at400 = lastHeight();
+    reportContentHeight(500);
+    expect(lastHeight() - at400).toBe(100);
 
-    // The estimate is two buttons of the mocked 56 plus one gap of spacing.small (8).
-    expect((mockHeights[mockHeights.length - 1] ?? NaN) - estimated).toBe(300 - (2 * 56 + 8));
+    // The mocked window is 800 tall.
+    reportContentHeight(5000);
+    expect(lastHeight()).toBe(800 * 0.92);
   });
 });
