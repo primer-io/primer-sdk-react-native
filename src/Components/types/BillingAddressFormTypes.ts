@@ -74,4 +74,6 @@ export interface PrimerBillingAddressFormProps {
   style?: StyleProp<ViewStyle>;
   /** Test ID root for the form. Nested elements derive suffixed IDs. */
   testID?: string;
+  /** Whether the fields accept input. Pass false while a payment is running. */
+  editable?: boolean;
 }

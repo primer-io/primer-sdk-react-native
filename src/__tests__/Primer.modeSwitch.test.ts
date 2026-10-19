@@ -190,7 +190,7 @@ describe('Primer mode switch — ESC-852', () => {
     expect(dropInModule.dismiss).toHaveBeenCalledTimes(1);
   });
 
-  it('Primer.dismiss drains both mode subscription arrays', async () => {
+  it('Primer.dismiss closes checkout and leaves the next show to drain', async () => {
     await PrimerHeadlessUniversalCheckout.startWithClientToken('tok-h', {
       headlessUniversalCheckoutCallbacks: { onError: jest.fn() },
     } as any);
@@ -199,9 +199,12 @@ describe('Primer mode switch — ESC-852', () => {
 
     Primer.dismiss();
 
-    expect(dropInEmitter()._subs.length).toBe(0);
-    expect(headlessEmitter()._subs.length).toBe(0);
     expect(dropInModule.dismiss).toHaveBeenCalledTimes(1);
+
+    await Primer.showUniversalCheckout('tok-d2');
+
+    expect(headlessEmitter()._subs.length).toBe(0);
+    expect(dropInEmitter()._subs.filter((s) => s.eventType === 'onError')).toHaveLength(1);
   });
 
   it('HeadlessUniversalCheckout.cleanUp drains headless subscriptions and calls native cleanUp', async () => {

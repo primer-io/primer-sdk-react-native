@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View, type TextStyle } from 'react-native';
 import { usePrimerTheme } from './theme';
 import { getNetworkAbbreviation } from './cardNetwork';
 import { PLACEHOLDER_ICON_HEIGHT, PLACEHOLDER_ICON_WIDTH } from '../inputs/dimensions';
@@ -63,11 +63,7 @@ export function CardNetworkBadge({ identifier, testID, marginLeft }: CardNetwork
     return (
       <Image
         source={{ uri }}
-        style={[
-          styles.chipImage,
-          baseStyle,
-          { backgroundColor: tokens.colors.surface, borderRadius: tokens.radii.xsmall },
-        ]}
+        style={[styles.chipImage, baseStyle, { borderRadius: tokens.radii.xsmall }]}
         resizeMode="contain"
         testID={testID}
       />
@@ -81,10 +77,9 @@ export function CardNetworkBadge({ identifier, testID, marginLeft }: CardNetwork
           styles.chip,
           baseStyle,
           {
-            backgroundColor: tokens.colors.surface,
-            borderColor: tokens.colors.border,
+            borderColor: tokens.colors.borderOutlinedDefault,
             borderRadius: tokens.radii.xsmall,
-            borderWidth: tokens.borders.input,
+            borderWidth: tokens.widths.default,
           },
         ]}
         testID={testID}
@@ -92,8 +87,11 @@ export function CardNetworkBadge({ identifier, testID, marginLeft }: CardNetwork
         <Text
           style={{
             color: tokens.colors.textPrimary,
-            fontFamily: tokens.typography.fontFamily,
+            fontFamily: tokens.typography.bodySmall.fontFamily,
             fontSize: tokens.typography.bodySmall.fontSize,
+            fontWeight: tokens.typography.bodySmall.fontWeight as TextStyle['fontWeight'],
+            letterSpacing: tokens.typography.bodySmall.letterSpacing,
+            lineHeight: tokens.typography.bodySmall.lineHeight,
           }}
         >
           {abbreviation}

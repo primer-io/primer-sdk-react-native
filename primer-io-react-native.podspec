@@ -15,6 +15,7 @@ Pod::Spec.new do |s|
 
   s.source_files = "ios/**/*.{h,m,mm,swift}"
   s.private_header_files = ['ios/PrimerSwiftInterop.h' ]
+  s.resources = ["ios/Fonts/PrimerInterVariable.ttf"]
 
   s.dependency "React-Core"
   s.dependency "PrimerSDK", "3.0.0-beta.4"
