@@ -12,8 +12,11 @@ export type PrimerCheckoutDataPayment = IPrimerCheckoutDataPayment;
 interface IPrimerCheckoutDataPayment {
   id?: string;
   orderId?: string;
+  status?: PrimerPaymentStatus;
   paymentFailureReason?: PrimerPaymentErrorCode;
 }
+
+export type PrimerPaymentStatus = 'SUCCESS' | 'FAILED' | 'PENDING';
 
 enum PrimerPaymentErrorCode {
   FAILED = 'payment-failed',

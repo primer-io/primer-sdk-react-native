@@ -233,6 +233,51 @@ const RNPrimer = {
       }
     });
   },
+
+  // ANALYTICS BRIDGE
+  setupAnalyticsLoggingBridge: (clientToken: string): Promise<void> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        await NativePrimer.setupAnalyticsLoggingBridge(clientToken);
+        resolve();
+      } catch (err) {
+        reject(err);
+      }
+    });
+  },
+
+  trackAnalyticsEvent: (eventName: string, metadata?: string): Promise<void> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        await NativePrimer.trackAnalyticsEvent(eventName, metadata);
+        resolve();
+      } catch (err) {
+        reject(err);
+      }
+    });
+  },
+
+  sendLog: (message: string, event: string, initDurationMs?: number): Promise<void> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        await NativePrimer.sendLog(message, event, initDurationMs);
+        resolve();
+      } catch (err) {
+        reject(err);
+      }
+    });
+  },
+
+  sendErrorLog: (message: string, event?: string, errorMessage?: string, stack?: string): Promise<void> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        await NativePrimer.sendErrorLog(message, event, errorMessage, stack);
+        resolve();
+      } catch (err) {
+        reject(err);
+      }
+    });
+  },
 };
 
 export default RNPrimer;

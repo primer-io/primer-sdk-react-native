@@ -1,5 +1,6 @@
 package com.primerioreactnative.components.manager.klarna
 
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import com.facebook.react.uimanager.SimpleViewManager
@@ -18,8 +19,12 @@ class PrimerKlarnaPaymentViewManager : SimpleViewManager<NativeViewContainer>() 
 
     override fun onAfterUpdateTransaction(view: NativeViewContainer) {
         super.onAfterUpdateTransaction(view)
+        val klarnaView = getPrimerKlarnaPaymentViewOrNull()
+        if (klarnaView == null) {
+            Log.w(REACT_CLASS, "Klarna payment view unavailable; rendering fallback")
+        }
         view.addViewImpl(
-            getPrimerKlarnaPaymentViewOrNull()
+            klarnaView
                 ?: TextView(view.context).apply { text = "Error loading Klarna payment view" },
         )
     }

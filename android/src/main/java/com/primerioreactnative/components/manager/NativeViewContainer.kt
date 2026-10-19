@@ -2,11 +2,14 @@ package com.primerioreactnative.components.manager
 
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.facebook.react.uimanager.ThemedReactContext
 
 class NativeViewContainer(private val context: ThemedReactContext) : FrameLayout(context) {
     fun addViewImpl(view: View) {
+        // Shared native view: detach from any previous container or addView throws "child already has a parent".
+        (view.parent as? ViewGroup)?.removeView(view)
         addView(view)
         view.setOnClickListener {
             (this.parent as? View)?.performClick()

@@ -22,4 +22,6 @@ RCT_EXTERN_METHOD(startPaymentFlow:(NSString *)vaultedPaymentMethodId resolver:(
 
 RCT_EXTERN_METHOD(startPaymentFlowWithAdditionalData:(NSString *)vaultedPaymentMethodId additionalDataStr:(NSString *)additionalDataStr resolver:(RCTPromiseResolveBlock)resolver rejecter:(RCTPromiseRejectBlock)rejecter)
 
+RCT_EXTERN_METHOD(requiresVaultedCardCvv:(RCTPromiseResolveBlock)resolver rejecter:(RCTPromiseRejectBlock)rejecter)
+
 @end

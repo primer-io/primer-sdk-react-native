@@ -1,5 +1,14 @@
+export type PrimerPaymentMethodManagerCategoryName =
+  | 'NATIVE_UI'
+  | 'RAW_DATA'
+  | 'CARD_COMPONENTS'
+  | 'COMPONENT_WITH_REDIRECT'
+  | 'KLARNA'
+  | 'STRIPE_ACH';
+export type PrimerSessionIntentName = 'CHECKOUT' | 'VAULT';
+
 export interface IPrimerHeadlessUniversalCheckoutPaymentMethod {
   paymentMethodType: string;
-  paymentMethodManagerCategories: ('NATIVE_UI' | 'RAW_DATA' | 'CARD_COMPONENTS')[];
-  supportedPrimerSessionIntents: ('CHECKOUT' | 'VAULT')[];
+  paymentMethodManagerCategories: PrimerPaymentMethodManagerCategoryName[];
+  supportedPrimerSessionIntents: PrimerSessionIntentName[];
 }

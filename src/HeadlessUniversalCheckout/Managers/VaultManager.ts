@@ -96,6 +96,18 @@ class PrimerHeadlessUniversalCheckoutVaultManager {
       }
     });
   }
+
+  async requiresVaultedCardCvv(): Promise<boolean> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const value: boolean = await RNPrimerHeadlessUniversalCheckoutVaultManager.requiresVaultedCardCvv();
+        resolve(value);
+      } catch (err) {
+        console.error(err);
+        reject(err);
+      }
+    });
+  }
 }
 
 // Convert accountNumberLastFourDigits to accountNumberLast4Digits when present

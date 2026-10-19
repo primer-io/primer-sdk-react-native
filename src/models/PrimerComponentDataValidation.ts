@@ -1,5 +1,4 @@
 import type { NamedComponentValidatableData } from './NamedComponentValidatableData';
-import { PrimerError } from './PrimerError';
 import type { PrimerValidationError } from './PrimerValidationError';
 
 export type PrimerValidatingComponentData<T extends NamedComponentValidatableData> = IPrimerValidatingComponentData<T>;
@@ -54,7 +53,8 @@ interface IPrimerComponentDataValidationError<T extends NamedComponentValidatabl
   data: T;
 
   /**
-   * The PrimerError that ocurred during the validation attempt.
+   * A list of PrimerValidationError describing what went wrong during the
+   * validation attempt. Native delivers these as an `errors` array.
    */
-  error: PrimerError;
+  errors: PrimerValidationError[];
 }

@@ -26,11 +26,19 @@ extension PrimerCardData {
                let cvv = dict["cvv"],
                let expiryDate = dict["expiryDate"] {
                 let cardholderName = dict["cardholderName"]
+                // Optional co-badge pick from JS; unknown identifiers are ignored.
+                var cardNetwork: CardNetwork?
+                if let networkIdentifier = dict["cardNetwork"],
+                   let network = CardNetwork(rawValue: networkIdentifier),
+                   network != .unknown {
+                    cardNetwork = network
+                }
                 self.init(
                     cardNumber: cardNumber,
                     expiryDate: expiryDate,
                     cvv: cvv,
-                    cardholderName: cardholderName)
+                    cardholderName: cardholderName,
+                    cardNetwork: cardNetwork)
             } else {
                 return nil
             }
