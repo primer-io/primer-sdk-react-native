@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import type { ListRenderItemInfo, TextStyle } from 'react-native';
 import { usePrimerTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
@@ -16,6 +16,7 @@ import { COUNTRIES, getLocalizedCountryName, type CountryCode } from '../countri
 import { flagEmoji } from '../flags';
 
 const ROW_HEIGHT = 44;
+const MAX_SCROLL_RETRIES = 10;
 const SEARCH_ICON_SIZE = 20;
 
 const searchIcon = require('./assets/search.png');
@@ -111,9 +112,7 @@ export function CountrySelectorScreen() {
           <Text style={styles.flag} accessibilityElementsHidden>
             {flagEmoji(item.code)}
           </Text>
-          <Text style={styles.rowLabel} numberOfLines={1}>
-            {item.name}
-          </Text>
+          <Text style={styles.rowLabel}>{item.name}</Text>
           {isSelected && (
             <Text style={styles.check} accessibilityElementsHidden>
               ✓
@@ -125,12 +124,27 @@ export function CountrySelectorScreen() {
     [handleSelect, initialSelected, styles, t]
   );
 
-  const getItemLayout = useCallback(
-    (_: ArrayLike<CountryListItem> | null | undefined, index: number) => ({
-      length: ROW_HEIGHT,
-      offset: ROW_HEIGHT * index,
-      index,
-    }),
+  // Long names wrap at large text sizes, so rows differ in height and the selected country can't
+  // be placed from a fixed row height. The list first draws every row up to it and a screen of rows
+  // past it, so that it can scroll that far, and once it has content we scroll there: if its row is
+  // not measured yet, FlatList calls back, and we jump near it by the average row height and try
+  // again on the next frame.
+  const { height: screenHeight } = useWindowDimensions();
+  const hasScrolledToSelectedRef = useRef(false);
+  const scrollRetriesRef = useRef(0);
+  const handleContentSizeChange = useCallback(() => {
+    if (hasScrolledToSelectedRef.current) return;
+    hasScrolledToSelectedRef.current = true;
+    if (initialScrollIndex > 0) listRef.current?.scrollToIndex({ index: initialScrollIndex, animated: false });
+  }, [initialScrollIndex]);
+
+  const handleScrollToIndexFailed = useCallback(
+    ({ index, averageItemLength }: { index: number; averageItemLength: number }) => {
+      listRef.current?.scrollToOffset({ offset: index * averageItemLength, animated: false });
+      if (scrollRetriesRef.current >= MAX_SCROLL_RETRIES) return;
+      scrollRetriesRef.current += 1;
+      requestAnimationFrame(() => listRef.current?.scrollToIndex({ index, animated: false }));
+    },
     []
   );
 
@@ -193,8 +207,9 @@ export function CountrySelectorScreen() {
         data={filtered}
         keyExtractor={keyExtractor}
         renderItem={renderItem}
-        getItemLayout={getItemLayout}
-        initialScrollIndex={initialScrollIndex}
+        initialNumToRender={initialScrollIndex + Math.ceil(screenHeight / ROW_HEIGHT)}
+        onContentSizeChange={handleContentSizeChange}
+        onScrollToIndexFailed={handleScrollToIndexFailed}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
         automaticallyAdjustKeyboardInsets
@@ -246,8 +261,9 @@ function createStyles(tokens: PrimerTokens) {
       alignItems: 'center',
       borderRadius: radii.small,
       flexDirection: 'row',
-      height: ROW_HEIGHT,
+      minHeight: ROW_HEIGHT,
       paddingHorizontal: spacing.medium,
+      paddingVertical: spacing.small,
     },
     rowLabel: {
       color: colors.textPrimary,
