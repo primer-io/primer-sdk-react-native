@@ -8,7 +8,7 @@ export interface CheckoutSheetProps {
   onDismiss?: () => void;
 
   /**
-   * Called when the user requests dismissal (backdrop tap, Android back at root).
+   * Called when the user requests dismissal (backdrop tap, or Android back on a screen without a Back button).
    * The parent must set `visible` to false in response.
    */
   onRequestDismiss?: () => void;
