@@ -121,10 +121,12 @@ repositories {
 }
 
 dependencies {
-  implementation "io.primer:3ds-android:1.8.0"
-  implementation "io.primer:ipay88-my-android:1.0.3"
-  implementation "io.primer:klarna-android:1.3.0"
-  implementation "io.primer:stripe-android:1.1.2"
+  // Optional Primer modules. No versions: @primer-io/react-native exports the Primer BOM as an enforced platform,
+  // so these resolve to the Android SDK version the RN SDK is built against.
+  implementation "io.primer:3ds-android"
+  implementation "io.primer:ipay88-my-android"
+  implementation "io.primer:klarna-android"
+  implementation "io.primer:stripe-android"
 
   // The version of react-native is set by the React Native Gradle Plugin
   implementation("com.facebook.react:react-android")

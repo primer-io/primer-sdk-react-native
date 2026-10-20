@@ -21,7 +21,7 @@ build-and-release:
     # Verify Android SDK version is published
     - |
       echo "Extracting Android Version from build.gradle..."
-      ANDROID_VERSION=`cat ./android/build.gradle  | grep -Po "implementation 'io.primer:android:\K[^']*"`
+      ANDROID_VERSION=`cat ./android/build.gradle  | grep -Po "def primerAndroidVersion = '\K[^']*"`
       echo "Android Version: $ANDROID_VERSION"
       echo "Checking that Android version $ANDROID_VERSION is available on maven..."
       ANDROID_VERSION_STATUS_CODE=`curl -o /dev/null -s -w "%{http_code}\n" "https://central.sonatype.com/artifact/io.primer/android/${ANDROID_VERSION}"`
