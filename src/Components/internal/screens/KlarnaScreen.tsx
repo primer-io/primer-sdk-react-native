@@ -301,7 +301,7 @@ function createStyles(tokens: PrimerTokens) {
     scrollContent: {
       gap: spacing.small,
       paddingHorizontal: spacing.large,
-      paddingTop: spacing.large,
+      paddingTop: spacing.xxlarge,
     },
     scrollView: {
       flex: 1,
