@@ -2,13 +2,13 @@ import type { IPrimerAsset } from '../../models/PrimerPaymentMethodResource';
 import type { PaymentMethodItem } from '../types/PaymentMethodTypes';
 
 /** The backend's three versions of a button's background and logo. */
-export type AssetVariant = 'colored' | 'light' | 'dark';
+type AssetVariant = 'colored' | 'light' | 'dark';
 
 /**
  * The coloured version in both modes; without it, the current mode's version, then the other
  * mode's. Null when there is none. The same rule as the native SDKs' list buttons.
  */
-export function pickVariant(asset: IPrimerAsset | undefined, isDark: boolean): AssetVariant | null {
+function pickVariant(asset: IPrimerAsset | undefined, isDark: boolean): AssetVariant | null {
   if (asset?.colored != null) return 'colored';
   const [current, other]: [AssetVariant, AssetVariant] = isDark ? ['dark', 'light'] : ['light', 'dark'];
   if (asset?.[current] != null) return current;

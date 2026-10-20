@@ -1,26 +1,6 @@
-import { partnerAssets, pickVariant } from '../../Components/internal/paymentMethodAssetVariant';
-import type { AssetVariant } from '../../Components/internal/paymentMethodAssetVariant';
+import { partnerAssets } from '../../Components/internal/paymentMethodAssetVariant';
 import type { PaymentMethodItem } from '../../Components/types/PaymentMethodTypes';
 import type { IPrimerAsset } from '../../models/PrimerPaymentMethodResource';
-
-describe('pickVariant', () => {
-  // The same cases as the Android SDK's PaymentMethodItemAssetTest.
-  it.each<[IPrimerAsset, boolean, AssetVariant | null]>([
-    [{ colored: 'c', light: 'l', dark: 'd' }, false, 'colored'],
-    [{ colored: 'c', light: 'l', dark: 'd' }, true, 'colored'],
-    [{ light: 'l', dark: 'd' }, false, 'light'],
-    [{ light: 'l', dark: 'd' }, true, 'dark'],
-    [{ dark: 'd' }, false, 'dark'],
-    [{ light: 'l' }, true, 'light'],
-    [{}, false, null],
-  ])('prefers coloured, then the mode, then the other mode: %j, dark %s → %s', (asset, isDark, expected) => {
-    expect(pickVariant(asset, isDark)).toBe(expected);
-  });
-
-  it('is null without an asset', () => {
-    expect(pickVariant(undefined, true)).toBeNull();
-  });
-});
 
 describe('partnerAssets', () => {
   const LOGOS = { colored: 'file:///colored.png', light: 'file:///light.png', dark: 'file:///dark.png' };
@@ -48,40 +28,45 @@ describe('partnerAssets', () => {
     };
   }
 
-  it('takes the coloured logo with the coloured background', () => {
-    expect(partnerAssets(itemWith(LOGOS, { colored: '#c', light: '#l', dark: '#d' }), true)).toEqual({
+  it.each([false, true])('takes the coloured logo with the coloured background (dark %s)', (isDark) => {
+    expect(partnerAssets(itemWith(LOGOS, { colored: '#c', light: '#l', dark: '#d' }), isDark)).toEqual({
       backgroundColor: '#c',
       logo: LOGOS.colored,
     });
   });
 
-  it.each([
-    [false, '#l', LOGOS.light],
-    [true, '#d', LOGOS.dark],
-  ])(
-    'puts the mode logo, not the coloured one, on a background with only light and dark (dark %s)',
-    (isDark, backgroundColor, logo) => {
-      expect(partnerAssets(itemWith(LOGOS, { light: '#l', dark: '#d' }), isDark)).toEqual({ backgroundColor, logo });
-    }
-  );
+  it('gives each mode its own background and logo when there is no coloured background', () => {
+    const item = itemWith(LOGOS, { light: '#l', dark: '#d' });
 
-  it.each([
-    [false, LOGOS.light],
-    [true, LOGOS.dark],
-  ])('falls back through pickVariant when the background version has no logo (dark %s)', (isDark, logo) => {
-    const lightAndDark = { light: LOGOS.light, dark: LOGOS.dark };
-    expect(partnerAssets(itemWith(lightAndDark, { colored: '#c' }), isDark)).toEqual({ backgroundColor: '#c', logo });
+    expect(partnerAssets(item, false)).toEqual({ backgroundColor: '#l', logo: LOGOS.light });
+    expect(partnerAssets(item, true)).toEqual({ backgroundColor: '#d', logo: LOGOS.dark });
   });
 
-  it.each([
-    [false, LOGOS.light],
-    [true, LOGOS.dark],
-  ])('uses the mode logo on the sheet colour when there is no background (dark %s)', (isDark, logo) => {
-    expect(partnerAssets(itemWith(LOGOS, {}), isDark)).toEqual({ backgroundColor: undefined, logo });
+  it('takes the other mode when the current one has no background', () => {
+    expect(partnerAssets(itemWith(LOGOS, { dark: '#d' }), false)).toEqual({ backgroundColor: '#d', logo: LOGOS.dark });
+    expect(partnerAssets(itemWith(LOGOS, { light: '#l' }), true)).toEqual({ backgroundColor: '#l', logo: LOGOS.light });
+  });
+
+  it('uses the mode logo on the sheet colour when there is no background', () => {
+    const item = itemWith(LOGOS, {});
+
+    expect(partnerAssets(item, false)).toEqual({ backgroundColor: undefined, logo: LOGOS.light });
+    expect(partnerAssets(item, true)).toEqual({ backgroundColor: undefined, logo: LOGOS.dark });
+  });
+
+  it('falls back to the mode logo when the background version has no logo', () => {
+    const item = itemWith({ light: LOGOS.light, dark: LOGOS.dark }, { colored: '#c' });
+
+    expect(partnerAssets(item, false)).toEqual({ backgroundColor: '#c', logo: LOGOS.light });
+    expect(partnerAssets(item, true)).toEqual({ backgroundColor: '#c', logo: LOGOS.dark });
   });
 
   it('still finds a logo when neither the background nor the mode has one', () => {
     expect(partnerAssets(itemWith({ colored: LOGOS.colored }, {}), false).logo).toBe(LOGOS.colored);
+  });
+
+  it('leaves the logo out when there is none', () => {
+    expect(partnerAssets(itemWith({}, { colored: '#c' }), false).logo).toBeUndefined();
   });
 
   it('keeps the item logo and background when there are no backend assets', () => {
