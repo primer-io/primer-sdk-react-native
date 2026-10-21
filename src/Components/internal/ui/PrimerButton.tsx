@@ -101,6 +101,7 @@ function createStyles(tokens: PrimerTokens) {
       backgroundColor: colors.backgroundPrimary,
       borderColor: colors.borderOutlinedDefault,
       borderWidth: widths.default,
+      padding: spacing.medium - widths.default,
     },
     outlinedText: {
       ...baseText,
