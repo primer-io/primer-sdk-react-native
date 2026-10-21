@@ -34,6 +34,14 @@ class PrimerGooglePayButtonManager : SimpleViewManager<NativeViewContainer>() {
         override fun requestLayout() {
             super.requestLayout()
             if (rootView !== this) rootView.requestLayout()
+            // Google reads where its new content sits as soon as it shows it; not laid out yet, that's 0,0.
+            if (width > 0 && !isInLayout) {
+                measure(
+                    MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
+                    MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY),
+                )
+                layout(left, top, right, bottom)
+            }
         }
 
         // The container sets its click listener on the view it is given; the button is what gets clicked.
