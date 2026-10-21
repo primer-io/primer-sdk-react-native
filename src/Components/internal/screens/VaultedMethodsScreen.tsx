@@ -144,6 +144,7 @@ export function VaultedMethodsScreen() {
   const [editMode, setEditMode] = useState(false);
   const [pendingDeletion, setPendingDeletion] = useState<VaultedPaymentMethodItem | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [confirmationContentHeight, setConfirmationContentHeight] = useState<number | null>(null);
 
   // Shrink the sheet to fit just the confirmation surface (single tile + caption + buttons row)
   // instead of the default 92%. Figma 366:69230.
@@ -158,8 +159,9 @@ export function VaultedMethodsScreen() {
       tokens.typography.bodySmall.lineHeight +
       tokens.spacing.small +
       buttonsRowHeight;
-    return headerArea + tokens.spacing.xxlarge + contentArea + bottomPadding + tokens.spacing.xlarge;
-  }, [tokens, bottomPadding]);
+    const content = confirmationContentHeight ?? tokens.spacing.xxlarge + contentArea;
+    return headerArea + content + bottomPadding + tokens.spacing.xlarge;
+  }, [tokens, bottomPadding, confirmationContentHeight]);
 
   // FR-014: if the targeted row vanishes from the underlying list (session refresh, external delete),
   // dismiss the confirmation silently rather than leaving the user staring at a stale tile.
@@ -317,7 +319,10 @@ export function VaultedMethodsScreen() {
         rightAction={headerRightAction}
       />
       {showConfirmation ? (
-        <View style={styles.confirmationContent}>
+        <View
+          style={styles.confirmationContent}
+          onLayout={(e) => setConfirmationContentHeight(e.nativeEvent.layout.height)}
+        >
           <ConfirmationSheetHeight height={confirmationSheetHeight} />
           <VaultedMethodRow
             method={pendingDeletion}
