@@ -129,7 +129,7 @@
   "primer_card_form_error_state_invalid": "Туура эмес штат, Аймак же Облус",
   "primer_card_form_error_state_required": "Штат, Аймак же Облус талап кылынат",
   "primer_card_form_label_address1": "Дарек сабы 1",
-  "primer_card_form_label_address2": "Дарек сабы 2",
+  "primer_card_form_label_address2": "Дарек сабы 2 (милдеттүү эмес)",
   "primer_card_form_label_city": "Шаар",
   "primer_card_form_label_country": "Өлкө",
   "primer_card_form_label_country_code": "Өлкө коду",

@@ -129,7 +129,7 @@
   "primer_card_form_error_state_invalid": "Облыс жарамсыз",
   "primer_card_form_error_state_required": "Облыс міндетті түрде толтырылуы керек",
   "primer_card_form_label_address1": "Мекенжай 1-жол",
-  "primer_card_form_label_address2": "Мекенжай 2-жол",
+  "primer_card_form_label_address2": "Мекенжай 2-жол (міндетті емес)",
   "primer_card_form_label_city": "Қала",
   "primer_card_form_label_country": "Мемлекет",
   "primer_card_form_label_country_code": "Мемлекет коды",
