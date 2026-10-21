@@ -18,7 +18,7 @@ import { routeMethodSelection } from '../routeMethodSelection';
 import { usePrimerTheme } from '../theme';
 import { PrimerButton } from '../ui/PrimerButton';
 import { PAYMENT_METHOD_BUTTON_HEIGHT } from '../ui/PaymentMethodButton';
-import { useBottomSafeArea } from './useBottomSafeArea';
+import { useBottomPadding } from './useBottomPadding';
 import { getLastSeenKeyboardHeight, useKeyboardHeight } from './useKeyboardHeight';
 import { useStatusScreenHeight } from './useStatusScreenHeight';
 
@@ -73,10 +73,9 @@ export function MethodSelectionScreen() {
   const methodCount = paymentMethods.length;
   const buttonGap = tokens.spacing.small;
   const listHeight = methodCount > 0 ? methodCount * PAYMENT_METHOD_BUTTON_HEIGHT + (methodCount - 1) * buttonGap : 0;
-  const rawBottomInset = useBottomSafeArea();
-  const bottomInset = Math.max(rawBottomInset, tokens.spacing.large);
+  const bottomPadding = useBottomPadding();
   // Container paddingTop + NavigationHeader (singleRow paddingVertical + titleXlarge lineHeight)
-  //   + content paddingTop + sectionTitle lineHeight + content gap + list + bottom safe area
+  //   + content paddingTop + sectionTitle lineHeight + content gap + list + bottom padding
   //   + spacing.xlarge for the sheet's drag-handle area (not part of screen content).
   const headerArea = tokens.spacing.xxsmall * 2 + tokens.typography.titleXlarge.lineHeight;
   const titleArea = tokens.typography.titleLarge.lineHeight;
@@ -102,20 +101,20 @@ export function MethodSelectionScreen() {
   const primerButtonHeight = tokens.spacing.medium * 2 + tokens.typography.titleLarge.lineHeight;
   const apmSectionHeight =
     vaultDisplayMode === 'lite' ? primerButtonHeight : titleArea + tokens.spacing.medium + listHeight;
-  // Grow the sheet by `keyboardHeight - bottomInset` so content stays above the keyboard.
+  // Grow the sheet by `keyboardHeight - bottomPadding` so content stays above the keyboard.
   // When CVV opens we use the last-seen height as an estimate to avoid a shrink-then-grow
   // jump during the ~74ms gap before `keyboardWillShow` fires.
   const keyboardHeight = useKeyboardHeight();
   const effectiveKeyboardHeight =
     keyboardHeight > 0 ? keyboardHeight : cvvInputVisible ? getLastSeenKeyboardHeight() : 0;
-  const keyboardSheetGrowth = effectiveKeyboardHeight > 0 ? Math.max(0, effectiveKeyboardHeight - bottomInset) : 0;
+  const keyboardSheetGrowth = effectiveKeyboardHeight > 0 ? Math.max(0, effectiveKeyboardHeight - bottomPadding) : 0;
   // Extra breathing room above the keyboard when CVV is open, so the input isn't flush
   // against the keyboard's top edge.
   const cvvBreathingRoom = cvvInputVisible ? tokens.spacing.xlarge : 0;
-  // Everything around the header and content: container paddingTop, bottom safe area,
+  // Everything around the header and content: container paddingTop, bottom padding,
   // drag-handle area and the keyboard growth.
   const sheetChrome =
-    tokens.spacing.large + bottomInset + tokens.spacing.xlarge + keyboardSheetGrowth + cvvBreathingRoom;
+    tokens.spacing.large + bottomPadding + tokens.spacing.xlarge + keyboardSheetGrowth + cvvBreathingRoom;
   const sheetHeight = sheetChrome + headerArea + tokens.spacing.xxlarge + vaultSectionHeight + apmSectionHeight;
   // Large system text makes the real header and list taller than the estimate: the sheet then
   // grows to fit them, up to the cap, and the list scrolls past it.
@@ -190,7 +189,7 @@ export function MethodSelectionScreen() {
   }, [activeVaultedMethod, requestExpandedVaultDisplay]);
 
   return (
-    <View style={[styles.root, { paddingBottom: bottomInset }]}>
+    <View style={[styles.root, { paddingBottom: bottomPadding }]}>
       <View onLayout={(e) => setHeaderHeight(e.nativeEvent.layout.height)}>
         <NavigationHeader title={title} rightAction={{ label: t('primer_common_button_cancel'), onPress: onCancel }} />
       </View>

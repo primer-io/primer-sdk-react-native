@@ -13,7 +13,7 @@ import { useNavigation } from '../navigation/useNavigation';
 import { usePrimerTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
 import { PrimerButton } from '../ui/PrimerButton';
-import { useBottomSafeArea } from './useBottomSafeArea';
+import { useBottomPadding } from './useBottomPadding';
 import { useStatusScreenHeight } from './useStatusScreenHeight';
 
 const BRAND_CHIP_WIDTH = 22.4;
@@ -139,8 +139,7 @@ export function VaultedMethodsScreen() {
   const { t } = usePrimerLocalization();
   const { vaultedMethods, activeMethod, selectVaultedMethodId, deleteVaultedPaymentMethod } = usePrimerVaultManager();
   const { pop } = useNavigation();
-  const rawBottomInset = useBottomSafeArea();
-  const bottomInset = Math.max(rawBottomInset, tokens.spacing.large);
+  const bottomPadding = useBottomPadding();
 
   const [editMode, setEditMode] = useState(false);
   const [pendingDeletion, setPendingDeletion] = useState<VaultedPaymentMethodItem | null>(null);
@@ -159,8 +158,8 @@ export function VaultedMethodsScreen() {
       tokens.typography.bodySmall.lineHeight +
       tokens.spacing.small +
       buttonsRowHeight;
-    return headerArea + tokens.spacing.xxlarge + contentArea + bottomInset + tokens.spacing.xlarge;
-  }, [tokens, bottomInset]);
+    return headerArea + tokens.spacing.xxlarge + contentArea + bottomPadding + tokens.spacing.xlarge;
+  }, [tokens, bottomPadding]);
 
   // FR-014: if the targeted row vanishes from the underlying list (session refresh, external delete),
   // dismiss the confirmation silently rather than leaving the user staring at a stale tile.
@@ -309,7 +308,7 @@ export function VaultedMethodsScreen() {
   const showConfirmation = pendingDeletion != null;
 
   return (
-    <View style={[styles.container, { paddingBottom: bottomInset }]}>
+    <View style={[styles.container, { paddingBottom: bottomPadding }]}>
       <NavigationHeader
         title={t('primer_vault_manage_title')}
         showBackButton

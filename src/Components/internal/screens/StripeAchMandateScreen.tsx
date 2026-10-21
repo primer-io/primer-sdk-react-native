@@ -9,7 +9,7 @@ import { useNavigation } from '../navigation/useNavigation';
 import { usePrimerLocalization } from '../localization';
 import { usePrimerCheckout } from '../../hooks/usePrimerCheckout';
 import { PrimerButton } from '../ui/PrimerButton';
-import { useBottomSafeArea } from './useBottomSafeArea';
+import { useBottomPadding } from './useBottomPadding';
 
 // Prebuilt ACH mandate screen: accept completes the payment, decline cancels it (→ error screen); no dismiss while mid-flight.
 export function StripeAchMandateScreen() {
@@ -18,7 +18,7 @@ export function StripeAchMandateScreen() {
   const { t } = usePrimerLocalization();
   const { popToRoot } = useNavigation();
   const { achMandate, achStep, acceptAchMandate, declineAchMandate } = usePrimerCheckout();
-  const bottomInset = useBottomSafeArea();
+  const bottomPadding = useBottomPadding();
 
   const answering = achStep === 'answeringMandate';
 
@@ -46,7 +46,7 @@ export function StripeAchMandateScreen() {
       >
         <Text style={styles.mandateText}>{achMandate.text}</Text>
       </ScrollView>
-      <View style={[styles.footer, { paddingBottom: Math.max(bottomInset, tokens.spacing.large) }]}>
+      <View style={[styles.footer, { paddingBottom: bottomPadding }]}>
         <PrimerButton
           title={t('primer_ach_mandate_button_accept')}
           onPress={handleAccept}

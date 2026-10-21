@@ -12,7 +12,7 @@ import { usePrimerLocalization } from '../localization';
 import { useCheckoutFlow } from '../checkout-flow/CheckoutFlowContext';
 import { usePrimerPaymentMethod } from '../../hooks/usePrimerPaymentMethod';
 import { PrimerButton } from '../ui/PrimerButton';
-import { useBottomSafeArea } from './useBottomSafeArea';
+import { useBottomPadding } from './useBottomPadding';
 
 /**
  * Prebuilt bank-selection screen for COMPONENT_WITH_REDIRECT methods (iDEAL; Android Dotpay).
@@ -27,7 +27,7 @@ export function BankSelectionScreen() {
   const { params } = useRoute<CheckoutRoute.bankSelection>();
   const { pop, replace, canGoBack } = useNavigation();
   const { onCancel } = useCheckoutFlow();
-  const bottomInset = useBottomSafeArea();
+  const bottomPadding = useBottomPadding();
 
   const method = usePrimerPaymentMethod(params.paymentMethodType);
   const bank = method.kind === 'bankSelection' ? method : null;
@@ -100,7 +100,7 @@ export function BankSelectionScreen() {
           })}
         </ScrollView>
       )}
-      <View style={[styles.footer, { paddingBottom: Math.max(bottomInset, tokens.spacing.large) }]}>
+      <View style={[styles.footer, { paddingBottom: bottomPadding }]}>
         <PrimerButton
           title={t('primer_common_button_pay')}
           onPress={handleSubmit}

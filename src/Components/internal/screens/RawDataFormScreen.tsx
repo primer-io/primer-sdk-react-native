@@ -13,7 +13,7 @@ import { useCheckoutFlow } from '../checkout-flow/CheckoutFlowContext';
 import { usePrimerPaymentMethod } from '../../hooks/usePrimerPaymentMethod';
 import { PrimerTextInput } from '../../inputs/PrimerTextInput';
 import { PrimerButton } from '../ui/PrimerButton';
-import { useBottomSafeArea } from './useBottomSafeArea';
+import { useBottomPadding } from './useBottomPadding';
 import { buildRawData } from './buildRawData';
 
 // Field keys are the SDK's input-element-type strings. NOTE the platform split for BLIK's
@@ -57,7 +57,7 @@ export function RawDataFormScreen() {
   const { params } = useRoute<CheckoutRoute.rawDataForm>();
   const { pop, replace, canGoBack } = useNavigation();
   const { onCancel } = useCheckoutFlow();
-  const bottomInset = useBottomSafeArea();
+  const bottomPadding = useBottomPadding();
 
   const method = usePrimerPaymentMethod(params.paymentMethodType);
   const form = method.kind === 'rawDataForm' ? method : null;
@@ -122,7 +122,7 @@ export function RawDataFormScreen() {
           );
         })}
       </ScrollView>
-      <View style={[styles.footer, { paddingBottom: Math.max(bottomInset, tokens.spacing.large) }]}>
+      <View style={[styles.footer, { paddingBottom: bottomPadding }]}>
         <PrimerButton
           title={t('primer_common_button_pay')}
           onPress={handleSubmit}

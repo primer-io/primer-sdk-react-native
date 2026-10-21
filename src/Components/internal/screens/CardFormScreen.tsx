@@ -15,6 +15,7 @@ import { usePrimerBillingAddressForm } from '../../hooks/usePrimerBillingAddress
 import { PrimerButton } from '../ui/PrimerButton';
 import { useSheetHeight } from '../checkout-sheet';
 import { useBottomSafeArea } from './useBottomSafeArea';
+import { useBottomPadding } from './useBottomPadding';
 import { useKeyboardPadding } from './useKeyboardPadding';
 
 // CheckoutSheet drag-handle chrome above our content: paddingTop(12) + handle(4) + paddingBottom(4).
@@ -30,6 +31,7 @@ export function CardFormScreen() {
   const cardForm = usePrimerCardForm();
   const billingForm = usePrimerBillingAddressForm();
   const bottomInset = useBottomSafeArea();
+  const bottomPadding = useBottomPadding();
   const keyboardPadding = useKeyboardPadding();
   const { height: screenHeight } = useWindowDimensions();
   const { requestHeight } = useSheetHeight();
@@ -50,7 +52,7 @@ export function CardFormScreen() {
     return release;
   }, [headerHeight, scrollContentHeight, footerHeight, screenHeight, requestHeight]);
   // Gap between the Pay button and the keyboard / system inset:
-  //   - keyboard closed: max(bottomInset, spacing.large) — clears home indicator / gesture pill.
+  //   - keyboard closed: bottomPadding, the system bar's space + spacing.large.
   //   - iOS keyboard open: spacing.large (16). `keyboard.endCoordinates.height` already
   //     includes the home-indicator area, so the bottom inset isn't needed.
   //   - Android keyboard open: spacing.large + bottomInset (≈40). Android reports just the
@@ -58,7 +60,7 @@ export function CardFormScreen() {
   //     `bottomInset` compensates so the visible gap matches iOS.
   const footerPaddingBottom =
     keyboardPadding === 0
-      ? Math.max(bottomInset, tokens.spacing.large)
+      ? bottomPadding
       : Platform.OS === 'ios'
         ? tokens.spacing.large
         : tokens.spacing.large + Math.max(bottomInset, tokens.spacing.large);

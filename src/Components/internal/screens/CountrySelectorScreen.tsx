@@ -14,6 +14,7 @@ import type { PrimerTextInputRef } from '../../types/CardInputTypes';
 import { usePrimerBillingAddressForm } from '../../hooks/usePrimerBillingAddressForm';
 import { COUNTRIES, getLocalizedCountryName, type CountryCode } from '../countries';
 import { flagEmoji } from '../flags';
+import { useBottomPadding } from './useBottomPadding';
 
 const ROW_HEIGHT = 44;
 const MAX_SCROLL_RETRIES = 10;
@@ -37,6 +38,7 @@ export function CountrySelectorScreen() {
   const { params } = useRoute<CheckoutRoute.countrySelector>();
   const billingForm = usePrimerBillingAddressForm();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
+  const bottomPadding = useBottomPadding();
 
   const initialSelected = params?.selectedCountryCode ?? '';
   const [query, setQuery] = useState('');
@@ -213,7 +215,7 @@ export function CountrySelectorScreen() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
         automaticallyAdjustKeyboardInsets
-        contentContainerStyle={styles.listContent}
+        contentContainerStyle={[styles.listContent, { paddingBottom: bottomPadding }]}
         ListEmptyComponent={emptyState}
       />
     </View>
@@ -250,7 +252,6 @@ function createStyles(tokens: PrimerTokens) {
       minWidth: 28,
     },
     listContent: {
-      paddingBottom: spacing.large,
       paddingHorizontal: spacing.large,
     },
     root: {

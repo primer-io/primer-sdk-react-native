@@ -16,6 +16,7 @@ import { PrimerTextInput } from '../../inputs';
 import { PrimerButton } from '../ui/PrimerButton';
 import { useSheetHeight } from '../checkout-sheet';
 import { useBottomSafeArea } from './useBottomSafeArea';
+import { useBottomPadding } from './useBottomPadding';
 import { useKeyboardPadding } from './useKeyboardPadding';
 
 // CheckoutSheet drag-handle chrome above our content: paddingTop(12) + handle(4) + paddingBottom(4).
@@ -33,6 +34,7 @@ export function StripeAchUserDetailsScreen() {
   const { onCancel } = useCheckoutFlow();
   const { stopAch } = usePrimerCheckout();
   const bottomInset = useBottomSafeArea();
+  const bottomPadding = useBottomPadding();
   const keyboardPadding = useKeyboardPadding();
   const { height: screenHeight } = useWindowDimensions();
   const { requestHeight } = useSheetHeight();
@@ -77,7 +79,7 @@ export function StripeAchUserDetailsScreen() {
   // Footer gap above the keyboard / system inset (mirrors CardFormScreen).
   const footerPaddingBottom =
     keyboardPadding === 0
-      ? Math.max(bottomInset, tokens.spacing.large)
+      ? bottomPadding
       : Platform.OS === 'ios'
         ? tokens.spacing.large
         : tokens.spacing.large + Math.max(bottomInset, tokens.spacing.large);

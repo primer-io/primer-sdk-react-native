@@ -25,7 +25,7 @@ import type { PrimerTokens } from '../theme';
 import { PrimerButton } from '../ui/PrimerButton';
 import { useSheetHeight } from '../checkout-sheet';
 import { CONTENT_HEIGHT as LOADING_CONTENT_HEIGHT } from './LoadingScreen';
-import { useBottomSafeArea } from './useBottomSafeArea';
+import { useBottomPadding } from './useBottomPadding';
 
 // CheckoutSheet drag-handle chrome above our content: paddingTop(12) + handle(4) + paddingBottom(4).
 const DRAG_HANDLE_AREA = 20;
@@ -77,7 +77,7 @@ export function KlarnaScreen() {
   const { params } = useRoute<CheckoutRoute.klarna>();
   const { pop, replace, canGoBack } = useNavigation();
   const { onCancel } = useCheckoutFlow();
-  const bottomInset = useBottomSafeArea();
+  const bottomPadding = useBottomPadding();
   const { height: screenHeight } = useWindowDimensions();
   const { requestHeight } = useSheetHeight();
 
@@ -96,8 +96,7 @@ export function KlarnaScreen() {
   const [scrollContentHeight, setScrollContentHeight] = useState(0);
   const [footerHeight, setFooterHeight] = useState(0);
 
-  const bottomInsetClamped = Math.max(bottomInset, tokens.spacing.large);
-  const loadingSheetHeight = LOADING_CONTENT_HEIGHT + bottomInsetClamped;
+  const loadingSheetHeight = LOADING_CONTENT_HEIGHT + bottomPadding;
 
   // Start the Klarna session on mount (fetches the payment categories).
   useEffect(() => {
@@ -145,7 +144,7 @@ export function KlarnaScreen() {
   return (
     <View style={styles.root}>
       {isInitialLoading ? (
-        <View style={[styles.loadingContainer, { height: loadingSheetHeight, paddingBottom: bottomInsetClamped }]}>
+        <View style={[styles.loadingContainer, { height: loadingSheetHeight, paddingBottom: bottomPadding }]}>
           <PrimerLoadingScreen
             title={t('primer_checkout_loading_indicator')}
             subtitle={t('primer_checkout_loading_subtitle')}
@@ -221,7 +220,7 @@ export function KlarnaScreen() {
           {paymentCategories.length > 0 && (
             <View
               onLayout={(e) => setFooterHeight(e.nativeEvent.layout.height)}
-              style={[styles.footer, { paddingBottom: bottomInsetClamped }]}
+              style={[styles.footer, { paddingBottom: bottomPadding }]}
             >
               <PrimerButton
                 title={t('primer_klarna_button_authorize')}
