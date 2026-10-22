@@ -79,8 +79,8 @@ Treat those as grandfathered. For **new** work, put anything public in `hooks/`,
 
 `src/__tests__/components/cardFormContracts.test.tsx` is narrower than its name suggests. It
 asserts 14 names against **`src/Components/index.ts`** — not `src/index.tsx` — plus a naming
-blacklist and PCI prop guards. Only `usePrimerTheme` and `usePrimerLocalization` are checked
-against the root barrel.
+blacklist and PCI prop guards. Only `usePrimerTheme`, `usePrimerLocalization` and
+`PrimerAcceptedCardNetworks` are checked against the root barrel.
 
 So it will **not** catch dropping `PrimerCheckoutSheet`, `usePrimerCheckout`, the inputs or the
 status screens from `src/index.tsx`. If you change the public surface, check `src/index.tsx` by
