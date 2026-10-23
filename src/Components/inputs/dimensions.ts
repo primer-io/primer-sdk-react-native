@@ -5,11 +5,9 @@ import type { PrimerTokens } from '../internal/theme/types';
 
 export const LINE_HEIGHT_RATIO = 1.25;
 
-// The design's minimum tappable height, shared by buttons and input fields.
 export const MIN_INTERACTIVE_HEIGHT = 44;
 
-// Outside height of an input box at the default font scale, border included. Padding and the body
-// line come to 44 at the default tokens; the floor keeps a theme with a smaller font tappable.
+// Outside height of an input box at the default font scale, border included.
 export function defaultFieldHeight(tokens: PrimerTokens): number {
   return Math.max(MIN_INTERACTIVE_HEIGHT, 2 * tokens.spacing.medium + tokens.typography.bodyLarge.lineHeight);
 }
