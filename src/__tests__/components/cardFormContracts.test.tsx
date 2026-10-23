@@ -104,7 +104,6 @@ describe('C1: card-form public exports are Primer-prefixed', () => {
     expect(hit).toBe(false);
   });
 
-  // PrimerAcceptedCardNetworks is out of PrimerCardForm; merchants place it themselves.
   it.each(['usePrimerTheme', 'usePrimerLocalization', 'PrimerAcceptedCardNetworks'])(
     'root barrel exports %s (prefixed)',
     (name) => {

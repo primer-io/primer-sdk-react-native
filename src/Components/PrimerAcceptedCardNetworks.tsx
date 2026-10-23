@@ -14,7 +14,6 @@ export interface PrimerAcceptedCardNetworksProps {
 const CHIP_WIDTH = 28;
 const CHIP_HEIGHT = 20;
 
-/** The accepted card logos in a row. `PrimerCardForm` doesn't show it: place it yourself. */
 export function PrimerAcceptedCardNetworks({
   networks: propNetworks,
   style,

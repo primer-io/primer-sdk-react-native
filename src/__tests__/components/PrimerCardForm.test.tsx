@@ -38,7 +38,6 @@ describe('PrimerCardForm', () => {
     return tree.root;
   }
 
-  // iOS and Android show no logos row; the team found RN's cluttered (ORC-8705).
   it('shows no accepted card logos row', () => {
     const root = render();
     expect(root.findAll((node: any) => node.type === 'PrimerAcceptedCardNetworks')).toHaveLength(0);
