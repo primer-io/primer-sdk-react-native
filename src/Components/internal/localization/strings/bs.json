@@ -129,7 +129,7 @@
   "primer_card_form_error_state_invalid": "Neispravan kanton ili regija",
   "primer_card_form_error_state_required": "Kanton ili regija je obavezna",
   "primer_card_form_label_address1": "Adresa 1",
-  "primer_card_form_label_address2": "Adresa 2",
+  "primer_card_form_label_address2": "Adresa 2 (neobavezno)",
   "primer_card_form_label_city": "Grad",
   "primer_card_form_label_country": "Zemlja",
   "primer_card_form_label_country_code": "Pozivni broj države",

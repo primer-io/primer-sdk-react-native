@@ -129,7 +129,7 @@
   "primer_card_form_error_state_invalid": "غلط صوبہ، علاقہ یا کاؤنٹی",
   "primer_card_form_error_state_required": "صوبہ، علاقہ یا کاؤنٹی ضروری ہے",
   "primer_card_form_label_address1": "پتے کی لائن 1",
-  "primer_card_form_label_address2": "پتے کی لائن 2",
+  "primer_card_form_label_address2": "پتے کی لائن 2 (اختیاری)",
   "primer_card_form_label_city": "شہر",
   "primer_card_form_label_country": "ملک",
   "primer_card_form_label_country_code": "ملک کا کوڈ",

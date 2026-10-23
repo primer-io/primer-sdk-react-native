@@ -129,7 +129,7 @@
   "primer_card_form_error_state_invalid": "استان نامعتبر است",
   "primer_card_form_error_state_required": "استان الزامی است",
   "primer_card_form_label_address1": "خط آدرس ۱",
-  "primer_card_form_label_address2": "خط آدرس ۲",
+  "primer_card_form_label_address2": "خط آدرس ۲ (اختیاری)",
   "primer_card_form_label_city": "شهر",
   "primer_card_form_label_country": "کشور",
   "primer_card_form_label_country_code": "کد کشور",

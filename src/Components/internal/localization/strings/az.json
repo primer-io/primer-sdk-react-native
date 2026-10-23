@@ -129,7 +129,7 @@
   "primer_card_form_error_state_invalid": "Yanlış Ştat, Region və ya Rayon",
   "primer_card_form_error_state_required": "Ştat, Region və ya Rayon tələb olunur",
   "primer_card_form_label_address1": "Ünvan Xətti 1",
-  "primer_card_form_label_address2": "Ünvan Xətti 2",
+  "primer_card_form_label_address2": "Ünvan Xətti 2 (istəyə bağlı)",
   "primer_card_form_label_city": "Şəhər",
   "primer_card_form_label_country": "Ölkə",
   "primer_card_form_label_country_code": "Ölkə Kodu",
