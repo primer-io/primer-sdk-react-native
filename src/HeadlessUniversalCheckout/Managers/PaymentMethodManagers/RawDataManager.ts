@@ -10,13 +10,14 @@ import type { PrimerAddress } from '../../../models/PrimerClientSession';
 const { RNTPrimerHeadlessUniversalCheckoutRawDataManager } = NativeModules;
 const eventEmitter = new NativeEventEmitter(RNTPrimerHeadlessUniversalCheckoutRawDataManager);
 
-type EventType = 'onMetadataChange' | 'onValidation' | 'onBinDataChange';
+type EventType = 'onMetadataChange' | 'onValidation' | 'onBinDataChange' | 'onCardNetworkSyncChange';
 
 export interface RawDataManagerProps {
   paymentMethodType: string;
   onMetadataChange?: (metadata: any) => void;
   onValidation?: (isValid: boolean, errors: PrimerError[] | undefined) => void;
   onBinDataChange?: (binData: PrimerBinData) => void;
+  onCardNetworkSyncChange?: (isSyncing: boolean) => void;
 }
 
 class PrimerHeadlessUniversalCheckoutRawDataManager {
@@ -83,6 +84,15 @@ class PrimerHeadlessUniversalCheckoutRawDataManager {
       const sub = await this.addListener('onBinDataChange', (data) => {
         if (this.options?.onBinDataChange) {
           this.options.onBinDataChange(data);
+        }
+      });
+      this.subscriptions.push(sub);
+    }
+
+    if (this.options?.onCardNetworkSyncChange) {
+      const sub = await this.addListener('onCardNetworkSyncChange', (data) => {
+        if (this.options?.onCardNetworkSyncChange) {
+          this.options.onCardNetworkSyncChange(data.isSyncing);
         }
       });
       this.subscriptions.push(sub);

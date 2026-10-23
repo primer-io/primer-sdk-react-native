@@ -65,10 +65,11 @@ export function MethodSelectionScreen() {
   // method re-runs its lifecycle. Fires only here (not on screen unmount), so an in-flight submit
   // isn't torn down — and stopAch self-defers while a mandate awaits an answer.
   useEffect(() => {
+    setActiveMethod(null);
     stopBanks();
     stopKlarna();
     stopAch();
-  }, [stopBanks, stopKlarna, stopAch]);
+  }, [setActiveMethod, stopBanks, stopKlarna, stopAch]);
 
   const methodCount = paymentMethods.length;
   const buttonGap = tokens.spacing.small;

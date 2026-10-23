@@ -48,6 +48,7 @@ export interface UsePrimerCardFormReturn {
   /** Trigger tokenization. No-op if invalid or already submitting; always flips submitAttempted. */
   submit: () => Promise<void>;
   isSubmitting: boolean;
+  isUpdatingClientSession: boolean;
   /** True after the first `submit()` / `markSubmitAttempted()` call, until `reset()`. */
   submitAttempted: boolean;
 

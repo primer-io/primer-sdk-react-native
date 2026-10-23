@@ -25,11 +25,12 @@ jest.mock(
 const mockStopBanks = jest.fn();
 const mockStopKlarna = jest.fn();
 const mockStopAch = jest.fn();
+const mockSetActiveMethod = jest.fn();
 let mockClientSession: { totalAmount?: number; currencyCode?: string } | null = null;
 jest.mock('../../Components/hooks/usePrimerCheckout', () => ({
   usePrimerCheckout: () => ({
     clientSession: mockClientSession,
-    setActiveMethod: jest.fn(),
+    setActiveMethod: mockSetActiveMethod,
     startNativeUI: jest.fn(),
     stopBanks: mockStopBanks,
     stopKlarna: mockStopKlarna,
@@ -139,6 +140,14 @@ describe('MethodSelectionScreen — flow disarm on mount (ORC-6514/6515)', () =>
       renderer.create(createElement(MethodSelectionScreen));
     });
     expect(mockStopKlarna).toHaveBeenCalledTimes(1);
+  });
+
+  it('closes the card session on mount so going back takes its network off the session', () => {
+    act(() => {
+      renderer.create(createElement(MethodSelectionScreen));
+    });
+    expect(mockSetActiveMethod).toHaveBeenCalledTimes(1);
+    expect(mockSetActiveMethod).toHaveBeenCalledWith(null);
   });
 });
 

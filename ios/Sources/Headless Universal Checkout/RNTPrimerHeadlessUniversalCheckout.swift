@@ -74,9 +74,31 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
   var primerDidResumeWithDecisionHandler:
     ((_ resumeToken: String?, _ errorMessage: String?) -> Void)?
   var implementedRNCallbacks: ImplementedRNCallbacks?
+  private let listenersLock = NSLock()
+  private var hasListeners = false
 
   override class func requiresMainQueueSetup() -> Bool {
     return true
+  }
+
+  override func addListener(_ eventName: String!) {
+    listenersLock.lock()
+    defer { listenersLock.unlock() }
+    super.addListener(eventName)
+  }
+
+  override func removeListeners(_ count: Double) {
+    listenersLock.lock()
+    defer { listenersLock.unlock() }
+    super.removeListeners(count)
+  }
+
+  override func startObserving() {
+    hasListeners = true
+  }
+
+  override func stopObserving() {
+    hasListeners = false
   }
 
   override init() {
@@ -568,9 +590,13 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
             clientSession: clientSession,
             checkoutModules: checkoutModules
           )
-          self.sendEvent(
-            withName: rnCallbackName,
-            body: [Self.clientSessionPayloadKey: payload])
+          self.listenersLock.lock()
+          defer { self.listenersLock.unlock() }
+          if self.hasListeners {
+            self.sendEvent(
+              withName: rnCallbackName,
+              body: [Self.clientSessionPayloadKey: payload])
+          }
 
         } catch {
           self.handleRNBridgeError(error, checkoutData: nil, stopOnDebug: true)

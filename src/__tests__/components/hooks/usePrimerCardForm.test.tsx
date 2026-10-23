@@ -76,7 +76,14 @@ const baseContext: PrimerCheckoutContextValue = {
   declineAchMandate: async () => {},
   stopAch: () => {},
   activeMethod: 'PAYMENT_CARD',
-  cardFormState: { isValid: false, errors: {}, binData: null, metadata: null, requiredFields: [] },
+  cardFormState: {
+    isValid: false,
+    errors: {},
+    binData: null,
+    metadata: null,
+    requiredFields: [],
+    isUpdatingClientSession: false,
+  },
   vaultedMethods: [],
   vaultedIconUrisById: {},
   vaultedNamesById: {},
@@ -183,6 +190,68 @@ describe('usePrimerCardForm — error visibility', () => {
     act(() => result.current.reset());
     expect(result.current.submitAttempted).toBe(false);
     expect(result.current.errors).toEqual({});
+  });
+});
+
+describe('usePrimerCardForm — card session', () => {
+  function Wrapper({ value, children }: { value: PrimerCheckoutContextValue; children?: ReactNode }) {
+    return createElement(
+      PrimerCheckoutContext.Provider,
+      { value },
+      createElement(PrimerCardFormProvider, null, children)
+    );
+  }
+
+  function render(value: PrimerCheckoutContextValue) {
+    const result = { current: null as unknown as ReturnType<typeof usePrimerCardForm> };
+    function HookComponent() {
+      result.current = usePrimerCardForm();
+      return null;
+    }
+    let tree: { update: (el: ReactNode) => void } | null = null;
+    act(() => {
+      tree = create(createElement(Wrapper, { value }, createElement(HookComponent)));
+    });
+    function rerender(next: PrimerCheckoutContextValue) {
+      act(() => {
+        tree!.update(createElement(Wrapper, { value: next }, createElement(HookComponent)));
+      });
+    }
+    return { result, rerender };
+  }
+
+  it('clears the fields once the card session closes', () => {
+    const { result, rerender } = render(baseContext);
+    act(() => {
+      result.current.updateCardNumber('4035501000000008');
+      result.current.updateCVV('123');
+    });
+    expect(result.current.cardNumber).not.toBe('');
+
+    rerender({ ...baseContext, activeMethod: null });
+
+    expect(result.current.cardNumber).toBe('');
+    expect(result.current.cvv).toBe('');
+  });
+
+  it('keeps the fields while the card session stays open', () => {
+    const { result, rerender } = render(baseContext);
+    act(() => {
+      result.current.updateCardNumber('4035501000000008');
+    });
+
+    rerender({ ...baseContext });
+
+    expect(result.current.cardNumber).not.toBe('');
+  });
+
+  it('surfaces the client session update from native', () => {
+    const { result } = render({
+      ...baseContext,
+      cardFormState: { ...baseContext.cardFormState, isUpdatingClientSession: true },
+    });
+
+    expect(result.current.isUpdatingClientSession).toBe(true);
   });
 });
 

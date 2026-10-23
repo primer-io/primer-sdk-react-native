@@ -136,6 +136,7 @@ const readyContext: PrimerCheckoutContextValue = {
     binData: null,
     metadata: null,
     requiredFields: [],
+    isUpdatingClientSession: false,
   },
   vaultedMethods: [],
   vaultedIconUrisById: {},

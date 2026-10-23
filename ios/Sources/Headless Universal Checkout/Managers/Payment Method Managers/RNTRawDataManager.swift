@@ -17,6 +17,7 @@ enum PrimerHeadlessUniversalCheckoutRawDataManagerEvents: Int, CaseIterable {
   case onMetadataChange = 0
   case onValidation
   case onBinDataChange
+  case onCardNetworkSyncChange
 
   var stringValue: String {
     switch self {
@@ -26,6 +27,8 @@ enum PrimerHeadlessUniversalCheckoutRawDataManagerEvents: Int, CaseIterable {
       return "onValidation"
     case .onBinDataChange:
       return "onBinDataChange"
+    case .onCardNetworkSyncChange:
+      return "onCardNetworkSyncChange"
     }
   }
 }
@@ -61,6 +64,7 @@ class RNTPrimerHeadlessUniversalCheckoutRawDataManager: RCTEventEmitter {
     do {
       self.rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(
         paymentMethodType: self.paymentMethodType!, delegate: self)
+      self.rawDataManager.cardNetworkSyncObserver = self
     } catch {
       rejecter(error.rnError["errorId"]!, error.rnError["description"], error)
     }
@@ -216,12 +220,30 @@ class RNTPrimerHeadlessUniversalCheckoutRawDataManager: RCTEventEmitter {
 
   @objc
   public func cleanUp(
-    _ resolver: RCTPromiseResolveBlock,
+    _ resolver: @escaping RCTPromiseResolveBlock,
     rejecter: RCTPromiseRejectBlock
   ) {
-    resolver(nil)
+    guard let rawDataManager else {
+      resolver(nil)
+      return
+    }
+    rawDataManager.cardNetworkSyncObserver = nil
+    Task {
+      await rawDataManager.releaseCardNetwork()
+      resolver(nil)
+    }
   }
 
+}
+
+extension RNTPrimerHeadlessUniversalCheckoutRawDataManager: CardNetworkSyncObserver {
+
+  @MainActor
+  func cardNetworkSyncDidChange(isSyncing: Bool) {
+    sendEvent(
+      withName: PrimerHeadlessUniversalCheckoutRawDataManagerEvents.onCardNetworkSyncChange.stringValue,
+      body: ["isSyncing": isSyncing])
+  }
 }
 
 extension RNTPrimerHeadlessUniversalCheckoutRawDataManager: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {

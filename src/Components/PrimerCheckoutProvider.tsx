@@ -60,12 +60,36 @@ const LOG = '[PrimerCheckoutProvider]';
 
 const assetsManager = new PrimerHeadlessUniversalCheckoutAssetsManager();
 
+const MANAGER_CLEAN_UP_WAIT_MS = 5000;
+const cleanedUpManagers = new WeakSet<PrimerHeadlessUniversalCheckoutRawDataManager>();
+let managerCleanUps: Promise<unknown> = Promise.resolve();
+let sessionCleanUp: Promise<unknown> = Promise.resolve();
+
+function cleanUpManager(manager: PrimerHeadlessUniversalCheckoutRawDataManager) {
+  if (cleanedUpManagers.has(manager)) return;
+  cleanedUpManagers.add(manager);
+  const done = manager.cleanUp().catch((err) => console.warn(`${LOG} manager cleanUp failed ${fmt(err)}`));
+  managerCleanUps = Promise.all([managerCleanUps, done]);
+}
+
+function cleanUpSession() {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise((resolve) => {
+    timer = setTimeout(resolve, MANAGER_CLEAN_UP_WAIT_MS);
+  });
+  sessionCleanUp = Promise.race([managerCleanUps, timeout])
+    .finally(() => clearTimeout(timer))
+    .then(() => PrimerHeadlessUniversalCheckout.cleanUp())
+    .catch((err) => console.warn(`${LOG} cleanUp failed ${fmt(err)}`));
+}
+
 const initialCardFormState: CardFormState = {
   isValid: false,
   errors: {},
   binData: null,
   metadata: null,
   requiredFields: [],
+  isUpdatingClientSession: false,
 };
 
 const EMPTY_ACH_USER_DETAILS: StripeAchUserDetails = { firstName: '', lastName: '', emailAddress: '' };
@@ -326,11 +350,32 @@ export function PrimerCheckoutProvider({
     onValidation: (isValid: boolean, errors: PrimerError[] | undefined) => void;
     onBinDataChange: (binData: PrimerBinData) => void;
     onMetadataChange: (metadata: unknown) => void;
+    onCardNetworkSyncChange: (isSyncing: boolean) => void;
   } | null>(null);
   // Marks the manager that `retry()` currently holds. Effect cleanup defers
   // teardown of this manager so an in-flight submit/configure isn't destroyed.
   const retryingManagerRef = useRef<PrimerHeadlessUniversalCheckoutRawDataManager | null>(null);
   const pendingCleanupRef = useRef<PrimerHeadlessUniversalCheckoutRawDataManager | null>(null);
+  const cardPaymentInFlightRef = useRef(false);
+  const closeCardAfterPaymentRef = useRef(false);
+
+  const tearDownManager = useCallback((manager: PrimerHeadlessUniversalCheckoutRawDataManager) => {
+    cleanUpManager(manager);
+    manager.removeAllListeners();
+    if (managerRef.current === manager) {
+      managerRef.current = null;
+    }
+    lastManagerCallbacksRef.current = null;
+    selectedCardNetworkRef.current = null;
+    setState((prev) => ({ ...prev, cardFormState: initialCardFormState, selectedCardNetwork: null }));
+  }, []);
+
+  const endCardPayment = useCallback(() => {
+    cardPaymentInFlightRef.current = false;
+    if (!closeCardAfterPaymentRef.current) return;
+    closeCardAfterPaymentRef.current = false;
+    setState((prev) => (prev.activeMethod === null ? prev : { ...prev, activeMethod: null }));
+  }, []);
 
   // -----------------------------------------------------------------------
   // Session init — create headless checkout + wire session-level callbacks.
@@ -342,6 +387,8 @@ export function PrimerCheckoutProvider({
     hadFailureRef.current = false;
     hadSuccessRef.current = false;
     becameReadyRef.current = false;
+    cardPaymentInFlightRef.current = false;
+    closeCardAfterPaymentRef.current = false;
     let cancelled = false;
     const initStartedAt = Date.now();
 
@@ -368,6 +415,7 @@ export function PrimerCheckoutProvider({
           settingsRef.current?.headlessUniversalCheckoutCallbacks?.onClientSessionUpdate?.(clientSession);
         },
         onError: (error, checkoutData) => {
+          endCardPayment();
           const achArmed = stateRef.current.activeAchMethod !== null;
           setState((prev) => {
             // Init-time errors → `error`. Payment-time errors → `paymentOutcome` → error
@@ -390,6 +438,7 @@ export function PrimerCheckoutProvider({
           // Native fires onCheckoutComplete for any finished checkout — including
           // FAILED payments — so we have to read `payment.status` to decide which
           // result screen to show. Backend statuses: SUCCESS | FAILED | PENDING.
+          endCardPayment();
           const achArmed = stateRef.current.activeAchMethod !== null;
           // The attempt tracker decides the ACH-only 'pending' mapping.
           const achAttempt = lastAttemptedMethodRef.current === 'STRIPE_ACH';
@@ -497,6 +546,8 @@ export function PrimerCheckoutProvider({
         headlessUniversalCheckoutCallbacks: callbacks,
       };
 
+      await sessionCleanUp;
+      if (cancelled) return;
       const methods = await PrimerHeadlessUniversalCheckout.startWithClientToken(clientToken, mergedSettings);
 
       if (!cancelled) {
@@ -556,7 +607,11 @@ export function PrimerCheckoutProvider({
       }
       // Vault manager is tied to the native session — let the next session recreate it.
       vaultManagerRef.current = null;
-      void PrimerHeadlessUniversalCheckout.cleanUp();
+      const manager = managerRef.current;
+      if (manager) {
+        cleanUpManager(manager);
+      }
+      cleanUpSession();
     };
   }, [clientToken]);
 
@@ -842,6 +897,13 @@ export function PrimerCheckoutProvider({
           cardFormState: { ...prev.cardFormState, metadata },
         }));
       },
+      onCardNetworkSyncChange: (isSyncing: boolean) => {
+        setState((prev) =>
+          prev.cardFormState.isUpdatingClientSession === isSyncing
+            ? prev
+            : { ...prev, cardFormState: { ...prev.cardFormState, isUpdatingClientSession: isSyncing } }
+        );
+      },
     };
     lastManagerCallbacksRef.current = callbacks;
 
@@ -868,14 +930,7 @@ export function PrimerCheckoutProvider({
         pendingCleanupRef.current = manager;
         return;
       }
-      manager.cleanUp().catch((err) => console.warn(`${LOG} manager cleanUp failed ${fmt(err)}`));
-      manager.removeAllListeners();
-      if (managerRef.current === manager) {
-        managerRef.current = null;
-      }
-      lastManagerCallbacksRef.current = null;
-      selectedCardNetworkRef.current = null;
-      setState((prev) => ({ ...prev, cardFormState: initialCardFormState, selectedCardNetwork: null }));
+      tearDownManager(manager);
     };
   }, [state.activeMethod, state.isReady]);
 
@@ -884,6 +939,11 @@ export function PrimerCheckoutProvider({
   // -----------------------------------------------------------------------
   const setActiveMethod = useCallback(
     (method: string | null) => {
+      if (method === null && cardPaymentInFlightRef.current) {
+        closeCardAfterPaymentRef.current = true;
+        return;
+      }
+      closeCardAfterPaymentRef.current = false;
       if (method !== null) {
         trackSelection(method);
       }
@@ -952,8 +1012,14 @@ export function PrimerCheckoutProvider({
       return;
     }
     trackAttemptStart(stateRef.current.activeMethod ?? 'PAYMENT_CARD', { submitted: true });
-    await manager.submit();
-  }, [trackAttemptStart]);
+    cardPaymentInFlightRef.current = true;
+    try {
+      await manager.submit();
+    } catch (err) {
+      endCardPayment();
+      throw err;
+    }
+  }, [trackAttemptStart, endCardPayment]);
 
   const retry = useCallback(async () => {
     const method = stateRef.current.activeMethod;
@@ -971,6 +1037,7 @@ export function PrimerCheckoutProvider({
     // outcomes. Reconfiguring here rebuilds the delegate binding; harmless on Android.
     // (The "remove once the iOS SDK stops nullifying" reminder lives in the PR description.)
     retryingManagerRef.current = manager;
+    cardPaymentInFlightRef.current = true;
     try {
       // Re-pass the original callbacks so the JS-wrapper's listeners get re-registered.
       // Otherwise native would emit onValidation/onBinDataChange/onMetadataChange during
@@ -986,24 +1053,17 @@ export function PrimerCheckoutProvider({
       await manager.submit();
     } catch (err) {
       console.error(`${LOG} retry failed ${fmt(err)}`);
+      endCardPayment();
       throw err;
     } finally {
       retryingManagerRef.current = null;
       // Run a teardown that the effect cleanup deferred while retry was in flight.
-      const pending = pendingCleanupRef.current;
-      if (pending === manager) {
+      if (pendingCleanupRef.current === manager) {
         pendingCleanupRef.current = null;
-        pending.cleanUp().catch((err) => console.warn(`${LOG} deferred cleanUp failed ${fmt(err)}`));
-        pending.removeAllListeners();
-        if (managerRef.current === pending) {
-          managerRef.current = null;
-        }
-        lastManagerCallbacksRef.current = null;
-        selectedCardNetworkRef.current = null;
-        setState((prev) => ({ ...prev, cardFormState: initialCardFormState, selectedCardNetwork: null }));
+        tearDownManager(manager);
       }
     }
-  }, []);
+  }, [tearDownManager, endCardPayment]);
 
   const clearPaymentOutcome = useCallback(() => {
     // Also nil activeKlarnaMethod so the effect cleanup runs — Klarna needs a fresh component per payment.

@@ -86,6 +86,7 @@ export interface CardFormState {
   binData: PrimerBinData | null;
   metadata: unknown;
   requiredFields: PrimerInputElementType[];
+  isUpdatingClientSession: boolean;
 }
 
 export interface PrimerCheckoutContextValue {

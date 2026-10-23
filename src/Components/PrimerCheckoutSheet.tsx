@@ -1,5 +1,8 @@
+import { useCallback, useEffect } from 'react';
+
 import { CheckoutSheet } from './internal/checkout-sheet/CheckoutSheet';
 import { CheckoutFlow } from './internal/checkout-flow/CheckoutFlow';
+import { usePrimerCheckout } from './hooks/usePrimerCheckout';
 
 export interface PrimerCheckoutSheetProps {
   /** Whether the sheet is visible. Drives show/hide animation. */
@@ -24,10 +27,19 @@ export function PrimerCheckoutSheet({
   onRequestDismiss,
   dismissOnBackdropPress,
 }: PrimerCheckoutSheetProps) {
+  const { setActiveMethod } = usePrimerCheckout();
+
+  const handleDismiss = useCallback(() => {
+    setActiveMethod(null);
+    onDismiss?.();
+  }, [setActiveMethod, onDismiss]);
+
+  useEffect(() => () => setActiveMethod(null), [setActiveMethod]);
+
   return (
     <CheckoutSheet
       visible={visible}
-      onDismiss={onDismiss}
+      onDismiss={handleDismiss}
       onRequestDismiss={onRequestDismiss}
       dismissOnBackdropPress={dismissOnBackdropPress}
     >

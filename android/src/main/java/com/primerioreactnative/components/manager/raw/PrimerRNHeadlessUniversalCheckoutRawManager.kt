@@ -51,6 +51,7 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
     private lateinit var rawManager: PrimerHeadlessUniversalCheckoutRawDataManagerInterface
     private var paymentMethodTypeStr: String? = null
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val releaseScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
     init {
         listener.sendEvent = { eventName, paramsJson -> sendEvent(eventName, paramsJson) }
@@ -241,11 +242,15 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManager(
                 ErrorTypeRN.NativeBridgeFailed errorTo UNINITIALIZED_ERROR
             promise.reject(exception.errorId, exception.description)
         } else {
-            rawManager.cleanup()
+            val manager = rawManager
+            manager.cleanup()
             // `scope` is module-scoped; cancel pending coroutines but keep the scope
             // alive across configure/cleanup cycles.
             scope.coroutineContext.cancelChildren()
-            promise.resolve(null)
+            releaseScope.launch {
+                (manager as? PrimerHeadlessUniversalCheckoutRawDataManager)?.releaseCardNetwork()
+                promise.resolve(null)
+            }
         }
     }
 

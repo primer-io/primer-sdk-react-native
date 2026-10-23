@@ -71,7 +71,7 @@ export function CardFormScreen() {
   const [paying, setPaying] = useState(false);
   const payingRef = useRef(false);
   const locked = paying || cardForm.isSubmitting;
-  const canSubmit = cardForm.isValid && billingForm.isValid && !locked;
+  const canSubmit = cardForm.isValid && billingForm.isValid && !locked && !cardForm.isUpdatingClientSession;
 
   // Flush pending billing-address debounce before navigating so native has the full address;
   // if anything fails before submit dispatches, the user stays on the form instead of stranded
@@ -135,7 +135,11 @@ export function CardFormScreen() {
           variant="primary"
           loading={locked}
           disabled={!canSubmit}
-          accessibilityHint={locked || canSubmit ? undefined : t('accessibility_card_form_submit_disabled')}
+          accessibilityHint={
+            locked || canSubmit || cardForm.isUpdatingClientSession
+              ? undefined
+              : t('accessibility_card_form_submit_disabled')
+          }
           loadingAccessibilityValue={t('accessibility_card_form_submit_loading')}
           testID="primer-card-form-submit"
         />

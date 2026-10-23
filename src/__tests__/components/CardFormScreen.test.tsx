@@ -69,8 +69,14 @@ jest.mock('../../Components/internal/screens/useKeyboardPadding', () => ({
 }));
 
 let mockCardFormValid = true;
+let mockUpdatingClientSession = false;
 jest.mock('../../Components/hooks/usePrimerCardForm', () => ({
-  usePrimerCardForm: () => ({ isValid: mockCardFormValid, isSubmitting: false, submit: mockSubmit }),
+  usePrimerCardForm: () => ({
+    isValid: mockCardFormValid,
+    isSubmitting: false,
+    isUpdatingClientSession: mockUpdatingClientSession,
+    submit: mockSubmit,
+  }),
 }));
 
 jest.mock('../../Components/hooks/usePrimerBillingAddressForm', () => ({
@@ -89,6 +95,7 @@ describe('CardFormScreen Pay', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockCardFormValid = true;
+    mockUpdatingClientSession = false;
   });
 
   function render() {
@@ -162,6 +169,22 @@ describe('CardFormScreen Pay', () => {
     expect(pay.disabled).toBe(true);
     expect(pay.accessibilityLabel).toBeUndefined();
     expect(pay.accessibilityHint).toBe('accessibility_card_form_submit_disabled');
+  });
+
+  it('stays disabled, without spinning, while the client session updates', async () => {
+    mockUpdatingClientSession = true;
+    const screen = render();
+
+    expect(screen.pay().disabled).toBe(true);
+    expect(screen.pay().loading).toBe(false);
+    expect(screen.pay().accessibilityHint).toBeUndefined();
+
+    await act(async () => {
+      void screen.pay().onPress();
+    });
+
+    expect(mockFlush).not.toHaveBeenCalled();
+    expect(mockSubmit).not.toHaveBeenCalled();
   });
 
   it('reads processing as its value, with no hint, while the payment is starting', async () => {

@@ -28,6 +28,7 @@ jest.mock(
           configure: jest.fn(),
           listRequiredInputElementTypes: jest.fn(),
           setRawData: jest.fn(),
+          submit: jest.fn(),
           cleanUp: jest.fn(),
         },
         RNPrimerHeadlessUniversalCheckoutVaultManager: {
@@ -548,6 +549,7 @@ describe('PrimerCheckoutProvider card network selection', () => {
     rawNative.configure.mockResolvedValue(null);
     rawNative.listRequiredInputElementTypes.mockResolvedValue({ inputElementTypes: [] });
     rawNative.setRawData.mockResolvedValue(null);
+    rawNative.submit.mockResolvedValue(null);
     rawNative.cleanUp.mockResolvedValue(null);
   });
 
@@ -671,6 +673,175 @@ describe('PrimerCheckoutProvider card network selection', () => {
 
     expect(rawNative.setRawData.mock.calls.length).toBe(callsAfterClear);
     expect(ctx().selectedCardNetwork).toBeNull();
+  });
+
+  it('reports the client session as updating while native syncs the card network', async () => {
+    const ctx = await setupCardForm();
+    const onCardNetworkSyncChange = findListener('onCardNetworkSyncChange');
+    expect(onCardNetworkSyncChange).toBeDefined();
+
+    await act(async () => {
+      onCardNetworkSyncChange!({ isSyncing: true });
+      await flushPromises();
+    });
+    expect(ctx().cardFormState.isUpdatingClientSession).toBe(true);
+
+    await act(async () => {
+      onCardNetworkSyncChange!({ isSyncing: false });
+      await flushPromises();
+    });
+    expect(ctx().cardFormState.isUpdatingClientSession).toBe(false);
+  });
+
+  it('cleans up the card manager once the card session closes', async () => {
+    const ctx = await setupCardForm();
+    await act(async () => {
+      findListener('onCardNetworkSyncChange')!({ isSyncing: true });
+      await flushPromises();
+    });
+
+    await act(async () => {
+      ctx().setActiveMethod(null);
+      await flushPromises();
+    });
+
+    expect(rawNative.cleanUp).toHaveBeenCalledTimes(1);
+    expect(ctx().cardFormState.isUpdatingClientSession).toBe(false);
+  });
+
+  it('closes the card session only once an in-flight card payment ends', async () => {
+    const ctx = await setupCardForm();
+    await act(async () => {
+      await ctx().submit();
+    });
+
+    await act(async () => {
+      ctx().setActiveMethod(null);
+      await flushPromises();
+    });
+    expect(rawNative.cleanUp).not.toHaveBeenCalled();
+    expect(ctx().activeMethod).toBe('PAYMENT_CARD');
+
+    await act(async () => {
+      findListener('onError')!({
+        error: { errorId: 'payment-failed', description: 'Declined', diagnosticsId: 'diag-1' },
+        checkoutData: null,
+      });
+      await flushPromises();
+    });
+    expect(rawNative.cleanUp).toHaveBeenCalledTimes(1);
+    expect(ctx().activeMethod).toBeNull();
+  });
+
+  async function renderCardForm(clientToken: string) {
+    let latest: PrimerCheckoutContextValue | undefined;
+    const element = (token: string) =>
+      createElement(
+        PrimerCheckoutProvider,
+        { clientToken: token },
+        createElement(TestConsumer, {
+          onContext: (ctx: PrimerCheckoutContextValue) => {
+            latest = ctx;
+          },
+        })
+      );
+    let root: renderer.ReactTestRenderer;
+    await act(async () => {
+      root = renderer.create(element(clientToken));
+      await flushPromises();
+    });
+    await act(async () => {
+      latest!.setActiveMethod('PAYMENT_CARD');
+      await flushPromises();
+    });
+    return { root: root!, element, ctx: () => latest! };
+  }
+
+  function holdManagerCleanUp() {
+    let finish: () => void = () => {};
+    rawNative.cleanUp.mockReturnValue(
+      new Promise((resolve) => {
+        finish = () => resolve(null);
+      })
+    );
+    return () => finish();
+  }
+
+  it('ends the session only after the card manager is cleaned up', async () => {
+    const { root } = await renderCardForm('token-1');
+    const finishManagerCleanUp = holdManagerCleanUp();
+
+    await act(async () => {
+      root.unmount();
+      await flushPromises();
+    });
+    expect(rawNative.cleanUp).toHaveBeenCalledTimes(1);
+    expect(nativeModule.cleanUp).not.toHaveBeenCalled();
+
+    await act(async () => {
+      finishManagerCleanUp();
+      await flushPromises();
+    });
+    expect(nativeModule.cleanUp).toHaveBeenCalledTimes(1);
+  });
+
+  it('ends the session only after the manager a retry holds is cleaned up', async () => {
+    const { root, ctx } = await renderCardForm('token-1');
+    let finishConfigure: () => void = () => {};
+    rawNative.configure.mockReturnValueOnce(
+      new Promise((resolve) => {
+        finishConfigure = () => resolve(null);
+      })
+    );
+    let retrying: Promise<void> = Promise.resolve();
+    await act(async () => {
+      retrying = ctx()
+        .retry()
+        .catch(() => {});
+      await flushPromises();
+    });
+    const finishManagerCleanUp = holdManagerCleanUp();
+
+    await act(async () => {
+      root.unmount();
+      await flushPromises();
+    });
+    expect(rawNative.cleanUp).toHaveBeenCalledTimes(1);
+    expect(nativeModule.cleanUp).not.toHaveBeenCalled();
+
+    await act(async () => {
+      finishManagerCleanUp();
+      await flushPromises();
+    });
+    expect(nativeModule.cleanUp).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      finishConfigure();
+      await retrying;
+      await flushPromises();
+    });
+    expect(rawNative.cleanUp).toHaveBeenCalledTimes(1);
+  });
+
+  it('starts the next session only after the previous one is cleaned up', async () => {
+    const { root, element } = await renderCardForm('token-1');
+    const finishManagerCleanUp = holdManagerCleanUp();
+
+    await act(async () => {
+      root.update(element('token-2'));
+      await flushPromises();
+    });
+    expect(nativeModule.cleanUp).not.toHaveBeenCalled();
+    expect(nativeModule.startWithClientToken).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      finishManagerCleanUp();
+      await flushPromises();
+    });
+    expect(nativeModule.startWithClientToken).toHaveBeenCalledTimes(2);
+    expect(nativeModule.cleanUp.mock.invocationCallOrder[0]).toBeLessThan(
+      nativeModule.startWithClientToken.mock.invocationCallOrder[1]
+    );
   });
 });
 

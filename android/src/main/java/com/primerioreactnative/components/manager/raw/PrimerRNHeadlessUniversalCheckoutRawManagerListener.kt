@@ -8,6 +8,7 @@ import io.primer.android.components.domain.core.models.card.PrimerCardMetadata
 import io.primer.android.components.domain.core.models.metadata.PrimerPaymentMethodBinData
 import io.primer.android.components.domain.core.models.metadata.PrimerPaymentMethodMetadata
 import io.primer.android.components.domain.error.PrimerInputValidationError
+import io.primer.android.components.manager.raw.CardNetworkSyncListener
 import io.primer.android.components.manager.raw.PrimerHeadlessUniversalCheckoutRawDataManagerListener
 import io.primer.android.core.ExperimentalPrimerApi
 import kotlinx.serialization.encodeToString
@@ -17,7 +18,8 @@ import org.json.JSONObject
 
 @ExperimentalPrimerApi
 internal class PrimerRNHeadlessUniversalCheckoutRawManagerListener :
-    PrimerHeadlessUniversalCheckoutRawDataManagerListener {
+    PrimerHeadlessUniversalCheckoutRawDataManagerListener,
+    CardNetworkSyncListener {
     var sendEvent: ((eventName: String, paramsJson: JSONObject?) -> Unit)? = null
 
     override fun onValidationChanged(
@@ -72,6 +74,13 @@ internal class PrimerRNHeadlessUniversalCheckoutRawManagerListener :
                 },
             )
         }
+    }
+
+    override fun onCardNetworkSyncChanged(isSyncing: Boolean) {
+        sendEvent?.invoke(
+            PrimerHeadlessUniversalCheckoutRawDataManagerEvent.ON_CARD_NETWORK_SYNC_CHANGED.eventName,
+            JSONObject().apply { put("isSyncing", isSyncing) },
+        )
     }
 
     private fun PrimerCardBinData.toJsonObject(): JSONObject {

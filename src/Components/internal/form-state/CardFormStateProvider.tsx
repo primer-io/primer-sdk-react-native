@@ -229,7 +229,7 @@ export function PrimerCardFormProvider({ children }: { children: ReactNode }) {
     }
   }, [isReady, activeMethod, cardFormState.isValid, providerSubmit]);
 
-  const reset = useCallback(() => {
+  const clearFields = useCallback(() => {
     setCardNumber('');
     setExpiryDate('');
     setCVV('');
@@ -241,8 +241,19 @@ export function PrimerCardFormProvider({ children }: { children: ReactNode }) {
     isSubmittingRef.current = false;
     fieldsRef.current = { cardNumber: '', expiryDate: '', cvv: '', cardholderName: '' };
     debouncedRef.current?.cancel();
+  }, []);
+
+  const reset = useCallback(() => {
+    clearFields();
     providerSetRawData({ cardNumber: '', expiryDate: '', cvv: '', cardholderName: '' }).catch(() => {});
-  }, [providerSetRawData]);
+  }, [clearFields, providerSetRawData]);
+
+  const previousMethodRef = useRef(activeMethod);
+  useEffect(() => {
+    const leftCard = previousMethodRef.current === PAYMENT_METHOD_TYPE && activeMethod !== PAYMENT_METHOD_TYPE;
+    previousMethodRef.current = activeMethod;
+    if (leftCard) clearFields();
+  }, [activeMethod, clearFields]);
 
   const value = useMemo<UsePrimerCardFormReturn>(
     () => ({
@@ -261,6 +272,7 @@ export function PrimerCardFormProvider({ children }: { children: ReactNode }) {
       markSubmitAttempted,
       submit,
       isSubmitting,
+      isUpdatingClientSession: cardFormState.isUpdatingClientSession,
       submitAttempted,
       requiredFields: cardFormState.requiredFields,
       binData: cardFormState.binData,
@@ -279,6 +291,7 @@ export function PrimerCardFormProvider({ children }: { children: ReactNode }) {
       updateCVV,
       updateCardholderName,
       cardFormState.isValid,
+      cardFormState.isUpdatingClientSession,
       cardFormState.requiredFields,
       cardFormState.binData,
       errors,
