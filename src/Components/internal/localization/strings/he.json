@@ -170,7 +170,7 @@
   "primer_checkout_auto_dismiss_message": "מסך זה ייסגר אוטומטית תוך 3 שניות",
   "primer_checkout_dismissing": "סוגר...",
   "primer_checkout_error_button_other_methods": "בחר אמצעי תשלום אחרים",
-  "primer_checkout_error_subtitle": "אירעה בעיית רשת.",
+  "primer_checkout_error_subtitle": "אנא נסה שוב או השתמש באמצעי תשלום אחר.",
   "primer_checkout_error_title": "התשלום נכשל",
   "primer_checkout_loading_indicator": "טוען",
   "primer_checkout_loading_subtitle": "פעולה זו עשויה להימשך מספר שניות.",

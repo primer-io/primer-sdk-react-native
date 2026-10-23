@@ -170,7 +170,7 @@
   "primer_checkout_auto_dismiss_message": "Bu ekran 3 soniyada avtomatik yopiladi",
   "primer_checkout_dismissing": "Yopilmoqda...",
   "primer_checkout_error_button_other_methods": "Boshqa to'lov usullarini tanlash",
-  "primer_checkout_error_subtitle": "Tarmoq muammosi yuz berdi.",
+  "primer_checkout_error_subtitle": "Iltimos, qayta urinib ko'ring yoki boshqa to'lov usulidan foydalaning.",
   "primer_checkout_error_title": "To'lov amalga oshmadi",
   "primer_checkout_loading_indicator": "Yuklanmoqda",
   "primer_checkout_loading_subtitle": "Bu bir necha soniya vaqt olishi mumkin.",

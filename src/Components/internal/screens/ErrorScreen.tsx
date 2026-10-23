@@ -12,8 +12,8 @@ import { PrimerError } from '../../../models/PrimerError';
 const LOG = '[ErrorScreen]';
 // CheckoutSheet drag-handle chrome above our content: paddingTop(12) + handle(4) + paddingBottom(4).
 const DRAG_HANDLE_AREA = 20;
-const CONTENT_HEIGHT = 262;
-const TOP_PADDING = 34;
+const CONTENT_HEIGHT = 274;
+const TOP_PADDING = 24;
 
 export function ErrorScreen() {
   const { t } = usePrimerLocalization();
@@ -27,7 +27,7 @@ export function ErrorScreen() {
   useStatusScreenHeight(sheetHeight);
 
   const title = params?.title ?? t('primer_checkout_error_title');
-  const subtitle = params?.subtitle ?? params?.error?.description ?? t('primer_checkout_error_subtitle');
+  const subtitle = params?.subtitle ?? t('primer_checkout_error_subtitle');
 
   const onRetry = () => {
     // Navigate to processing first so the user sees an immediate spinner;

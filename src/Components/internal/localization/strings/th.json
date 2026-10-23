@@ -170,7 +170,7 @@
   "primer_checkout_auto_dismiss_message": "หน้าจอนี้จะปิดอัตโนมัติใน 3 วินาที",
   "primer_checkout_dismissing": "กำลังปิด...",
   "primer_checkout_error_button_other_methods": "เลือกวิธีการชำระเงินอื่น",
-  "primer_checkout_error_subtitle": "เกิดปัญหาการเชื่อมต่อเครือข่าย",
+  "primer_checkout_error_subtitle": "กรุณาลองอีกครั้งหรือใช้วิธีการชำระเงินอื่น",
   "primer_checkout_error_title": "การชำระเงินล้มเหลว",
   "primer_checkout_loading_indicator": "กำลังโหลด",
   "primer_checkout_loading_subtitle": "อาจใช้เวลาสักครู่",

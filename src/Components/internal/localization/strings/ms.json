@@ -170,7 +170,7 @@
   "primer_checkout_auto_dismiss_message": "Skrin ini akan ditutup secara automatik dalam 3 saat",
   "primer_checkout_dismissing": "Menutup...",
   "primer_checkout_error_button_other_methods": "Pilih kaedah pembayaran lain",
-  "primer_checkout_error_subtitle": "Terdapat masalah rangkaian.",
+  "primer_checkout_error_subtitle": "Sila cuba lagi atau gunakan kaedah pembayaran lain.",
   "primer_checkout_error_title": "Pembayaran gagal",
   "primer_checkout_loading_indicator": "Memuatkan",
   "primer_checkout_loading_subtitle": "Ini mungkin mengambil masa beberapa saat.",

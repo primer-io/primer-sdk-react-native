@@ -170,7 +170,7 @@
   "primer_checkout_auto_dismiss_message": "Бұл терезе 3 секундтан кейін автоматты түрде жабылады",
   "primer_checkout_dismissing": "Жабылуда...",
   "primer_checkout_error_button_other_methods": "Басқа төлем әдістерін таңдау",
-  "primer_checkout_error_subtitle": "Желі қатесі орын алды.",
+  "primer_checkout_error_subtitle": "Қайталап көріңіз немесе басқа төлем әдісін пайдаланыңыз.",
   "primer_checkout_error_title": "Төлем сәтсіз аяқталды",
   "primer_checkout_loading_indicator": "Жүктелуде",
   "primer_checkout_loading_subtitle": "Бұл бірнеше секунд алуы мүмкін.",

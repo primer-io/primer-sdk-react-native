@@ -170,7 +170,7 @@
   "primer_checkout_auto_dismiss_message": "Kjo faqe do të mbyllet automatikisht për 3 sekonda",
   "primer_checkout_dismissing": "Po mbyllet...",
   "primer_checkout_error_button_other_methods": "Zgjidhni metoda të tjera pagese",
-  "primer_checkout_error_subtitle": "Pati një problem me rrjetin.",
+  "primer_checkout_error_subtitle": "Ju lutem provoni përsëri ose përdorni një metodë tjetër pagese.",
   "primer_checkout_error_title": "Pagesa dështoi",
   "primer_checkout_loading_indicator": "Po ngarkohet",
   "primer_checkout_loading_subtitle": "Kjo mund të zgjasë disa sekonda.",

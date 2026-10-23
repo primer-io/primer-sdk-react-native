@@ -170,7 +170,7 @@
   "primer_checkout_auto_dismiss_message": "Ovaj će se zaslon zatvoriti automatski za 3 sekunde",
   "primer_checkout_dismissing": "Zatvaranje...",
   "primer_checkout_error_button_other_methods": "Odaberite druge načine plaćanja",
-  "primer_checkout_error_subtitle": "Došlo je do problema s mrežom.",
+  "primer_checkout_error_subtitle": "Pokušajte ponovno ili upotrijebite drugi način plaćanja.",
   "primer_checkout_error_title": "Plaćanje nije uspjelo",
   "primer_checkout_loading_indicator": "Učitavanje",
   "primer_checkout_loading_subtitle": "Ovo može potrajati nekoliko sekundi.",

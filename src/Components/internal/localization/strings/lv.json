@@ -170,7 +170,7 @@
   "primer_checkout_auto_dismiss_message": "Šis ekrāns automātiski aizvērsies pēc 3 sekundēm",
   "primer_checkout_dismissing": "Notiek aizvēršana...",
   "primer_checkout_error_button_other_methods": "Izvēlēties citas maksājuma metodes",
-  "primer_checkout_error_subtitle": "Radās tīkla problēma.",
+  "primer_checkout_error_subtitle": "Lūdzu, mēģiniet vēlreiz vai izmantojiet citu maksājuma metodi.",
   "primer_checkout_error_title": "Maksājums neizdevās",
   "primer_checkout_loading_indicator": "Notiek ielāde",
   "primer_checkout_loading_subtitle": "Tas var aizņemt dažas sekundes.",

@@ -170,7 +170,7 @@
   "primer_checkout_auto_dismiss_message": "Այս էկրանը ինքնաբերաբար կփակվի 3 վայրկյանից",
   "primer_checkout_dismissing": "Փակվում է...",
   "primer_checkout_error_button_other_methods": "Ընտրել այլ վճարման եղանակներ",
-  "primer_checkout_error_subtitle": "Ցանցային խնդիր է ծագել։",
+  "primer_checkout_error_subtitle": "Կրկին փորձեք կամ օգտագործեք վճարման այլ եղանակ։",
   "primer_checkout_error_title": "Վճարումը չհաջողվեց",
   "primer_checkout_loading_indicator": "Ներբեռնվում է",
   "primer_checkout_loading_subtitle": "Սա կարող է տևել մի քանի վայրկյան։",

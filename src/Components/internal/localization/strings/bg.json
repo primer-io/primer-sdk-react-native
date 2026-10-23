@@ -170,7 +170,7 @@
   "primer_checkout_auto_dismiss_message": "Този екран ще се затвори автоматично след 3 секунди",
   "primer_checkout_dismissing": "Затваряне...",
   "primer_checkout_error_button_other_methods": "Изберете други методи за плащане",
-  "primer_checkout_error_subtitle": "Възникна проблем с мрежата.",
+  "primer_checkout_error_subtitle": "Моля, опитайте отново или използвайте друг метод за плащане.",
   "primer_checkout_error_title": "Плащането не успя",
   "primer_checkout_loading_indicator": "Зареждане",
   "primer_checkout_loading_subtitle": "Това може да отнеме няколко секунди.",

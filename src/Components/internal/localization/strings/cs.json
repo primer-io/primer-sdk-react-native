@@ -170,7 +170,7 @@
   "primer_checkout_auto_dismiss_message": "Tato obrazovka se automaticky zavře za 3 sekundy",
   "primer_checkout_dismissing": "Zavírá se...",
   "primer_checkout_error_button_other_methods": "Vybrat jiné platební metody",
-  "primer_checkout_error_subtitle": "Došlo k chybě sítě.",
+  "primer_checkout_error_subtitle": "Zkuste to znovu nebo použijte jinou platební metodu.",
   "primer_checkout_error_title": "Platba selhala",
   "primer_checkout_loading_indicator": "Načítání",
   "primer_checkout_loading_subtitle": "Může to trvat několik sekund.",
