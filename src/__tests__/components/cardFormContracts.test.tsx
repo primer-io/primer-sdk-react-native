@@ -104,10 +104,13 @@ describe('C1: card-form public exports are Primer-prefixed', () => {
     expect(hit).toBe(false);
   });
 
-  it.each(['usePrimerTheme', 'usePrimerLocalization'])('root barrel exports %s (prefixed)', (name) => {
-    expect(rootExports).toContain(name);
-    expect(name).toMatch(/^(Primer|usePrimer)/);
-  });
+  it.each(['usePrimerTheme', 'usePrimerLocalization', 'PrimerAcceptedCardNetworks'])(
+    'root barrel exports %s (prefixed)',
+    (name) => {
+      expect(rootExports).toContain(name);
+      expect(name).toMatch(/^(Primer|usePrimer)/);
+    }
+  );
 
   it('every card-form value export in the root barrel is prefixed', () => {
     const cardFormish = rootExports.filter((n) =>
