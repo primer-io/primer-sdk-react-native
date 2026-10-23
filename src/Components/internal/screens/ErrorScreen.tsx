@@ -12,8 +12,8 @@ import { PrimerError } from '../../../models/PrimerError';
 const LOG = '[ErrorScreen]';
 // CheckoutSheet drag-handle chrome above our content: paddingTop(12) + handle(4) + paddingBottom(4).
 const DRAG_HANDLE_AREA = 20;
-const CONTENT_HEIGHT = 262;
-const TOP_PADDING = 34;
+const CONTENT_HEIGHT = 274;
+const TOP_PADDING = 24;
 
 export function ErrorScreen() {
   const { t } = usePrimerLocalization();

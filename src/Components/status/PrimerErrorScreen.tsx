@@ -66,6 +66,7 @@ function createStyles(tokens: PrimerTokens) {
   return StyleSheet.create({
     buttonGroup: {
       gap: spacing.small,
+      marginTop: spacing.medium,
       width: '100%',
     },
     icon: {
