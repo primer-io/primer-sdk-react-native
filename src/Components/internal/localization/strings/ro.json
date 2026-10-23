@@ -170,7 +170,7 @@
   "primer_checkout_auto_dismiss_message": "Acest ecran se va închide automat în 3 secunde",
   "primer_checkout_dismissing": "Se închide...",
   "primer_checkout_error_button_other_methods": "Alegeți alte metode de plată",
-  "primer_checkout_error_subtitle": "A apărut o problemă de rețea.",
+  "primer_checkout_error_subtitle": "Vă rugăm să încercați din nou sau să folosiți o altă metodă de plată.",
   "primer_checkout_error_title": "Plata a eșuat",
   "primer_checkout_loading_indicator": "Se încarcă",
   "primer_checkout_loading_subtitle": "Aceasta poate dura câteva secunde.",

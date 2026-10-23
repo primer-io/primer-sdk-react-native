@@ -170,7 +170,7 @@
   "primer_checkout_auto_dismiss_message": "Màn hình này sẽ tự động đóng trong 3 giây",
   "primer_checkout_dismissing": "Đang đóng...",
   "primer_checkout_error_button_other_methods": "Chọn phương thức thanh toán khác",
-  "primer_checkout_error_subtitle": "Đã xảy ra sự cố mạng.",
+  "primer_checkout_error_subtitle": "Vui lòng thử lại hoặc sử dụng phương thức thanh toán khác.",
   "primer_checkout_error_title": "Thanh toán thất bại",
   "primer_checkout_loading_indicator": "Đang tải",
   "primer_checkout_loading_subtitle": "Quá trình này có thể mất vài giây.",

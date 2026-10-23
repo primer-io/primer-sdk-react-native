@@ -170,7 +170,7 @@
   "primer_checkout_auto_dismiss_message": "ეს ეკრანი ავტომატურად დაიხურება 3 წამში",
   "primer_checkout_dismissing": "იხურება...",
   "primer_checkout_error_button_other_methods": "აირჩიეთ სხვა გადახდის მეთოდი",
-  "primer_checkout_error_subtitle": "წარმოიშვა ქსელის პრობლემა.",
+  "primer_checkout_error_subtitle": "გთხოვთ, სცადოთ ხელახლა ან გამოიყენოთ გადახდის სხვა მეთოდი.",
   "primer_checkout_error_title": "გადახდა ვერ შესრულდა",
   "primer_checkout_loading_indicator": "იტვირთება",
   "primer_checkout_loading_subtitle": "შეიძლება რამდენიმე წამი დასჭირდეს.",

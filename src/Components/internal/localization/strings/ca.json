@@ -170,7 +170,7 @@
   "primer_checkout_auto_dismiss_message": "Aquesta pantalla es tancarà automàticament en 3 segons",
   "primer_checkout_dismissing": "Tancant...",
   "primer_checkout_error_button_other_methods": "Tria altres mètodes de pagament",
-  "primer_checkout_error_subtitle": "Hi ha hagut un problema de xarxa.",
+  "primer_checkout_error_subtitle": "Si us plau, torneu-ho a intentar o feu servir un altre mètode de pagament.",
   "primer_checkout_error_title": "El pagament ha fallat",
   "primer_checkout_loading_indicator": "Carregant",
   "primer_checkout_loading_subtitle": "Això pot trigar uns segons.",

@@ -170,7 +170,7 @@
   "primer_checkout_auto_dismiss_message": "ستغلق هذه الشاشة تلقائياً خلال 3 ثوانٍ",
   "primer_checkout_dismissing": "جاري الإغلاق...",
   "primer_checkout_error_button_other_methods": "اختر طرق دفع أخرى",
-  "primer_checkout_error_subtitle": "حدثت مشكلة في الشبكة.",
+  "primer_checkout_error_subtitle": "يرجى المحاولة مرة أخرى أو استخدام طريقة دفع أخرى.",
   "primer_checkout_error_title": "فشلت عملية الدفع",
   "primer_checkout_loading_indicator": "جاري التحميل",
   "primer_checkout_loading_subtitle": "قد يستغرق هذا بضع ثوانٍ.",

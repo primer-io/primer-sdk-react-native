@@ -27,7 +27,8 @@ export function ErrorScreen() {
   useStatusScreenHeight(sheetHeight);
 
   const title = params?.title ?? t('primer_checkout_error_title');
-  const subtitle = params?.subtitle ?? params?.error?.description ?? t('primer_checkout_error_subtitle');
+  // The error's own text is written for developers; merchants get it in onError and the logs.
+  const subtitle = params?.subtitle ?? t('primer_checkout_error_subtitle');
 
   const onRetry = () => {
     // Navigate to processing first so the user sees an immediate spinner;

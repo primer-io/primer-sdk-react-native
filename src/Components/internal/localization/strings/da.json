@@ -170,7 +170,7 @@
   "primer_checkout_auto_dismiss_message": "Denne skærm lukker automatisk om 3 sekunder",
   "primer_checkout_dismissing": "Lukker...",
   "primer_checkout_error_button_other_methods": "Vælg andre betalingsmetoder",
-  "primer_checkout_error_subtitle": "Der opstod et netværksproblem.",
+  "primer_checkout_error_subtitle": "Prøv venligst igen, eller brug en anden betalingsmetode.",
   "primer_checkout_error_title": "Betaling mislykkedes",
   "primer_checkout_loading_indicator": "Indlæser",
   "primer_checkout_loading_subtitle": "Dette kan tage et par sekunder.",
