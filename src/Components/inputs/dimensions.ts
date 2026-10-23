@@ -5,9 +5,11 @@ import type { PrimerTokens } from '../internal/theme/types';
 
 export const LINE_HEIGHT_RATIO = 1.25;
 
+export const MIN_INTERACTIVE_HEIGHT = 44;
+
 // Outside height of an input box at the default font scale, border included.
 export function defaultFieldHeight(tokens: PrimerTokens): number {
-  return 2 * tokens.spacing.medium + tokens.typography.bodyLarge.lineHeight;
+  return Math.max(MIN_INTERACTIVE_HEIGHT, 2 * tokens.spacing.medium + tokens.typography.bodyLarge.lineHeight);
 }
 
 // Trailing glyph inside the input (expiry calendar, CVV hint). Square, 20×20,

@@ -3,6 +3,7 @@ import { ActivityIndicator, Text, TouchableOpacity, StyleSheet } from 'react-nat
 import type { TextStyle } from 'react-native';
 import { usePrimerTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
+import { MIN_INTERACTIVE_HEIGHT } from '../../inputs/dimensions';
 
 export interface PrimerButtonProps {
   title: string;
@@ -74,7 +75,7 @@ function createStyles(tokens: PrimerTokens) {
     justifyContent: 'center' as const,
     // padding + label line-height already come to 44 at the default tokens, but both are
     // themable, so the touch-target floor has to be pinned independently
-    minHeight: 44,
+    minHeight: MIN_INTERACTIVE_HEIGHT,
     padding: spacing.medium,
     width: '100%' as const,
   };

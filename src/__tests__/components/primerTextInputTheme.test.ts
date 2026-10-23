@@ -35,6 +35,19 @@ describe('PrimerTextInput resolveTheme', () => {
     expect(resolveTheme(roomy).fieldHeight).toBe(52);
   });
 
+  it('keeps the token-built field height at the tappable minimum when the theme shrinks it', () => {
+    const compact = {
+      ...defaultLightTokens,
+      spacing: { ...defaultLightTokens.spacing, medium: 8 },
+      typography: {
+        ...defaultLightTokens.typography,
+        bodyLarge: { ...defaultLightTokens.typography.bodyLarge, lineHeight: 16 },
+      },
+    };
+
+    expect(resolveTheme(compact).fieldHeight).toBe(44);
+  });
+
   it('lets a merchant fieldHeight win over the token-built one', () => {
     expect(resolveTheme(defaultLightTokens, { fieldHeight: 56 }).fieldHeight).toBe(56);
   });
