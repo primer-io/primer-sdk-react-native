@@ -8,14 +8,14 @@ PODS:
   - hermes-engine (0.81.6):
     - hermes-engine/Pre-built (= 0.81.6)
   - hermes-engine/Pre-built (0.81.6)
-  - primer-io-react-native (2.48.0):
+  - primer-io-react-native (2.49.0):
     - boost
     - DoubleConversion
     - fast_float
     - fmt
     - glog
     - hermes-engine
-    - PrimerSDK (= 2.53.0)
+    - PrimerSDK (= 2.53.1)
     - RCT-Folly
     - RCT-Folly/Fabric
     - RCTRequired
@@ -38,41 +38,41 @@ PODS:
     - SocketRocket
     - Yoga
   - Primer3DS (2.8.0)
-  - PrimerBDCCore (2.53.0):
-    - PrimerBDCEngine (= 2.53.0)
-    - PrimerFoundation (= 2.53.0)
-    - PrimerStepResolver (= 2.53.0)
-  - PrimerBDCEngine (2.53.0):
-    - PrimerFoundation (= 2.53.0)
-    - PrimerStepResolver (= 2.53.0)
-  - PrimerCore (2.53.0):
+  - PrimerBDCCore (2.53.1):
+    - PrimerBDCEngine (= 2.53.1)
+    - PrimerFoundation (= 2.53.1)
+    - PrimerStepResolver (= 2.53.1)
+  - PrimerBDCEngine (2.53.1):
+    - PrimerFoundation (= 2.53.1)
+    - PrimerStepResolver (= 2.53.1)
+  - PrimerCore (2.53.1):
     - Primer3DS
-    - PrimerFoundation (= 2.53.0)
-    - PrimerResources (= 2.53.0)
-  - PrimerFoundation (2.53.0)
+    - PrimerFoundation (= 2.53.1)
+    - PrimerResources (= 2.53.1)
+  - PrimerFoundation (2.53.1)
   - PrimerIPay88MYSDK (0.1.7)
   - PrimerKlarnaSDK (1.3.1)
-  - PrimerNetworking (2.53.0):
-    - PrimerFoundation (= 2.53.0)
-  - PrimerResources (2.53.0)
-  - PrimerSDK (2.53.0):
-    - PrimerSDK/Core (= 2.53.0)
-  - PrimerSDK/Core (2.53.0):
-    - PrimerBDCCore (= 2.53.0)
-    - PrimerBDCEngine (= 2.53.0)
-    - PrimerCore (= 2.53.0)
-    - PrimerFoundation (= 2.53.0)
-    - PrimerNetworking (= 2.53.0)
-    - PrimerResources (= 2.53.0)
-    - PrimerStepResolver (= 2.53.0)
-    - PrimerUI (= 2.53.0)
-  - PrimerStepResolver (2.53.0):
-    - PrimerFoundation (= 2.53.0)
+  - PrimerNetworking (2.53.1):
+    - PrimerFoundation (= 2.53.1)
+  - PrimerResources (2.53.1)
+  - PrimerSDK (2.53.1):
+    - PrimerSDK/Core (= 2.53.1)
+  - PrimerSDK/Core (2.53.1):
+    - PrimerBDCCore (= 2.53.1)
+    - PrimerBDCEngine (= 2.53.1)
+    - PrimerCore (= 2.53.1)
+    - PrimerFoundation (= 2.53.1)
+    - PrimerNetworking (= 2.53.1)
+    - PrimerResources (= 2.53.1)
+    - PrimerStepResolver (= 2.53.1)
+    - PrimerUI (= 2.53.1)
+  - PrimerStepResolver (2.53.1):
+    - PrimerFoundation (= 2.53.1)
   - PrimerStripeSDK (1.0.0)
-  - PrimerUI (2.53.0):
-    - PrimerCore (= 2.53.0)
-    - PrimerFoundation (= 2.53.0)
-    - PrimerResources (= 2.53.0)
+  - PrimerUI (2.53.1):
+    - PrimerCore (= 2.53.1)
+    - PrimerFoundation (= 2.53.1)
+    - PrimerResources (= 2.53.1)
   - RCT-Folly (2024.11.18.00):
     - boost
     - DoubleConversion
@@ -1813,7 +1813,7 @@ PODS:
     - React-RCTFBReactNativeSpec
     - ReactCommon/turbomodule/core
     - SocketRocket
-  - react-native-safe-area-context (5.6.2):
+  - react-native-safe-area-context (5.10.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -1831,8 +1831,8 @@ PODS:
     - React-graphics
     - React-ImageManager
     - React-jsi
-    - react-native-safe-area-context/common (= 5.6.2)
-    - react-native-safe-area-context/fabric (= 5.6.2)
+    - react-native-safe-area-context/common (= 5.10.1)
+    - react-native-safe-area-context/fabric (= 5.10.1)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -1843,7 +1843,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-safe-area-context/common (5.6.2):
+  - react-native-safe-area-context/common (5.10.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -1871,7 +1871,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-safe-area-context/fabric (5.6.2):
+  - react-native-safe-area-context/fabric (5.10.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -2731,20 +2731,20 @@ SPEC CHECKSUMS:
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
   glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
   hermes-engine: 7219f6e751ad6ec7f3d7ec121830ee34dae40749
-  primer-io-react-native: a45eb71768cee21c2915b9dad0f4d0d9bfc30d3c
+  primer-io-react-native: a5d82fb0770b5b684c0b0197de1a88b5988c73c5
   Primer3DS: b8b583ef260f703180870358bc55069de74f8f51
-  PrimerBDCCore: 73d3a3b83dd5a924d914c8715920787aee57f1d6
-  PrimerBDCEngine: d847f277dd0d5bae6c86349700a52372e3ef2e40
-  PrimerCore: a024d57ed16f735ea896c82ac505d09273b82e60
-  PrimerFoundation: 1cfb4f3ce1a7f718a1f7aad555087a8b43c6c726
+  PrimerBDCCore: c2d5e0a40bb4cc269dcc31c9224a260bc8f510ce
+  PrimerBDCEngine: 0cdc0a2d41c2d6b396be834b07e2c1866426419b
+  PrimerCore: d2b381207344d8e357f338490969191293ba5c9d
+  PrimerFoundation: fd261febca5d324b0336a94e44c292ae42824f2a
   PrimerIPay88MYSDK: 436ee0be7e2c97e4e81456ccddee20175e9e3c4d
   PrimerKlarnaSDK: 104962584ac6baad20424f73ee8493c8503fd487
-  PrimerNetworking: b6c12d7ee4057ccbb2c8e446b2817946951b3356
-  PrimerResources: 3ce2ce0d0ea23f91667b3e56f79d45c1254da0b7
-  PrimerSDK: a1bf08fd1c76057672e5baf2823e6e08b35bac41
-  PrimerStepResolver: babced653ea6cd3f622af0788d5843ddc75c77c6
+  PrimerNetworking: 1b25b32b2919bf7fd1c686650da56680c7949b65
+  PrimerResources: a718c9d579a0361e8119e23522277fba29862f2c
+  PrimerSDK: b669aab1c36996877d54c99ca90ed89054fb9878
+  PrimerStepResolver: 57db7e7508ec2ea34574d016f48bf444d540b10f
   PrimerStripeSDK: c37d4e7c1b5256d67d4890c4cc4b38ddc9427489
-  PrimerUI: 0142f75868aa8c4c959a1b58334cfbb4bcf22650
+  PrimerUI: ded3044e295f973d4032e75b85cdbdac5ab82570
   RCT-Folly: 846fda9475e61ec7bcbf8a3fe81edfcaeb090669
   RCTDeprecation: d4ef510f229cea15314176aee5e3ba10064a8496
   RCTRequired: 1e41b794629558f6626e2bc39c166ac0ec1c5878
@@ -2778,7 +2778,7 @@ SPEC CHECKSUMS:
   React-logger: 6aa0606d9b8746a0df076bf77cc9940a6405452b
   React-Mapbuffer: 8f8bba0802f49d7926602c5c276f2a2083a5ac55
   React-microtasksnativemodule: 1e4d3178ba5d5000b351b902c603fb0c9d60649e
-  react-native-safe-area-context: c00143b4823773bba23f2f19f85663ae89ceb460
+  react-native-safe-area-context: 735c8ebacdececeb034ce0524f80ef1a484f67fe
   react-native-segmented-control: bf6e0032726727498e18dd437ae88afcdbc18e99
   React-NativeModulesApple: 183f9bd5b20a51a8b016e90be78ed6c1538da4a7
   React-oscompat: d5e3366fbd6c7150e17c1bda85eab583a6fa9fce
