@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Image, StyleSheet, Text, View, type TextStyle } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import { usePrimerTheme } from './theme';
+import { toTextStyle } from './theme/typography';
 import { getNetworkAbbreviation } from './cardNetwork';
 import { PLACEHOLDER_ICON_HEIGHT, PLACEHOLDER_ICON_WIDTH } from '../inputs/dimensions';
 import PrimerHeadlessUniversalCheckoutAssetsManager from '../../HeadlessUniversalCheckout/Managers/AssetsManager';
@@ -87,11 +88,7 @@ export function CardNetworkBadge({ identifier, testID, marginLeft }: CardNetwork
         <Text
           style={{
             color: tokens.colors.textPrimary,
-            fontFamily: tokens.typography.bodySmall.fontFamily,
-            fontSize: tokens.typography.bodySmall.fontSize,
-            fontWeight: tokens.typography.bodySmall.fontWeight as TextStyle['fontWeight'],
-            letterSpacing: tokens.typography.bodySmall.letterSpacing,
-            lineHeight: tokens.typography.bodySmall.lineHeight,
+            ...toTextStyle(tokens.typography.bodySmall),
           }}
         >
           {abbreviation}

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, FlatList, Image, Platform, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import type { Insets, ListRenderItemInfo, TextStyle } from 'react-native';
+import type { Insets, ListRenderItemInfo } from 'react-native';
 
 import { PrimerAnalytics } from '../../analytics';
 import { usePrimerVaultManager } from '../../hooks/usePrimerVaultManager';
@@ -12,6 +12,7 @@ import type { NavigationHeaderAction } from '../navigation/NavigationHeader';
 import { useNavigation } from '../navigation/useNavigation';
 import { usePrimerTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
+import { toTextStyle } from '../theme/typography';
 import { PrimerButton } from '../ui/PrimerButton';
 import { useBottomPadding } from './useBottomPadding';
 import { useStatusScreenHeight } from './useStatusScreenHeight';
@@ -396,11 +397,7 @@ function createStyles(tokens: PrimerTokens) {
     },
     confirmationCaption: {
       color: colors.textSecondary,
-      fontFamily: typography.bodySmall.fontFamily,
-      fontSize: typography.bodySmall.fontSize,
-      fontWeight: typography.bodySmall.fontWeight as TextStyle['fontWeight'],
-      letterSpacing: typography.bodySmall.letterSpacing,
-      lineHeight: typography.bodySmall.lineHeight,
+      ...toTextStyle(typography.bodySmall),
     },
     confirmationContent: {
       gap: spacing.small,
@@ -477,20 +474,12 @@ function createRowStyles(tokens: PrimerTokens, isActive: boolean) {
     },
     mediumText: {
       color: colors.textPrimary,
-      fontFamily: typography.bodyMedium.fontFamily,
-      fontSize: typography.bodyMedium.fontSize,
-      fontWeight: typography.bodyMedium.fontWeight as TextStyle['fontWeight'],
-      letterSpacing: typography.bodyMedium.letterSpacing,
-      lineHeight: typography.bodyMedium.lineHeight,
+      ...toTextStyle(typography.bodyMedium),
       textAlign: 'right',
     },
     primaryText: {
       color: colors.textPrimary,
-      fontFamily: typography.bodyLarge.fontFamily,
-      fontSize: typography.bodyLarge.fontSize,
-      fontWeight: typography.bodyLarge.fontWeight as TextStyle['fontWeight'],
-      letterSpacing: typography.bodyLarge.letterSpacing,
-      lineHeight: typography.bodyLarge.lineHeight,
+      ...toTextStyle(typography.bodyLarge),
     },
     rightCol: {
       alignItems: 'flex-end',
@@ -508,11 +497,7 @@ function createRowStyles(tokens: PrimerTokens, isActive: boolean) {
     },
     secondaryText: {
       color: colors.textSecondary,
-      fontFamily: typography.bodySmall.fontFamily,
-      fontSize: typography.bodySmall.fontSize,
-      fontWeight: typography.bodySmall.fontWeight as TextStyle['fontWeight'],
-      letterSpacing: typography.bodySmall.letterSpacing,
-      lineHeight: typography.bodySmall.lineHeight,
+      ...toTextStyle(typography.bodySmall),
     },
     tile: {
       backgroundColor: colors.backgroundPrimary,

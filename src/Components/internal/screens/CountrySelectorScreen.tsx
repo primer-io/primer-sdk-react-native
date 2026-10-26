@@ -3,6 +3,7 @@ import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View, useWindowDim
 import type { ListRenderItemInfo, TextStyle } from 'react-native';
 import { usePrimerTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
+import { toTextStyle } from '../theme/typography';
 import { NavigationHeader } from '../navigation/NavigationHeader';
 import { useNavigation } from '../navigation/useNavigation';
 import { useRoute } from '../navigation/useRoute';
@@ -240,11 +241,7 @@ function createStyles(tokens: PrimerTokens) {
     },
     emptyText: {
       color: colors.textSecondary,
-      fontFamily: typography.bodyLarge.fontFamily,
-      fontSize: typography.bodyLarge.fontSize,
-      fontWeight: typography.bodyLarge.fontWeight as TextStyle['fontWeight'],
-      letterSpacing: typography.bodyLarge.letterSpacing,
-      lineHeight: typography.bodyLarge.lineHeight,
+      ...toTextStyle(typography.bodyLarge),
     },
     flag: {
       fontSize: typography.bodyLarge.fontSize + 4,
@@ -269,11 +266,7 @@ function createStyles(tokens: PrimerTokens) {
     rowLabel: {
       color: colors.textPrimary,
       flex: 1,
-      fontFamily: typography.bodyLarge.fontFamily,
-      fontSize: typography.bodyLarge.fontSize,
-      fontWeight: typography.bodyLarge.fontWeight as TextStyle['fontWeight'],
-      letterSpacing: typography.bodyLarge.letterSpacing,
-      lineHeight: typography.bodyLarge.lineHeight,
+      ...toTextStyle(typography.bodyLarge),
     },
     rowSelected: {
       backgroundColor: colors.backgroundSecondary,

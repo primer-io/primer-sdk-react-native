@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
-import type { TextStyle } from 'react-native';
 
 import { usePrimerLocalization } from '../localization';
 import { usePrimerTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
+import { toTextStyle } from '../theme/typography';
 import { PrimerTextInput } from '../../inputs/PrimerTextInput';
 import type { PrimerTextInputRef } from '../../types/CardInputTypes';
 
@@ -82,11 +82,7 @@ function createStyles(tokens: PrimerTokens) {
     caption: {
       color: colors.textSecondary,
       flex: 1,
-      fontFamily: typography.bodySmall.fontFamily,
-      fontSize: typography.bodySmall.fontSize,
-      fontWeight: typography.bodySmall.fontWeight as TextStyle['fontWeight'],
-      letterSpacing: typography.bodySmall.letterSpacing,
-      lineHeight: typography.bodySmall.lineHeight,
+      ...toTextStyle(typography.bodySmall),
     },
     icon: {
       height: ICON_SIZE,

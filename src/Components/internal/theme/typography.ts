@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import { Platform, type TextStyle } from 'react-native';
 import type { PrimerTypographyStyle, PrimerTypographyTokens } from './types';
 
 // The family each platform registers for the bundled font: iOS names the variable font, Android names the resource.
@@ -33,4 +33,14 @@ export function resolveTypography(source: PrimerTypographySource): PrimerTypogra
   }
 
   return { fontFamily: source.fontFamily, ...styles };
+}
+
+export function toTextStyle(style: PrimerTypographyStyle): TextStyle {
+  return {
+    fontFamily: style.fontFamily,
+    fontSize: style.fontSize,
+    fontWeight: style.fontWeight,
+    letterSpacing: style.letterSpacing,
+    lineHeight: style.lineHeight,
+  };
 }

@@ -9,7 +9,7 @@ import {
   View,
   useWindowDimensions,
 } from 'react-native';
-import type { NativeSyntheticEvent, TextStyle } from 'react-native';
+import type { NativeSyntheticEvent } from 'react-native';
 
 import { PrimerKlarnaPaymentView } from '../../../HeadlessUniversalCheckout/Components/PrimerKlarnaPaymentView';
 import { usePrimerPaymentMethod } from '../../hooks/usePrimerPaymentMethod';
@@ -22,6 +22,7 @@ import { useNavigation } from '../navigation/useNavigation';
 import { useRoute } from '../navigation/useRoute';
 import { usePrimerTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
+import { toTextStyle } from '../theme/typography';
 import { PrimerButton } from '../ui/PrimerButton';
 import { useSheetHeight } from '../checkout-sheet';
 import { CONTENT_HEIGHT as LOADING_CONTENT_HEIGHT } from './LoadingScreen';
@@ -269,11 +270,7 @@ function createStyles(tokens: PrimerTokens) {
     categoryName: {
       color: colors.textPrimary,
       flex: 1,
-      fontFamily: typography.bodyLarge.fontFamily,
-      fontSize: typography.bodyLarge.fontSize,
-      fontWeight: typography.bodyLarge.fontWeight as TextStyle['fontWeight'],
-      letterSpacing: typography.bodyLarge.letterSpacing,
-      lineHeight: typography.bodyLarge.lineHeight,
+      ...toTextStyle(typography.bodyLarge),
     },
     checkIcon: {
       height: sizes.medium,

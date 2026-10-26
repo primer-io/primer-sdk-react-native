@@ -1,9 +1,10 @@
 import { useRef, useState, type ComponentRef } from 'react';
-import { Image, Pressable, StyleSheet, Text, View, type TextStyle } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { usePrimerCardNetworkSelection } from './hooks/usePrimerCardNetworkSelection';
 import { Popover, type PopoverAnchor } from './internal/Popover';
 import { CardNetworkBadge } from './internal/CardNetworkBadge';
 import { usePrimerTheme } from './internal/theme';
+import { toTextStyle } from './internal/theme/typography';
 import { TRAILING_ICON_MARGIN } from './inputs/dimensions';
 
 const LOG = '[PrimerCardNetworkSelector]';
@@ -118,11 +119,7 @@ export function PrimerCardNetworkSelector({ testID }: PrimerCardNetworkSelectorP
                 <Text
                   style={{
                     color: tokens.colors.textPrimary,
-                    fontFamily: tokens.typography.bodyLarge.fontFamily,
-                    fontSize: tokens.typography.bodyLarge.fontSize,
-                    fontWeight: tokens.typography.bodyLarge.fontWeight as TextStyle['fontWeight'],
-                    letterSpacing: tokens.typography.bodyLarge.letterSpacing,
-                    lineHeight: tokens.typography.bodyLarge.lineHeight,
+                    ...toTextStyle(tokens.typography.bodyLarge),
                   }}
                 >
                   {n.displayName}

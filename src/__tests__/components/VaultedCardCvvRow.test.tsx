@@ -5,20 +5,6 @@ import renderer, { act } from 'react-test-renderer';
 // @ts-expect-error -- React 19 concurrent act environment
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
-jest.mock(
-  'react-native',
-  () => ({
-    Image: 'Image',
-    StyleSheet: { create: (s: unknown) => s, flatten: (s: unknown) => s },
-    Text: 'Text',
-    TextInput: 'TextInput',
-    View: 'View',
-    Platform: { OS: 'ios' },
-    useColorScheme: () => 'light',
-  }),
-  { virtual: true }
-);
-
 jest.mock('../../Components/internal/theme', () => ({
   usePrimerColorScheme: () => 'light',
   usePrimerTheme: () => ({
