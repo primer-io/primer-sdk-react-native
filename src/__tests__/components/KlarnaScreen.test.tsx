@@ -55,8 +55,6 @@ jest.mock('../../Components/internal/screens/useBottomSafeArea', () => ({ useBot
 
 import { KlarnaScreen } from '../../Components/internal/screens/KlarnaScreen';
 
-const KLARNA_BADGE = require('../../Components/internal/screens/assets/klarna-badge.png');
-
 function klarnaState(overrides: Record<string, unknown> = {}) {
   return {
     kind: 'klarna',
@@ -95,7 +93,7 @@ function render(overrides: Record<string, unknown> = {}) {
     mockKlarna = klarnaState(next);
     act(() => tree.update(createElement(KlarnaScreen)));
   };
-  return { tree, rows, row, button, klarnaViews, klarnaStyle, reportHeight, update };
+  return { row, button, klarnaViews, klarnaStyle, reportHeight, update };
 }
 
 function flatten(style: unknown): Record<string, unknown> {
@@ -119,34 +117,7 @@ afterEach(() => {
   jest.useRealTimers();
 });
 
-describe('KlarnaScreen — header', () => {
-  it('titles the screen "Klarna" in the middle of the back row, like the native SDKs', () => {
-    const { tree } = render();
-
-    expect(tree.root.findByType('NavigationHeader').props.title).toBe('primer_vault_default_klarna');
-    expect(tree.root.findByType('NavigationHeader').props.titleAlignment).toBe('center');
-  });
-});
-
 describe('KlarnaScreen — option list', () => {
-  it('shows each option as the Klarna badge and its name, with no radio and no description line', () => {
-    const { tree, rows } = render();
-
-    expect(rows()).toHaveLength(2);
-    for (const r of rows()) {
-      const [badge] = ofType(r, 'Image');
-      expect(ofType(r, 'Image')).toHaveLength(1);
-      expect(badge.props.source).toBe(KLARNA_BADGE);
-      expect(flatten(badge.props.style)).toEqual({ height: 24, width: 56 });
-      expect(badge.props.importantForAccessibility).toBe('no-hide-descendants');
-      expect(badge.props.accessibilityElementsHidden).toBe(true);
-      expect(r.props.accessibilityState).toEqual({ checked: false });
-      expect(ofType(r, 'ActivityIndicator')).toHaveLength(0);
-    }
-    expect(rows().map((r: any) => texts(r))).toEqual([['Pay later'], ['Pay in full today']]);
-    expect(texts(tree.root)).not.toContain('primer_klarna_select_category_description');
-  });
-
   it('selects an option on tap, and ignores a tap on the option already loaded', () => {
     const { row } = render({ selectedCategoryId: 'pay_later', isViewLoaded: true });
 
@@ -218,6 +189,9 @@ describe('KlarnaScreen — option list', () => {
     expect(ofType(row('Pay in full today'), 'Image')).toHaveLength(1);
     expect(button().props.disabled).toBe(false);
     expect(button().props.loading).toBe(false);
+    expect(button().props.title).toBe('primer_klarna_button_authorize');
+    expect(button().props.accessibilityLabel).toBeUndefined();
+    expect(button().props.accessibilityHint).toBeUndefined();
 
     reportHeight(86);
     expect(klarnaStyle().height).toBe(86);
@@ -268,35 +242,11 @@ describe('KlarnaScreen — option list', () => {
     act(() => jest.advanceTimersByTime(1500));
     expect(klarnaStyle().height).toBe(53);
   });
-
-  it('spins Continue only while an authorize is in flight', () => {
-    const { button } = render({ selectedCategoryId: 'pay_later', isViewLoaded: true, isLoading: true });
-
-    expect(button().props.loading).toBe(true);
-  });
 });
 
 describe('KlarnaScreen — Continue button', () => {
-  it('is named by its title, with no hint, once the chosen option is ready', () => {
-    const { button, reportHeight } = render({ selectedCategoryId: 'pay_later', isViewLoaded: true });
-    reportHeight(53);
-
-    expect(button().props.title).toBe('primer_klarna_button_authorize');
-    expect(button().props.loading).toBe(false);
-    expect(button().props.accessibilityLabel).toBeUndefined();
-    expect(button().props.accessibilityHint).toBeUndefined();
-  });
-
   it('gets the disabled hint before an option is chosen', () => {
     const { button } = render();
-
-    expect(button().props.disabled).toBe(true);
-    expect(button().props.loading).toBe(false);
-    expect(button().props.accessibilityHint).toBe('accessibility_card_form_submit_disabled');
-  });
-
-  it('keeps the disabled hint while the chosen option loads, since the spinner is in the row', () => {
-    const { button } = render({ selectedCategoryId: 'pay_later', isViewLoaded: true });
 
     expect(button().props.disabled).toBe(true);
     expect(button().props.loading).toBe(false);

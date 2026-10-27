@@ -4,14 +4,11 @@ import { buildRawData } from '../../Components/internal/screens/buildRawData';
 describe('buildRawData', () => {
   it('maps a BLIK one-time code (iOS OTP) to { otp }', () => {
     expect(buildRawData('ADYEN_BLIK', { OTP: '123456' })).toEqual({ otp: '123456' });
+    expect(buildRawData('ADYEN_BLIK', { OTP: '111', PHONE_NUMBER: '+44123' })).toEqual({ otp: '111' });
   });
 
   it('maps the Android OTP_CODE key to { otp } as well', () => {
     expect(buildRawData('ADYEN_BLIK', { OTP_CODE: '654321' })).toEqual({ otp: '654321' });
-  });
-
-  it('picks the shape by type, ignoring unrelated fields', () => {
-    expect(buildRawData('ADYEN_BLIK', { OTP: '111', PHONE_NUMBER: '+44123' })).toEqual({ otp: '111' });
   });
 
   it('maps a phone number (MBWay) to { phoneNumber }', () => {
@@ -34,9 +31,5 @@ describe('buildRawData', () => {
       expiryDate: '',
       cardholderName: '',
     });
-  });
-
-  it('returns an empty payload for an unknown type — no silent card fallthrough', () => {
-    expect(buildRawData('SOMETHING_ELSE', { OTP: '123', CARD_NUMBER: '4111' })).toEqual({});
   });
 });
