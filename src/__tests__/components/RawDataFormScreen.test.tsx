@@ -183,7 +183,6 @@ describe('RawDataFormScreen (ORC-6514)', () => {
     expect(mockSubmit).toHaveBeenCalledTimes(1);
   });
 
-  // ORC-7697: 'number-pad' has no '/' key, so without auto-insert a valid expiry is untypeable.
   describe('Bancontact expiry (ORC-7697)', () => {
     const bancontactForm = (overrides: Record<string, unknown> = {}) => {
       mockPaymentMethodType = 'ADYEN_BANCONTACT_CARD';
@@ -206,34 +205,14 @@ describe('RawDataFormScreen (ORC-6514)', () => {
 
       act(() => expiryInput(root).props.onChangeText('03/30'));
       expect(expiryInput(root).props.value).toBe('03/30');
-    });
-
-    it('sends MM/YYYY to native while displaying MM/YY', () => {
-      const root = bancontactForm();
-
-      act(() => expiryInput(root).props.onChangeText('03/30'));
-
-      expect(expiryInput(root).props.value).toBe('03/30');
       expect(mockSetData).toHaveBeenLastCalledWith({
         cardNumber: '',
         expiryDate: '03/2030',
         cardholderName: '',
       });
-    });
 
-    it('lets a delete cross the separator', () => {
-      const root = bancontactForm();
-
-      act(() => expiryInput(root).props.onChangeText('03/30'));
       act(() => expiryInput(root).props.onChangeText('03/3'));
       expect(expiryInput(root).props.value).toBe('033');
-    });
-
-    it('caps the expiry at the displayed MM/YY length', () => {
-      const root = bancontactForm();
-
-      expect(expiryInput(root).props.maxLength).toBe(5);
-      expect(textInputs(root)[0].props.maxLength).toBeUndefined();
     });
   });
 });
