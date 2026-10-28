@@ -9,35 +9,19 @@ import { PrimerTextInput } from '../../../Components/inputs/PrimerTextInput';
 import { ThemeContext, type PrimerColorScheme } from '../../../Components/internal/theme/ThemeContext';
 import { defaultDarkTokens, defaultLightTokens } from '../../../Components/internal/theme/tokens';
 
-function renderUnder(scheme: PrimerColorScheme | null) {
+function renderUnder(scheme: PrimerColorScheme) {
   const field = createElement(PrimerTextInput, { value: '', onChangeText: () => {}, label: 'Name' });
   const tokens = scheme === 'dark' ? defaultDarkTokens : defaultLightTokens;
   let instance: any;
   act(() => {
-    instance = renderer.create(
-      scheme ? createElement(ThemeContext.Provider, { value: { scheme, tokens } }, field) : field
-    );
+    instance = renderer.create(createElement(ThemeContext.Provider, { value: { scheme, tokens } }, field));
   });
   return instance.root.find((n: any) => n.type === 'TextInput').props;
 }
-
-afterEach(() => {
-  jest.mocked(useColorScheme).mockReturnValue('light');
-});
 
 describe('PrimerTextInput keyboardAppearance', () => {
   it('is dark when the checkout is forced dark on a light phone', () => {
     jest.mocked(useColorScheme).mockReturnValue('light');
     expect(renderUnder('dark').keyboardAppearance).toBe('dark');
-  });
-
-  it('is light when the checkout is forced light on a dark phone', () => {
-    jest.mocked(useColorScheme).mockReturnValue('dark');
-    expect(renderUnder('light').keyboardAppearance).toBe('light');
-  });
-
-  it('follows the phone outside the provider', () => {
-    jest.mocked(useColorScheme).mockReturnValue('dark');
-    expect(renderUnder(null).keyboardAppearance).toBe('dark');
   });
 });

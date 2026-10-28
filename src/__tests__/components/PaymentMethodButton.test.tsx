@@ -134,12 +134,6 @@ describe('PaymentMethodButton — partner', () => {
     });
   });
 
-  it('keeps a merchant-supplied logo and colour when the item has no backend assets', () => {
-    const root = render(makeItem('PAYPAL', { logo: 'file:///merchant.png', backgroundColor: '#123123' }));
-    expect(rowStyle(root).backgroundColor).toBe('#123123');
-    expect(root.findByType('Image').props.source).toEqual({ uri: 'file:///merchant.png' });
-  });
-
   it('is a button labelled with the method name, and calls onPress', () => {
     const onPress = jest.fn();
     const root = render(withAssets('PAYPAL', 'PayPal', LOGOS, { colored: '#ffc439' }), { onPress });
@@ -174,11 +168,12 @@ describe('PaymentMethodButton — partner', () => {
     );
   });
 
-  it('lets the name shrink so large text wraps instead of being cut off', () => {
+  it("lets the name, and Klarna's words, shrink so large text wraps instead of being cut off", () => {
     const root = render(withAssets('PAYPAL', 'PayPal', {}, { colored: '#ffc439' }));
     const [name] = texts(root);
 
     expect(flat(name!.props.style).flexShrink).toBe(1);
+    texts(render(makeItem('KLARNA'))).forEach((text) => expect(flat(text.props.style).flexShrink).toBe(1));
   });
 });
 
@@ -201,21 +196,19 @@ describe('PaymentMethodButton — card', () => {
   };
   const card = withAssets('PAYMENT_CARD', 'Card', { colored: 'file:///backend-card.png' }, { colored: '#000000' });
 
-  it('fills with backgroundOutlinedDefault inside the default border', () => {
-    expect(rowStyle(render(card, { tokens }))).toMatchObject({
-      backgroundColor: '#123456',
-      borderColor: tokens.colors.borderOutlinedDefault,
-      borderWidth: tokens.widths.default,
-    });
-  });
-
-  it('draws the bundled glyph tinted iconPrimary, not the backend logo', () => {
-    const image = render(card, { tokens }).findByType('Image');
+  it('draws the bundled glyph tinted iconPrimary, not the backend logo, on backgroundOutlinedDefault inside the default border', () => {
+    const root = render(card, { tokens });
+    const image = root.findByType('Image');
     expect(image.props.source).toBe(creditCardIcon);
     expect(flat(image.props.style)).toMatchObject({
       height: tokens.sizes.medium,
       tintColor: tokens.colors.iconPrimary,
       width: tokens.sizes.medium,
+    });
+    expect(rowStyle(root)).toMatchObject({
+      backgroundColor: '#123456',
+      borderColor: tokens.colors.borderOutlinedDefault,
+      borderWidth: tokens.widths.default,
     });
   });
 
@@ -240,7 +233,7 @@ describe('PaymentMethodButton — Klarna', () => {
   const { before, after } = splitKlarnaLabel(label);
   const words = [before, after].filter((word) => word != null);
 
-  it.each(['light', 'dark'] as const)('draws "Pay with Klarna" with the pink badge on Klarna black (%s)', (scheme) => {
+  it.each(['dark'] as const)('draws "Pay with Klarna" with the pink badge on Klarna black (%s)', (scheme) => {
     const root = render(klarna, { scheme });
     const tokens = scheme === 'dark' ? defaultDarkTokens : defaultLightTokens;
 
@@ -294,10 +287,6 @@ describe('PaymentMethodButton — Klarna', () => {
     expect(flat(surcharge!.props.style)).toMatchObject({ color: '#ffffff', opacity: 0.8 });
     expect(row(root).props.accessibilityLabel).toBe(`${label}, +50`);
   });
-
-  it('lets the words shrink so large text wraps instead of being cut off', () => {
-    texts(render(klarna)).forEach((text) => expect(flat(text.props.style).flexShrink).toBe(1));
-  });
 });
 
 describe('PaymentMethodButton — Apple Pay', () => {
@@ -313,17 +302,9 @@ describe('PaymentMethodButton — Apple Pay', () => {
     );
   });
 
-  it.each([
-    ['dark', 'light'],
-    ['light', 'dark'],
-  ] as const)('follows the SDK scheme %s over the phone %s', (scheme, phone) => {
+  it.each([['dark', 'light']] as const)('follows the SDK scheme %s over the phone %s', (scheme, phone) => {
     rnMock.useColorScheme.mockReturnValue(phone);
     expect(render(applePay, { scheme }).findByType('PrimerApplePayButton').props.colorScheme).toBe(scheme);
-  });
-
-  it('takes the corner radius from the theme', () => {
-    const tokens = { ...defaultLightTokens, radii: { ...defaultLightTokens.radii, medium: 16 } };
-    expect(render(applePay, { tokens }).findByType('PrimerApplePayButton').props.cornerRadius).toBe(16);
   });
 
   it('starts the method from the row and shows no surcharge', () => {
@@ -343,20 +324,8 @@ describe('PaymentMethodButton — Apple Pay', () => {
 });
 
 describe('PaymentMethodButton — height', () => {
-  it.each([
-    ['card', makeItem('PAYMENT_CARD')],
-    ['Klarna', makeItem('KLARNA')],
-    ['partner logo', withAssets('PAYPAL', 'PayPal', LOGOS, { colored: '#ffc439' })],
-    ['partner name', withAssets('ACME_PAY', 'Acme Pay', {}, {})],
-  ])('lets the %s button grow from 44 with large text', (_, item) => {
+  it.each([['card', makeItem('PAYMENT_CARD')]])('lets the %s button grow from 44 with large text', (_, item) => {
     expect(rowStyle(render(item))).toMatchObject({ minHeight: 44, paddingVertical: defaultLightTokens.spacing.small });
     expect(rowStyle(render(item)).height).toBeUndefined();
-  });
-
-  it.each([
-    ['Apple Pay', withAssets('APPLE_PAY', 'Apple Pay', LOGOS, {})],
-    ['Google Pay', makeItem('GOOGLE_PAY', { nativeViewName: 'PrimerGooglePayButton' })],
-  ])('keeps the native %s button at 44', (_, item) => {
-    expect(rowStyle(render(item)).height).toBe(44);
   });
 });

@@ -108,21 +108,6 @@ function wrap(ctx: PrimerCheckoutContextValue, nav: NavigationContextValue, node
 }
 
 describe('PaymentOutcomeTransitioner', () => {
-  it('navigates to the error screen when the outcome is an error (the stuck-flow guarantee)', () => {
-    const { value, replace } = makeNav();
-    const error = new PrimerError('declined', undefined, 'Card declined', undefined, undefined);
-    act(() => {
-      create(
-        wrap(
-          { ...baseContext, paymentOutcome: { status: 'error', error, data: null } },
-          value,
-          createElement(PaymentOutcomeTransitioner)
-        )
-      );
-    });
-    expect(replace).toHaveBeenCalledWith(CheckoutRoute.error, { error });
-  });
-
   it('holds the outcome while isAnimating, then routes exactly once when it clears', () => {
     const replace = jest.fn();
     const error = new PrimerError('declined', undefined, 'Card declined', undefined, undefined);

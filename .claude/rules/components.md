@@ -75,16 +75,16 @@ Treat those as grandfathered. For **new** work, put anything public in `hooks/`,
 - The example app demonstrates the **prebuilt sheet only** — `PrimerCheckoutProvider` wrapping
   `PrimerCheckoutSheet`. No custom-hook UI screens.
 
-### What the contract test does and doesn't cover
+### What the public API test does and doesn't cover
 
-`src/__tests__/components/cardFormContracts.test.tsx` is narrower than its name suggests. It
-asserts 14 names against **`src/Components/index.ts`** — not `src/index.tsx` — plus a naming
-blacklist and PCI prop guards. Only `usePrimerTheme`, `usePrimerLocalization` and
-`PrimerAcceptedCardNetworks` are checked against the root barrel.
+`src/__tests__/components/publicApi.test.tsx` reads `src/index.tsx` as text and asserts every
+Checkout Components value and type it exports today against its `export { … } from` and
+`export type { … } from` statements, plus one PCI guard: `PrimerCardInputProps` declares no
+`value`, `onChange`, `onChangeText`, `cardForm` or `binData` member.
 
-So it will **not** catch dropping `PrimerCheckoutSheet`, `usePrimerCheckout`, the inputs or the
-status screens from `src/index.tsx`. If you change the public surface, check `src/index.tsx` by
-hand — a green test is not evidence the API is intact.
+It checks names, not shapes — a changed prop or return type passes it. The list is the test's own:
+a **new** public name is unguarded until you add it there, and an export written without `from`
+(`export { X };`) is invisible to it.
 
 ## Native dependencies
 

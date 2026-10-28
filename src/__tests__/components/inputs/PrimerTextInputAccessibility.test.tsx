@@ -30,8 +30,9 @@ describe('PrimerTextInput screen reader error', () => {
     expect(input(render('Invalid card number')).props.accessibilityLabel).toBe('Card number, Invalid card number');
   });
 
-  it('reads only the field without an error', () => {
+  it('reads only the field and announces nothing without an error', () => {
     expect(input(render()).props.accessibilityLabel).toBe('Card number');
+    expect(rnMock.AccessibilityInfo.announceForAccessibility).not.toHaveBeenCalled();
   });
 
   it('announces a new error on iOS, where the live region does nothing', () => {
@@ -44,12 +45,6 @@ describe('PrimerTextInput screen reader error', () => {
     rnMock.Platform.OS = 'android';
 
     render('Invalid card number');
-
-    expect(rnMock.AccessibilityInfo.announceForAccessibility).not.toHaveBeenCalled();
-  });
-
-  it('announces nothing without an error', () => {
-    render();
 
     expect(rnMock.AccessibilityInfo.announceForAccessibility).not.toHaveBeenCalled();
   });

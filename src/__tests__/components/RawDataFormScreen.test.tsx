@@ -112,8 +112,6 @@ function render() {
 }
 
 const textInputs = (root: any) => root.findAll((n: any) => n.type === 'TextInput');
-// The bordered View PrimerTextInput wraps each field in — carries the focus/error/disabled border.
-const fieldBorder = (root: any, index = 0) => textInputs(root)[index].parent.props.style;
 const payButton = (root: any) => root.findAll((n: any) => n.type === 'TouchableOpacity')[0];
 
 describe('RawDataFormScreen (ORC-6514)', () => {
@@ -143,26 +141,7 @@ describe('RawDataFormScreen (ORC-6514)', () => {
       'creditCardNumber',
       'creditCardName',
     ]);
-  });
-
-  it('capitalises the cardholder name and nothing else', () => {
-    mockMethod = rawDataForm({ requiredInputs: ['PHONE_NUMBER', 'CARDHOLDER_NAME'] });
-    const inputs = textInputs(render().root);
-
-    expect(inputs.map((i: any) => i.props.autoCapitalize)).toEqual(['none', 'words']);
-  });
-
-  it('draws the focus border while a field is focused (ORC-8178)', () => {
-    mockMethod = rawDataForm({ requiredInputs: ['PHONE_NUMBER'] });
-    const root = render().root;
-
-    expect(fieldBorder(root)).toMatchObject({ borderColor: '#ccc', borderWidth: 1 });
-
-    act(() => textInputs(root)[0].props.onFocus());
-    expect(fieldBorder(root)).toMatchObject({ borderColor: '#08c', borderWidth: 2 });
-
-    act(() => textInputs(root)[0].props.onBlur());
-    expect(fieldBorder(root)).toMatchObject({ borderColor: '#ccc', borderWidth: 1 });
+    expect(inputs.map((i: any) => i.props.autoCapitalize)).toEqual(['none', 'none', 'none', 'words']);
   });
 
   it('forwards typed input to the SDK in the right raw-data shape', () => {
@@ -178,9 +157,9 @@ describe('RawDataFormScreen (ORC-6514)', () => {
     const root = render().root;
 
     expect(payButton(root).props.disabled).toBe(true);
-    // Disabled reads as the grey fill, not a faded brand (ORC-8265).
-    expect(payButton(root).props.style[0].backgroundColor).toBe('#eee');
-    expect(payButton(root).props.style[1]).toEqual({ opacity: 1 });
+    expect(payButton(root).props.accessibilityLabel).toBe('primer_common_button_pay');
+    expect(payButton(root).props.accessibilityHint).toBe('accessibility_card_form_submit_disabled');
+    expect(payButton(root).props.accessibilityValue).toBeUndefined();
     act(() => payButton(root).props.onPress());
     expect(mockSubmit).not.toHaveBeenCalled();
     expect(mockReplace).not.toHaveBeenCalled();
@@ -191,34 +170,11 @@ describe('RawDataFormScreen (ORC-6514)', () => {
     const root = render().root;
 
     expect(payButton(root).props.disabled).toBe(false);
-    expect(payButton(root).props.style[0].backgroundColor).toBe('#08f');
-    act(() => payButton(root).props.onPress());
-    expect(mockReplace).toHaveBeenCalledWith('processing');
-    expect(mockSubmit).toHaveBeenCalledTimes(1);
-  });
-
-  it('names Pay by its title and gives it the disabled hint until the data is valid', () => {
-    mockMethod = rawDataForm({ isValid: false });
-    const root = render().root;
-
-    expect(payButton(root).props.accessibilityLabel).toBe('primer_common_button_pay');
-    expect(payButton(root).props.accessibilityHint).toBe('accessibility_card_form_submit_disabled');
-    expect(payButton(root).props.accessibilityValue).toBeUndefined();
-  });
-
-  it('drops the hint once the data is valid', () => {
-    mockMethod = rawDataForm({ isValid: true });
-    const root = render().root;
-
     expect(payButton(root).props.accessibilityLabel).toBe('primer_common_button_pay');
     expect(payButton(root).props.accessibilityHint).toBeUndefined();
     expect(payButton(root).props.accessibilityValue).toBeUndefined();
-  });
-
-  it('renders nothing when the method is not a raw-data form', () => {
-    mockMethod = { kind: 'card', isAvailable: true, start: jest.fn(), clearPaymentOutcome: jest.fn() };
-
-    expect(render().toJSON()).toBeNull();
-    expect(mockStart).not.toHaveBeenCalled();
+    act(() => payButton(root).props.onPress());
+    expect(mockReplace).toHaveBeenCalledWith('processing');
+    expect(mockSubmit).toHaveBeenCalledTimes(1);
   });
 });

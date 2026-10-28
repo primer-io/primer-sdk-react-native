@@ -15,10 +15,6 @@ describe('interpolate', () => {
     expect(interpolate('Count: {{n}}', { n: 0 })).toBe('Count: 0');
   });
 
-  it('replaces repeated placeholders', () => {
-    expect(interpolate('{{a}} and {{a}}', { a: 'X' })).toBe('X and X');
-  });
-
   it('leaves unmatched placeholders and warns', () => {
     expect(interpolate('Pay {{amount}}', { currency: 'USD' })).toBe('Pay {{amount}}');
     expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('amount'));

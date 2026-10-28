@@ -125,20 +125,15 @@ import { MethodSelectionScreen } from '../../Components/internal/screens/MethodS
 describe('MethodSelectionScreen — flow disarm on mount (ORC-6514/6515)', () => {
   beforeEach(() => jest.clearAllMocks());
 
-  it('disarms any active bank flow on mount so re-picking the same method re-fetches', () => {
+  it('disarms any active bank, Klarna and ACH flow on mount so re-picking re-fetches and an abandoned session is torn down', () => {
     act(() => {
       renderer.create(createElement(MethodSelectionScreen));
     });
     // Landing on the method list is the "shopper left the bank flow" signal — it must disarm,
     // and it must do so here (not on bank-screen unmount, which would fire mid-submit).
     expect(mockStopBanks).toHaveBeenCalledTimes(1);
-  });
-
-  it('disarms any active Klarna flow on mount so an abandoned session is torn down', () => {
-    act(() => {
-      renderer.create(createElement(MethodSelectionScreen));
-    });
     expect(mockStopKlarna).toHaveBeenCalledTimes(1);
+    expect(mockStopAch).toHaveBeenCalledTimes(1);
   });
 });
 

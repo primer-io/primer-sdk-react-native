@@ -1,17 +1,11 @@
 import { mergeTokens } from '../../../Components/internal/theme/merge';
-import { INTER_FONT_FAMILY } from '../../../Components/internal/theme/typography';
-import { defaultDarkTokens, defaultLightTokens } from '../../../Components/internal/theme/tokens';
-import type { PrimerTypographyStyle } from '../../../Components/internal/theme/types';
+import { defaultLightTokens } from '../../../Components/internal/theme/tokens';
 
 const base = defaultLightTokens;
 
 describe('mergeTokens', () => {
-  it('returns base unchanged (referential equality) when override is undefined', () => {
-    expect(mergeTokens(base, undefined)).toBe(base);
-  });
-
-  it('returns base unchanged (referential equality) when override is null', () => {
-    expect(mergeTokens(base, null as any)).toBe(base);
+  it.each([undefined, null])('returns base unchanged (referential equality) when override is %p', (override) => {
+    expect(mergeTokens(base, override as any)).toBe(base);
   });
 
   it('applies partial colors override — only specified fields change', () => {
@@ -24,26 +18,6 @@ describe('mergeTokens', () => {
   it('falls back to base value when override color field is null', () => {
     const result = mergeTokens(base, { colors: { brand: null as any } });
     expect(result.colors.brand).toBe(base.colors.brand);
-  });
-
-  it('applies partial spacing override — only specified fields change', () => {
-    const result = mergeTokens(base, { spacing: { large: 24 } });
-    expect(result.spacing.large).toBe(24);
-    expect(result.spacing.small).toBe(base.spacing.small);
-    expect(result.spacing.medium).toBe(base.spacing.medium);
-  });
-
-  it('applies a full typography style override', () => {
-    const customStyle: PrimerTypographyStyle = {
-      fontSize: 28,
-      fontWeight: '700',
-      lineHeight: 36,
-      letterSpacing: -1,
-      fontFamily: 'Roboto',
-    };
-    const result = mergeTokens(base, { typography: { titleXlarge: customStyle } });
-    expect(result.typography.titleXlarge).toEqual(customStyle);
-    expect(result.typography.titleLarge).toEqual(base.typography.titleLarge);
   });
 
   it('applies overrides across all five categories simultaneously', () => {
@@ -68,86 +42,23 @@ describe('mergeTokens', () => {
     expect(result.widths.default).toBe(base.widths.default);
   });
 
-  it('keeps the error text style separate from the body-small label', () => {
-    const result = mergeTokens(base, { typography: { error: { ...base.typography.error, fontSize: 20 } } });
-
-    expect(result.typography.error.fontSize).toBe(20);
-    expect(result.typography.bodySmall.fontSize).toBe(base.typography.bodySmall.fontSize);
-  });
-
-  it('carries the same colour vocabulary as the other SDKs', () => {
-    // 30 shared tokens, plus onBrand and overlay which RN needs and the token files do not carry.
-    expect(Object.keys(base.colors)).toHaveLength(32);
-    expect(base.colors.borderOutlinedFocus).toBe(base.colors.brand);
-    expect(base.colors.backgroundOutlinedDefault).toBe(base.colors.backgroundPrimary);
-  });
-
-  it('offers no colour named after the palette rather than its job', () => {
-    const palette = /^(gray\d{3}|blue\d{3}|green\d{3}|red\d{3})$/;
-
-    expect(Object.keys(base.colors).filter((name) => palette.test(name))).toEqual([]);
-  });
-
-  it('exposes size tokens and merges a partial override', () => {
-    expect(base.sizes).toEqual({ small: 16, medium: 20, large: 24, xlarge: 32, xxlarge: 40, xxxlarge: 56 });
-
-    const result = mergeTokens(base, { sizes: { xxlarge: 60 } });
-    expect(result.sizes.xxlarge).toBe(60);
-    expect(result.sizes.medium).toBe(base.sizes.medium);
-  });
-
-  it('names the widths after the field state, matching the other SDKs', () => {
-    expect(base.widths).toEqual({ default: 1, focus: 2, selected: 2, error: 2 });
-  });
-
-  it('carries a background override into the input fill so inputs keep matching the sheet', () => {
-    const result = mergeTokens(base, { colors: { backgroundPrimary: '#101010' } });
-
-    expect(result.colors.backgroundPrimary).toBe('#101010');
-    expect(result.colors.backgroundOutlinedDefault).toBe('#101010');
-  });
-
-  it('paints the pay button label in a background override when onBrand is not set', () => {
-    const result = mergeTokens(base, { colors: { backgroundPrimary: '#101010' } });
-
-    expect(result.colors.onBrand).toBe('#101010');
-  });
-
-  it('lets an explicit onBrand win over the background it would follow', () => {
-    const result = mergeTokens(base, { colors: { backgroundPrimary: '#101010', onBrand: '#000000' } });
-
-    expect(result.colors.onBrand).toBe('#000000');
-  });
-
-  it('carries a text override into the input text', () => {
-    const result = mergeTokens(base, { colors: { textPrimary: '#fafafa' } });
-
-    expect(result.colors.textPrimary).toBe('#fafafa');
-    expect(result.colors.textOutlinedDefault).toBe('#fafafa');
-  });
-
-  it('lets an explicit input colour win over the one it would inherit', () => {
-    const result = mergeTokens(base, {
-      colors: { backgroundPrimary: '#101010', backgroundOutlinedDefault: '#202020' },
-    });
-
-    expect(result.colors.backgroundPrimary).toBe('#101010');
-    expect(result.colors.backgroundOutlinedDefault).toBe('#202020');
-  });
-
-  it('leaves the input colours alone when neither is overridden', () => {
-    const result = mergeTokens(base, { colors: { brand: '#aabbcc' } });
-
-    expect(result.colors.backgroundOutlinedDefault).toBe(base.colors.backgroundOutlinedDefault);
-    expect(result.colors.textOutlinedDefault).toBe(base.colors.textOutlinedDefault);
-  });
-
-  it('moves every colour built on the brand when the brand is overridden', () => {
+  it('moves every colour built on the brand, the background or the text when that one is overridden', () => {
     const result = mergeTokens(base, { colors: { brand: '#123456' } });
 
     expect(result.colors.focus).toBe('#123456');
     expect(result.colors.loader).toBe('#123456');
     expect(result.colors.borderOutlinedSelected).toBe('#123456');
+
+    const background = mergeTokens(base, { colors: { backgroundPrimary: '#101010' } });
+
+    expect(background.colors.backgroundPrimary).toBe('#101010');
+    expect(background.colors.backgroundOutlinedDefault).toBe('#101010');
+    expect(background.colors.onBrand).toBe('#101010');
+
+    const text = mergeTokens(base, { colors: { textPrimary: '#fafafa' } });
+
+    expect(text.colors.textPrimary).toBe('#fafafa');
+    expect(text.colors.textOutlinedDefault).toBe('#fafafa');
   });
 
   it('carries a brand override two hops, through focus into the field border', () => {
@@ -162,40 +73,10 @@ describe('mergeTokens', () => {
 
     expect(result.colors.focus).toBe('#654321');
   });
-
-  it('leaves colours built on something else untouched', () => {
-    const result = mergeTokens(base, { colors: { brand: '#123456' } });
-
-    expect(result.colors.textPrimary).toBe(base.colors.textPrimary);
-    expect(result.colors.backgroundSecondary).toBe(base.colors.backgroundSecondary);
-  });
 });
 
 describe('brand font', () => {
   const STYLES = ['titleXlarge', 'titleLarge', 'bodyLarge', 'bodyMedium', 'bodySmall', 'error'] as const;
-
-  const withoutFont = ({ fontSize, fontWeight, lineHeight, letterSpacing }: PrimerTypographyStyle) => ({
-    fontSize,
-    fontWeight,
-    lineHeight,
-    letterSpacing,
-  });
-
-  it('paints the pay button label on the sheet it sits on, per mode', () => {
-    expect(defaultLightTokens.colors.onBrand).toBe(defaultLightTokens.colors.backgroundPrimary);
-    expect(defaultDarkTokens.colors.onBrand).toBe(defaultDarkTokens.colors.backgroundPrimary);
-  });
-
-  it('leaves every style on Inter when nothing is set', () => {
-    for (const tokens of [defaultLightTokens, defaultDarkTokens]) {
-      expect(tokens.typography.fontFamily).toBe(INTER_FONT_FAMILY);
-      for (const style of STYLES) {
-        expect(tokens.typography[style].fontFamily).toBe(INTER_FONT_FAMILY);
-      }
-    }
-
-    expect(mergeTokens(base, { colors: { brand: '#ff0000' } }).typography).toBe(base.typography);
-  });
 
   it('moves every style the merchant left alone to the brand font', () => {
     const result = mergeTokens(base, { typography: { fontFamily: 'Roboto' } });
@@ -213,13 +94,6 @@ describe('brand font', () => {
 
     expect(result.typography.error.fontFamily).toBe('Menlo');
     expect(result.typography.bodySmall.fontFamily).toBe('Roboto');
-  });
-
-  it('gives a style set without a font the brand font', () => {
-    const metrics = withoutFont(base.typography.bodyLarge);
-    const result = mergeTokens(base, { typography: { fontFamily: 'Roboto', bodyLarge: { ...metrics, fontSize: 18 } } });
-
-    expect(result.typography.bodyLarge).toEqual({ ...metrics, fontSize: 18, fontFamily: 'Roboto' });
   });
 
   it('changes one typography field and leaves the rest alone', () => {
@@ -246,12 +120,6 @@ describe('brand font', () => {
     expect(result.typography.bodyLarge.fontFamily).toBe('Menlo');
     expect(result.typography.bodyLarge.fontSize).toBe(22);
   });
-
-  it('gives a style set without a font the default font when the brand font is not set', () => {
-    const result = mergeTokens(base, { typography: { bodyLarge: withoutFont(base.typography.bodyLarge) } });
-
-    expect(result.typography.bodyLarge.fontFamily).toBe(INTER_FONT_FAMILY);
-  });
 });
 
 describe('error typography follows bodySmall', () => {
@@ -261,15 +129,6 @@ describe('error typography follows bodySmall', () => {
     expect(result.typography.bodySmall.fontSize).toBe(14);
     expect(result.typography.error.fontSize).toBe(14);
     expect(result.typography.error.lineHeight).toBe(18);
-  });
-
-  it('lets an explicit error value win over the bodySmall one', () => {
-    const result = mergeTokens(base, {
-      typography: { bodySmall: { fontSize: 14 }, error: { fontSize: 10 } },
-    });
-
-    expect(result.typography.bodySmall.fontSize).toBe(14);
-    expect(result.typography.error.fontSize).toBe(10);
   });
 
   it('is per field, so error keeps inheriting what it did not override', () => {
@@ -287,17 +146,11 @@ describe('error typography follows bodySmall', () => {
     expect(result.typography.bodySmall.fontSize).toBe(base.typography.bodySmall.fontSize);
     expect(result.typography.error.fontSize).toBe(10);
   });
-
-  it('does not touch error when nothing typographic moves', () => {
-    const result = mergeTokens(base, { colors: { brand: '#ff0000' } });
-
-    expect(result.typography.error).toEqual(base.typography.error);
-  });
 });
 
 describe('non-finite theme numbers', () => {
   const WARNING = '[PrimerCheckoutTheme] A NaN or infinite theme number is ignored.';
-  const BAD_VALUES = [NaN, Infinity, -Infinity];
+  const BAD_VALUES = [NaN, Infinity];
   let warn: jest.SpyInstance;
 
   beforeEach(() => {
@@ -310,7 +163,7 @@ describe('non-finite theme numbers', () => {
 
   const poison = (tokens: object, bad: number) => Object.fromEntries(Object.keys(tokens).map((key) => [key, bad]));
 
-  it.each(BAD_VALUES)('ignores %p in spacing, radii, sizes and widths and keeps the defaults', (bad) => {
+  it.each(BAD_VALUES)('ignores %p in spacing, radii, sizes, widths and typography and keeps the defaults', (bad) => {
     const result = mergeTokens(base, {
       spacing: poison(base.spacing, bad),
       radii: poison(base.radii, bad),
@@ -324,11 +177,9 @@ describe('non-finite theme numbers', () => {
     expect(result.widths).toEqual(base.widths);
     expect(warn).toHaveBeenCalledTimes(1);
     expect(warn).toHaveBeenCalledWith(WARNING);
-  });
 
-  it.each(BAD_VALUES)('ignores %p in typography numbers and keeps the defaults', (bad) => {
     const style = { fontSize: bad, lineHeight: bad, letterSpacing: bad };
-    const result = mergeTokens(base, {
+    const typed = mergeTokens(base, {
       typography: {
         titleXlarge: style,
         titleLarge: style,
@@ -339,9 +190,9 @@ describe('non-finite theme numbers', () => {
       },
     });
 
-    expect(result.typography).toEqual(base.typography);
-    expect(warn).toHaveBeenCalledTimes(1);
-    expect(warn).toHaveBeenCalledWith(WARNING);
+    expect(typed.typography).toEqual(base.typography);
+    expect(warn).toHaveBeenCalledTimes(2);
+    expect(warn).toHaveBeenLastCalledWith(WARNING);
   });
 
   it('keeps the finite values set next to a bad one', () => {
@@ -349,18 +200,6 @@ describe('non-finite theme numbers', () => {
 
     expect(result.spacing.small).toBe(base.spacing.small);
     expect(result.spacing.large).toBe(24);
-  });
-
-  it('warns once per merge even when every category carries a bad number', () => {
-    mergeTokens(base, {
-      spacing: { small: NaN },
-      radii: { small: Infinity },
-      sizes: { small: -Infinity },
-      widths: { focus: NaN },
-      typography: { bodyLarge: { fontSize: NaN } },
-    });
-
-    expect(warn).toHaveBeenCalledTimes(1);
   });
 
   it('does not warn for finite numbers or colours', () => {

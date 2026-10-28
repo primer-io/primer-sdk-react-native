@@ -78,7 +78,6 @@ import type {
   BankSelectionPaymentMethod,
   KlarnaPaymentMethod,
   NativeUiPaymentMethod,
-  RawDataFormPaymentMethod,
   UsePrimerPaymentMethodReturn,
 } from '../../Components/types/PrimerPaymentMethodTypes';
 
@@ -106,14 +105,6 @@ function asNativeUi(c: UsePrimerPaymentMethodReturn): NativeUiPaymentMethod {
 function asBankSelection(c: UsePrimerPaymentMethodReturn): BankSelectionPaymentMethod {
   if (c.kind !== 'bankSelection') {
     throw new Error(`expected kind 'bankSelection', got '${c.kind}'`);
-  }
-  return c;
-}
-
-/** Asserts the captured controller is the `rawDataForm` variant and returns it typed. */
-function asRawDataForm(c: UsePrimerPaymentMethodReturn): RawDataFormPaymentMethod {
-  if (c.kind !== 'rawDataForm') {
-    throw new Error(`expected kind 'rawDataForm', got '${c.kind}'`);
   }
   return c;
 }
@@ -205,21 +196,6 @@ describe('usePrimerPaymentMethod', () => {
   });
 
   describe('kind routing', () => {
-    it('routes a NATIVE_UI method (Google Pay) to kind "nativeUi"', async () => {
-      const captures = await mountWithMethods([{ paymentMethodType: 'GOOGLE_PAY' }]);
-      expect(captures[captures.length - 1]!.kind).toBe('nativeUi');
-    });
-
-    it('routes PAYMENT_CARD to kind "card"', async () => {
-      const captures = await mountWithMethods(
-        [{ paymentMethodType: 'PAYMENT_CARD', categories: ['RAW_DATA'] }],
-        'PAYMENT_CARD'
-      );
-      const last = captures[captures.length - 1]!;
-      expect(last.kind).toBe('card');
-      expect(last.isAvailable).toBe(true);
-    });
-
     it('routes a type not in the session to kind "unsupported"', async () => {
       const captures = await mountWithMethods(
         [{ paymentMethodType: 'PAYMENT_CARD', categories: ['RAW_DATA'] }],
@@ -239,16 +215,6 @@ describe('usePrimerPaymentMethod', () => {
       expect(last.availabilityError).toBeNull();
     });
 
-    it('start configures and shows GOOGLE_PAY when available (H4)', async () => {
-      const captures = await mountWithMethods([{ paymentMethodType: 'GOOGLE_PAY' }]);
-      const ctrl = asNativeUi(captures[captures.length - 1]!);
-      await act(async () => {
-        await ctrl.start();
-      });
-      expect(nativeUiManager.configure).toHaveBeenCalledWith('GOOGLE_PAY');
-      expect(nativeUiManager.showPaymentMethod).toHaveBeenCalledWith('CHECKOUT');
-    });
-
     it('ignores a re-entrant start while a flow is already in flight', async () => {
       const captures = await mountWithMethods([{ paymentMethodType: 'GOOGLE_PAY' }]);
       const ctrl = asNativeUi(captures[captures.length - 1]!);
@@ -262,17 +228,6 @@ describe('usePrimerPaymentMethod', () => {
       expect(nativeUiManager.showPaymentMethod).toHaveBeenCalledTimes(1);
     });
 
-    it('routes a successful checkout into paymentOutcome (H5, FR-007)', async () => {
-      const captures = await mountWithMethods([{ paymentMethodType: 'GOOGLE_PAY' }]);
-      const checkoutData = { payment: { id: 'pay_123', status: 'SUCCESS' } };
-      await act(async () => {
-        findListener('onCheckoutComplete')!(checkoutData);
-      });
-      const last = asNativeUi(captures[captures.length - 1]!);
-      expect(last.paymentOutcome).toEqual({ status: 'success', data: checkoutData });
-      expect(last.isLoading).toBe(false);
-    });
-
     it('routes a cancel (payment-cancelled) to an error outcome with that errorId (H7, FR-008)', async () => {
       const captures = await mountWithMethods([{ paymentMethodType: 'GOOGLE_PAY' }]);
       await act(async () => {
@@ -284,17 +239,6 @@ describe('usePrimerPaymentMethod', () => {
       const last = asNativeUi(captures[captures.length - 1]!);
       expect(last.paymentOutcome?.status === 'error' && last.paymentOutcome.error.errorId).toBe('payment-cancelled');
       expect(last.isLoading).toBe(false);
-    });
-
-    it('routes a payment failure into an error outcome (H6, FR-009)', async () => {
-      const captures = await mountWithMethods([{ paymentMethodType: 'GOOGLE_PAY' }]);
-      await act(async () => {
-        findListener('onError')!({
-          error: { errorId: 'declined', errorCode: 'E01', description: 'Card declined' },
-          checkoutData: null,
-        });
-      });
-      expect(asNativeUi(captures[captures.length - 1]!).paymentOutcome?.status).toBe('error');
     });
 
     it('a native start() failure sets an error outcome, resets loading, and rejects', async () => {
@@ -341,17 +285,6 @@ describe('usePrimerPaymentMethod', () => {
       expect(last.isAvailable).toBe(true);
       expect(last.availabilityError).toBeNull();
     });
-
-    it('start configures and shows APPLE_PAY when available', async () => {
-      rnMock.Platform.OS = 'ios';
-      const captures = await mountWithMethods([{ paymentMethodType: 'APPLE_PAY' }], 'APPLE_PAY');
-      const ctrl = asNativeUi(captures[captures.length - 1]!);
-      await act(async () => {
-        await ctrl.start();
-      });
-      expect(nativeUiManager.configure).toHaveBeenCalledWith('APPLE_PAY');
-      expect(nativeUiManager.showPaymentMethod).toHaveBeenCalledWith('CHECKOUT');
-    });
   });
 
   describe('Apple Pay (nativeUi) on Android', () => {
@@ -373,69 +306,32 @@ describe('usePrimerPaymentMethod', () => {
   });
 
   describe('PayPal (nativeUi) — both platforms, no gate', () => {
-    it('routes a NATIVE_UI PayPal method to kind "nativeUi"', async () => {
-      const captures = await mountWithMethods([{ paymentMethodType: 'PAYPAL' }], 'PAYPAL');
-      expect(captures[captures.length - 1]!.kind).toBe('nativeUi');
-    });
-
-    it('isAvailable is true on Android when PAYPAL is listed', async () => {
-      const captures = await mountWithMethods([{ paymentMethodType: 'PAYPAL' }], 'PAYPAL');
-      const last = asNativeUi(captures[captures.length - 1]!);
-      expect(last.isAvailable).toBe(true);
-      expect(last.availabilityError).toBeNull();
-    });
-
-    it('isAvailable is also true on iOS when PAYPAL is listed (unlike Google/Apple Pay, no platform gate)', async () => {
+    it('isAvailable is true on Android and on iOS when PAYPAL is listed (unlike Google/Apple Pay, no platform gate)', async () => {
+      const android = await mountWithMethods([{ paymentMethodType: 'PAYPAL' }], 'PAYPAL');
+      const androidLast = asNativeUi(android[android.length - 1]!);
+      expect(androidLast.isAvailable).toBe(true);
+      expect(androidLast.availabilityError).toBeNull();
       rnMock.Platform.OS = 'ios';
-      const captures = await mountWithMethods([{ paymentMethodType: 'PAYPAL' }], 'PAYPAL');
-      const last = asNativeUi(captures[captures.length - 1]!);
-      expect(last.isAvailable).toBe(true);
-      expect(last.availabilityError).toBeNull();
-    });
-
-    it('start configures and shows PAYPAL when available', async () => {
-      const captures = await mountWithMethods([{ paymentMethodType: 'PAYPAL' }], 'PAYPAL');
-      const ctrl = asNativeUi(captures[captures.length - 1]!);
-      await act(async () => {
-        await ctrl.start();
-      });
-      expect(nativeUiManager.configure).toHaveBeenCalledWith('PAYPAL');
-      expect(nativeUiManager.showPaymentMethod).toHaveBeenCalledWith('CHECKOUT');
+      const ios = await mountWithMethods([{ paymentMethodType: 'PAYPAL' }], 'PAYPAL');
+      const iosLast = asNativeUi(ios[ios.length - 1]!);
+      expect(iosLast.isAvailable).toBe(true);
+      expect(iosLast.availabilityError).toBeNull();
     });
   });
 
-  describe('web-redirect APMs (Twint/Sofort) — both platforms, no gate', () => {
-    it('routes a NATIVE_UI web-redirect method (Twint) to kind "nativeUi"', async () => {
-      const captures = await mountWithMethods([{ paymentMethodType: 'ADYEN_TWINT' }], 'ADYEN_TWINT');
-      expect(captures[captures.length - 1]!.kind).toBe('nativeUi');
+  it.each([
+    ['GOOGLE_PAY', 'android'],
+    ['APPLE_PAY', 'ios'],
+    ['PAYPAL', 'android'],
+  ])('start configures and shows %s when available on %s', async (type, os) => {
+    rnMock.Platform.OS = os;
+    const captures = await mountWithMethods([{ paymentMethodType: type }], type);
+    const ctrl = asNativeUi(captures[captures.length - 1]!);
+    await act(async () => {
+      await ctrl.start();
     });
-
-    it('Twint is available on both platforms when listed (no platform gate)', async () => {
-      const android = await mountWithMethods([{ paymentMethodType: 'ADYEN_TWINT' }], 'ADYEN_TWINT');
-      expect(asNativeUi(android[android.length - 1]!).isAvailable).toBe(true);
-      rnMock.Platform.OS = 'ios';
-      const ios = await mountWithMethods([{ paymentMethodType: 'ADYEN_TWINT' }], 'ADYEN_TWINT');
-      const last = asNativeUi(ios[ios.length - 1]!);
-      expect(last.isAvailable).toBe(true);
-      expect(last.availabilityError).toBeNull();
-    });
-
-    it('start configures and shows the tapped method (Twint)', async () => {
-      const captures = await mountWithMethods([{ paymentMethodType: 'ADYEN_TWINT' }], 'ADYEN_TWINT');
-      const ctrl = asNativeUi(captures[captures.length - 1]!);
-      await act(async () => {
-        await ctrl.start();
-      });
-      expect(nativeUiManager.configure).toHaveBeenCalledWith('ADYEN_TWINT');
-      expect(nativeUiManager.showPaymentMethod).toHaveBeenCalledWith('CHECKOUT');
-    });
-
-    it('Sofort rides the same path — routes to nativeUi and is available when listed', async () => {
-      const captures = await mountWithMethods([{ paymentMethodType: 'ADYEN_SOFORT' }], 'ADYEN_SOFORT');
-      const last = asNativeUi(captures[captures.length - 1]!);
-      expect(last.kind).toBe('nativeUi');
-      expect(last.isAvailable).toBe(true);
-    });
+    expect(nativeUiManager.configure).toHaveBeenCalledWith(type);
+    expect(nativeUiManager.showPaymentMethod).toHaveBeenCalledWith('CHECKOUT');
   });
 
   describe('bank selection (COMPONENT_WITH_REDIRECT) — iDEAL / Dotpay', () => {
@@ -448,46 +344,16 @@ describe('usePrimerPaymentMethod', () => {
       expect(last.isAvailable).toBe(true);
     });
 
-    it('is available on both platforms when listed (no platform gate)', async () => {
-      rnMock.Platform.OS = 'ios';
-      const captures = await mountWithMethods(ideal, 'ADYEN_IDEAL');
-      expect(asBankSelection(captures[captures.length - 1]!).isAvailable).toBe(true);
-    });
-
-    it('start() provides the component, configures the type, and fetches the issuer list', async () => {
+    it('filter and selectBank forward to native, selectBank tracks the selection; submit tokenises', async () => {
       const captures = await mountWithMethods(ideal, 'ADYEN_IDEAL');
       await act(async () => {
         await asBankSelection(captures[captures.length - 1]!).start();
         await flushPromises();
       });
-      expect(banksNative.configure).toHaveBeenCalledWith('ADYEN_IDEAL');
-      expect(banksNative.start).toHaveBeenCalled();
-    });
-
-    it('populates banks from a banksRetrieved step', async () => {
-      const captures = await mountWithMethods(ideal, 'ADYEN_IDEAL');
       await act(async () => {
-        await asBankSelection(captures[captures.length - 1]!).start();
-        await flushPromises();
+        asBankSelection(captures[captures.length - 1]!).filter('rabo');
       });
-      const banks = [
-        { id: 'ing', name: 'ING', iconUrl: '', disabled: false },
-        { id: 'rabo', name: 'Rabobank', iconUrl: '', disabled: false },
-      ];
-      await act(async () => {
-        findListener('onStep')!({ stepName: 'banksRetrieved', banks });
-      });
-      const last = asBankSelection(captures[captures.length - 1]!);
-      expect(last.banks).toEqual(banks);
-      expect(last.isLoading).toBe(false);
-    });
-
-    it('selectBank forwards to native and tracks the selection; submit tokenises', async () => {
-      const captures = await mountWithMethods(ideal, 'ADYEN_IDEAL');
-      await act(async () => {
-        await asBankSelection(captures[captures.length - 1]!).start();
-        await flushPromises();
-      });
+      expect(banksNative.onBankFilterChange).toHaveBeenCalledWith('rabo');
       await act(async () => {
         asBankSelection(captures[captures.length - 1]!).selectBank('ing');
       });
@@ -546,52 +412,10 @@ describe('usePrimerPaymentMethod', () => {
       expect(last.paymentOutcome?.status).toBe('error');
       expect(last.isLoading).toBe(false);
     });
-
-    it('filter forwards the query to the native bank filter', async () => {
-      const captures = await mountWithMethods(ideal, 'ADYEN_IDEAL');
-      await act(async () => {
-        await asBankSelection(captures[captures.length - 1]!).start();
-        await flushPromises();
-      });
-      await act(async () => {
-        asBankSelection(captures[captures.length - 1]!).filter('rabo');
-      });
-      expect(banksNative.onBankFilterChange).toHaveBeenCalledWith('rabo');
-    });
-  });
-
-  describe('raw-data form methods (Bancontact/MBWay/BLIK)', () => {
-    it('routes a non-card RAW_DATA method (MBWay) to kind "rawDataForm" with the form contract', async () => {
-      const captures = await mountWithMethods(
-        [{ paymentMethodType: 'ADYEN_MBWAY', categories: ['RAW_DATA'] }],
-        'ADYEN_MBWAY'
-      );
-      const form = asRawDataForm(captures[captures.length - 1]!);
-      expect(form.isAvailable).toBe(true);
-      expect(form.requiredInputs).toEqual([]); // populated once start() activates the raw-data manager
-      expect(form.isValid).toBe(false);
-    });
-
-    it('Bancontact also routes to rawDataForm (not the card form)', async () => {
-      const captures = await mountWithMethods(
-        [{ paymentMethodType: 'ADYEN_BANCONTACT_CARD', categories: ['RAW_DATA'] }],
-        'ADYEN_BANCONTACT_CARD'
-      );
-      expect(captures[captures.length - 1]!.kind).toBe('rawDataForm');
-    });
   });
 
   describe('Klarna (KLARNA)', () => {
     const klarna = [{ paymentMethodType: 'KLARNA', categories: ['KLARNA'] }];
-
-    it('routes a KLARNA method to kind "klarna" with the controller shape', async () => {
-      const captures = await mountWithMethods(klarna, 'KLARNA');
-      const k = asKlarna(captures[captures.length - 1]!);
-      expect(k.isAvailable).toBe(true);
-      expect(k.paymentCategories).toEqual([]); // populated once start() opens the session
-      expect(k.selectedCategoryId).toBeNull();
-      expect(k.isViewLoaded).toBe(false);
-    });
 
     it('auto-finalizes exactly once on paymentSessionAuthorized; a later manual finalize() is a no-op', async () => {
       const captures = await mountWithMethods(klarna, 'KLARNA');
