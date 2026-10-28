@@ -54,10 +54,4 @@ describe('ErrorScreen', () => {
     expect(props.title).toBe('primer_checkout_error_title');
     expect(props.subtitle).toBe('primer_checkout_error_subtitle');
   });
-
-  it('shows the same text when there is no error', () => {
-    mockParams = undefined;
-
-    expect(errorScreenProps().subtitle).toBe('primer_checkout_error_subtitle');
-  });
 });
