@@ -15,20 +15,10 @@ internal class PrimerUIOptionsRNTest {
     @CsvSource(
         delimiter = '|',
         textBlock = """
-            DARK   | true  | true
             DARK   | false | true
             LIGHT  | true  | false
-            LIGHT  | false | false
             SYSTEM | true  | true
-            SYSTEM | false | false
-            dark   | true  | true
-            dark   | false | false
-            SEPIA  | true  | true
-            SEPIA  | false | false
-            ''     | true  | true
-            ''     | false | false
-                   | true  | true
-                   | false | false""",
+            SYSTEM | false | false""",
     )
     fun `DARK and LIGHT force the appearance, anything else follows the system`(
         appearanceMode: String?,

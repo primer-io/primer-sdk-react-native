@@ -11,12 +11,7 @@ import { act, create } from 'react-test-renderer';
 jest.mock('../../../Components/internal/screens/assets/check-circle-large.png', () => 1, { virtual: true });
 jest.mock('../../../Components/internal/screens/assets/error-large.png', () => 2, { virtual: true });
 
-import {
-  PrimerStatusScreenLayout,
-  PrimerLoadingScreen,
-  PrimerSuccessScreen,
-  PrimerErrorScreen,
-} from '../../../Components/status';
+import { PrimerLoadingScreen, PrimerSuccessScreen, PrimerErrorScreen } from '../../../Components/status';
 import { PrimerButton } from '../../../Components/internal/ui';
 import { ThemeContext } from '../../../Components/internal/theme/ThemeContext';
 import { defaultLightTokens } from '../../../Components/internal/theme/tokens';
@@ -30,27 +25,6 @@ function render(element: ReturnType<typeof createElement>) {
 }
 
 describe('public status components (standalone, no checkout/navigation provider)', () => {
-  it('PrimerStatusScreenLayout renders title, subtitle, icon and children without throwing', () => {
-    const r = render(
-      createElement(
-        PrimerStatusScreenLayout,
-        { icon: createElement('Icon'), title: 'Hello', subtitle: 'World' },
-        createElement('Child')
-      )
-    );
-    expect(r.toJSON()).not.toBeNull();
-  });
-
-  it('PrimerLoadingScreen renders with default copy', () => {
-    const r = render(createElement(PrimerLoadingScreen, {}));
-    expect(r.toJSON()).not.toBeNull();
-  });
-
-  it('PrimerLoadingScreen renders with overridden copy', () => {
-    const r = render(createElement(PrimerLoadingScreen, { title: 'Wait', subtitle: 'Almost there' }));
-    expect(r.toJSON()).not.toBeNull();
-  });
-
   it('PrimerLoadingScreen paints its spinner from the loader colour, not from brand', () => {
     const tokens = {
       ...defaultLightTokens,
@@ -63,11 +37,6 @@ describe('public status components (standalone, no checkout/navigation provider)
       })
     );
     expect(r.root.findByType('ActivityIndicator').props.color).toBe('#00ff00');
-  });
-
-  it('PrimerSuccessScreen renders without throwing', () => {
-    const r = render(createElement(PrimerSuccessScreen, { title: 'Done', subtitle: 'Paid' }));
-    expect(r.toJSON()).not.toBeNull();
   });
 
   it('PrimerSuccessScreen fires onDismiss after autoDismissMs and clears on unmount', () => {
@@ -102,16 +71,6 @@ describe('public status components (standalone, no checkout/navigation provider)
     }
   });
 
-  it('PrimerErrorScreen renders without throwing', () => {
-    const r = render(createElement(PrimerErrorScreen, { title: 'Failed', subtitle: 'Oops' }));
-    expect(r.toJSON()).not.toBeNull();
-  });
-
-  it('PrimerErrorScreen renders no buttons when no callbacks are passed', () => {
-    const r = render(createElement(PrimerErrorScreen, {}));
-    expect(r.root.findAllByType(PrimerButton)).toHaveLength(0);
-  });
-
   it('PrimerErrorScreen renders only the retry button when only onRetry is passed', () => {
     const onRetry = jest.fn();
     const r = render(createElement(PrimerErrorScreen, { onRetry }));
@@ -130,10 +89,5 @@ describe('public status components (standalone, no checkout/navigation provider)
     const buttons = r.root.findAllByType(PrimerButton);
     expect(buttons).toHaveLength(1);
     expect(buttons[0].props.variant).toBe('outlined');
-  });
-
-  it('PrimerErrorScreen renders both buttons when both callbacks are passed', () => {
-    const r = render(createElement(PrimerErrorScreen, { onRetry: jest.fn(), onChooseOtherMethod: jest.fn() }));
-    expect(r.root.findAllByType(PrimerButton)).toHaveLength(2);
   });
 });

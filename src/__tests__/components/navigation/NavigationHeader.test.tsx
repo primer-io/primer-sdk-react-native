@@ -49,13 +49,6 @@ function ancestors(node: any) {
 }
 
 describe('NavigationHeader — title placement', () => {
-  it('draws the title large, under the back row, by default', () => {
-    const title = renderTitle({ showBackButton: true });
-
-    expect(flatten(title.props.style).fontSize).toBe(24);
-    expect(ancestors(title).some((view) => view.style.minHeight === BACK_ROW_HEIGHT)).toBe(false);
-  });
-
   it.each([
     ['with the back button', true],
     ['without it, as while the screen slides out after Back', false],

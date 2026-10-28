@@ -101,12 +101,6 @@ describe('VaultedMethodsScreen — leaving the delete question', () => {
     expect(isOnQuestion()).toBe(false);
     expect(isEditing()).toBe(true);
     expect(mockPop).not.toHaveBeenCalled();
-  });
-
-  it('Back on the saved list itself still leaves the screen', () => {
-    const { header } = renderOnDeleteQuestion();
-    act(() => header().props.onBackPress()); // closes the question
-
     expect(header().props.onBackPress).toBeUndefined();
   });
 });

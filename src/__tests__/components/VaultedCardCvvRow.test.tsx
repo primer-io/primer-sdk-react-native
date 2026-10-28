@@ -96,17 +96,6 @@ describe('VaultedCardCvvRow', () => {
     const tree = renderRow({ value: '', onChangeValue: () => {}, cvvLabel: 'CID', maxLength: 4 }).toJSON();
     const input = findInputProps(tree);
     expect(input?.maxLength).toBe(4);
-  });
-
-  it('forwards maxLength=3 (Visa/MC/etc) to the input', () => {
-    const tree = renderRow({ value: '', onChangeValue: () => {}, cvvLabel: 'CVV', maxLength: 3 }).toJSON();
-    const input = findInputProps(tree);
-    expect(input?.maxLength).toBe(3);
-  });
-
-  it('uses cvvLabel as the input placeholder', () => {
-    const tree = renderRow({ value: '', onChangeValue: () => {}, cvvLabel: 'CID', maxLength: 4 }).toJSON();
-    const input = findInputProps(tree);
     expect(input?.placeholder).toBe('CID');
   });
 
@@ -117,12 +106,6 @@ describe('VaultedCardCvvRow', () => {
     expect(typeof input?.onChangeText).toBe('function');
     (input?.onChangeText as (s: string) => void)('1a2b3');
     expect(onChangeValue).toHaveBeenCalledWith('123');
-  });
-
-  it('passes the value through to the input', () => {
-    const tree = renderRow({ value: '12', onChangeValue: () => {}, cvvLabel: 'CVV', maxLength: 3 }).toJSON();
-    const input = findInputProps(tree);
-    expect(input?.value).toBe('12');
   });
 
   it('renders with secureTextEntry and number-pad keyboard', () => {

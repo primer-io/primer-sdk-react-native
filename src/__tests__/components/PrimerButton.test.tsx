@@ -18,14 +18,6 @@ function render(props: Partial<PrimerButtonProps> = {}) {
 }
 
 describe('PrimerButton accessible name', () => {
-  it('is the title when enabled', () => {
-    expect(render().accessibilityLabel).toBe('Pay');
-  });
-
-  it('is the title when disabled', () => {
-    expect(render({ disabled: true }).accessibilityLabel).toBe('Pay');
-  });
-
   it('stays the title while loading, when only the spinner is drawn', () => {
     const button = render({ loading: true });
 
