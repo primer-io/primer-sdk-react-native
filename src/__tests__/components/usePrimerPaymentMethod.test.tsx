@@ -1,7 +1,6 @@
 // @ts-expect-error -- React 19 concurrent act environment
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
-// Pin the locale so error-copy assertions don't depend on the host's device locale.
 jest.mock('../../Components/internal/localization/locale-resolver', () => ({
   resolveLocale: () => ({ locale: 'en', source: 'fallback' }),
 }));
@@ -436,8 +435,6 @@ describe('usePrimerPaymentMethod', () => {
   describe('raw-data form methods (Bancontact/MBWay/BLIK)', () => {
     const mbway = [{ paymentMethodType: 'ADYEN_MBWAY', categories: ['RAW_DATA'] }];
 
-    // The one line that carries native's messages to the form. Without it the shopper gets a
-    // disabled Pay button and no stated reason, which is the whole bug this contract exists for.
     it('surfaces native validation messages as validationErrors', async () => {
       const captures = await mountWithMethods(mbway, 'ADYEN_MBWAY');
       await act(async () => {

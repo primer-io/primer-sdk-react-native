@@ -26,7 +26,6 @@ const mockSubmit = jest.fn().mockResolvedValue(undefined);
 const mockReplace = jest.fn();
 // The payment-method hook's return value — swapped per test.
 let mockMethod: any;
-// The active method type, read by the mocked useRoute — swapped per test.
 let mockPaymentMethodType = 'ADYEN_MBWAY';
 
 jest.mock('../../Components/hooks/usePrimerPaymentMethod', () => ({
@@ -52,7 +51,6 @@ jest.mock('../../Components/internal/theme', () => ({
       textOutlinedDefault: '#111',
       textPlaceholder: '#999',
       textPrimary: '#000',
-      textSecondary: '#666',
     },
     spacing: { xsmall: 4, small: 8, medium: 12, large: 16 },
     radii: { small: 4, medium: 8, large: 12 },
@@ -188,65 +186,38 @@ describe('RawDataFormScreen (ORC-6514)', () => {
     expect(mockSubmit).toHaveBeenCalledTimes(1);
   });
 
-  it('shows the OVO phone helper hint for a phone-number form', () => {
-    mockPaymentMethodType = 'XENDIT_OVO';
-    mockMethod = rawDataForm({ requiredInputs: ['PHONE_NUMBER'] });
-
-    expect(ovoHints(render().root)).toHaveLength(1);
-  });
-
-  it('renders the OVO hint once, grouped with the phone field, when OVO reports several fields', () => {
+  it('renders the OVO hint once, grouped with the phone field, and only for OVO', () => {
     mockPaymentMethodType = 'XENDIT_OVO';
     mockMethod = rawDataForm({ requiredInputs: ['PHONE_NUMBER', 'OTP'] });
     const hints = ovoHints(render().root);
 
     expect(hints).toHaveLength(1);
-    // Guards against the hint being lifted out of the per-field loop and rendered under another field.
     expect(hints[0].parent.findByType('TextInput').props.keyboardType).toBe('phone-pad');
-  });
 
-  it('does not show the OVO hint for other raw-data methods (e.g. MBWay)', () => {
+    mockPaymentMethodType = 'ADYEN_MBWAY';
     mockMethod = rawDataForm({ requiredInputs: ['PHONE_NUMBER'] });
-
     expect(ovoHints(render().root)).toHaveLength(0);
   });
 
-  const INVALID_PHONE = 'Phone number is not valid.';
-
-  it('shows no validation error on an untouched form', () => {
-    mockMethod = rawDataForm({ validationErrors: [INVALID_PHONE] });
-
-    expect(errorTexts(render().root, INVALID_PHONE)).toHaveLength(0);
-  });
-
-  it('surfaces the validation error as soon as the shopper types', () => {
-    mockMethod = rawDataForm({ validationErrors: [INVALID_PHONE] });
-    const root = render().root;
-
-    // Pay is disabled while invalid, so nothing the shopper can tap would reveal this.
-    act(() => textInputs(root)[0].props.onChangeText('+1226'));
-    expect(errorTexts(root, INVALID_PHONE)).toHaveLength(1);
-  });
-
-  it('hides the error again once the field is cleared', () => {
-    mockMethod = rawDataForm({ validationErrors: [INVALID_PHONE] });
-    const root = render().root;
-
-    act(() => textInputs(root)[0].props.onChangeText('+1226'));
-    act(() => textInputs(root)[0].props.onChangeText(''));
-    expect(errorTexts(root, INVALID_PHONE)).toHaveLength(0);
-  });
-
-  it('renders every reported error, not just the first (multi-field methods)', () => {
+  it('surfaces every validation error as soon as the shopper types, and none while the form is empty', () => {
+    const INVALID_PHONE = 'Phone number is not valid.';
+    const INVALID_OTP = 'OTP is not valid.';
     mockMethod = rawDataForm({
-      requiredInputs: ['CARD_NUMBER', 'EXPIRY_DATE'],
-      validationErrors: ['Card number is not valid.', 'Expiry date is not valid.'],
+      requiredInputs: ['PHONE_NUMBER', 'OTP'],
+      validationErrors: [INVALID_PHONE, INVALID_OTP],
     });
     const root = render().root;
 
-    act(() => textInputs(root)[0].props.onChangeText('4111'));
-    expect(errorTexts(root, 'Card number is not valid.')).toHaveLength(1);
-    expect(errorTexts(root, 'Expiry date is not valid.')).toHaveLength(1);
+    expect(errorTexts(root, INVALID_PHONE)).toHaveLength(0);
+    expect(errorTexts(root, INVALID_OTP)).toHaveLength(0);
+
+    act(() => textInputs(root)[0].props.onChangeText('+1226'));
+    expect(errorTexts(root, INVALID_PHONE)).toHaveLength(1);
+    expect(errorTexts(root, INVALID_OTP)).toHaveLength(1);
+
+    act(() => textInputs(root)[0].props.onChangeText(''));
+    expect(errorTexts(root, INVALID_PHONE)).toHaveLength(0);
+    expect(errorTexts(root, INVALID_OTP)).toHaveLength(0);
   });
 
   it('warns rather than failing silently when the SDK rejects the raw data', async () => {

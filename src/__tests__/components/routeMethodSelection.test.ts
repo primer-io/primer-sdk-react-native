@@ -28,7 +28,6 @@ describe('routeMethodSelection', () => {
   });
 
   it('leaves other RAW_DATA methods (e.g. XENDIT_RETAIL_OUTLETS) unsupported', () => {
-    // Retail-outlets needs a list picker, not the free-text form.
     expect(routeMethodSelection('XENDIT_RETAIL_OUTLETS', ['RAW_DATA'])).toBe('unsupported');
   });
 

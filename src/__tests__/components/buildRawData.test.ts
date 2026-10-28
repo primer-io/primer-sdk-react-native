@@ -11,11 +11,8 @@ describe('buildRawData', () => {
     expect(buildRawData('ADYEN_BLIK', { OTP_CODE: '654321' })).toEqual({ otp: '654321' });
   });
 
-  it('maps a phone number (MBWay) to { phoneNumber }', () => {
+  it('maps a phone number (MBWay/OVO) to { phoneNumber }', () => {
     expect(buildRawData('ADYEN_MBWAY', { PHONE_NUMBER: '+351912345678' })).toEqual({ phoneNumber: '+351912345678' });
-  });
-
-  it('maps an OVO phone number to { phoneNumber } (same shape as MBWay)', () => {
     expect(buildRawData('XENDIT_OVO', { PHONE_NUMBER: '+6281234567890' })).toEqual({ phoneNumber: '+6281234567890' });
   });
 
