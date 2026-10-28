@@ -78,7 +78,6 @@ export function RawDataFormScreen() {
   const { requiredInputs, isValid, setData, submit } = form;
 
   const handleChange = (field: string, text: string) => {
-    // 'number-pad' has no '/' key on either platform, so the separator has to be inserted for them.
     const formatted = field === 'EXPIRY_DATE' ? formatExpiryDate(text, values[field] ?? '') : text;
     const next = { ...values, [field]: formatted };
     setValues(next);
