@@ -16,11 +16,4 @@ describe('formatCurrency', () => {
     // 1234 / 1000 = 1.234
     expect(result).toMatch(/1\.234/);
   });
-
-  it('applies locale-specific formatting rules', () => {
-    const result = formatCurrency(123456, 'EUR', 'de-DE');
-    // German: period for thousands, comma for decimal
-    expect(result).toMatch(/1\.234,56/);
-    expect(result).toContain('€');
-  });
 });

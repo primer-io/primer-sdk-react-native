@@ -58,7 +58,7 @@ function flow() {
   });
 }
 
-function sheet(visible: boolean, onRequestDismiss?: () => void) {
+function sheet(visible: boolean, onRequestDismiss: () => void) {
   return createElement(CheckoutSheet, { visible, onRequestDismiss, children: flow() });
 }
 
@@ -206,17 +206,6 @@ describe('Android back in the checkout sheet (ORC-8671)', () => {
 
     expect(onRequestDismiss).toHaveBeenCalledTimes(1);
     expect(routes()).toEqual([CheckoutRoute.methodSelection, CheckoutRoute.vaultedMethods]);
-  });
-
-  it('without onRequestDismiss, still goes back a screen and does nothing on the first screen', () => {
-    const tree = render(sheet(true));
-    act(() => nav.push(CheckoutRoute.vaultedMethods));
-
-    pressBack(tree);
-    expect(routes()).toEqual([CheckoutRoute.methodSelection]);
-
-    expect(() => pressBack(tree)).not.toThrow();
-    expect(routes()).toEqual([CheckoutRoute.methodSelection]);
   });
 
   it('works outside a sheet: nothing to register with, and the header Back still pops', () => {

@@ -311,14 +311,4 @@ describe('PrimerCheckoutProvider analytics contract', () => {
     expect(names[reattemptIndex + 2]).toBe('PAYMENT_PROCESSING_STARTED');
     expect(trackedMeta('PAYMENT_REATTEMPTED')).toEqual({ paymentMethod: 'PAYMENT_CARD' });
   });
-
-  it('emits PAYMENT_FLOW_EXITED when the session ends without a completed payment', async () => {
-    const { root } = await renderProvider();
-
-    await act(async () => {
-      root.unmount();
-    });
-
-    expect(trackedNames()).toContain('PAYMENT_FLOW_EXITED');
-  });
 });

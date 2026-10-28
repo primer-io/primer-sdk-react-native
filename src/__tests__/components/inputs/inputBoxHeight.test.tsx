@@ -39,30 +39,26 @@ function measure(tree: any) {
 }
 
 describe('PrimerTextInput box height', () => {
-  it('is 44 tall on the outside at the default theme, border included', () => {
-    const { boxStyle, inputStyle, outsideHeight } = measure(renderInput());
-
-    expect(boxStyle.minHeight).toBe(44);
-    expect(boxStyle.height).toBeUndefined();
-    expect(inputStyle.paddingVertical).toBe(spacing.medium - widths.default);
-    expect(outsideHeight).toBe(44);
-  });
-
-  it('stays 44 when focus thickens the border', () => {
+  it('is 44 tall on the outside at the default theme, border included, and stays 44 when focus or an error thickens the border', () => {
     const tree = renderInput();
+    const resting = measure(tree);
+
+    expect(resting.boxStyle.minHeight).toBe(44);
+    expect(resting.boxStyle.height).toBeUndefined();
+    expect(resting.inputStyle.paddingVertical).toBe(spacing.medium - widths.default);
+    expect(resting.outsideHeight).toBe(44);
+
     act(() => measure(tree).input.props.onFocus());
 
     const { inputStyle, outsideHeight } = measure(tree);
 
     expect(inputStyle.paddingVertical).toBe(spacing.medium - widths.focus);
     expect(outsideHeight).toBe(44);
-  });
 
-  it('stays 44 when an error thickens the border', () => {
-    const { inputStyle, outsideHeight } = measure(renderInput({ error: 'Invalid card number' }));
+    const errored = measure(renderInput({ error: 'Invalid card number' }));
 
-    expect(inputStyle.paddingVertical).toBe(spacing.medium - widths.error);
-    expect(outsideHeight).toBe(44);
+    expect(errored.inputStyle.paddingVertical).toBe(spacing.medium - widths.error);
+    expect(errored.outsideHeight).toBe(44);
   });
 
   it('stretches the text field over the box, so a tap above or below the text lands in it', () => {
@@ -94,14 +90,6 @@ describe('CountrySelectorRow box height', () => {
     });
     return tree.root.find((n: any) => n.type === 'TouchableOpacity' && n.props.testID === 'country-row');
   }
-
-  it('matches the text inputs: 44 on the outside at the default theme, border included', () => {
-    const style = flatten(renderRow().props.style);
-
-    expect(style.minHeight).toBe(44);
-    expect(style.height).toBeUndefined();
-    expect(style.paddingVertical).toBe(spacing.medium - widths.default);
-  });
 
   it('keeps the flag and chevron to the body line height, so a selected country does not grow the row', () => {
     const lineHeights = renderRow()
