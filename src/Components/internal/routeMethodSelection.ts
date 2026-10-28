@@ -8,7 +8,7 @@ import type { PrimerPaymentMethodManagerCategoryName } from '../../models/Primer
  * - `nativeUi` — a native-sheet / browser-redirect method (Google/Apple Pay, PayPal), started via
  *   `startNativeUI(type)`.
  * - `bankSelection` — a `COMPONENT_WITH_REDIRECT` bank-redirect method (iDEAL; Android Dotpay).
- * - `rawDataForm` — a non-card `RAW_DATA` method that collects a small input (Bancontact/MBWay/BLIK/OVO).
+ * - `rawDataForm` — a non-card `RAW_DATA` method that collects a small input (Bancontact/MBWay/BLIK).
  * - `klarna` — a `KLARNA` method (session → categories → embedded view → authorize → finalize).
  * - `stripeAch` — Stripe ACH bank-account payments (details form → native bank link → mandate).
  * - `card` — the card form (`PAYMENT_CARD` only).

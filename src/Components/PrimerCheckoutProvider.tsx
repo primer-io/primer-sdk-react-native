@@ -216,7 +216,6 @@ function firstValidationMessage(errors: PrimerValidationError[] | undefined): st
   return errors?.[0]?.description;
 }
 
-// Keyed by native's `inputElementType`. iOS calls BLIK's code `OTP`, Android `OTP_CODE`.
 const FIELD_BY_ELEMENT: Record<string, CardFormField> = {
   CARD_NUMBER: 'cardNumber',
   EXPIRY_DATE: 'expiryDate',
@@ -234,12 +233,10 @@ const COPY_BY_ELEMENT: Record<string, string> = {
   OTP_CODE: 'primer_form_redirect_otp_code_invalid',
 };
 
-// An unsupported brand is reported against CARD_NUMBER, but the digits are fine.
 const COPY_BY_ERROR_ID: Record<string, string> = {
   'unsupported-card-type': 'primer_card_form_error_card_type_unsupported',
 };
 
-// iOS wraps `description` as "[errorId] message (diagnosticsId: …)".
 function stripDiagnostics(description: string): string {
   return description
     .replace(/^\[[^\]]*\]\s*/, '')
@@ -247,9 +244,6 @@ function stripDiagnostics(description: string): string {
     .trim();
 }
 
-// Native names the field it rejected. No name means it threw instead, so `description` is an
-// internal diagnostic ("Client token is not valid:") and must not reach the shopper. Never
-// returns empty — a disabled Pay with no stated reason is what this whole path exists to avoid.
 function resolveMessage(error: PrimerInputValidationError, t: Translate): string {
   const element = error.inputElementType;
   if (!element) return t('primer_common_error_generic');
@@ -267,11 +261,7 @@ function sameErrors(a: CardFormErrors, b: CardFormErrors): boolean {
   return keys.length === Object.keys(b).length && keys.every((key) => a[key] === b[key]);
 }
 
-/**
- * Map native validation errors to per-field typed errors plus every message the UI can render.
- * `messages` carries errors no card field owns (phone number, OTP) — dropping those would leave
- * non-card raw-data forms with a disabled Pay button and no stated reason.
- */
+/** Map native validation errors to per-field typed errors the UI can render. */
 function parseValidationErrors(
   errors: PrimerInputValidationError[] | undefined,
   t: Translate
@@ -299,7 +289,6 @@ export function PrimerCheckoutProvider({
   children,
 }: PrimerCheckoutProviderProps) {
   const [state, setState] = useState<InternalState>(initialState);
-  // Resolved once per mount; `onValidation` fires per keystroke and must not re-resolve the locale.
   const { t } = usePrimerLocalization();
 
   const lightTokens = useMemo(() => mergeTokens(defaultLightTokens, theme?.light), [theme?.light]);
@@ -862,8 +851,6 @@ export function PrimerCheckoutProvider({
         }
         const { fieldErrors, messages } = parseValidationErrors(errors, t);
         setState((prev) => {
-          // Consecutive keystrokes usually re-report the same errors; returning `prev` skips a
-          // context rebuild that would re-render every themed component on the screen.
           const card = prev.cardFormState;
           if (
             card.isValid === isValid &&
@@ -942,7 +929,6 @@ export function PrimerCheckoutProvider({
       selectedCardNetworkRef.current = null;
       setState((prev) => ({ ...prev, cardFormState: initialCardFormState, selectedCardNetwork: null }));
     };
-    // `t` is memoized for the provider's lifetime, so it never retriggers this effect.
   }, [state.activeMethod, state.isReady, t]);
 
   // -----------------------------------------------------------------------

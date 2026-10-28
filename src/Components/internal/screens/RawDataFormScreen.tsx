@@ -46,7 +46,7 @@ const FIELD_INPUT_PROPS: Record<string, FieldInputProps> = {
 type FieldValues = Record<string, string>;
 
 /**
- * Prebuilt input form for non-card RAW_DATA methods — MBWay/OVO (phone), Bancontact (card-fields),
+ * Prebuilt input form for non-card RAW_DATA methods — MBWay (phone), Bancontact (card-fields),
  * BLIK (one-time code). Renders exactly the fields the method reports (never the card form). On
  * submit the SDK tokenises; methods that redirect/poll are owned by the native flow. Dogfoods the
  * public `usePrimerPaymentMethod` API.
@@ -77,8 +77,6 @@ export function RawDataFormScreen() {
 
   const { requiredInputs, isValid, validationErrors, setData, submit } = form;
 
-  // Pay stays disabled while invalid, so there is no tap that could reveal the reason —
-  // show it as soon as anything has been typed, and let it clear itself once valid.
   const hasInput = requiredInputs.some((field) => (values[field] ?? '').trim().length > 0);
 
   const handleChange = (field: string, text: string) => {
