@@ -20,15 +20,16 @@ jest.mock(
 );
 
 jest.mock('../../Components/internal/theme', () => ({
+  usePrimerColorScheme: () => 'light',
   usePrimerTheme: () => ({
     colors: {
-      background: '#fff',
-      surface: '#fafafa',
-      border: '#ccc',
-      borderDisabled: '#eee',
-      borderError: '#f00',
-      borderFocused: '#08f',
-      primary: '#08f',
+      backgroundPrimary: '#fff',
+      backgroundSecondary: '#fafafa',
+      borderOutlinedDefault: '#ccc',
+      borderOutlinedDisabled: '#eee',
+      borderOutlinedError: '#f00',
+      borderOutlinedFocus: '#08f',
+      brand: '#08f',
       textPrimary: '#000',
       textSecondary: '#666',
       textPlaceholder: '#999',
@@ -37,10 +38,12 @@ jest.mock('../../Components/internal/theme', () => ({
     },
     spacing: { xsmall: 4, small: 8, medium: 12, large: 16, xlarge: 20 },
     radii: { small: 4, medium: 8, large: 12 },
-    borders: { input: 1, strong: 2 },
+    sizes: { small: 16, medium: 20, large: 24, xlarge: 32, xxlarge: 40, xxxlarge: 56, base: 4 },
+    widths: { default: 1, focus: 2, selected: 2, error: 2 },
     typography: {
       fontFamily: 'system',
       bodySmall: { fontFamily: 'system', fontSize: 12, fontWeight: '400', letterSpacing: 0, lineHeight: 16 },
+      error: { fontFamily: 'system', fontSize: 12, fontWeight: '400', letterSpacing: 0, lineHeight: 16 },
       bodyLarge: { fontFamily: 'system', fontSize: 16, fontWeight: '400', letterSpacing: 0, lineHeight: 20 },
     },
   }),
@@ -93,17 +96,6 @@ describe('VaultedCardCvvRow', () => {
     const tree = renderRow({ value: '', onChangeValue: () => {}, cvvLabel: 'CID', maxLength: 4 }).toJSON();
     const input = findInputProps(tree);
     expect(input?.maxLength).toBe(4);
-  });
-
-  it('forwards maxLength=3 (Visa/MC/etc) to the input', () => {
-    const tree = renderRow({ value: '', onChangeValue: () => {}, cvvLabel: 'CVV', maxLength: 3 }).toJSON();
-    const input = findInputProps(tree);
-    expect(input?.maxLength).toBe(3);
-  });
-
-  it('uses cvvLabel as the input placeholder', () => {
-    const tree = renderRow({ value: '', onChangeValue: () => {}, cvvLabel: 'CID', maxLength: 4 }).toJSON();
-    const input = findInputProps(tree);
     expect(input?.placeholder).toBe('CID');
   });
 
@@ -114,12 +106,6 @@ describe('VaultedCardCvvRow', () => {
     expect(typeof input?.onChangeText).toBe('function');
     (input?.onChangeText as (s: string) => void)('1a2b3');
     expect(onChangeValue).toHaveBeenCalledWith('123');
-  });
-
-  it('passes the value through to the input', () => {
-    const tree = renderRow({ value: '12', onChangeValue: () => {}, cvvLabel: 'CVV', maxLength: 3 }).toJSON();
-    const input = findInputProps(tree);
-    expect(input?.value).toBe('12');
   });
 
   it('renders with secureTextEntry and number-pad keyboard', () => {

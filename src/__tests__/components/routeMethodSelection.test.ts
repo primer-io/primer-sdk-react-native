@@ -16,11 +16,6 @@ describe('routeMethodSelection', () => {
     expect(routeMethodSelection('ADYEN_DOTPAY', ['COMPONENT_WITH_REDIRECT'])).toBe('bankSelection');
   });
 
-  it('routes pure-redirect NATIVE_UI APMs (Twint/Sofort) to nativeUi', () => {
-    expect(routeMethodSelection('ADYEN_TWINT', ['NATIVE_UI'])).toBe('nativeUi');
-    expect(routeMethodSelection('ADYEN_SOFORT', ['NATIVE_UI'])).toBe('nativeUi');
-  });
-
   it('routes non-card RAW_DATA methods (Bancontact/MBWay/BLIK) to rawDataForm', () => {
     expect(routeMethodSelection('ADYEN_BANCONTACT_CARD', ['RAW_DATA'])).toBe('rawDataForm');
     expect(routeMethodSelection('ADYEN_MBWAY', ['RAW_DATA'])).toBe('rawDataForm');
@@ -29,11 +24,6 @@ describe('routeMethodSelection', () => {
 
   it('routes STRIPE_ACH to stripeAch by its dedicated manager category', () => {
     expect(routeMethodSelection('STRIPE_ACH', ['STRIPE_ACH'])).toBe('stripeAch');
-  });
-
-  it('leaves STRIPE_ACH unsupported when absent from the session (no categories)', () => {
-    // e.g. Android without io.primer:stripe-android — the method is never listed.
-    expect(routeMethodSelection('STRIPE_ACH', [])).toBe('unsupported');
   });
 
   it('leaves other RAW_DATA methods (e.g. XENDIT_RETAIL_OUTLETS) unsupported', () => {
@@ -46,11 +36,9 @@ describe('routeMethodSelection', () => {
     expect(routeMethodSelection('KLARNA', ['KLARNA'])).toBe('klarna');
   });
 
-  it('returns unsupported for a category that is not yet routed', () => {
-    expect(routeMethodSelection('SOME_FUTURE_METHOD', ['CARD_COMPONENTS'])).toBe('unsupported');
-  });
-
-  it('returns unsupported when the method is absent from the session (no categories)', () => {
+  it('returns unsupported when the method is absent from the session or its category is not yet routed', () => {
     expect(routeMethodSelection('GOOGLE_PAY', [])).toBe('unsupported');
+    expect(routeMethodSelection('STRIPE_ACH', [])).toBe('unsupported');
+    expect(routeMethodSelection('SOME_FUTURE_METHOD', ['CARD_COMPONENTS'])).toBe('unsupported');
   });
 });

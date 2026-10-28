@@ -1,11 +1,12 @@
-import { useCallback, useEffect, useMemo } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 
 import { PrimerError } from '../../../models/PrimerError';
 import { PrimerAnalytics } from '../../analytics';
 import { usePrimerPaymentMethods } from '../../hooks/usePrimerPaymentMethods';
 import { usePrimerCheckout } from '../../hooks/usePrimerCheckout';
 import { usePrimerVaultManager } from '../../hooks/usePrimerVaultManager';
+import { defaultFieldHeight } from '../../inputs/dimensions';
 import { PrimerPaymentMethodList } from '../../PrimerPaymentMethodList';
 import { PrimerVaultedPaymentMethod } from '../../PrimerVaultedPaymentMethod';
 import { useCheckoutFlow } from '../checkout-flow/CheckoutFlowContext';
@@ -15,9 +16,9 @@ import { CheckoutRoute } from '../navigation/types';
 import { useNavigation } from '../navigation/useNavigation';
 import { routeMethodSelection } from '../routeMethodSelection';
 import { usePrimerTheme } from '../theme';
-import { CheckoutButton } from '../ui/CheckoutButton';
+import { PrimerButton } from '../ui/PrimerButton';
 import { PAYMENT_METHOD_BUTTON_HEIGHT } from '../ui/PaymentMethodButton';
-import { useBottomSafeArea } from './useBottomSafeArea';
+import { useBottomPadding } from './useBottomPadding';
 import { getLastSeenKeyboardHeight, useKeyboardHeight } from './useKeyboardHeight';
 import { useStatusScreenHeight } from './useStatusScreenHeight';
 
@@ -31,8 +32,8 @@ const LOG = '[MethodSelectionScreen]';
 // Outer grey padding + tile padding are added into sheetHeight separately below.
 const VAULT_TILE_CONTENT_HEIGHT = 44;
 
-// Matches `FIELD_HEIGHT` in `Components/inputs/dimensions.ts`.
-const VAULT_TILE_CVV_ROW_HEIGHT = 44;
+// Matches CheckoutSheet's DEFAULT_HEIGHT_RATIO: the sheet never exceeds 92% of the screen.
+const MAX_SHEET_HEIGHT_RATIO = 0.92;
 
 const CHEVRON_ICON_SIZE = 20;
 const chevronDownIcon = require('./assets/chevron-down.png');
@@ -40,11 +41,19 @@ const chevronDownIcon = require('./assets/chevron-down.png');
 export function MethodSelectionScreen() {
   const tokens = usePrimerTheme();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
-  const { t } = usePrimerLocalization();
+  const { t, formatCurrency } = usePrimerLocalization();
   const { onCancel } = useCheckoutFlow();
   const { paymentMethods } = usePrimerPaymentMethods();
   const { push, replace } = useNavigation();
-  const { setActiveMethod, startNativeUI, stopBanks, stopKlarna, startAch, stopAch } = usePrimerCheckout();
+  const { clientSession, setActiveMethod, startNativeUI, stopBanks, stopKlarna, startAch, stopAch } =
+    usePrimerCheckout();
+  const totalAmount = clientSession?.totalAmount;
+  const currencyCode = clientSession?.currencyCode;
+  // The native SDKs title the list with the amount; "Checkout" only until the session arrives.
+  const title =
+    totalAmount != null && currencyCode
+      ? t('primer_common_button_pay_amount', { amount: formatCurrency(totalAmount, currencyCode) })
+      : t('primer_checkout_title');
   const {
     activeMethod: activeVaultedMethod,
     vaultDisplayMode,
@@ -64,18 +73,18 @@ export function MethodSelectionScreen() {
   const methodCount = paymentMethods.length;
   const buttonGap = tokens.spacing.small;
   const listHeight = methodCount > 0 ? methodCount * PAYMENT_METHOD_BUTTON_HEIGHT + (methodCount - 1) * buttonGap : 0;
-  const rawBottomInset = useBottomSafeArea();
-  const bottomInset = Math.max(rawBottomInset, tokens.spacing.large);
-  // Container paddingTop + NavigationHeader (singleRow paddingVertical + titleXLarge lineHeight)
-  //   + content paddingTop + sectionTitle lineHeight + content gap + list + bottom safe area
+  const bottomPadding = useBottomPadding();
+  // Container paddingTop + NavigationHeader (singleRow paddingVertical + titleXlarge lineHeight)
+  //   + content paddingTop + sectionTitle lineHeight + content gap + list + bottom padding
   //   + spacing.xlarge for the sheet's drag-handle area (not part of screen content).
-  const headerArea = tokens.spacing.xxsmall * 2 + tokens.typography.titleXLarge.lineHeight;
+  const headerArea = tokens.spacing.xxsmall * 2 + tokens.typography.titleXlarge.lineHeight;
   const titleArea = tokens.typography.titleLarge.lineHeight;
   // Vault section = section title + content gap + outer padding*2 + tile padding*2 + tile content
   //   (+ inner-tile gap + CVV row, when CVV state is open)
-  //   + tile-to-button gap + Pay button (CheckoutButton: padding.medium*2 + titleLarge lineHeight)
+  //   + tile-to-button gap + Pay button (PrimerButton: padding.medium*2 + titleLarge lineHeight)
   //   + section-to-APM gap.
-  const cvvExtraHeight = cvvInputVisible ? tokens.spacing.medium + VAULT_TILE_CVV_ROW_HEIGHT : 0;
+  // CVV row height is the height of the input field it wraps.
+  const cvvExtraHeight = cvvInputVisible ? tokens.spacing.medium + defaultFieldHeight(tokens) : 0;
   const vaultSectionHeight =
     activeVaultedMethod != null
       ? titleArea +
@@ -88,31 +97,32 @@ export function MethodSelectionScreen() {
         (tokens.spacing.medium * 2 + tokens.typography.titleLarge.lineHeight) +
         tokens.spacing.medium
       : 0;
-  // CheckoutButton intrinsic height = padding.medium*2 + titleLarge lineHeight (matches Pay button).
-  const checkoutButtonHeight = tokens.spacing.medium * 2 + tokens.typography.titleLarge.lineHeight;
+  // PrimerButton intrinsic height = padding.medium*2 + titleLarge lineHeight (matches Pay button).
+  const primerButtonHeight = tokens.spacing.medium * 2 + tokens.typography.titleLarge.lineHeight;
   const apmSectionHeight =
-    vaultDisplayMode === 'lite' ? checkoutButtonHeight : titleArea + tokens.spacing.medium + listHeight;
-  // Grow the sheet by `keyboardHeight - bottomInset` so content stays above the keyboard.
+    vaultDisplayMode === 'lite' ? primerButtonHeight : titleArea + tokens.spacing.medium + listHeight;
+  // Grow the sheet by `keyboardHeight - bottomPadding` so content stays above the keyboard.
   // When CVV opens we use the last-seen height as an estimate to avoid a shrink-then-grow
   // jump during the ~74ms gap before `keyboardWillShow` fires.
   const keyboardHeight = useKeyboardHeight();
   const effectiveKeyboardHeight =
     keyboardHeight > 0 ? keyboardHeight : cvvInputVisible ? getLastSeenKeyboardHeight() : 0;
-  const keyboardSheetGrowth = effectiveKeyboardHeight > 0 ? Math.max(0, effectiveKeyboardHeight - bottomInset) : 0;
+  const keyboardSheetGrowth = effectiveKeyboardHeight > 0 ? Math.max(0, effectiveKeyboardHeight - bottomPadding) : 0;
   // Extra breathing room above the keyboard when CVV is open, so the input isn't flush
   // against the keyboard's top edge.
   const cvvBreathingRoom = cvvInputVisible ? tokens.spacing.xlarge : 0;
-  const sheetHeight =
-    tokens.spacing.large +
-    headerArea +
-    tokens.spacing.xxlarge +
-    vaultSectionHeight +
-    apmSectionHeight +
-    bottomInset +
-    tokens.spacing.xlarge +
-    keyboardSheetGrowth +
-    cvvBreathingRoom;
-  useStatusScreenHeight(sheetHeight);
+  // Everything around the header and content: container paddingTop, bottom padding,
+  // drag-handle area and the keyboard growth.
+  const sheetChrome =
+    tokens.spacing.large + bottomPadding + tokens.spacing.xlarge + keyboardSheetGrowth + cvvBreathingRoom;
+  const sheetHeight = sheetChrome + headerArea + tokens.spacing.xxlarge + vaultSectionHeight + apmSectionHeight;
+  // Large system text makes the real header and list taller than the estimate: the sheet then
+  // grows to fit them, up to the cap, and the list scrolls past it.
+  const { height: screenHeight } = useWindowDimensions();
+  const [headerHeight, setHeaderHeight] = useState(0);
+  const [contentHeight, setContentHeight] = useState(0);
+  const measuredSheetHeight = sheetChrome + headerHeight + contentHeight;
+  useStatusScreenHeight(Math.max(sheetHeight, Math.min(measuredSheetHeight, screenHeight * MAX_SHEET_HEIGHT_RATIO)));
 
   const handleSelect = (method: PaymentMethodItem) => {
     // Route through the shared classifier (the same map the hook uses), so a new kind can't be
@@ -179,12 +189,17 @@ export function MethodSelectionScreen() {
   }, [activeVaultedMethod, requestExpandedVaultDisplay]);
 
   return (
-    <View style={[styles.root, { paddingBottom: bottomInset }]}>
-      <NavigationHeader
-        title={t('primer_checkout_title')}
-        rightAction={{ label: t('primer_common_button_cancel'), onPress: onCancel }}
-      />
-      <View style={styles.content}>
+    <View style={[styles.root, { paddingBottom: bottomPadding }]}>
+      <View onLayout={(e) => setHeaderHeight(e.nativeEvent.layout.height)}>
+        <NavigationHeader title={title} rightAction={{ label: t('primer_common_button_cancel'), onPress: onCancel }} />
+      </View>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        alwaysBounceVertical={false}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+        onContentSizeChange={(_, h) => setContentHeight(h)}
+      >
         {activeVaultedMethod != null && (
           <View style={styles.section}>
             <View style={styles.sectionHeaderRow}>
@@ -209,7 +224,7 @@ export function MethodSelectionScreen() {
           </View>
         )}
         {vaultDisplayMode === 'lite' ? (
-          <CheckoutButton
+          <PrimerButton
             title={t('primer_vault_selected_button_other')}
             variant="outlined"
             onPress={handleRequestExpanded}
@@ -220,7 +235,7 @@ export function MethodSelectionScreen() {
             <PrimerPaymentMethodList data={paymentMethods} onSelect={handleSelect} />
           </View>
         )}
-      </View>
+      </ScrollView>
     </View>
   );
 }
@@ -264,6 +279,7 @@ function createStyles(tokens: PrimerTokens) {
     },
     showAllIcon: {
       height: CHEVRON_ICON_SIZE,
+      tintColor: colors.iconPrimary,
       width: CHEVRON_ICON_SIZE,
     },
     showAllLabel: {

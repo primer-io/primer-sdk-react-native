@@ -1,14 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  ActivityIndicator,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  useWindowDimensions,
-} from 'react-native';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Platform, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import type { TextStyle } from 'react-native';
 import { usePrimerTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
@@ -21,8 +12,10 @@ import { PrimerCardForm } from '../../PrimerCardForm';
 import { PrimerBillingAddressForm } from '../../PrimerBillingAddressForm';
 import { usePrimerCardForm } from '../../hooks/usePrimerCardForm';
 import { usePrimerBillingAddressForm } from '../../hooks/usePrimerBillingAddressForm';
+import { PrimerButton } from '../ui/PrimerButton';
 import { useSheetHeight } from '../checkout-sheet';
 import { useBottomSafeArea } from './useBottomSafeArea';
+import { useBottomPadding } from './useBottomPadding';
 import { useKeyboardPadding } from './useKeyboardPadding';
 
 // CheckoutSheet drag-handle chrome above our content: paddingTop(12) + handle(4) + paddingBottom(4).
@@ -38,6 +31,7 @@ export function CardFormScreen() {
   const cardForm = usePrimerCardForm();
   const billingForm = usePrimerBillingAddressForm();
   const bottomInset = useBottomSafeArea();
+  const bottomPadding = useBottomPadding();
   const keyboardPadding = useKeyboardPadding();
   const { height: screenHeight } = useWindowDimensions();
   const { requestHeight } = useSheetHeight();
@@ -58,7 +52,7 @@ export function CardFormScreen() {
     return release;
   }, [headerHeight, scrollContentHeight, footerHeight, screenHeight, requestHeight]);
   // Gap between the Pay button and the keyboard / system inset:
-  //   - keyboard closed: max(bottomInset, spacing.large) — clears home indicator / gesture pill.
+  //   - keyboard closed: bottomPadding, the system bar's space + spacing.large.
   //   - iOS keyboard open: spacing.large (16). `keyboard.endCoordinates.height` already
   //     includes the home-indicator area, so the bottom inset isn't needed.
   //   - Android keyboard open: spacing.large + bottomInset (≈40). Android reports just the
@@ -66,19 +60,26 @@ export function CardFormScreen() {
   //     `bottomInset` compensates so the visible gap matches iOS.
   const footerPaddingBottom =
     keyboardPadding === 0
-      ? Math.max(bottomInset, tokens.spacing.large)
+      ? bottomPadding
       : Platform.OS === 'ios'
         ? tokens.spacing.large
         : tokens.spacing.large + Math.max(bottomInset, tokens.spacing.large);
   const styles = useMemo(() => createStyles(tokens), [tokens]);
 
-  const canSubmit = cardForm.isValid && billingForm.isValid && !cardForm.isSubmitting;
+  // Locked from the tap, not from submit(): the billing address call below takes about a second,
+  // and the form must not stay live, with a Pay button that shows nothing, while it runs.
+  const [paying, setPaying] = useState(false);
+  const payingRef = useRef(false);
+  const locked = paying || cardForm.isSubmitting;
+  const canSubmit = cardForm.isValid && billingForm.isValid && !locked;
 
   // Flush pending billing-address debounce before navigating so native has the full address;
   // if anything fails before submit dispatches, the user stays on the form instead of stranded
   // on the processing screen with nothing in flight.
   const handlePay = useCallback(async () => {
-    if (!canSubmit) return;
+    if (!canSubmit || payingRef.current) return;
+    payingRef.current = true;
+    setPaying(true);
     if (billingForm.sectionVisible) {
       await billingForm.flush();
     }
@@ -104,12 +105,12 @@ export function CardFormScreen() {
         showsVerticalScrollIndicator={false}
         onContentSizeChange={(_, h) => setScrollContentHeight(h)}
       >
-        <PrimerCardForm autoFocus onSubmit={handlePay} />
+        <PrimerCardForm autoFocus onSubmit={handlePay} editable={!locked} />
         {billingForm.sectionVisible && (
           <>
             <View style={styles.divider} />
             <Text style={styles.sectionTitle}>{t('primer_card_form_billing_address_title')}</Text>
-            <PrimerBillingAddressForm billingForm={billingForm} />
+            <PrimerBillingAddressForm billingForm={billingForm} editable={!locked} />
           </>
         )}
       </ScrollView>
@@ -128,78 +129,41 @@ export function CardFormScreen() {
           },
         ]}
       >
-        <TouchableOpacity
+        <PrimerButton
+          title={t('primer_common_button_pay')}
           onPress={handlePay}
+          variant="primary"
+          loading={locked}
           disabled={!canSubmit}
-          activeOpacity={0.7}
-          style={[styles.payButton, canSubmit ? styles.payButtonEnabled : styles.payButtonDisabled]}
-          accessibilityRole="button"
-          accessibilityState={{ disabled: !canSubmit, busy: cardForm.isSubmitting }}
-          accessibilityLabel={t('accessibility_card_form_submit_label')}
-          accessibilityHint={
-            cardForm.isSubmitting
-              ? t('accessibility_card_form_submit_loading')
-              : canSubmit
-                ? t('accessibility_card_form_submit_hint')
-                : t('accessibility_card_form_submit_disabled')
-          }
+          accessibilityHint={locked || canSubmit ? undefined : t('accessibility_card_form_submit_disabled')}
+          loadingAccessibilityValue={t('accessibility_card_form_submit_loading')}
           testID="primer-card-form-submit"
-        >
-          {cardForm.isSubmitting ? (
-            <ActivityIndicator color={tokens.colors.background} />
-          ) : (
-            <Text style={styles.payButtonText}>{t('primer_common_button_pay')}</Text>
-          )}
-        </TouchableOpacity>
+        />
       </View>
     </View>
   );
 }
 
 function createStyles(tokens: PrimerTokens) {
-  const { colors, radii, spacing, typography } = tokens;
+  const { colors, spacing, typography } = tokens;
   /* eslint-disable react-native/no-unused-styles */
   return StyleSheet.create({
     divider: {
-      backgroundColor: colors.border,
+      backgroundColor: colors.borderOutlinedDefault,
       height: StyleSheet.hairlineWidth,
       marginVertical: spacing.small,
     },
     footer: {
-      backgroundColor: colors.background,
+      backgroundColor: colors.backgroundPrimary,
       paddingHorizontal: spacing.large,
       paddingTop: spacing.small,
     },
     keyboardOverlay: {
-      backgroundColor: colors.background,
+      backgroundColor: colors.backgroundPrimary,
       bottom: 0,
       left: 0,
       position: 'absolute',
       right: 0,
-    },
-    payButton: {
-      alignItems: 'center',
-      backgroundColor: colors.primary,
-      borderRadius: radii.medium,
-      justifyContent: 'center',
-      minHeight: 44,
-      padding: spacing.medium,
-      width: '100%',
-    },
-    payButtonDisabled: {
-      opacity: 0.5,
-    },
-    payButtonEnabled: {
-      opacity: 1,
-    },
-    payButtonText: {
-      color: colors.background,
-      fontFamily: typography.titleLarge.fontFamily,
-      fontSize: typography.titleLarge.fontSize,
-      fontWeight: typography.titleLarge.fontWeight as TextStyle['fontWeight'],
-      letterSpacing: typography.titleLarge.letterSpacing,
-      lineHeight: typography.titleLarge.lineHeight,
-      textAlign: 'center',
     },
     root: {
       flex: 1,

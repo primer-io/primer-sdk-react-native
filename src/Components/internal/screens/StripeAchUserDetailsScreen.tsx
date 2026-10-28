@@ -1,14 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import {
-  ActivityIndicator,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  useWindowDimensions,
-} from 'react-native';
+import { ActivityIndicator, Platform, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import type { TextStyle } from 'react-native';
 
 import { usePrimerTheme } from '../theme';
@@ -22,8 +13,10 @@ import { useCheckoutFlow } from '../checkout-flow/CheckoutFlowContext';
 import { usePrimerCheckout } from '../../hooks/usePrimerCheckout';
 import { usePrimerPaymentMethod } from '../../hooks/usePrimerPaymentMethod';
 import { PrimerTextInput } from '../../inputs';
+import { PrimerButton } from '../ui/PrimerButton';
 import { useSheetHeight } from '../checkout-sheet';
 import { useBottomSafeArea } from './useBottomSafeArea';
+import { useBottomPadding } from './useBottomPadding';
 import { useKeyboardPadding } from './useKeyboardPadding';
 
 // CheckoutSheet drag-handle chrome above our content: paddingTop(12) + handle(4) + paddingBottom(4).
@@ -41,6 +34,7 @@ export function StripeAchUserDetailsScreen() {
   const { onCancel } = useCheckoutFlow();
   const { stopAch } = usePrimerCheckout();
   const bottomInset = useBottomSafeArea();
+  const bottomPadding = useBottomPadding();
   const keyboardPadding = useKeyboardPadding();
   const { height: screenHeight } = useWindowDimensions();
   const { requestHeight } = useSheetHeight();
@@ -85,7 +79,7 @@ export function StripeAchUserDetailsScreen() {
   // Footer gap above the keyboard / system inset (mirrors CardFormScreen).
   const footerPaddingBottom =
     keyboardPadding === 0
-      ? Math.max(bottomInset, tokens.spacing.large)
+      ? bottomPadding
       : Platform.OS === 'ios'
         ? tokens.spacing.large
         : tokens.spacing.large + Math.max(bottomInset, tokens.spacing.large);
@@ -118,7 +112,7 @@ export function StripeAchUserDetailsScreen() {
       </View>
       {isStarting ? (
         <View style={styles.loading}>
-          <ActivityIndicator color={tokens.colors.primary} />
+          <ActivityIndicator color={tokens.colors.loader} />
         </View>
       ) : (
         <ScrollView
@@ -138,7 +132,8 @@ export function StripeAchUserDetailsScreen() {
               onChangeText={(text) => void ach.setFirstName(text)}
               error={fieldErrors.firstName}
               autoCapitalize="words"
-              autoComplete="name-given"
+              autoComplete="given-name"
+              textContentType="givenName"
               editable={!isWaiting}
             />
             <PrimerTextInput
@@ -148,7 +143,8 @@ export function StripeAchUserDetailsScreen() {
               onChangeText={(text) => void ach.setLastName(text)}
               error={fieldErrors.lastName}
               autoCapitalize="words"
-              autoComplete="name-family"
+              autoComplete="family-name"
+              textContentType="familyName"
               editable={!isWaiting}
             />
           </View>
@@ -160,6 +156,7 @@ export function StripeAchUserDetailsScreen() {
             keyboardType="email-address"
             autoCapitalize="none"
             autoComplete="email"
+            textContentType="emailAddress"
             editable={!isWaiting}
           />
           <Text style={styles.disclaimer}>{t('primer_ach_email_disclaimer')}</Text>
@@ -174,51 +171,23 @@ export function StripeAchUserDetailsScreen() {
         onLayout={(e) => setFooterHeight(e.nativeEvent.layout.height)}
         style={[styles.footer, { paddingBottom: footerPaddingBottom, transform: [{ translateY: -keyboardPadding }] }]}
       >
-        <TouchableOpacity
+        <PrimerButton
+          title={t('primer_ach_button_continue')}
           onPress={handleContinue}
+          variant="primary"
+          loading={isWaiting}
           disabled={!canSubmit}
-          activeOpacity={0.7}
-          style={[styles.continueButton, !canSubmit && styles.continueButtonDisabled]}
-          accessibilityRole="button"
-          accessibilityState={{ disabled: !canSubmit, busy: isWaiting }}
           accessibilityHint={t('accessibility_ach_continue_hint')}
-        >
-          {isWaiting ? (
-            <ActivityIndicator color={tokens.colors.background} />
-          ) : (
-            <Text style={styles.continueButtonText}>{t('primer_ach_button_continue')}</Text>
-          )}
-        </TouchableOpacity>
+        />
       </View>
     </View>
   );
 }
 
 function createStyles(tokens: PrimerTokens) {
-  const { colors, radii, spacing, typography } = tokens;
+  const { colors, spacing, typography } = tokens;
   /* eslint-disable react-native/no-unused-styles */
   return StyleSheet.create({
-    continueButton: {
-      alignItems: 'center',
-      backgroundColor: colors.primary,
-      borderRadius: radii.medium,
-      justifyContent: 'center',
-      minHeight: 44,
-      padding: spacing.medium,
-      width: '100%',
-    },
-    continueButtonDisabled: {
-      opacity: 0.5,
-    },
-    continueButtonText: {
-      color: colors.background,
-      fontFamily: typography.titleLarge.fontFamily,
-      fontSize: typography.titleLarge.fontSize,
-      fontWeight: typography.titleLarge.fontWeight as TextStyle['fontWeight'],
-      letterSpacing: typography.titleLarge.letterSpacing,
-      lineHeight: typography.titleLarge.lineHeight,
-      textAlign: 'center',
-    },
     disclaimer: {
       color: colors.textSecondary,
       fontFamily: typography.bodySmall.fontFamily,
@@ -228,12 +197,12 @@ function createStyles(tokens: PrimerTokens) {
       lineHeight: typography.bodySmall.lineHeight,
     },
     footer: {
-      backgroundColor: colors.background,
+      backgroundColor: colors.backgroundPrimary,
       paddingHorizontal: spacing.large,
       paddingTop: spacing.small,
     },
     keyboardOverlay: {
-      backgroundColor: colors.background,
+      backgroundColor: colors.backgroundPrimary,
       bottom: 0,
       left: 0,
       position: 'absolute',

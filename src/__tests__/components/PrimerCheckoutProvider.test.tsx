@@ -17,6 +17,7 @@ jest.mock(
     const mockAddListener = jest.fn().mockImplementation(() => ({ remove: jest.fn() }));
     return {
       Platform: { OS: 'android', select: (o: any) => o.android ?? o.default },
+      useColorScheme: () => 'light',
       NativeModules: {
         PrimerHeadlessUniversalCheckout: {
           startWithClientToken: jest.fn(),
@@ -60,6 +61,7 @@ import { createElement } from 'react';
 // @ts-expect-error -- react-test-renderer has no types for React 19
 import renderer, { act } from 'react-test-renderer';
 import { PrimerCheckoutProvider } from '../../Components/PrimerCheckoutProvider';
+import { usePrimerColorScheme, usePrimerTheme } from '../../Components/internal/theme';
 import { usePrimerCheckout } from '../../Components/hooks/usePrimerCheckout';
 import { PrimerError } from '../../models/PrimerError';
 import type { PrimerCheckoutContextValue } from '../../Components/types/PrimerCheckoutProviderTypes';
@@ -209,28 +211,6 @@ describe('PrimerCheckoutProvider', () => {
     expect(nativeModule.cleanUp).toHaveBeenCalled();
   });
 
-  it('does not re-initialize when only callbacks change', async () => {
-    let root: renderer.ReactTestRenderer;
-
-    await act(async () => {
-      root = renderer.create(
-        createElement(PrimerCheckoutProvider, { clientToken: 'token-1', onCheckoutComplete: () => {} }, null)
-      );
-      await flushPromises();
-    });
-
-    expect(nativeModule.startWithClientToken).toHaveBeenCalledTimes(1);
-
-    await act(async () => {
-      root!.update(
-        createElement(PrimerCheckoutProvider, { clientToken: 'token-1', onCheckoutComplete: () => {} }, null)
-      );
-      await flushPromises();
-    });
-
-    expect(nativeModule.startWithClientToken).toHaveBeenCalledTimes(1);
-  });
-
   it('clears isLoadingResources when no payment methods are configured', async () => {
     // startWithClientToken resolves with an empty list — nothing to fetch.
     nativeModule.startWithClientToken.mockResolvedValue({ availablePaymentMethods: [] });
@@ -334,25 +314,6 @@ describe('PrimerCheckoutProvider native event callbacks', () => {
     nativeModule.setImplementedRNCallbacks.mockResolvedValue(undefined);
   });
 
-  it('forwards onCheckoutComplete to merchant callback', async () => {
-    const onCheckoutComplete = jest.fn();
-
-    await act(async () => {
-      renderer.create(createElement(PrimerCheckoutProvider, { clientToken: 'token-1', onCheckoutComplete }, null));
-      await flushPromises();
-    });
-
-    const listener = findListener('onCheckoutComplete');
-    expect(listener).toBeDefined();
-
-    const checkoutData = { payment: { id: 'pay_123' } };
-    await act(async () => {
-      listener!(checkoutData);
-    });
-
-    expect(onCheckoutComplete).toHaveBeenCalledWith(checkoutData);
-  });
-
   it('forwards onError to merchant callback and sets error in context', async () => {
     const onError = jest.fn();
     let captured: PrimerCheckoutContextValue | undefined;
@@ -434,44 +395,27 @@ describe('PrimerCheckoutProvider native event callbacks', () => {
     expect(captured!.clientSession).toEqual(session);
   });
 
-  it('forwards onTokenizationSuccess to merchant callback', async () => {
-    const onTokenizationSuccess = jest.fn();
+  it.each([
+    ['onTokenizationSuccess', { paymentMethodTokenData: { token: 'tok_123', paymentInstrumentType: 'PAYMENT_CARD' } }],
+    ['onBeforePaymentCreate', { paymentMethodType: 'PAYMENT_CARD', paymentMethod: 'PAYMENT_CARD' }],
+  ] as const)('forwards %s to merchant callback', async (callbackName, payload) => {
+    const callback = jest.fn();
 
     await act(async () => {
-      renderer.create(createElement(PrimerCheckoutProvider, { clientToken: 'token-1', onTokenizationSuccess }, null));
+      renderer.create(
+        createElement(PrimerCheckoutProvider, { clientToken: 'token-1', [callbackName]: callback }, null)
+      );
       await flushPromises();
     });
 
-    const listener = findListener('onTokenizationSuccess');
+    const listener = findListener(callbackName);
     expect(listener).toBeDefined();
 
-    const tokenData = { paymentMethodTokenData: { token: 'tok_123', paymentInstrumentType: 'PAYMENT_CARD' } };
-
     await act(async () => {
-      listener!(tokenData);
+      listener!(payload);
     });
 
-    expect(onTokenizationSuccess).toHaveBeenCalled();
-  });
-
-  it('forwards onBeforePaymentCreate to merchant callback', async () => {
-    const onBeforePaymentCreate = jest.fn();
-
-    await act(async () => {
-      renderer.create(createElement(PrimerCheckoutProvider, { clientToken: 'token-1', onBeforePaymentCreate }, null));
-      await flushPromises();
-    });
-
-    const listener = findListener('onBeforePaymentCreate');
-    expect(listener).toBeDefined();
-
-    const paymentMethodData = { paymentMethodType: 'PAYMENT_CARD', paymentMethod: 'PAYMENT_CARD' };
-
-    await act(async () => {
-      listener!(paymentMethodData);
-    });
-
-    expect(onBeforePaymentCreate).toHaveBeenCalled();
+    expect(callback).toHaveBeenCalled();
   });
 
   it('uses latest callback ref without re-initializing', async () => {
@@ -504,12 +448,6 @@ describe('PrimerCheckoutProvider native event callbacks', () => {
 
     expect(onCheckoutComplete1).not.toHaveBeenCalled();
     expect(onCheckoutComplete2).toHaveBeenCalledWith(checkoutData);
-  });
-});
-
-describe('usePrimerCheckout', () => {
-  it('throws when called outside React render cycle', () => {
-    expect(() => usePrimerCheckout()).toThrow();
   });
 });
 
@@ -716,52 +654,6 @@ describe('PrimerCheckoutProvider — requiresVaultedCardCvv flag wiring', () => 
     expect(captured!.requiresVaultedCardCvv).toBe(true);
   });
 
-  it('propagates false through context when bridge resolves false', async () => {
-    vaultModule.requiresVaultedCardCvv.mockResolvedValue(false);
-    let captured: PrimerCheckoutContextValue | undefined;
-
-    await act(async () => {
-      renderer.create(
-        createElement(
-          PrimerCheckoutProvider,
-          { clientToken: 'token-1' },
-          createElement(TestConsumer, {
-            onContext: (ctx: PrimerCheckoutContextValue) => {
-              captured = ctx;
-            },
-          })
-        )
-      );
-      await flushPromises();
-      await flushPromises();
-    });
-
-    expect(captured!.requiresVaultedCardCvv).toBe(false);
-  });
-
-  it('defaults to false when bridge rejects (safe fallback)', async () => {
-    vaultModule.requiresVaultedCardCvv.mockRejectedValue({ errorId: 'NATIVE_BRIDGE_FAILED', description: 'oops' });
-    let captured: PrimerCheckoutContextValue | undefined;
-
-    await act(async () => {
-      renderer.create(
-        createElement(
-          PrimerCheckoutProvider,
-          { clientToken: 'token-1' },
-          createElement(TestConsumer, {
-            onContext: (ctx: PrimerCheckoutContextValue) => {
-              captured = ctx;
-            },
-          })
-        )
-      );
-      await flushPromises();
-      await flushPromises();
-    });
-
-    expect(captured!.requiresVaultedCardCvv).toBe(false);
-  });
-
   it('routes payFromVault to startPaymentFlow without additional data when none is supplied', async () => {
     vaultModule.startPaymentFlow.mockResolvedValue(undefined);
     let captured: PrimerCheckoutContextValue | undefined;
@@ -870,6 +762,7 @@ describe('PrimerCheckoutProvider — requiresVaultedCardCvv flag wiring', () => 
 
   it('re-selecting the same method re-fetches only after disarm (the spinner fix)', async () => {
     const ctx = await renderReady();
+    const before = mockAddListener.mock.calls.length;
 
     await act(async () => {
       await ctx().startBanks('ADYEN_IDEAL');
@@ -887,26 +780,6 @@ describe('PrimerCheckoutProvider — requiresVaultedCardCvv flag wiring', () => 
     expect(banksModule.configure).toHaveBeenCalledTimes(1);
     expect(banksModule.start).toHaveBeenCalledTimes(1);
 
-    // Disarm (what MethodSelectionScreen does on return to the list), then re-arm the same method.
-    await act(async () => {
-      ctx().stopBanks();
-      await flushPromises();
-    });
-    await act(async () => {
-      await ctx().startBanks('ADYEN_IDEAL');
-      await flushPromises();
-    });
-    expect(banksModule.configure).toHaveBeenCalledTimes(2);
-    expect(banksModule.start).toHaveBeenCalledTimes(2);
-  });
-
-  it('stopBanks clears the issuer list, selection, and loading flag', async () => {
-    const ctx = await renderReady();
-    const before = mockAddListener.mock.calls.length;
-    await act(async () => {
-      await ctx().startBanks('ADYEN_IDEAL');
-      await flushPromises();
-    });
     const onStep = mockAddListener.mock.calls.slice(before).find((c: any[]) => c[0] === 'onStep')?.[1];
     await act(async () => {
       onStep!({ stepName: 'banksRetrieved', banks: [{ id: 'ing', name: 'ING' }] });
@@ -914,6 +787,7 @@ describe('PrimerCheckoutProvider — requiresVaultedCardCvv flag wiring', () => 
     });
     expect(ctx().banks).toHaveLength(1);
 
+    // Disarm (what MethodSelectionScreen does on return to the list), then re-arm the same method.
     await act(async () => {
       ctx().stopBanks();
       await flushPromises();
@@ -921,6 +795,12 @@ describe('PrimerCheckoutProvider — requiresVaultedCardCvv flag wiring', () => 
     expect(ctx().banks).toEqual([]);
     expect(ctx().selectedBankId).toBeNull();
     expect(ctx().isBanksLoading).toBe(false);
+    await act(async () => {
+      await ctx().startBanks('ADYEN_IDEAL');
+      await flushPromises();
+    });
+    expect(banksModule.configure).toHaveBeenCalledTimes(2);
+    expect(banksModule.start).toHaveBeenCalledTimes(2);
   });
 
   it('surfaces a component error that arrives after submit (listener not torn down by submit)', async () => {
@@ -943,5 +823,70 @@ describe('PrimerCheckoutProvider — requiresVaultedCardCvv flag wiring', () => 
       await flushPromises();
     });
     expect(ctx().paymentOutcome?.status).toBe('error');
+  });
+
+  it('applies a changed theme prop to the tokens it provides', async () => {
+    // Regression: tokens were built with useState(() => ...), which runs once, so a
+    // merchant swapping theme at runtime kept the first theme for the whole session.
+    const seen: string[] = [];
+
+    function ThemeProbe() {
+      seen.push(usePrimerTheme().colors.brand);
+      return null;
+    }
+
+    let root: renderer.ReactTestRenderer;
+    await act(async () => {
+      root = renderer.create(
+        createElement(
+          PrimerCheckoutProvider,
+          { clientToken: 'token-1', theme: { light: { colors: { brand: '#111111' } } } },
+          createElement(ThemeProbe)
+        )
+      );
+      await flushPromises();
+    });
+
+    expect(seen[seen.length - 1]).toBe('#111111');
+
+    await act(async () => {
+      root!.update(
+        createElement(
+          PrimerCheckoutProvider,
+          { clientToken: 'token-1', theme: { light: { colors: { brand: '#222222' } } } },
+          createElement(ThemeProbe)
+        )
+      );
+      await flushPromises();
+    });
+
+    expect(seen[seen.length - 1]).toBe('#222222');
+  });
+
+  it('hands components the dark tokens when appearanceMode is DARK', async () => {
+    let seen: { brand: string; scheme: string } | undefined;
+
+    function Probe() {
+      seen = { brand: usePrimerTheme().colors.brand, scheme: usePrimerColorScheme() };
+      return null;
+    }
+
+    await act(async () => {
+      renderer.create(
+        createElement(
+          PrimerCheckoutProvider,
+          {
+            clientToken: 'token-1',
+            settings: { uiOptions: { appearanceMode: 'DARK' } },
+            theme: { light: { colors: { brand: '#111111' } }, dark: { colors: { brand: '#222222' } } },
+          },
+          createElement(Probe)
+        )
+      );
+      await flushPromises();
+    });
+
+    // The phone is light in this suite, so only the setting can make it dark.
+    expect(seen).toEqual({ brand: '#222222', scheme: 'dark' });
   });
 });

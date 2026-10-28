@@ -52,13 +52,6 @@ beforeEach(() => {
 });
 
 describe('AchMandateTransitioner', () => {
-  it('routes to the mandate screen when the mandate arrives', () => {
-    mockAchMandate = mandate('LEGAL');
-    render();
-    expect(mockReplace).toHaveBeenCalledTimes(1);
-    expect(mockReplace).toHaveBeenCalledWith(CheckoutRoute.stripeAchMandate);
-  });
-
   it('routes exactly once while the mandate stays set (its own replace() animation re-runs the effect)', () => {
     mockAchMandate = mandate('LEGAL');
     const root = render();

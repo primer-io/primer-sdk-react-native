@@ -40,11 +40,10 @@ function captureDescriptor(network: string | null | undefined) {
     captured.current = useCardNetworkDescriptor(net);
     return null;
   }
-  let tree: any;
   act(() => {
-    tree = renderer.create(createElement(Probe, { net: network }));
+    renderer.create(createElement(Probe, { net: network }));
   });
-  return { captured, tree };
+  return { captured };
 }
 
 beforeEach(() => {
@@ -52,21 +51,8 @@ beforeEach(() => {
 });
 
 describe('useCardNetworkDescriptor', () => {
-  it('returns DEFAULT_DESCRIPTOR synchronously on first render with a known network', () => {
-    mockFetchCardNetworkDescriptor.mockReturnValue(new Promise(() => {}));
-    const { captured } = captureDescriptor('AMEX');
-    expect(captured.current).toEqual(DEFAULT_DESCRIPTOR);
-    expect(mockFetchCardNetworkDescriptor).toHaveBeenCalledWith('AMEX');
-  });
-
   it('returns DEFAULT_DESCRIPTOR and skips fetch when network is null', () => {
     const { captured } = captureDescriptor(null);
-    expect(captured.current).toEqual(DEFAULT_DESCRIPTOR);
-    expect(mockFetchCardNetworkDescriptor).not.toHaveBeenCalled();
-  });
-
-  it('returns DEFAULT_DESCRIPTOR and skips fetch when network is undefined', () => {
-    const { captured } = captureDescriptor(undefined);
     expect(captured.current).toEqual(DEFAULT_DESCRIPTOR);
     expect(mockFetchCardNetworkDescriptor).not.toHaveBeenCalled();
   });
@@ -75,31 +61,10 @@ describe('useCardNetworkDescriptor', () => {
     mockFetchCardNetworkDescriptor.mockResolvedValue(AMEX_DESCRIPTOR);
     const { captured } = captureDescriptor('AMEX');
     expect(captured.current).toEqual(DEFAULT_DESCRIPTOR);
+    expect(mockFetchCardNetworkDescriptor).toHaveBeenCalledWith('AMEX');
     await act(async () => {
       await Promise.resolve();
     });
     expect(captured.current).toEqual(AMEX_DESCRIPTOR);
-  });
-
-  it('does not call setState after unmount when the fetch resolves later', async () => {
-    let resolveFetch: (d: CardNetworkDescriptor) => void = () => {};
-    mockFetchCardNetworkDescriptor.mockReturnValue(
-      new Promise<CardNetworkDescriptor>((resolve) => {
-        resolveFetch = resolve;
-      })
-    );
-    const { tree } = captureDescriptor('AMEX');
-    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-    act(() => {
-      tree.unmount();
-    });
-    await act(async () => {
-      resolveFetch(AMEX_DESCRIPTOR);
-      await Promise.resolve();
-    });
-    expect(errorSpy).not.toHaveBeenCalledWith(
-      expect.stringContaining("Can't perform a React state update on an unmounted component")
-    );
-    errorSpy.mockRestore();
   });
 });

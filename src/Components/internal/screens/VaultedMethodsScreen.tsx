@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert, FlatList, Image, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import type { ListRenderItemInfo, TextStyle } from 'react-native';
+import { Alert, FlatList, Image, Platform, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import type { Insets, ListRenderItemInfo, TextStyle } from 'react-native';
 
 import { PrimerAnalytics } from '../../analytics';
 import { usePrimerVaultManager } from '../../hooks/usePrimerVaultManager';
@@ -12,19 +12,30 @@ import type { NavigationHeaderAction } from '../navigation/NavigationHeader';
 import { useNavigation } from '../navigation/useNavigation';
 import { usePrimerTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
-import { CheckoutButton } from '../ui/CheckoutButton';
-import { useBottomSafeArea } from './useBottomSafeArea';
+import { PrimerButton } from '../ui/PrimerButton';
+import { useBottomPadding } from './useBottomPadding';
 import { useStatusScreenHeight } from './useStatusScreenHeight';
 
 const BRAND_CHIP_WIDTH = 22.4;
 const BRAND_CHIP_HEIGHT = 16;
 const CHECK_ICON_SIZE = 20;
 const DELETE_ICON_SIZE = 20;
+const IOS_MIN_TOUCH_TARGET = 44;
+const ANDROID_MIN_TOUCH_TARGET = 48;
 const HEADER_ICON_SIZE = 20;
 const closeIcon = require('./assets/close.png');
 const checkIcon = require('./assets/check.png'); // blue — active-row indicator
 const doneIcon = require('./assets/done.png'); // black — header Done button
 const editIcon = require('./assets/edit.png');
+
+// The icon stays 20; the slop grows it to the platform's minimum, reaching left only across the gap so
+// a tap on the card's edge still selects the card.
+function deleteHitSlop(gapToCard: number): Insets {
+  const target = Platform.OS === 'android' ? ANDROID_MIN_TOUCH_TARGET : IOS_MIN_TOUCH_TARGET;
+  const extra = target - DELETE_ICON_SIZE;
+  const left = Math.min(gapToCard, extra);
+  return { top: extra / 2, bottom: extra / 2, left, right: extra - left };
+}
 
 interface VaultedMethodRowProps {
   method: VaultedPaymentMethodItem;
@@ -114,7 +125,7 @@ function VaultedMethodRow({
         onPress={onDeletePress}
         disabled={!isInteractive}
         style={styles.deleteButton}
-        hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}
+        hitSlop={deleteHitSlop(tokens.spacing.medium)}
       >
         <Image source={closeIcon} style={styles.deleteIcon} resizeMode="contain" />
       </TouchableOpacity>
@@ -128,18 +139,18 @@ export function VaultedMethodsScreen() {
   const { t } = usePrimerLocalization();
   const { vaultedMethods, activeMethod, selectVaultedMethodId, deleteVaultedPaymentMethod } = usePrimerVaultManager();
   const { pop } = useNavigation();
-  const rawBottomInset = useBottomSafeArea();
-  const bottomInset = Math.max(rawBottomInset, tokens.spacing.large);
+  const bottomPadding = useBottomPadding();
 
   const [editMode, setEditMode] = useState(false);
   const [pendingDeletion, setPendingDeletion] = useState<VaultedPaymentMethodItem | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [confirmationContentHeight, setConfirmationContentHeight] = useState<number | null>(null);
 
   // Shrink the sheet to fit just the confirmation surface (single tile + caption + buttons row)
   // instead of the default 92%. Figma 366:69230.
   const confirmationSheetHeight = useMemo(() => {
     const headerArea =
-      tokens.spacing.large + tokens.spacing.xxlarge + tokens.spacing.large + tokens.typography.titleXLarge.lineHeight;
+      tokens.spacing.large + tokens.spacing.xxlarge + tokens.spacing.large + tokens.typography.titleXlarge.lineHeight;
     const tileHeight = tokens.spacing.medium * 2 + tokens.typography.bodyLarge.lineHeight + tokens.spacing.xsmall + 16;
     const buttonsRowHeight = tokens.spacing.medium * 2 + tokens.typography.titleLarge.lineHeight;
     const contentArea =
@@ -148,8 +159,9 @@ export function VaultedMethodsScreen() {
       tokens.typography.bodySmall.lineHeight +
       tokens.spacing.small +
       buttonsRowHeight;
-    return headerArea + tokens.spacing.xxlarge + contentArea + bottomInset + tokens.spacing.xlarge;
-  }, [tokens, bottomInset]);
+    const content = confirmationContentHeight ?? tokens.spacing.xxlarge + contentArea;
+    return headerArea + content + bottomPadding + tokens.spacing.xlarge;
+  }, [tokens, bottomPadding, confirmationContentHeight]);
 
   // FR-014: if the targeted row vanishes from the underlying list (session refresh, external delete),
   // dismiss the confirmation silently rather than leaving the user staring at a stale tile.
@@ -275,7 +287,8 @@ export function VaultedMethodsScreen() {
     };
   }, [editMode, t, styles.headerIcon, handleEnterEditMode, handleExitEditMode]);
 
-  const headerBackHandler = isDeleting ? noop : undefined;
+  // On the delete question, Back acts like Cancel: the list comes back still in edit mode.
+  const headerBackHandler = isDeleting ? noop : pendingDeletion != null ? handleCancelDelete : undefined;
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<VaultedPaymentMethodItem>) => (
@@ -297,7 +310,7 @@ export function VaultedMethodsScreen() {
   const showConfirmation = pendingDeletion != null;
 
   return (
-    <View style={[styles.container, { paddingBottom: bottomInset }]}>
+    <View style={[styles.container, { paddingBottom: bottomPadding }]}>
       <NavigationHeader
         title={t('primer_vault_manage_title')}
         showBackButton
@@ -306,7 +319,10 @@ export function VaultedMethodsScreen() {
         rightAction={headerRightAction}
       />
       {showConfirmation ? (
-        <View style={styles.confirmationContent}>
+        <View
+          style={styles.confirmationContent}
+          onLayout={(e) => setConfirmationContentHeight(e.nativeEvent.layout.height)}
+        >
           <ConfirmationSheetHeight height={confirmationSheetHeight} />
           <VaultedMethodRow
             method={pendingDeletion}
@@ -319,7 +335,7 @@ export function VaultedMethodsScreen() {
           <Text style={styles.confirmationCaption}>{t('primer_vault_delete_message')}</Text>
           <View style={styles.confirmationButtons}>
             <View style={styles.confirmationButtonHalf}>
-              <CheckoutButton
+              <PrimerButton
                 title={t('primer_vault_delete_button_cancel')}
                 variant="outlined"
                 onPress={handleCancelDelete}
@@ -327,7 +343,7 @@ export function VaultedMethodsScreen() {
               />
             </View>
             <View style={styles.confirmationButtonHalf}>
-              <CheckoutButton
+              <PrimerButton
                 title={t('primer_vault_delete_button_confirm')}
                 variant="primary"
                 onPress={handleConfirmDelete}
@@ -397,6 +413,7 @@ function createStyles(tokens: PrimerTokens) {
     },
     headerIcon: {
       height: HEADER_ICON_SIZE,
+      tintColor: colors.iconPrimary,
       width: HEADER_ICON_SIZE,
     },
     listContent: {
@@ -407,15 +424,15 @@ function createStyles(tokens: PrimerTokens) {
 }
 
 function createRowStyles(tokens: PrimerTokens, isActive: boolean) {
-  const { colors, spacing, radii, borders, typography } = tokens;
+  const { colors, spacing, radii, widths, typography } = tokens;
   // Match the overall tile size between active (2px border) and default (1px) by
   // compensating padding so inner content doesn't shift by 1px on toggle.
-  const innerPadding = isActive ? spacing.medium - 1 : spacing.medium;
+  const innerPadding = isActive ? spacing.medium - (widths.selected - widths.default) : spacing.medium;
   /* eslint-disable react-native/no-unused-styles */
   return StyleSheet.create({
     brandChip: {
       alignItems: 'center',
-      backgroundColor: colors.surface,
+      backgroundColor: colors.backgroundSecondary,
       borderRadius: radii.xsmall,
       height: BRAND_CHIP_HEIGHT,
       justifyContent: 'center',
@@ -433,6 +450,7 @@ function createRowStyles(tokens: PrimerTokens, isActive: boolean) {
     },
     checkIcon: {
       height: CHECK_ICON_SIZE,
+      tintColor: colors.brand,
       width: CHECK_ICON_SIZE,
     },
     checkIconBox: {
@@ -449,6 +467,7 @@ function createRowStyles(tokens: PrimerTokens, isActive: boolean) {
     },
     deleteIcon: {
       height: DELETE_ICON_SIZE,
+      tintColor: colors.iconPrimary,
       width: DELETE_ICON_SIZE,
     },
     leftCol: {
@@ -496,10 +515,10 @@ function createRowStyles(tokens: PrimerTokens, isActive: boolean) {
       lineHeight: typography.bodySmall.lineHeight,
     },
     tile: {
-      backgroundColor: colors.background,
-      borderColor: isActive ? colors.primary : colors.border,
+      backgroundColor: colors.backgroundPrimary,
+      borderColor: isActive ? colors.borderOutlinedSelected : colors.borderOutlinedDefault,
       borderRadius: radii.medium,
-      borderWidth: isActive ? borders.strong : borders.default,
+      borderWidth: isActive ? widths.selected : widths.default,
       padding: innerPadding,
     },
     tileFull: {

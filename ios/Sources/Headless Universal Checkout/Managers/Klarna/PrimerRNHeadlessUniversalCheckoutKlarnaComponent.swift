@@ -198,10 +198,17 @@ extension RNTPrimerHeadlessUniversalCheckoutKlarnaComponent: PrimerHeadlessStepp
       notifyCheckoutComplete(checkoutData)
 
     case .viewLoaded(let view):
+      let body = try? step.toPaymentViewLoadedRN().toJsonObject()
+      // Set the view before the event, so the view JS mounts on this step finds it.
       DispatchQueue.main.async {
         RNTPrimerKlarnaPaymentViewManager.updatePrimerKlarnaPaymentView(view)
+        self.sendStepEvent(body)
       }
-      sendStepEvent(try? step.toPaymentViewLoadedRN().toJsonObject())
+
+    case .viewResized(let height):
+      DispatchQueue.main.async {
+        RNTPrimerKlarnaPaymentViewManager.updatePrimerKlarnaPaymentViewContentHeight(height)
+      }
 
     default:
       break

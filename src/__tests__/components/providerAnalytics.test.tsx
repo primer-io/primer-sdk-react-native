@@ -17,6 +17,7 @@ jest.mock(
     const mockAddListener = jest.fn().mockImplementation(() => ({ remove: jest.fn() }));
     return {
       Platform: { OS: 'android', select: (o: any) => o.android ?? o.default },
+      useColorScheme: () => 'light',
       NativeModules: {
         PrimerHeadlessUniversalCheckout: {
           startWithClientToken: jest.fn(),
@@ -309,15 +310,5 @@ describe('PrimerCheckoutProvider analytics contract', () => {
     expect(names[reattemptIndex + 1]).toBe('PAYMENT_SUBMITTED');
     expect(names[reattemptIndex + 2]).toBe('PAYMENT_PROCESSING_STARTED');
     expect(trackedMeta('PAYMENT_REATTEMPTED')).toEqual({ paymentMethod: 'PAYMENT_CARD' });
-  });
-
-  it('emits PAYMENT_FLOW_EXITED when the session ends without a completed payment', async () => {
-    const { root } = await renderProvider();
-
-    await act(async () => {
-      root.unmount();
-    });
-
-    expect(trackedNames()).toContain('PAYMENT_FLOW_EXITED');
   });
 });

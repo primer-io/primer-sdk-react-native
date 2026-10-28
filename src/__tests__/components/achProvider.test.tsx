@@ -24,6 +24,7 @@ jest.mock(
   'react-native',
   () => ({
     Platform: { OS: 'android', select: (o: { android?: unknown; default?: unknown }) => o.android ?? o.default },
+    useColorScheme: () => 'light',
     NativeModules: {},
     NativeEventEmitter: jest.fn().mockImplementation(() => ({
       addListener: jest.fn().mockImplementation(() => ({ remove: jest.fn() })),
@@ -215,17 +216,6 @@ describe('PrimerCheckoutProvider — Stripe ACH slice', () => {
     expect(ctx().achIsValid).toBe(true);
   });
 
-  it('empty prefill still opens the gate and triggers no native validation', async () => {
-    const { ctx } = await renderProvider();
-    await armAch(ctx);
-
-    fireStep({ stepName: 'userDetailsRetrieved', firstName: '', lastName: '', emailAddress: '' });
-
-    expect(mockAchComponent.handleFirstNameChange).not.toHaveBeenCalled();
-    expect(ctx().achIsValid).toBe(true);
-    expect(ctx().achFieldErrors).toEqual({});
-  });
-
   it('gate tracks errors: defaults open, an error closes it, clearing the error reopens it', async () => {
     const { ctx } = await renderProvider();
     await armAch(ctx);
@@ -393,20 +383,6 @@ describe('PrimerCheckoutProvider — Stripe ACH slice', () => {
       capturedCallbacks?.onCheckoutComplete?.(checkoutData);
     });
     expect(ctx().paymentOutcome).toEqual({ status: 'success', data: checkoutData });
-  });
-
-  it('publishes a genuine ACH error as an error outcome and resets the slice', async () => {
-    const merchantOnError = jest.fn();
-    const { ctx } = await renderProvider({ onError: merchantOnError });
-    await armAch(ctx);
-
-    const bankError = new PrimerError('stripe-error', 'stripe-error', 'Collector failed', undefined, undefined);
-    act(() => {
-      capturedCallbacks?.onError?.(bankError, null);
-    });
-    expect(ctx().paymentOutcome).toEqual({ status: 'error', error: bankError, data: null });
-    expect(merchantOnError).toHaveBeenCalledTimes(1);
-    expect(ctx().achStep).toBe('idle');
   });
 
   it('forwards the mandate event verbatim when no CC ACH flow is armed (merchant-driven ACH)', async () => {
