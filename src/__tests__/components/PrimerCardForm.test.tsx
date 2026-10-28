@@ -42,10 +42,6 @@ describe('PrimerCardForm', () => {
     const root = render();
     expect(root.findAll((node: any) => node.type === 'PrimerAcceptedCardNetworks')).toHaveLength(0);
     expect(root.findAll((node: any) => /accepted/.test(String(node.props.testID ?? '')))).toHaveLength(0);
-  });
-
-  it('starts with the card number', () => {
-    const root = render();
     const form = root.find((node: any) => node.type === 'View' && node.props.testID === 'primer-card-form');
     expect(form.children[0].type).toBe('PrimerCardNumberInput');
   });
