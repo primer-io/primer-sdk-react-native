@@ -8,7 +8,7 @@ import type {
 } from '../../../models/PrimerComponentDataValidation';
 import { PrimerError } from '../../../models/PrimerError';
 import type { EventType } from './Utils/EventType';
-import { unwrapNativeError } from './Utils/unwrapNativeError';
+import { subscribeToComponentEvents } from './Utils/subscribeToComponentEvents';
 import type { AchStep } from '../../../models/ach/AchSteps';
 import type { AchValidatableData } from '../../../models/ach/AchCollectableData';
 
@@ -112,48 +112,10 @@ export class PrimerHeadlessUniversalCheckoutAchManager {
   }
 
   private async configureListeners(props: AchManagerProps): Promise<void> {
-    if (props?.onStep) {
-      const sub = await this.addListener('onStep', (data) => {
-        props.onStep?.(data);
-      });
-      this.subscriptions.push(sub);
-    }
-
-    if (props?.onInvalid) {
-      const sub = await this.addListener('onInvalid', (data) => {
-        props.onInvalid?.(data);
-      });
-      this.subscriptions.push(sub);
-    }
-
-    if (props?.onError) {
-      const sub = await this.addListener('onError', (data) => {
-        const error = unwrapNativeError(data);
-        if (error) props.onError?.(error);
-      });
-      this.subscriptions.push(sub);
-    }
-
-    if (props?.onValid) {
-      const sub = await this.addListener('onValid', (data) => {
-        props.onValid?.(data);
-      });
-      this.subscriptions.push(sub);
-    }
-
-    if (props?.onValidating) {
-      const sub = await this.addListener('onValidating', (data) => {
-        props.onValidating?.(data);
-      });
-      this.subscriptions.push(sub);
-    }
-
-    if (props?.onValidationError) {
-      const sub = await this.addListener('onValidationError', (data) => {
-        props.onValidationError?.(data);
-      });
-      this.subscriptions.push(sub);
-    }
+    const subscriptions = await subscribeToComponentEvents<AchStep, AchValidatableData>(props, (eventType, listener) =>
+      this.addListener(eventType, listener)
+    );
+    this.subscriptions.push(...subscriptions);
   }
 
   ///////////////////////////////////////////

@@ -13,8 +13,6 @@ const eventEmitter = new NativeEventEmitter(RNTPrimerHeadlessUniversalCheckoutRa
 
 type EventType = 'onMetadataChange' | 'onValidation' | 'onBinDataChange';
 
-const eventTypes: EventType[] = ['onMetadataChange', 'onValidation', 'onBinDataChange'];
-
 export interface RawDataManagerProps {
   paymentMethodType: string;
   onMetadataChange?: (metadata: any) => void;
@@ -37,6 +35,7 @@ class PrimerHeadlessUniversalCheckoutRawDataManager {
   ///////////////////////////////////////////
 
   async configure(options: RawDataManagerProps): Promise<{ initializationData: PrimerInitializationData } | void> {
+    this.removeAllListeners();
     return new Promise(async (resolve, reject) => {
       try {
         this.options = options;
@@ -219,7 +218,8 @@ class PrimerHeadlessUniversalCheckoutRawDataManager {
   }
 
   removeAllListeners() {
-    eventTypes.forEach((eventType) => this.removeAllListenersForEvent(eventType));
+    this.subscriptions.forEach((subscription) => subscription.remove());
+    this.subscriptions = [];
   }
 }
 

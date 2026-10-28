@@ -18,6 +18,7 @@ import { fmt } from './internal/debug';
 import { PrimerCheckoutContext } from './internal/PrimerCheckoutContext';
 import { mergeTokens } from './internal/theme/merge';
 import { ThemeContext } from './internal/theme/ThemeContext';
+import { useResolvedScheme } from './internal/theme/useResolvedScheme';
 import { defaultDarkTokens, defaultLightTokens } from './internal/theme/tokens';
 import { toError } from './internal/utils/errors';
 import { translate } from './internal/localization';
@@ -301,8 +302,13 @@ export function PrimerCheckoutProvider({
   // Resolved once per mount; `onValidation` fires per keystroke and must not re-resolve the locale.
   const { t } = usePrimerLocalization();
 
-  const [lightTokens] = useState(() => mergeTokens(defaultLightTokens, theme?.light));
-  const [darkTokens] = useState(() => mergeTokens(defaultDarkTokens, theme?.dark));
+  const lightTokens = useMemo(() => mergeTokens(defaultLightTokens, theme?.light), [theme?.light]);
+  const darkTokens = useMemo(() => mergeTokens(defaultDarkTokens, theme?.dark), [theme?.dark]);
+  const scheme = useResolvedScheme(settings?.uiOptions?.appearanceMode);
+  const themeContextValue = useMemo(
+    () => ({ scheme, tokens: scheme === 'dark' ? darkTokens : lightTokens }),
+    [scheme, lightTokens, darkTokens]
+  );
 
   // Refs keep init useEffect deps to [clientToken] only.
   const settingsRef = useRef(settings);
@@ -1903,7 +1909,7 @@ export function PrimerCheckoutProvider({
   ]);
 
   return (
-    <ThemeContext.Provider value={{ lightTokens, darkTokens }}>
+    <ThemeContext.Provider value={themeContextValue}>
       <PrimerCheckoutContext.Provider value={contextValue}>{children}</PrimerCheckoutContext.Provider>
     </ThemeContext.Provider>
   );

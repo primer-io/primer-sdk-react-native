@@ -31,12 +31,12 @@ internal open class DefaultNativePrimerModule(
 ) {
     private var analyticsLoggingBridge: ComponentsAnalyticsLoggingBridge? = null
     private val mListener = PrimerRNEventListener()
+    private var listenerAttached = false
 
     init {
         mListener.sendEvent = { eventName, paramsJson -> sendEvent(eventName, paramsJson) }
         mListener.sendError = { paramsJson -> onError(paramsJson) }
         mListener.sendErrorWithCheckoutData = { paramsJson, checkoutData -> onError(paramsJson, checkoutData) }
-        mListener.onDismissedEvent = { Primer.instance.dismiss(true) }
     }
 
     open fun sendEvent(
@@ -144,13 +144,20 @@ internal open class DefaultNativePrimerModule(
     }
 
     fun dismiss(promise: Promise) {
-        Primer.instance.dismiss(true)
+        Primer.instance.dismiss()
         promise.resolve(null)
     }
 
     fun cleanUp(promise: Promise) {
-        Primer.instance.dismiss(true)
+        Primer.instance.dismiss()
         promise.resolve(null)
+    }
+
+    // The SDK holds our listener until told otherwise.
+    fun invalidate() {
+        if (!listenerAttached) return
+        listenerAttached = false
+        Primer.instance.cleanup(cleanClientSessionCache = false)
     }
 
     // region tokenization handlers
@@ -304,6 +311,7 @@ internal open class DefaultNativePrimerModule(
 
     private fun startSdk(settings: PrimerSettings) {
         Primer.instance.configure(settings, mListener)
+        listenerAttached = true
     }
 
     private fun onError(

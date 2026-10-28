@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import type { TextStyle } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import type { TextInputProps, TextStyle } from 'react-native';
 
 import { usePrimerTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
@@ -12,21 +12,36 @@ import { usePrimerLocalization } from '../localization';
 import { useCheckoutFlow } from '../checkout-flow/CheckoutFlowContext';
 import { usePrimerPaymentMethod } from '../../hooks/usePrimerPaymentMethod';
 import { fmt } from '../debug';
-import { useBottomSafeArea } from './useBottomSafeArea';
+import { PrimerTextInput } from '../../inputs/PrimerTextInput';
+import { PrimerButton } from '../ui/PrimerButton';
+import { useBottomPadding } from './useBottomPadding';
 import { buildRawData } from './buildRawData';
 
 // Field keys are the SDK's input-element-type strings. NOTE the platform split for BLIK's
 // one-time code: iOS reports 'OTP', Android reports 'OTP_CODE' — both are handled.
-const FIELD_LABEL: Record<string, string> = {
-  PHONE_NUMBER: 'Phone number',
-  OTP: 'One-time code',
-  OTP_CODE: 'One-time code',
-  CARD_NUMBER: 'Card number',
-  EXPIRY_DATE: 'Expiry date (MM/YY)',
-  CARDHOLDER_NAME: 'Cardholder name',
+const FIELD_LABEL_KEY: Record<string, string> = {
+  PHONE_NUMBER: 'primer_card_form_label_phone',
+  OTP: 'primer_card_form_label_otp',
+  OTP_CODE: 'primer_card_form_label_otp',
+  CARD_NUMBER: 'primer_card_form_label_number',
+  EXPIRY_DATE: 'primer_card_form_label_expiry',
+  CARDHOLDER_NAME: 'primer_card_form_label_name',
 };
 
 const NUMERIC_FIELDS = new Set<string>(['PHONE_NUMBER', 'OTP', 'OTP_CODE', 'CARD_NUMBER', 'EXPIRY_DATE']);
+
+// Autofill hints and capitalisation, per field. `autoComplete` drives Android, `textContentType`
+// drives iOS, and only the cardholder name wants capitalisation.
+type FieldInputProps = Pick<TextInputProps, 'autoComplete' | 'textContentType' | 'autoCapitalize'>;
+
+const FIELD_INPUT_PROPS: Record<string, FieldInputProps> = {
+  PHONE_NUMBER: { autoComplete: 'tel', textContentType: 'telephoneNumber' },
+  OTP: { autoComplete: 'one-time-code', textContentType: 'oneTimeCode' },
+  OTP_CODE: { autoComplete: 'one-time-code', textContentType: 'oneTimeCode' },
+  CARD_NUMBER: { autoComplete: 'cc-number', textContentType: 'creditCardNumber' },
+  EXPIRY_DATE: { autoComplete: 'cc-exp', textContentType: 'creditCardExpiration' },
+  CARDHOLDER_NAME: { autoComplete: 'name', textContentType: 'creditCardName', autoCapitalize: 'words' },
+};
 
 type FieldValues = Record<string, string>;
 
@@ -43,7 +58,7 @@ export function RawDataFormScreen() {
   const { params } = useRoute<CheckoutRoute.rawDataForm>();
   const { pop, replace, canGoBack } = useNavigation();
   const { onCancel } = useCheckoutFlow();
-  const bottomInset = useBottomSafeArea();
+  const bottomPadding = useBottomPadding();
 
   const method = usePrimerPaymentMethod(params.paymentMethodType);
   const form = method.kind === 'rawDataForm' ? method : null;
@@ -96,26 +111,29 @@ export function RawDataFormScreen() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        {requiredInputs.map((field) => (
-          <View key={field} style={styles.field}>
-            <Text style={styles.label}>{FIELD_LABEL[field] ?? field}</Text>
-            <TextInput
-              style={styles.input}
-              value={values[field] ?? ''}
-              onChangeText={(text) => handleChange(field, text)}
-              keyboardType={
-                field === 'PHONE_NUMBER' ? 'phone-pad' : NUMERIC_FIELDS.has(field) ? 'number-pad' : 'default'
-              }
-              autoCapitalize="none"
-              accessibilityLabel={FIELD_LABEL[field] ?? field}
-            />
-            {params.paymentMethodType === 'XENDIT_OVO' && field === 'PHONE_NUMBER' && (
-              <Text style={styles.hint}>{t('primer_form_redirect_ovo_phone_helper')}</Text>
-            )}
-          </View>
-        ))}
+        {requiredInputs.map((field) => {
+          const labelKey = FIELD_LABEL_KEY[field];
+          const label = labelKey ? t(labelKey) : field;
+          return (
+            <View key={field} style={styles.field}>
+              <PrimerTextInput
+                label={label}
+                value={values[field] ?? ''}
+                onChangeText={(text) => handleChange(field, text)}
+                keyboardType={
+                  field === 'PHONE_NUMBER' ? 'phone-pad' : NUMERIC_FIELDS.has(field) ? 'number-pad' : 'default'
+                }
+                autoCapitalize="none"
+                {...FIELD_INPUT_PROPS[field]}
+              />
+              {params.paymentMethodType === 'XENDIT_OVO' && field === 'PHONE_NUMBER' && (
+                <Text style={styles.hint}>{t('primer_form_redirect_ovo_phone_helper')}</Text>
+              )}
+            </View>
+          );
+        })}
       </ScrollView>
-      <View style={[styles.footer, { paddingBottom: Math.max(bottomInset, tokens.spacing.large) }]}>
+      <View style={[styles.footer, { paddingBottom: bottomPadding }]}>
         {hasInput && validationErrors.length > 0 && (
           <View style={styles.errorBlock}>
             {validationErrors.map((message) => (
@@ -125,23 +143,20 @@ export function RawDataFormScreen() {
             ))}
           </View>
         )}
-        <TouchableOpacity
+        <PrimerButton
+          title={t('primer_common_button_pay')}
           onPress={handleSubmit}
+          variant="primary"
           disabled={!isValid}
-          activeOpacity={0.7}
-          style={[styles.payButton, !isValid && styles.payButtonDisabled]}
-          accessibilityRole="button"
-          accessibilityState={{ disabled: !isValid }}
-        >
-          <Text style={styles.payButtonText}>{t('primer_common_button_pay')}</Text>
-        </TouchableOpacity>
+          accessibilityHint={isValid ? undefined : t('accessibility_card_form_submit_disabled')}
+        />
       </View>
     </View>
   );
 }
 
 function createStyles(tokens: PrimerTokens) {
-  const { colors, radii, spacing, typography } = tokens;
+  const { colors, spacing, typography } = tokens;
   /* eslint-disable react-native/no-unused-styles */
   return StyleSheet.create({
     errorBlock: {
@@ -160,7 +175,7 @@ function createStyles(tokens: PrimerTokens) {
       gap: spacing.xsmall,
     },
     footer: {
-      backgroundColor: colors.background,
+      backgroundColor: colors.backgroundPrimary,
       paddingHorizontal: spacing.large,
       paddingTop: spacing.small,
     },
@@ -171,45 +186,6 @@ function createStyles(tokens: PrimerTokens) {
       fontWeight: typography.bodySmall.fontWeight as TextStyle['fontWeight'],
       letterSpacing: typography.bodySmall.letterSpacing,
       lineHeight: typography.bodySmall.lineHeight,
-    },
-    input: {
-      borderColor: colors.border,
-      borderRadius: radii.medium,
-      borderWidth: StyleSheet.hairlineWidth,
-      color: colors.textPrimary,
-      fontSize: typography.titleLarge.fontSize,
-      minHeight: 48,
-      paddingHorizontal: spacing.medium,
-      paddingVertical: spacing.small,
-    },
-    label: {
-      color: colors.textPrimary,
-      fontFamily: typography.titleLarge.fontFamily,
-      fontSize: typography.titleLarge.fontSize,
-      fontWeight: typography.titleLarge.fontWeight as TextStyle['fontWeight'],
-      letterSpacing: typography.titleLarge.letterSpacing,
-      lineHeight: typography.titleLarge.lineHeight,
-    },
-    payButton: {
-      alignItems: 'center',
-      backgroundColor: colors.primary,
-      borderRadius: radii.medium,
-      justifyContent: 'center',
-      minHeight: 44,
-      padding: spacing.medium,
-      width: '100%',
-    },
-    payButtonDisabled: {
-      opacity: 0.5,
-    },
-    payButtonText: {
-      color: colors.background,
-      fontFamily: typography.titleLarge.fontFamily,
-      fontSize: typography.titleLarge.fontSize,
-      fontWeight: typography.titleLarge.fontWeight as TextStyle['fontWeight'],
-      letterSpacing: typography.titleLarge.letterSpacing,
-      lineHeight: typography.titleLarge.lineHeight,
-      textAlign: 'center',
     },
     root: {
       flex: 1,

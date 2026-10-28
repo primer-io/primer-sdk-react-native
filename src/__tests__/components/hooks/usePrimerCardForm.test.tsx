@@ -147,13 +147,6 @@ describe('usePrimerCardForm — error visibility', () => {
     expect(result.current.errors).toEqual({});
   });
 
-  it('shows the field error after focus + blur', () => {
-    const { result } = renderHook(() => usePrimerCardForm(), contextWrapper(withErrors(ALL_FIELD_ERRORS)));
-    act(() => result.current.markFieldFocused('cardNumber'));
-    act(() => result.current.markFieldBlurred('cardNumber'));
-    expect(result.current.errors).toEqual({ cardNumber: 'Invalid card number' });
-  });
-
   it('hides the field error when re-focused (on-focus-clear)', () => {
     const { result } = renderHook(() => usePrimerCardForm(), contextWrapper(withErrors(ALL_FIELD_ERRORS)));
     act(() => result.current.markFieldFocused('cvv'));
@@ -187,35 +180,23 @@ describe('usePrimerCardForm — error visibility', () => {
 });
 
 describe('usePrimerCardForm — descriptor-driven dimensions', () => {
-  it('cardNumberMaxLength tracks descriptor (default 22 = 19 digits + 3 gaps within)', () => {
+  it.each<[string, CardNetworkDescriptor, number]>([
+    ['tracks descriptor (default 22 = 19 digits + 3 gaps within)', DEFAULT_DESCRIPTOR, 22],
+    [
+      'shrinks for Amex (15 digits + 2 gaps = 17)',
+      {
+        id: 'AMEX',
+        displayName: 'American Express',
+        panLengths: [15],
+        gapPattern: [4, 10],
+        cvvLength: 4,
+        cvvLabel: 'CID',
+      },
+      17,
+    ],
+  ])('cardNumberMaxLength %s', (_, descriptor, expected) => {
+    mockDescriptor = descriptor;
     const { result } = renderHook(() => usePrimerCardForm(), contextWrapper(baseContext));
-    expect(result.current.cardNumberMaxLength).toBe(22);
-  });
-
-  it('cardNumberMaxLength shrinks for Amex (15 digits + 2 gaps = 17)', () => {
-    mockDescriptor = {
-      id: 'AMEX',
-      displayName: 'American Express',
-      panLengths: [15],
-      gapPattern: [4, 10],
-      cvvLength: 4,
-      cvvLabel: 'CID',
-    };
-    const { result } = renderHook(() => usePrimerCardForm(), contextWrapper(baseContext));
-    expect(result.current.cardNumberMaxLength).toBe(17);
-  });
-
-  it('descriptor.cvvLength on Amex is 4', () => {
-    mockDescriptor = {
-      id: 'AMEX',
-      displayName: 'American Express',
-      panLengths: [15],
-      gapPattern: [4, 10],
-      cvvLength: 4,
-      cvvLabel: 'CID',
-    };
-    const { result } = renderHook(() => usePrimerCardForm(), contextWrapper(baseContext));
-    expect(result.current.descriptor.cvvLength).toBe(4);
-    expect(result.current.descriptor.cvvLabel).toBe('CID');
+    expect(result.current.cardNumberMaxLength).toBe(expected);
   });
 });

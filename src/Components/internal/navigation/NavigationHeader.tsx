@@ -1,6 +1,8 @@
-import React, { useMemo } from 'react';
+import React, { useContext, useLayoutEffect, useMemo } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import type { TextStyle } from 'react-native';
+import { SheetBackContext } from '../checkout-sheet/SheetBackContext';
+import { NavigationContext, RouteEntryContext } from './NavigationContext';
 import { useNavigation } from './useNavigation';
 import { usePrimerTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
@@ -18,6 +20,8 @@ export interface NavigationHeaderProps {
   onBackPress?: () => void;
   rightAction?: NavigationHeaderAction;
   rightComponent?: React.ReactNode;
+  /** 'below' (default): a large title under the back row. 'center': a smaller title centred in the top row. */
+  titleAlignment?: 'below' | 'center';
 }
 
 const ICON_SIZE = 20;
@@ -72,12 +76,25 @@ export function NavigationHeader({
   onBackPress,
   rightAction,
   rightComponent,
+  titleAlignment = 'below',
 }: NavigationHeaderProps) {
   const { pop } = useNavigation();
   const tokens = usePrimerTheme();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
 
   const handleBackPress = onBackPress ?? pop;
+
+  // Android back in the sheet runs this same action while the button shows on the top screen, so a
+  // screen sliding out never answers. A layout effect, so it changes in the same commit as the button.
+  const setSheetBackAction = useContext(SheetBackContext);
+  const entryKey = useContext(RouteEntryContext)?.key;
+  const stack = useContext(NavigationContext)?.state.stack;
+  const isTop = entryKey != null && entryKey === stack?.[stack.length - 1]?.key;
+  useLayoutEffect(() => {
+    if (!showBackButton || !isTop || !setSheetBackAction) return;
+    // A fresh wrapper per registration: screens share `pop`, and a release clears only its own.
+    return setSheetBackAction(() => handleBackPress());
+  }, [showBackButton, isTop, setSheetBackAction, handleBackPress]);
   const hitSlop = useMemo(
     () => ({
       top: tokens.spacing.medium,
@@ -87,6 +104,15 @@ export function NavigationHeader({
     }),
     [tokens.spacing.medium, tokens.spacing.small]
   );
+
+  const centeredTitle =
+    title != null && titleAlignment === 'center' ? (
+      <View style={styles.centeredTitleBox} pointerEvents="none">
+        <Text style={styles.centeredTitle} numberOfLines={1}>
+          {title}
+        </Text>
+      </View>
+    ) : null;
 
   const rightElement = rightAction ? (
     <ActionButton action={rightAction} styles={styles} hitSlop={hitSlop} />
@@ -98,6 +124,7 @@ export function NavigationHeader({
     return (
       <View style={styles.container}>
         <View style={styles.headerBar}>
+          {centeredTitle}
           <TouchableOpacity onPress={handleBackPress} style={styles.actionButton} hitSlop={hitSlop}>
             <ChevronLeftIcon size={ICON_SIZE} color={tokens.colors.iconPrimary} />
             {backLabel != null && (
@@ -110,7 +137,23 @@ export function NavigationHeader({
           <View style={styles.spacer} />
           {rightElement}
         </View>
-        {title != null && <Text style={[styles.title, styles.titleTopMargin]}>{title}</Text>}
+        {title != null && titleAlignment === 'below' && (
+          <Text style={[styles.title, styles.titleTopMargin]}>{title}</Text>
+        )}
+      </View>
+    );
+  }
+
+  // Also reached while a screen slides out after Back (the stack no longer allows going back), so a
+  // centred title keeps its place instead of jumping to the large layout.
+  if (titleAlignment === 'center') {
+    return (
+      <View style={styles.container}>
+        <View style={styles.headerBar}>
+          {centeredTitle}
+          <View style={styles.spacer} />
+          {rightElement}
+        </View>
       </View>
     );
   }
@@ -147,13 +190,26 @@ function createStyles(tokens: PrimerTokens) {
       letterSpacing: typography.titleLarge.letterSpacing,
       lineHeight: typography.titleLarge.lineHeight,
     },
+    centeredTitle: {
+      color: colors.textPrimary,
+      fontFamily: typography.titleLarge.fontFamily,
+      fontSize: typography.titleLarge.fontSize,
+      fontWeight: typography.titleLarge.fontWeight as TextStyle['fontWeight'],
+      letterSpacing: typography.titleLarge.letterSpacing,
+      lineHeight: typography.titleLarge.lineHeight,
+    },
+    centeredTitleBox: {
+      ...StyleSheet.absoluteFillObject,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
     container: {
       paddingHorizontal: spacing.large,
     },
     headerBar: {
       alignItems: 'center',
       flexDirection: 'row',
-      height: spacing.xxlarge,
+      minHeight: spacing.xxlarge,
     },
     singleRow: {
       alignItems: 'flex-start',
@@ -165,11 +221,11 @@ function createStyles(tokens: PrimerTokens) {
     },
     title: {
       color: colors.textPrimary,
-      fontFamily: typography.titleXLarge.fontFamily,
-      fontSize: typography.titleXLarge.fontSize,
-      fontWeight: typography.titleXLarge.fontWeight as TextStyle['fontWeight'],
-      letterSpacing: typography.titleXLarge.letterSpacing,
-      lineHeight: typography.titleXLarge.lineHeight,
+      fontFamily: typography.titleXlarge.fontFamily,
+      fontSize: typography.titleXlarge.fontSize,
+      fontWeight: typography.titleXlarge.fontWeight as TextStyle['fontWeight'],
+      letterSpacing: typography.titleXlarge.letterSpacing,
+      lineHeight: typography.titleXlarge.lineHeight,
     },
     titleFlex: {
       flex: 1,

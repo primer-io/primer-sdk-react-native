@@ -38,7 +38,10 @@ export function PrimerAcceptedCardNetworks({
       {chips.map((chip) => (
         <View
           key={chip.network}
-          style={[styles.chip, { backgroundColor: tokens.colors.surface, borderRadius: tokens.radii.xsmall }]}
+          style={[
+            styles.chip,
+            { backgroundColor: tokens.colors.backgroundSecondary, borderRadius: tokens.radii.xsmall },
+          ]}
           testID={`${testID}-chip-${chip.network}`}
         >
           {chip.iconUri ? (
@@ -47,7 +50,7 @@ export function PrimerAcceptedCardNetworks({
             <Text
               style={[
                 styles.abbreviation,
-                { color: tokens.colors.textPrimary, fontFamily: tokens.typography.fontFamily },
+                { color: tokens.colors.textPrimary, fontFamily: tokens.typography.bodySmall.fontFamily },
               ]}
             >
               {chip.abbreviation}
@@ -60,6 +63,7 @@ export function PrimerAcceptedCardNetworks({
 }
 
 const styles = StyleSheet.create({
+  // The chip is 20px wide, so this label has its own size and weight. No token is this small.
   abbreviation: { fontSize: 9, fontWeight: '600' },
   chip: {
     alignItems: 'center',

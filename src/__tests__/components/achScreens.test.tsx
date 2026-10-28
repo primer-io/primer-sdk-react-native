@@ -3,7 +3,6 @@
  *   - user-details: gated Continue, waiting state during the native bank link,
  *     back and Cancel are hidden/no-op while waiting (U1), inline per-field errors + editable prefills (US3)
  *   - mandate: renders the resolved text, accept/decline wiring, buttons disable while answering
- *   - pending: distinct confirmation with the ported completion copy + auto-dismiss
  */
 // @ts-expect-error -- React 19 concurrent act environment
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
@@ -31,23 +30,28 @@ jest.mock(
 jest.mock('../../Components/internal/theme', () => ({
   usePrimerTheme: () => ({
     colors: {
-      background: '#fff',
-      surface: '#fafafa',
-      border: '#ccc',
-      primary: '#08f',
+      backgroundPrimary: '#fff',
+      backgroundOutlinedDisabled: '#eee',
+      backgroundSecondary: '#fafafa',
+      borderOutlinedDefault: '#ccc',
+      brand: '#08f',
+      onBrand: '#fff',
+      textDisabled: '#aaa',
       textPrimary: '#000',
       textSecondary: '#666',
     },
     spacing: { xxsmall: 2, xsmall: 4, small: 8, medium: 12, large: 16, xlarge: 20, xxlarge: 24 },
     radii: { small: 4, medium: 8, large: 12 },
-    borders: { input: 1, default: 1, strong: 2 },
+    sizes: { small: 16, medium: 20, large: 24, xlarge: 32, xxlarge: 40, xxxlarge: 56, base: 4 },
+    widths: { default: 1, focus: 2, selected: 2, error: 2 },
     typography: {
       fontFamily: 'system',
       bodySmall: { fontFamily: 'system', fontSize: 12, fontWeight: '400', letterSpacing: 0, lineHeight: 16 },
+      error: { fontFamily: 'system', fontSize: 12, fontWeight: '400', letterSpacing: 0, lineHeight: 16 },
       bodyMedium: { fontFamily: 'system', fontSize: 14, fontWeight: '400', letterSpacing: 0, lineHeight: 18 },
       bodyLarge: { fontFamily: 'system', fontSize: 16, fontWeight: '400', letterSpacing: 0, lineHeight: 20 },
       titleLarge: { fontFamily: 'system', fontSize: 16, fontWeight: '500', letterSpacing: 0, lineHeight: 20 },
-      titleXLarge: { fontFamily: 'system', fontSize: 18, fontWeight: '600', letterSpacing: 0, lineHeight: 22 },
+      titleXlarge: { fontFamily: 'system', fontSize: 18, fontWeight: '600', letterSpacing: 0, lineHeight: 22 },
     },
   }),
 }));
@@ -77,12 +81,10 @@ jest.mock('../../Components/internal/navigation/useRoute', () => ({
 
 jest.mock('../../Components/internal/screens/useBottomSafeArea', () => ({ useBottomSafeArea: () => 0 }));
 jest.mock('../../Components/internal/screens/useKeyboardPadding', () => ({ useKeyboardPadding: () => 0 }));
-jest.mock('../../Components/internal/screens/useStatusScreenHeight', () => ({ useStatusScreenHeight: () => {} }));
 jest.mock('../../Components/internal/checkout-sheet', () => ({
   useSheetHeight: () => ({ requestHeight: () => () => {}, requestHeightRatio: () => () => {} }),
 }));
 
-// Capture NavigationHeader + PrimerTextInput + PrimerSuccessScreen props instead of rendering them.
 let mockHeaderProps: Record<string, unknown> | null = null;
 jest.mock('../../Components/internal/navigation/NavigationHeader', () => ({
   NavigationHeader: (props: Record<string, unknown>) => {
@@ -95,14 +97,6 @@ const mockInputPropsByLabel = new Map<string, Record<string, unknown>>();
 jest.mock('../../Components/inputs', () => ({
   PrimerTextInput: (props: Record<string, unknown> & { label?: string }) => {
     mockInputPropsByLabel.set(props.label ?? '', props);
-    return null;
-  },
-}));
-
-let mockSuccessScreenProps: Record<string, unknown> | null = null;
-jest.mock('../../Components/status', () => ({
-  PrimerSuccessScreen: (props: Record<string, unknown>) => {
-    mockSuccessScreenProps = props;
     return null;
   },
 }));
@@ -124,7 +118,6 @@ jest.mock('../../Components/hooks/usePrimerCheckout', () => ({
 
 import { StripeAchUserDetailsScreen } from '../../Components/internal/screens/StripeAchUserDetailsScreen';
 import { StripeAchMandateScreen } from '../../Components/internal/screens/StripeAchMandateScreen';
-import { PendingScreen } from '../../Components/internal/screens/PendingScreen';
 
 function baseVariant(overrides: Partial<StripeAchPaymentMethod>): StripeAchPaymentMethod {
   return {
@@ -171,7 +164,6 @@ function continueButton(root: TestInstance) {
 beforeEach(() => {
   jest.clearAllMocks();
   mockHeaderProps = null;
-  mockSuccessScreenProps = null;
   mockInputPropsByLabel.clear();
   mockCheckoutContext = { stopAch: mockStopAch };
 });
@@ -182,6 +174,8 @@ describe('StripeAchUserDetailsScreen', () => {
     const root = render(createElement(StripeAchUserDetailsScreen));
     const button = continueButton(root);
     expect(button.props.disabled).toBe(true);
+    // Invalid reads as the grey fill, not a faded brand (ORC-8265).
+    expect((button.props.style as Array<Record<string, unknown>>)[0]!.backgroundColor).toBe('#eee');
 
     (button.props.onPress as () => void)();
     expect(mockAchVariant.submit).not.toHaveBeenCalled();
@@ -219,9 +213,12 @@ describe('StripeAchUserDetailsScreen', () => {
     mockAchVariant = baseVariant({ isValid: true, step: 'awaitingBankLink' });
     const root = render(createElement(StripeAchUserDetailsScreen));
 
-    // Spinner replaces the Continue label; the button is disabled.
+    // Spinner replaces the Continue label; the button is disabled but keeps the brand fill (ORC-8265).
     const button = continueButton(root);
     expect(button.props.disabled).toBe(true);
+    const style = button.props.style as Array<Record<string, unknown>>;
+    expect(style[0]!.backgroundColor).toBe('#08f');
+    expect(style[1]).toEqual({ opacity: 1 });
     expect(root.findAllByType('ActivityIndicator')).toHaveLength(1);
 
     // Back affordance is hidden, and a stray back press is a no-op.
@@ -262,6 +259,7 @@ describe('StripeAchMandateScreen', () => {
 
     const [accept, decline] = root.findAllByType('TouchableOpacity');
     expect(accept!.props.disabled).toBe(false);
+    expect((accept!.props.style as Array<Record<string, unknown>>)[0]!.backgroundColor).toBe('#08f');
     (accept!.props.onPress as () => void)();
     expect(acceptAchMandate).toHaveBeenCalledTimes(1);
 
@@ -283,26 +281,10 @@ describe('StripeAchMandateScreen', () => {
     for (const button of buttons) {
       expect(button.props.disabled).toBe(true);
     }
-  });
-
-  it('renders nothing without a mandate (defensive)', () => {
-    mockCheckoutContext = {
-      achMandate: null,
-      achStep: 'idle',
-      acceptAchMandate: jest.fn(),
-      declineAchMandate: jest.fn(),
-    };
-    const root = render(createElement(StripeAchMandateScreen));
-    expect(root.findAllByType('TouchableOpacity')).toHaveLength(0);
-  });
-});
-
-describe('PendingScreen', () => {
-  it('shows the ported completion copy; dismissal is owned by the flow-level wrapper (no inner timer)', () => {
-    render(createElement(PendingScreen));
-    expect(mockSuccessScreenProps?.title).toBe('primer_ach_pay_with_title');
-    expect(mockSuccessScreenProps?.subtitle).toBe('primer_ach_payment_request_completed');
-    expect(mockSuccessScreenProps?.autoDismissMs).toBeUndefined();
-    expect(mockSuccessScreenProps?.onDismiss).toBeUndefined();
+    // Accept is loading, so it keeps the brand fill; decline is genuinely disabled and dims (ORC-8265).
+    const [accept, decline] = buttons;
+    expect((accept!.props.style as Array<Record<string, unknown>>)[0]!.backgroundColor).toBe('#08f');
+    expect((accept!.props.style as Array<Record<string, unknown>>)[1]).toEqual({ opacity: 1 });
+    expect((decline!.props.style as Array<Record<string, unknown>>)[1]).toEqual({ opacity: 0.5 });
   });
 });

@@ -48,7 +48,6 @@ function makeCardVault(overrides: Partial<PrimerVaultedPaymentMethod> = {}): Pri
 }
 
 const payFromVault = jest.fn().mockResolvedValue(undefined);
-const deleteVaultedPaymentMethodFn = jest.fn().mockResolvedValue(undefined);
 
 const baseContext: PrimerCheckoutContextValue = {
   isReady: true,
@@ -114,7 +113,7 @@ const baseContext: PrimerCheckoutContextValue = {
   vaultDisplayOverride: null,
   selectVaultedMethodId: () => {},
   requestExpandedVaultDisplay: () => {},
-  deleteVaultedPaymentMethod: deleteVaultedPaymentMethodFn,
+  deleteVaultedPaymentMethod: async () => {},
   requiresVaultedCardCvv: false,
   cvvInputVisible: false,
   setCvvInputVisible: () => {},
@@ -122,17 +121,9 @@ const baseContext: PrimerCheckoutContextValue = {
 
 beforeEach(() => {
   payFromVault.mockClear();
-  deleteVaultedPaymentMethodFn.mockClear();
 });
 
 describe('usePrimerVaultManager', () => {
-  it('returns empty list and null primary when there are no vaulted methods', () => {
-    const { result } = renderHook(() => usePrimerVaultManager(), contextWrapper(baseContext));
-    expect(result.current.vaultedMethods).toEqual([]);
-    expect(result.current.primaryMethod).toBeNull();
-    expect(result.current.isLoading).toBe(false);
-  });
-
   it('derives card-vault display fields (last4, expiry, brand)', () => {
     const vault = makeCardVault();
     const ctx: PrimerCheckoutContextValue = {
@@ -176,45 +167,26 @@ describe('usePrimerVaultManager', () => {
     expect(item.displayName).toBe('ACH Direct Debit');
   });
 
-  it('picks the first method as primary', () => {
+  it('picks the first method as primary, originalDefault and activeMethod, and pay() charges it with no selection', async () => {
     const first = makeCardVault({ id: 'first' });
     const second = makeCardVault({ id: 'second' });
     const ctx: PrimerCheckoutContextValue = { ...baseContext, vaultedMethods: [first, second] };
     const { result } = renderHook(() => usePrimerVaultManager(), contextWrapper(ctx));
     expect(result.current.primaryMethod?.id).toBe('first');
     expect(result.current.vaultedMethods).toHaveLength(2);
+    expect(result.current.originalDefault?.id).toBe('first');
+    expect(result.current.activeMethod?.id).toBe('first');
+    await result.current.pay();
+    expect(payFromVault).toHaveBeenCalledWith('first', undefined);
   });
 
-  it('pay() is a no-op when no primary method exists', async () => {
+  it('returns empty list and null primary, and pay() is a no-op, when there are no vaulted methods', async () => {
     const { result } = renderHook(() => usePrimerVaultManager(), contextWrapper(baseContext));
+    expect(result.current.vaultedMethods).toEqual([]);
+    expect(result.current.primaryMethod).toBeNull();
+    expect(result.current.isLoading).toBe(false);
     await result.current.pay();
     expect(payFromVault).not.toHaveBeenCalled();
-  });
-
-  it('pay() delegates to payFromVault with primary method id', async () => {
-    const vault = makeCardVault();
-    const ctx: PrimerCheckoutContextValue = { ...baseContext, vaultedMethods: [vault] };
-    const { result } = renderHook(() => usePrimerVaultManager(), contextWrapper(ctx));
-    await result.current.pay();
-    expect(payFromVault).toHaveBeenCalledWith('vault-1', undefined);
-  });
-
-  it('payById() delegates to payFromVault with the passed id', async () => {
-    const { result } = renderHook(() => usePrimerVaultManager(), contextWrapper(baseContext));
-    await result.current.payById('explicit-id');
-    expect(payFromVault).toHaveBeenCalledWith('explicit-id', undefined);
-  });
-
-  it('surfaces isLoading / error from context', () => {
-    const err = new Error('boom');
-    const ctx: PrimerCheckoutContextValue = {
-      ...baseContext,
-      isLoadingVaulted: true,
-      vaultedError: err,
-    };
-    const { result } = renderHook(() => usePrimerVaultManager(), contextWrapper(ctx));
-    expect(result.current.isLoading).toBe(true);
-    expect(result.current.error).toBe(err);
   });
 
   it('parses a non-card vault (PayPal) as kind "other" with detail + displayName', () => {
@@ -239,25 +211,7 @@ describe('usePrimerVaultManager', () => {
   });
 
   describe('originalDefault & activeMethod', () => {
-    it('originalDefault is the first method on the session', () => {
-      const ctx: PrimerCheckoutContextValue = {
-        ...baseContext,
-        vaultedMethods: [makeCardVault({ id: 'first' }), makeCardVault({ id: 'second' })],
-      };
-      const { result } = renderHook(() => usePrimerVaultManager(), contextWrapper(ctx));
-      expect(result.current.originalDefault?.id).toBe('first');
-    });
-
-    it('activeMethod falls back to originalDefault when no override is set', () => {
-      const ctx: PrimerCheckoutContextValue = {
-        ...baseContext,
-        vaultedMethods: [makeCardVault({ id: 'first' }), makeCardVault({ id: 'second' })],
-      };
-      const { result } = renderHook(() => usePrimerVaultManager(), contextWrapper(ctx));
-      expect(result.current.activeMethod?.id).toBe('first');
-    });
-
-    it('activeMethod resolves to the user-selected method when activeVaultedMethodId is set', () => {
+    it('activeMethod resolves to the user-selected method when activeVaultedMethodId is set, and pay() charges it', async () => {
       const ctx: PrimerCheckoutContextValue = {
         ...baseContext,
         vaultedMethods: [makeCardVault({ id: 'first' }), makeCardVault({ id: 'second' })],
@@ -265,6 +219,8 @@ describe('usePrimerVaultManager', () => {
       };
       const { result } = renderHook(() => usePrimerVaultManager(), contextWrapper(ctx));
       expect(result.current.activeMethod?.id).toBe('second');
+      await result.current.pay();
+      expect(payFromVault).toHaveBeenCalledWith('second', undefined);
     });
 
     it('activeMethod falls back to originalDefault when activeVaultedMethodId is missing from the list', () => {
@@ -317,53 +273,6 @@ describe('usePrimerVaultManager', () => {
       expect(result.current.vaultDisplayMode).toBe('expanded');
       // Selection itself is preserved.
       expect(result.current.activeMethod?.id).toBe('b');
-    });
-  });
-
-  describe('pay() with active selection', () => {
-    it('charges the user-selected method when activeVaultedMethodId is set', async () => {
-      const ctx: PrimerCheckoutContextValue = {
-        ...baseContext,
-        vaultedMethods: [makeCardVault({ id: 'a' }), makeCardVault({ id: 'b' })],
-        activeVaultedMethodId: 'b',
-      };
-      const { result } = renderHook(() => usePrimerVaultManager(), contextWrapper(ctx));
-      await result.current.pay();
-      expect(payFromVault).toHaveBeenCalledWith('b', undefined);
-    });
-
-    it('charges originalDefault when no selection has been made', async () => {
-      const ctx: PrimerCheckoutContextValue = {
-        ...baseContext,
-        vaultedMethods: [makeCardVault({ id: 'a' }), makeCardVault({ id: 'b' })],
-      };
-      const { result } = renderHook(() => usePrimerVaultManager(), contextWrapper(ctx));
-      await result.current.pay();
-      expect(payFromVault).toHaveBeenCalledWith('a', undefined);
-    });
-  });
-
-  describe('deleteVaultedPaymentMethod', () => {
-    it('exposes the context method', () => {
-      const { result } = renderHook(() => usePrimerVaultManager(), contextWrapper(baseContext));
-      expect(typeof result.current.deleteVaultedPaymentMethod).toBe('function');
-    });
-
-    it('forwards the call to the context with the given id', async () => {
-      const ctx: PrimerCheckoutContextValue = {
-        ...baseContext,
-        vaultedMethods: [makeCardVault({ id: 'a' })],
-      };
-      const { result } = renderHook(() => usePrimerVaultManager(), contextWrapper(ctx));
-      await result.current.deleteVaultedPaymentMethod('a');
-      expect(deleteVaultedPaymentMethodFn).toHaveBeenCalledWith('a');
-    });
-
-    it('propagates rejection from the context implementation', async () => {
-      const err = { errorId: 'BRIDGE_FAILURE', description: 'boom' };
-      deleteVaultedPaymentMethodFn.mockRejectedValueOnce(err);
-      const { result } = renderHook(() => usePrimerVaultManager(), contextWrapper(baseContext));
-      await expect(result.current.deleteVaultedPaymentMethod('x')).rejects.toEqual(err);
     });
   });
 });

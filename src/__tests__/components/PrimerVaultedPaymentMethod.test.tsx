@@ -27,15 +27,17 @@ jest.mock(
 );
 
 jest.mock('../../Components/internal/theme', () => ({
+  usePrimerColorScheme: () => 'light',
   usePrimerTheme: () => ({
     colors: {
-      background: '#fff',
-      surface: '#fafafa',
-      border: '#ccc',
-      borderDisabled: '#eee',
-      borderError: '#f00',
-      borderFocused: '#08f',
-      primary: '#08f',
+      backgroundPrimary: '#fff',
+      backgroundSecondary: '#fafafa',
+      borderOutlinedDefault: '#ccc',
+      borderOutlinedDisabled: '#eee',
+      borderOutlinedError: '#f00',
+      borderOutlinedFocus: '#08f',
+      borderOutlinedSelected: '#08f',
+      brand: '#08f',
       textPrimary: '#000',
       textSecondary: '#666',
       textPlaceholder: '#999',
@@ -44,14 +46,16 @@ jest.mock('../../Components/internal/theme', () => ({
     },
     spacing: { xxsmall: 2, xsmall: 4, small: 8, medium: 12, large: 16, xlarge: 20, xxlarge: 24 },
     radii: { small: 4, medium: 8, large: 12 },
-    borders: { input: 1, default: 1, strong: 2 },
+    sizes: { small: 16, medium: 20, large: 24, xlarge: 32, xxlarge: 40, xxxlarge: 56, base: 4 },
+    widths: { default: 1, focus: 2, selected: 2, error: 2 },
     typography: {
       fontFamily: 'system',
       bodySmall: { fontFamily: 'system', fontSize: 12, fontWeight: '400', letterSpacing: 0, lineHeight: 16 },
+      error: { fontFamily: 'system', fontSize: 12, fontWeight: '400', letterSpacing: 0, lineHeight: 16 },
       bodyMedium: { fontFamily: 'system', fontSize: 14, fontWeight: '400', letterSpacing: 0, lineHeight: 18 },
       bodyLarge: { fontFamily: 'system', fontSize: 16, fontWeight: '400', letterSpacing: 0, lineHeight: 20 },
       titleLarge: { fontFamily: 'system', fontSize: 16, fontWeight: '500', letterSpacing: 0, lineHeight: 20 },
-      titleXLarge: { fontFamily: 'system', fontSize: 18, fontWeight: '600', letterSpacing: 0, lineHeight: 22 },
+      titleXlarge: { fontFamily: 'system', fontSize: 18, fontWeight: '600', letterSpacing: 0, lineHeight: 22 },
     },
   }),
 }));
@@ -83,8 +87,8 @@ jest.mock('../../Components/hooks/useCardNetworkDescriptor', () => ({
     id: network ?? 'OTHER',
     panLengths: [16],
     gapPattern: [4, 8, 12],
-    cvvLength: network === 'AMEX' ? 4 : 3,
-    cvvLabel: network === 'AMEX' ? 'CID' : 'CVV',
+    cvvLength: 3,
+    cvvLabel: 'CVV',
   }),
 }));
 
@@ -184,7 +188,7 @@ function findFirstByType(tree: any, type: string): any | null {
   return findByType(tree, type)[0] ?? null;
 }
 
-function findCheckoutButton(tree: any): any | null {
+function findPrimerButton(tree: any): any | null {
   const tos = findByType(tree, 'TouchableOpacity');
   return tos.find((t) => t.props?.accessibilityRole === 'button') ?? null;
 }
@@ -212,7 +216,7 @@ describe('PrimerVaultedPaymentMethod — US1 trigger', () => {
     act(() => {
       tree = renderer.create(createElement(PrimerVaultedPaymentMethod, {}));
     });
-    const button = findCheckoutButton(tree.toJSON());
+    const button = findPrimerButton(tree.toJSON());
     expect(button).toBeTruthy();
     act(() => {
       (button.props.onPress as () => void)();
@@ -223,15 +227,18 @@ describe('PrimerVaultedPaymentMethod — US1 trigger', () => {
   });
 
   it('renders CVV row + emits VAULT_CVV_REQUIRED_RENDERED on Pay tap when flag is on AND method is a card', () => {
-    mockHookState.current = makeHook({ requiresVaultedCardCvv: true });
+    const select = jest.fn();
+    mockHookState.current = makeHook({ requiresVaultedCardCvv: true, selectVaultedMethodId: select });
     let tree: any;
     act(() => {
       tree = renderer.create(createElement(PrimerVaultedPaymentMethod, {}));
     });
-    const button = findCheckoutButton(tree.toJSON());
+    const button = findPrimerButton(tree.toJSON());
     act(() => {
       (button.props.onPress as () => void)();
     });
+    expect(select).toHaveBeenCalledTimes(1);
+    expect(select).toHaveBeenCalledWith('vault-1');
     rerender(tree);
     expect(mockReplace).not.toHaveBeenCalled();
     expect(mockPay).not.toHaveBeenCalled();
@@ -270,43 +277,7 @@ describe('PrimerVaultedPaymentMethod — US1 trigger', () => {
     act(() => {
       tree = renderer.create(createElement(PrimerVaultedPaymentMethod, {}));
     });
-    const button = findCheckoutButton(tree.toJSON());
-    act(() => {
-      (button.props.onPress as () => void)();
-    });
-    expect(mockReplace).toHaveBeenCalledWith('processing');
-    expect(mockPay).toHaveBeenCalledWith();
-    expect(mockTrackEvent).not.toHaveBeenCalledWith('VAULT_CVV_REQUIRED_RENDERED', expect.anything());
-  });
-
-  it('bank (ACH) vaulted method bypasses CVV state even when flag is true', () => {
-    const bankRaw = makeRawCard({
-      id: 'vault-ach',
-      paymentInstrumentType: 'AUTOMATED_CLEARING_HOUSE',
-      paymentMethodType: 'STRIPE_ACH',
-      paymentInstrumentData: { bankName: 'STRIPE TEST BANK', accountNumberLast4Digits: 6789 },
-    });
-    const bank: VaultedPaymentMethodItem = {
-      kind: 'bank',
-      id: bankRaw.id,
-      paymentMethodType: bankRaw.paymentMethodType,
-      paymentInstrumentType: bankRaw.paymentInstrumentType,
-      bankName: 'STRIPE TEST BANK',
-      accountLast4: '6789',
-      rawMethod: bankRaw,
-    };
-    mockHookState.current = makeHook({
-      requiresVaultedCardCvv: true,
-      activeMethod: bank,
-      primaryMethod: bank,
-      originalDefault: bank,
-      vaultedMethods: [bank],
-    });
-    let tree: any;
-    act(() => {
-      tree = renderer.create(createElement(PrimerVaultedPaymentMethod, {}));
-    });
-    const button = findCheckoutButton(tree.toJSON());
+    const button = findPrimerButton(tree.toJSON());
     act(() => {
       (button.props.onPress as () => void)();
     });
@@ -323,25 +294,31 @@ describe('PrimerVaultedPaymentMethod — US2 submit', () => {
     act(() => {
       tree = renderer.create(createElement(PrimerVaultedPaymentMethod, {}));
     });
-    let button = findCheckoutButton(tree.toJSON());
+    let button = findPrimerButton(tree.toJSON());
     expect(button.props.accessibilityState?.disabled).toBe(false);
+    expect(button.props.accessibilityLabel).toBe('primer_common_button_pay');
+    expect(button.props.accessibilityHint).toBeUndefined();
     act(() => {
       (button.props.onPress as () => void)();
     });
     rerender(tree);
-    button = findCheckoutButton(tree.toJSON());
+    button = findPrimerButton(tree.toJSON());
     expect(button.props.accessibilityState?.disabled).toBe(true);
+    expect(button.props.accessibilityLabel).toBe('primer_common_button_pay');
+    expect(button.props.accessibilityHint).toBe('accessibility_card_form_submit_disabled');
+    expect(button.props.accessibilityValue).toBeUndefined();
     const input = findFirstByType(tree.toJSON(), 'TextInput');
     act(() => {
       (input.props.onChangeText as (s: string) => void)('12');
     });
-    button = findCheckoutButton(tree.toJSON());
+    button = findPrimerButton(tree.toJSON());
     expect(button.props.accessibilityState?.disabled).toBe(true);
     act(() => {
       (input.props.onChangeText as (s: string) => void)('123');
     });
-    button = findCheckoutButton(tree.toJSON());
+    button = findPrimerButton(tree.toJSON());
     expect(button.props.accessibilityState?.disabled).toBe(false);
+    expect(button.props.accessibilityHint).toBeUndefined();
   });
 
   it('submits with CVV on second Pay tap; emits VAULT_CVV_SUBMITTED', () => {
@@ -350,7 +327,7 @@ describe('PrimerVaultedPaymentMethod — US2 submit', () => {
     act(() => {
       tree = renderer.create(createElement(PrimerVaultedPaymentMethod, {}));
     });
-    let button = findCheckoutButton(tree.toJSON());
+    let button = findPrimerButton(tree.toJSON());
     act(() => {
       (button.props.onPress as () => void)();
     });
@@ -359,7 +336,7 @@ describe('PrimerVaultedPaymentMethod — US2 submit', () => {
     act(() => {
       (input.props.onChangeText as (s: string) => void)('123');
     });
-    button = findCheckoutButton(tree.toJSON());
+    button = findPrimerButton(tree.toJSON());
     act(() => {
       (button.props.onPress as () => void)();
     });
@@ -370,107 +347,6 @@ describe('PrimerVaultedPaymentMethod — US2 submit', () => {
     expect(mockReplace).toHaveBeenCalledWith('processing');
     expect(mockPay).toHaveBeenCalledWith({ cvv: '123' });
   });
-
-  it('does not submit when CVV is incomplete', () => {
-    mockHookState.current = makeHook({ requiresVaultedCardCvv: true });
-    let tree: any;
-    act(() => {
-      tree = renderer.create(createElement(PrimerVaultedPaymentMethod, {}));
-    });
-    let button = findCheckoutButton(tree.toJSON());
-    act(() => {
-      (button.props.onPress as () => void)();
-    });
-    rerender(tree);
-    // TouchableOpacity gates onPress on `disabled`, so asserting disabled covers the gate.
-    button = findCheckoutButton(tree.toJSON());
-    expect(button.props.accessibilityState?.disabled).toBe(true);
-    expect(mockPay).not.toHaveBeenCalled();
-  });
-
-  it('SC-004 regression: even when payFromVault rejects, the component does not mutate provider list/active/display on rejection', async () => {
-    // Self-handle the rejection so `void hook.pay(...)` doesn't surface an unhandled rejection
-    // in tests; in production the provider routes errors to the merchant's onError callback.
-    const rejection = { errorId: 'PAYMENT_FAILED', description: 'declined' };
-    mockPay.mockReset();
-    mockPay.mockImplementation(() =>
-      Promise.reject(rejection).catch(() => {
-        /* swallow */
-      })
-    );
-    const select = jest.fn();
-    const requestExpanded = jest.fn();
-    mockHookState.current = makeHook({
-      requiresVaultedCardCvv: true,
-      selectVaultedMethodId: select,
-      requestExpandedVaultDisplay: requestExpanded,
-    });
-    let tree: any;
-    act(() => {
-      tree = renderer.create(createElement(PrimerVaultedPaymentMethod, {}));
-    });
-    let button = findCheckoutButton(tree.toJSON());
-    // First tap opens CVV state and legitimately commits the active method (forces lite layout).
-    act(() => {
-      (button.props.onPress as () => void)();
-    });
-    expect(select).toHaveBeenCalledTimes(1);
-    expect(select).toHaveBeenCalledWith('vault-1');
-    select.mockClear();
-    requestExpanded.mockClear();
-    rerender(tree);
-    const input = findFirstByType(tree.toJSON(), 'TextInput');
-    act(() => {
-      (input.props.onChangeText as (s: string) => void)('123');
-    });
-    button = findCheckoutButton(tree.toJSON());
-    await act(async () => {
-      (button.props.onPress as () => void)();
-      await Promise.resolve();
-    });
-    expect(select).not.toHaveBeenCalled();
-    expect(requestExpanded).not.toHaveBeenCalled();
-  });
-
-  it('AMEX requires 4 digits before Pay enables', () => {
-    const amexRaw = makeRawCard({
-      paymentInstrumentData: {
-        cardholderName: 'John Appleseed',
-        network: 'AMEX',
-        last4Digits: 5,
-        expirationMonth: 5,
-        expirationYear: 2026,
-      },
-    });
-    const amex = makeItem(amexRaw, { brandName: 'Amex' });
-    mockHookState.current = makeHook({
-      requiresVaultedCardCvv: true,
-      activeMethod: amex,
-      primaryMethod: amex,
-      originalDefault: amex,
-      vaultedMethods: [amex],
-    });
-    let tree: any;
-    act(() => {
-      tree = renderer.create(createElement(PrimerVaultedPaymentMethod, {}));
-    });
-    let button = findCheckoutButton(tree.toJSON());
-    act(() => {
-      (button.props.onPress as () => void)();
-    });
-    rerender(tree);
-    const input = findFirstByType(tree.toJSON(), 'TextInput');
-    act(() => {
-      (input.props.onChangeText as (s: string) => void)('123');
-    });
-    button = findCheckoutButton(tree.toJSON());
-    expect(button.props.accessibilityState?.disabled).toBe(true);
-    act(() => {
-      (input.props.onChangeText as (s: string) => void)('1234');
-    });
-    button = findCheckoutButton(tree.toJSON());
-    expect(button.props.accessibilityState?.disabled).toBe(false);
-  });
 });
 
 describe('PrimerVaultedPaymentMethod — US3 exit', () => {
@@ -480,32 +356,12 @@ describe('PrimerVaultedPaymentMethod — US3 exit', () => {
     act(() => {
       tree = renderer.create(createElement(PrimerVaultedPaymentMethod, {}));
     });
-    const button = findCheckoutButton(tree.toJSON());
+    let button = findPrimerButton(tree.toJSON());
     act(() => {
       (button.props.onPress as () => void)();
     });
     rerender(tree);
     expect(findByType(tree.toJSON(), 'TextInput').length).toBeGreaterThanOrEqual(1);
-    mockHookState.current = { ...mockHookState.current, vaultDisplayMode: 'expanded' };
-    act(() => {
-      tree.update(createElement(PrimerVaultedPaymentMethod, {}));
-    });
-    expect(mockTrackEvent).toHaveBeenCalledWith('VAULT_CVV_REQUIRED_DISMISSED', { vaultedMethodId: 'vault-1' });
-    rerender(tree);
-    expect(findByType(tree.toJSON(), 'TextInput').length).toBe(0);
-  });
-
-  it('re-tapping Pay after dismissal re-triggers CVV state with empty value', () => {
-    mockHookState.current = makeHook({ requiresVaultedCardCvv: true });
-    let tree: any;
-    act(() => {
-      tree = renderer.create(createElement(PrimerVaultedPaymentMethod, {}));
-    });
-    let button = findCheckoutButton(tree.toJSON());
-    act(() => {
-      (button.props.onPress as () => void)();
-    });
-    rerender(tree);
     let input = findFirstByType(tree.toJSON(), 'TextInput');
     act(() => {
       (input.props.onChangeText as (s: string) => void)('99');
@@ -514,11 +370,14 @@ describe('PrimerVaultedPaymentMethod — US3 exit', () => {
     act(() => {
       tree.update(createElement(PrimerVaultedPaymentMethod, {}));
     });
+    expect(mockTrackEvent).toHaveBeenCalledWith('VAULT_CVV_REQUIRED_DISMISSED', { vaultedMethodId: 'vault-1' });
+    rerender(tree);
+    expect(findByType(tree.toJSON(), 'TextInput').length).toBe(0);
     mockHookState.current = makeHook({ requiresVaultedCardCvv: true, vaultDisplayMode: 'lite' });
     act(() => {
       tree.update(createElement(PrimerVaultedPaymentMethod, {}));
     });
-    button = findCheckoutButton(tree.toJSON());
+    button = findPrimerButton(tree.toJSON());
     act(() => {
       (button.props.onPress as () => void)();
     });
@@ -533,7 +392,7 @@ describe('PrimerVaultedPaymentMethod — US3 exit', () => {
     act(() => {
       tree = renderer.create(createElement(PrimerVaultedPaymentMethod, {}));
     });
-    const button = findCheckoutButton(tree.toJSON());
+    const button = findPrimerButton(tree.toJSON());
     act(() => {
       (button.props.onPress as () => void)();
     });

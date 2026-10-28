@@ -25,6 +25,7 @@ export function PrimerBillingAddressForm({
   billingForm,
   style,
   testID = 'primer-billing-address-form',
+  editable = true,
 }: PrimerBillingAddressFormProps) {
   const tokens = usePrimerTheme();
   const { t, locale } = usePrimerLocalization();
@@ -52,6 +53,7 @@ export function PrimerBillingAddressForm({
           label={t('primer_card_form_label_country')}
           placeholder={t('primer_card_form_placeholder_country_code')}
           onPress={handleCountryPress}
+          editable={editable}
           testID={`${testID}-country`}
         />
       )}
@@ -61,10 +63,12 @@ export function PrimerBillingAddressForm({
           {visibleFields.firstName && (
             <View style={styles.halfField}>
               <PrimerTextInput
+                editable={editable}
                 value={billingForm.firstName}
                 onChangeText={billingForm.updateFirstName}
                 onBlur={() => billingForm.markFieldTouched('firstName')}
-                autoComplete="name-given"
+                autoComplete="given-name"
+                textContentType="givenName"
                 autoCapitalize="words"
                 label={t('primer_card_form_label_first_name')}
                 placeholder={t('primer_card_form_placeholder_first_name')}
@@ -77,10 +81,12 @@ export function PrimerBillingAddressForm({
           {visibleFields.lastName && (
             <View style={styles.halfField}>
               <PrimerTextInput
+                editable={editable}
                 value={billingForm.lastName}
                 onChangeText={billingForm.updateLastName}
                 onBlur={() => billingForm.markFieldTouched('lastName')}
-                autoComplete="name-family"
+                autoComplete="family-name"
+                textContentType="familyName"
                 autoCapitalize="words"
                 label={t('primer_card_form_label_last_name')}
                 placeholder={t('primer_card_form_placeholder_last_name')}
@@ -95,10 +101,12 @@ export function PrimerBillingAddressForm({
 
       {visibleFields.addressLine1 && (
         <PrimerTextInput
+          editable={editable}
           value={billingForm.addressLine1}
           onChangeText={billingForm.updateAddressLine1}
           onBlur={() => billingForm.markFieldTouched('addressLine1')}
-          autoComplete="street-address"
+          autoComplete="address-line1"
+          textContentType="streetAddressLine1"
           autoCapitalize="words"
           label={t('primer_card_form_label_address1')}
           placeholder={t('primer_card_form_placeholder_address1')}
@@ -110,9 +118,12 @@ export function PrimerBillingAddressForm({
 
       {visibleFields.addressLine2 && (
         <PrimerTextInput
+          editable={editable}
           value={billingForm.addressLine2}
           onChangeText={billingForm.updateAddressLine2}
           onBlur={() => billingForm.markFieldTouched('addressLine2')}
+          autoComplete="address-line2"
+          textContentType="streetAddressLine2"
           autoCapitalize="words"
           label={t('primer_card_form_label_address2')}
           placeholder={t('primer_card_form_placeholder_address2')}
@@ -127,10 +138,12 @@ export function PrimerBillingAddressForm({
           {visibleFields.postalCode && (
             <View style={styles.halfField}>
               <PrimerTextInput
+                editable={editable}
                 value={billingForm.postalCode}
                 onChangeText={billingForm.updatePostalCode}
                 onBlur={() => billingForm.markFieldTouched('postalCode')}
                 autoComplete="postal-code"
+                textContentType="postalCode"
                 autoCapitalize="characters"
                 label={t('primer_card_form_label_postal')}
                 placeholder={t('primer_card_form_placeholder_postal')}
@@ -143,9 +156,12 @@ export function PrimerBillingAddressForm({
           {visibleFields.city && (
             <View style={styles.halfField}>
               <PrimerTextInput
+                editable={editable}
                 value={billingForm.city}
                 onChangeText={billingForm.updateCity}
                 onBlur={() => billingForm.markFieldTouched('city')}
+                autoComplete="postal-address-locality"
+                textContentType="addressCity"
                 autoCapitalize="words"
                 label={t('primer_card_form_label_city')}
                 placeholder={t('primer_card_form_placeholder_city')}
@@ -160,9 +176,12 @@ export function PrimerBillingAddressForm({
 
       {visibleFields.state && (
         <PrimerTextInput
+          editable={editable}
           value={billingForm.state}
           onChangeText={billingForm.updateState}
           onBlur={() => billingForm.markFieldTouched('state')}
+          autoComplete="postal-address-region"
+          textContentType="addressState"
           autoCapitalize="words"
           label={t('primer_card_form_label_state')}
           placeholder={t('primer_card_form_placeholder_state')}

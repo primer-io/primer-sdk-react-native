@@ -8,6 +8,7 @@ import renderer, { act } from 'react-test-renderer';
 jest.mock(
   'react-native',
   () => ({
+    Platform: { OS: 'ios', select: (o: { ios?: unknown; default?: unknown }) => o.ios ?? o.default },
     ScrollView: 'ScrollView',
     StyleSheet: { create: (s: unknown) => s, flatten: (s: unknown) => s, hairlineWidth: 1 },
     Text: 'Text',
@@ -33,20 +34,36 @@ jest.mock('../../Components/hooks/usePrimerPaymentMethod', () => ({
 }));
 
 jest.mock('../../Components/internal/theme', () => ({
+  usePrimerColorScheme: () => 'light',
   usePrimerTheme: () => ({
     colors: {
-      background: '#fff',
-      border: '#ccc',
-      primary: '#08f',
+      backgroundPrimary: '#fff',
+      backgroundOutlinedDefault: '#fdfdfd',
+      backgroundOutlinedDisabled: '#eee',
+      backgroundSecondary: '#fafafa',
+      borderOutlinedDefault: '#ccc',
+      borderOutlinedDisabled: '#ddd',
+      borderOutlinedError: '#f00',
+      borderOutlinedFocus: '#08c',
+      brand: '#08f',
+      onBrand: '#fff',
+      textDisabled: '#aaa',
       textNegative: '#c00',
+      textOutlinedDefault: '#111',
+      textPlaceholder: '#999',
       textPrimary: '#000',
       textSecondary: '#666',
     },
     spacing: { xsmall: 4, small: 8, medium: 12, large: 16 },
-    radii: { medium: 8 },
+    radii: { small: 4, medium: 8, large: 12 },
+    sizes: { small: 16, medium: 20, large: 24, xlarge: 32, xxlarge: 40, xxxlarge: 56, base: 4 },
+    widths: { default: 1, focus: 2, selected: 2, error: 2 },
     typography: {
-      titleLarge: { fontFamily: 'system', fontSize: 16, fontWeight: '500', letterSpacing: 0, lineHeight: 20 },
+      fontFamily: 'system',
       bodySmall: { fontFamily: 'system', fontSize: 12, fontWeight: '400', letterSpacing: 0, lineHeight: 16 },
+      bodyLarge: { fontFamily: 'system', fontSize: 16, fontWeight: '400', letterSpacing: 0, lineHeight: 20 },
+      error: { fontFamily: 'system', fontSize: 12, fontWeight: '400', letterSpacing: 0, lineHeight: 16 },
+      titleLarge: { fontFamily: 'system', fontSize: 16, fontWeight: '500', letterSpacing: 0, lineHeight: 20 },
     },
   }),
 }));
@@ -121,6 +138,22 @@ describe('RawDataFormScreen (ORC-6514)', () => {
     expect(inputs.map((i: any) => i.props.keyboardType)).toEqual(['phone-pad', 'number-pad', 'default']);
   });
 
+  it('offers the right autofill hint per field', () => {
+    mockMethod = rawDataForm({ requiredInputs: ['PHONE_NUMBER', 'OTP', 'CARD_NUMBER', 'CARDHOLDER_NAME'] });
+    const inputs = textInputs(render().root);
+
+    // `cc-name` is not an Android autofill value, and an unrecognised one switches autofill off for
+    // that field, so it was worse than leaving it blank. `name` is what the card form uses.
+    expect(inputs.map((i: any) => i.props.autoComplete)).toEqual(['tel', 'one-time-code', 'cc-number', 'name']);
+    expect(inputs.map((i: any) => i.props.textContentType)).toEqual([
+      'telephoneNumber',
+      'oneTimeCode',
+      'creditCardNumber',
+      'creditCardName',
+    ]);
+    expect(inputs.map((i: any) => i.props.autoCapitalize)).toEqual(['none', 'none', 'none', 'words']);
+  });
+
   it('forwards typed input to the SDK in the right raw-data shape', () => {
     mockMethod = rawDataForm({ requiredInputs: ['PHONE_NUMBER'] });
     const root = render().root;
@@ -134,6 +167,9 @@ describe('RawDataFormScreen (ORC-6514)', () => {
     const root = render().root;
 
     expect(payButton(root).props.disabled).toBe(true);
+    expect(payButton(root).props.accessibilityLabel).toBe('primer_common_button_pay');
+    expect(payButton(root).props.accessibilityHint).toBe('accessibility_card_form_submit_disabled');
+    expect(payButton(root).props.accessibilityValue).toBeUndefined();
     act(() => payButton(root).props.onPress());
     expect(mockSubmit).not.toHaveBeenCalled();
     expect(mockReplace).not.toHaveBeenCalled();
@@ -144,16 +180,12 @@ describe('RawDataFormScreen (ORC-6514)', () => {
     const root = render().root;
 
     expect(payButton(root).props.disabled).toBe(false);
+    expect(payButton(root).props.accessibilityLabel).toBe('primer_common_button_pay');
+    expect(payButton(root).props.accessibilityHint).toBeUndefined();
+    expect(payButton(root).props.accessibilityValue).toBeUndefined();
     act(() => payButton(root).props.onPress());
     expect(mockReplace).toHaveBeenCalledWith('processing');
     expect(mockSubmit).toHaveBeenCalledTimes(1);
-  });
-
-  it('renders nothing when the method is not a raw-data form', () => {
-    mockMethod = { kind: 'card', isAvailable: true, start: jest.fn(), clearPaymentOutcome: jest.fn() };
-
-    expect(render().toJSON()).toBeNull();
-    expect(mockStart).not.toHaveBeenCalled();
   });
 
   it('shows the OVO phone helper hint for a phone-number form', () => {

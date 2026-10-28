@@ -14,6 +14,7 @@ import type { PrimerCardFormProps } from './types/PrimerCardFormTypes';
 export function PrimerCardForm({
   onSubmit,
   autoFocus = false,
+  editable = true,
   style,
   testID = 'primer-card-form',
 }: PrimerCardFormProps) {
@@ -34,7 +35,7 @@ export function PrimerCardForm({
     return () => clearTimeout(handle);
   }, [autoFocus]);
 
-  const disabled = cardForm.isSubmitting;
+  const disabled = cardForm.isSubmitting || !editable;
 
   return (
     <View style={[styles.container, style]} testID={testID}>
