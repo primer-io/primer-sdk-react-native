@@ -25,16 +25,12 @@ function resolve(appearanceMode?: PrimerAppearanceMode): PrimerColorScheme {
 }
 
 describe('useResolvedScheme', () => {
-  it('follows the phone when the mode is SYSTEM', () => {
+  it('follows the phone when the mode is SYSTEM or nothing is set', () => {
     setPhoneScheme('dark');
     expect(resolve('SYSTEM')).toBe('dark');
+    expect(resolve(undefined)).toBe('dark');
     setPhoneScheme('light');
     expect(resolve('SYSTEM')).toBe('light');
-  });
-
-  it('follows the phone when nothing is set', () => {
-    setPhoneScheme('dark');
-    expect(resolve(undefined)).toBe('dark');
   });
 
   it('is light when the phone reports no scheme', () => {

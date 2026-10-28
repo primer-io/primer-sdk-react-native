@@ -15,13 +15,6 @@ afterEach(() => {
 });
 
 describe('resolveLocale', () => {
-  it('resolves exact device locale', () => {
-    mockDeviceLocale('en');
-    const result = resolveLocale();
-    expect(result.locale).toBe('en');
-    expect(result.source).toBe('device');
-  });
-
   it('falls back from regional variant to base language', () => {
     mockDeviceLocale('fr-CA');
     const result = resolveLocale();

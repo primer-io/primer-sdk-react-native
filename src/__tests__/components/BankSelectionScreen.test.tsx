@@ -58,14 +58,12 @@ describe('BankSelectionScreen Pay', () => {
     expect(pay.accessibilityLabel).toBe('primer_common_button_pay');
     expect(pay.accessibilityHint).toBe('accessibility_card_form_submit_disabled');
     expect(pay.accessibilityValue).toBeUndefined();
-  });
 
-  it('has no hint once a bank is chosen', () => {
     mockSelectedBankId = 'ing';
-    const pay = payButton();
+    const chosen = payButton();
 
-    expect(pay.accessibilityLabel).toBe('primer_common_button_pay');
-    expect(pay.accessibilityHint).toBeUndefined();
-    expect(pay.accessibilityValue).toBeUndefined();
+    expect(chosen.accessibilityLabel).toBe('primer_common_button_pay');
+    expect(chosen.accessibilityHint).toBeUndefined();
+    expect(chosen.accessibilityValue).toBeUndefined();
   });
 });

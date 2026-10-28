@@ -109,6 +109,9 @@ describe('CardFormScreen Pay', () => {
     expect(screen.cardForm().editable).toBe(true);
     expect(screen.billingForm().editable).toBe(true);
     expect(screen.pay().loading).toBe(false);
+    expect(screen.pay().title).toBe('primer_common_button_pay');
+    expect(screen.pay().accessibilityLabel).toBeUndefined();
+    expect(screen.pay().accessibilityHint).toBeUndefined();
 
     await act(async () => {
       void screen.pay().onPress();
@@ -118,6 +121,9 @@ describe('CardFormScreen Pay', () => {
     expect(screen.cardForm().editable).toBe(false);
     expect(screen.billingForm().editable).toBe(false);
     expect(screen.pay().loading).toBe(true);
+    expect(screen.pay().accessibilityLabel).toBeUndefined();
+    expect(screen.pay().accessibilityHint).toBeUndefined();
+    expect(screen.pay().loadingAccessibilityValue).toBe('accessibility_card_form_submit_loading');
     expect(mockReplace).not.toHaveBeenCalled();
     expect(mockSubmit).not.toHaveBeenCalled();
 
@@ -146,15 +152,6 @@ describe('CardFormScreen Pay', () => {
     expect(mockSubmit).toHaveBeenCalledTimes(1);
   });
 
-  it('is named by its Pay title, with no hint, when enabled', () => {
-    const pay = render().pay();
-
-    expect(pay.title).toBe('primer_common_button_pay');
-    expect(pay.loading).toBe(false);
-    expect(pay.accessibilityLabel).toBeUndefined();
-    expect(pay.accessibilityHint).toBeUndefined();
-  });
-
   it('gets the disabled hint while the form is incomplete', () => {
     mockCardFormValid = false;
     const pay = render().pay();
@@ -162,18 +159,5 @@ describe('CardFormScreen Pay', () => {
     expect(pay.disabled).toBe(true);
     expect(pay.accessibilityLabel).toBeUndefined();
     expect(pay.accessibilityHint).toBe('accessibility_card_form_submit_disabled');
-  });
-
-  it('reads processing as its value, with no hint, while the payment is starting', async () => {
-    const screen = render();
-
-    await act(async () => {
-      void screen.pay().onPress();
-    });
-
-    expect(screen.pay().loading).toBe(true);
-    expect(screen.pay().accessibilityLabel).toBeUndefined();
-    expect(screen.pay().accessibilityHint).toBeUndefined();
-    expect(screen.pay().loadingAccessibilityValue).toBe('accessibility_card_form_submit_loading');
   });
 });
