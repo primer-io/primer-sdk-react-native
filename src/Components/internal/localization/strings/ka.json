@@ -129,7 +129,7 @@
   "primer_card_form_error_state_invalid": "არასწორი რეგიონი",
   "primer_card_form_error_state_required": "რეგიონი აუცილებელია",
   "primer_card_form_label_address1": "მისამართის ხაზი 1",
-  "primer_card_form_label_address2": "მისამართის ხაზი 2",
+  "primer_card_form_label_address2": "მისამართის ხაზი 2 (არასავალდებულო)",
   "primer_card_form_label_city": "ქალაქი",
   "primer_card_form_label_country": "ქვეყანა",
   "primer_card_form_label_country_code": "ქვეყნის კოდი",

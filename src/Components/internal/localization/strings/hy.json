@@ -129,7 +129,7 @@
   "primer_card_form_error_state_invalid": "Սխալ նահանգ, մարզ կամ գավառ",
   "primer_card_form_error_state_required": "Նահանգը, մարզը կամ գավառը պարտադիր է",
   "primer_card_form_label_address1": "Հասցեի տող 1",
-  "primer_card_form_label_address2": "Հասցեի տող 2",
+  "primer_card_form_label_address2": "Հասցեի տող 2 (ոչ պարտադիր)",
   "primer_card_form_label_city": "Քաղաք",
   "primer_card_form_label_country": "Երկիր",
   "primer_card_form_label_country_code": "Երկրի ծածկագիր",
