@@ -69,8 +69,10 @@ jest.mock('../../Components/internal/localization', () => ({
   usePrimerLocalization: () => ({ t: (key: string) => key }),
 }));
 
+let mockPaymentMethodType = 'ADYEN_MBWAY';
+
 jest.mock('../../Components/internal/navigation/useRoute', () => ({
-  useRoute: () => ({ params: { paymentMethodType: 'ADYEN_MBWAY' } }),
+  useRoute: () => ({ params: { paymentMethodType: mockPaymentMethodType } }),
 }));
 
 jest.mock('../../Components/internal/navigation/useNavigation', () => ({
@@ -115,7 +117,10 @@ const textInputs = (root: any) => root.findAll((n: any) => n.type === 'TextInput
 const payButton = (root: any) => root.findAll((n: any) => n.type === 'TouchableOpacity')[0];
 
 describe('RawDataFormScreen (ORC-6514)', () => {
-  beforeEach(() => jest.clearAllMocks());
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockPaymentMethodType = 'ADYEN_MBWAY';
+  });
 
   it('activates the raw-data manager on mount and picks a keyboard per field', () => {
     mockMethod = rawDataForm({ requiredInputs: ['PHONE_NUMBER', 'OTP', 'CARDHOLDER_NAME'] });
@@ -176,5 +181,38 @@ describe('RawDataFormScreen (ORC-6514)', () => {
     act(() => payButton(root).props.onPress());
     expect(mockReplace).toHaveBeenCalledWith('processing');
     expect(mockSubmit).toHaveBeenCalledTimes(1);
+  });
+
+  describe('Bancontact expiry (ORC-7697)', () => {
+    const bancontactForm = (overrides: Record<string, unknown> = {}) => {
+      mockPaymentMethodType = 'ADYEN_BANCONTACT_CARD';
+      mockMethod = rawDataForm({
+        requiredInputs: ['CARD_NUMBER', 'EXPIRY_DATE', 'CARDHOLDER_NAME'],
+        ...overrides,
+      });
+      return render().root;
+    };
+    const expiryInput = (root: any) => textInputs(root)[1];
+
+    it('inserts the separator as digits are typed', () => {
+      const root = bancontactForm();
+
+      act(() => expiryInput(root).props.onChangeText('0'));
+      expect(expiryInput(root).props.value).toBe('0');
+
+      act(() => expiryInput(root).props.onChangeText('03'));
+      expect(expiryInput(root).props.value).toBe('03/');
+
+      act(() => expiryInput(root).props.onChangeText('03/30'));
+      expect(expiryInput(root).props.value).toBe('03/30');
+      expect(mockSetData).toHaveBeenLastCalledWith({
+        cardNumber: '',
+        expiryDate: '03/2030',
+        cardholderName: '',
+      });
+
+      act(() => expiryInput(root).props.onChangeText('03/3'));
+      expect(expiryInput(root).props.value).toBe('033');
+    });
   });
 });

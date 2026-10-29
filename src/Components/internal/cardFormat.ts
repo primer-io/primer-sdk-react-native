@@ -24,6 +24,27 @@ export function maxFormattedCardNumberLength(descriptor: CardNetworkDescriptor):
   return digits + gapsWithin;
 }
 
+export function formatExpiryDate(value: string, previous: string): string {
+  const digits = value.replace(/\D/g, '').slice(0, 4);
+  if (value.length < previous.length) {
+    return digits;
+  }
+  if (digits.length >= 2) {
+    return digits.slice(0, 2) + '/' + digits.slice(2);
+  }
+  return digits;
+}
+
+export const MAX_EXPIRY_DATE_LENGTH = 5;
+
+// Display is MM/YY but Android's validator requires MM/YYYY; iOS accepts both.
+// Expand only once the year is fully typed (4-char "MM/YY"); partial edits
+// pass through unchanged so native can keep reporting "cannot be blank".
+export function expandExpiryYearForNative(formatted: string): string {
+  const match = /^(\d{2})\/(\d{2})$/.exec(formatted);
+  return match ? `${match[1]}/20${match[2]}` : formatted;
+}
+
 /**
  * Insert spaces into a raw digit string according to a gap pattern.
  * Example: `formatDigitsWithGaps("4242424242424242", [4,8,12])` → `"4242 4242 4242 4242"`.

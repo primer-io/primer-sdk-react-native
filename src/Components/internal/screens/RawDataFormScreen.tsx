@@ -15,6 +15,7 @@ import { PrimerTextInput } from '../../inputs/PrimerTextInput';
 import { PrimerButton } from '../ui/PrimerButton';
 import { useBottomPadding } from './useBottomPadding';
 import { buildRawData } from './buildRawData';
+import { formatExpiryDate, MAX_EXPIRY_DATE_LENGTH } from '../cardFormat';
 
 // Field keys are the SDK's input-element-type strings. NOTE the platform split for BLIK's
 // one-time code: iOS reports 'OTP', Android reports 'OTP_CODE' — both are handled.
@@ -77,7 +78,8 @@ export function RawDataFormScreen() {
   const { requiredInputs, isValid, setData, submit } = form;
 
   const handleChange = (field: string, text: string) => {
-    const next = { ...values, [field]: text };
+    const formatted = field === 'EXPIRY_DATE' ? formatExpiryDate(text, values[field] ?? '') : text;
+    const next = { ...values, [field]: formatted };
     setValues(next);
     void setData(buildRawData(params.paymentMethodType, next)).catch(() => {});
   };
@@ -116,6 +118,7 @@ export function RawDataFormScreen() {
               keyboardType={
                 field === 'PHONE_NUMBER' ? 'phone-pad' : NUMERIC_FIELDS.has(field) ? 'number-pad' : 'default'
               }
+              maxLength={field === 'EXPIRY_DATE' ? MAX_EXPIRY_DATE_LENGTH : undefined}
               autoCapitalize="none"
               {...FIELD_INPUT_PROPS[field]}
             />
