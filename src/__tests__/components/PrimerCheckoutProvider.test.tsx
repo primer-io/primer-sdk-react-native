@@ -1,6 +1,10 @@
 // @ts-expect-error -- React 19 concurrent act environment
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
+jest.mock('../../Components/internal/localization/locale-resolver', () => ({
+  resolveLocale: () => ({ locale: 'en', source: 'fallback' }),
+}));
+
 jest.mock('../../specs/NativePrimer', () => ({
   __esModule: true,
   default: {
@@ -65,6 +69,7 @@ import { usePrimerColorScheme, usePrimerTheme } from '../../Components/internal/
 import { usePrimerCheckout } from '../../Components/hooks/usePrimerCheckout';
 import { PrimerError } from '../../models/PrimerError';
 import type { PrimerCheckoutContextValue } from '../../Components/types/PrimerCheckoutProviderTypes';
+import type { PrimerInputValidationError } from '../../models/PrimerValidationError';
 
 const rnMock = require('react-native');
 const nativeModule = rnMock.NativeModules.PrimerHeadlessUniversalCheckout;
@@ -607,6 +612,92 @@ describe('PrimerCheckoutProvider card network selection', () => {
 
     expect(rawNative.setRawData.mock.calls.length).toBe(callsAfterClear);
     expect(ctx().selectedCardNetwork).toBeNull();
+  });
+
+  const validate = async (errors: PrimerInputValidationError[]) => {
+    const ctx = await setupCardForm();
+    const onValidation = findListener('onValidation');
+    await act(async () => {
+      onValidation!({ isValid: false, errors });
+      await flushPromises();
+    });
+    return ctx;
+  };
+
+  it('routes card errors to their fields, keeps every message in order, and clears both once valid', async () => {
+    const ctx = await validate([
+      { errorId: 'invalid-card-number', inputElementType: 'CARD_NUMBER', description: 'Card number is not valid.' },
+      { errorId: 'invalid-expiry-date', inputElementType: 'EXPIRY_DATE', description: 'Expiry date is not valid.' },
+      { errorId: 'invalid-cvv', inputElementType: 'CVV', description: 'CVV is not valid.' },
+      { errorId: 'invalid-cardholder-name', inputElementType: 'CARDHOLDER_NAME', description: 'Name is not valid.' },
+      { errorId: 'invalid-phone-number', inputElementType: 'PHONE_NUMBER', description: 'Phone number is not valid.' },
+      { errorId: 'invalid-otp-code', inputElementType: 'OTP', description: 'OTP is not valid.' },
+      { errorId: 'invalid-otp-code', inputElementType: 'OTP_CODE', description: 'OTP is not valid.' },
+    ]);
+
+    expect(ctx().cardFormState.errors).toEqual({
+      cardNumber: 'Invalid card number',
+      expiryDate: 'Invalid date',
+      cvv: 'Invalid CVV',
+      cardholderName: 'Invalid Cardholder name',
+    });
+    expect(ctx().cardFormState.messages).toEqual([
+      'Invalid card number',
+      'Invalid date',
+      'Invalid CVV',
+      'Invalid Cardholder name',
+      'Enter a valid phone number',
+      'Enter a valid 6-digit code',
+      'Enter a valid 6-digit code',
+    ]);
+
+    await act(async () => {
+      findListener('onValidation')!({ isValid: true, errors: [] });
+      await flushPromises();
+    });
+
+    expect(ctx().cardFormState.messages).toEqual([]);
+    expect(ctx().cardFormState.errors).toEqual({});
+  });
+
+  it.each([
+    {
+      when: 'native threw',
+      error: { errorId: 'invalid-client-token', description: '[invalid-client-token] Client token is not valid:' },
+      message: 'An unknown error occurred.',
+      errors: {},
+    },
+    {
+      when: 'native names a field we have no copy for',
+      error: {
+        errorId: 'invalid-postal-code',
+        inputElementType: 'POSTAL_CODE',
+        description: '[x] Bad. (diagnosticsId: a-1)',
+      },
+      message: 'Bad.',
+      errors: {},
+    },
+    {
+      when: 'native names a field but gives no usable wording',
+      error: { errorId: 'invalid-retailer', inputElementType: 'RETAILER', description: '[x] (diagnosticsId: a-1)' },
+      message: 'An unknown error occurred.',
+      errors: {},
+    },
+    {
+      when: 'the card brand is unsupported',
+      error: {
+        errorId: 'unsupported-card-type',
+        inputElementType: 'CARD_NUMBER',
+        description: 'Unsupported card type: Diners.',
+      },
+      message: 'Unsupported card type',
+      errors: { cardNumber: 'Unsupported card type' },
+    },
+  ])('shows shopper copy rather than an SDK diagnostic when $when', async ({ error, message, errors }) => {
+    const ctx = await validate([error]);
+
+    expect(ctx().cardFormState.messages).toEqual([message]);
+    expect(ctx().cardFormState.errors).toEqual(errors);
   });
 });
 

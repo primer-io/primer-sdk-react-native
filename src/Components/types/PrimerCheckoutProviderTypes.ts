@@ -83,6 +83,7 @@ export interface StripeAchMandateDisplay {
 export interface CardFormState {
   isValid: boolean;
   errors: CardFormErrors;
+  messages: string[];
   binData: PrimerBinData | null;
   metadata: unknown;
   requiredFields: PrimerInputElementType[];

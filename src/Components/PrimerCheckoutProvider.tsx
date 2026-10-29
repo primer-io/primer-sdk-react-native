@@ -11,6 +11,7 @@ import { PrimerHeadlessUniversalCheckoutAchMandateManager } from '../HeadlessUni
 import PrimerHeadlessUniversalCheckoutVaultManager from '../HeadlessUniversalCheckout/Managers/VaultManager';
 import { PrimerHeadlessUniversalCheckout } from '../HeadlessUniversalCheckout/PrimerHeadlessUniversalCheckout';
 import { PrimerError } from '../models/PrimerError';
+import type { PrimerInputValidationError } from '../models/PrimerValidationError';
 import { PrimerAnalytics } from './analytics';
 import { PrimerSessionIntent } from '../models/PrimerSessionIntent';
 import { fmt } from './internal/debug';
@@ -55,6 +56,9 @@ import type { KlarnaPaymentStep } from '../models/klarna/KlarnaPaymentSteps';
 import type { StripeAchUserDetailsComponent } from '../HeadlessUniversalCheckout/Managers/PaymentMethodManagers/AchManager';
 import type { AchValidatableData } from '../models/ach/AchCollectableData';
 import type { PrimerValidationError } from '../models/PrimerValidationError';
+import { usePrimerLocalization } from './internal/localization';
+
+type Translate = (key: string) => string;
 
 const LOG = '[PrimerCheckoutProvider]';
 
@@ -63,6 +67,7 @@ const assetsManager = new PrimerHeadlessUniversalCheckoutAssetsManager();
 const initialCardFormState: CardFormState = {
   isValid: false,
   errors: {},
+  messages: [],
   binData: null,
   metadata: null,
   requiredFields: [],
@@ -211,27 +216,66 @@ function firstValidationMessage(errors: PrimerValidationError[] | undefined): st
   return errors?.[0]?.description;
 }
 
-// Native validation errors carry a free-form `errorId` like `invalid-card-number`. The table
-// below routes each id to a `CardFormField`. First match wins. When native gains a typed
-// `inputElementType` field on the error object, swap this for a direct enum-keyed lookup.
-const ERROR_FIELD_TABLE: ReadonlyArray<{ test: (id: string) => boolean; field: CardFormField }> = [
-  { test: (id) => id.includes('card') && id.includes('number'), field: 'cardNumber' },
-  { test: (id) => id.includes('expir'), field: 'expiryDate' },
-  { test: (id) => id.includes('cvv') || id.includes('cvc'), field: 'cvv' },
-  { test: (id) => id.includes('cardholder') || id.includes('card_holder'), field: 'cardholderName' },
-];
+const FIELD_BY_ELEMENT: Record<string, CardFormField> = {
+  CARD_NUMBER: 'cardNumber',
+  EXPIRY_DATE: 'expiryDate',
+  CVV: 'cvv',
+  CARDHOLDER_NAME: 'cardholderName',
+};
+
+const COPY_BY_ELEMENT: Record<string, string> = {
+  CARD_NUMBER: 'primer_card_form_error_number_invalid',
+  EXPIRY_DATE: 'primer_card_form_error_expiry_invalid',
+  CVV: 'primer_card_form_error_cvv_invalid',
+  CARDHOLDER_NAME: 'primer_card_form_error_name_invalid',
+  PHONE_NUMBER: 'primer_card_form_error_phone_invalid',
+  OTP: 'primer_form_redirect_otp_code_invalid',
+  OTP_CODE: 'primer_form_redirect_otp_code_invalid',
+};
+
+const COPY_BY_ERROR_ID: Record<string, string> = {
+  'unsupported-card-type': 'primer_card_form_error_card_type_unsupported',
+};
+
+function stripDiagnostics(description: string): string {
+  return description
+    .replace(/^\[[^\]]*\]\s*/, '')
+    .replace(/\s*\(diagnosticsId:[^)]*\)\s*$/, '')
+    .trim();
+}
+
+function resolveMessage(error: PrimerInputValidationError, t: Translate): string {
+  const element = error.inputElementType;
+  if (!element) return t('primer_common_error_generic');
+  const key = COPY_BY_ERROR_ID[error.errorId] ?? COPY_BY_ELEMENT[element];
+  if (key) return t(key);
+  return stripDiagnostics(error.description) || t('primer_common_error_generic');
+}
+
+function sameMessages(a: string[], b: string[]): boolean {
+  return a.length === b.length && a.every((message, i) => message === b[i]);
+}
+
+function sameErrors(a: CardFormErrors, b: CardFormErrors): boolean {
+  const keys = Object.keys(a) as CardFormField[];
+  return keys.length === Object.keys(b).length && keys.every((key) => a[key] === b[key]);
+}
 
 /** Map native validation errors to per-field typed errors the UI can render. */
-function parseValidationErrors(errors: PrimerError[] | undefined): CardFormErrors {
+function parseValidationErrors(
+  errors: PrimerInputValidationError[] | undefined,
+  t: Translate
+): { fieldErrors: CardFormErrors; messages: string[] } {
   const fieldErrors: CardFormErrors = {};
-  if (!errors) return fieldErrors;
+  const messages: string[] = [];
+  if (!errors) return { fieldErrors, messages };
   for (const error of errors) {
-    const id = (error.errorId ?? '').toLowerCase();
-    const description = error.description ?? error.message ?? 'Invalid';
-    const match = ERROR_FIELD_TABLE.find((entry) => entry.test(id));
-    if (match) fieldErrors[match.field] = description;
+    const message = resolveMessage(error, t);
+    const field = error.inputElementType ? FIELD_BY_ELEMENT[error.inputElementType] : undefined;
+    if (field) fieldErrors[field] = message;
+    messages.push(message);
   }
-  return fieldErrors;
+  return { fieldErrors, messages };
 }
 
 export function PrimerCheckoutProvider({
@@ -245,6 +289,7 @@ export function PrimerCheckoutProvider({
   children,
 }: PrimerCheckoutProviderProps) {
   const [state, setState] = useState<InternalState>(initialState);
+  const { t } = usePrimerLocalization();
 
   const lightTokens = useMemo(() => mergeTokens(defaultLightTokens, theme?.light), [theme?.light]);
   const darkTokens = useMemo(() => mergeTokens(defaultDarkTokens, theme?.dark), [theme?.dark]);
@@ -323,7 +368,7 @@ export function PrimerCheckoutProvider({
   // native-side state.
   const selectedCardNetworkRef = useRef<CardNetworkId | null>(null);
   const lastManagerCallbacksRef = useRef<{
-    onValidation: (isValid: boolean, errors: PrimerError[] | undefined) => void;
+    onValidation: (isValid: boolean, errors: PrimerInputValidationError[] | undefined) => void;
     onBinDataChange: (binData: PrimerBinData) => void;
     onMetadataChange: (metadata: unknown) => void;
   } | null>(null);
@@ -799,16 +844,23 @@ export function PrimerCheckoutProvider({
     let detailsEnteredFired = false;
 
     const callbacks = {
-      onValidation: (isValid: boolean, errors: PrimerError[] | undefined) => {
+      onValidation: (isValid: boolean, errors: PrimerInputValidationError[] | undefined) => {
         if (isValid && !detailsEnteredFired) {
           detailsEnteredFired = true;
           void PrimerAnalytics.trackEvent('PAYMENT_DETAILS_ENTERED', { paymentMethod: method });
         }
-        const parsed = parseValidationErrors(errors);
-        setState((prev) => ({
-          ...prev,
-          cardFormState: { ...prev.cardFormState, isValid, errors: parsed },
-        }));
+        const { fieldErrors, messages } = parseValidationErrors(errors, t);
+        setState((prev) => {
+          const card = prev.cardFormState;
+          if (
+            card.isValid === isValid &&
+            sameErrors(card.errors, fieldErrors) &&
+            sameMessages(card.messages, messages)
+          ) {
+            return prev;
+          }
+          return { ...prev, cardFormState: { ...card, isValid, errors: fieldErrors, messages } };
+        });
       },
       onBinDataChange: (binData: PrimerBinData) => {
         // A PAN edit can change the detected networks. If the shopper's co-badge
@@ -877,7 +929,7 @@ export function PrimerCheckoutProvider({
       selectedCardNetworkRef.current = null;
       setState((prev) => ({ ...prev, cardFormState: initialCardFormState, selectedCardNetwork: null }));
     };
-  }, [state.activeMethod, state.isReady]);
+  }, [state.activeMethod, state.isReady, t]);
 
   // -----------------------------------------------------------------------
   // Actions — stable identities.

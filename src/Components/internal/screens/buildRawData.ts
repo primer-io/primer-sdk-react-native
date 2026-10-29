@@ -12,6 +12,7 @@ export function buildRawData(type: string, values: RawFieldValues): PrimerRawDat
     case 'ADYEN_BLIK':
       return { otp: values.OTP ?? values.OTP_CODE ?? '' };
     case 'ADYEN_MBWAY':
+    case 'XENDIT_OVO':
       return { phoneNumber: values.PHONE_NUMBER ?? '' };
     case 'ADYEN_BANCONTACT_CARD':
       return {
@@ -20,6 +21,6 @@ export function buildRawData(type: string, values: RawFieldValues): PrimerRawDat
         cardholderName: values.CARDHOLDER_NAME ?? '',
       };
     default:
-      return {}; // unreachable — routing allowlists these three types
+      return {};
   }
 }

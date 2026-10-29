@@ -16,10 +16,11 @@ describe('routeMethodSelection', () => {
     expect(routeMethodSelection('ADYEN_DOTPAY', ['COMPONENT_WITH_REDIRECT'])).toBe('bankSelection');
   });
 
-  it('routes non-card RAW_DATA methods (Bancontact/MBWay/BLIK) to rawDataForm', () => {
+  it('routes non-card RAW_DATA methods (Bancontact/MBWay/BLIK/OVO) to rawDataForm', () => {
     expect(routeMethodSelection('ADYEN_BANCONTACT_CARD', ['RAW_DATA'])).toBe('rawDataForm');
     expect(routeMethodSelection('ADYEN_MBWAY', ['RAW_DATA'])).toBe('rawDataForm');
     expect(routeMethodSelection('ADYEN_BLIK', ['RAW_DATA'])).toBe('rawDataForm');
+    expect(routeMethodSelection('XENDIT_OVO', ['RAW_DATA'])).toBe('rawDataForm');
   });
 
   it('routes STRIPE_ACH to stripeAch by its dedicated manager category', () => {
@@ -27,9 +28,7 @@ describe('routeMethodSelection', () => {
   });
 
   it('leaves other RAW_DATA methods (e.g. XENDIT_RETAIL_OUTLETS) unsupported', () => {
-    // Retail-outlets needs a list picker, not the free-text form; OVO/others aren't wired yet.
     expect(routeMethodSelection('XENDIT_RETAIL_OUTLETS', ['RAW_DATA'])).toBe('unsupported');
-    expect(routeMethodSelection('XENDIT_OVO', ['RAW_DATA'])).toBe('unsupported');
   });
 
   it('routes a KLARNA method to klarna', () => {

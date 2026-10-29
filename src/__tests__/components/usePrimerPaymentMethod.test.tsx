@@ -1,6 +1,10 @@
 // @ts-expect-error -- React 19 concurrent act environment
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
+jest.mock('../../Components/internal/localization/locale-resolver', () => ({
+  resolveLocale: () => ({ locale: 'en', source: 'fallback' }),
+}));
+
 jest.mock('../../specs/NativePrimer', () => ({
   __esModule: true,
   default: {
@@ -27,6 +31,12 @@ jest.mock(
         RNTPrimerHeadlessUniversalPaymentMethodNativeUIManager: {
           configure: jest.fn().mockResolvedValue(undefined),
           showPaymentMethod: jest.fn().mockResolvedValue(undefined),
+        },
+        RNTPrimerHeadlessUniversalCheckoutRawDataManager: {
+          configure: jest.fn(),
+          listRequiredInputElementTypes: jest.fn(),
+          setRawData: jest.fn(),
+          cleanUp: jest.fn(),
         },
         RNTPrimerHeadlessUniversalCheckoutBanksComponent: {
           configure: jest.fn().mockResolvedValue(undefined),
@@ -78,6 +88,7 @@ import type {
   BankSelectionPaymentMethod,
   KlarnaPaymentMethod,
   NativeUiPaymentMethod,
+  RawDataFormPaymentMethod,
   UsePrimerPaymentMethodReturn,
 } from '../../Components/types/PrimerPaymentMethodTypes';
 
@@ -113,6 +124,13 @@ function asBankSelection(c: UsePrimerPaymentMethodReturn): BankSelectionPaymentM
 function asKlarna(c: UsePrimerPaymentMethodReturn): KlarnaPaymentMethod {
   if (c.kind !== 'klarna') {
     throw new Error(`expected kind 'klarna', got '${c.kind}'`);
+  }
+  return c;
+}
+
+function asRawDataForm(c: UsePrimerPaymentMethodReturn): RawDataFormPaymentMethod {
+  if (c.kind !== 'rawDataForm') {
+    throw new Error(`expected kind 'rawDataForm', got '${c.kind}'`);
   }
   return c;
 }
@@ -411,6 +429,28 @@ describe('usePrimerPaymentMethod', () => {
       const last = asBankSelection(captures[captures.length - 1]!);
       expect(last.paymentOutcome?.status).toBe('error');
       expect(last.isLoading).toBe(false);
+    });
+  });
+
+  describe('raw-data form methods (Bancontact/MBWay/BLIK)', () => {
+    const mbway = [{ paymentMethodType: 'ADYEN_MBWAY', categories: ['RAW_DATA'] }];
+
+    it('surfaces native validation messages as validationErrors', async () => {
+      const captures = await mountWithMethods(mbway, 'ADYEN_MBWAY');
+      await act(async () => {
+        await asRawDataForm(captures[captures.length - 1]!).start();
+        await flushPromises();
+      });
+
+      await act(async () => {
+        findListener('onValidation')!({
+          isValid: false,
+          errors: [{ errorId: 'invalid-phone-number', inputElementType: 'PHONE_NUMBER' }],
+        });
+        await flushPromises();
+      });
+
+      expect(asRawDataForm(captures[captures.length - 1]!).validationErrors).toEqual(['Enter a valid phone number']);
     });
   });
 

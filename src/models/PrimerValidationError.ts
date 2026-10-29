@@ -5,3 +5,11 @@ export interface IPrimerValidationError {
   description?: string;
   diagnosticsId?: string;
 }
+
+export type PrimerInputValidationError = IPrimerInputValidationError;
+
+export interface IPrimerInputValidationError extends IPrimerValidationError {
+  errorId: string;
+  description: string;
+  inputElementType?: string;
+}

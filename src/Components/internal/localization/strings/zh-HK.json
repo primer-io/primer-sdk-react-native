@@ -194,6 +194,8 @@
   "primer_country_placeholder_search": "搜尋",
   "primer_country_selector_placeholder": "國家/地區選擇器",
   "primer_country_title": "選擇國家/地區",
+  "primer_form_redirect_otp_code_invalid": "Enter a valid 6-digit code",
+  "primer_form_redirect_ovo_phone_helper": "Enter the phone number registered with your OVO account.",
   "primer_klarna_button_authorize": "繼續",
   "primer_klarna_button_finalize": "付款",
   "primer_klarna_loading_subtitle": "這可能需要幾秒鐘。",

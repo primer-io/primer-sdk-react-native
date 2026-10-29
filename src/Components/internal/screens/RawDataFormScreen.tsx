@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
-import type { TextInputProps } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import type { TextInputProps, TextStyle } from 'react-native';
 
 import { usePrimerTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
@@ -11,6 +11,7 @@ import { CheckoutRoute } from '../navigation/types';
 import { usePrimerLocalization } from '../localization';
 import { useCheckoutFlow } from '../checkout-flow/CheckoutFlowContext';
 import { usePrimerPaymentMethod } from '../../hooks/usePrimerPaymentMethod';
+import { fmt } from '../debug';
 import { PrimerTextInput } from '../../inputs/PrimerTextInput';
 import { PrimerButton } from '../ui/PrimerButton';
 import { useBottomPadding } from './useBottomPadding';
@@ -74,12 +75,16 @@ export function RawDataFormScreen() {
     return null;
   }
 
-  const { requiredInputs, isValid, setData, submit } = form;
+  const { requiredInputs, isValid, validationErrors, setData, submit } = form;
+
+  const hasInput = requiredInputs.some((field) => (values[field] ?? '').trim().length > 0);
 
   const handleChange = (field: string, text: string) => {
     const next = { ...values, [field]: text };
     setValues(next);
-    void setData(buildRawData(params.paymentMethodType, next)).catch(() => {});
+    void setData(buildRawData(params.paymentMethodType, next)).catch((err) =>
+      console.warn(`[PrimerRawDataForm] setData failed ${fmt(err)}`)
+    );
   };
 
   const handleSubmit = () => {
@@ -108,21 +113,34 @@ export function RawDataFormScreen() {
           const labelKey = FIELD_LABEL_KEY[field];
           const label = labelKey ? t(labelKey) : field;
           return (
-            <PrimerTextInput
-              key={field}
-              label={label}
-              value={values[field] ?? ''}
-              onChangeText={(text) => handleChange(field, text)}
-              keyboardType={
-                field === 'PHONE_NUMBER' ? 'phone-pad' : NUMERIC_FIELDS.has(field) ? 'number-pad' : 'default'
-              }
-              autoCapitalize="none"
-              {...FIELD_INPUT_PROPS[field]}
-            />
+            <View key={field} style={styles.field}>
+              <PrimerTextInput
+                label={label}
+                value={values[field] ?? ''}
+                onChangeText={(text) => handleChange(field, text)}
+                keyboardType={
+                  field === 'PHONE_NUMBER' ? 'phone-pad' : NUMERIC_FIELDS.has(field) ? 'number-pad' : 'default'
+                }
+                autoCapitalize="none"
+                {...FIELD_INPUT_PROPS[field]}
+              />
+              {params.paymentMethodType === 'XENDIT_OVO' && field === 'PHONE_NUMBER' && (
+                <Text style={styles.hint}>{t('primer_form_redirect_ovo_phone_helper')}</Text>
+              )}
+            </View>
           );
         })}
       </ScrollView>
       <View style={[styles.footer, { paddingBottom: bottomPadding }]}>
+        {hasInput && validationErrors.length > 0 && (
+          <View style={styles.errorBlock}>
+            {validationErrors.map((message) => (
+              <Text key={message} style={styles.errorText}>
+                {message}
+              </Text>
+            ))}
+          </View>
+        )}
         <PrimerButton
           title={t('primer_common_button_pay')}
           onPress={handleSubmit}
@@ -136,13 +154,36 @@ export function RawDataFormScreen() {
 }
 
 function createStyles(tokens: PrimerTokens) {
-  const { colors, spacing } = tokens;
+  const { colors, spacing, typography } = tokens;
   /* eslint-disable react-native/no-unused-styles */
   return StyleSheet.create({
+    errorBlock: {
+      gap: spacing.xsmall,
+      paddingBottom: spacing.small,
+    },
+    errorText: {
+      color: colors.textNegative,
+      fontFamily: typography.bodySmall.fontFamily,
+      fontSize: typography.bodySmall.fontSize,
+      fontWeight: typography.bodySmall.fontWeight as TextStyle['fontWeight'],
+      letterSpacing: typography.bodySmall.letterSpacing,
+      lineHeight: typography.bodySmall.lineHeight,
+    },
+    field: {
+      gap: spacing.xsmall,
+    },
     footer: {
       backgroundColor: colors.backgroundPrimary,
       paddingHorizontal: spacing.large,
       paddingTop: spacing.small,
+    },
+    hint: {
+      color: colors.textSecondary,
+      fontFamily: typography.bodySmall.fontFamily,
+      fontSize: typography.bodySmall.fontSize,
+      fontWeight: typography.bodySmall.fontWeight as TextStyle['fontWeight'],
+      letterSpacing: typography.bodySmall.letterSpacing,
+      lineHeight: typography.bodySmall.lineHeight,
     },
     root: {
       flex: 1,
