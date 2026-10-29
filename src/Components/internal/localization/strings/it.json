@@ -170,7 +170,7 @@
   "primer_checkout_auto_dismiss_message": "Questa schermata si chiuderà automaticamente tra 3 secondi",
   "primer_checkout_dismissing": "Chiusura in corso...",
   "primer_checkout_error_button_other_methods": "Scegli un altro metodo di pagamento",
-  "primer_checkout_error_subtitle": "Si è verificato un problema di rete.",
+  "primer_checkout_error_subtitle": "Riprova o usa un altro metodo di pagamento.",
   "primer_checkout_error_title": "Pagamento fallito",
   "primer_checkout_loading_indicator": "Caricamento",
   "primer_checkout_loading_subtitle": "L'operazione potrebbe richiedere alcuni secondi.",

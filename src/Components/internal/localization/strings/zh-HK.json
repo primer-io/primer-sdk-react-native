@@ -170,7 +170,7 @@
   "primer_checkout_auto_dismiss_message": "此畫面將於 3 秒後自動關閉",
   "primer_checkout_dismissing": "正在關閉...",
   "primer_checkout_error_button_other_methods": "選擇其他付款方式",
-  "primer_checkout_error_subtitle": "發生網絡問題。",
+  "primer_checkout_error_subtitle": "請重試或使用其他付款方式。",
   "primer_checkout_error_title": "付款失敗",
   "primer_checkout_loading_indicator": "載入中",
   "primer_checkout_loading_subtitle": "這可能需要幾秒鐘。",

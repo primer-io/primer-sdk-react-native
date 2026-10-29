@@ -184,7 +184,7 @@
   "primer_checkout_auto_dismiss_message": "This screen will close automatically in 3 seconds",
   "primer_checkout_dismissing": "Dismissing...",
   "primer_checkout_error_button_other_methods": "Choose other payment methods",
-  "primer_checkout_error_subtitle": "There was a network issue.",
+  "primer_checkout_error_subtitle": "Please try again or use another payment method.",
   "primer_checkout_error_title": "Payment failed",
   "primer_checkout_loading_indicator": "Loading",
   "primer_checkout_loading_subtitle": "This may take a few seconds.",
