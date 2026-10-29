@@ -21,6 +21,19 @@ describe('PrimerTextInput resolveTheme', () => {
     expect(r.errorFontSize).toBe(9);
   });
 
+  it('keeps the token-built field height at the tappable minimum when the theme shrinks it', () => {
+    const compact = {
+      ...defaultLightTokens,
+      spacing: { ...defaultLightTokens.spacing, medium: 8 },
+      typography: {
+        ...defaultLightTokens.typography,
+        bodyLarge: { ...defaultLightTokens.typography.bodyLarge, lineHeight: 16 },
+      },
+    };
+
+    expect(resolveTheme(compact).fieldHeight).toBe(44);
+  });
+
   it('gives error and focus their own widths, both clamped to at least the resting width', () => {
     const r = resolveTheme(defaultLightTokens, { borderWidth: 5 });
 
