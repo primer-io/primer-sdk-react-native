@@ -1,10 +1,11 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
-import { Image, StyleSheet, Text, View, type TextInputProps, type TextStyle } from 'react-native';
+import { Image, StyleSheet, Text, View, type TextInputProps } from 'react-native';
 import { PrimerTextInput } from './PrimerTextInput';
 import { caretFromDigitIndex, countDigits, countDigitsBefore, targetDigitIndex } from './caret';
 import { PLACEHOLDER_ICON_HEIGHT, PLACEHOLDER_ICON_WIDTH, TRAILING_ICON_MARGIN } from './dimensions';
 import { usePrimerLocalization } from '../internal/localization';
 import { usePrimerTheme } from '../internal/theme';
+import { toTextStyle } from '../internal/theme/typography';
 import { usePrimerCardForm } from '../hooks/usePrimerCardForm';
 import { usePrimerCardNetwork } from '../hooks/usePrimerCardNetwork';
 import { usePrimerCardNetworkSelection } from '../hooks/usePrimerCardNetworkSelection';
@@ -100,11 +101,7 @@ export const PrimerCardNumberInput = forwardRef<PrimerTextInputRef, PrimerCardNu
             <Text
               style={{
                 color: tokens.colors.textPrimary,
-                fontFamily: tokens.typography.bodySmall.fontFamily,
-                fontSize: tokens.typography.bodySmall.fontSize,
-                fontWeight: tokens.typography.bodySmall.fontWeight as TextStyle['fontWeight'],
-                letterSpacing: tokens.typography.bodySmall.letterSpacing,
-                lineHeight: tokens.typography.bodySmall.lineHeight,
+                ...toTextStyle(tokens.typography.bodySmall),
               }}
             >
               {abbreviation}

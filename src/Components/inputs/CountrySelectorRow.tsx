@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, type StyleProp, type ViewStyle, type TextStyle } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, type StyleProp, type ViewStyle } from 'react-native';
 import { usePrimerTheme } from '../internal/theme';
 import type { PrimerTokens } from '../internal/theme';
+import { toTextStyle } from '../internal/theme/typography';
 import { flagEmoji } from '../internal/flags';
 import { defaultFieldHeight } from './dimensions';
 
@@ -94,11 +95,7 @@ function createStyles(tokens: PrimerTokens) {
     },
     label: {
       color: colors.textPrimary,
-      fontFamily: typography.bodySmall.fontFamily,
-      fontSize: typography.bodySmall.fontSize,
-      fontWeight: typography.bodySmall.fontWeight as TextStyle['fontWeight'],
-      letterSpacing: typography.bodySmall.letterSpacing,
-      lineHeight: typography.bodySmall.lineHeight,
+      ...toTextStyle(typography.bodySmall),
       marginBottom: spacing.xsmall,
     },
     placeholder: {
@@ -125,11 +122,7 @@ function createStyles(tokens: PrimerTokens) {
     value: {
       color: colors.textOutlinedDefault,
       flex: 1,
-      fontFamily: typography.bodyLarge.fontFamily,
-      fontSize: typography.bodyLarge.fontSize,
-      fontWeight: typography.bodyLarge.fontWeight as TextStyle['fontWeight'],
-      letterSpacing: typography.bodyLarge.letterSpacing,
-      lineHeight: typography.bodyLarge.lineHeight,
+      ...toTextStyle(typography.bodyLarge),
     },
   });
   /* eslint-enable react-native/no-unused-styles */

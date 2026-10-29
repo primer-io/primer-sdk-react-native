@@ -1,9 +1,9 @@
 import { useEffect, useMemo } from 'react';
 import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import type { TextStyle } from 'react-native';
 
 import { usePrimerTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
+import { toTextStyle } from '../theme/typography';
 import { NavigationHeader } from '../navigation/NavigationHeader';
 import { useNavigation } from '../navigation/useNavigation';
 import { useRoute } from '../navigation/useRoute';
@@ -123,11 +123,7 @@ function createStyles(tokens: PrimerTokens) {
     },
     bankName: {
       color: colors.textPrimary,
-      fontFamily: typography.titleLarge.fontFamily,
-      fontSize: typography.titleLarge.fontSize,
-      fontWeight: typography.titleLarge.fontWeight as TextStyle['fontWeight'],
-      letterSpacing: typography.titleLarge.letterSpacing,
-      lineHeight: typography.titleLarge.lineHeight,
+      ...toTextStyle(typography.titleLarge),
     },
     bankRow: {
       alignItems: 'center',

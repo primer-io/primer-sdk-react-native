@@ -1,12 +1,12 @@
 import { useMemo } from 'react';
 import { Image, Platform, Text, TouchableOpacity, StyleSheet, View } from 'react-native';
-import type { TextStyle } from 'react-native';
 import { PrimerGooglePayButton as PrimerGooglePayNativeButton } from '../../../HeadlessUniversalCheckout/Components/PrimerGooglePayButton';
 import { APPLE_PAY } from '../applePay';
 import { splitKlarnaLabel } from '../klarnaLabel';
 import { partnerAssets } from '../paymentMethodAssetVariant';
 import { usePrimerColorScheme, usePrimerTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
+import { toTextStyle } from '../theme/typography';
 import { usePrimerLocalization } from '../localization';
 import type { PaymentMethodButtonProps } from '../../types/PrimerPaymentMethodListTypes';
 import { ApplePayNativeButton } from './ApplePayNativeButton';
@@ -145,13 +145,7 @@ export function PaymentMethodButton({ item, onPress }: PaymentMethodButtonProps)
 
 function createStyles(tokens: PrimerTokens) {
   const { colors, spacing, radii, sizes, widths, typography } = tokens;
-  const titleLarge = {
-    fontFamily: typography.titleLarge.fontFamily,
-    fontSize: typography.titleLarge.fontSize,
-    fontWeight: typography.titleLarge.fontWeight as TextStyle['fontWeight'],
-    letterSpacing: typography.titleLarge.letterSpacing,
-    lineHeight: typography.titleLarge.lineHeight,
-  };
+  const titleLarge = toTextStyle(typography.titleLarge);
 
   /* eslint-disable react-native/no-unused-styles */
   return StyleSheet.create({
@@ -214,7 +208,7 @@ function createStyles(tokens: PrimerTokens) {
       color: colors.textSecondary,
       fontFamily: typography.bodySmall.fontFamily,
       fontSize: typography.bodySmall.fontSize,
-      fontWeight: typography.bodySmall.fontWeight as TextStyle['fontWeight'],
+      fontWeight: typography.bodySmall.fontWeight,
       marginLeft: spacing.small,
       position: 'absolute',
       right: spacing.small,
@@ -223,7 +217,7 @@ function createStyles(tokens: PrimerTokens) {
       color: ON_BRAND_SURFACE_TEXT,
       fontFamily: typography.bodySmall.fontFamily,
       fontSize: typography.bodySmall.fontSize,
-      fontWeight: typography.bodySmall.fontWeight as TextStyle['fontWeight'],
+      fontWeight: typography.bodySmall.fontWeight,
       opacity: 0.8,
       position: 'absolute',
       right: spacing.small,

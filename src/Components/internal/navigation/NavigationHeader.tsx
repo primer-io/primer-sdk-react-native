@@ -1,11 +1,11 @@
 import React, { useContext, useLayoutEffect, useMemo } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import type { TextStyle } from 'react-native';
 import { SheetBackContext } from '../checkout-sheet/SheetBackContext';
 import { NavigationContext, RouteEntryContext } from './NavigationContext';
 import { useNavigation } from './useNavigation';
 import { usePrimerTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
+import { toTextStyle } from '../theme/typography';
 
 export interface NavigationHeaderAction {
   label: string;
@@ -184,19 +184,11 @@ function createStyles(tokens: PrimerTokens) {
     },
     actionLabel: {
       color: colors.textPrimary,
-      fontFamily: typography.titleLarge.fontFamily,
-      fontSize: typography.titleLarge.fontSize,
-      fontWeight: typography.titleLarge.fontWeight as TextStyle['fontWeight'],
-      letterSpacing: typography.titleLarge.letterSpacing,
-      lineHeight: typography.titleLarge.lineHeight,
+      ...toTextStyle(typography.titleLarge),
     },
     centeredTitle: {
       color: colors.textPrimary,
-      fontFamily: typography.titleLarge.fontFamily,
-      fontSize: typography.titleLarge.fontSize,
-      fontWeight: typography.titleLarge.fontWeight as TextStyle['fontWeight'],
-      letterSpacing: typography.titleLarge.letterSpacing,
-      lineHeight: typography.titleLarge.lineHeight,
+      ...toTextStyle(typography.titleLarge),
     },
     centeredTitleBox: {
       ...StyleSheet.absoluteFillObject,
@@ -221,11 +213,7 @@ function createStyles(tokens: PrimerTokens) {
     },
     title: {
       color: colors.textPrimary,
-      fontFamily: typography.titleXlarge.fontFamily,
-      fontSize: typography.titleXlarge.fontSize,
-      fontWeight: typography.titleXlarge.fontWeight as TextStyle['fontWeight'],
-      letterSpacing: typography.titleXlarge.letterSpacing,
-      lineHeight: typography.titleXlarge.lineHeight,
+      ...toTextStyle(typography.titleXlarge),
     },
     titleFlex: {
       flex: 1,

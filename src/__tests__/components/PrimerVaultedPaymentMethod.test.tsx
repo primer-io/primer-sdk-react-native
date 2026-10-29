@@ -10,22 +10,6 @@ import type { PrimerVaultedPaymentMethod as RawVaultedMethod } from '../../model
 // @ts-expect-error -- React 19 concurrent act environment
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
-jest.mock(
-  'react-native',
-  () => ({
-    Image: 'Image',
-    StyleSheet: { create: (s: unknown) => s, flatten: (s: unknown) => s },
-    Text: 'Text',
-    TextInput: 'TextInput',
-    TouchableOpacity: 'TouchableOpacity',
-    ActivityIndicator: 'ActivityIndicator',
-    View: 'View',
-    Platform: { OS: 'ios' },
-    useColorScheme: () => 'light',
-  }),
-  { virtual: true }
-);
-
 jest.mock('../../Components/internal/theme', () => ({
   usePrimerColorScheme: () => 'light',
   usePrimerTheme: () => ({

@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
-import type { TextStyle } from 'react-native';
 
 import { PrimerAnalytics } from './analytics';
 import { usePrimerTheme } from './internal/theme';
 import type { PrimerTokens } from './internal/theme';
+import { toTextStyle } from './internal/theme/typography';
 import { usePrimerLocalization } from './internal/localization';
 import { getVaultRowDisplay } from './internal/vaultRowDisplay';
 import { CheckoutRoute } from './internal/navigation/types';
@@ -180,11 +180,7 @@ function createStyles(tokens: PrimerTokens) {
     },
     mediumText: {
       color: colors.textPrimary,
-      fontFamily: typography.bodyMedium.fontFamily,
-      fontSize: typography.bodyMedium.fontSize,
-      fontWeight: typography.bodyMedium.fontWeight as TextStyle['fontWeight'],
-      letterSpacing: typography.bodyMedium.letterSpacing,
-      lineHeight: typography.bodyMedium.lineHeight,
+      ...toTextStyle(typography.bodyMedium),
       textAlign: 'right',
     },
     outer: {
@@ -196,11 +192,7 @@ function createStyles(tokens: PrimerTokens) {
     },
     primaryText: {
       color: colors.textPrimary,
-      fontFamily: typography.bodyLarge.fontFamily,
-      fontSize: typography.bodyLarge.fontSize,
-      fontWeight: typography.bodyLarge.fontWeight as TextStyle['fontWeight'],
-      letterSpacing: typography.bodyLarge.letterSpacing,
-      lineHeight: typography.bodyLarge.lineHeight,
+      ...toTextStyle(typography.bodyLarge),
     },
     rightCol: {
       alignItems: 'flex-end',
@@ -213,11 +205,7 @@ function createStyles(tokens: PrimerTokens) {
     },
     secondaryText: {
       color: colors.textSecondary,
-      fontFamily: typography.bodySmall.fontFamily,
-      fontSize: typography.bodySmall.fontSize,
-      fontWeight: typography.bodySmall.fontWeight as TextStyle['fontWeight'],
-      letterSpacing: typography.bodySmall.letterSpacing,
-      lineHeight: typography.bodySmall.lineHeight,
+      ...toTextStyle(typography.bodySmall),
     },
     tile: {
       backgroundColor: colors.backgroundPrimary,
