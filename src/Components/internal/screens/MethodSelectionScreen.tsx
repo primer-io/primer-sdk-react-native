@@ -16,13 +16,13 @@ import { CheckoutRoute } from '../navigation/types';
 import { useNavigation } from '../navigation/useNavigation';
 import { routeMethodSelection } from '../routeMethodSelection';
 import { usePrimerTheme } from '../theme';
+import { toTextStyle } from '../theme/typography';
 import { PrimerButton } from '../ui/PrimerButton';
 import { PAYMENT_METHOD_BUTTON_HEIGHT } from '../ui/PaymentMethodButton';
 import { useBottomPadding } from './useBottomPadding';
 import { getLastSeenKeyboardHeight, useKeyboardHeight } from './useKeyboardHeight';
 import { useStatusScreenHeight } from './useStatusScreenHeight';
 
-import type { TextStyle } from 'react-native';
 import type { PrimerTokens } from '../theme';
 import type { PaymentMethodItem } from '../../types/PaymentMethodTypes';
 
@@ -264,11 +264,7 @@ function createStyles(tokens: PrimerTokens) {
     },
     sectionTitle: {
       color: colors.textPrimary,
-      fontFamily: typography.titleLarge.fontFamily,
-      fontSize: typography.titleLarge.fontSize,
-      fontWeight: typography.titleLarge.fontWeight as TextStyle['fontWeight'],
-      letterSpacing: typography.titleLarge.letterSpacing,
-      lineHeight: typography.titleLarge.lineHeight,
+      ...toTextStyle(typography.titleLarge),
     },
     showAllButton: {
       alignItems: 'center',
@@ -284,11 +280,7 @@ function createStyles(tokens: PrimerTokens) {
     },
     showAllLabel: {
       color: colors.textPrimary,
-      fontFamily: typography.titleLarge.fontFamily,
-      fontSize: typography.titleLarge.fontSize,
-      fontWeight: typography.titleLarge.fontWeight as TextStyle['fontWeight'],
-      letterSpacing: typography.titleLarge.letterSpacing,
-      lineHeight: typography.titleLarge.lineHeight,
+      ...toTextStyle(typography.titleLarge),
     },
   });
   /* eslint-enable react-native/no-unused-styles */

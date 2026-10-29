@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import type { TextStyle } from 'react-native';
 
 import { usePrimerTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
+import { toTextStyle } from '../theme/typography';
 import { NavigationHeader } from '../navigation/NavigationHeader';
 import { useNavigation } from '../navigation/useNavigation';
 import { usePrimerLocalization } from '../localization';
@@ -78,11 +78,7 @@ function createStyles(tokens: PrimerTokens) {
     },
     mandateText: {
       color: colors.textPrimary,
-      fontFamily: typography.bodyMedium.fontFamily,
-      fontSize: typography.bodyMedium.fontSize,
-      fontWeight: typography.bodyMedium.fontWeight as TextStyle['fontWeight'],
-      letterSpacing: typography.bodyMedium.letterSpacing,
-      lineHeight: typography.bodyMedium.lineHeight,
+      ...toTextStyle(typography.bodyMedium),
     },
     root: {
       flex: 1,

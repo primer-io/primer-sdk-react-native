@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import type { TextStyle } from 'react-native';
 import { usePrimerTheme } from '../internal/theme';
 import type { PrimerTokens } from '../internal/theme';
+import { toTextStyle } from '../internal/theme/typography';
 
 export interface PrimerStatusScreenLayoutProps {
   icon: React.ReactNode;
@@ -51,11 +51,7 @@ function createStyles(tokens: PrimerTokens) {
     },
     subtitle: {
       color: colors.textSecondary,
-      fontFamily: typography.bodyMedium.fontFamily,
-      fontSize: typography.bodyMedium.fontSize,
-      fontWeight: typography.bodyMedium.fontWeight as TextStyle['fontWeight'],
-      letterSpacing: typography.bodyMedium.letterSpacing,
-      lineHeight: typography.bodyMedium.lineHeight,
+      ...toTextStyle(typography.bodyMedium),
       textAlign: 'center',
     },
     textContent: {
@@ -65,11 +61,7 @@ function createStyles(tokens: PrimerTokens) {
     },
     title: {
       color: colors.textPrimary,
-      fontFamily: typography.bodyLarge.fontFamily,
-      fontSize: typography.bodyLarge.fontSize,
-      fontWeight: typography.bodyLarge.fontWeight as TextStyle['fontWeight'],
-      letterSpacing: typography.bodyLarge.letterSpacing,
-      lineHeight: typography.bodyLarge.lineHeight,
+      ...toTextStyle(typography.bodyLarge),
       textAlign: 'center',
     },
   });

@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Platform, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
-import type { TextStyle } from 'react-native';
 import { usePrimerTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
+import { toTextStyle } from '../theme/typography';
 import { NavigationHeader } from '../navigation/NavigationHeader';
 import { useNavigation } from '../navigation/useNavigation';
 import { CheckoutRoute } from '../navigation/types';
@@ -179,11 +179,7 @@ function createStyles(tokens: PrimerTokens) {
     },
     sectionTitle: {
       color: colors.textPrimary,
-      fontFamily: typography.titleLarge.fontFamily,
-      fontSize: typography.titleLarge.fontSize,
-      fontWeight: typography.titleLarge.fontWeight as TextStyle['fontWeight'],
-      letterSpacing: typography.titleLarge.letterSpacing,
-      lineHeight: typography.titleLarge.lineHeight,
+      ...toTextStyle(typography.titleLarge),
     },
   });
   /* eslint-enable react-native/no-unused-styles */

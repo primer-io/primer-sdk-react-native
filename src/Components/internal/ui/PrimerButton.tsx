@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import type { TextStyle } from 'react-native';
 import { usePrimerTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
+import { toTextStyle } from '../theme/typography';
 
 export interface PrimerButtonProps {
   title: string;
@@ -80,11 +80,7 @@ function createStyles(tokens: PrimerTokens) {
   };
 
   const baseText = {
-    fontFamily: typography.titleLarge.fontFamily,
-    fontSize: typography.titleLarge.fontSize,
-    fontWeight: typography.titleLarge.fontWeight as TextStyle['fontWeight'],
-    letterSpacing: typography.titleLarge.letterSpacing,
-    lineHeight: typography.titleLarge.lineHeight,
+    ...toTextStyle(typography.titleLarge),
     textAlign: 'center' as const,
   };
 

@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Platform, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
-import type { TextStyle } from 'react-native';
 
 import { usePrimerTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
+import { toTextStyle } from '../theme/typography';
 import { NavigationHeader } from '../navigation/NavigationHeader';
 import { useNavigation } from '../navigation/useNavigation';
 import { useRoute } from '../navigation/useRoute';
@@ -190,11 +190,7 @@ function createStyles(tokens: PrimerTokens) {
   return StyleSheet.create({
     disclaimer: {
       color: colors.textSecondary,
-      fontFamily: typography.bodySmall.fontFamily,
-      fontSize: typography.bodySmall.fontSize,
-      fontWeight: typography.bodySmall.fontWeight as TextStyle['fontWeight'],
-      letterSpacing: typography.bodySmall.letterSpacing,
-      lineHeight: typography.bodySmall.lineHeight,
+      ...toTextStyle(typography.bodySmall),
     },
     footer: {
       backgroundColor: colors.backgroundPrimary,
@@ -234,19 +230,11 @@ function createStyles(tokens: PrimerTokens) {
     },
     subtitle: {
       color: colors.textSecondary,
-      fontFamily: typography.bodyMedium.fontFamily,
-      fontSize: typography.bodyMedium.fontSize,
-      fontWeight: typography.bodyMedium.fontWeight as TextStyle['fontWeight'],
-      letterSpacing: typography.bodyMedium.letterSpacing,
-      lineHeight: typography.bodyMedium.lineHeight,
+      ...toTextStyle(typography.bodyMedium),
     },
     title: {
       color: colors.textPrimary,
-      fontFamily: typography.titleLarge.fontFamily,
-      fontSize: typography.titleLarge.fontSize,
-      fontWeight: typography.titleLarge.fontWeight as TextStyle['fontWeight'],
-      letterSpacing: typography.titleLarge.letterSpacing,
-      lineHeight: typography.titleLarge.lineHeight,
+      ...toTextStyle(typography.titleLarge),
     },
   });
   /* eslint-enable react-native/no-unused-styles */
