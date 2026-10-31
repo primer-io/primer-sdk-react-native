@@ -1,8 +1,9 @@
-import { useRef, useState, type ComponentRef } from 'react';
+import { useContext, useEffect, useRef, useState, type ComponentRef } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { usePrimerCardNetworkSelection } from './hooks/usePrimerCardNetworkSelection';
 import { Popover, type PopoverAnchor } from './internal/Popover';
 import { CardNetworkBadge } from './internal/CardNetworkBadge';
+import { InputFieldAnchorContext } from './internal/inputFieldAnchor';
 import { usePrimerTheme } from './internal/theme';
 import { toTextStyle } from './internal/theme/typography';
 import { TRAILING_ICON_MARGIN } from './inputs/dimensions';
@@ -12,6 +13,25 @@ const LOG = '[PrimerCardNetworkSelector]';
 const CHEVRON_SIZE = 24;
 const CHEVRON_GAP = 4;
 const chevronDownIcon = require('./internal/screens/assets/chevron-down.png');
+
+const isSameAnchor = (a: PopoverAnchor | null, b: PopoverAnchor) =>
+  a != null && a.x === b.x && a.y === b.y && a.width === b.width && a.height === b.height;
+
+function measureAnchor(
+  trigger: ComponentRef<typeof View> | null,
+  field: ComponentRef<typeof View> | null | undefined,
+  onMeasured: (anchor: PopoverAnchor) => void
+) {
+  trigger?.measureInWindow((x: number, y: number, width: number, height: number) => {
+    if (!field) {
+      onMeasured({ x, y, width, height });
+      return;
+    }
+    field.measureInWindow((_fieldX: number, fieldY: number, _fieldWidth: number, fieldHeight: number) =>
+      onMeasured({ x, y: fieldY, width, height: fieldHeight })
+    );
+  });
+}
 
 export interface PrimerCardNetworkSelectorProps {
   testID?: string;
@@ -28,7 +48,31 @@ export function PrimerCardNetworkSelector({ testID }: PrimerCardNetworkSelectorP
     usePrimerCardNetworkSelection();
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [anchor, setAnchor] = useState<PopoverAnchor | null>(null);
+  const anchorRef = useRef<PopoverAnchor | null>(null);
   const triggerRef = useRef<ComponentRef<typeof View>>(null);
+  const fieldRef = useContext(InputFieldAnchorContext);
+
+  const placeAnchor = (next: PopoverAnchor) => {
+    if (isSameAnchor(anchorRef.current, next)) return;
+    anchorRef.current = next;
+    setAnchor(next);
+  };
+
+  useEffect(() => {
+    if (!popoverOpen) return;
+    let following = true;
+    const follow = () =>
+      measureAnchor(triggerRef.current, fieldRef?.current, (next) => {
+        if (!following) return;
+        placeAnchor(next);
+        frame = requestAnimationFrame(follow);
+      });
+    let frame = requestAnimationFrame(follow);
+    return () => {
+      following = false;
+      cancelAnimationFrame(frame);
+    };
+  }, [popoverOpen, fieldRef]);
 
   if (!isSelectorVisible && !isDualBadge) return null;
 
@@ -48,8 +92,8 @@ export function PrimerCardNetworkSelector({ testID }: PrimerCardNetworkSelectorP
   }
 
   const openPopover = () => {
-    triggerRef.current?.measureInWindow((x: number, y: number, width: number, height: number) => {
-      setAnchor({ x, y, width, height });
+    measureAnchor(triggerRef.current, fieldRef?.current, (measured) => {
+      placeAnchor(measured);
       setPopoverOpen(true);
     });
   };

@@ -1,6 +1,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState, type ComponentRef } from 'react';
 import { AccessibilityInfo, Platform, StyleSheet, Text, TextInput, View, type TextStyle } from 'react-native';
 import { usePrimerColorScheme, usePrimerTheme } from '../internal/theme';
+import { InputFieldAnchorContext } from '../internal/inputFieldAnchor';
 import { LINE_HEIGHT_RATIO, defaultFieldHeight } from './dimensions';
 import type { PrimerTextInputProps, PrimerTextInputRef, PrimerTextInputTheme } from '../types/CardInputTypes';
 import type { PrimerTokens, PrimerTypographyStyle } from '../internal/theme/types';
@@ -106,6 +107,7 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
   const resolved = useMemo(() => resolveTheme(tokens, themeOverride), [tokens, themeOverride]);
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<ComponentRef<typeof TextInput>>(null);
+  const fieldRef = useRef<ComponentRef<typeof View>>(null);
 
   useImperativeHandle(
     ref,
@@ -220,7 +222,7 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
   return (
     <View style={[styles.container, style]} testID={testID}>
       {showLabel && label != null && <Text style={[styles.label, labelStyle]}>{label}</Text>}
-      <View style={styles.inputContainer}>
+      <View ref={fieldRef} collapsable={false} style={styles.inputContainer}>
         {leadingContent}
         <TextInput
           ref={inputRef}
@@ -250,7 +252,7 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
           aria-invalid={hasError}
           testID={testID ? `${testID}-input` : undefined}
         />
-        {trailingContent}
+        <InputFieldAnchorContext.Provider value={fieldRef}>{trailingContent}</InputFieldAnchorContext.Provider>
       </View>
       {hasError && (
         <Text
