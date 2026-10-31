@@ -39,7 +39,7 @@ export function resolveTheme(tokens: PrimerTokens, override?: PrimerTextInputThe
     // error token existed, so a merchant already setting them keeps working.
     errorFontFamily: override?.errorFontFamily ?? override?.fontFamily ?? tokens.typography.error.fontFamily,
     errorFontSize: override?.errorFontSize ?? override?.labelFontSize ?? tokens.typography.error.fontSize,
-    errorFontWeight: (override?.errorFontWeight ?? tokens.typography.error.fontWeight) as TextStyle['fontWeight'],
+    errorFontWeight: override?.errorFontWeight ?? tokens.typography.error.fontWeight,
     errorLetterSpacing: override?.errorLetterSpacing ?? tokens.typography.error.letterSpacing,
     errorLineHeight: scaledLineHeight(
       override?.errorLineHeight,
@@ -53,13 +53,13 @@ export function resolveTheme(tokens: PrimerTokens, override?: PrimerTextInputThe
     // reaches the field. The brand font still reaches it, through the style's own default.
     fontFamily: override?.fontFamily ?? tokens.typography.bodyLarge.fontFamily,
     fontSize: override?.fontSize ?? tokens.typography.bodyLarge.fontSize,
-    fontWeight: (override?.fontWeight ?? tokens.typography.bodyLarge.fontWeight) as TextStyle['fontWeight'],
+    fontWeight: override?.fontWeight ?? tokens.typography.bodyLarge.fontWeight,
     letterSpacing: override?.letterSpacing ?? tokens.typography.bodyLarge.letterSpacing,
     lineHeight: scaledLineHeight(override?.lineHeight, override?.fontSize, tokens.typography.bodyLarge),
     labelColor: override?.labelColor ?? tokens.colors.textPrimary,
     labelFontFamily: override?.fontFamily ?? tokens.typography.bodySmall.fontFamily,
     labelFontSize: override?.labelFontSize ?? tokens.typography.bodySmall.fontSize,
-    labelFontWeight: (override?.labelFontWeight ?? tokens.typography.bodySmall.fontWeight) as TextStyle['fontWeight'],
+    labelFontWeight: override?.labelFontWeight ?? tokens.typography.bodySmall.fontWeight,
     labelLetterSpacing: override?.labelLetterSpacing ?? tokens.typography.bodySmall.letterSpacing,
     labelLineHeight: scaledLineHeight(override?.labelLineHeight, override?.labelFontSize, tokens.typography.bodySmall),
     placeholderColor: override?.placeholderColor ?? tokens.colors.textPlaceholder,
