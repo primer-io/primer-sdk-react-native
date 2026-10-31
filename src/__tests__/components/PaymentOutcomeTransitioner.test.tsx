@@ -128,7 +128,7 @@ describe('PaymentOutcomeTransitioner', () => {
       root!.update(wrap(ctx, idle, createElement(PaymentOutcomeTransitioner)));
     });
     expect(replace).toHaveBeenCalledTimes(1);
-    expect(replace).toHaveBeenCalledWith(CheckoutRoute.error, { error });
+    expect(replace).toHaveBeenCalledWith(CheckoutRoute.error);
   });
 
   it('navigates to the success screen on a successful outcome', () => {

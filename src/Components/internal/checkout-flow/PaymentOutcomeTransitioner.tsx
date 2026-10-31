@@ -45,7 +45,7 @@ export function PaymentOutcomeTransitioner() {
         flow?.onCancel();
         return;
       }
-      replace(CheckoutRoute.error, { error: paymentOutcome.error });
+      replace(CheckoutRoute.error);
     }
   }, [paymentOutcome, settings, replace, clearPaymentOutcome, flow, isAnimating]);
 

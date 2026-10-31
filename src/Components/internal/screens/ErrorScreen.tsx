@@ -7,7 +7,6 @@ import { useStatusScreenHeight } from './useStatusScreenHeight';
 import { useBottomPadding } from './useBottomPadding';
 import { usePrimerCheckout } from '../../hooks/usePrimerCheckout';
 import { fmt } from '../debug';
-import { PrimerError } from '../../../models/PrimerError';
 
 const LOG = '[ErrorScreen]';
 // CheckoutSheet drag-handle chrome above our content: paddingTop(12) + handle(4) + paddingBottom(4).
@@ -38,7 +37,7 @@ export function ErrorScreen() {
       // JS-side failures (e.g. configure/setRawData rejecting) never reach the
       // native onError callback, so paymentOutcome stays null — without this
       // the user is stuck on the processing spinner.
-      replace(CheckoutRoute.error, err instanceof PrimerError ? { error: err } : undefined);
+      replace(CheckoutRoute.error);
     });
   };
 

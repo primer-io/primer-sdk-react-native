@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 
-import { PrimerError } from '../../../models/PrimerError';
 import { PrimerAnalytics } from '../../analytics';
 import { usePrimerPaymentMethods } from '../../hooks/usePrimerPaymentMethods';
 import { usePrimerCheckout } from '../../hooks/usePrimerCheckout';
@@ -136,8 +135,8 @@ export function MethodSelectionScreen() {
         // lists, like Google Pay on iOS), show the error screen instead of stranding the shopper on
         // the spinner.
         replace(CheckoutRoute.processing);
-        void startNativeUI(method.type).catch((e) => {
-          replace(CheckoutRoute.error, { error: e instanceof PrimerError ? e : undefined });
+        void startNativeUI(method.type).catch(() => {
+          replace(CheckoutRoute.error);
         });
         return;
       case 'card':

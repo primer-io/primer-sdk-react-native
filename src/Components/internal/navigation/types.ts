@@ -1,5 +1,4 @@
 import type { PrimerCheckoutData } from '../../../models/PrimerCheckoutData';
-import type { PrimerError } from '../../../models/PrimerError';
 
 export enum CheckoutRoute {
   splash = 'splash',
@@ -34,7 +33,7 @@ export type RouteParamMap = {
   [CheckoutRoute.processing]: undefined;
   [CheckoutRoute.pending]: { checkoutData?: PrimerCheckoutData } | undefined;
   [CheckoutRoute.success]: { checkoutData?: PrimerCheckoutData; title?: string; subtitle?: string } | undefined;
-  [CheckoutRoute.error]: { error?: PrimerError; title?: string; subtitle?: string } | undefined;
+  [CheckoutRoute.error]: { title?: string; subtitle?: string } | undefined;
   [CheckoutRoute.countrySelector]: { selectedCountryCode?: string };
   [CheckoutRoute.vaultedMethods]: undefined;
   [CheckoutRoute.deleteConfirmation]: { paymentMethodId: string };

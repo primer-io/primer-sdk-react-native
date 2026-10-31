@@ -15,7 +15,7 @@ export function ReadinessTransitioner() {
 
     if (error) {
       hasTransitioned.current = true;
-      replace(CheckoutRoute.error, { error });
+      replace(CheckoutRoute.error);
       return;
     }
 

@@ -4,14 +4,12 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 import { createElement } from 'react';
 // @ts-expect-error -- react-test-renderer has no types for React 19
 import renderer, { act } from 'react-test-renderer';
-import { PrimerError } from '../../models/PrimerError';
 
-let mockParams: Record<string, unknown> | undefined;
 jest.mock('../../Components/internal/localization', () => ({
   usePrimerLocalization: () => ({ t: (key: string) => key }),
 }));
 jest.mock('../../Components/internal/navigation/useRoute', () => ({
-  useRoute: () => ({ params: mockParams }),
+  useRoute: () => ({ params: undefined }),
 }));
 jest.mock('../../Components/internal/navigation/useNavigation', () => ({
   useNavigation: () => ({ replace: jest.fn() }),
@@ -27,31 +25,19 @@ jest.mock('../../Components/internal/screens/useStatusScreenHeight', () => ({ us
 jest.mock('../../Components/internal/screens/useBottomPadding', () => ({ useBottomPadding: () => 0 }));
 
 import { ErrorScreen } from '../../Components/internal/screens/ErrorScreen';
-import { PrimerErrorScreen } from '../../Components/status';
 
-function errorScreenProps() {
+function renderedTexts() {
   let tree: any;
   act(() => {
     tree = renderer.create(createElement(ErrorScreen));
   });
-  return tree.root.findByType(PrimerErrorScreen).props;
+  return tree.root.findAllByType('Text').map((node: any) => node.props.children);
 }
 
 describe('ErrorScreen', () => {
-  it('shows the shopper text, not the error description written for developers', () => {
-    mockParams = {
-      error: new PrimerError(
-        'payment-failed',
-        undefined,
-        'The payment with id IhpbtLOxI was created but ended up in a FAILED status.',
-        undefined,
-        'diagnostics-id'
-      ),
-    };
-
-    const props = errorScreenProps();
-
-    expect(props.title).toBe('primer_checkout_error_title');
-    expect(props.subtitle).toBe('primer_checkout_error_subtitle');
+  it('shows the localized title and subtitle', () => {
+    expect(renderedTexts()).toEqual(
+      expect.arrayContaining(['primer_checkout_error_title', 'primer_checkout_error_subtitle'])
+    );
   });
 });
