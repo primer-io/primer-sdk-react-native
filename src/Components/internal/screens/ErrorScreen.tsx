@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { View } from 'react-native';
-import { usePrimerLocalization } from '../localization';
-import { CheckoutRoute, useNavigation, useRoute } from '../navigation';
+import { CheckoutRoute, useNavigation } from '../navigation';
 import { PrimerErrorScreen } from '../../status';
 import { useStatusScreenHeight } from './useStatusScreenHeight';
 import { useBottomPadding } from './useBottomPadding';
@@ -15,18 +14,13 @@ const CONTENT_HEIGHT = 274;
 const TOP_PADDING = 24;
 
 export function ErrorScreen() {
-  const { t } = usePrimerLocalization();
   const { replace } = useNavigation();
-  const { params } = useRoute<CheckoutRoute.error>();
   const { retry, clearPaymentOutcome, requestExpandedVaultDisplay } = usePrimerCheckout();
   const bottomPadding = useBottomPadding();
   // A long error message or large text needs more than the estimate; the sheet follows the content.
   const [contentHeight, setContentHeight] = useState(CONTENT_HEIGHT);
   const sheetHeight = DRAG_HANDLE_AREA + TOP_PADDING + contentHeight + bottomPadding;
   useStatusScreenHeight(sheetHeight);
-
-  const title = params?.title ?? t('primer_checkout_error_title');
-  const subtitle = params?.subtitle ?? t('primer_checkout_error_subtitle');
 
   const onRetry = () => {
     // Navigate to processing first so the user sees an immediate spinner;
@@ -53,7 +47,7 @@ export function ErrorScreen() {
   return (
     <View style={{ height: sheetHeight, paddingTop: TOP_PADDING, paddingBottom: bottomPadding }}>
       <View onLayout={(e) => setContentHeight(e.nativeEvent.layout.height)}>
-        <PrimerErrorScreen title={title} subtitle={subtitle} onRetry={onRetry} onChooseOtherMethod={onChooseOther} />
+        <PrimerErrorScreen onRetry={onRetry} onChooseOtherMethod={onChooseOther} />
       </View>
     </View>
   );

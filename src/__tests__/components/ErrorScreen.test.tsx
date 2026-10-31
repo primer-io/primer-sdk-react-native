@@ -8,9 +8,6 @@ import renderer, { act } from 'react-test-renderer';
 jest.mock('../../Components/internal/localization', () => ({
   usePrimerLocalization: () => ({ t: (key: string) => key }),
 }));
-jest.mock('../../Components/internal/navigation/useRoute', () => ({
-  useRoute: () => ({ params: undefined }),
-}));
 jest.mock('../../Components/internal/navigation/useNavigation', () => ({
   useNavigation: () => ({ replace: jest.fn() }),
 }));

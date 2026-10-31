@@ -33,7 +33,7 @@ export type RouteParamMap = {
   [CheckoutRoute.processing]: undefined;
   [CheckoutRoute.pending]: { checkoutData?: PrimerCheckoutData } | undefined;
   [CheckoutRoute.success]: { checkoutData?: PrimerCheckoutData; title?: string; subtitle?: string } | undefined;
-  [CheckoutRoute.error]: { title?: string; subtitle?: string } | undefined;
+  [CheckoutRoute.error]: undefined;
   [CheckoutRoute.countrySelector]: { selectedCountryCode?: string };
   [CheckoutRoute.vaultedMethods]: undefined;
   [CheckoutRoute.deleteConfirmation]: { paymentMethodId: string };
