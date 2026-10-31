@@ -5,7 +5,7 @@ import { PrimerAnalytics } from '../../analytics';
 import { usePrimerPaymentMethods } from '../../hooks/usePrimerPaymentMethods';
 import { usePrimerCheckout } from '../../hooks/usePrimerCheckout';
 import { usePrimerVaultManager } from '../../hooks/usePrimerVaultManager';
-import { defaultFieldHeight } from '../../inputs/dimensions';
+import { defaultButtonHeight, defaultFieldHeight } from '../../inputs/dimensions';
 import { PrimerPaymentMethodList } from '../../PrimerPaymentMethodList';
 import { PrimerVaultedPaymentMethod } from '../../PrimerVaultedPaymentMethod';
 import { useCheckoutFlow } from '../checkout-flow/CheckoutFlowContext';
@@ -78,9 +78,10 @@ export function MethodSelectionScreen() {
   //   + spacing.xlarge for the sheet's drag-handle area (not part of screen content).
   const headerArea = tokens.spacing.xxsmall * 2 + tokens.typography.titleXlarge.lineHeight;
   const titleArea = tokens.typography.titleLarge.lineHeight;
+  const primerButtonHeight = defaultButtonHeight(tokens);
   // Vault section = section title + content gap + outer padding*2 + tile padding*2 + tile content
   //   (+ inner-tile gap + CVV row, when CVV state is open)
-  //   + tile-to-button gap + Pay button (PrimerButton: padding.medium*2 + titleLarge lineHeight)
+  //   + tile-to-button gap + Pay button
   //   + section-to-APM gap.
   // CVV row height is the height of the input field it wraps.
   const cvvExtraHeight = cvvInputVisible ? tokens.spacing.medium + defaultFieldHeight(tokens) : 0;
@@ -93,11 +94,9 @@ export function MethodSelectionScreen() {
         VAULT_TILE_CONTENT_HEIGHT +
         cvvExtraHeight +
         tokens.spacing.small +
-        (tokens.spacing.medium * 2 + tokens.typography.titleLarge.lineHeight) +
+        primerButtonHeight +
         tokens.spacing.medium
       : 0;
-  // PrimerButton intrinsic height = padding.medium*2 + titleLarge lineHeight (matches Pay button).
-  const primerButtonHeight = tokens.spacing.medium * 2 + tokens.typography.titleLarge.lineHeight;
   const apmSectionHeight =
     vaultDisplayMode === 'lite' ? primerButtonHeight : titleArea + tokens.spacing.medium + listHeight;
   // Grow the sheet by `keyboardHeight - bottomPadding` so content stays above the keyboard.

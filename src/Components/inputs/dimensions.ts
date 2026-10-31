@@ -12,6 +12,10 @@ export function defaultFieldHeight(tokens: PrimerTokens): number {
   return Math.max(MIN_INTERACTIVE_HEIGHT, 2 * tokens.spacing.medium + tokens.typography.bodyLarge.lineHeight);
 }
 
+export function defaultButtonHeight(tokens: PrimerTokens): number {
+  return Math.max(MIN_INTERACTIVE_HEIGHT, 2 * tokens.spacing.medium + tokens.typography.titleLarge.lineHeight);
+}
+
 // Trailing glyph inside the input (expiry calendar, CVV hint). Square, 20×20,
 // with 8px gap to the left of it.
 export const TRAILING_ICON_SIZE = 20;

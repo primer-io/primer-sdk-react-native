@@ -5,6 +5,7 @@ import type { Insets, ListRenderItemInfo } from 'react-native';
 import { PrimerAnalytics } from '../../analytics';
 import { usePrimerVaultManager } from '../../hooks/usePrimerVaultManager';
 import type { VaultedPaymentMethodItem } from '../../types/VaultedPaymentMethodTypes';
+import { defaultButtonHeight } from '../../inputs/dimensions';
 import { getVaultRowDisplay } from '../vaultRowDisplay';
 import { usePrimerLocalization } from '../localization';
 import { NavigationHeader } from '../navigation/NavigationHeader';
@@ -153,7 +154,7 @@ export function VaultedMethodsScreen() {
     const headerArea =
       tokens.spacing.large + tokens.spacing.xxlarge + tokens.spacing.large + tokens.typography.titleXlarge.lineHeight;
     const tileHeight = tokens.spacing.medium * 2 + tokens.typography.bodyLarge.lineHeight + tokens.spacing.xsmall + 16;
-    const buttonsRowHeight = tokens.spacing.medium * 2 + tokens.typography.titleLarge.lineHeight;
+    const buttonsRowHeight = defaultButtonHeight(tokens);
     const contentArea =
       tileHeight +
       tokens.spacing.small +
