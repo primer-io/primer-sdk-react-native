@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { Image, Platform, Text, TouchableOpacity, StyleSheet, View } from 'react-native';
 import { PrimerGooglePayButton as PrimerGooglePayNativeButton } from '../../../HeadlessUniversalCheckout/Components/PrimerGooglePayButton';
 import { APPLE_PAY } from '../applePay';
+import { KLARNA_BLACK, KLARNA_ON_BLACK, KLARNA_PINK, klarnaWordmark } from '../klarnaBrand';
 import { splitKlarnaLabel } from '../klarnaLabel';
 import { partnerAssets } from '../paymentMethodAssetVariant';
 import { usePrimerColorScheme, usePrimerTheme } from '../theme';
@@ -12,7 +13,6 @@ import type { PaymentMethodButtonProps } from '../../types/PrimerPaymentMethodLi
 import { ApplePayNativeButton } from './ApplePayNativeButton';
 
 const creditCardIcon = require('../screens/assets/credit-card.png');
-const klarnaWordmark = require('../screens/assets/klarna-wordmark.png');
 
 export const PAYMENT_METHOD_BUTTON_HEIGHT = 44;
 const BUTTON_HEIGHT = PAYMENT_METHOD_BUTTON_HEIGHT;
@@ -24,10 +24,6 @@ const KLARNA_TYPE = 'KLARNA';
 // the surcharge badge sits on the payment method's own brand colour, which merchant theming
 // doesn't control, so it stays a fixed light value
 const ON_BRAND_SURFACE_TEXT = '#ffffff';
-// Klarna's brand colours: the same in both modes and outside merchant theming, as in both native SDKs.
-const KLARNA_BLACK = '#0b051d';
-const KLARNA_PINK = '#ffa8cd';
-const KLARNA_ON_BLACK = '#ffffff';
 
 export function PaymentMethodButton({ item, onPress }: PaymentMethodButtonProps) {
   const tokens = usePrimerTheme();

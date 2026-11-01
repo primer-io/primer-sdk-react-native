@@ -6,6 +6,7 @@ import { createElement } from 'react';
 import renderer, { act } from 'react-test-renderer';
 
 const mockSelectCategory = jest.fn();
+let mockScheme = 'light';
 let mockKlarna: Record<string, unknown> = {};
 jest.mock('../../Components/hooks/usePrimerPaymentMethod', () => ({
   usePrimerPaymentMethod: () => mockKlarna,
@@ -31,6 +32,7 @@ jest.mock('../../Components/internal/navigation/useRoute', () => ({
   useRoute: () => ({ params: { paymentMethodType: 'KLARNA' } }),
 }));
 jest.mock('../../Components/internal/theme', () => ({
+  usePrimerColorScheme: () => mockScheme,
   usePrimerTheme: () => ({
     colors: {},
     spacing: { xxsmall: 2, xsmall: 4, small: 8, medium: 12, large: 16, xlarge: 20, xxlarge: 24 },
@@ -85,6 +87,7 @@ function render(overrides: Record<string, unknown> = {}) {
     tree.root.findAll((n: any) => n.type === 'TouchableOpacity' && n.props.accessibilityRole === 'radio');
   const row = (name: string) => rows().find((r: any) => texts(r).includes(name));
   const button = () => tree.root.findByType('PrimerButton');
+  const header = () => tree.root.findByType('NavigationHeader');
   const klarnaViews = () => ofType(tree.root, 'PrimerKlarnaPaymentView');
   const klarnaStyle = () => flatten(klarnaViews()[0].props.style);
   const reportHeight = (height: number) =>
@@ -93,7 +96,7 @@ function render(overrides: Record<string, unknown> = {}) {
     mockKlarna = klarnaState(next);
     act(() => tree.update(createElement(KlarnaScreen)));
   };
-  return { row, button, klarnaViews, klarnaStyle, reportHeight, update };
+  return { row, button, header, klarnaViews, klarnaStyle, reportHeight, update };
 }
 
 function flatten(style: unknown): Record<string, unknown> {
@@ -110,11 +113,27 @@ function texts(node: any): string[] {
 
 beforeEach(() => {
   mockSelectCategory.mockClear();
+  mockScheme = 'light';
 });
 
 afterEach(() => {
   act(() => mounted.splice(0).forEach((tree) => tree.unmount()));
   jest.useRealTimers();
+});
+
+describe('KlarnaScreen — title', () => {
+  it.each([
+    ['light', '#0b051d'],
+    ['dark', '#ffffff'],
+  ])("shows Klarna's logo on a %s sheet in %s, with Klarna as its label", (scheme, color) => {
+    mockScheme = scheme;
+    const { header } = render();
+
+    expect(header().props.title).toBe('primer_vault_default_klarna');
+    const logo = header().props.titleIcon;
+    expect(logo.props.source).toBeDefined();
+    expect(flatten(logo.props.style)).toMatchObject({ tintColor: color, width: 48, height: 12 });
+  });
 });
 
 describe('KlarnaScreen — option list', () => {
