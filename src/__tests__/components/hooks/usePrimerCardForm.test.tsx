@@ -147,12 +147,30 @@ describe('usePrimerCardForm — error visibility', () => {
     expect(result.current.errors).toEqual({});
   });
 
-  it('hides the field error when re-focused (on-focus-clear)', () => {
+  it('keeps the field error when re-focused', () => {
     const { result } = renderHook(() => usePrimerCardForm(), contextWrapper(withErrors(ALL_FIELD_ERRORS)));
+    act(() => result.current.updateCVV('12'));
     act(() => result.current.markFieldFocused('cvv'));
     act(() => result.current.markFieldBlurred('cvv'));
     expect(result.current.errors).toEqual({ cvv: 'Invalid CVV' });
     act(() => result.current.markFieldFocused('cvv'));
+    expect(result.current.errors).toEqual({ cvv: 'Invalid CVV' });
+  });
+
+  it('hides the error of a field left empty', () => {
+    const { result } = renderHook(() => usePrimerCardForm(), contextWrapper(withErrors(ALL_FIELD_ERRORS)));
+    act(() => result.current.markFieldFocused('expiryDate'));
+    act(() => result.current.markFieldBlurred('expiryDate'));
+    expect(result.current.errors).toEqual({});
+  });
+
+  it('hides the error of a left field once its value is cleared', () => {
+    const { result } = renderHook(() => usePrimerCardForm(), contextWrapper(withErrors(ALL_FIELD_ERRORS)));
+    act(() => result.current.updateCardholderName('J'));
+    act(() => result.current.markFieldFocused('cardholderName'));
+    act(() => result.current.markFieldBlurred('cardholderName'));
+    expect(result.current.errors).toEqual({ cardholderName: 'Cardholder required' });
+    act(() => result.current.updateCardholderName(''));
     expect(result.current.errors).toEqual({});
   });
 

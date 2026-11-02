@@ -34,13 +34,13 @@ export interface UsePrimerCardFormReturn {
   isValid: boolean;
   /**
    * Per-field errors, surfaced under the rules: visible after a field has been focused
-   * and then blurred; hidden again when the user re-focuses the field; visible for all
-   * fields once `submit()` has been attempted (until `reset()`).
+   * and then blurred while it holds a value, until the value is valid; hidden while it is
+   * empty; visible for all fields once `submit()` has been attempted (until `reset()`).
    */
   errors: CardFormErrors;
-  /** Mark a field focused. Re-focusing a previously-blurred field clears its error until next blur. */
+  /** Mark a field focused. Re-focusing a field keeps its error. */
   markFieldFocused: (field: CardFormField) => void;
-  /** Mark a field blurred. The field's error becomes visible (unless re-focused). */
+  /** Mark a field blurred. The field's error becomes visible if the field holds a value. */
   markFieldBlurred: (field: CardFormField) => void;
   /** Force every field's errors to render. `submit()` calls this automatically; expose for custom submit buttons. */
   markSubmitAttempted: () => void;

@@ -168,12 +168,8 @@ export function PrimerCardFormProvider({ children }: { children: ReactNode }) {
     [syncToNative]
   );
 
-  // Re-arm: focusing a previously-blurred field clears its blur flag so its error
-  // disappears until the user blurs again. A submit attempt overrides this gate
-  // so the user can't hide errors by tapping a field after a failed submit.
   const markFieldFocused = useCallback((field: CardFormField) => {
     setHasBeenFocused((prev) => (prev[field] ? prev : { ...prev, [field]: true }));
-    setHasBeenBlurred((prev) => (!prev[field] ? prev : { ...prev, [field]: false }));
   }, []);
 
   const markFieldBlurred = useCallback((field: CardFormField) => {
@@ -185,13 +181,23 @@ export function PrimerCardFormProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const errors = useMemo(() => {
+    const values: Record<CardFormField, string> = { cardNumber, expiryDate, cvv, cardholderName };
     const visible: CardFormErrors = {};
     for (const field of Object.keys(cardFormState.errors) as CardFormField[]) {
-      const show = submitAttempted || (hasBeenFocused[field] && hasBeenBlurred[field]);
+      const show = submitAttempted || (hasBeenFocused[field] && hasBeenBlurred[field] && values[field].trim() !== '');
       if (show) visible[field] = cardFormState.errors[field];
     }
     return visible;
-  }, [cardFormState.errors, hasBeenFocused, hasBeenBlurred, submitAttempted]);
+  }, [
+    cardFormState.errors,
+    cardNumber,
+    expiryDate,
+    cvv,
+    cardholderName,
+    hasBeenFocused,
+    hasBeenBlurred,
+    submitAttempted,
+  ]);
 
   // Mid-typing re-format: when the detected network flips (e.g. first 4 digits
   // resolve to AMEX), reformat what's already in the field so spacing matches the
