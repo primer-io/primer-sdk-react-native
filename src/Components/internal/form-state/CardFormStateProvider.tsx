@@ -180,20 +180,30 @@ export function PrimerCardFormProvider({ children }: { children: ReactNode }) {
     setSubmitAttempted(true);
   }, []);
 
+  const isCardNumberFilled = cardNumber.trim() !== '';
+  const isExpiryDateFilled = expiryDate.trim() !== '';
+  const isCvvFilled = cvv.trim() !== '';
+  const isCardholderNameFilled = cardholderName.trim() !== '';
+
   const errors = useMemo(() => {
-    const values: Record<CardFormField, string> = { cardNumber, expiryDate, cvv, cardholderName };
+    const isFilled: Record<CardFormField, boolean> = {
+      cardNumber: isCardNumberFilled,
+      expiryDate: isExpiryDateFilled,
+      cvv: isCvvFilled,
+      cardholderName: isCardholderNameFilled,
+    };
     const visible: CardFormErrors = {};
     for (const field of Object.keys(cardFormState.errors) as CardFormField[]) {
-      const show = submitAttempted || (hasBeenFocused[field] && hasBeenBlurred[field] && values[field].trim() !== '');
+      const show = submitAttempted || (hasBeenFocused[field] && hasBeenBlurred[field] && isFilled[field]);
       if (show) visible[field] = cardFormState.errors[field];
     }
     return visible;
   }, [
     cardFormState.errors,
-    cardNumber,
-    expiryDate,
-    cvv,
-    cardholderName,
+    isCardNumberFilled,
+    isExpiryDateFilled,
+    isCvvFilled,
+    isCardholderNameFilled,
     hasBeenFocused,
     hasBeenBlurred,
     submitAttempted,

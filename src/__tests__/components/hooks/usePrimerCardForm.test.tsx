@@ -174,6 +174,23 @@ describe('usePrimerCardForm — error visibility', () => {
     expect(result.current.errors).toEqual({});
   });
 
+  it('keeps the errors reference and skips onValidationChange while typing in a filled field', () => {
+    const onValidationChange = jest.fn();
+    const { result } = renderHook(
+      () => usePrimerCardForm({ onValidationChange }),
+      contextWrapper(withErrors(ALL_FIELD_ERRORS))
+    );
+    act(() => result.current.updateCardholderName('J'));
+    act(() => result.current.markFieldFocused('cardholderName'));
+    act(() => result.current.markFieldBlurred('cardholderName'));
+    const errorsBeforeTyping = result.current.errors;
+    onValidationChange.mockClear();
+    act(() => result.current.updateCardholderName('Jo'));
+    act(() => result.current.updateCardholderName('Joe'));
+    expect(result.current.errors).toBe(errorsBeforeTyping);
+    expect(onValidationChange).not.toHaveBeenCalled();
+  });
+
   it('shows every error after markSubmitAttempted regardless of focus state', () => {
     const { result } = renderHook(() => usePrimerCardForm(), contextWrapper(withErrors(ALL_FIELD_ERRORS)));
     act(() => result.current.markSubmitAttempted());
