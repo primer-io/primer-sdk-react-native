@@ -62,3 +62,29 @@ describe('NavigationHeader — title placement', () => {
     expect(row?.style.minHeight).toBe(BACK_ROW_HEIGHT);
   });
 });
+
+describe('NavigationHeader — title icon', () => {
+  it('draws the icon in place of the centred title, with the title as its label', () => {
+    let tree: any;
+    act(() => {
+      tree = renderer.create(
+        createElement(NavigationHeader, {
+          title: 'Klarna',
+          titleIcon: createElement('Logo'),
+          titleAlignment: 'center',
+          showBackButton: true,
+          backLabel: 'Back',
+        })
+      );
+    });
+
+    expect(tree.root.findAll((node: any) => node.type === 'Text' && node.props.children === 'Klarna')).toHaveLength(0);
+    const logo = tree.root.findByType('Logo');
+    expect(logo.parent.props).toMatchObject({
+      accessible: true,
+      accessibilityRole: 'image',
+      accessibilityLabel: 'Klarna',
+    });
+    expect(ancestors(logo)[1]).toMatchObject({ pointerEvents: 'none', style: { alignItems: 'center' } });
+  });
+});

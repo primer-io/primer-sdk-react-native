@@ -15,12 +15,13 @@ import { PrimerKlarnaPaymentView } from '../../../HeadlessUniversalCheckout/Comp
 import { usePrimerPaymentMethod } from '../../hooks/usePrimerPaymentMethod';
 import { PrimerLoadingScreen } from '../../status';
 import { useCheckoutFlow } from '../checkout-flow/CheckoutFlowContext';
+import { KLARNA_BLACK, KLARNA_ON_BLACK, klarnaWordmark } from '../klarnaBrand';
 import { usePrimerLocalization } from '../localization';
 import { NavigationHeader } from '../navigation/NavigationHeader';
 import { CheckoutRoute } from '../navigation/types';
 import { useNavigation } from '../navigation/useNavigation';
 import { useRoute } from '../navigation/useRoute';
-import { usePrimerTheme } from '../theme';
+import { usePrimerColorScheme, usePrimerTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
 import { toTextStyle } from '../theme/typography';
 import { PrimerButton } from '../ui/PrimerButton';
@@ -37,6 +38,9 @@ const HEADER_FALLBACK_HEIGHT = 24;
 
 const checkIcon = require('./assets/check.png');
 const klarnaBadge = require('./assets/klarna-badge.png');
+
+const KLARNA_LOGO_WIDTH = 48;
+const KLARNA_LOGO_HEIGHT = 12;
 
 const KLARNA_HEIGHT_TIMEOUT_MS = 1500;
 const KLARNA_FALLBACK_HEIGHT = 250;
@@ -73,6 +77,7 @@ function useKlarnaWidgetHeight(loadedViewKey: string | null) {
 // Prebuilt Klarna screen: session → categories → embedded Klarna view → authorize (auto-finalized).
 export function KlarnaScreen() {
   const tokens = usePrimerTheme();
+  const scheme = usePrimerColorScheme();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
   const { t } = usePrimerLocalization();
   const { params } = useRoute<CheckoutRoute.klarna>();
@@ -158,6 +163,13 @@ export function KlarnaScreen() {
           <View collapsable={false} onLayout={(e) => setHeaderHeight(e.nativeEvent.layout.height)}>
             <NavigationHeader
               title={t('primer_vault_default_klarna')}
+              titleIcon={
+                <Image
+                  source={klarnaWordmark}
+                  style={[styles.titleLogo, { tintColor: scheme === 'dark' ? KLARNA_ON_BLACK : KLARNA_BLACK }]}
+                  resizeMode="contain"
+                />
+              }
               titleAlignment="center"
               showBackButton={canGoBack}
               backLabel={t('primer_common_back')}
@@ -301,6 +313,10 @@ function createStyles(tokens: PrimerTokens) {
     },
     scrollView: {
       flex: 1,
+    },
+    titleLogo: {
+      height: KLARNA_LOGO_HEIGHT,
+      width: KLARNA_LOGO_WIDTH,
     },
     trailing: {
       alignItems: 'center',

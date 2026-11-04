@@ -15,6 +15,7 @@ export interface NavigationHeaderAction {
 
 export interface NavigationHeaderProps {
   title?: string;
+  titleIcon?: React.ReactNode;
   showBackButton?: boolean;
   backLabel?: string;
   onBackPress?: () => void;
@@ -71,6 +72,7 @@ function ActionButton({
 
 export function NavigationHeader({
   title,
+  titleIcon,
   showBackButton = false,
   backLabel,
   onBackPress,
@@ -108,9 +110,15 @@ export function NavigationHeader({
   const centeredTitle =
     title != null && titleAlignment === 'center' ? (
       <View style={styles.centeredTitleBox} pointerEvents="none">
-        <Text style={styles.centeredTitle} numberOfLines={1}>
-          {title}
-        </Text>
+        {titleIcon != null ? (
+          <View accessible accessibilityRole="image" accessibilityLabel={title}>
+            {titleIcon}
+          </View>
+        ) : (
+          <Text style={styles.centeredTitle} numberOfLines={1}>
+            {title}
+          </Text>
+        )}
       </View>
     ) : null;
 
