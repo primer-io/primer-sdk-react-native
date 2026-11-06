@@ -22,15 +22,10 @@ function measureAnchor(
   field: ComponentRef<typeof View> | null | undefined,
   onMeasured: (anchor: PopoverAnchor) => void
 ) {
-  trigger?.measureInWindow((x: number, y: number, width: number, height: number) => {
-    if (!field) {
-      onMeasured({ x, y, width, height });
-      return;
-    }
-    field.measureInWindow((_fieldX: number, fieldY: number, _fieldWidth: number, fieldHeight: number) =>
-      onMeasured({ x, y: fieldY, width, height: fieldHeight })
-    );
-  });
+  const anchorView = field ?? trigger;
+  anchorView?.measureInWindow((x: number, y: number, width: number, height: number) =>
+    onMeasured({ x, y, width, height })
+  );
 }
 
 export interface PrimerCardNetworkSelectorProps {

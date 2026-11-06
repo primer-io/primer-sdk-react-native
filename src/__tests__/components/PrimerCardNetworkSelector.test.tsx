@@ -55,10 +55,10 @@ describe('PrimerCardNetworkSelector menu', () => {
   });
   afterEach(() => jest.useRealTimers());
 
-  it('opens below the field, lined up with the selector', () => {
+  it('opens below the field, ending at its right edge', () => {
     const tree = openMenu({ current: inWindow(field) });
 
-    expect(menuAnchor(tree)).toEqual({ x: selector.x, y: field.y, width: selector.width, height: field.height });
+    expect(menuAnchor(tree)).toEqual(field);
   });
 
   it('opens below the selector outside a field', () => {
@@ -72,7 +72,7 @@ describe('PrimerCardNetworkSelector menu', () => {
     fieldRef.current = inWindow({ ...field, y: 612 });
     act(() => jest.advanceTimersByTime(20));
 
-    expect(menuAnchor(tree)).toEqual({ x: selector.x, y: 612, width: selector.width, height: field.height });
+    expect(menuAnchor(tree)).toEqual({ ...field, y: 612 });
   });
 
   it('stops measuring the field once the menu closes', () => {
