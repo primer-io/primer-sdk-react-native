@@ -76,7 +76,7 @@ const baseContext: PrimerCheckoutContextValue = {
   declineAchMandate: async () => {},
   stopAch: () => {},
   activeMethod: 'PAYMENT_CARD',
-  cardFormState: { isValid: false, errors: {}, binData: null, metadata: null, requiredFields: [] },
+  cardFormState: { isValid: false, errors: {}, errorIds: {}, binData: null, metadata: null, requiredFields: [] },
   vaultedMethods: [],
   vaultedIconUrisById: {},
   vaultedNamesById: {},
@@ -136,6 +136,11 @@ const ALL_FIELD_ERRORS: CardFormErrors = {
 };
 
 describe('usePrimerCardForm — error visibility', () => {
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => jest.useRealTimers());
+
+  const settleNativeCheck = () => act(() => jest.runOnlyPendingTimers());
+
   it('hides errors before any field has been focused', () => {
     const { result } = renderHook(() => usePrimerCardForm(), contextWrapper(withErrors(ALL_FIELD_ERRORS)));
     expect(result.current.errors).toEqual({});
@@ -150,11 +155,12 @@ describe('usePrimerCardForm — error visibility', () => {
   it('keeps the field error when re-focused', () => {
     const { result } = renderHook(() => usePrimerCardForm(), contextWrapper(withErrors(ALL_FIELD_ERRORS)));
     act(() => result.current.updateCVV('12'));
+    settleNativeCheck();
     act(() => result.current.markFieldFocused('cvv'));
     act(() => result.current.markFieldBlurred('cvv'));
-    expect(result.current.errors).toEqual({ cvv: 'Invalid CVV' });
+    expect(result.current.errors).toEqual({ cvv: 'CVV must be 3 digits' });
     act(() => result.current.markFieldFocused('cvv'));
-    expect(result.current.errors).toEqual({ cvv: 'Invalid CVV' });
+    expect(result.current.errors).toEqual({ cvv: 'CVV must be 3 digits' });
   });
 
   it('hides the error of a field left empty', () => {
@@ -167,9 +173,10 @@ describe('usePrimerCardForm — error visibility', () => {
   it('hides the error of a left field once its value is cleared', () => {
     const { result } = renderHook(() => usePrimerCardForm(), contextWrapper(withErrors(ALL_FIELD_ERRORS)));
     act(() => result.current.updateCardholderName('J'));
+    settleNativeCheck();
     act(() => result.current.markFieldFocused('cardholderName'));
     act(() => result.current.markFieldBlurred('cardholderName'));
-    expect(result.current.errors).toEqual({ cardholderName: 'Cardholder required' });
+    expect(result.current.errors).toEqual({ cardholderName: 'Name must have between 2 and 45 characters' });
     act(() => result.current.updateCardholderName(''));
     expect(result.current.errors).toEqual({});
   });
@@ -181,12 +188,14 @@ describe('usePrimerCardForm — error visibility', () => {
       contextWrapper(withErrors(ALL_FIELD_ERRORS))
     );
     act(() => result.current.updateCardholderName('J'));
+    settleNativeCheck();
     act(() => result.current.markFieldFocused('cardholderName'));
     act(() => result.current.markFieldBlurred('cardholderName'));
     const errorsBeforeTyping = result.current.errors;
     onValidationChange.mockClear();
     act(() => result.current.updateCardholderName('Jo'));
     act(() => result.current.updateCardholderName('Joe'));
+    settleNativeCheck();
     expect(result.current.errors).toBe(errorsBeforeTyping);
     expect(onValidationChange).not.toHaveBeenCalled();
   });
@@ -194,7 +203,12 @@ describe('usePrimerCardForm — error visibility', () => {
   it('shows every error after markSubmitAttempted regardless of focus state', () => {
     const { result } = renderHook(() => usePrimerCardForm(), contextWrapper(withErrors(ALL_FIELD_ERRORS)));
     act(() => result.current.markSubmitAttempted());
-    expect(result.current.errors).toEqual(ALL_FIELD_ERRORS);
+    expect(result.current.errors).toEqual({
+      cardNumber: 'Card number is required',
+      expiryDate: 'Expiry date is required',
+      cvv: 'CVV number is required',
+      cardholderName: 'Name on card is required',
+    });
     expect(result.current.submitAttempted).toBe(true);
   });
 
@@ -202,7 +216,7 @@ describe('usePrimerCardForm — error visibility', () => {
     const { result } = renderHook(() => usePrimerCardForm(), contextWrapper(withErrors(ALL_FIELD_ERRORS)));
     act(() => result.current.markSubmitAttempted());
     act(() => result.current.markFieldFocused('cardNumber'));
-    expect(result.current.errors.cardNumber).toBe('Invalid card number');
+    expect(result.current.errors.cardNumber).toBe('Card number is required');
   });
 
   it('reset() clears submitAttempted and focus/blur state', () => {

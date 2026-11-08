@@ -19,7 +19,7 @@ import type { PrimerVaultedPaymentMethodAdditionalData } from '../../models/Prim
 import type { IssuingBank } from '../../models/IssuingBank';
 import type { KlarnaPaymentCategory } from '../../models/klarna/KlarnaPaymentCategory';
 import type { PrimerThemeOverride } from '../internal/theme/types';
-import type { CardFormErrors } from './CardFormTypes';
+import type { CardFormErrors, CardFormField } from './CardFormTypes';
 import type { CardNetworkId } from '../internal/cardNetwork';
 
 export interface PrimerCheckoutProviderProps {
@@ -83,6 +83,7 @@ export interface StripeAchMandateDisplay {
 export interface CardFormState {
   isValid: boolean;
   errors: CardFormErrors;
+  errorIds: Partial<Record<CardFormField, string>>;
   binData: PrimerBinData | null;
   metadata: unknown;
   requiredFields: PrimerInputElementType[];

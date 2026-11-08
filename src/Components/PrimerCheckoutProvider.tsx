@@ -44,7 +44,7 @@ import type {
   StripeAchFieldErrors,
   StripeAchMandateDisplay,
 } from './types/PrimerCheckoutProviderTypes';
-import type { CardFormErrors, CardFormField } from './types/CardFormTypes';
+import type { CardFormField } from './types/CardFormTypes';
 import type { CardNetworkId } from './internal/cardNetwork';
 import type { BanksComponent } from '../HeadlessUniversalCheckout/Managers/PaymentMethodManagers/ComponentWithRedirectManager';
 import type { KlarnaComponent } from '../HeadlessUniversalCheckout/Managers/PaymentMethodManagers/KlarnaManager';
@@ -63,6 +63,7 @@ const assetsManager = new PrimerHeadlessUniversalCheckoutAssetsManager();
 const initialCardFormState: CardFormState = {
   isValid: false,
   errors: {},
+  errorIds: {},
   binData: null,
   metadata: null,
   requiredFields: [],
@@ -215,23 +216,26 @@ function firstValidationMessage(errors: PrimerValidationError[] | undefined): st
 // below routes each id to a `CardFormField`. First match wins. When native gains a typed
 // `inputElementType` field on the error object, swap this for a direct enum-keyed lookup.
 const ERROR_FIELD_TABLE: ReadonlyArray<{ test: (id: string) => boolean; field: CardFormField }> = [
-  { test: (id) => id.includes('card') && id.includes('number'), field: 'cardNumber' },
+  {
+    test: (id) => (id.includes('card') && id.includes('number')) || id === 'unsupported-card-type',
+    field: 'cardNumber',
+  },
   { test: (id) => id.includes('expir'), field: 'expiryDate' },
   { test: (id) => id.includes('cvv') || id.includes('cvc'), field: 'cvv' },
   { test: (id) => id.includes('cardholder') || id.includes('card_holder'), field: 'cardholderName' },
 ];
 
 /** Map native validation errors to per-field typed errors the UI can render. */
-function parseValidationErrors(errors: PrimerError[] | undefined): CardFormErrors {
-  const fieldErrors: CardFormErrors = {};
-  if (!errors) return fieldErrors;
-  for (const error of errors) {
+function parseValidationErrors(errors: PrimerError[] | undefined): Pick<CardFormState, 'errors' | 'errorIds'> {
+  const parsed: Pick<CardFormState, 'errors' | 'errorIds'> = { errors: {}, errorIds: {} };
+  for (const error of errors ?? []) {
     const id = (error.errorId ?? '').toLowerCase();
-    const description = error.description ?? error.message ?? 'Invalid';
     const match = ERROR_FIELD_TABLE.find((entry) => entry.test(id));
-    if (match) fieldErrors[match.field] = description;
+    if (!match) continue;
+    parsed.errors[match.field] = error.description ?? error.message ?? 'Invalid';
+    parsed.errorIds[match.field] = id;
   }
-  return fieldErrors;
+  return parsed;
 }
 
 export function PrimerCheckoutProvider({
@@ -807,7 +811,7 @@ export function PrimerCheckoutProvider({
         const parsed = parseValidationErrors(errors);
         setState((prev) => ({
           ...prev,
-          cardFormState: { ...prev.cardFormState, isValid, errors: parsed },
+          cardFormState: { ...prev.cardFormState, isValid, ...parsed },
         }));
       },
       onBinDataChange: (binData: PrimerBinData) => {
