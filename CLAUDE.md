@@ -78,8 +78,7 @@ never run. `__mocks__/react-native.js` is a global mock applied to every test; d
 
 ## Acceptance gates (must pass before merge)
 
-Eight of the nine workflows in `.github/workflows/` run on every pull request, drafts skipped
-(`sync-phrase-translations` is `workflow_dispatch` only):
+All eight workflows in `.github/workflows/` run on every pull request, drafts skipped:
 
 - **Danger JS** — `fail()`s on any ESLint finding in `src/**/*.{ts,tsx}` (warnings count too) and on
   a PR title without a conventional-commit prefix (`release*` exempt). Warns on >600 changed lines,

@@ -105,6 +105,3 @@ Keys.ts
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
-
-# Phrase
-.phrase.yml
