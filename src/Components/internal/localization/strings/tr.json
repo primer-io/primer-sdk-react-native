@@ -107,7 +107,7 @@
   "primer_ach_last_name_label": "Last name",
   "primer_ach_mandate_button_accept": "Kabul Ediyorum",
   "primer_ach_mandate_button_decline": "İptal",
-  "primer_ach_mandate_template": "\"Kabul Ediyorum\"a tıklayarak, {{merchantName}} hizmetlerini kullanımınızdan ve/veya {{merchantName}}'den ürün satın almanızdan kaynaklanan ücretler için borçlu olunan herhangi bir tutarı, {{merchantName}}'nin web sitesi ve koşullarına uygun olarak, bu yetki iptal edilene kadar yukarıda belirtilen banka hesabından çekme yetkisi verirsiniz. Bu yetkiyi istediğiniz zaman {{merchantName}}'ye 30 (otuz) gün önceden bildirimde bulunarak değiştirebilir veya iptal edebilirsiniz.",
+  "primer_ach_mandate_template": "\"Kabul Ediyorum\"a tıklayarak, {{merchantName}} hizmetlerini kullanımınızdan ve/veya {{merchantName}}'den ürün satın almanızdan kaynaklanan ücretler için borçlu olunan herhangi bir tutarı, {{merchantName}}'nin web sitesi ve koşullarına uygun olarak, bu yetki iptal edilene kadar yukarıda belirtilen banka hesabından çekmesi için {{merchantName}}'ye yetki verirsiniz. Bu yetkiyi istediğiniz zaman {{merchantName}}'ye 30 (otuz) gün önceden bildirimde bulunarak değiştirebilir veya iptal edebilirsiniz.",
   "primer_ach_mandate_title": "Yetkilendirme",
   "primer_ach_pay_with_title": "ACH ile öde",
   "primer_ach_payment_request_completed": "You have now authorized your bank account to be debited. You will be notified via email once the payment has been collected successfully.",
