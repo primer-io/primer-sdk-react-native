@@ -4,6 +4,8 @@ import { usePrimerCardNetwork } from '../../hooks/usePrimerCardNetwork';
 import { debounce, type DebouncedFunction } from '../../../utils/debounce';
 import { PrimerError } from '../../../models/PrimerError';
 import { formatDigitsWithGaps, maxFormattedCardNumberLength, maxPanDigits } from '../cardFormat';
+import { cardFieldErrorKey } from '../cardFieldError';
+import { usePrimerLocalization } from '../localization';
 import type { CardFormField, CardFormErrors, UsePrimerCardFormReturn } from '../../types/CardFormTypes';
 
 const LOG = '[CardFormState]';
@@ -88,20 +90,22 @@ export function PrimerCardFormProvider({ children }: { children: ReactNode }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fieldsRef = useRef({ cardNumber: '', expiryDate: '', cvv: '', cardholderName: '' });
-  const debouncedRef = useRef<DebouncedFunction<
-    (data: { cardNumber: string; expiryDate: string; cvv: string; cardholderName: string }) => void
-  > | null>(null);
+  const checkedFieldsRef = useRef<Record<CardFormField, string>>({ ...fieldsRef.current });
+  const debouncedRef = useRef<DebouncedFunction<(fields: Record<CardFormField, string>) => void> | null>(null);
   const isSubmittingRef = useRef(false);
 
   useEffect(() => {
-    debouncedRef.current = debounce(
-      (data: { cardNumber: string; expiryDate: string; cvv: string; cardholderName: string }) => {
-        providerSetRawData(data).catch(() => {
-          // Provider already logs (sanitized); swallow to prevent unhandled rejection.
-        });
-      },
-      DEBOUNCE_MS
-    );
+    debouncedRef.current = debounce((fields: Record<CardFormField, string>) => {
+      checkedFieldsRef.current = fields;
+      providerSetRawData({
+        cardNumber: stripCardNumberForNative(fields.cardNumber),
+        expiryDate: expandExpiryYearForNative(fields.expiryDate),
+        cvv: fields.cvv,
+        cardholderName: fields.cardholderName,
+      }).catch(() => {
+        // Provider already logs (sanitized); swallow to prevent unhandled rejection.
+      });
+    }, DEBOUNCE_MS);
     return () => debouncedRef.current?.cancel();
   }, [providerSetRawData]);
 
@@ -109,14 +113,7 @@ export function PrimerCardFormProvider({ children }: { children: ReactNode }) {
   // varies by client session; sending the field unconditionally keeps validation honest
   // regardless of whether the merchant has required it server-side.
   const syncToNative = useCallback(() => {
-    const fields = fieldsRef.current;
-    const data = {
-      cardNumber: stripCardNumberForNative(fields.cardNumber),
-      expiryDate: expandExpiryYearForNative(fields.expiryDate),
-      cvv: fields.cvv,
-      cardholderName: fields.cardholderName,
-    };
-    debouncedRef.current?.(data);
+    debouncedRef.current?.({ ...fieldsRef.current });
   }, []);
 
   // Descriptor resolves asynchronously (see usePrimerCardNetwork). Capture via a ref so
@@ -184,6 +181,7 @@ export function PrimerCardFormProvider({ children }: { children: ReactNode }) {
   const isExpiryDateFilled = expiryDate.trim() !== '';
   const isCvvFilled = cvv.trim() !== '';
   const isCardholderNameFilled = cardholderName.trim() !== '';
+  const { t } = usePrimerLocalization();
 
   const errors = useMemo(() => {
     const isFilled: Record<CardFormField, boolean> = {
@@ -195,18 +193,24 @@ export function PrimerCardFormProvider({ children }: { children: ReactNode }) {
     const visible: CardFormErrors = {};
     for (const field of Object.keys(cardFormState.errors) as CardFormField[]) {
       const show = submitAttempted || (hasBeenFocused[field] && hasBeenBlurred[field] && isFilled[field]);
-      if (show) visible[field] = cardFormState.errors[field];
+      if (show) {
+        const errorId = cardFormState.errorIds[field] ?? '';
+        visible[field] = t(cardFieldErrorKey(field, errorId, checkedFieldsRef.current[field], descriptor));
+      }
     }
     return visible;
   }, [
     cardFormState.errors,
+    cardFormState.errorIds,
     isCardNumberFilled,
     isExpiryDateFilled,
     isCvvFilled,
     isCardholderNameFilled,
+    descriptor,
     hasBeenFocused,
     hasBeenBlurred,
     submitAttempted,
+    t,
   ]);
 
   // Mid-typing re-format: when the detected network flips (e.g. first 4 digits
@@ -256,6 +260,7 @@ export function PrimerCardFormProvider({ children }: { children: ReactNode }) {
     setIsSubmitting(false);
     isSubmittingRef.current = false;
     fieldsRef.current = { cardNumber: '', expiryDate: '', cvv: '', cardholderName: '' };
+    checkedFieldsRef.current = { ...fieldsRef.current };
     debouncedRef.current?.cancel();
     providerSetRawData({ cardNumber: '', expiryDate: '', cvv: '', cardholderName: '' }).catch(() => {});
   }, [providerSetRawData]);

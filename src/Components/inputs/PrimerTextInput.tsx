@@ -1,14 +1,16 @@
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState, type ComponentRef } from 'react';
-import { AccessibilityInfo, Platform, StyleSheet, Text, TextInput, View, type TextStyle } from 'react-native';
+import { AccessibilityInfo, Image, Platform, StyleSheet, Text, TextInput, View, type TextStyle } from 'react-native';
 import { usePrimerColorScheme, usePrimerTheme } from '../internal/theme';
 import { InputFieldAnchorContext } from '../internal/inputFieldAnchor';
-import { LINE_HEIGHT_RATIO, defaultFieldHeight } from './dimensions';
+import { LINE_HEIGHT_RATIO, TRAILING_ICON_MARGIN, TRAILING_ICON_SIZE, defaultFieldHeight } from './dimensions';
 import type { PrimerTextInputProps, PrimerTextInputRef, PrimerTextInputTheme } from '../types/CardInputTypes';
 import type { PrimerTokens, PrimerTypographyStyle } from '../internal/theme/types';
 
 // Shared nativeID for an empty InputAccessoryView rendered once in CheckoutSheet.
 // Suppresses iOS's auto-added Previous/Next/Done navigation toolbar above the keyboard.
 export const PRIMER_EMPTY_ACCESSORY_ID = 'primer-empty-input-accessory';
+
+const fieldErrorIconSource = require('../../assets/images/ic-field-error.png');
 
 // A line height set by the merchant wins. Otherwise the style's own token, unless the merchant
 // sized this one input by hand, in which case the line grows with the text rather than clipping it.
@@ -173,6 +175,12 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
           lineHeight: resolved.errorLineHeight,
           marginTop: tokens.spacing.xsmall,
         },
+        errorIcon: {
+          height: TRAILING_ICON_SIZE,
+          marginLeft: TRAILING_ICON_MARGIN,
+          tintColor: tokens.colors.iconNegative,
+          width: TRAILING_ICON_SIZE,
+        },
         input: {
           alignSelf: 'stretch',
           color: editable ? resolved.textColor : tokens.colors.textDisabled,
@@ -253,6 +261,14 @@ export const PrimerTextInput = forwardRef<PrimerTextInputRef, PrimerTextInputPro
           testID={testID ? `${testID}-input` : undefined}
         />
         <InputFieldAnchorContext.Provider value={fieldRef}>{trailingContent}</InputFieldAnchorContext.Provider>
+        {hasError && (
+          <Image
+            source={fieldErrorIconSource}
+            style={styles.errorIcon}
+            resizeMode="contain"
+            testID={testID ? `${testID}-error-icon` : undefined}
+          />
+        )}
       </View>
       {hasError && (
         <Text
