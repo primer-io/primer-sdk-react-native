@@ -70,8 +70,8 @@ that happens. More example-app traps in `.claude/rules/example-app.md`.
 yarn test            # jest src/__tests__ --coverage
 yarn typecheck       # tsc --noEmit  — note: on `master` this script is named `yarn typescript`
 yarn lint            # eslint; add --fix to autofix
-# translation check, as Validate SDK runs it
-python3 scripts/check_translations.py --base "$(git merge-base origin/ov/feat/components HEAD)"
+# translation check, as Validate SDK runs it; <base-branch> is the branch the PR targets
+python3 scripts/check_translations.py --base "$(git merge-base origin/<base-branch> HEAD)"
 ```
 
 `yarn test` takes `src/__tests__` as a **path argument** — a test placed anywhere else is silently
