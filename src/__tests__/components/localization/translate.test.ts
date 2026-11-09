@@ -1,4 +1,5 @@
 import { translate } from '../../../Components/internal/localization/translate';
+import { getTranslationMap } from '../../../Components/internal/localization/strings';
 
 const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
@@ -21,9 +22,13 @@ describe('translate', () => {
   });
 
   it('falls back to English when key exists in en but not in locale', () => {
-    // primer_qr_code_scan_instruction exists in en but not in fr
-    const result = translate('primer_qr_code_scan_instruction', 'fr');
-    expect(result).toBe('Scan to pay or take a screenshot');
-    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('primer_qr_code_scan_instruction'));
+    const enMap = getTranslationMap('en')!;
+    enMap.test_only_key = 'English only';
+    try {
+      expect(translate('test_only_key', 'fr')).toBe('English only');
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('test_only_key'));
+    } finally {
+      delete enMap.test_only_key;
+    }
   });
 });
