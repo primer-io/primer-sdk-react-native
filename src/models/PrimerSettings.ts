@@ -245,4 +245,6 @@ interface IPrimerFullMandateData extends IPrimerStripeMandateData {
 
 interface IPrimerCardFormUIOptions {
   payButtonAddNewCard?: boolean;
+  payButtonText?: string;
+  payButtonAmountVisible?: boolean;
 }
