@@ -256,7 +256,7 @@
   "primer_vault_delete_button_cancel": "გაუქმება",
   "primer_vault_delete_button_confirm": "წაშლა",
   "primer_vault_delete_message": "დარწმუნებული ხართ, რომ გსურთ ამ გადახდის მეთოდის წაშლა?",
-  "primer_vault_format_card_details": "{{cardNetwork}} რომელიც მთავრდება {{last4}}",
+  "primer_vault_format_card_details": "{{cardNetwork}}, ბოლო ციფრები {{last4}}",
   "primer_vault_format_expires": "ვადის თარიღი {{month}}/{{year}}",
   "primer_vault_format_masked": "•••• {{last4}}",
   "primer_vault_manage_button_done": "შესრულდა",

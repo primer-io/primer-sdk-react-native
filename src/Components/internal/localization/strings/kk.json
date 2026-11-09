@@ -20,7 +20,7 @@
   "accessibility_card_form_card_number_error_invalid": "Карта нөмірі жарамсыз. Тексеріп, қайталап көріңіз.",
   "accessibility_card_form_card_number_hint": "Карта нөміріңізді енгізіңіз",
   "accessibility_card_form_card_number_label": "Карта нөмірі, міндетті",
-  "accessibility_card_form_cardholder_name_hint": "Картада көрсетілгендей аты-жөніні енгізіңіз",
+  "accessibility_card_form_cardholder_name_hint": "Картада көрсетілгендей аты-жөнін енгізіңіз",
   "accessibility_card_form_cardholder_name_label": "Карта иесінің аты-жөні",
   "accessibility_card_form_cvc_error_invalid": "Қауіпсіздік коды жарамсыз.",
   "accessibility_card_form_cvc_hint": "Картаның артындағы 3 немесе 4 таңбалы код",

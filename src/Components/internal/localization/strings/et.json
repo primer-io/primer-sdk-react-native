@@ -37,7 +37,7 @@
   "accessibility_card_form_submit_disabled": "Nupp keelatud. Makse lubamiseks täida kõik nõutavad väljad",
   "accessibility_card_form_submit_hint": "Makse esitamiseks topelttoksa",
   "accessibility_card_form_submit_label": "Esita makse",
-  "accessibility_card_form_submit_loading": "Maksed töödeldakse, palun oota",
+  "accessibility_card_form_submit_loading": "Makse töötlemine, palun oota",
   "accessibility_checkout_error_icon": "Viga",
   "accessibility_checkout_success_icon": "Makse õnnestus",
   "accessibility_common_back": "Mine tagasi",

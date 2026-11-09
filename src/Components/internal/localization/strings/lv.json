@@ -14,7 +14,7 @@
   "accessibility_card_form_billing_address_last_name_label": "Uzvārds, obligāti",
   "accessibility_card_form_billing_address_postal_code_hint": "Ievadiet pasta indeksu",
   "accessibility_card_form_billing_address_postal_code_label": "Pasta indekss, obligāti",
-  "accessibility_card_form_billing_address_state_label": "Valsts/reģions, obligāti",
+  "accessibility_card_form_billing_address_state_label": "Novads/reģions, obligāti",
   "accessibility_card_form_billing_section": "Norēķinu adrese",
   "accessibility_card_form_card_number_error_empty": "Kartes numurs ir obligāts.",
   "accessibility_card_form_card_number_error_invalid": "Nederīgs kartes numurs. Lūdzu, pārbaudiet un mēģiniet vēlreiz.",
