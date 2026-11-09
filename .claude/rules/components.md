@@ -31,7 +31,9 @@ src/Components/
 **Translations**: `internal/localization/strings/*.json` holds 57 locale catalogs (~1 MB), loaded by
 `strings/index.ts`. Edit them in the repo with the shared `translate` skill from the primer-claude
 marketplace (plugin `primer-core`). A new key goes into every catalog in the same change: a locale
-without it falls back to English with a `console.warn`.
+without it falls back to English with a `console.warn`. The Validate SDK workflow runs
+`scripts/check_translations.py` on every pull request and fails when a key the PR adds or changes
+is missing or empty in a locale, has other placeholders than English, or is Cyrillic in `sr.json`.
 
 ## Public surface
 
