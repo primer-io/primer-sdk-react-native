@@ -12,8 +12,6 @@ import { PrimerCardForm } from '../../PrimerCardForm';
 import { PrimerBillingAddressForm } from '../../PrimerBillingAddressForm';
 import { usePrimerCardForm } from '../../hooks/usePrimerCardForm';
 import { usePrimerBillingAddressForm } from '../../hooks/usePrimerBillingAddressForm';
-import { usePrimerCheckout } from '../../hooks/usePrimerCheckout';
-import { payButtonTitle } from '../payButtonTitle';
 import { PrimerButton } from '../ui/PrimerButton';
 import { useSheetHeight } from '../checkout-sheet';
 import { useBottomSafeArea } from './useBottomSafeArea';
@@ -27,8 +25,7 @@ const MAX_SHEET_HEIGHT_RATIO = 0.92;
 
 export function CardFormScreen() {
   const tokens = usePrimerTheme();
-  const { t, formatCurrency } = usePrimerLocalization();
-  const { clientSession, settings } = usePrimerCheckout();
+  const { t } = usePrimerLocalization();
   const { pop, replace, canGoBack } = useNavigation();
   const { onCancel } = useCheckoutFlow();
   const cardForm = usePrimerCardForm();
@@ -75,9 +72,6 @@ export function CardFormScreen() {
   const payingRef = useRef(false);
   const locked = paying || cardForm.isSubmitting;
   const canSubmit = cardForm.isValid && billingForm.isValid && !locked;
-  const totalAmount = clientSession?.totalAmount;
-  const currencyCode = clientSession?.currencyCode;
-  const formattedAmount = totalAmount != null && currencyCode ? formatCurrency(totalAmount, currencyCode) : undefined;
 
   // Flush pending billing-address debounce before navigating so native has the full address;
   // if anything fails before submit dispatches, the user stays on the form instead of stranded
@@ -136,12 +130,7 @@ export function CardFormScreen() {
         ]}
       >
         <PrimerButton
-          title={payButtonTitle(
-            settings?.uiOptions?.cardFormUIOptions,
-            formattedAmount,
-            t('primer_common_button_pay'),
-            (amount) => t('primer_common_button_pay_amount', { amount })
-          )}
+          title={t('primer_common_button_pay')}
           onPress={handlePay}
           variant="primary"
           loading={locked}

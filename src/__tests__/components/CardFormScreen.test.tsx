@@ -41,15 +41,7 @@ jest.mock('../../Components/internal/theme', () => ({
 }));
 
 jest.mock('../../Components/internal/localization', () => ({
-  usePrimerLocalization: () => ({
-    t: (key: string, params?: { amount?: string }) => (params?.amount ? `${key}:${params.amount}` : key),
-    formatCurrency: (amount: number, currency: string) => `${amount} ${currency}`,
-  }),
-}));
-
-let mockCheckout: { clientSession?: { totalAmount?: number; currencyCode?: string }; settings?: unknown } = {};
-jest.mock('../../Components/hooks/usePrimerCheckout', () => ({
-  usePrimerCheckout: () => mockCheckout,
+  usePrimerLocalization: () => ({ t: (key: string) => key }),
 }));
 
 jest.mock('../../Components/internal/navigation/useNavigation', () => ({
@@ -97,7 +89,6 @@ describe('CardFormScreen Pay', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockCardFormValid = true;
-    mockCheckout = { clientSession: { totalAmount: 1000, currencyCode: 'GBP' } };
   });
 
   function render() {
@@ -168,19 +159,5 @@ describe('CardFormScreen Pay', () => {
     expect(pay.disabled).toBe(true);
     expect(pay.accessibilityLabel).toBeUndefined();
     expect(pay.accessibilityHint).toBe('accessibility_card_form_submit_disabled');
-  });
-
-  it("shows the merchant's text with the session total when both options are set", () => {
-    mockCheckout.settings = {
-      uiOptions: { cardFormUIOptions: { payButtonText: 'Complete order', payButtonAmountVisible: true } },
-    };
-
-    expect(render().pay().title).toBe('Complete order 1000 GBP');
-  });
-
-  it('shows the translated pay-with-amount text when only the amount option is set', () => {
-    mockCheckout.settings = { uiOptions: { cardFormUIOptions: { payButtonAmountVisible: true } } };
-
-    expect(render().pay().title).toBe('primer_common_button_pay_amount:1000 GBP');
   });
 });
