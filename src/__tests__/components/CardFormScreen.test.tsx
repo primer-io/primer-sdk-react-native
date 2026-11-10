@@ -42,7 +42,7 @@ jest.mock('../../Components/internal/theme', () => ({
 
 jest.mock('../../Components/internal/localization', () => ({
   usePrimerLocalization: () => ({
-    t: (key: string, params?: { amount?: string }) => (params?.amount ? `${key}:${params.amount}` : key),
+    t: (key: string) => key,
     formatCurrency: (amount: number, currency: string) => `${amount} ${currency}`,
   }),
 }));
@@ -170,17 +170,15 @@ describe('CardFormScreen Pay', () => {
     expect(pay.accessibilityHint).toBe('accessibility_card_form_submit_disabled');
   });
 
-  it("shows the merchant's text with the session total when both options are set", () => {
-    mockCheckout.settings = {
-      uiOptions: { cardFormUIOptions: { payButtonText: 'Complete order', payButtonAmountVisible: true } },
-    };
+  it('shows the merchant text with the session total in place of the token', () => {
+    mockCheckout.settings = { uiOptions: { cardFormUIOptions: { payButtonText: 'Complete order {amount}' } } };
 
     expect(render().pay().title).toBe('Complete order 1000 GBP');
   });
 
-  it('shows the translated pay-with-amount text when only the amount option is set', () => {
-    mockCheckout.settings = { uiOptions: { cardFormUIOptions: { payButtonAmountVisible: true } } };
+  it('shows the merchant text as written when it has no token', () => {
+    mockCheckout.settings = { uiOptions: { cardFormUIOptions: { payButtonText: 'Complete order' } } };
 
-    expect(render().pay().title).toBe('primer_common_button_pay_amount:1000 GBP');
+    expect(render().pay().title).toBe('Complete order');
   });
 });

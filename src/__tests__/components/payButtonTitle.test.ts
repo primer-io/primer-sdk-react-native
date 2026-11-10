@@ -1,39 +1,18 @@
 import { payButtonTitle } from '../../Components/internal/payButtonTitle';
 
-const payWithAmount = (amount: string) => `${amount} bezahlen`;
-
 describe('payButtonTitle', () => {
-  it('shows the default title without options', () => {
-    expect(payButtonTitle(undefined, '10,00 €', 'Bezahlen', payWithAmount)).toBe('Bezahlen');
-  });
-
-  it('replaces the default title with custom text', () => {
-    expect(payButtonTitle({ payButtonText: 'Complete order' }, '£10.00', 'Pay', payWithAmount)).toBe('Complete order');
-  });
-
-  it('trims the custom text', () => {
-    expect(
-      payButtonTitle({ payButtonText: ' Buy now ', payButtonAmountVisible: true }, '£10.00', 'Pay', payWithAmount)
-    ).toBe('Buy now £10.00');
-  });
-
-  it('keeps the default title when the custom text is blank', () => {
-    expect(payButtonTitle({ payButtonText: '  ' }, '£10.00', 'Pay', payWithAmount)).toBe('Pay');
-  });
-
-  it('uses the translated pay-with-amount text when there is no custom text', () => {
-    expect(payButtonTitle({ payButtonAmountVisible: true }, '10,00 €', 'Bezahlen', payWithAmount)).toBe(
-      '10,00 € bezahlen'
-    );
-  });
-
-  it('appends the amount to the custom text', () => {
-    expect(
-      payButtonTitle({ payButtonText: 'Complete order', payButtonAmountVisible: true }, '£10.00', 'Pay', payWithAmount)
-    ).toBe('Complete order £10.00');
-  });
-
-  it('shows the title alone while the amount is unknown', () => {
-    expect(payButtonTitle({ payButtonAmountVisible: true }, undefined, 'Pay', payWithAmount)).toBe('Pay');
+  it.each([
+    ['no text', undefined, '£10.00', 'Pay'],
+    ['plain text', 'Complete order', '£10.00', 'Complete order'],
+    ['blank text', '   ', '£10.00', 'Pay'],
+    ['text to trim', '  Buy now  ', '£10.00', 'Buy now'],
+    ['token at the start', '{amount} bezahlen', '10,00 €', '10,00 € bezahlen'],
+    ['token in the middle', 'Pay {amount} now', '£10.00', 'Pay £10.00 now'],
+    ['token at the end', 'Complete order {amount}', '£10.00', 'Complete order £10.00'],
+    ['every token', '{amount} or {amount}', '£10.00', '£10.00 or £10.00'],
+    ['token with unknown amount', 'Pay {amount} now', undefined, 'Pay now'],
+    ['only the token with unknown amount', '{amount}', undefined, 'Pay'],
+  ])('%s', (_name, text, amount, expected) => {
+    expect(payButtonTitle(text, amount, 'Pay')).toBe(expected);
   });
 });
