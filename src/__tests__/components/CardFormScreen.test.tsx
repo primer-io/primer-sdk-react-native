@@ -41,7 +41,15 @@ jest.mock('../../Components/internal/theme', () => ({
 }));
 
 jest.mock('../../Components/internal/localization', () => ({
-  usePrimerLocalization: () => ({ t: (key: string) => key }),
+  usePrimerLocalization: () => ({
+    t: (key: string) => key,
+    formatCurrency: (amount: number, currency: string) => `${amount} ${currency}`,
+  }),
+}));
+
+let mockCheckout: { clientSession?: { totalAmount?: number; currencyCode?: string }; settings?: unknown } = {};
+jest.mock('../../Components/hooks/usePrimerCheckout', () => ({
+  usePrimerCheckout: () => mockCheckout,
 }));
 
 jest.mock('../../Components/internal/navigation/useNavigation', () => ({
@@ -89,6 +97,7 @@ describe('CardFormScreen Pay', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockCardFormValid = true;
+    mockCheckout = { clientSession: { totalAmount: 1000, currencyCode: 'GBP' } };
   });
 
   function render() {
@@ -159,5 +168,17 @@ describe('CardFormScreen Pay', () => {
     expect(pay.disabled).toBe(true);
     expect(pay.accessibilityLabel).toBeUndefined();
     expect(pay.accessibilityHint).toBe('accessibility_card_form_submit_disabled');
+  });
+
+  it('shows the merchant text with the session total in place of the token', () => {
+    mockCheckout.settings = { uiOptions: { cardFormUIOptions: { payButtonText: 'Complete order {amount}' } } };
+
+    expect(render().pay().title).toBe('Complete order 1000 GBP');
+  });
+
+  it('shows the merchant text as written when it has no token', () => {
+    mockCheckout.settings = { uiOptions: { cardFormUIOptions: { payButtonText: 'Complete order' } } };
+
+    expect(render().pay().title).toBe('Complete order');
   });
 });
