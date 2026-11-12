@@ -8,7 +8,6 @@
 import XCTest
 @testable import primer_io_react_native
 import PrimerSDK
-@_spi(PrimerInternal) import PrimerCore
 
 class RNTPrimerHeadlessUniversalCheckoutTests: XCTestCase {
 
@@ -29,14 +28,6 @@ class RNTPrimerHeadlessUniversalCheckoutTests: XCTestCase {
     func testInitialization() {
         XCTAssertNotNil(rnPrimerHeadlessUniversalCheckout)
         XCTAssertTrue(RNTPrimerHeadlessUniversalCheckout.requiresMainQueueSetup())
-    }
-
-    func testInitSetsReactNativeIntegrationOptions() {
-        Primer.shared.integrationOptions = nil
-
-        _ = RNTPrimerHeadlessUniversalCheckout()
-
-        XCTAssertEqual(Primer.shared.integrationOptions?.reactNativeVersion, PrimerReactNativeSDKVersion)
     }
 
     // MARK: - API
