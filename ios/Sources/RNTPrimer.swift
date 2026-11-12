@@ -73,7 +73,7 @@ enum PrimerEvents: Int, CaseIterable {
         print("🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
 
-    override init() {
+    @objc override public init() {
         super.init()
         Primer.shared.delegate = self
         Primer.shared.integrationOptions = PrimerIntegrationOptions(reactNativeVersion: PrimerReactNativeSDKVersion)

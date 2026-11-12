@@ -81,6 +81,7 @@ class RNTPrimerHeadlessUniversalCheckout: RCTEventEmitter {
 
   override init() {
     super.init()
+    Primer.shared.integrationOptions = PrimerIntegrationOptions(reactNativeVersion: PrimerReactNativeSDKVersion)
   }
 
   override func supportedEvents() -> [String]! {
