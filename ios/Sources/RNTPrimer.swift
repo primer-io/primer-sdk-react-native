@@ -76,7 +76,7 @@ enum PrimerEvents: Int, CaseIterable {
     @objc override public init() {
         super.init()
         Primer.shared.delegate = self
-        Primer.shared.integrationOptions = PrimerIntegrationOptions(reactNativeVersion: PrimerReactNativeSDKVersion)
+        Primer.shared.integrationOptions = .reactNative
     }
     // MARK: - SDK API
 
