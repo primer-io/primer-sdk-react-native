@@ -1,15 +1,14 @@
-import type { PrimerSettings } from '../../models/PrimerSettings';
-
-type CardFormUIOptions = NonNullable<NonNullable<PrimerSettings['uiOptions']>['cardFormUIOptions']>;
+const AMOUNT_TOKEN = '{amount}';
 
 export function payButtonTitle(
-  options: CardFormUIOptions | undefined,
+  payButtonText: string | undefined,
   formattedAmount: string | undefined,
-  defaultTitle: string,
-  defaultTitleWithAmount: (amount: string) => string
+  defaultTitle: string
 ): string {
-  const customText = options?.payButtonText?.trim();
-  const amount = options?.payButtonAmountVisible ? formattedAmount : undefined;
-  if (!amount) return customText || defaultTitle;
-  return customText ? `${customText} ${amount}` : defaultTitleWithAmount(amount);
+  const text = payButtonText?.trim();
+  if (!text) return defaultTitle;
+  if (!text.includes(AMOUNT_TOKEN)) return text;
+  if (formattedAmount !== undefined) return text.split(AMOUNT_TOKEN).join(formattedAmount);
+  const withoutAmount = text.split(AMOUNT_TOKEN).join('').replace(/ {2,}/g, ' ').trim();
+  return withoutAmount || defaultTitle;
 }

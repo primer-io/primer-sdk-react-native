@@ -71,7 +71,6 @@ export function PrimerBillingAddressForm({
                 textContentType="givenName"
                 autoCapitalize="words"
                 label={t('primer_card_form_label_first_name')}
-                placeholder={t('primer_card_form_placeholder_first_name')}
                 error={billingForm.errors.firstName}
                 returnKeyType={returnKey('firstName')}
                 testID={`${testID}-first-name`}
@@ -89,7 +88,6 @@ export function PrimerBillingAddressForm({
                 textContentType="familyName"
                 autoCapitalize="words"
                 label={t('primer_card_form_label_last_name')}
-                placeholder={t('primer_card_form_placeholder_last_name')}
                 error={billingForm.errors.lastName}
                 returnKeyType={returnKey('lastName')}
                 testID={`${testID}-last-name`}
@@ -146,7 +144,6 @@ export function PrimerBillingAddressForm({
                 textContentType="postalCode"
                 autoCapitalize="characters"
                 label={t('primer_card_form_label_postal')}
-                placeholder={t('primer_card_form_placeholder_postal')}
                 error={billingForm.errors.postalCode}
                 returnKeyType={returnKey('postalCode')}
                 testID={`${testID}-postal-code`}
@@ -164,7 +161,6 @@ export function PrimerBillingAddressForm({
                 textContentType="addressCity"
                 autoCapitalize="words"
                 label={t('primer_card_form_label_city')}
-                placeholder={t('primer_card_form_placeholder_city')}
                 error={billingForm.errors.city}
                 returnKeyType={returnKey('city')}
                 testID={`${testID}-city`}
@@ -184,7 +180,6 @@ export function PrimerBillingAddressForm({
           textContentType="addressState"
           autoCapitalize="words"
           label={t('primer_card_form_label_state')}
-          placeholder={t('primer_card_form_placeholder_state')}
           error={billingForm.errors.state}
           returnKeyType={returnKey('state')}
           testID={`${testID}-state`}

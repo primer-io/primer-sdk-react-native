@@ -137,10 +137,9 @@ export function CardFormScreen() {
       >
         <PrimerButton
           title={payButtonTitle(
-            settings?.uiOptions?.cardFormUIOptions,
+            settings?.uiOptions?.cardFormUIOptions?.payButtonText,
             formattedAmount,
-            t('primer_common_button_pay'),
-            (amount) => t('primer_common_button_pay_amount', { amount })
+            t('primer_common_button_pay')
           )}
           onPress={handlePay}
           variant="primary"
