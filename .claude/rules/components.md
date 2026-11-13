@@ -28,10 +28,10 @@ src/Components/
 `internal/` also holds ~14 loose files (`cardNetwork.ts`, `routeMethodSelection.ts`,
 `PrimerCheckoutContext.ts`, …) alongside its subdirectories.
 
-**Generated — do not hand-edit**: `internal/localization/strings/` holds 58 locale JSON files
-(~1 MB) pulled from Phrase (`phrase_config.yml`) and overwritten wholesale by the
-`sync-phrase-translations` workflow. Add a string in Phrase, then dispatch the sync — an edit here
-is lost on the next pull.
+**Translations**: `internal/localization/strings/*.json` holds 57 locale catalogs (~1 MB), loaded by
+`strings/index.ts`. Edit them in the repo with the shared `translate` skill from the primer-claude
+marketplace (plugin `primer-core`). A new key goes into every catalog in the same change: a locale
+without it falls back to English with a `console.warn`.
 
 ## Public surface
 
