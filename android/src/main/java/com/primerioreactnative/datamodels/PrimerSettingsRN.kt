@@ -1,7 +1,6 @@
 package com.primerioreactnative.datamodels
 
 import android.content.Context
-import android.content.res.Configuration
 import com.primerioreactnative.extensions.toLocale
 import com.primerioreactnative.extensions.toPrimerDebugOptions
 import com.primerioreactnative.extensions.toPrimerPaymentMethodOptions
@@ -54,6 +53,8 @@ data class PrimerUIOptionsRN(
     var isSuccessScreenEnabled: Boolean = true,
     var isErrorScreenEnabled: Boolean = true,
     var dismissalMechanism: List<String>? = listOf("gestures"),
+    // A String, not an enum: an unknown value would fail the decode of the whole settings.
+    var appearanceMode: String? = null,
     var theme: PrimerThemeRN = PrimerThemeRN(),
     var cardFormUIOptions: PrimerCardFormUIOptionsRN = PrimerCardFormUIOptionsRN(),
 )
@@ -63,41 +64,37 @@ data class PrimerThemeRN(
     val colors: ColorThemeRN? = null,
     val darkModeColors: ColorThemeRN? = null,
 ) {
-    fun toPrimerTheme(context: Context): PrimerTheme {
-        val isDarkMode =
-            (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
-                Configuration.UI_MODE_NIGHT_YES
-
+    fun toPrimerTheme(isDarkAppearance: Boolean): PrimerTheme {
         return PrimerTheme.buildWithDynamicValues(
-            isDarkMode = isDarkMode,
+            isDarkMode = isDarkAppearance,
             mainColor =
             when {
-                isDarkMode -> darkModeColors?.mainColor?.toHexStrColor()
+                isDarkAppearance -> darkModeColors?.mainColor?.toHexStrColor()
                 else -> colors?.mainColor?.toHexStrColor()
             },
             backgroundColor =
             when {
-                isDarkMode -> darkModeColors?.background?.toHexStrColor()
+                isDarkAppearance -> darkModeColors?.background?.toHexStrColor()
                 else -> colors?.background?.toHexStrColor()
             },
             disabledColor =
             when {
-                isDarkMode -> darkModeColors?.disabled?.toHexStrColor()
+                isDarkAppearance -> darkModeColors?.disabled?.toHexStrColor()
                 else -> colors?.disabled?.toHexStrColor()
             },
             textColor =
             when {
-                isDarkMode -> darkModeColors?.text?.toHexStrColor()
+                isDarkAppearance -> darkModeColors?.text?.toHexStrColor()
                 else -> colors?.text?.toHexStrColor()
             },
             bordersColor =
             when {
-                isDarkMode -> darkModeColors?.borders?.toHexStrColor()
+                isDarkAppearance -> darkModeColors?.borders?.toHexStrColor()
                 else -> colors?.borders?.toHexStrColor()
             },
             errorColor =
             when {
-                isDarkMode -> darkModeColors?.error?.toHexStrColor()
+                isDarkAppearance -> darkModeColors?.error?.toHexStrColor()
                 else -> colors?.error?.toHexStrColor()
             },
         )
@@ -203,12 +200,12 @@ data class PrimerStripeOptionsRN(
     )
 }
 
-fun PrimerSettingsRN.toPrimerSettings(context: Context) =
+fun PrimerSettingsRN.toPrimerSettings(context: Context, appearanceMode: String? = null) =
     PrimerSettings(
         paymentHandling = paymentHandling,
         locale = localeData.toLocale(),
         paymentMethodOptions = paymentMethodOptions.toPrimerPaymentMethodOptions(context),
-        uiOptions = uiOptions.toPrimerUIOptions(context),
+        uiOptions = uiOptions.toPrimerUIOptions(context, appearanceMode),
         debugOptions = debugOptions.toPrimerDebugOptions(),
         clientSessionCachingEnabled = clientSessionCachingEnabled,
         apiVersion = when (apiVersion) {

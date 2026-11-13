@@ -18,6 +18,7 @@ export default tseslint.config(
       '**/babel.config.js',
       'index.js',
       '**/jest.config.js',
+      '**/jest.assetMock.js',
     ],
   },
   eslint.configs.recommended,
@@ -33,6 +34,7 @@ export default tseslint.config(
     },
     files: ['**/src/**/*.ts', '**/src/**/*.tsx'],
     rules: {
+      '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/no-shadow': 'error',
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       'no-undef': 'off',

@@ -129,7 +129,7 @@ def kotlin_version = getExtOrDefault('kotlinVersion')
 // The one place the Android SDK version is pinned (CI reads it from this line). It is exported to the app as an
 // enforced BOM platform, so the app's optional io.primer:* dependencies (3ds-android, klarna-android, ...) resolve to
 // this version without declaring one, and a hand-pinned version is overridden rather than drifting from the SDK.
-def primerAndroidVersion = '2.54.0'
+def primerAndroidVersion = '3.0.0-beta.6'
 
 dependencies {
   detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.8")
@@ -139,6 +139,8 @@ dependencies {
   implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3"
   api enforcedPlatform("io.primer:bom:$primerAndroidVersion")
   implementation 'io.primer:android'
+  implementation 'io.primer:components-analytics'
+  implementation 'io.primer:components-bridge'
   testImplementation 'io.mockk:mockk:1.14.2'
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'

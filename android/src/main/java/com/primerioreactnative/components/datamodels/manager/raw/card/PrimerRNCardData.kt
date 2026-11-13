@@ -1,6 +1,7 @@
 package com.primerioreactnative.components.datamodels.manager.raw.card
 
 import io.primer.android.components.domain.core.models.card.PrimerCardData
+import io.primer.android.configuration.data.model.CardNetwork
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -9,6 +10,7 @@ internal data class PrimerRNCardData(
     val expiryDate: String? = null,
     val cvv: String? = null,
     val cardholderName: String? = null,
+    val cardNetwork: String? = null,
 ) {
     fun toPrimerCardData() =
         PrimerCardData(
@@ -16,5 +18,6 @@ internal data class PrimerRNCardData(
             expiryDate.orEmpty(),
             cvv.orEmpty(),
             cardholderName,
+            cardNetwork = cardNetwork?.let { id -> CardNetwork.Type.values().firstOrNull { it.name == id } },
         )
 }

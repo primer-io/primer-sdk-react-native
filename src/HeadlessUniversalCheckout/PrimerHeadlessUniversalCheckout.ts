@@ -23,14 +23,14 @@ import type {
 const tokenizationHandler: PrimerHeadlessUniversalCheckoutResumeHandler = {
   continueWithNewClientToken: async (newClientToken: string) => {
     try {
-      RNPrimerHeadlessUniversalCheckout.handleTokenizationNewClientToken(newClientToken);
+      await RNPrimerHeadlessUniversalCheckout.handleTokenizationNewClientToken(newClientToken);
     } catch (err) {
       console.error(err);
     }
   },
 
   complete: () => {
-    RNPrimerHeadlessUniversalCheckout.handleCompleteFlow();
+    void RNPrimerHeadlessUniversalCheckout.handleCompleteFlow();
   },
 };
 
@@ -39,14 +39,14 @@ const tokenizationHandler: PrimerHeadlessUniversalCheckoutResumeHandler = {
 const resumeHandler: PrimerHeadlessUniversalCheckoutResumeHandler = {
   continueWithNewClientToken: async (newClientToken: string) => {
     try {
-      RNPrimerHeadlessUniversalCheckout.handleResumeWithNewClientToken(newClientToken);
+      await RNPrimerHeadlessUniversalCheckout.handleResumeWithNewClientToken(newClientToken);
     } catch (err) {
       console.error(err);
     }
   },
 
   complete: () => {
-    RNPrimerHeadlessUniversalCheckout.handleCompleteFlow();
+    void RNPrimerHeadlessUniversalCheckout.handleCompleteFlow();
   },
 };
 
@@ -55,7 +55,7 @@ const resumeHandler: PrimerHeadlessUniversalCheckoutResumeHandler = {
 const paymentCreationHandler: PrimerPaymentCreationHandler = {
   abortPaymentCreation: async (errorMessage: string) => {
     try {
-      RNPrimerHeadlessUniversalCheckout.handlePaymentCreationAbort(errorMessage);
+      await RNPrimerHeadlessUniversalCheckout.handlePaymentCreationAbort(errorMessage);
     } catch (err) {
       console.error(err);
     }
@@ -63,7 +63,7 @@ const paymentCreationHandler: PrimerPaymentCreationHandler = {
 
   continuePaymentCreation: async () => {
     try {
-      RNPrimerHeadlessUniversalCheckout.handlePaymentCreationContinue();
+      await RNPrimerHeadlessUniversalCheckout.handlePaymentCreationContinue();
     } catch (err) {
       console.error(err);
     }

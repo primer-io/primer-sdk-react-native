@@ -1,0 +1,111 @@
+import { INTER_FONT_FAMILY, resolveTypography } from '../typography';
+import type { PrimerTokens } from '../types';
+
+// Values derived from iOS dark.json (Style Dictionary generated, dark theme).
+// Source: primer-sdk-ios: Modules/PrimerResources/.../JSONs/dark.json
+// Spacing, typography, radii, and widths are mode-independent and match light defaults.
+export const defaultDarkTokens: PrimerTokens = {
+  colors: {
+    backgroundOutlinedDefault: '#171619',
+    backgroundOutlinedDisabled: '#efefef0a',
+    backgroundPrimary: '#171619',
+    backgroundSecondary: '#efefef0a',
+    borderOutlinedActive: '#efefef70',
+    borderOutlinedDefault: '#efefef24',
+    borderOutlinedDisabled: '#efefef12',
+    borderOutlinedError: '#e46d70',
+    borderOutlinedFocus: '#2f98ff',
+    borderOutlinedLoading: '#efefef12',
+    borderOutlinedSelected: '#2f98ff',
+    borderTransparentActive: '#ffffff00',
+    borderTransparentDefault: '#ffffff00',
+    borderTransparentDisabled: '#ffffff00',
+    borderTransparentFocus: '#2f98ff',
+    borderTransparentSelected: '#ffffff00',
+    brand: '#2f98ff',
+    focus: '#2f98ff',
+    iconDisabled: '#efefef4d',
+    iconNegative: '#e46d70',
+    iconPositive: '#27b17d',
+    iconPrimary: '#efefef',
+    loader: '#2f98ff',
+    onBrand: '#171619',
+    overlay: 'rgba(0,0,0,0.5)',
+    textDisabled: '#efefef4d',
+    textLink: '#4aaeff',
+    textNegative: '#f6bfbf',
+    textOutlinedDefault: '#efefef',
+    textPlaceholder: '#efefef70',
+    textPrimary: '#efefef',
+    textSecondary: '#efefef9e',
+  },
+  spacing: {
+    xxsmall: 2,
+    xsmall: 4,
+    small: 8,
+    medium: 12,
+    large: 16,
+    xlarge: 20,
+    xxlarge: 24,
+  },
+  // Each style's font comes from the brand font above unless it names its own.
+  typography: resolveTypography({
+    fontFamily: INTER_FONT_FAMILY,
+    titleXlarge: {
+      fontSize: 24,
+      fontWeight: '500',
+      lineHeight: 32,
+      letterSpacing: -0.6,
+    },
+    titleLarge: {
+      fontSize: 16,
+      fontWeight: '500',
+      lineHeight: 20,
+      letterSpacing: -0.2,
+    },
+    bodyLarge: {
+      fontSize: 16,
+      fontWeight: '400',
+      lineHeight: 20,
+      letterSpacing: -0.2,
+    },
+    bodyMedium: {
+      fontSize: 14,
+      fontWeight: '400',
+      lineHeight: 20,
+      letterSpacing: 0,
+    },
+    bodySmall: {
+      fontSize: 12,
+      fontWeight: '400',
+      lineHeight: 16,
+      letterSpacing: 0,
+    },
+    error: {
+      fontSize: 12,
+      fontWeight: '400',
+      lineHeight: 16,
+      letterSpacing: 0,
+    },
+  }),
+  radii: {
+    xsmall: 2,
+    small: 4,
+    medium: 8,
+    large: 12,
+  },
+  sizes: {
+    small: 16, // primerSizeSmall
+    medium: 20, // primerSizeMedium
+    large: 24, // primerSizeLarge
+    xlarge: 32, // primerSizeXlarge
+    xxlarge: 40, // primerSizeXxlarge
+    xxxlarge: 56, // primerSizeXxxlarge
+  },
+  widths: {
+    default: 1,
+    focus: 2,
+    selected: 2,
+    error: 2,
+  },
+};

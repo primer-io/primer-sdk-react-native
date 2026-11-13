@@ -1,0 +1,135 @@
+export interface PrimerColorTokens {
+  backgroundOutlinedDefault: string;
+  backgroundOutlinedDisabled: string;
+  backgroundPrimary: string;
+  backgroundSecondary: string;
+  borderOutlinedActive: string;
+  borderOutlinedDefault: string;
+  borderOutlinedDisabled: string;
+  borderOutlinedError: string;
+  borderOutlinedFocus: string;
+  borderOutlinedLoading: string;
+  borderOutlinedSelected: string;
+  borderTransparentActive: string;
+  borderTransparentDefault: string;
+  borderTransparentDisabled: string;
+  borderTransparentFocus: string;
+  borderTransparentSelected: string;
+  brand: string;
+  focus: string;
+  iconDisabled: string;
+  iconNegative: string;
+  iconPositive: string;
+  iconPrimary: string;
+  loader: string;
+  textDisabled: string;
+  textLink: string;
+  textNegative: string;
+  textOutlinedDefault: string;
+  textPlaceholder: string;
+  textPrimary: string;
+  textSecondary: string;
+  onBrand: string;
+  overlay: string;
+}
+
+export interface PrimerSpacingTokens {
+  xxsmall: number;
+  xsmall: number;
+  small: number;
+  medium: number;
+  large: number;
+  xlarge: number;
+  xxlarge: number;
+}
+
+export interface PrimerSizeTokens {
+  small: number;
+  medium: number;
+  large: number;
+  xlarge: number;
+  xxlarge: number;
+  xxxlarge: number;
+}
+
+// React Native rejects any weight outside this list. 550, the design value the other three
+// SDKs use, logs an error and renders 400, so it must not be spellable here.
+export type PrimerFontWeight = '100' | '200' | '300' | '400' | '500' | '600' | '700' | '800' | '900';
+
+export interface PrimerTypographyStyle {
+  fontSize: number;
+  fontWeight: PrimerFontWeight;
+  lineHeight: number;
+  letterSpacing: number;
+  fontFamily: string;
+}
+
+/**
+ * A style a merchant sets. Every field is optional: set only what you want to change and the rest
+ * keeps its default. Leave `fontFamily` out and the style follows the brand font.
+ */
+export type PrimerTypographyStyleOverride = Partial<PrimerTypographyStyle>;
+
+export interface PrimerTypographyTokens {
+  /** The brand font — the default typeface for all six styles. */
+  fontFamily: string;
+  titleXlarge: PrimerTypographyStyle;
+  titleLarge: PrimerTypographyStyle;
+  bodyLarge: PrimerTypographyStyle;
+  bodyMedium: PrimerTypographyStyle;
+  bodySmall: PrimerTypographyStyle;
+  error: PrimerTypographyStyle;
+}
+
+export interface PrimerTypographyOverride {
+  /** Set once to change the typeface of every style that does not name its own. */
+  fontFamily?: string;
+  titleXlarge?: PrimerTypographyStyleOverride;
+  titleLarge?: PrimerTypographyStyleOverride;
+  bodyLarge?: PrimerTypographyStyleOverride;
+  bodyMedium?: PrimerTypographyStyleOverride;
+  bodySmall?: PrimerTypographyStyleOverride;
+  error?: PrimerTypographyStyleOverride;
+}
+
+export interface PrimerRadiusTokens {
+  xsmall: number;
+  small: number;
+  medium: number;
+  large: number;
+}
+
+export interface PrimerWidthTokens {
+  default: number;
+  focus: number;
+  selected: number;
+  error: number;
+}
+
+export interface PrimerTokens {
+  colors: PrimerColorTokens;
+  spacing: PrimerSpacingTokens;
+  typography: PrimerTypographyTokens;
+  radii: PrimerRadiusTokens;
+  sizes: PrimerSizeTokens;
+  widths: PrimerWidthTokens;
+}
+
+export interface PrimerThemeOverride {
+  light?: {
+    colors?: Partial<PrimerColorTokens>;
+    spacing?: Partial<PrimerSpacingTokens>;
+    typography?: PrimerTypographyOverride;
+    radii?: Partial<PrimerRadiusTokens>;
+    sizes?: Partial<PrimerSizeTokens>;
+    widths?: Partial<PrimerWidthTokens>;
+  };
+  dark?: {
+    colors?: Partial<PrimerColorTokens>;
+    spacing?: Partial<PrimerSpacingTokens>;
+    typography?: PrimerTypographyOverride;
+    radii?: Partial<PrimerRadiusTokens>;
+    sizes?: Partial<PrimerSizeTokens>;
+    widths?: Partial<PrimerWidthTokens>;
+  };
+}
