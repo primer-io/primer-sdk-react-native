@@ -70,6 +70,8 @@ that happens. More example-app traps in `.claude/rules/example-app.md`.
 yarn test            # jest src/__tests__ --coverage
 yarn typecheck       # tsc --noEmit  — note: on `master` this script is named `yarn typescript`
 yarn lint            # eslint; add --fix to autofix
+# translation check, as Validate SDK runs it; <base-branch> is the branch the PR targets
+python3 scripts/check_translations.py --base "$(git merge-base origin/<base-branch> HEAD)"
 ```
 
 `yarn test` takes `src/__tests__` as a **path argument** — a test placed anywhere else is silently
@@ -86,7 +88,9 @@ All eight workflows in `.github/workflows/` run on every pull request, drafts sk
   do **not** currently fire — inline styles and colour literals pass despite being set to error.
 - **Danger Kotlin / Swift** — fail on **any** detekt or SwiftLint finding. No local command.
 - **Unit Tests and Code Quality** — RN, Android and iOS tests, then SonarCloud over merged coverage.
-- **Validate SDK** — `yarn typecheck`, `yarn build`, verify artifacts, confirm the package packs.
+- **Validate SDK** — the translation check (`scripts/check_translations.py`, vendored from
+  primer-claude, only keys the PR changes), `yarn typecheck`, `yarn build`, verify artifacts,
+  confirm the package packs.
 - **RN Compat Build** — discrete versions, not ranges: iOS 0.79.6 / 0.80.1 / 0.81.1 / 0.82.1 /
   0.83.1; Android **0.81.1 / 0.82.1 / 0.83.1 only**.
 - **iOS / Android build-and-distribute** — build the example app and upload to Appetize. Slowest and
