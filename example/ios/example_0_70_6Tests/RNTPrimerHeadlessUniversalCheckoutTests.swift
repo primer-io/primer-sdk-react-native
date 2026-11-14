@@ -7,7 +7,7 @@
 
 import XCTest
 @testable import primer_io_react_native
-import PrimerSDK
+@_spi(PrimerInternal) import PrimerSDK
 
 class RNTPrimerHeadlessUniversalCheckoutTests: XCTestCase {
 
@@ -149,5 +149,51 @@ class RNTPrimerHeadlessUniversalCheckoutTests: XCTestCase {
 
         wait(for: [handlerExpectation, resolverExpectation], timeout: 2.0)
         XCTAssertNil(rnPrimerHeadlessUniversalCheckout.primerWillCreatePaymentWithDataDecisionHandler)
+    }
+
+    func testClientSessionPayloadCarriesSurchargesWithZeros() throws {
+        let clientSession = PrimerClientSession(
+            customerId: nil,
+            orderId: nil,
+            currencyCode: "GBP",
+            totalAmount: 1050,
+            lineItems: nil,
+            orderDetails: nil,
+            customer: nil,
+            paymentMethod: nil,
+            fees: nil
+        )
+        let paymentMethodOptions = [
+            ComponentsPaymentMethodOption(type: "PAYPAL", surcharge: 0, networks: []),
+            ComponentsPaymentMethodOption(
+                type: "PAYMENT_CARD",
+                surcharge: nil,
+                networks: [
+                    .init(type: "VISA", surcharge: 0),
+                    .init(type: "CARTES_BANCAIRES", surcharge: 20),
+                    .init(type: "MASTERCARD", surcharge: nil)
+                ]
+            )
+        ]
+
+        let payload = try RNTPrimerHeadlessUniversalCheckout.makeClientSessionPayload(
+            clientSession: clientSession,
+            checkoutModules: nil,
+            paymentMethodOptions: paymentMethodOptions
+        )
+
+        XCTAssertEqual(
+            payload["paymentMethodOptions"] as? NSDictionary,
+            [
+                "PAYPAL": ["surcharge": ["amount": 0], "networks": [String: Any]()],
+                "PAYMENT_CARD": [
+                    "networks": [
+                        "VISA": ["surcharge": ["amount": 0]],
+                        "CARTES_BANCAIRES": ["surcharge": ["amount": 20]],
+                        "MASTERCARD": [String: Any]()
+                    ]
+                ]
+            ] as NSDictionary
+        )
     }
 }

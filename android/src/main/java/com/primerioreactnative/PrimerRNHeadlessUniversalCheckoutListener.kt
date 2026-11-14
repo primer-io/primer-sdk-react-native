@@ -93,6 +93,7 @@ class PrimerRNHeadlessUniversalCheckoutListener(
                                 Json.encodeToString(
                                     initialClientSession.toPrimerClientSessionRN(
                                         bridge.getCheckoutModules(),
+                                        bridge.getPaymentMethodOptions(),
                                     ),
                                 ),
                             ),
@@ -199,7 +200,7 @@ class PrimerRNHeadlessUniversalCheckoutListener(
             // The SDK callback delivers `PrimerClientSession` without `checkoutModules`.
             // Read those separately from the bridge so JS gets the same shape it gets
             // from the synthesized initial event.
-            val checkoutModules = ComponentsClientSessionBridge.create().getCheckoutModules()
+            val bridge = ComponentsClientSessionBridge.create()
             sendEvent?.invoke(
                 PrimerHeadlessUniversalCheckoutEvent.ON_CLIENT_SESSION_UPDATE.eventName,
                 JSONObject().apply {
@@ -207,7 +208,10 @@ class PrimerRNHeadlessUniversalCheckoutListener(
                         CLIENT_SESSION_PAYLOAD_KEY,
                         JSONObject(
                             Json.encodeToString(
-                                clientSession.toPrimerClientSessionRN(checkoutModules),
+                                clientSession.toPrimerClientSessionRN(
+                                    bridge.getCheckoutModules(),
+                                    bridge.getPaymentMethodOptions(),
+                                ),
                             ),
                         ),
                     )
