@@ -1,6 +1,9 @@
 import type { VaultedPaymentMethodItem } from '../types/VaultedPaymentMethodTypes';
 import type { TranslationParams } from './localization/types';
-import { titleCaseFromType } from './utils/formatting';
+import { getSavedMethodName } from './savedMethodName';
+
+const PAYPAL_PAYMENT_METHOD_TYPE = 'PAYPAL';
+const PAYPAL_NAME = 'PayPal';
 
 type Translate = (key: string, params?: TranslationParams) => string;
 
@@ -26,7 +29,7 @@ export function getVaultRowDisplay(item: VaultedPaymentMethodItem, t: Translate)
           : null;
       return {
         title: item.cardholderName ?? null,
-        secondaryLabel: item.brandName ?? null,
+        secondaryLabel: item.brandName ?? t('primer_vault_default_card'),
         iconUri,
         maskedNumber,
         expiryText,
@@ -50,14 +53,14 @@ export function getVaultRowDisplay(item: VaultedPaymentMethodItem, t: Translate)
       };
     }
     case 'other': {
-      const title = item.displayName ?? titleCaseFromType(item.paymentMethodType);
+      const name = getSavedMethodName(item.paymentMethodType, item.displayName);
       return {
-        title,
-        secondaryLabel: item.detail ?? null,
+        title: item.holderName ?? null,
+        secondaryLabel: item.paymentMethodType === PAYPAL_PAYMENT_METHOD_TYPE ? PAYPAL_NAME : name,
         iconUri,
-        maskedNumber: null,
+        maskedNumber: item.detail ?? null,
         expiryText: null,
-        accessibilityLabel: t('accessibility_vaulted_payment_method', { paymentMethodName: title }),
+        accessibilityLabel: t('accessibility_vaulted_payment_method', { paymentMethodName: name }),
       };
     }
   }
@@ -68,19 +71,20 @@ function buildCardAccessibilityLabel(
   t: Translate,
   expiryText: string | null
 ): string {
-  if (item.brandName != null && item.last4 != null && expiryText != null) {
+  const cardNetwork = item.brandName ?? t('primer_vault_default_card');
+  if (item.last4 != null && expiryText != null) {
     return item.cardholderName != null
       ? t('accessibility_vaulted_card_full', {
-          cardNetwork: item.brandName,
+          cardNetwork,
           last4: item.last4,
           expiry: expiryText,
           cardholderName: item.cardholderName,
         })
       : t('accessibility_vaulted_card_no_name', {
-          cardNetwork: item.brandName,
+          cardNetwork,
           last4: item.last4,
           expiry: expiryText,
         });
   }
-  return t('accessibility_vaulted_payment_method', { paymentMethodName: item.brandName ?? item.paymentMethodType });
+  return t('accessibility_vaulted_payment_method', { paymentMethodName: cardNetwork });
 }

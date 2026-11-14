@@ -160,7 +160,7 @@ export function PrimerVaultedPaymentMethod({ data, onPay, style }: PrimerVaulted
 }
 
 function createStyles(tokens: PrimerTokens) {
-  const { colors, spacing, radii, widths, typography } = tokens;
+  const { colors, spacing, radii, widths, typography, sizes } = tokens;
 
   /* eslint-disable react-native/no-unused-styles */
   return StyleSheet.create({
@@ -202,6 +202,7 @@ function createStyles(tokens: PrimerTokens) {
       alignItems: 'center',
       flexDirection: 'row',
       gap: spacing.medium,
+      minHeight: sizes.xxlarge,
     },
     secondaryText: {
       color: colors.textSecondary,
