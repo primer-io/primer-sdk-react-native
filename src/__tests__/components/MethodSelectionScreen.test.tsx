@@ -5,6 +5,7 @@ import { createElement } from 'react';
 // @ts-expect-error -- react-test-renderer has no types for React 19
 import renderer, { act } from 'react-test-renderer';
 import type { PrimerClientSession } from '../../models/PrimerClientSession';
+import type { PaymentMethodSurcharge } from '../../Components/types/PaymentMethodTypes';
 
 jest.mock(
   'react-native',
@@ -39,7 +40,7 @@ jest.mock('../../Components/hooks/usePrimerCheckout', () => ({
   }),
 }));
 
-let mockPaymentMethods: Array<{ type: string }> = [];
+let mockPaymentMethods: Array<{ type: string; surcharge?: PaymentMethodSurcharge }> = [];
 jest.mock('../../Components/hooks/usePrimerPaymentMethods', () => ({
   usePrimerPaymentMethods: () => ({ paymentMethods: mockPaymentMethods }),
 }));
@@ -195,5 +196,20 @@ describe('MethodSelectionScreen — sheet height', () => {
     // The mocked window is 800 tall.
     reportContentHeight(5000);
     expect(lastHeight()).toBe(800 * 0.92);
+  });
+
+  it('makes room for each surcharge group title', () => {
+    const estimatedHeight = () => {
+      mockHeights.length = 0;
+      act(() => {
+        renderer.create(createElement(MethodSelectionScreen));
+      });
+      return mockHeights[0] ?? NaN;
+    };
+    const flatHeight = estimatedHeight();
+
+    mockPaymentMethods = [{ type: 'PAYMENT_CARD' }, { type: 'PAYPAL', surcharge: { kind: 'flat', amount: 50 } }];
+
+    expect(estimatedHeight() - flatHeight).toBe(2 * (3 * 8 + 20));
   });
 });

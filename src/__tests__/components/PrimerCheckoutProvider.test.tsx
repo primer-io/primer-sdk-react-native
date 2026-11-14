@@ -61,6 +61,7 @@ import { createElement } from 'react';
 // @ts-expect-error -- react-test-renderer has no types for React 19
 import renderer, { act } from 'react-test-renderer';
 import { PrimerCheckoutProvider } from '../../Components/PrimerCheckoutProvider';
+import AssetsManager from '../../HeadlessUniversalCheckout/Managers/AssetsManager';
 import { usePrimerColorScheme, usePrimerTheme } from '../../Components/internal/theme';
 import { usePrimerCheckout } from '../../Components/hooks/usePrimerCheckout';
 import { PrimerError } from '../../models/PrimerError';
@@ -129,6 +130,27 @@ describe('PrimerCheckoutProvider', () => {
     expect(last.isReady).toBe(true);
     expect(last.availablePaymentMethods).toHaveLength(1);
     expect(last.availablePaymentMethods[0]!.paymentMethodType).toBe('PAYMENT_CARD');
+  });
+
+  it('has the accepted card networks in its first ready state', async () => {
+    const networks = jest
+      .spyOn(AssetsManager.prototype, 'getOrderedAllowedCardNetworks')
+      .mockResolvedValue(['VISA', 'MASTERCARD']);
+    const captures: PrimerCheckoutContextValue[] = [];
+
+    await act(async () => {
+      renderer.create(
+        createElement(
+          PrimerCheckoutProvider,
+          { clientToken: 'token-1' },
+          createElement(TestConsumer, { onContext: (ctx: PrimerCheckoutContextValue) => captures.push(ctx) })
+        )
+      );
+      await flushPromises();
+    });
+    networks.mockRestore();
+
+    expect(captures.find((ctx) => ctx.isReady)?.acceptedCardNetworks).toEqual(['VISA', 'MASTERCARD']);
   });
 
   it('sets error on init failure', async () => {

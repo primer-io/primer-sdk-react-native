@@ -5,6 +5,8 @@ import { createElement } from 'react';
 // @ts-expect-error -- react-test-renderer has no types for React 19
 import renderer, { act } from 'react-test-renderer';
 import { CheckoutRoute } from '../../Components/internal/navigation/types';
+import type { ShownNetworkSurcharge } from '../../Components/internal/useShownNetworkSurcharge';
+import type { PrimerClientSession } from '../../models/PrimerClientSession';
 
 jest.mock(
   'react-native',
@@ -47,7 +49,7 @@ jest.mock('../../Components/internal/localization', () => ({
   }),
 }));
 
-let mockCheckout: { clientSession?: { totalAmount?: number; currencyCode?: string }; settings?: unknown } = {};
+let mockCheckout: { clientSession?: PrimerClientSession; settings?: unknown } = {};
 jest.mock('../../Components/hooks/usePrimerCheckout', () => ({
   usePrimerCheckout: () => mockCheckout,
 }));
@@ -76,6 +78,11 @@ jest.mock('../../Components/internal/screens/useKeyboardPadding', () => ({
   useKeyboardPadding: () => 0,
 }));
 
+let mockSurcharge: ShownNetworkSurcharge = {};
+jest.mock('../../Components/internal/useShownNetworkSurcharge', () => ({
+  useShownNetworkSurcharge: () => mockSurcharge,
+}));
+
 let mockCardFormValid = true;
 jest.mock('../../Components/hooks/usePrimerCardForm', () => ({
   usePrimerCardForm: () => ({ isValid: mockCardFormValid, isSubmitting: false, submit: mockSubmit }),
@@ -97,6 +104,7 @@ describe('CardFormScreen Pay', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockCardFormValid = true;
+    mockSurcharge = {};
     mockCheckout = { clientSession: { totalAmount: 1000, currencyCode: 'GBP' } };
   });
 
@@ -174,6 +182,14 @@ describe('CardFormScreen Pay', () => {
     mockCheckout.settings = { uiOptions: { cardFormUIOptions: { payButtonText: 'Complete order {amount}' } } };
 
     expect(render().pay().title).toBe('Complete order 1000 GBP');
+  });
+
+  it('pays the order total without the session surcharge plus the shown network fee', () => {
+    mockCheckout.settings = { uiOptions: { cardFormUIOptions: { payButtonText: 'Pay {amount}' } } };
+    mockCheckout.clientSession = { totalAmount: 1050, currencyCode: 'GBP', fees: [{ type: 'SURCHARGE', amount: 50 }] };
+    mockSurcharge = { surchargeAmountRaw: 30, surchargeAmount: '+ 30 GBP' };
+
+    expect(render().pay().title).toBe('Pay 1030 GBP');
   });
 
   it('shows the merchant text as written when it has no token', () => {
