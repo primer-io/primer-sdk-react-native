@@ -35,10 +35,10 @@ build-and-release:
       echo "Extracting iOS Version from podspec..."
       IOS_VERSION=`cat ./primer-io-react-native.podspec  | grep -Po "\"PrimerSDK\", \"\K[^\"]*"`
       echo "iOS Version: $IOS_VERSION"
-      echo "Checking that iOS version $IOS_VERSION is available on the master Cocoapods Specs..."
-      IOS_COCOAPODS_STATUS_CODE=`curl --silent --output /dev/stderr --write-out "%{http_code}" "https://raw.githubusercontent.com/CocoaPods/Specs/master/Specs/e/0/5/PrimerSDK/${IOS_VERSION}/PrimerSDK.podspec.json"`
+      echo "Checking that iOS version $IOS_VERSION is available in the Primer spec repo..."
+      IOS_COCOAPODS_STATUS_CODE=`curl --silent --output /dev/stderr --write-out "%{http_code}" "https://raw.githubusercontent.com/primer-io/primer-sdk-ios-specs/main/PrimerSDK/${IOS_VERSION}/PrimerSDK.podspec.json"`
       if [ $IOS_COCOAPODS_STATUS_CODE -ne "200" ]; then
-        echo "Couldn't find Version $IOS_VERSION of PrimerSDK on Cocoapods. Exiting."
+        echo "Couldn't find Version $IOS_VERSION of PrimerSDK in the Primer spec repo. Exiting."
         exit 1
       fi
     # Identify npm tag suffix based on semver
