@@ -79,4 +79,33 @@ describe('getVaultRowDisplay, cards', () => {
   it('keeps the network name when it is known', () => {
     expect(getVaultRowDisplay(card('American Express'), t).secondaryLabel).toBe('American Express');
   });
+
+  it('uses the bundled payment card icon when the network is unknown', () => {
+    const display = getVaultRowDisplay({ ...card(undefined), iconUri: 'file:///tmp/x.png' }, t);
+    expect(display.icon).toBe(require('../../assets/images/ic-brand-payment-card.png'));
+  });
+
+  it('keeps the native icon for a known network', () => {
+    const display = getVaultRowDisplay({ ...card('Visa'), iconUri: 'file:///tmp/visa.png' }, t);
+    expect(display.icon).toEqual({ uri: 'file:///tmp/visa.png' });
+  });
+});
+
+describe('getVaultRowDisplay, bundled icons for other methods', () => {
+  it.each([
+    ['PAYPAL', 'paypal'],
+    ['KLARNA', 'klarna'],
+    ['ADYEN_IDEAL', 'ideal'],
+  ])('uses the bundled icon for %s', (type, icon) => {
+    const display = getVaultRowDisplay(otherItem({ paymentMethodType: type, iconUri: 'file:///tmp/big.png' }), t);
+    expect(display.icon).toBe(require(`../../assets/images/ic-brand-${icon}.png`));
+  });
+
+  it('keeps the native icon for other methods', () => {
+    const display = getVaultRowDisplay(
+      otherItem({ paymentMethodType: 'ADYEN_SOFORT', iconUri: 'file:///tmp/sofort.png' }),
+      t
+    );
+    expect(display.icon).toEqual({ uri: 'file:///tmp/sofort.png' });
+  });
 });

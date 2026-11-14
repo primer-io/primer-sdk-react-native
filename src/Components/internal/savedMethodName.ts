@@ -1,6 +1,6 @@
 import { titleCaseFromType } from './utils/formatting';
 
-const IDEAL_TYPE_SUFFIX = '_IDEAL';
+export const IDEAL_TYPE_SUFFIX = '_IDEAL';
 const IDEAL_NAME = 'iDEAL | Wero';
 
 export function getSavedMethodName(paymentMethodType: string, sessionName?: string): string {

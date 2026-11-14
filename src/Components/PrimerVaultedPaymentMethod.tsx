@@ -123,9 +123,7 @@ export function PrimerVaultedPaymentMethod({ data, onPay, style }: PrimerVaulted
               </Text>
             )}
             <View style={styles.brandRow}>
-              {display.iconUri != null && (
-                <Image source={{ uri: display.iconUri }} style={styles.brandIcon} resizeMode="contain" />
-              )}
+              {display.icon != null && <Image source={display.icon} style={styles.brandIcon} resizeMode="contain" />}
               {display.secondaryLabel != null && (
                 <Text style={styles.secondaryText} numberOfLines={1}>
                   {display.secondaryLabel}
@@ -214,7 +212,7 @@ function createStyles(tokens: PrimerTokens) {
       borderRadius: radii.medium,
       borderWidth: widths.selected,
       gap: spacing.medium,
-      padding: spacing.medium,
+      padding: spacing.medium - widths.selected,
     },
   });
   /* eslint-enable react-native/no-unused-styles */
