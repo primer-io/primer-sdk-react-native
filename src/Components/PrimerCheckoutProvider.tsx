@@ -93,6 +93,7 @@ interface InternalState {
   isLoadingResources: boolean;
   resourcesError: Error | null;
   paymentOutcome: PaymentOutcome | null;
+  isPaymentInFlight: boolean;
   nativeUiInFlightType: string | null;
   activeMethod: string | null;
   cardFormState: CardFormState;
@@ -137,6 +138,7 @@ const initialState: InternalState = {
   isLoadingResources: false,
   resourcesError: null,
   paymentOutcome: null,
+  isPaymentInFlight: false,
   nativeUiInFlightType: null,
   activeMethod: null,
   cardFormState: initialCardFormState,
@@ -164,6 +166,7 @@ const initialState: InternalState = {
 
 // Cleared on every terminal payment event so no per-method in-flight flag outlives an outcome.
 const PAYMENT_ATTEMPT_RESET = {
+  isPaymentInFlight: false,
   nativeUiInFlightType: null,
   isBanksLoading: false,
   isKlarnaLoading: false,
@@ -955,8 +958,13 @@ export function PrimerCheckoutProvider({
       console.warn(`${LOG} submit: no manager`);
       return;
     }
-    trackAttemptStart(stateRef.current.activeMethod ?? 'PAYMENT_CARD', { submitted: true });
-    await manager.submit();
+    const method = stateRef.current.activeMethod ?? 'PAYMENT_CARD';
+    trackAttemptStart(method, { submitted: true });
+    setState((prev) => ({ ...prev, isPaymentInFlight: method === 'PAYMENT_CARD' }));
+    await manager.submit().catch((err) => {
+      setState((prev) => ({ ...prev, isPaymentInFlight: false }));
+      throw err;
+    });
   }, [trackAttemptStart]);
 
   const retry = useCallback(async () => {
@@ -975,6 +983,7 @@ export function PrimerCheckoutProvider({
     // outcomes. Reconfiguring here rebuilds the delegate binding; harmless on Android.
     // (The "remove once the iOS SDK stops nullifying" reminder lives in the PR description.)
     retryingManagerRef.current = manager;
+    setState((prev) => ({ ...prev, isPaymentInFlight: method === 'PAYMENT_CARD' }));
     try {
       // Re-pass the original callbacks so the JS-wrapper's listeners get re-registered.
       // Otherwise native would emit onValidation/onBinDataChange/onMetadataChange during
@@ -990,6 +999,7 @@ export function PrimerCheckoutProvider({
       await manager.submit();
     } catch (err) {
       console.error(`${LOG} retry failed ${fmt(err)}`);
+      setState((prev) => ({ ...prev, isPaymentInFlight: false }));
       throw err;
     } finally {
       retryingManagerRef.current = null;
@@ -1660,7 +1670,7 @@ export function PrimerCheckoutProvider({
         return;
       }
       // Clear any stale outcome so PaymentOutcomeTransitioner re-fires for this attempt.
-      setState((prev) => (prev.paymentOutcome === null ? prev : { ...prev, paymentOutcome: null }));
+      setState((prev) => ({ ...prev, paymentOutcome: null, isPaymentInFlight: true }));
       // Vaulted pay is a card payment: same SUBMITTED → PROCESSING → outcome sequence.
       trackAttemptStart('PAYMENT_CARD', { submitted: true });
       try {
@@ -1680,6 +1690,7 @@ export function PrimerCheckoutProvider({
         const primerError = err as PrimerError;
         setState((prev) => ({
           ...prev,
+          isPaymentInFlight: false,
           paymentOutcome: { status: 'error', error: primerError, data: null },
         }));
       }
@@ -1752,6 +1763,7 @@ export function PrimerCheckoutProvider({
       resourcesError: state.resourcesError,
       settings: settingsRef.current,
       paymentOutcome: state.paymentOutcome,
+      isPaymentInFlight: state.isPaymentInFlight,
       nativeUiInFlightType: state.nativeUiInFlightType,
       activeMethod: state.activeMethod,
       cardFormState: state.cardFormState,

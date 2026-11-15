@@ -28,6 +28,7 @@ jest.mock(
           configure: jest.fn(),
           listRequiredInputElementTypes: jest.fn(),
           setRawData: jest.fn(),
+          submit: jest.fn(),
           cleanUp: jest.fn(),
         },
         RNPrimerHeadlessUniversalCheckoutVaultManager: {
@@ -69,6 +70,7 @@ import type { PrimerCheckoutContextValue } from '../../Components/types/PrimerCh
 const rnMock = require('react-native');
 const nativeModule = rnMock.NativeModules.PrimerHeadlessUniversalCheckout;
 const vaultModule = rnMock.NativeModules.RNPrimerHeadlessUniversalCheckoutVaultManager;
+const rawNative = rnMock.NativeModules.RNTPrimerHeadlessUniversalCheckoutRawDataManager;
 const banksModule = rnMock.NativeModules.RNTPrimerHeadlessUniversalCheckoutBanksComponent;
 const mockAddListener: jest.Mock = rnMock.__mockAddListener;
 
@@ -452,8 +454,6 @@ describe('PrimerCheckoutProvider native event callbacks', () => {
 });
 
 describe('PrimerCheckoutProvider card network selection', () => {
-  const rawNative = rnMock.NativeModules.RNTPrimerHeadlessUniversalCheckoutRawDataManager;
-
   const CARD = { cardNumber: '5555555555554444', expiryDate: '03/30', cvv: '123' };
 
   const COBADGE_BIN_DATA = {
@@ -627,6 +627,10 @@ describe('PrimerCheckoutProvider — requiresVaultedCardCvv flag wiring', () => 
     vaultModule.configure.mockResolvedValue(undefined);
     vaultModule.fetchVaultedPaymentMethods.mockResolvedValue({ paymentMethods: [] });
     vaultModule.requiresVaultedCardCvv.mockResolvedValue(false);
+    rawNative.configure.mockResolvedValue(undefined);
+    rawNative.listRequiredInputElementTypes.mockResolvedValue([]);
+    rawNative.cleanUp.mockResolvedValue(undefined);
+    rawNative.submit.mockResolvedValue(undefined);
   });
 
   it('reads the flag once after vm.configure() resolves and propagates true through context', async () => {
@@ -888,5 +892,67 @@ describe('PrimerCheckoutProvider — requiresVaultedCardCvv flag wiring', () => 
 
     // The phone is light in this suite, so only the setting can make it dark.
     expect(seen).toEqual({ brand: '#222222', scheme: 'dark' });
+  });
+
+  async function selectCard(ctx: () => PrimerCheckoutContextValue) {
+    await act(async () => {
+      ctx().setActiveMethod('PAYMENT_CARD');
+      await flushPromises();
+    });
+  }
+
+  it('is in flight from a card submit until the outcome', async () => {
+    const ctx = await renderReady();
+    await selectCard(ctx);
+    await act(async () => {
+      await ctx().submit();
+    });
+    expect(ctx().isPaymentInFlight).toBe(true);
+
+    await act(async () => {
+      findListener('onCheckoutComplete')!({ payment: { id: 'pay_1', status: 'SUCCESS' } });
+    });
+    expect(ctx().isPaymentInFlight).toBe(false);
+  });
+
+  it('is not in flight for a payment method other than card', async () => {
+    const ctx = await renderReady();
+    await act(async () => {
+      ctx().setActiveMethod('ADYEN_BLIK');
+      await flushPromises();
+    });
+    await act(async () => {
+      await ctx().submit();
+    });
+
+    expect(ctx().isPaymentInFlight).toBe(false);
+  });
+
+  it('is not in flight when the card submit itself is rejected', async () => {
+    rawNative.submit.mockRejectedValueOnce(new Error('bridge down'));
+    const ctx = await renderReady();
+    await selectCard(ctx);
+
+    await act(async () => {
+      await expect(ctx().submit()).rejects.toThrow('bridge down');
+    });
+
+    expect(ctx().isPaymentInFlight).toBe(false);
+  });
+
+  it('is in flight from a saved card payment, and not once its start is rejected', async () => {
+    const ctx = await renderReady();
+    await act(async () => {
+      await ctx().payFromVault('vault-1');
+    });
+    expect(ctx().isPaymentInFlight).toBe(true);
+
+    vaultModule.startPaymentFlow.mockRejectedValueOnce(
+      new PrimerError('vault-failed', 'vault-failed', 'Vault failed', undefined, undefined)
+    );
+    await act(async () => {
+      await ctx().payFromVault('vault-1');
+    });
+    expect(ctx().isPaymentInFlight).toBe(false);
   });
 });

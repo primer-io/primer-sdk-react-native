@@ -133,6 +133,18 @@ describe('Android back in the checkout sheet (ORC-8671)', () => {
     expect(onRequestDismiss).not.toHaveBeenCalled();
   });
 
+  it("does not run a disabled header's Back", () => {
+    const onBackPress = jest.fn();
+    headers[CheckoutRoute.cardForm] = { showBackButton: true, onBackPress, disabled: true };
+    const tree = render(sheet(true, jest.fn()));
+    act(() => nav.push(CheckoutRoute.cardForm, card));
+
+    pressBack(tree);
+
+    expect(onBackPress).not.toHaveBeenCalled();
+    expect(routes()).toEqual([CheckoutRoute.methodSelection, CheckoutRoute.cardForm]);
+  });
+
   it('runs the Back action of the latest render', () => {
     const first = jest.fn();
     const latest = jest.fn();

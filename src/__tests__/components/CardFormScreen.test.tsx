@@ -21,6 +21,7 @@ jest.mock(
 
 // `mock`-prefixed so the hoisted jest.mock factories may reference them.
 const mockReplace = jest.fn();
+const mockCardFormBusy = jest.fn();
 const mockSubmit = jest.fn().mockResolvedValue(undefined);
 let mockResolveFlush: () => void = () => {};
 const mockFlush = jest.fn(
@@ -61,7 +62,7 @@ jest.mock('../../Components/internal/navigation/NavigationHeader', () => ({
 }));
 
 jest.mock('../../Components/internal/checkout-flow/CheckoutFlowContext', () => ({
-  useCheckoutFlow: () => ({ onCancel: jest.fn() }),
+  useCheckoutFlow: () => ({ onCancel: jest.fn(), onCardFormBusyChange: mockCardFormBusy }),
 }));
 
 jest.mock('../../Components/internal/checkout-sheet', () => ({
@@ -110,6 +111,7 @@ describe('CardFormScreen Pay', () => {
       cardForm: () => props('PrimerCardForm'),
       billingForm: () => props('PrimerBillingAddressForm'),
       pay: () => props('PrimerButton'),
+      header: () => props('NavigationHeader'),
     };
   }
 
@@ -118,6 +120,8 @@ describe('CardFormScreen Pay', () => {
     expect(screen.cardForm().editable).toBe(true);
     expect(screen.billingForm().editable).toBe(true);
     expect(screen.pay().loading).toBe(false);
+    expect(screen.header().disabled).toBe(false);
+    expect(mockCardFormBusy).toHaveBeenLastCalledWith(false);
     expect(screen.pay().title).toBe('primer_common_button_pay');
     expect(screen.pay().accessibilityLabel).toBeUndefined();
     expect(screen.pay().accessibilityHint).toBeUndefined();
@@ -130,6 +134,8 @@ describe('CardFormScreen Pay', () => {
     expect(screen.cardForm().editable).toBe(false);
     expect(screen.billingForm().editable).toBe(false);
     expect(screen.pay().loading).toBe(true);
+    expect(screen.header().disabled).toBe(true);
+    expect(mockCardFormBusy).toHaveBeenLastCalledWith(true);
     expect(screen.pay().accessibilityLabel).toBeUndefined();
     expect(screen.pay().accessibilityHint).toBeUndefined();
     expect(screen.pay().loadingAccessibilityValue).toBe('accessibility_card_form_submit_loading');

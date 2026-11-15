@@ -66,10 +66,14 @@ const screenMap: Partial<Record<CheckoutRouteType, React.ComponentType>> = {
 
 export interface CheckoutFlowProps {
   onCancel?: () => void;
+  onCardFormBusyChange?: (busy: boolean) => void;
 }
 
-export function CheckoutFlow({ onCancel }: CheckoutFlowProps = {}) {
-  const contextValue = useMemo(() => ({ onCancel: onCancel ?? (() => {}) }), [onCancel]);
+export function CheckoutFlow({ onCancel, onCardFormBusyChange }: CheckoutFlowProps = {}) {
+  const contextValue = useMemo(
+    () => ({ onCancel: onCancel ?? (() => {}), onCardFormBusyChange }),
+    [onCancel, onCardFormBusyChange]
+  );
 
   return (
     <CheckoutFlowContext.Provider value={contextValue}>
