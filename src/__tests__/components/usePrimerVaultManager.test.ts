@@ -39,7 +39,7 @@ function makeCardVault(overrides: Partial<PrimerVaultedPaymentMethod> = {}): Pri
     paymentInstrumentData: {
       cardholderName: 'John Appleseed',
       network: 'MASTERCARD',
-      last4Digits: 1234,
+      last4Digits: '0005',
       expirationMonth: 5,
       expirationYear: 2026,
     },
@@ -137,7 +137,7 @@ describe('usePrimerVaultManager', () => {
     if (item?.kind !== 'card') throw new Error('expected a card vault');
     expect(item.id).toBe('vault-1');
     expect(item.cardholderName).toBe('John Appleseed');
-    expect(item.last4).toBe('1234');
+    expect(item.last4).toBe('0005');
     expect(item.expiryMonth).toBe('05');
     expect(item.expiryYear).toBe('26');
     expect(item.brandName).toBe('Mastercard');

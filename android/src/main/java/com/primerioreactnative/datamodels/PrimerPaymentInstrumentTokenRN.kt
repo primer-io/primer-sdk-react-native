@@ -34,7 +34,7 @@ data class PrimerPaymentInstrumentTokenRN(
         val network: String? = null,
         val cardholderName: String? = null,
         val first6Digits: Int? = null,
-        val last4Digits: Int? = null,
+        val last4Digits: String? = null,
         val accountNumberLast4Digits: Int? = null,
         val expirationMonth: Int? = null,
         val expirationYear: Int? = null,
