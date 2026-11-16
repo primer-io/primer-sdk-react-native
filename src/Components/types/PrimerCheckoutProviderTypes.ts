@@ -219,6 +219,7 @@ export interface PrimerCheckoutContextValue {
    * (the entered CVV digits stay local to `PrimerVaultedPaymentMethod` for security).
    */
   cvvInputVisible: boolean;
+  isVaultedPayment: boolean;
 
   // --- Actions ---
   /** Register/deregister the active payment method. Pass `null` to tear down. */
