@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
+import { FlatList, Image, Platform, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import type { ListRenderItemInfo, TextStyle } from 'react-native';
 import { usePrimerTheme } from '../theme';
 import type { PrimerTokens } from '../theme';
@@ -16,12 +16,14 @@ import { usePrimerBillingAddressForm } from '../../hooks/usePrimerBillingAddress
 import { COUNTRIES, getLocalizedCountryName, type CountryCode } from '../countries';
 import { flagEmoji } from '../flags';
 import { useBottomPadding } from './useBottomPadding';
+import { useKeyboardPadding } from './useKeyboardPadding';
 
 const ROW_HEIGHT = 44;
 const MAX_SCROLL_RETRIES = 10;
 const SEARCH_ICON_SIZE = 20;
 
 const searchIcon = require('./assets/search.png');
+const closeIcon = require('./assets/close.png');
 
 // Row shape used inside the picker: code + the (localized) display name plus
 // the English fallback we keep for searching while the locale is non-English.
@@ -39,7 +41,8 @@ export function CountrySelectorScreen() {
   const { params } = useRoute<CheckoutRoute.countrySelector>();
   const billingForm = usePrimerBillingAddressForm();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
-  const bottomPadding = useBottomPadding();
+  const keyboardPadding = useKeyboardPadding();
+  const bottomPadding = useBottomPadding() + (Platform.OS === 'android' ? keyboardPadding : 0);
 
   const initialSelected = params?.selectedCountryCode ?? '';
   const [query, setQuery] = useState('');
@@ -166,9 +169,7 @@ export function CountrySelectorScreen() {
         accessibilityLabel={t('accessibility_country_selection_clear')}
         testID="primer-country-selector-clear"
       >
-        <Text style={styles.clear} accessibilityElementsHidden>
-          ✕
-        </Text>
+        <Image source={closeIcon} style={styles.clear} accessibilityElementsHidden importantForAccessibility="no" />
       </TouchableOpacity>
     ) : null;
 
@@ -232,8 +233,9 @@ function createStyles(tokens: PrimerTokens) {
       marginLeft: spacing.small,
     },
     clear: {
-      color: colors.iconPrimary,
-      fontSize: typography.bodyLarge.fontSize,
+      height: SEARCH_ICON_SIZE,
+      tintColor: colors.iconPrimary,
+      width: SEARCH_ICON_SIZE,
     },
     empty: {
       alignItems: 'center',
