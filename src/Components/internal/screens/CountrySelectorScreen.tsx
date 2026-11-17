@@ -24,6 +24,7 @@ const SEARCH_ICON_SIZE = 20;
 
 const searchIcon = require('./assets/search.png');
 const closeIcon = require('./assets/close.png');
+const checkIcon = require('./assets/check.png');
 
 // Row shape used inside the picker: code + the (localized) display name plus
 // the English fallback we keep for searching while the locale is non-English.
@@ -120,9 +121,7 @@ export function CountrySelectorScreen() {
           </Text>
           <Text style={styles.rowLabel}>{item.name}</Text>
           {isSelected && (
-            <Text style={styles.check} accessibilityElementsHidden>
-              ✓
-            </Text>
+            <Image source={checkIcon} style={styles.check} accessibilityElementsHidden importantForAccessibility="no" />
           )}
         </TouchableOpacity>
       );
@@ -228,9 +227,10 @@ function createStyles(tokens: PrimerTokens) {
   const { colors, radii, spacing, typography } = tokens;
   return StyleSheet.create({
     check: {
-      color: colors.iconPrimary,
-      fontSize: typography.bodyLarge.fontSize,
+      height: SEARCH_ICON_SIZE,
       marginLeft: spacing.small,
+      tintColor: colors.iconPrimary,
+      width: SEARCH_ICON_SIZE,
     },
     clear: {
       height: SEARCH_ICON_SIZE,
@@ -280,9 +280,8 @@ function createStyles(tokens: PrimerTokens) {
       width: SEARCH_ICON_SIZE,
     },
     searchWrapper: {
-      paddingBottom: spacing.medium,
       paddingHorizontal: spacing.large,
-      paddingTop: spacing.medium,
+      paddingVertical: spacing.xxlarge,
     },
   } satisfies Record<string, TextStyle | object>);
 }
