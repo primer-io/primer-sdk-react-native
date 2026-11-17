@@ -39,6 +39,9 @@ jest.mock(
           startPaymentFlowWithAdditionalData: jest.fn().mockResolvedValue(undefined),
           requiresVaultedCardCvv: jest.fn().mockResolvedValue(false),
         },
+        RNTPrimerHeadlessUniversalCheckoutAssetsManager: {
+          getCardNetworkImage: jest.fn(),
+        },
         RNTPrimerHeadlessUniversalCheckoutBanksComponent: {
           configure: jest.fn().mockResolvedValue(undefined),
           start: jest.fn(),
@@ -70,6 +73,7 @@ const rnMock = require('react-native');
 const nativeModule = rnMock.NativeModules.PrimerHeadlessUniversalCheckout;
 const vaultModule = rnMock.NativeModules.RNPrimerHeadlessUniversalCheckoutVaultManager;
 const banksModule = rnMock.NativeModules.RNTPrimerHeadlessUniversalCheckoutBanksComponent;
+const assetsModule = rnMock.NativeModules.RNTPrimerHeadlessUniversalCheckoutAssetsManager;
 const mockAddListener: jest.Mock = rnMock.__mockAddListener;
 
 function findListener(eventName: string): ((...args: any[]) => void) | undefined {
@@ -652,6 +656,19 @@ describe('PrimerCheckoutProvider — requiresVaultedCardCvv flag wiring', () => 
     expect(vaultModule.configure).toHaveBeenCalledTimes(1);
     expect(vaultModule.requiresVaultedCardCvv).toHaveBeenCalledTimes(1);
     expect(captured!.requiresVaultedCardCvv).toBe(true);
+  });
+
+  it('looks up a saved card logo by its BIN network when the network is missing', async () => {
+    vaultModule.fetchVaultedPaymentMethods.mockResolvedValue({
+      paymentMethods: [
+        { id: 'vault-1', paymentMethodType: 'PAYMENT_CARD', paymentInstrumentData: { binData: { network: 'VISA' } } },
+      ],
+    });
+    assetsModule.getCardNetworkImage.mockResolvedValue({ cardNetworkImageURL: 'file:///visa.png' });
+
+    const ctx = await renderReady();
+
+    expect(ctx().vaultedIconUrisById['vault-1']).toBe('file:///visa.png');
   });
 
   it('routes payFromVault to startPaymentFlow without additional data when none is supplied', async () => {

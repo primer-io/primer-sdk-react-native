@@ -674,7 +674,7 @@ export function PrimerCheckoutProvider({
         const kind = classifyVault(m);
         try {
           if (kind === 'card') {
-            const network = m.paymentInstrumentData?.network;
+            const network = m.paymentInstrumentData?.network ?? m.paymentInstrumentData?.binData?.network;
             const iconUri = network ? await assetsManager.getCardNetworkImageURL(network) : undefined;
             return [m.id, { iconUri, name: undefined }] as const;
           }
