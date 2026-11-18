@@ -55,8 +55,7 @@ function parseVaultedMethod(
         ...base,
         kind: 'bank',
         bankName: instrument?.bankName,
-        accountLast4:
-          instrument?.accountNumberLast4Digits != null ? String(instrument.accountNumberLast4Digits) : undefined,
+        accountLast4: instrument?.accountNumberLast4Digits,
       };
     case 'other': {
       const email = instrument?.externalPayerInfo?.email;

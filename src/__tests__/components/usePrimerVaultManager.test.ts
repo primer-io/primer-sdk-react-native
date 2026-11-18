@@ -151,7 +151,7 @@ describe('usePrimerVaultManager', () => {
       analyticsId: 'a',
       paymentInstrumentType: 'AUTOMATED_CLEARING_HOUSE',
       paymentMethodType: 'STRIPE_ACH',
-      paymentInstrumentData: { bankName: 'STRIPE TEST BANK', accountNumberLast4Digits: 6789 },
+      paymentInstrumentData: { bankName: 'STRIPE TEST BANK', accountNumberLast4Digits: '0789' },
     };
     const ctx: PrimerCheckoutContextValue = {
       ...baseContext,
@@ -163,7 +163,7 @@ describe('usePrimerVaultManager', () => {
     expect(item?.kind).toBe('bank');
     if (item?.kind !== 'bank') throw new Error('expected a bank vault');
     expect(item.bankName).toBe('STRIPE TEST BANK');
-    expect(item.accountLast4).toBe('6789');
+    expect(item.accountLast4).toBe('0789');
     expect(item.displayName).toBe('ACH Direct Debit');
   });
 
