@@ -13,7 +13,9 @@ import { PrimerBillingAddressForm } from '../../PrimerBillingAddressForm';
 import { usePrimerCardForm } from '../../hooks/usePrimerCardForm';
 import { usePrimerBillingAddressForm } from '../../hooks/usePrimerBillingAddressForm';
 import { usePrimerCheckout } from '../../hooks/usePrimerCheckout';
+import { orderTotal } from '../orderTotal';
 import { payButtonTitle } from '../payButtonTitle';
+import { useShownNetworkSurcharge } from '../useShownNetworkSurcharge';
 import { PrimerButton } from '../ui/PrimerButton';
 import { useSheetHeight } from '../checkout-sheet';
 import { useBottomSafeArea } from './useBottomSafeArea';
@@ -33,6 +35,7 @@ export function CardFormScreen() {
   const { onCancel, onCardFormBusyChange } = useCheckoutFlow();
   const cardForm = usePrimerCardForm();
   const billingForm = usePrimerBillingAddressForm();
+  const { surchargeAmountRaw } = useShownNetworkSurcharge();
   const bottomInset = useBottomSafeArea();
   const bottomPadding = useBottomPadding();
   const keyboardPadding = useKeyboardPadding();
@@ -79,9 +82,10 @@ export function CardFormScreen() {
     return () => onCardFormBusyChange?.(false);
   }, [locked, onCardFormBusyChange]);
   const canSubmit = cardForm.isValid && billingForm.isValid && !locked;
-  const totalAmount = clientSession?.totalAmount;
+  const totalAmount = orderTotal(clientSession);
+  const payAmount = totalAmount != null ? totalAmount + (surchargeAmountRaw ?? 0) : undefined;
   const currencyCode = clientSession?.currencyCode;
-  const formattedAmount = totalAmount != null && currencyCode ? formatCurrency(totalAmount, currencyCode) : undefined;
+  const formattedAmount = payAmount != null && currencyCode ? formatCurrency(payAmount, currencyCode) : undefined;
 
   // Flush pending billing-address debounce before navigating so native has the full address;
   // if anything fails before submit dispatches, the user stays on the form instead of stranded

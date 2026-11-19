@@ -523,6 +523,8 @@ export function PrimerCheckoutProvider({
           console.warn(`${LOG} analytics setup failed ${fmt(analyticsErr)}`);
         }
 
+        const acceptedCardNetworks = await assetsManager.getOrderedAllowedCardNetworks().catch(() => null);
+
         // Seed isLoadingResources atomically with isReady so consumers don't see a
         // brief "ready but no resources loading" window before the fetch effect runs.
         setState((prev) => ({
@@ -532,6 +534,7 @@ export function PrimerCheckoutProvider({
           paymentMethodResources: [],
           isLoadingResources: true,
           resourcesError: null,
+          acceptedCardNetworks,
         }));
         becameReadyRef.current = true;
         void PrimerAnalytics.trackEvent('CHECKOUT_FLOW_STARTED');

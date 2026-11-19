@@ -4,6 +4,8 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 import { createElement } from 'react';
 // @ts-expect-error -- react-test-renderer has no types for React 19
 import renderer, { act } from 'react-test-renderer';
+import type { PrimerClientSession } from '../../models/PrimerClientSession';
+import type { PaymentMethodSurcharge } from '../../Components/types/PaymentMethodTypes';
 
 jest.mock(
   'react-native',
@@ -25,7 +27,7 @@ jest.mock(
 const mockStopBanks = jest.fn();
 const mockStopKlarna = jest.fn();
 const mockStopAch = jest.fn();
-let mockClientSession: { totalAmount?: number; currencyCode?: string } | null = null;
+let mockClientSession: PrimerClientSession | null = null;
 jest.mock('../../Components/hooks/usePrimerCheckout', () => ({
   usePrimerCheckout: () => ({
     clientSession: mockClientSession,
@@ -38,7 +40,7 @@ jest.mock('../../Components/hooks/usePrimerCheckout', () => ({
   }),
 }));
 
-let mockPaymentMethods: Array<{ type: string }> = [];
+let mockPaymentMethods: Array<{ type: string; surcharge?: PaymentMethodSurcharge }> = [];
 jest.mock('../../Components/hooks/usePrimerPaymentMethods', () => ({
   usePrimerPaymentMethods: () => ({ paymentMethods: mockPaymentMethods }),
 }));
@@ -151,6 +153,14 @@ describe('MethodSelectionScreen — sheet title', () => {
     expect(mockHeaderTitles.at(-1)).toBe('primer_common_button_pay_amount:1000 GBP');
   });
 
+  it('shows the order total without the surcharge fee', () => {
+    mockClientSession = { totalAmount: 1050, currencyCode: 'GBP', fees: [{ type: 'SURCHARGE', amount: 50 }] };
+    act(() => {
+      renderer.create(createElement(MethodSelectionScreen));
+    });
+    expect(mockHeaderTitles.at(-1)).toBe('primer_common_button_pay_amount:1000 GBP');
+  });
+
   it('falls back to the checkout title while the session has no amount', () => {
     act(() => {
       renderer.create(createElement(MethodSelectionScreen));
@@ -186,5 +196,20 @@ describe('MethodSelectionScreen — sheet height', () => {
     // The mocked window is 800 tall.
     reportContentHeight(5000);
     expect(lastHeight()).toBe(800 * 0.92);
+  });
+
+  it('makes room for each surcharge group title', () => {
+    const estimatedHeight = () => {
+      mockHeights.length = 0;
+      act(() => {
+        renderer.create(createElement(MethodSelectionScreen));
+      });
+      return mockHeights[0] ?? NaN;
+    };
+    const flatHeight = estimatedHeight();
+
+    mockPaymentMethods = [{ type: 'PAYMENT_CARD' }, { type: 'PAYPAL', surcharge: { kind: 'flat', amount: 50 } }];
+
+    expect(estimatedHeight() - flatHeight).toBe(2 * (3 * 8 + 20));
   });
 });

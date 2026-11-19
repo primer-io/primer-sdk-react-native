@@ -13,6 +13,30 @@ data class PrimerClientSessionRN(
     val orderDetails: PrimerOrderRN?,
     val customer: PrimerCustomerRN?,
     val checkoutModules: List<PrimerCheckoutModuleRN>? = null,
+    val paymentMethodOptions: Map<String, PrimerClientSessionPaymentMethodOptionRN>? = null,
+    val fees: List<PrimerFeeRN>? = null,
+)
+
+@Serializable
+data class PrimerClientSessionPaymentMethodOptionRN(
+    val surcharge: PrimerClientSessionSurchargeRN? = null,
+    val networks: Map<String, PrimerClientSessionPaymentMethodNetworkRN>,
+)
+
+@Serializable
+data class PrimerClientSessionPaymentMethodNetworkRN(
+    val surcharge: PrimerClientSessionSurchargeRN? = null,
+)
+
+@Serializable
+data class PrimerClientSessionSurchargeRN(
+    val amount: Int,
+)
+
+@Serializable
+data class PrimerFeeRN(
+    val type: String?,
+    val amount: Int,
 )
 
 @Serializable
