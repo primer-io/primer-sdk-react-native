@@ -146,28 +146,6 @@ describe('PaymentMethodButton — partner', () => {
     expect(onPress).toHaveBeenCalledTimes(1);
   });
 
-  it('shows a flat surcharge in white on a backend fill and in textSecondary on the sheet colour', () => {
-    const surcharge = { kind: 'flat', amount: 50 } as const;
-    const onBrand = render(withAssets('PAYPAL', 'PayPal', LOGOS, { colored: '#ffc439' }, { surcharge }));
-    const [onBrandLabel] = texts(onBrand);
-    expect(onBrandLabel!.props.children).toBe('+50');
-    expect(flat(onBrandLabel!.props.style)).toMatchObject({ color: '#ffffff', opacity: 0.8 });
-
-    const onSheet = render(withAssets('PAYPAL', 'PayPal', LOGOS, {}, { surcharge }));
-    const [onSheetLabel] = texts(onSheet);
-    expect(flat(onSheetLabel!.props.style).color).toBe(defaultLightTokens.colors.textSecondary);
-  });
-
-  it('reads the flat surcharge after the method name', () => {
-    const root = render(
-      withAssets('PAYPAL', 'PayPal', LOGOS, { colored: '#ffc439' }, { surcharge: { kind: 'flat', amount: 50 } })
-    );
-
-    expect(row(root).props.accessibilityLabel).toBe(
-      `${tr('accessibility_screen_payment_method', { paymentMethodName: 'PayPal' })}, +50`
-    );
-  });
-
   it("lets the name, and Klarna's words, shrink so large text wraps instead of being cut off", () => {
     const root = render(withAssets('PAYPAL', 'PayPal', {}, { colored: '#ffc439' }));
     const [name] = texts(root);
@@ -217,12 +195,6 @@ describe('PaymentMethodButton — card', () => {
     expect(texts(root).map((t) => t.props.children)).toEqual([tr('primer_card_form_title')]);
     expect(row(root).props.accessibilityRole).toBe('button');
     expect(row(root).props.accessibilityLabel).toBe(tr('accessibility_payment_selection_pay_with_card'));
-  });
-
-  it('shows a flat surcharge in textSecondary', () => {
-    const root = render({ ...card, surcharge: { kind: 'flat', amount: 50 } }, { tokens });
-    const surcharge = texts(root).find((t) => t.props.children === '+50');
-    expect(flat(surcharge!.props.style).color).toBe(tokens.colors.textSecondary);
   });
 });
 
@@ -280,13 +252,6 @@ describe('PaymentMethodButton — Klarna', () => {
     texts(root).forEach((text, i) => expect(flat(text.props.style)).toMatchObject(margins[i]!));
     expect(row(root).props.accessibilityLabel).toBe(localeLabel);
   });
-
-  it('shows a flat surcharge in white on the black, and reads it after the label', () => {
-    const root = render({ ...klarna, surcharge: { kind: 'flat', amount: 50 } });
-    const surcharge = texts(root).find((t) => t.props.children === '+50');
-    expect(flat(surcharge!.props.style)).toMatchObject({ color: '#ffffff', opacity: 0.8 });
-    expect(row(root).props.accessibilityLabel).toBe(`${label}, +50`);
-  });
 });
 
 describe('PaymentMethodButton — Apple Pay', () => {
@@ -320,6 +285,20 @@ describe('PaymentMethodButton — Apple Pay', () => {
     const root = render(applePay);
     expect(root.findAllByType('PrimerApplePayButton')).toHaveLength(0);
     expect(root.findByType('Image').props.source).toEqual({ uri: LOGOS.light });
+  });
+});
+
+describe('PaymentMethodButton — surcharge', () => {
+  it.each([
+    ['partner', withAssets('PAYPAL', 'PayPal', LOGOS, { colored: '#ffc439' })],
+    ['card', makeItem('PAYMENT_CARD')],
+    ['Klarna', makeItem('KLARNA')],
+  ])('shows no fee on the %s row', (_, item) => {
+    const plain = render(item);
+    const withFee = render({ ...item, surcharge: { kind: 'flat', amount: 50 } });
+
+    expect(texts(withFee).map((t) => t.props.children)).toEqual(texts(plain).map((t) => t.props.children));
+    expect(row(withFee).props.accessibilityLabel).toBe(row(plain).props.accessibilityLabel);
   });
 });
 

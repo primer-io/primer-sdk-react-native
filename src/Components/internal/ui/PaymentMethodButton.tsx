@@ -21,9 +21,6 @@ const BUTTON_HEIGHT = PAYMENT_METHOD_BUTTON_HEIGHT;
 const PARTNER_LOGO_HEIGHT = 26;
 const PAYMENT_CARD_TYPE = 'PAYMENT_CARD';
 const KLARNA_TYPE = 'KLARNA';
-// the surcharge badge sits on the payment method's own brand colour, which merchant theming
-// doesn't control, so it stays a fixed light value
-const ON_BRAND_SURFACE_TEXT = '#ffffff';
 
 export function PaymentMethodButton({ item, onPress }: PaymentMethodButtonProps) {
   const tokens = usePrimerTheme();
@@ -51,8 +48,8 @@ export function PaymentMethodButton({ item, onPress }: PaymentMethodButtonProps)
   }
 
   // PassKit's own button, as in the iOS SDK, in the list's scheme so a forced appearanceMode wins.
-  // iOS only: the Android SDK never lists APPLE_PAY and Android registers no such view. It can't
-  // carry text, so it shows no surcharge, and it stays 44 high as PassKit doesn't grow.
+  // iOS only: the Android SDK never lists APPLE_PAY and Android registers no such view. It stays
+  // 44 high as PassKit doesn't grow.
   if (item.type === APPLE_PAY && Platform.OS === 'ios') {
     return (
       <TouchableOpacity
@@ -69,26 +66,19 @@ export function PaymentMethodButton({ item, onPress }: PaymentMethodButtonProps)
     );
   }
 
-  // Only the flat surcharge has a single amount we can display on the button.
-  // `perNetwork` (PAYMENT_CARD) depends on the card the user enters — skip here.
-  const surchargeLabel = item.surcharge?.kind === 'flat' ? `+${item.surcharge.amount}` : null;
-  // The row's label replaces its children for screen readers, so it carries the fee too.
-  const withSurcharge = (label: string) => (surchargeLabel != null ? `${label}, ${surchargeLabel}` : label);
-
   // PAYMENT_CARD never takes the partner path: it always shows the bundled card glyph and the
   // "Pay with card" label, even if the native resource exposes a logo or background.
   if (item.type === PAYMENT_CARD_TYPE) {
     return (
       <TouchableOpacity
         accessibilityRole="button"
-        accessibilityLabel={withSurcharge(t('accessibility_payment_selection_pay_with_card'))}
+        accessibilityLabel={t('accessibility_payment_selection_pay_with_card')}
         style={[styles.button, styles.cardButton]}
         onPress={onPress}
         activeOpacity={0.7}
       >
         <Image source={creditCardIcon} style={styles.cardIcon} resizeMode="contain" />
         <Text style={styles.titleText}>{t('primer_card_form_title')}</Text>
-        {surchargeLabel != null && <Text style={styles.surchargeDark}>{surchargeLabel}</Text>}
       </TouchableOpacity>
     );
   }
@@ -101,7 +91,7 @@ export function PaymentMethodButton({ item, onPress }: PaymentMethodButtonProps)
     return (
       <TouchableOpacity
         accessibilityRole="button"
-        accessibilityLabel={withSurcharge(label)}
+        accessibilityLabel={label}
         style={[styles.button, styles.klarnaButton]}
         onPress={onPress}
         activeOpacity={0.7}
@@ -111,7 +101,6 @@ export function PaymentMethodButton({ item, onPress }: PaymentMethodButtonProps)
           <Image source={klarnaWordmark} style={styles.klarnaWordmark} />
         </View>
         {after != null && <Text style={[styles.klarnaText, styles.klarnaTextAfter]}>{after}</Text>}
-        {surchargeLabel != null && <Text style={styles.surchargeLight}>{surchargeLabel}</Text>}
       </TouchableOpacity>
     );
   }
@@ -122,7 +111,7 @@ export function PaymentMethodButton({ item, onPress }: PaymentMethodButtonProps)
   return (
     <TouchableOpacity
       accessibilityRole="button"
-      accessibilityLabel={withSurcharge(methodLabel)}
+      accessibilityLabel={methodLabel}
       style={[styles.button, { backgroundColor: backgroundColor ?? tokens.colors.backgroundPrimary }]}
       onPress={onPress}
       activeOpacity={0.7}
@@ -131,9 +120,6 @@ export function PaymentMethodButton({ item, onPress }: PaymentMethodButtonProps)
         <Image source={{ uri: logo }} style={styles.logo} resizeMode="contain" />
       ) : (
         <Text style={styles.titleText}>{item.name}</Text>
-      )}
-      {surchargeLabel != null && (
-        <Text style={backgroundColor != null ? styles.surchargeLight : styles.surchargeDark}>{surchargeLabel}</Text>
       )}
     </TouchableOpacity>
   );
@@ -199,24 +185,6 @@ function createStyles(tokens: PrimerTokens) {
     nativeButton: {
       height: BUTTON_HEIGHT,
       width: '100%',
-    },
-    surchargeDark: {
-      color: colors.textSecondary,
-      fontFamily: typography.bodySmall.fontFamily,
-      fontSize: typography.bodySmall.fontSize,
-      fontWeight: typography.bodySmall.fontWeight,
-      marginLeft: spacing.small,
-      position: 'absolute',
-      right: spacing.small,
-    },
-    surchargeLight: {
-      color: ON_BRAND_SURFACE_TEXT,
-      fontFamily: typography.bodySmall.fontFamily,
-      fontSize: typography.bodySmall.fontSize,
-      fontWeight: typography.bodySmall.fontWeight,
-      opacity: 0.8,
-      position: 'absolute',
-      right: spacing.small,
     },
     titleText: {
       ...titleLarge,

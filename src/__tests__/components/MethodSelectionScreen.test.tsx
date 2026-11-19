@@ -4,6 +4,7 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 import { createElement } from 'react';
 // @ts-expect-error -- react-test-renderer has no types for React 19
 import renderer, { act } from 'react-test-renderer';
+import type { PrimerClientSession } from '../../models/PrimerClientSession';
 
 jest.mock(
   'react-native',
@@ -25,7 +26,7 @@ jest.mock(
 const mockStopBanks = jest.fn();
 const mockStopKlarna = jest.fn();
 const mockStopAch = jest.fn();
-let mockClientSession: { totalAmount?: number; currencyCode?: string } | null = null;
+let mockClientSession: PrimerClientSession | null = null;
 jest.mock('../../Components/hooks/usePrimerCheckout', () => ({
   usePrimerCheckout: () => ({
     clientSession: mockClientSession,
@@ -145,6 +146,14 @@ describe('MethodSelectionScreen — sheet title', () => {
 
   it('shows the amount once the client session carries it, as the native SDKs do', () => {
     mockClientSession = { totalAmount: 1000, currencyCode: 'GBP' };
+    act(() => {
+      renderer.create(createElement(MethodSelectionScreen));
+    });
+    expect(mockHeaderTitles.at(-1)).toBe('primer_common_button_pay_amount:1000 GBP');
+  });
+
+  it('shows the order total without the surcharge fee', () => {
+    mockClientSession = { totalAmount: 1050, currencyCode: 'GBP', fees: [{ type: 'SURCHARGE', amount: 50 }] };
     act(() => {
       renderer.create(createElement(MethodSelectionScreen));
     });

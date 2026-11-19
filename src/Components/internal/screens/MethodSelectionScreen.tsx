@@ -13,6 +13,7 @@ import { usePrimerLocalization } from '../localization';
 import { NavigationHeader } from '../navigation/NavigationHeader';
 import { CheckoutRoute } from '../navigation/types';
 import { useNavigation } from '../navigation/useNavigation';
+import { orderTotal } from '../orderTotal';
 import { routeMethodSelection } from '../routeMethodSelection';
 import { usePrimerTheme } from '../theme';
 import { toTextStyle } from '../theme/typography';
@@ -46,7 +47,7 @@ export function MethodSelectionScreen() {
   const { push, replace } = useNavigation();
   const { clientSession, setActiveMethod, startNativeUI, stopBanks, stopKlarna, startAch, stopAch } =
     usePrimerCheckout();
-  const totalAmount = clientSession?.totalAmount;
+  const totalAmount = orderTotal(clientSession);
   const currencyCode = clientSession?.currencyCode;
   // The native SDKs title the list with the amount; "Checkout" only until the session arrives.
   const title =

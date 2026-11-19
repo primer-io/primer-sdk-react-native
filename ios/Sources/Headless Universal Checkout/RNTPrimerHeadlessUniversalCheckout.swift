@@ -279,7 +279,8 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
           do {
             let payload = try Self.makeClientSessionPayload(
               clientSession: initialClientSession,
-              checkoutModules: bridge.getCheckoutModules()
+              checkoutModules: bridge.getCheckoutModules(),
+              paymentMethodOptions: bridge.getPaymentMethodOptions()
             )
             self.sendEvent(
               withName: updateCallbackName,
@@ -561,12 +562,16 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
           // Augment the SDK-provided `clientSession` with `checkoutModules` from the
           // bridge — these are not surfaced on the public `PrimerClientSession` type.
           var checkoutModules: [ComponentsCheckoutModule]?
+          var paymentMethodOptions: [ComponentsPaymentMethodOption]?
           if #available(iOS 15.0, *) {
-            checkoutModules = ComponentsClientSessionBridge().getCheckoutModules()
+            let bridge = ComponentsClientSessionBridge()
+            checkoutModules = bridge.getCheckoutModules()
+            paymentMethodOptions = bridge.getPaymentMethodOptions()
           }
           let payload = try Self.makeClientSessionPayload(
             clientSession: clientSession,
-            checkoutModules: checkoutModules
+            checkoutModules: checkoutModules,
+            paymentMethodOptions: paymentMethodOptions
           )
           self.sendEvent(
             withName: rnCallbackName,
@@ -585,9 +590,10 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
   // surfaced by `ComponentsClientSessionBridge`. The bridge returns a value-typed
   // `ComponentsCheckoutModule` parameter under SPI, so the parameter is `Any?` in
   // the public signature to avoid leaking SPI types into call-site availability.
-  private static func makeClientSessionPayload(
+  static func makeClientSessionPayload(
     clientSession: PrimerClientSession,
-    checkoutModules: Any?
+    checkoutModules: Any?,
+    paymentMethodOptions: Any?
   ) throws -> [String: Any] {
     let json = try clientSession.toJsonObject()
     var dict = (json as? [String: Any]) ?? [:]
@@ -599,6 +605,17 @@ extension RNTPrimerHeadlessUniversalCheckout: PrimerHeadlessUniversalCheckoutDel
           moduleDict["options"] = options
         }
         return moduleDict
+      }
+    }
+    if #available(iOS 15.0, *), let options = paymentMethodOptions as? [ComponentsPaymentMethodOption] {
+      dict["paymentMethodOptions"] = options.reduce(into: [String: Any]()) { result, option in
+        var optionDict: [String: Any] = [
+          "networks": option.networks.reduce(into: [String: Any]()) { networks, network in
+            networks[network.type] = network.surcharge.map { ["surcharge": ["amount": $0]] } ?? [:]
+          }
+        ]
+        optionDict["surcharge"] = option.surcharge.map { ["amount": $0] }
+        result[option.type] = optionDict
       }
     }
     return dict
