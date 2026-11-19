@@ -13,6 +13,7 @@ import type {
 } from '../../../models/klarna/KlarnaPaymentCollectableData';
 import type { KlarnaPaymentStep } from '../../../models/klarna/KlarnaPaymentSteps';
 import type { EventType } from './Utils/EventType';
+import { unwrapNativeError } from './Utils/unwrapNativeError';
 import { PrimerSessionIntent } from '../../../models/PrimerSessionIntent';
 
 const { RNTPrimerHeadlessUniversalCheckoutKlarnaComponent } = NativeModules;
@@ -142,7 +143,8 @@ export class PrimerHeadlessUniversalCheckoutKlarnaManager {
 
     if (props?.onError) {
       const sub = await this.addListener('onError', (data) => {
-        props.onError?.(data);
+        const error = unwrapNativeError(data);
+        if (error) props.onError?.(error);
       });
       this.subscriptions.push(sub);
     }

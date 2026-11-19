@@ -1,0 +1,190 @@
+// @ts-expect-error -- React 19 concurrent act environment
+globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+
+import { createElement } from 'react';
+// @ts-expect-error -- react-test-renderer has no types for React 19
+import renderer, { act } from 'react-test-renderer';
+
+jest.mock(
+  'react-native',
+  () => ({
+    Image: 'Image',
+    StyleSheet: { create: (s: unknown) => s, flatten: (s: unknown) => s },
+    Text: 'Text',
+    TouchableOpacity: 'TouchableOpacity',
+    View: 'View',
+    Platform: { OS: 'ios', select: (o: any) => o.ios ?? o.default },
+    ScrollView: 'ScrollView',
+    useWindowDimensions: () => ({ width: 400, height: 800 }),
+  }),
+  { virtual: true }
+);
+
+// stopBanks/stopAch are the disarms we assert on; the rest of the context surface is stubbed.
+// `mock`-prefixed names so the hoisted jest.mock factory may reference them.
+const mockStopBanks = jest.fn();
+const mockStopKlarna = jest.fn();
+const mockStopAch = jest.fn();
+let mockClientSession: { totalAmount?: number; currencyCode?: string } | null = null;
+jest.mock('../../Components/hooks/usePrimerCheckout', () => ({
+  usePrimerCheckout: () => ({
+    clientSession: mockClientSession,
+    setActiveMethod: jest.fn(),
+    startNativeUI: jest.fn(),
+    stopBanks: mockStopBanks,
+    stopKlarna: mockStopKlarna,
+    startAch: jest.fn().mockResolvedValue(undefined),
+    stopAch: mockStopAch,
+  }),
+}));
+
+let mockPaymentMethods: Array<{ type: string }> = [];
+jest.mock('../../Components/hooks/usePrimerPaymentMethods', () => ({
+  usePrimerPaymentMethods: () => ({ paymentMethods: mockPaymentMethods }),
+}));
+
+jest.mock('../../Components/hooks/usePrimerVaultManager', () => ({
+  usePrimerVaultManager: () => ({
+    activeMethod: null,
+    vaultDisplayMode: 'none',
+    requestExpandedVaultDisplay: jest.fn(),
+    cvvInputVisible: false,
+  }),
+}));
+
+jest.mock('../../Components/internal/theme', () => ({
+  usePrimerTheme: () => ({
+    colors: {
+      backgroundPrimary: '#fff',
+      backgroundSecondary: '#fafafa',
+      borderOutlinedDefault: '#ccc',
+      brand: '#08f',
+      textPrimary: '#000',
+      textSecondary: '#666',
+    },
+    spacing: { xxsmall: 2, xsmall: 4, small: 8, medium: 12, large: 16, xlarge: 20, xxlarge: 24 },
+    radii: { small: 4, medium: 8, large: 12 },
+    sizes: { small: 16, medium: 20, large: 24, xlarge: 32, xxlarge: 40, xxxlarge: 56, base: 4 },
+    widths: { default: 1, focus: 2, selected: 2, error: 2 },
+    typography: {
+      fontFamily: 'system',
+      bodySmall: { fontFamily: 'system', fontSize: 12, fontWeight: '400', letterSpacing: 0, lineHeight: 16 },
+      error: { fontFamily: 'system', fontSize: 12, fontWeight: '400', letterSpacing: 0, lineHeight: 16 },
+      bodyMedium: { fontFamily: 'system', fontSize: 14, fontWeight: '400', letterSpacing: 0, lineHeight: 18 },
+      bodyLarge: { fontFamily: 'system', fontSize: 16, fontWeight: '400', letterSpacing: 0, lineHeight: 20 },
+      titleLarge: { fontFamily: 'system', fontSize: 16, fontWeight: '500', letterSpacing: 0, lineHeight: 20 },
+      titleXlarge: { fontFamily: 'system', fontSize: 18, fontWeight: '600', letterSpacing: 0, lineHeight: 22 },
+    },
+  }),
+}));
+
+jest.mock('../../Components/internal/localization', () => ({
+  usePrimerLocalization: () => ({
+    t: (key: string, params?: Record<string, string>) => (params?.amount ? `${key}:${params.amount}` : key),
+    formatCurrency: (amount: number, currency: string) => `${amount} ${currency}`,
+  }),
+}));
+
+jest.mock('../../Components/internal/checkout-flow/CheckoutFlowContext', () => ({
+  useCheckoutFlow: () => ({ onCancel: jest.fn() }),
+}));
+
+jest.mock('../../Components/internal/navigation/useNavigation', () => ({
+  useNavigation: () => ({ push: jest.fn(), replace: jest.fn() }),
+}));
+
+jest.mock('../../Components/internal/screens/useBottomSafeArea', () => ({ useBottomSafeArea: () => 0 }));
+jest.mock('../../Components/internal/screens/useKeyboardHeight', () => ({
+  useKeyboardHeight: () => 0,
+  getLastSeenKeyboardHeight: () => 0,
+}));
+// Every sheet height the screen asks for, in order.
+const mockHeights: number[] = [];
+jest.mock('../../Components/internal/screens/useStatusScreenHeight', () => ({
+  useStatusScreenHeight: (height: number) => {
+    mockHeights.push(height);
+  },
+}));
+
+// Child components + analytics are irrelevant to the disarm wiring — stub them out.
+jest.mock('../../Components/PrimerPaymentMethodList', () => ({ PrimerPaymentMethodList: () => null }));
+jest.mock('../../Components/PrimerVaultedPaymentMethod', () => ({ PrimerVaultedPaymentMethod: () => null }));
+const mockHeaderTitles: string[] = [];
+jest.mock('../../Components/internal/navigation/NavigationHeader', () => ({
+  NavigationHeader: ({ title }: { title: string }) => {
+    mockHeaderTitles.push(title);
+    return null;
+  },
+}));
+jest.mock('../../Components/internal/ui/PrimerButton', () => ({ PrimerButton: () => null }));
+jest.mock('../../Components/internal/ui/PaymentMethodButton', () => ({ PAYMENT_METHOD_BUTTON_HEIGHT: 56 }));
+jest.mock('../../Components/analytics', () => ({ PrimerAnalytics: { trackEvent: jest.fn() } }));
+
+import { MethodSelectionScreen } from '../../Components/internal/screens/MethodSelectionScreen';
+
+describe('MethodSelectionScreen — flow disarm on mount (ORC-6514/6515)', () => {
+  beforeEach(() => jest.clearAllMocks());
+
+  it('disarms any active bank, Klarna and ACH flow on mount so re-picking re-fetches and an abandoned session is torn down', () => {
+    act(() => {
+      renderer.create(createElement(MethodSelectionScreen));
+    });
+    // Landing on the method list is the "shopper left the bank flow" signal — it must disarm,
+    // and it must do so here (not on bank-screen unmount, which would fire mid-submit).
+    expect(mockStopBanks).toHaveBeenCalledTimes(1);
+    expect(mockStopKlarna).toHaveBeenCalledTimes(1);
+    expect(mockStopAch).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('MethodSelectionScreen — sheet title', () => {
+  beforeEach(() => {
+    mockHeaderTitles.length = 0;
+    mockClientSession = null;
+  });
+
+  it('shows the amount once the client session carries it, as the native SDKs do', () => {
+    mockClientSession = { totalAmount: 1000, currencyCode: 'GBP' };
+    act(() => {
+      renderer.create(createElement(MethodSelectionScreen));
+    });
+    expect(mockHeaderTitles.at(-1)).toBe('primer_common_button_pay_amount:1000 GBP');
+  });
+
+  it('falls back to the checkout title while the session has no amount', () => {
+    act(() => {
+      renderer.create(createElement(MethodSelectionScreen));
+    });
+    expect(mockHeaderTitles.at(-1)).toBe('primer_checkout_title');
+  });
+});
+
+describe('MethodSelectionScreen — sheet height', () => {
+  beforeEach(() => {
+    mockHeights.length = 0;
+    mockPaymentMethods = [{ type: 'PAYMENT_CARD' }, { type: 'PAYPAL' }];
+  });
+
+  afterEach(() => {
+    mockPaymentMethods = [];
+  });
+
+  it('grows the sheet with the measured content so taller buttons fit, up to 92% of the screen', () => {
+    let tree: any;
+    act(() => {
+      tree = renderer.create(createElement(MethodSelectionScreen));
+    });
+    const lastHeight = () => mockHeights[mockHeights.length - 1] ?? NaN;
+    const reportContentHeight = (height: number) =>
+      act(() => tree.root.findByType('ScrollView').props.onContentSizeChange(0, height));
+
+    reportContentHeight(400);
+    const at400 = lastHeight();
+    reportContentHeight(500);
+    expect(lastHeight() - at400).toBe(100);
+
+    // The mocked window is 800 tall.
+    reportContentHeight(5000);
+    expect(lastHeight()).toBe(800 * 0.92);
+  });
+});

@@ -265,7 +265,7 @@ const CheckoutScreen = (props: any) => {
         recurringPaymentDescription: 'Recurring payment description',
       },
       applePayOptions: {
-        merchantIdentifier: 'merchant.checkout.team',
+        merchantIdentifier: 'merchant.acceptance.team',
         merchantName: appPaymentParameters.merchantName || 'Merchant name',
         isCaptureBillingAddressEnabled: true,
         showApplePayForUnsupportedDevice: true,

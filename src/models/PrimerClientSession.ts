@@ -8,6 +8,36 @@ interface IPrimerClientSession {
   lineItems?: IPrimerLineItem[];
   orderDetails?: IPrimerOrder;
   customer?: IPrimerCustomer;
+  checkoutModules?: IPrimerCheckoutModule[];
+  paymentMethodOptions?: Record<string, IPrimerClientSessionPaymentMethodOption>;
+}
+
+export type PrimerCheckoutModule = IPrimerCheckoutModule;
+
+interface IPrimerCheckoutModule {
+  type: string;
+  options?: Record<string, boolean>;
+}
+
+export type PrimerClientSessionPaymentMethodOption = IPrimerClientSessionPaymentMethodOption;
+
+interface IPrimerClientSessionPaymentMethodOption {
+  // Top-level surcharge (e.g. PAYPAL, APPLE_PAY). Not set on PAYMENT_CARD — see `networks`.
+  surcharge?: IPrimerClientSessionSurcharge;
+  // PAYMENT_CARD only: per-card-network surcharges (VISA, MASTERCARD, …).
+  networks?: Record<string, IPrimerClientSessionPaymentMethodNetwork>;
+}
+
+export type PrimerClientSessionPaymentMethodNetwork = IPrimerClientSessionPaymentMethodNetwork;
+
+interface IPrimerClientSessionPaymentMethodNetwork {
+  surcharge?: IPrimerClientSessionSurcharge;
+}
+
+export type PrimerClientSessionSurcharge = IPrimerClientSessionSurcharge;
+
+interface IPrimerClientSessionSurcharge {
+  amount?: number;
 }
 
 export type PrimerLineItem = IPrimerLineItem;

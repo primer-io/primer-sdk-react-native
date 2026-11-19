@@ -6,7 +6,7 @@ import io.primer.android.data.settings.DismissalMechanism
 import io.primer.android.ui.settings.PrimerUIOptions
 
 @OptIn(kotlin.ExperimentalStdlibApi::class)
-internal fun PrimerUIOptionsRN.toPrimerUIOptions(context: Context) =
+internal fun PrimerUIOptionsRN.toPrimerUIOptions(context: Context, appearanceMode: String?) =
     PrimerUIOptions(
         isInitScreenEnabled,
         isSuccessScreenEnabled,
@@ -20,6 +20,13 @@ internal fun PrimerUIOptionsRN.toPrimerUIOptions(context: Context) =
                 }
             }
         }.toList().takeIf { it.isNotEmpty() } ?: listOf(DismissalMechanism.GESTURES),
-        theme.toPrimerTheme(context),
+        theme.toPrimerTheme(isDarkAppearance(appearanceMode, orSystem = context.isSystemDarkAppearance())),
         cardFormUIOptions.toPrimerCardFormUIOptions(),
     )
+
+internal fun isDarkAppearance(appearanceMode: String?, orSystem: Boolean): Boolean =
+    when (appearanceMode) {
+        "DARK" -> true
+        "LIGHT" -> false
+        else -> orSystem
+    }
