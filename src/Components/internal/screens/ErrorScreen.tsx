@@ -15,7 +15,8 @@ const TOP_PADDING = 24;
 
 export function ErrorScreen() {
   const { replace } = useNavigation();
-  const { retry, clearPaymentOutcome, requestExpandedVaultDisplay } = usePrimerCheckout();
+  const { retry, clearPaymentOutcome, requestExpandedVaultDisplay, isVaultedPayment, setCvvInputVisible } =
+    usePrimerCheckout();
   const bottomPadding = useBottomPadding();
   // A long error message or large text needs more than the estimate; the sheet follows the content.
   const [contentHeight, setContentHeight] = useState(CONTENT_HEIGHT);
@@ -23,6 +24,12 @@ export function ErrorScreen() {
   useStatusScreenHeight(sheetHeight);
 
   const onRetry = () => {
+    if (isVaultedPayment) {
+      setCvvInputVisible(false);
+      clearPaymentOutcome();
+      replace(CheckoutRoute.methodSelection);
+      return;
+    }
     // Navigate to processing first so the user sees an immediate spinner;
     // the outcome transitioner replaces with success/error when retry resolves.
     replace(CheckoutRoute.processing);

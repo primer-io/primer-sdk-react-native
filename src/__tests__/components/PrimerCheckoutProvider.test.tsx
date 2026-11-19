@@ -699,6 +699,35 @@ describe('PrimerCheckoutProvider — requiresVaultedCardCvv flag wiring', () => 
     expect(vaultModule.startPaymentFlowWithAdditionalData).not.toHaveBeenCalled();
   });
 
+  it('marks a saved card payment until the outcome is cleared', async () => {
+    vaultModule.startPaymentFlow.mockResolvedValue(undefined);
+    let captured: PrimerCheckoutContextValue | undefined;
+
+    await act(async () => {
+      renderer.create(
+        createElement(
+          PrimerCheckoutProvider,
+          { clientToken: 'token-1' },
+          createElement(TestConsumer, {
+            onContext: (ctx: PrimerCheckoutContextValue) => {
+              captured = ctx;
+            },
+          })
+        )
+      );
+      await flushPromises();
+    });
+
+    await act(async () => {
+      await captured!.payFromVault('vault-1');
+      await flushPromises();
+    });
+    expect(captured!.isVaultedPayment).toBe(true);
+
+    act(() => captured!.clearPaymentOutcome());
+    expect(captured!.isVaultedPayment).toBe(false);
+  });
+
   it('routes payFromVault to startPaymentFlowWithAdditionalData when CVV is supplied', async () => {
     vaultModule.startPaymentFlowWithAdditionalData.mockResolvedValue(undefined);
     let captured: PrimerCheckoutContextValue | undefined;
