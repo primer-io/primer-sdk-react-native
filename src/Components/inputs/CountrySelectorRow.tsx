@@ -1,10 +1,12 @@
 import { useMemo } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View, type StyleProp, type ViewStyle } from 'react-native';
 import { usePrimerTheme } from '../internal/theme';
 import type { PrimerTokens } from '../internal/theme';
 import { toTextStyle } from '../internal/theme/typography';
 import { flagEmoji } from '../internal/flags';
-import { defaultFieldHeight } from './dimensions';
+import { defaultFieldHeight, TRAILING_ICON_SIZE } from './dimensions';
+
+const chevronIcon = require('../internal/screens/assets/chevron-down.png');
 
 export interface CountrySelectorRowProps {
   /** ISO country code currently selected, or empty if none. */
@@ -68,9 +70,7 @@ export function CountrySelectorRow({
         >
           {text}
         </Text>
-        <Text style={styles.chevron} accessibilityElementsHidden>
-          ›
-        </Text>
+        <Image source={chevronIcon} style={styles.chevron} resizeMode="contain" />
       </TouchableOpacity>
     </View>
   );
@@ -81,10 +81,11 @@ function createStyles(tokens: PrimerTokens) {
   /* eslint-disable react-native/no-unused-styles */
   return StyleSheet.create({
     chevron: {
-      color: tokens.colors.textSecondary,
-      fontSize: typography.bodyLarge.fontSize + 4,
-      lineHeight: typography.bodyLarge.lineHeight,
+      height: TRAILING_ICON_SIZE,
       marginLeft: spacing.small,
+      tintColor: colors.iconPrimary,
+      transform: [{ rotate: '-90deg' }],
+      width: TRAILING_ICON_SIZE,
     },
     container: {},
     flag: {
