@@ -28,7 +28,7 @@ export type VaultedPaymentMethodItem =
       brandName?: string;
     })
   | (VaultBase & { kind: 'bank'; bankName?: string; accountLast4?: string })
-  | (VaultBase & { kind: 'other'; detail?: string });
+  | (VaultBase & { kind: 'other'; holderName?: string; detail?: string });
 
 export type VaultKind = VaultedPaymentMethodItem['kind'];
 

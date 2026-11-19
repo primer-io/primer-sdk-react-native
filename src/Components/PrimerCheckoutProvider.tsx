@@ -24,7 +24,7 @@ import { translate } from './internal/localization';
 import { resolveLocale } from './internal/localization/locale-resolver';
 import { GOOGLE_PAY, isGooglePaySupported } from './internal/googlePay';
 import { APPLE_PAY, isApplePaySupported } from './internal/applePay';
-import { titleCaseFromType } from './internal/utils/formatting';
+import { getSavedMethodName } from './internal/savedMethodName';
 import { classifyVault } from './types/VaultedPaymentMethodTypes';
 
 import type { PrimerSettings } from '../models/PrimerSettings';
@@ -674,18 +674,18 @@ export function PrimerCheckoutProvider({
         const kind = classifyVault(m);
         try {
           if (kind === 'card') {
-            const network = m.paymentInstrumentData?.network;
+            const network = m.paymentInstrumentData?.network ?? m.paymentInstrumentData?.binData?.network;
             const iconUri = network ? await assetsManager.getCardNetworkImageURL(network) : undefined;
             return [m.id, { iconUri, name: undefined }] as const;
           }
           const resource = await assetsManager.getPaymentMethodResource(m.paymentMethodType);
           const logo = 'paymentMethodLogo' in resource ? resource.paymentMethodLogo : undefined;
           const iconUri = logo?.colored ?? logo?.light ?? logo?.dark;
-          const name = resource.paymentMethodName || titleCaseFromType(m.paymentMethodType);
+          const name = resource.paymentMethodName || getSavedMethodName(m.paymentMethodType);
           return [m.id, { iconUri, name }] as const;
         } catch (resolveErr) {
           console.warn(`${LOG} vault asset resolve failed for ${m.paymentMethodType} ${fmt(resolveErr)}`);
-          const name = kind === 'card' ? undefined : titleCaseFromType(m.paymentMethodType);
+          const name = kind === 'card' ? undefined : getSavedMethodName(m.paymentMethodType);
           return [m.id, { iconUri: undefined, name }] as const;
         }
       })
