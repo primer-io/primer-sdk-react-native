@@ -89,9 +89,9 @@ function VaultedMethodRow({
             </Text>
           )}
           <View style={styles.brandRow}>
-            {display.iconUri != null && (
+            {display.icon != null && (
               <View style={styles.brandChip}>
-                <Image source={{ uri: display.iconUri }} style={styles.brandIcon} resizeMode="contain" />
+                <Image source={display.icon} style={styles.brandIcon} resizeMode="contain" />
               </View>
             )}
             {display.secondaryLabel != null && (
@@ -422,15 +422,14 @@ function createStyles(tokens: PrimerTokens) {
 }
 
 function createRowStyles(tokens: PrimerTokens, isActive: boolean) {
-  const { colors, spacing, radii, widths, typography } = tokens;
+  const { colors, spacing, radii, widths, typography, sizes } = tokens;
   // Match the overall tile size between active (2px border) and default (1px) by
   // compensating padding so inner content doesn't shift by 1px on toggle.
-  const innerPadding = isActive ? spacing.medium - (widths.selected - widths.default) : spacing.medium;
+  const innerPadding = spacing.medium - (isActive ? widths.selected : widths.default);
   /* eslint-disable react-native/no-unused-styles */
   return StyleSheet.create({
     brandChip: {
       alignItems: 'center',
-      backgroundColor: colors.backgroundSecondary,
       borderRadius: radii.xsmall,
       height: BRAND_CHIP_HEIGHT,
       justifyContent: 'center',
@@ -490,6 +489,7 @@ function createRowStyles(tokens: PrimerTokens, isActive: boolean) {
       alignItems: 'center',
       flexDirection: 'row',
       gap: spacing.medium,
+      minHeight: sizes.xxlarge,
     },
     rowContainer: {
       alignItems: 'center',

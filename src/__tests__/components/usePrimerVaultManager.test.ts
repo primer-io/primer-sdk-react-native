@@ -117,6 +117,7 @@ const baseContext: PrimerCheckoutContextValue = {
   deleteVaultedPaymentMethod: async () => {},
   requiresVaultedCardCvv: false,
   cvvInputVisible: false,
+  isVaultedPayment: false,
   setCvvInputVisible: () => {},
 };
 
@@ -144,6 +145,60 @@ describe('usePrimerVaultManager', () => {
     expect(item.brandName).toBe('Mastercard');
     expect(item.network).toBe('MASTERCARD');
     expect(item.iconUri).toBe('file:///tmp/mastercard.png');
+  });
+
+  it.each([
+    ['AMEX', 'American Express'],
+    ['CARTES_BANCAIRES', 'Cartes Bancaires'],
+    ['DINERS_CLUB', 'Diners Club'],
+    ['UNIONPAY', 'UnionPay'],
+    ['OTHER', undefined],
+    ['NEW_NETWORK', undefined],
+    [undefined, undefined],
+  ])('names a %s card %s', (network, brandName) => {
+    const vault = makeCardVault({
+      paymentInstrumentData: { network, last4Digits: 5, expirationMonth: 5, expirationYear: 2026 },
+    });
+    const ctx: PrimerCheckoutContextValue = { ...baseContext, vaultedMethods: [vault] };
+    const { result } = renderHook(() => usePrimerVaultManager(), contextWrapper(ctx));
+    const item = result.current.primaryMethod;
+    if (item?.kind !== 'card') throw new Error('expected a card vault');
+    expect(item.brandName).toBe(brandName);
+  });
+
+  it('names a card from its BIN data when the network is missing, and skips blank payer names', () => {
+    const card = makeCardVault({
+      paymentInstrumentData: { binData: { network: 'VISA' }, last4Digits: 1111 },
+    });
+    const paypal: PrimerVaultedPaymentMethod = {
+      id: 'paypal-2',
+      analyticsId: 'a',
+      paymentInstrumentType: 'PAYPAL_BILLING_AGREEMENT',
+      paymentMethodType: 'PAYPAL',
+      paymentInstrumentData: { externalPayerInfo: { email: 'a@b.co', firstName: ' ', lastName: 'Smith' } },
+    };
+    const ctx: PrimerCheckoutContextValue = { ...baseContext, vaultedMethods: [card, paypal] };
+    const { result } = renderHook(() => usePrimerVaultManager(), contextWrapper(ctx));
+    const [cardItem, paypalItem] = result.current.vaultedMethods;
+    if (cardItem?.kind !== 'card' || paypalItem?.kind !== 'other') throw new Error('unexpected kinds');
+    expect(cardItem.brandName).toBe('Visa');
+    expect(paypalItem.holderName).toBe('Smith');
+  });
+
+  it('parses a Klarna vault: no holder name, masked billing email', () => {
+    const klarna: PrimerVaultedPaymentMethod = {
+      id: 'klarna-1',
+      analyticsId: 'a',
+      paymentInstrumentType: 'KLARNA_CUSTOMER_TOKEN',
+      paymentMethodType: 'KLARNA',
+      paymentInstrumentData: { sessionData: { billingAddress: { email: 'jane@example.com' } } },
+    };
+    const ctx: PrimerCheckoutContextValue = { ...baseContext, vaultedMethods: [klarna] };
+    const { result } = renderHook(() => usePrimerVaultManager(), contextWrapper(ctx));
+    const item = result.current.primaryMethod;
+    if (item?.kind !== 'other') throw new Error('expected an other vault');
+    expect(item.holderName).toBeUndefined();
+    expect(item.detail).toBe('ja••••@example.com');
   });
 
   it('parses a bank (ACH) vault: kind, bankName, accountLast4, displayName', () => {
@@ -196,7 +251,9 @@ describe('usePrimerVaultManager', () => {
       analyticsId: 'a',
       paymentInstrumentType: 'PAYPAL',
       paymentMethodType: 'PAYPAL',
-      paymentInstrumentData: { externalPayerInfo: { email: 'a@b.c' } },
+      paymentInstrumentData: {
+        externalPayerInfo: { email: 'john.smith@example.com', firstName: 'John', lastName: 'Smith' },
+      },
     };
     const ctx: PrimerCheckoutContextValue = {
       ...baseContext,
@@ -207,7 +264,8 @@ describe('usePrimerVaultManager', () => {
     const item = result.current.primaryMethod;
     expect(item?.kind).toBe('other');
     if (item?.kind !== 'other') throw new Error('expected an other-kind vault');
-    expect(item.detail).toBe('a••••@b.c');
+    expect(item.holderName).toBe('John Smith');
+    expect(item.detail).toBe('jo••••th@example.com');
     expect(item.displayName).toBe('PayPal');
   });
 

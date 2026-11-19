@@ -2,6 +2,7 @@ import { useCallback, useMemo } from 'react';
 import { usePrimerCheckout } from './usePrimerCheckout';
 import { classifyVault } from '../types/VaultedPaymentMethodTypes';
 import { maskEmail } from '../internal/utils/formatting';
+import { getCardNetworkDisplayName } from '../internal/cardNetworkDisplayName';
 import type {
   UsePrimerVaultManagerReturn,
   VaultDisplayMode,
@@ -9,11 +10,6 @@ import type {
 } from '../types/VaultedPaymentMethodTypes';
 import type { PrimerVaultedPaymentMethod } from '../../models/PrimerVaultedPaymentMethod';
 import type { PrimerVaultedPaymentMethodAdditionalData } from '../../models/PrimerVaultedPaymentMethodAdditionalData';
-
-function titleCase(value: string): string {
-  const lower = value.toLowerCase();
-  return lower.charAt(0).toUpperCase() + lower.slice(1);
-}
 
 function pad2(value: number | undefined): string | undefined {
   if (value == null) return undefined;
@@ -47,7 +43,7 @@ function parseVaultedMethod(
         // Year field is typed as `number` (e.g. 2026) — display the last two digits.
         expiryYear: yearRaw != null ? String(yearRaw).slice(-2) : undefined,
         network: instrument?.network,
-        brandName: instrument?.network ? titleCase(instrument.network) : undefined,
+        brandName: getCardNetworkDisplayName(instrument?.network ?? instrument?.binData?.network),
       };
     }
     case 'bank':
@@ -59,8 +55,11 @@ function parseVaultedMethod(
           instrument?.accountNumberLast4Digits != null ? String(instrument.accountNumberLast4Digits) : undefined,
       };
     case 'other': {
-      const email = instrument?.externalPayerInfo?.email;
-      return { ...base, kind: 'other', detail: email ? maskEmail(email) : undefined };
+      const payer = instrument?.externalPayerInfo;
+      const email = payer?.email ?? instrument?.sessionData?.billingAddress?.email;
+      const holderName =
+        [payer?.firstName, payer?.lastName].filter((part) => part != null && part.trim() !== '').join(' ') || undefined;
+      return { ...base, kind: 'other', holderName, detail: email ? maskEmail(email) : undefined };
     }
   }
 }

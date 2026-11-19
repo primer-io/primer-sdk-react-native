@@ -160,6 +160,7 @@ const readyContext: PrimerCheckoutContextValue = {
   deleteVaultedPaymentMethod: async () => {},
   requiresVaultedCardCvv: false,
   cvvInputVisible: false,
+  isVaultedPayment: false,
   setCvvInputVisible: () => {},
 };
 

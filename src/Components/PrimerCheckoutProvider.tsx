@@ -24,7 +24,7 @@ import { translate } from './internal/localization';
 import { resolveLocale } from './internal/localization/locale-resolver';
 import { GOOGLE_PAY, isGooglePaySupported } from './internal/googlePay';
 import { APPLE_PAY, isApplePaySupported } from './internal/applePay';
-import { titleCaseFromType } from './internal/utils/formatting';
+import { getSavedMethodName } from './internal/savedMethodName';
 import { classifyVault } from './types/VaultedPaymentMethodTypes';
 
 import type { PrimerSettings } from '../models/PrimerSettings';
@@ -126,6 +126,7 @@ interface InternalState {
   selectedCardNetwork: CardNetworkId | null;
   requiresVaultedCardCvv: boolean;
   cvvInputVisible: boolean;
+  isVaultedPayment: boolean;
 }
 
 const initialState: InternalState = {
@@ -162,6 +163,7 @@ const initialState: InternalState = {
   vaultDisplayOverride: null,
   requiresVaultedCardCvv: false,
   cvvInputVisible: false,
+  isVaultedPayment: false,
 };
 
 // Cleared on every terminal payment event so no per-method in-flight flag outlives an outcome.
@@ -677,18 +679,18 @@ export function PrimerCheckoutProvider({
         const kind = classifyVault(m);
         try {
           if (kind === 'card') {
-            const network = m.paymentInstrumentData?.network;
+            const network = m.paymentInstrumentData?.network ?? m.paymentInstrumentData?.binData?.network;
             const iconUri = network ? await assetsManager.getCardNetworkImageURL(network) : undefined;
             return [m.id, { iconUri, name: undefined }] as const;
           }
           const resource = await assetsManager.getPaymentMethodResource(m.paymentMethodType);
           const logo = 'paymentMethodLogo' in resource ? resource.paymentMethodLogo : undefined;
           const iconUri = logo?.colored ?? logo?.light ?? logo?.dark;
-          const name = resource.paymentMethodName || titleCaseFromType(m.paymentMethodType);
+          const name = resource.paymentMethodName || getSavedMethodName(m.paymentMethodType);
           return [m.id, { iconUri, name }] as const;
         } catch (resolveErr) {
           console.warn(`${LOG} vault asset resolve failed for ${m.paymentMethodType} ${fmt(resolveErr)}`);
-          const name = kind === 'card' ? undefined : titleCaseFromType(m.paymentMethodType);
+          const name = kind === 'card' ? undefined : getSavedMethodName(m.paymentMethodType);
           return [m.id, { iconUri: undefined, name }] as const;
         }
       })
@@ -1022,11 +1024,12 @@ export function PrimerCheckoutProvider({
   const clearPaymentOutcome = useCallback(() => {
     // Also nil activeKlarnaMethod so the effect cleanup runs — Klarna needs a fresh component per payment.
     setState((prev) =>
-      prev.paymentOutcome === null && prev.activeKlarnaMethod === null
+      prev.paymentOutcome === null && prev.activeKlarnaMethod === null && !prev.isVaultedPayment
         ? prev
         : {
             ...prev,
             paymentOutcome: null,
+            isVaultedPayment: false,
             activeKlarnaMethod: null,
             klarnaPaymentCategories: [],
             selectedKlarnaCategoryId: null,
@@ -1670,7 +1673,7 @@ export function PrimerCheckoutProvider({
         return;
       }
       // Clear any stale outcome so PaymentOutcomeTransitioner re-fires for this attempt.
-      setState((prev) => ({ ...prev, paymentOutcome: null, isPaymentInFlight: true }));
+      setState((prev) => ({ ...prev, paymentOutcome: null, isPaymentInFlight: true, isVaultedPayment: true }));
       // Vaulted pay is a card payment: same SUBMITTED → PROCESSING → outcome sequence.
       trackAttemptStart('PAYMENT_CARD', { submitted: true });
       try {
@@ -1789,6 +1792,7 @@ export function PrimerCheckoutProvider({
       selectedCardNetwork: state.selectedCardNetwork,
       requiresVaultedCardCvv: state.requiresVaultedCardCvv,
       cvvInputVisible: state.cvvInputVisible,
+      isVaultedPayment: state.isVaultedPayment,
       setActiveMethod,
       setRawData,
       setBillingAddress,

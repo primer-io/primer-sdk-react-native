@@ -40,6 +40,9 @@ jest.mock(
           startPaymentFlowWithAdditionalData: jest.fn().mockResolvedValue(undefined),
           requiresVaultedCardCvv: jest.fn().mockResolvedValue(false),
         },
+        RNTPrimerHeadlessUniversalCheckoutAssetsManager: {
+          getCardNetworkImage: jest.fn(),
+        },
         RNTPrimerHeadlessUniversalCheckoutBanksComponent: {
           configure: jest.fn().mockResolvedValue(undefined),
           start: jest.fn(),
@@ -72,6 +75,7 @@ const nativeModule = rnMock.NativeModules.PrimerHeadlessUniversalCheckout;
 const vaultModule = rnMock.NativeModules.RNPrimerHeadlessUniversalCheckoutVaultManager;
 const rawNative = rnMock.NativeModules.RNTPrimerHeadlessUniversalCheckoutRawDataManager;
 const banksModule = rnMock.NativeModules.RNTPrimerHeadlessUniversalCheckoutBanksComponent;
+const assetsModule = rnMock.NativeModules.RNTPrimerHeadlessUniversalCheckoutAssetsManager;
 const mockAddListener: jest.Mock = rnMock.__mockAddListener;
 
 function findListener(eventName: string): ((...args: any[]) => void) | undefined {
@@ -658,6 +662,19 @@ describe('PrimerCheckoutProvider — requiresVaultedCardCvv flag wiring', () => 
     expect(captured!.requiresVaultedCardCvv).toBe(true);
   });
 
+  it('looks up a saved card logo by its BIN network when the network is missing', async () => {
+    vaultModule.fetchVaultedPaymentMethods.mockResolvedValue({
+      paymentMethods: [
+        { id: 'vault-1', paymentMethodType: 'PAYMENT_CARD', paymentInstrumentData: { binData: { network: 'VISA' } } },
+      ],
+    });
+    assetsModule.getCardNetworkImage.mockResolvedValue({ cardNetworkImageURL: 'file:///visa.png' });
+
+    const ctx = await renderReady();
+
+    expect(ctx().vaultedIconUrisById['vault-1']).toBe('file:///visa.png');
+  });
+
   it('routes payFromVault to startPaymentFlow without additional data when none is supplied', async () => {
     vaultModule.startPaymentFlow.mockResolvedValue(undefined);
     let captured: PrimerCheckoutContextValue | undefined;
@@ -684,6 +701,35 @@ describe('PrimerCheckoutProvider — requiresVaultedCardCvv flag wiring', () => 
 
     expect(vaultModule.startPaymentFlow).toHaveBeenCalledWith('vault-1');
     expect(vaultModule.startPaymentFlowWithAdditionalData).not.toHaveBeenCalled();
+  });
+
+  it('marks a saved card payment until the outcome is cleared', async () => {
+    vaultModule.startPaymentFlow.mockResolvedValue(undefined);
+    let captured: PrimerCheckoutContextValue | undefined;
+
+    await act(async () => {
+      renderer.create(
+        createElement(
+          PrimerCheckoutProvider,
+          { clientToken: 'token-1' },
+          createElement(TestConsumer, {
+            onContext: (ctx: PrimerCheckoutContextValue) => {
+              captured = ctx;
+            },
+          })
+        )
+      );
+      await flushPromises();
+    });
+
+    await act(async () => {
+      await captured!.payFromVault('vault-1');
+      await flushPromises();
+    });
+    expect(captured!.isVaultedPayment).toBe(true);
+
+    act(() => captured!.clearPaymentOutcome());
+    expect(captured!.isVaultedPayment).toBe(false);
   });
 
   it('routes payFromVault to startPaymentFlowWithAdditionalData when CVV is supplied', async () => {
