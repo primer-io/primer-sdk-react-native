@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { usePrimerCheckout } from './hooks/usePrimerCheckout';
 import { CheckoutSheet } from './internal/checkout-sheet/CheckoutSheet';
 import { CheckoutFlow } from './internal/checkout-flow/CheckoutFlow';
 
@@ -24,14 +26,18 @@ export function PrimerCheckoutSheet({
   onRequestDismiss,
   dismissOnBackdropPress,
 }: PrimerCheckoutSheetProps) {
+  const { isPaymentInFlight } = usePrimerCheckout();
+  const [isCardFormBusy, setCardFormBusy] = useState(false);
+  const locked = isPaymentInFlight || isCardFormBusy;
+
   return (
     <CheckoutSheet
       visible={visible}
       onDismiss={onDismiss}
-      onRequestDismiss={onRequestDismiss}
+      onRequestDismiss={locked ? undefined : onRequestDismiss}
       dismissOnBackdropPress={dismissOnBackdropPress}
     >
-      <CheckoutFlow onCancel={onRequestDismiss} />
+      <CheckoutFlow onCancel={onRequestDismiss} onCardFormBusyChange={setCardFormBusy} />
     </CheckoutSheet>
   );
 }
