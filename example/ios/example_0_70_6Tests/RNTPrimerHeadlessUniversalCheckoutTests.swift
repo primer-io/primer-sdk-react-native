@@ -161,7 +161,7 @@ class RNTPrimerHeadlessUniversalCheckoutTests: XCTestCase {
             orderDetails: nil,
             customer: nil,
             paymentMethod: nil,
-            fees: nil
+            fees: [PrimerFee(type: "SURCHARGE", amount: 50)]
         )
         let paymentMethodOptions = [
             ComponentsPaymentMethodOption(type: "PAYPAL", surcharge: 0, networks: []),
@@ -195,5 +195,6 @@ class RNTPrimerHeadlessUniversalCheckoutTests: XCTestCase {
                 ]
             ] as NSDictionary
         )
+        XCTAssertEqual(payload["fees"] as? NSArray, [["type": "SURCHARGE", "amount": 50]] as NSArray)
     }
 }

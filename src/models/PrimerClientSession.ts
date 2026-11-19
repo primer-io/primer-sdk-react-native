@@ -16,7 +16,7 @@ interface IPrimerClientSession {
 export type PrimerFee = IPrimerFee;
 
 interface IPrimerFee {
-  type?: string;
+  type?: string | null;
   amount: number;
 }
 
