@@ -129,7 +129,7 @@ def kotlin_version = getExtOrDefault('kotlinVersion')
 // The one place the Android SDK version is pinned (CI reads it from this line). It is exported to the app as an
 // enforced BOM platform, so the app's optional io.primer:* dependencies (3ds-android, klarna-android, ...) resolve to
 // this version without declaring one, and a hand-pinned version is overridden rather than drifting from the SDK.
-def primerAndroidVersion = '2.53.1'
+def primerAndroidVersion = '2.54.0'
 
 dependencies {
   detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.8")

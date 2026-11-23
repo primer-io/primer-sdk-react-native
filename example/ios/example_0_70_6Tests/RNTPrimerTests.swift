@@ -7,6 +7,7 @@
 
 import XCTest
 import PrimerSDK
+@_spi(PrimerInternal) import PrimerCore
 @testable import primer_io_react_native
 
 class RNTPrimerTests: XCTestCase {
@@ -21,6 +22,14 @@ class RNTPrimerTests: XCTestCase {
     override func tearDown() {
         rnPrimer = nil
         super.tearDown()
+    }
+
+    func testNativeModuleInitSetsReactNativeIntegrationOptions() {
+        Primer.shared.integrationOptions = nil
+
+        _ = RCTNativePrimer()
+
+        XCTAssertEqual(Primer.shared.integrationOptions?.reactNativeVersion, PrimerReactNativeSDKVersion)
     }
 
     // MARK: - SDK API

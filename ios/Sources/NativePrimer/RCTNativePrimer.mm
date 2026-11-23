@@ -21,7 +21,7 @@ RCT_EXPORT_MODULE(NativePrimer)
 
 - (instancetype)init {
     if (self = [super init]) {
-         _primer = [RNTPrimer alloc];
+         _primer = [[RNTPrimer alloc] init];
       }
     [_primer setEventDelegate:self];
     return self;
