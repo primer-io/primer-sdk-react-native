@@ -10,6 +10,14 @@ interface IPrimerClientSession {
   customer?: IPrimerCustomer;
   checkoutModules?: IPrimerCheckoutModule[];
   paymentMethodOptions?: Record<string, IPrimerClientSessionPaymentMethodOption>;
+  fees?: IPrimerFee[];
+}
+
+export type PrimerFee = IPrimerFee;
+
+interface IPrimerFee {
+  type?: string | null;
+  amount: number;
 }
 
 export type PrimerCheckoutModule = IPrimerCheckoutModule;
