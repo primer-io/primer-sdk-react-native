@@ -95,8 +95,10 @@ describe('CountrySelectorRow box height', () => {
     const lineHeights = renderRow()
       .findAll((n: any) => n.type === 'Text')
       .map((n: any) => flatten(n.props.style).lineHeight);
+    const chevron = flatten(renderRow().find((n: any) => n.type === 'Image').props.style);
 
-    expect(lineHeights).toHaveLength(3);
+    expect(lineHeights).toHaveLength(2);
     expect(new Set(lineHeights)).toEqual(new Set([typography.bodyLarge.lineHeight]));
+    expect(chevron.height).toBeLessThanOrEqual(typography.bodyLarge.lineHeight);
   });
 });

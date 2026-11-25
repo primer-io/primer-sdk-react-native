@@ -24,7 +24,7 @@ import { translate } from './internal/localization';
 import { resolveLocale } from './internal/localization/locale-resolver';
 import { GOOGLE_PAY, isGooglePaySupported } from './internal/googlePay';
 import { APPLE_PAY, isApplePaySupported } from './internal/applePay';
-import { titleCaseFromType } from './internal/utils/formatting';
+import { getSavedMethodName } from './internal/savedMethodName';
 import { classifyVault } from './types/VaultedPaymentMethodTypes';
 
 import type { PrimerSettings } from '../models/PrimerSettings';
@@ -93,6 +93,7 @@ interface InternalState {
   isLoadingResources: boolean;
   resourcesError: Error | null;
   paymentOutcome: PaymentOutcome | null;
+  isPaymentInFlight: boolean;
   nativeUiInFlightType: string | null;
   activeMethod: string | null;
   cardFormState: CardFormState;
@@ -125,6 +126,7 @@ interface InternalState {
   selectedCardNetwork: CardNetworkId | null;
   requiresVaultedCardCvv: boolean;
   cvvInputVisible: boolean;
+  isVaultedPayment: boolean;
 }
 
 const initialState: InternalState = {
@@ -137,6 +139,7 @@ const initialState: InternalState = {
   isLoadingResources: false,
   resourcesError: null,
   paymentOutcome: null,
+  isPaymentInFlight: false,
   nativeUiInFlightType: null,
   activeMethod: null,
   cardFormState: initialCardFormState,
@@ -160,10 +163,12 @@ const initialState: InternalState = {
   vaultDisplayOverride: null,
   requiresVaultedCardCvv: false,
   cvvInputVisible: false,
+  isVaultedPayment: false,
 };
 
 // Cleared on every terminal payment event so no per-method in-flight flag outlives an outcome.
 const PAYMENT_ATTEMPT_RESET = {
+  isPaymentInFlight: false,
   nativeUiInFlightType: null,
   isBanksLoading: false,
   isKlarnaLoading: false,
@@ -677,18 +682,18 @@ export function PrimerCheckoutProvider({
         const kind = classifyVault(m);
         try {
           if (kind === 'card') {
-            const network = m.paymentInstrumentData?.network;
+            const network = m.paymentInstrumentData?.network ?? m.paymentInstrumentData?.binData?.network;
             const iconUri = network ? await assetsManager.getCardNetworkImageURL(network) : undefined;
             return [m.id, { iconUri, name: undefined }] as const;
           }
           const resource = await assetsManager.getPaymentMethodResource(m.paymentMethodType);
           const logo = 'paymentMethodLogo' in resource ? resource.paymentMethodLogo : undefined;
           const iconUri = logo?.colored ?? logo?.light ?? logo?.dark;
-          const name = resource.paymentMethodName || titleCaseFromType(m.paymentMethodType);
+          const name = resource.paymentMethodName || getSavedMethodName(m.paymentMethodType);
           return [m.id, { iconUri, name }] as const;
         } catch (resolveErr) {
           console.warn(`${LOG} vault asset resolve failed for ${m.paymentMethodType} ${fmt(resolveErr)}`);
-          const name = kind === 'card' ? undefined : titleCaseFromType(m.paymentMethodType);
+          const name = kind === 'card' ? undefined : getSavedMethodName(m.paymentMethodType);
           return [m.id, { iconUri: undefined, name }] as const;
         }
       })
@@ -958,8 +963,13 @@ export function PrimerCheckoutProvider({
       console.warn(`${LOG} submit: no manager`);
       return;
     }
-    trackAttemptStart(stateRef.current.activeMethod ?? 'PAYMENT_CARD', { submitted: true });
-    await manager.submit();
+    const method = stateRef.current.activeMethod ?? 'PAYMENT_CARD';
+    trackAttemptStart(method, { submitted: true });
+    setState((prev) => ({ ...prev, isPaymentInFlight: method === 'PAYMENT_CARD' }));
+    await manager.submit().catch((err) => {
+      setState((prev) => ({ ...prev, isPaymentInFlight: false }));
+      throw err;
+    });
   }, [trackAttemptStart]);
 
   const retry = useCallback(async () => {
@@ -978,6 +988,7 @@ export function PrimerCheckoutProvider({
     // outcomes. Reconfiguring here rebuilds the delegate binding; harmless on Android.
     // (The "remove once the iOS SDK stops nullifying" reminder lives in the PR description.)
     retryingManagerRef.current = manager;
+    setState((prev) => ({ ...prev, isPaymentInFlight: method === 'PAYMENT_CARD' }));
     try {
       // Re-pass the original callbacks so the JS-wrapper's listeners get re-registered.
       // Otherwise native would emit onValidation/onBinDataChange/onMetadataChange during
@@ -993,6 +1004,7 @@ export function PrimerCheckoutProvider({
       await manager.submit();
     } catch (err) {
       console.error(`${LOG} retry failed ${fmt(err)}`);
+      setState((prev) => ({ ...prev, isPaymentInFlight: false }));
       throw err;
     } finally {
       retryingManagerRef.current = null;
@@ -1015,11 +1027,12 @@ export function PrimerCheckoutProvider({
   const clearPaymentOutcome = useCallback(() => {
     // Also nil activeKlarnaMethod so the effect cleanup runs — Klarna needs a fresh component per payment.
     setState((prev) =>
-      prev.paymentOutcome === null && prev.activeKlarnaMethod === null
+      prev.paymentOutcome === null && prev.activeKlarnaMethod === null && !prev.isVaultedPayment
         ? prev
         : {
             ...prev,
             paymentOutcome: null,
+            isVaultedPayment: false,
             activeKlarnaMethod: null,
             klarnaPaymentCategories: [],
             selectedKlarnaCategoryId: null,
@@ -1663,7 +1676,7 @@ export function PrimerCheckoutProvider({
         return;
       }
       // Clear any stale outcome so PaymentOutcomeTransitioner re-fires for this attempt.
-      setState((prev) => (prev.paymentOutcome === null ? prev : { ...prev, paymentOutcome: null }));
+      setState((prev) => ({ ...prev, paymentOutcome: null, isPaymentInFlight: true, isVaultedPayment: true }));
       // Vaulted pay is a card payment: same SUBMITTED → PROCESSING → outcome sequence.
       trackAttemptStart('PAYMENT_CARD', { submitted: true });
       try {
@@ -1683,6 +1696,7 @@ export function PrimerCheckoutProvider({
         const primerError = err as PrimerError;
         setState((prev) => ({
           ...prev,
+          isPaymentInFlight: false,
           paymentOutcome: { status: 'error', error: primerError, data: null },
         }));
       }
@@ -1755,6 +1769,7 @@ export function PrimerCheckoutProvider({
       resourcesError: state.resourcesError,
       settings: settingsRef.current,
       paymentOutcome: state.paymentOutcome,
+      isPaymentInFlight: state.isPaymentInFlight,
       nativeUiInFlightType: state.nativeUiInFlightType,
       activeMethod: state.activeMethod,
       cardFormState: state.cardFormState,
@@ -1780,6 +1795,7 @@ export function PrimerCheckoutProvider({
       selectedCardNetwork: state.selectedCardNetwork,
       requiresVaultedCardCvv: state.requiresVaultedCardCvv,
       cvvInputVisible: state.cvvInputVisible,
+      isVaultedPayment: state.isVaultedPayment,
       setActiveMethod,
       setRawData,
       setBillingAddress,

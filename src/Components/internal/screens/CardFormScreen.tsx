@@ -32,7 +32,7 @@ export function CardFormScreen() {
   const { t, formatCurrency } = usePrimerLocalization();
   const { clientSession, settings } = usePrimerCheckout();
   const { pop, replace, canGoBack } = useNavigation();
-  const { onCancel } = useCheckoutFlow();
+  const { onCancel, onCardFormBusyChange } = useCheckoutFlow();
   const cardForm = usePrimerCardForm();
   const billingForm = usePrimerBillingAddressForm();
   const { surchargeAmountRaw } = useShownNetworkSurcharge();
@@ -77,6 +77,10 @@ export function CardFormScreen() {
   const [paying, setPaying] = useState(false);
   const payingRef = useRef(false);
   const locked = paying || cardForm.isSubmitting;
+  useEffect(() => {
+    onCardFormBusyChange?.(locked);
+    return () => onCardFormBusyChange?.(false);
+  }, [locked, onCardFormBusyChange]);
   const canSubmit = cardForm.isValid && billingForm.isValid && !locked;
   const totalAmount = orderTotal(clientSession);
   const payAmount = totalAmount != null ? totalAmount + (surchargeAmountRaw ?? 0) : undefined;
@@ -106,6 +110,7 @@ export function CardFormScreen() {
           backLabel={t('primer_common_back')}
           onBackPress={pop}
           rightAction={{ label: t('primer_common_button_cancel'), onPress: onCancel }}
+          disabled={locked}
         />
       </View>
       <ScrollView

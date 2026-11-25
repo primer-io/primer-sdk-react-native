@@ -123,9 +123,7 @@ export function PrimerVaultedPaymentMethod({ data, onPay, style }: PrimerVaulted
               </Text>
             )}
             <View style={styles.brandRow}>
-              {display.iconUri != null && (
-                <Image source={{ uri: display.iconUri }} style={styles.brandIcon} resizeMode="contain" />
-              )}
+              {display.icon != null && <Image source={display.icon} style={styles.brandIcon} resizeMode="contain" />}
               {display.secondaryLabel != null && (
                 <Text style={styles.secondaryText} numberOfLines={1}>
                   {display.secondaryLabel}
@@ -160,7 +158,7 @@ export function PrimerVaultedPaymentMethod({ data, onPay, style }: PrimerVaulted
 }
 
 function createStyles(tokens: PrimerTokens) {
-  const { colors, spacing, radii, widths, typography } = tokens;
+  const { colors, spacing, radii, widths, typography, sizes } = tokens;
 
   /* eslint-disable react-native/no-unused-styles */
   return StyleSheet.create({
@@ -202,6 +200,7 @@ function createStyles(tokens: PrimerTokens) {
       alignItems: 'center',
       flexDirection: 'row',
       gap: spacing.medium,
+      minHeight: sizes.xxlarge,
     },
     secondaryText: {
       color: colors.textSecondary,
@@ -213,7 +212,7 @@ function createStyles(tokens: PrimerTokens) {
       borderRadius: radii.medium,
       borderWidth: widths.selected,
       gap: spacing.medium,
-      padding: spacing.medium,
+      padding: spacing.medium - widths.selected,
     },
   });
   /* eslint-enable react-native/no-unused-styles */

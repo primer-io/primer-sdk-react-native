@@ -190,6 +190,7 @@ export interface PrimerCheckoutContextValue {
   // --- Active payment attempt ---
   /** Outcome of the most recent payment attempt; `null` before any submit. */
   paymentOutcome: PaymentOutcome | null;
+  isPaymentInFlight: boolean;
   /** The payment method whose raw-data manager is currently active. */
   activeMethod: string | null;
   /** Validation + metadata state from the active raw-data manager. */
@@ -219,6 +220,7 @@ export interface PrimerCheckoutContextValue {
    * (the entered CVV digits stay local to `PrimerVaultedPaymentMethod` for security).
    */
   cvvInputVisible: boolean;
+  isVaultedPayment: boolean;
 
   // --- Actions ---
   /** Register/deregister the active payment method. Pass `null` to tear down. */

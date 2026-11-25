@@ -3,6 +3,7 @@ import { createContext, useContext } from 'react';
 export interface CheckoutFlowContextValue {
   /** Called when the user requests to cancel/close the checkout flow */
   onCancel: () => void;
+  onCardFormBusyChange?: (busy: boolean) => void;
 }
 
 export const CheckoutFlowContext = createContext<CheckoutFlowContextValue | null>(null);

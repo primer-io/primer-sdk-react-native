@@ -23,6 +23,7 @@ export interface NavigationHeaderProps {
   rightComponent?: React.ReactNode;
   /** 'below' (default): a large title under the back row. 'center': a smaller title centred in the top row. */
   titleAlignment?: 'below' | 'center';
+  disabled?: boolean;
 }
 
 const ICON_SIZE = 20;
@@ -52,13 +53,15 @@ function ActionButton({
   action,
   styles,
   hitSlop,
+  disabled,
 }: {
   action: NavigationHeaderAction;
   styles: ReturnType<typeof createStyles>;
   hitSlop: { top: number; bottom: number; left: number; right: number };
+  disabled?: boolean;
 }) {
   return (
-    <TouchableOpacity onPress={action.onPress} style={styles.actionButton} hitSlop={hitSlop}>
+    <TouchableOpacity onPress={action.onPress} style={styles.actionButton} hitSlop={hitSlop} disabled={disabled}>
       {action.icon != null && (
         <>
           {action.icon}
@@ -79,6 +82,7 @@ export function NavigationHeader({
   rightAction,
   rightComponent,
   titleAlignment = 'below',
+  disabled,
 }: NavigationHeaderProps) {
   const { pop } = useNavigation();
   const tokens = usePrimerTheme();
@@ -93,10 +97,10 @@ export function NavigationHeader({
   const stack = useContext(NavigationContext)?.state.stack;
   const isTop = entryKey != null && entryKey === stack?.[stack.length - 1]?.key;
   useLayoutEffect(() => {
-    if (!showBackButton || !isTop || !setSheetBackAction) return;
+    if (!showBackButton || disabled || !isTop || !setSheetBackAction) return;
     // A fresh wrapper per registration: screens share `pop`, and a release clears only its own.
     return setSheetBackAction(() => handleBackPress());
-  }, [showBackButton, isTop, setSheetBackAction, handleBackPress]);
+  }, [showBackButton, disabled, isTop, setSheetBackAction, handleBackPress]);
   const hitSlop = useMemo(
     () => ({
       top: tokens.spacing.medium,
@@ -123,7 +127,7 @@ export function NavigationHeader({
     ) : null;
 
   const rightElement = rightAction ? (
-    <ActionButton action={rightAction} styles={styles} hitSlop={hitSlop} />
+    <ActionButton action={rightAction} styles={styles} hitSlop={hitSlop} disabled={disabled} />
   ) : (
     (rightComponent ?? null)
   );
@@ -133,7 +137,7 @@ export function NavigationHeader({
       <View style={styles.container}>
         <View style={styles.headerBar}>
           {centeredTitle}
-          <TouchableOpacity onPress={handleBackPress} style={styles.actionButton} hitSlop={hitSlop}>
+          <TouchableOpacity onPress={handleBackPress} style={styles.actionButton} hitSlop={hitSlop} disabled={disabled}>
             <ChevronLeftIcon size={ICON_SIZE} color={tokens.colors.iconPrimary} />
             {backLabel != null && (
               <>
