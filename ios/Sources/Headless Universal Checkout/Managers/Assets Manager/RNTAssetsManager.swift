@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import PrimerSDK
+@_spi(PrimerInternal) import PrimerSDK
 import React
 
 // swiftlint:disable type_name
@@ -23,24 +23,57 @@ class RNTPrimerHeadlessUniversalCheckoutAssetsManager: RCTEventEmitter {
     }
 
     @objc
+    func getCardNetworkTraits(
+        _ cardNetworkStr: String,
+        resolver: RCTPromiseResolveBlock,
+        rejecter: RCTPromiseRejectBlock
+    ) {
+        guard let traits = PrimerSDK.PrimerHeadlessUniversalCheckout.AssetsManager
+            .getCardNetworkTraits(cardNetworkString: cardNetworkStr) else {
+            resolver(nil)
+            return
+        }
+        resolver([
+            "cardNetwork": traits.cardNetwork.rawValue,
+            "displayName": traits.displayName,
+            "panLengths": traits.panLengths,
+            "gapPattern": traits.gapPattern,
+            "cvvLength": traits.cvvLength,
+            "cvvLabel": traits.cvvLabel
+        ])
+    }
+
+    @objc
+    func getOrderedAllowedCardNetworks(
+        _ resolver: @escaping RCTPromiseResolveBlock,
+        rejecter: @escaping RCTPromiseRejectBlock
+    ) {
+        guard #available(iOS 15.0, *) else {
+            resolver(["networks": NSNull()])
+            return
+        }
+        if let networks = ComponentsClientSessionBridge().getOrderedAllowedCardNetworks() {
+            resolver(["networks": networks])
+        } else {
+            resolver(["networks": NSNull()])
+        }
+    }
+
+    @objc
     func getCardNetworkImage(
         _ cardNetworkStr: String,
         resolver: RCTPromiseResolveBlock,
         rejecter: RCTPromiseRejectBlock
     ) {
         do {
-
-            guard let cardNetwork = CardNetwork(rawValue: cardNetworkStr) else {
-                let err = RNTNativeError(
-                    errorId: "native-ios",
-                    errorDescription: "Failed to find asset of \(cardNetworkStr).",
-                    recoverySuggestion: nil)
-                throw err
-            }
-
+            // Use the non-deprecated getCardNetworkAsset API. The deprecated
+            // getCardNetworkImage(for:) concatenates rawValue uppercase with a lowercase
+            // bundle filename (e.g. "VISA-logo-colored" vs "visa-logo-colored.imageset"),
+            // which always misses on iOS's case-sensitive asset lookup.
             guard
-                let cardNetworkImage = try PrimerSDK.PrimerHeadlessUniversalCheckout.AssetsManager
-                    .getCardNetworkImage(for: cardNetwork)
+                let cardNetworkAsset = PrimerSDK.PrimerHeadlessUniversalCheckout.AssetsManager
+                    .getCardNetworkAsset(cardNetworkString: cardNetworkStr),
+                let cardNetworkImage = cardNetworkAsset.cardImage
             else {
                 let err = RNTNativeError(
                     errorId: "native-ios",
@@ -49,7 +82,7 @@ class RNTPrimerHeadlessUniversalCheckoutAssetsManager: RCTEventEmitter {
                 throw err
             }
 
-            let localUrl = try cardNetworkImage.store(withName: cardNetwork.rawValue)
+            let localUrl = try cardNetworkImage.store(withName: cardNetworkAsset.cardNetwork.rawValue)
             resolver(["cardNetworkImageURL": localUrl.absoluteString])
 
         } catch {

@@ -8,6 +8,7 @@ import type {
 import type { PrimerError } from '../../../../models/PrimerError';
 import type { NamedComponentValidatableData } from '../../../../models/NamedComponentValidatableData';
 import type { EventType } from './EventType';
+import { unwrapNativeError } from './unwrapNativeError';
 
 export interface ComponentEventProps<TStep, TValidatableData extends NamedComponentValidatableData> {
   onStep?: (data: TStep) => void;
@@ -37,7 +38,12 @@ export async function subscribeToComponentEvents<TStep, TValidatableData extends
   }
 
   if (props.onError) {
-    subscriptions.push(await addListener('onError', (error: PrimerError) => props.onError?.(error)));
+    subscriptions.push(
+      await addListener('onError', (data: Parameters<typeof unwrapNativeError>[0]) => {
+        const error = unwrapNativeError(data);
+        if (error) props.onError?.(error);
+      })
+    );
   }
 
   if (props.onValid) {

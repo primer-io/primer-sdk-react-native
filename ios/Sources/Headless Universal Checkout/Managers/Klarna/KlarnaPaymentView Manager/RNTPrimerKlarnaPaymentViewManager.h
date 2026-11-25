@@ -9,6 +9,10 @@
 
 @interface RNTPrimerKlarnaPaymentViewManager : RCTViewManager
 
-+ (void)updatePrimerKlarnaPaymentView:(UIView *)view;
++ (void)updatePrimerKlarnaPaymentView:(nullable UIView *)view;
+
++ (void)updatePrimerKlarnaPaymentViewContentHeight:(CGFloat)height;
+
++ (CGFloat)primerKlarnaPaymentViewContentHeight;
 
 @end

@@ -56,6 +56,13 @@ export interface StripeAchUserDetailsComponent {
    * last name and email address.
    */
   submit(): Promise<void>;
+
+  /**
+   * Tears down the underlying native component and releases the JS event
+   * subscriptions registered by {@link PrimerHeadlessUniversalCheckoutAchManager.provide},
+   * allowing consecutive Stripe ACH payments within the same app session.
+   */
+  cleanUp(): Promise<void>;
 }
 
 export class PrimerHeadlessUniversalCheckoutAchManager {
@@ -70,26 +77,31 @@ export class PrimerHeadlessUniversalCheckoutAchManager {
   // API
   ///////////////////////////////////////////
 
-  async provide(props: AchManagerProps): Promise<StripeAchUserDetailsComponent | any> {
-    this.removeAllListeners();
+  async provide(props: AchManagerProps): Promise<StripeAchUserDetailsComponent | null> {
+    // Drain any subscriptions left over from a previous provide() on this instance.
+    this.drainSubscriptions();
     await this.configureListeners(props);
 
     if (props.paymentMethodType === 'STRIPE_ACH') {
       const component: StripeAchUserDetailsComponent = {
         start: async () => {
-          RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent.start();
+          await RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent.start();
         },
         submit: async () => {
-          RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent.submit();
+          await RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent.submit();
         },
         handleFirstNameChange: async (value: String) => {
-          RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent.onSetFirstName(value);
+          await RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent.onSetFirstName(value);
         },
         handleLastNameChange: async (value: String) => {
-          RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent.onSetLastName(value);
+          await RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent.onSetLastName(value);
         },
         handleEmailAddressChange: async (value: String) => {
-          RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent.onSetEmailAddress(value);
+          await RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent.onSetEmailAddress(value);
+        },
+        cleanUp: async () => {
+          await RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent.cleanUp();
+          this.drainSubscriptions();
         },
       };
       await RNTPrimerHeadlessUniversalCheckoutStripeAchUserDetailsComponent.configure();
@@ -115,14 +127,20 @@ export class PrimerHeadlessUniversalCheckoutAchManager {
   }
 
   removeListener(subscription: EmitterSubscription): void {
-    return subscription.remove();
+    subscription.remove();
+    this.subscriptions = this.subscriptions.filter((sub) => sub !== subscription);
   }
 
   removeAllListenersForEvent(eventType: EventType) {
     eventEmitter.removeAllListeners(eventType);
   }
 
+  // Per-instance drain, not eventEmitter.removeAllListeners — the global nuke wipes other modules' shared-emitter listeners on Android.
   removeAllListeners() {
+    this.drainSubscriptions();
+  }
+
+  private drainSubscriptions(): void {
     this.subscriptions.forEach((subscription) => subscription.remove());
     this.subscriptions = [];
   }

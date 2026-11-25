@@ -15,6 +15,8 @@ import com.primerioreactnative.components.events.PrimerHeadlessUniversalCheckout
 import com.primerioreactnative.datamodels.ErrorTypeRN
 import com.primerioreactnative.datamodels.PrimerErrorRN
 import com.primerioreactnative.datamodels.klarna.KlarnaPaymentCategoryRN
+import com.primerioreactnative.extensions.isDarkAppearance
+import com.primerioreactnative.extensions.isSystemDarkAppearance
 import com.primerioreactnative.extensions.klarna.toFinalizePaymentRN
 import com.primerioreactnative.extensions.klarna.toKlarnaPaymentCategory
 import com.primerioreactnative.extensions.klarna.toPaymentOptionsRN
@@ -24,6 +26,7 @@ import com.primerioreactnative.extensions.klarna.toPaymentSessionFinalizedRN
 import com.primerioreactnative.extensions.klarna.toPaymentViewLoadedRN
 import com.primerioreactnative.extensions.putErrors
 import com.primerioreactnative.extensions.putValidationErrors
+import com.primerioreactnative.extensions.withDarkAppearance
 import com.primerioreactnative.utils.errorTo
 import com.primerioreactnative.utils.toWritableArray
 import com.primerioreactnative.utils.toWritableMap
@@ -269,7 +272,10 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaComponent(
         } else {
             klarnaComponent?.updateCollectedData(
                 KlarnaPaymentCollectableData.PaymentOptions(
-                    context = activity,
+                    // Klarna's theme comes from isDarkMode only when true, otherwise from this context.
+                    context = activity.withDarkAppearance(
+                        isDarkAppearance(appearanceMode, orSystem = activity.isSystemDarkAppearance()),
+                    ),
                     returnIntentUrl = requireNotNull(returnIntentUrl),
                     paymentCategory = klarnaPaymentCategoryRN.toKlarnaPaymentCategory(),
                 ),
@@ -328,6 +334,8 @@ class PrimerRNHeadlessUniversalCheckoutKlarnaComponent(
             """
 
         private val json by lazy { Json { encodeDefaults = true } }
+
+        internal var appearanceMode: String? = null
 
         const val NAME = "RNTPrimerHeadlessUniversalCheckoutKlarnaComponent"
     }
