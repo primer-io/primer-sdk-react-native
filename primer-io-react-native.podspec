@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
   s.resources = ["ios/Fonts/PrimerInterVariable.ttf"]
 
   s.dependency "React-Core"
-  s.dependency "PrimerSDK", "3.0.0-beta.4"
+  s.dependency "PrimerSDK", "3.0.0-beta.9"
 
   s.pod_target_xcconfig = {
     "SWIFT_ENABLE_EXPLICIT_MODULES" => "NO"
