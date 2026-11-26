@@ -9,6 +9,7 @@ import { defaultButtonHeight, defaultFieldHeight } from '../../inputs/dimensions
 import { PrimerPaymentMethodList } from '../../PrimerPaymentMethodList';
 import { PrimerVaultedPaymentMethod } from '../../PrimerVaultedPaymentMethod';
 import { useCheckoutFlow } from '../checkout-flow/CheckoutFlowContext';
+import { groupBySurcharge } from '../groupBySurcharge';
 import { usePrimerLocalization } from '../localization';
 import { NavigationHeader } from '../navigation/NavigationHeader';
 import { CheckoutRoute } from '../navigation/types';
@@ -47,6 +48,7 @@ export function MethodSelectionScreen() {
   const { push, replace } = useNavigation();
   const { clientSession, setActiveMethod, startNativeUI, stopBanks, stopKlarna, startAch, stopAch } =
     usePrimerCheckout();
+  const { acceptedCardNetworks } = usePrimerCheckout();
   const totalAmount = orderTotal(clientSession);
   const currencyCode = clientSession?.currencyCode;
   // The native SDKs title the list with the amount; "Checkout" only until the session arrives.
@@ -72,7 +74,12 @@ export function MethodSelectionScreen() {
 
   const methodCount = paymentMethods.length;
   const buttonGap = tokens.spacing.small;
-  const listHeight = methodCount > 0 ? methodCount * PAYMENT_METHOD_BUTTON_HEIGHT + (methodCount - 1) * buttonGap : 0;
+  const surchargeTitleArea =
+    tokens.spacing.small * 3 +
+    Math.max(tokens.typography.bodyMedium.lineHeight, tokens.typography.titleLarge.lineHeight);
+  const listHeight =
+    (methodCount > 0 ? methodCount * PAYMENT_METHOD_BUTTON_HEIGHT + (methodCount - 1) * buttonGap : 0) +
+    groupBySurcharge(paymentMethods, acceptedCardNetworks ?? []).length * surchargeTitleArea;
   const bottomPadding = useBottomPadding();
   // Container paddingTop + NavigationHeader (singleRow paddingVertical + titleXlarge lineHeight)
   //   + content paddingTop + sectionTitle lineHeight + content gap + list + bottom padding

@@ -11,6 +11,7 @@ import { usePrimerCardNetwork } from '../hooks/usePrimerCardNetwork';
 import { usePrimerCardNetworkSelection } from '../hooks/usePrimerCardNetworkSelection';
 import { PrimerCardNetworkSelector } from '../PrimerCardNetworkSelector';
 import { getNetworkAbbreviation } from '../internal/cardNetwork';
+import { useShownNetworkSurcharge } from '../internal/useShownNetworkSurcharge';
 import type { PrimerCardNumberInputProps, PrimerTextInputRef } from '../types/CardInputTypes';
 
 type SelectionChangeHandler = NonNullable<TextInputProps['onSelectionChange']>;
@@ -26,6 +27,7 @@ export const PrimerCardNumberInput = forwardRef<PrimerTextInputRef, PrimerCardNu
     const { network, iconSource } = usePrimerCardNetwork();
     const { isSelectorVisible, isDualBadge } = usePrimerCardNetworkSelection();
     const showSelector = isSelectorVisible || isDualBadge;
+    const { surchargeAmount } = useShownNetworkSurcharge();
     const tokens = usePrimerTheme();
     const abbreviation = iconSource == null && network ? getNetworkAbbreviation(network) : '';
 
@@ -77,10 +79,10 @@ export const PrimerCardNumberInput = forwardRef<PrimerTextInputRef, PrimerCardNu
       lastSelectionRef.current = e.nativeEvent.selection;
     };
 
+    const testID = (suffix: string) => (rest.testID ? `${rest.testID}-${suffix}` : undefined);
+
     // Three mutually exclusive trailing states, read top to bottom.
     const renderTrailingContent = () => {
-      const testID = (suffix: string) => (rest.testID ? `${rest.testID}-${suffix}` : undefined);
-
       if (showSelector) {
         return <PrimerCardNetworkSelector testID={testID('network-selector')} />;
       }
@@ -135,7 +137,31 @@ export const PrimerCardNumberInput = forwardRef<PrimerTextInputRef, PrimerCardNu
         placeholder={resolvedPlaceholder}
         error={cardForm.errors.cardNumber}
         onSelectionChange={handleSelectionChange}
-        trailingContent={renderTrailingContent()}
+        trailingContent={
+          <>
+            {surchargeAmount ? (
+              <View
+                style={[
+                  styles.surcharge,
+                  {
+                    backgroundColor: tokens.colors.backgroundSecondary,
+                    borderRadius: tokens.radii.xsmall,
+                    paddingHorizontal: tokens.spacing.xsmall,
+                    paddingVertical: tokens.spacing.xxsmall,
+                  },
+                ]}
+              >
+                <Text
+                  style={{ color: tokens.colors.textPrimary, ...toTextStyle(tokens.typography.bodySmall) }}
+                  testID={testID('surcharge')}
+                >
+                  {surchargeAmount}
+                </Text>
+              </View>
+            ) : null}
+            {renderTrailingContent()}
+          </>
+        }
         {...rest}
       />
     );
@@ -154,5 +180,8 @@ const styles = StyleSheet.create({
     height: PLACEHOLDER_ICON_HEIGHT,
     marginLeft: TRAILING_ICON_MARGIN,
     width: PLACEHOLDER_ICON_WIDTH,
+  },
+  surcharge: {
+    marginLeft: TRAILING_ICON_MARGIN,
   },
 });
