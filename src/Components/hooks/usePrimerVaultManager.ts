@@ -38,7 +38,7 @@ function parseVaultedMethod(
         ...base,
         kind: 'card',
         cardholderName: instrument?.cardholderName,
-        last4: instrument?.last4Digits != null ? String(instrument.last4Digits) : undefined,
+        last4: instrument?.last4Digits,
         expiryMonth: pad2(instrument?.expirationMonth),
         // Year field is typed as `number` (e.g. 2026) — display the last two digits.
         expiryYear: yearRaw != null ? String(yearRaw).slice(-2) : undefined,
@@ -51,8 +51,7 @@ function parseVaultedMethod(
         ...base,
         kind: 'bank',
         bankName: instrument?.bankName,
-        accountLast4:
-          instrument?.accountNumberLast4Digits != null ? String(instrument.accountNumberLast4Digits) : undefined,
+        accountLast4: instrument?.accountNumberLast4Digits,
       };
     case 'other': {
       const payer = instrument?.externalPayerInfo;

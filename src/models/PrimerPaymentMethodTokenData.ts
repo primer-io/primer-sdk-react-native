@@ -33,8 +33,8 @@ export interface IPrimerPaymentInstrumentData {
   network?: string;
   cardholderName?: string;
   first6Digits?: number;
-  last4Digits?: number;
-  accountNumberLast4Digits?: number;
+  last4Digits?: string;
+  accountNumberLast4Digits?: string;
   expirationMonth?: number;
   expirationYear?: number;
   externalPayerInfo?: IExternalPayerInfo;

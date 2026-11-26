@@ -107,7 +107,7 @@ function makeRawCard(overrides: Partial<RawVaultedMethod> = {}): RawVaultedMetho
     paymentInstrumentData: {
       cardholderName: 'John Appleseed',
       network: 'MASTERCARD',
-      last4Digits: 1234,
+      last4Digits: '1234',
       expirationMonth: 5,
       expirationYear: 2026,
     },
@@ -124,7 +124,7 @@ function makeItem(raw: RawVaultedMethod, overrides: Partial<CardVaultItem> = {})
     paymentMethodType: raw.paymentMethodType,
     paymentInstrumentType: raw.paymentInstrumentType,
     cardholderName: raw.paymentInstrumentData?.cardholderName,
-    last4: raw.paymentInstrumentData?.last4Digits != null ? String(raw.paymentInstrumentData.last4Digits) : undefined,
+    last4: raw.paymentInstrumentData?.last4Digits,
     expiryMonth: '05',
     expiryYear: '26',
     brandName: 'Mastercard',
